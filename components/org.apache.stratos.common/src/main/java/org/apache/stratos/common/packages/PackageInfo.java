@@ -41,71 +41,71 @@ package org.apache.stratos.common.packages;
 </packages>
  */
 public class PackageInfo {
-	
-	private String name;
-	private int usersLimit;
-	private int subscriptionCharge;
-	private int chargePerUser;
-	private int resourceVolumeLimit;
-	private int bandwidthLimit;
-	private int bandwidthOveruseCharge;
 
-	
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private int usersLimit;
+    private int subscriptionCharge;
+    private int chargePerUser;
+    private int resourceVolumeLimit;
+    private int bandwidthLimit;
+    private int bandwidthOveruseCharge;
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
-	public int getUsersLimit() {
-		return usersLimit;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setUsersLimit(int usersLimit) {
-		this.usersLimit = usersLimit;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public int getSubscriptionCharge() {
-		return subscriptionCharge;
-	}
+    public int getUsersLimit() {
+        return usersLimit;
+    }
 
-	public void setSubscriptionCharge(int subscriptionCharge) {
-		this.subscriptionCharge = subscriptionCharge;
-	}
+    public void setUsersLimit(int usersLimit) {
+        this.usersLimit = usersLimit;
+    }
 
-	public int getChargePerUser() {
-		return chargePerUser;
-	}
+    public int getSubscriptionCharge() {
+        return subscriptionCharge;
+    }
 
-	public void setChargePerUser(int chargePerUser) {
-		this.chargePerUser = chargePerUser;
-	}
+    public void setSubscriptionCharge(int subscriptionCharge) {
+        this.subscriptionCharge = subscriptionCharge;
+    }
 
-	public int getResourceVolumeLimit() {
-		return resourceVolumeLimit;
-	}
+    public int getChargePerUser() {
+        return chargePerUser;
+    }
 
-	public void setResourceVolumeLimit(int resourceVolumeLimit) {
-		this.resourceVolumeLimit = resourceVolumeLimit;
-	}
+    public void setChargePerUser(int chargePerUser) {
+        this.chargePerUser = chargePerUser;
+    }
 
-	public int getBandwidthLimit() {
-		return bandwidthLimit;
-	}
+    public int getResourceVolumeLimit() {
+        return resourceVolumeLimit;
+    }
 
-	public void setBandwidthLimit(int bandwidthLimit) {
-		this.bandwidthLimit = bandwidthLimit;
-	}
+    public void setResourceVolumeLimit(int resourceVolumeLimit) {
+        this.resourceVolumeLimit = resourceVolumeLimit;
+    }
 
-	public int getBandwidthOveruseCharge() {
-		return bandwidthOveruseCharge;
-	}
+    public int getBandwidthLimit() {
+        return bandwidthLimit;
+    }
 
-	public void setBandwidthOveruseCharge(int bandwidthOveruseCharge) {
-		this.bandwidthOveruseCharge = bandwidthOveruseCharge;
-	}
+    public void setBandwidthLimit(int bandwidthLimit) {
+        this.bandwidthLimit = bandwidthLimit;
+    }
 
-    
+    public int getBandwidthOveruseCharge() {
+        return bandwidthOveruseCharge;
+    }
+
+    public void setBandwidthOveruseCharge(int bandwidthOveruseCharge) {
+        this.bandwidthOveruseCharge = bandwidthOveruseCharge;
+    }
+
+
 }

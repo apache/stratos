@@ -22,7 +22,7 @@ package org.apache.stratos.common.beans.cartridge;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement (name = "iaasProvider")
+@XmlRootElement(name = "iaasProvider")
 public class IaasProviderBean {
 
     private String type;
@@ -107,9 +107,9 @@ public class IaasProviderBean {
         this.networkInterfaces = networkInterfaces;
     }
 
-    private String getIaasPropertiesString () {
+    private String getIaasPropertiesString() {
         StringBuilder iaasPropertyBuilder = new StringBuilder();
-        if(getProperty() != null) {
+        if (getProperty() != null) {
             for (PropertyBean propertyBean : getProperty()) {
                 iaasPropertyBuilder.append(propertyBean.getName() + " : " + propertyBean.getValue() + " | ");
             }
@@ -122,7 +122,7 @@ public class IaasProviderBean {
         if (getNetworkInterfaces() != null) {
             sb.append('[');
             String delimeter = "";
-            for (NetworkInterfaceBean nib: getNetworkInterfaces()) {
+            for (NetworkInterfaceBean nib : getNetworkInterfaces()) {
                 sb.append(delimeter).append(nib);
                 delimeter = ", ";
             }
@@ -131,7 +131,7 @@ public class IaasProviderBean {
         return sb.toString();
     }
 
-    public String toString () {
+    public String toString() {
         return " [ Type: " + getType() + ", Name: " + getName() + ", Class Name: " + getClassName() + ", Image Id: " + getImageId() +
                 ", Provider: " + getProvider() + ", Identity: " + getIdentity() +
                 ", Credentials: " + getCredential() + ", Properties: " + getIaasPropertiesString() + ", Network Interfaces: " +

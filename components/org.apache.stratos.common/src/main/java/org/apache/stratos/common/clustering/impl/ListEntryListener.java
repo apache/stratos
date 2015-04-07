@@ -25,12 +25,14 @@ package org.apache.stratos.common.clustering.impl;
 public interface ListEntryListener {
     /**
      * Invoked when an item is added to the distributed list.
+     *
      * @param item
      */
     void itemAdded(Object item);
 
     /**
      * Invoked when an item is removed from the distributed list.
+     *
      * @param item
      */
     void itemRemoved(Object item);

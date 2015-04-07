@@ -25,18 +25,18 @@ import java.util.List;
 @XmlRootElement(name = "cartridgeBean")
 public class CartridgeBean {
 
-	private String type;
-	private String provider;
+    private String type;
+    private String provider;
     /**
      * Category: framework|data|load-balancer
      */
     private String category;
     private String host;
     private String displayName;
-	private String description;
-	private String version;
-	private boolean multiTenant;
-	private boolean isPublic;
+    private String description;
+    private String version;
+    private boolean multiTenant;
+    private boolean isPublic;
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
     private String tenantPartitions;
@@ -49,39 +49,39 @@ public class CartridgeBean {
     private String[] metadataKeys;
     private List<PropertyBean> property;
 
-	private String getDeploymentDetails () {
-        if(getDeployment() != null) {
+    private String getDeploymentDetails() {
+        if (getDeployment() != null) {
             return getDeployment().toString();
         }
         return null;
     }
 
-    private String getPortMappings () {
+    private String getPortMappings() {
         StringBuilder portMappingBuilder = new StringBuilder();
-        if(getPortMapping() != null && !getPortMapping().isEmpty()) {
-            for(PortMappingBean portMappingBean : getPortMapping()) {
+        if (getPortMapping() != null && !getPortMapping().isEmpty()) {
+            for (PortMappingBean portMappingBean : getPortMapping()) {
                 portMappingBuilder.append(portMappingBean.toString());
             }
         }
         return portMappingBuilder.toString();
     }
 
-    private String getIaasProviders () {
+    private String getIaasProviders() {
 
         StringBuilder iaasBuilder = new StringBuilder();
-        if(getIaasProvider() != null && !getIaasProvider().isEmpty()) {
-            for(IaasProviderBean iaasProviderBean : getIaasProvider()) {
+        if (getIaasProvider() != null && !getIaasProvider().isEmpty()) {
+            for (IaasProviderBean iaasProviderBean : getIaasProvider()) {
                 iaasBuilder.append(iaasProviderBean.toString());
             }
         }
         return iaasBuilder.toString();
     }
 
-    private String getProperties () {
+    private String getProperties() {
 
         StringBuilder propertyBuilder = new StringBuilder();
-        if(getProperty() != null) {
-            for(PropertyBean propertyBean : getProperty()) {
+        if (getProperty() != null) {
+            for (PropertyBean propertyBean : getProperty()) {
                 propertyBuilder.append(propertyBean.getName() + " : " + propertyBean.getValue() + " | ");
             }
         }
@@ -216,15 +216,15 @@ public class CartridgeBean {
         this.loadBalancingIPType = loadBalancingIPType;
     }
 
-	public String[] getMetadataKeys() {
-		return metadataKeys;
-	}
+    public String[] getMetadataKeys() {
+        return metadataKeys;
+    }
 
-	public void setMetadataKeys(String[] metadataKeys) {
-		this.metadataKeys = metadataKeys;
-	}
+    public void setMetadataKeys(String[] metadataKeys) {
+        this.metadataKeys = metadataKeys;
+    }
 
-    public String toString () {
+    public String toString() {
 
         return "Type: " + getType() +
                 ", Provider: " + getProvider() +
@@ -237,9 +237,9 @@ public class CartridgeBean {
                 ", Public " + isPublic() +
                 ", Deployment" + getDeploymentDetails() +
                 ", Port Mapping: " + getPortMappings() +
-                ", Tenant Partitions: " +  getTenantPartitions() +
+                ", Tenant Partitions: " + getTenantPartitions() +
                 ", IaaS Providers: " + getIaasProviders() +
-                ", Persistence "+ (getPersistence() == null ? "" : getPersistence().toString()) +
+                ", Persistence " + (getPersistence() == null ? "" : getPersistence().toString()) +
                 ", Load Balancing IP Type: " + getLoadBalancingIPType() +
                 ", Metadata Keys: " + getMetadataKeys() +
                 ", Properties: " + getProperties();

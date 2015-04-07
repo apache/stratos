@@ -49,7 +49,7 @@ public class CloudServiceConfigParser {
         synchronized (loadlock) {
             if (cloudServicesDescConfig == null) {
                 try {
-                    String configFileName = CarbonUtils.getCarbonConfigDirPath() + File.separator + 
+                    String configFileName = CarbonUtils.getCarbonConfigDirPath() + File.separator +
                             StratosConstants.MULTITENANCY_CONFIG_FOLDER + File.separator + CONFIG_FILENAME;
                     OMElement configElement = CommonUtil.buildOMElement(new FileInputStream(configFileName));
                     cloudServicesDescConfig = new CloudServicesDescConfig(configElement);

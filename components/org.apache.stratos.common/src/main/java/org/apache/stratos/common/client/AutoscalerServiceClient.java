@@ -104,37 +104,37 @@ public class AutoscalerServiceClient {
 
     public boolean deployApplication(String applicationId, String applicationPolicyId) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceApplicationDefinitionExceptionException {
-		return stub.deployApplication(applicationId, applicationPolicyId);
+        return stub.deployApplication(applicationId, applicationPolicyId);
     }
-    
-    public void addApplicationPolicy(ApplicationPolicy applicationPolicy) 
-    		throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException, 
-    AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException {
-    	stub.addApplicationPolicy(applicationPolicy);
+
+    public void addApplicationPolicy(ApplicationPolicy applicationPolicy)
+            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException,
+            AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException {
+        stub.addApplicationPolicy(applicationPolicy);
     }
-    
+
     public ApplicationPolicy getApplicationPolicy(String applicationPolicyId) throws RemoteException {
-    	return stub.getApplicationPolicy(applicationPolicyId);
+        return stub.getApplicationPolicy(applicationPolicyId);
     }
-    
+
     public ApplicationPolicy[] getApplicationPolicies() throws RemoteException {
-    	return stub.getApplicationPolicies();
+        return stub.getApplicationPolicies();
     }
-    
-    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy) 
-    		throws RemoteException, AutoscalerServiceApplicatioinPolicyNotExistsExceptionException, 
-    		AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException{
-    	stub.updateApplicationPolicy(applicationPolicy);
+
+    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy)
+            throws RemoteException, AutoscalerServiceApplicatioinPolicyNotExistsExceptionException,
+            AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException {
+        stub.updateApplicationPolicy(applicationPolicy);
     }
-    
-    public void removeApplicationPolicy(String applicationPolicyId) 
-    		throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException {
-    	stub.removeApplicationPolicy(applicationPolicyId);
+
+    public void removeApplicationPolicy(String applicationPolicyId)
+            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException {
+        stub.removeApplicationPolicy(applicationPolicyId);
     }
-    
-    public String[] getApplicationNetworkPartitions(String applicationId) throws RemoteException, 
-    AutoscalerServiceAutoScalerExceptionException {
-    	return stub.getApplicationNetworkPartitions(applicationId);
+
+    public String[] getApplicationNetworkPartitions(String applicationId) throws RemoteException,
+            AutoscalerServiceAutoScalerExceptionException {
+        return stub.getApplicationNetworkPartitions(applicationId);
     }
 
     public void undeployApplication(String applicationId, boolean force) throws
@@ -156,10 +156,10 @@ public class AutoscalerServiceClient {
         return stub.updateAutoScalingPolicy(autoScalePolicy);
     }
 
-	public boolean removeAutoscalingPolicy(String autoScalePolicyId) throws RemoteException,
+    public boolean removeAutoscalingPolicy(String autoScalePolicyId) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException {
-		return stub.removeAutoScalingPolicy(autoScalePolicyId);
-	}
+        return stub.removeAutoScalingPolicy(autoScalePolicyId);
+    }
 
     public ServiceGroup getServiceGroup(String serviceGroupDefinitionName) throws RemoteException {
         return stub.getServiceGroup(serviceGroupDefinitionName);
@@ -208,7 +208,7 @@ public class AutoscalerServiceClient {
         return stub.getDeploymentPolicy(deploymentPolicyID);
     }
 
-    public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException{
+    public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException {
         return stub.getDeploymentPolicies();
     }
 

@@ -33,6 +33,7 @@ import java.util.concurrent.locks.Lock;
 public interface DistributedObjectProvider extends Serializable {
     /**
      * Returns a distributed map if clustering is enabled, else returns a local hash map.
+     *
      * @param name
      * @return
      */
@@ -40,12 +41,14 @@ public interface DistributedObjectProvider extends Serializable {
 
     /**
      * Removes a map from the object provider.
+     *
      * @param name
      */
     void removeMap(String name);
 
     /**
      * Returns a distributed list if clustering is enabled, else returns a local array list.
+     *
      * @param name
      * @return
      */
@@ -53,6 +56,7 @@ public interface DistributedObjectProvider extends Serializable {
 
     /**
      * Remove a list from the object provider.
+     *
      * @param name
      */
     void removeList(String name);
@@ -60,6 +64,7 @@ public interface DistributedObjectProvider extends Serializable {
     /**
      * Acquires a distributed lock if clustering is enabled, else acquires a local reentrant lock and
      * returns the lock object.
+     *
      * @param object
      * @return
      */
@@ -67,6 +72,7 @@ public interface DistributedObjectProvider extends Serializable {
 
     /**
      * Releases a given distributed/local lock.
+     *
      * @param lock
      */
     void releaseLock(Lock lock);

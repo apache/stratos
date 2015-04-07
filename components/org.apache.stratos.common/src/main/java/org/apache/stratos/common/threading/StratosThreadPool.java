@@ -38,32 +38,33 @@ public class StratosThreadPool {
 
     private static Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<String, ExecutorService>();
     private static Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
-	private static Object executorServiceMapLock = new Object();
+    private static Object executorServiceMapLock = new Object();
     private static Object scheduledServiceMapLock = new Object();
 
-	/**
-	 * Return the executor service based on the identifier and thread pool size
-	 *
-	 * @param identifier     Thread pool identifier name
-	 * @param threadPoolSize Thread pool size
-	 * @return ExecutorService
-	 */
-	public static ExecutorService getExecutorService(String identifier, int threadPoolSize) {
-		ExecutorService executorService = executorServiceMap.get(identifier);
-		if (executorService == null) {
-			synchronized (executorServiceMapLock) {
-				if (executorService == null) {
-					executorService = Executors.newFixedThreadPool(threadPoolSize);
-					executorServiceMap.put(identifier, executorService);
+    /**
+     * Return the executor service based on the identifier and thread pool size
+     *
+     * @param identifier     Thread pool identifier name
+     * @param threadPoolSize Thread pool size
+     * @return ExecutorService
+     */
+    public static ExecutorService getExecutorService(String identifier, int threadPoolSize) {
+        ExecutorService executorService = executorServiceMap.get(identifier);
+        if (executorService == null) {
+            synchronized (executorServiceMapLock) {
+                if (executorService == null) {
+                    executorService = Executors.newFixedThreadPool(threadPoolSize);
+                    executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
-				}
-			}
-		}
-		return executorService;
-	}
+                }
+            }
+        }
+        return executorService;
+    }
 
     /**
      * Returns a scheduled executor for given thread pool size.
+     *
      * @param identifier     Thread pool identifier name
      * @param threadPoolSize Thread pool size
      * @return

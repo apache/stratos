@@ -61,10 +61,11 @@ public class AxiomXpathParserUtil {
     public static final String ALIAS_ATTRIBUTE_PREFIX = "svns";
     public static final String ALIAS_NAMESPACE = "http://org.wso2.securevault/configuration";
 
-    private AxiomXpathParserUtil(){}
-    
+    private AxiomXpathParserUtil() {
+    }
+
     public static OMElement parse(File xmlSource) throws MalformedConfigurationFileException,
-        IllegalArgumentException {
+            IllegalArgumentException {
 
         OMElement documentElement;
 
@@ -121,7 +122,7 @@ public class AxiomXpathParserUtil {
     }
 
     public static OMElement getElement(final String fileName, final OMElement rootElt,
-        final String eltStr, final String xpath) {
+                                       final String eltStr, final String xpath) {
         List<?> nodes = getMatchingNodes(xpath, rootElt);
         neglectingWarn(fileName, eltStr, nodes.size());
         OMElement element = getElement(nodes.get(0));
@@ -140,31 +141,29 @@ public class AxiomXpathParserUtil {
     private static void neglectingWarn(final String fileName, final String elt, final int size) {
         if (size > 1) {
             LOG.warn(fileName + " contains more than one " + elt + " elements!" +
-                     " Elements other than the first will be neglected.");
+                    " Elements other than the first will be neglected.");
         }
     }
 
     public static void plainTextWarn(final String elt) {
         LOG.warn("Unable to find a value for " + elt + " element from Secure Vault." +
-                 "Hence we will try to assign the plain text value (if specified).");
+                "Hence we will try to assign the plain text value (if specified).");
     }
 
     /**
-     * @param xpath
-     *            XPATH expression to be read.
-     * @param elt
-     *            OMElement to be used for the search.
+     * @param xpath XPATH expression to be read.
+     * @param elt   OMElement to be used for the search.
      * @return List matching OMNode list
      */
     @SuppressWarnings("unchecked")
-    public static OMNode getFirstMatchingNode(final String xpath, final OMElement elt) throws MalformedConfigurationFileException{
+    public static OMNode getFirstMatchingNode(final String xpath, final OMElement elt) throws MalformedConfigurationFileException {
 
         AXIOMXPath axiomXpath;
         List<OMNode> nodeList = null;
         try {
             axiomXpath = new AXIOMXPath(xpath);
             nodeList = axiomXpath.selectNodes(elt);
-            return nodeList.isEmpty() ?  null : nodeList.get(0);
+            return nodeList.isEmpty() ? null : nodeList.get(0);
         } catch (JaxenException e) {
             String msg = "Error occurred while reading the Xpath (" + xpath + ")";
             LOG.error(msg, e);
@@ -174,12 +173,11 @@ public class AxiomXpathParserUtil {
     }
 
     /**
-     * @param xpath
-     *            XPATH expression to be read.
+     * @param xpath XPATH expression to be read.
      * @return List matching list
      */
     @SuppressWarnings("unchecked")
-    public static List<OMNode> getMatchingNodes(OMElement elt, final String xpath) throws MalformedConfigurationFileException{
+    public static List<OMNode> getMatchingNodes(OMElement elt, final String xpath) throws MalformedConfigurationFileException {
 
         AXIOMXPath axiomXpath;
         List<OMNode> nodeList = null;
@@ -196,14 +194,12 @@ public class AxiomXpathParserUtil {
     }
 
     /**
-     * @param xpath
-     *            XPATH expression to be read.
-     * @param elt
-     *            OMElement to be used for the search.
+     * @param xpath XPATH expression to be read.
+     * @param elt   OMElement to be used for the search.
      * @return List matching OMNode list
      */
     @SuppressWarnings("unchecked")
-    public static List<OMNode> getMatchingNodes(final String xpath, final OMElement elt) throws MalformedConfigurationFileException{
+    public static List<OMNode> getMatchingNodes(final String xpath, final OMElement elt) throws MalformedConfigurationFileException {
 
         AXIOMXPath axiomXpath;
         List<OMNode> nodeList = null;

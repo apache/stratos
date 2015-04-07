@@ -29,21 +29,21 @@ public class DeploymentPolicyBean {
 
     private String id;
 
-	private List<NetworkPartitionBean> networkPartitions;
+    private List<NetworkPartitionBean> networkPartitions;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public List<NetworkPartitionBean> getNetworkPartitions() {
-		return networkPartitions;
-	}
+    public List<NetworkPartitionBean> getNetworkPartitions() {
+        return networkPartitions;
+    }
 
-	public void setNetworkPartitions(List<NetworkPartitionBean> networkPartitions) {
-		this.networkPartitions = networkPartitions;
-	}
+    public void setNetworkPartitions(List<NetworkPartitionBean> networkPartitions) {
+        this.networkPartitions = networkPartitions;
+    }
 }

@@ -45,10 +45,8 @@ public class Partition implements Serializable {
     /**
      * Gets the value of the id property.
      *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
+     * @return possible object is
+     * {@link String }
      */
     public String getId() {
         return id;
@@ -57,10 +55,8 @@ public class Partition implements Serializable {
     /**
      * Sets the value of the id property.
      *
-     * @param id
-     *     allowed object is
-     *     {@link String }
-     *
+     * @param id allowed object is
+     *           {@link String }
      */
     public void setId(String id) {
         this.id = id;
@@ -69,10 +65,8 @@ public class Partition implements Serializable {
     /**
      * Gets the value of the description property.
      *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDescription() {
         return description;
@@ -81,10 +75,8 @@ public class Partition implements Serializable {
     /**
      * Sets the value of the description property.
      *
-     * @param description
-     *     allowed object is
-     *     {@link String }
-     *
+     * @param description allowed object is
+     *                    {@link String }
      */
     public void setDescription(String description) {
         this.description = description;
@@ -93,9 +85,7 @@ public class Partition implements Serializable {
     /**
      * Sets the value of the isPublic property.
      *
-     * @param isPublic
-     *     allowed object is boolean
-     *
+     * @param isPublic allowed object is boolean
      */
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
@@ -103,7 +93,6 @@ public class Partition implements Serializable {
 
     /**
      * Gets the value of the isPublic property.
-     *
      */
     public boolean getIsPublic() {
         return isPublic;
@@ -127,7 +116,7 @@ public class Partition implements Serializable {
 
     public String getKubernetesClusterId() {
         Property property = properties.getProperty(KUBERNETES_CLUSTER);
-        if(property != null) {
+        if (property != null) {
             return property.getValue();
         }
         return null;
@@ -140,7 +129,7 @@ public class Partition implements Serializable {
     }
 
     public boolean equals(Object obj) {
-        if(obj != null && obj instanceof Partition) {
+        if (obj != null && obj instanceof Partition) {
             return this.id.equals(((Partition) obj).getId());
         }
         return false;

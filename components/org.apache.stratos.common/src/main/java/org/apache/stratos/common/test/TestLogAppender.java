@@ -37,7 +37,8 @@ public class TestLogAppender extends AppenderSkeleton {
         return new ArrayList<String>(messages);
     }
 
-    public void close() {}
+    public void close() {
+    }
 
     public boolean requiresLayout() {
         return false;
@@ -45,7 +46,7 @@ public class TestLogAppender extends AppenderSkeleton {
 
     @Override
     protected void append(LoggingEvent event) {
-        if(event.getMessage() != null) {
+        if (event.getMessage() != null) {
             messages.add(event.getMessage().toString());
         }
     }

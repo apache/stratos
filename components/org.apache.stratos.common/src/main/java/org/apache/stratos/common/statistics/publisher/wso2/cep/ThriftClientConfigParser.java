@@ -48,15 +48,15 @@ public class ThriftClientConfigParser {
      * This method reads thrift-client-config.xml file and assign necessary credential
      * values into thriftClientInfo object.  A singleton design has been implemented
      * with the use of thriftClientIConfig class.
-     * <p>
+     * <p/>
      * The filePath argument is the path to thrift-client-config.xml file
      *
      * @param filePath the path to thrift-client-config.xml file
-     * @return         ThriftClientConfig object
+     * @return ThriftClientConfig object
      */
     public static ThriftClientConfig parse(String filePath) {
         try {
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("Parsing thrift client config file: %s", filePath));
             }
 
@@ -65,7 +65,7 @@ public class ThriftClientConfigParser {
             thriftClientIConfig.setThriftClientInfo(thriftClientInfo);
 
             File configFile = new File(filePath);
-            if(!configFile.exists()) {
+            if (!configFile.exists()) {
                 throw new RuntimeException(String.format("Thrift client config file does not exist: %s", filePath));
             }
             OMElement document = AxiomXpathParserUtil.parse(configFile);

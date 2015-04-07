@@ -39,10 +39,10 @@ public class PermissionConfig {
         Iterator configChildIt = configEle.getChildElements();
         while (configChildIt.hasNext()) {
             Object configChildObj = configChildIt.next();
-            if (!( configChildObj instanceof OMElement)) {
+            if (!(configChildObj instanceof OMElement)) {
                 continue;
             }
-            OMElement configChildEle = (OMElement)configChildObj;
+            OMElement configChildEle = (OMElement) configChildObj;
             if (new QName(CONFIG_NS, NAME, "").
                     equals(configChildEle.getQName())) {
                 name = configChildEle.getText();

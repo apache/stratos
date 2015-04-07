@@ -24,11 +24,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement(name="clusterInstances")
+@XmlRootElement(name = "clusterInstances")
 public class ClusterInstanceBean implements Serializable {
 
-	private String status;
-	private String instanceId;
+    private String status;
+    private String instanceId;
     private String parentInstanceId;
     private String alias;
     private String serviceName;
@@ -36,24 +36,24 @@ public class ClusterInstanceBean implements Serializable {
     private List<MemberBean> member;
     private String tenantRange;
     private List<String> hostNames;
-	private List<String> accessUrls;
+    private List<String> accessUrls;
     private List<KubernetesServiceBean> kubernetesServices;
 
     public String getStatus() {
-		return status;
-	}
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public String getInstanceId() {
-		return instanceId;
-	}
+    public String getInstanceId() {
+        return instanceId;
+    }
 
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
 
     public String getAlias() {
         return alias;
@@ -118,13 +118,13 @@ public class ClusterInstanceBean implements Serializable {
         this.parentInstanceId = parentInstanceId;
     }
 
-	public List<String> getAccessUrls() {
-		return accessUrls;
-	}
+    public List<String> getAccessUrls() {
+        return accessUrls;
+    }
 
-	public void setAccessUrls(List<String> accessUrls) {
-		this.accessUrls = accessUrls;
-	}
+    public void setAccessUrls(List<String> accessUrls) {
+        this.accessUrls = accessUrls;
+    }
 
     public void setKubernetesServices(List<KubernetesServiceBean> kubernetesServices) {
         this.kubernetesServices = kubernetesServices;

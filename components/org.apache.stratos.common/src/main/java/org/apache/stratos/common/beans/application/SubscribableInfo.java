@@ -33,7 +33,7 @@ public class SubscribableInfo implements Serializable {
 
     private static final long serialVersionUID = 8097432440778125606L;
 
-	private String alias;
+    private String alias;
     private String deploymentPolicy;
     private String autoscalingPolicy;
     private int maxMembers;
@@ -74,7 +74,7 @@ public class SubscribableInfo implements Serializable {
     public void setDependencyAliases(String[] dependencyAliases) {
         this.dependencyAliases = dependencyAliases;
     }
-    
+
     public List<PropertyBean> getProperty() {
         return property;
     }

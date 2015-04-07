@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement(name="applicationDomainMappings")
+@XmlRootElement(name = "applicationDomainMappings")
 public class ApplicationDomainMappingsBean implements Serializable {
 
     private static final long serialVersionUID = 8896916017135654616L;

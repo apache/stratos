@@ -63,7 +63,7 @@ public class AutoscalePolicyBean {
         this.isPublic = isPublic;
     }
 
-    
+
     public LoadThresholdsBean getLoadThresholds() {
         return loadThresholds;
     }

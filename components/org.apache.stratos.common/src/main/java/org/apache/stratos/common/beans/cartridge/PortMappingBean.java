@@ -28,7 +28,7 @@ public class PortMappingBean {
     private int port;
     private int proxyPort;
 
-    public String toString () {
+    public String toString() {
         return " [ Protocol: " + getProtocol() + ", Port: " + getPort() + ", Proxy port: " + getProxyPort() + "] ";
     }
 

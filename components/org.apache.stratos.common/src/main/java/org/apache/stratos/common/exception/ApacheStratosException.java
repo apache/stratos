@@ -23,7 +23,7 @@ package org.apache.stratos.common.exception;
  * This class is defined as the general Exception implementation for Stratos. This can be used
  * within Stratos components when handling exceptions.
  */
-public class ApacheStratosException extends Exception{
+public class ApacheStratosException extends Exception {
 
     public ApacheStratosException() {
     }

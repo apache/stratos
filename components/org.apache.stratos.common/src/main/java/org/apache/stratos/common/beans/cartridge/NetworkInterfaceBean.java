@@ -23,80 +23,80 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement (name = "networkInterfaces")
+@XmlRootElement(name = "networkInterfaces")
 public class NetworkInterfaceBean {
 
-	private String networkUuid;
-	private String fixedIp;
-	private String portUuid;
-	private List<FloatingNetworkBean> floatingNetworks;
-    
+    private String networkUuid;
+    private String fixedIp;
+    private String portUuid;
+    private List<FloatingNetworkBean> floatingNetworks;
+
     private String getFloatingNetworksString() {
-    	StringBuilder sb = new StringBuilder();
-    	if (floatingNetworks != null) {
-    		sb.append('[');
-    		String delimeter = "";
-    		for (FloatingNetworkBean floatingNetworkBean:floatingNetworks) {
-    			sb.append(delimeter).append(floatingNetworkBean);
-    			delimeter = ", ";
-    		}
-    		sb.append(']');
-    	}
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        if (floatingNetworks != null) {
+            sb.append('[');
+            String delimeter = "";
+            for (FloatingNetworkBean floatingNetworkBean : floatingNetworks) {
+                sb.append(delimeter).append(floatingNetworkBean);
+                delimeter = ", ";
+            }
+            sb.append(']');
+        }
+        return sb.toString();
     }
 
-	public String getNetworkUuid() {
-		return networkUuid;
-	}
+    public String getNetworkUuid() {
+        return networkUuid;
+    }
 
-	public void setNetworkUuid(String networkUuid) {
-		this.networkUuid = networkUuid;
-	}
+    public void setNetworkUuid(String networkUuid) {
+        this.networkUuid = networkUuid;
+    }
 
-	public String getFixedIp() {
-		return fixedIp;
-	}
+    public String getFixedIp() {
+        return fixedIp;
+    }
 
-	public void setFixedIp(String fixedIp) {
-		this.fixedIp = fixedIp;
-	}
+    public void setFixedIp(String fixedIp) {
+        this.fixedIp = fixedIp;
+    }
 
-	public String getPortUuid() {
-		return portUuid;
-	}
+    public String getPortUuid() {
+        return portUuid;
+    }
 
-	public void setPortUuid(String portUuid) {
-		this.portUuid = portUuid;
-	}
+    public void setPortUuid(String portUuid) {
+        this.portUuid = portUuid;
+    }
 
-	public void setFloatingNetworks(List<FloatingNetworkBean> floatingNetworks) {
-		this.floatingNetworks = floatingNetworks;
-	}
+    public void setFloatingNetworks(List<FloatingNetworkBean> floatingNetworks) {
+        this.floatingNetworks = floatingNetworks;
+    }
 
-	public List<FloatingNetworkBean> getFloatingNetworks() {
-		return floatingNetworks;
-	}
+    public List<FloatingNetworkBean> getFloatingNetworks() {
+        return floatingNetworks;
+    }
 
-	public String toString () {
-		StringBuilder sb = new StringBuilder('{');
-		String delimeter = "";
-		if (getNetworkUuid() != null) {
-			sb.append(delimeter).append("networkUuid : ").append(getNetworkUuid());
-			delimeter = ", ";
-		}
-		if (getFixedIp() != null) {
-			sb.append(delimeter).append("fixedIp : ").append(getFixedIp());
-			delimeter = ", ";
-		}
-		if (getPortUuid() != null) {
-			sb.append(delimeter).append("portUuid : ").append(getPortUuid());
-			delimeter = ", ";
-		}
-		if (getFloatingNetworks() != null) {
-			sb.append(delimeter).append("floatingNetworks : ").append(getFloatingNetworks());
-			delimeter = ", ";
-		}
-		sb.append('}');
-		return sb.toString();
-	}
+    public String toString() {
+        StringBuilder sb = new StringBuilder('{');
+        String delimeter = "";
+        if (getNetworkUuid() != null) {
+            sb.append(delimeter).append("networkUuid : ").append(getNetworkUuid());
+            delimeter = ", ";
+        }
+        if (getFixedIp() != null) {
+            sb.append(delimeter).append("fixedIp : ").append(getFixedIp());
+            delimeter = ", ";
+        }
+        if (getPortUuid() != null) {
+            sb.append(delimeter).append("portUuid : ").append(getPortUuid());
+            delimeter = ", ";
+        }
+        if (getFloatingNetworks() != null) {
+            sb.append(delimeter).append("floatingNetworks : ").append(getFloatingNetworks());
+            delimeter = ", ";
+        }
+        sb.append('}');
+        return sb.toString();
+    }
 }

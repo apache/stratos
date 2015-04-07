@@ -28,11 +28,11 @@ public class DeploymentBean {
     private String baseDir;
     private List<String> dir;
 
-    private String getDirectories () {
+    private String getDirectories() {
 
         StringBuilder directoryBuilder = new StringBuilder();
-        if(getDir() != null) {
-            for(String directory : getDir()) {
+        if (getDir() != null) {
+            for (String directory : getDir()) {
                 directoryBuilder.append(directory + " | ");
             }
         }
@@ -55,7 +55,7 @@ public class DeploymentBean {
         this.dir = dir;
     }
 
-    public String toString () {
+    public String toString() {
         return " Base Directory: " + getBaseDir() + " Directories: " + getDirectories();
     }
 }

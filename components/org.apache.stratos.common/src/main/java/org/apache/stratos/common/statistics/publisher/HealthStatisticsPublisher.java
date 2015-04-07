@@ -26,13 +26,14 @@ public interface HealthStatisticsPublisher extends StatisticsPublisher {
 
     /**
      * Publish health statistics to complex event processor.
-     * @param clusterId Cluster id of the member
-     * @param clusterInstanceId Cluster instance id of the member
+     *
+     * @param clusterId          Cluster id of the member
+     * @param clusterInstanceId  Cluster instance id of the member
      * @param networkPartitionId Network partition id of the member
-     * @param memberId Member id
-     * @param partitionId Partition id of the member
-     * @param health Health type: memory_consumption | load_average
-     * @param value Health type value
+     * @param memberId           Member id
+     * @param partitionId        Partition id of the member
+     * @param health             Health type: memory_consumption | load_average
+     * @param value              Health type value
      */
     void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
                  String memberId, String partitionId, String health, double value);

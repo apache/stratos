@@ -69,6 +69,7 @@ public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher
 
     /**
      * Publish health statistics to cep.
+     *
      * @param clusterId
      * @param clusterInstanceId
      * @param networkPartitionId
@@ -79,7 +80,7 @@ public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher
      */
     @Override
     public void publish(String clusterId, String clusterInstanceId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
         }

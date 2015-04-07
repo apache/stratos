@@ -46,13 +46,13 @@ public class NetworkPartitionBean {
         this.partitions = partitions;
     }
 
-	public String getProvider() {
-		return provider;
-	}
+    public String getProvider() {
+        return provider;
+    }
 
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 
     public String getPartitionAlgo() {
         return partitionAlgo;

@@ -27,7 +27,7 @@ import org.apache.stratos.common.statistics.publisher.wso2.cep.WSO2CEPHealthStat
 public class HealthStatisticsPublisherFactory {
 
     public static HealthStatisticsPublisher createHealthStatisticsPublisher(StatisticsPublisherType type) {
-        if(type == StatisticsPublisherType.WSO2CEP) {
+        if (type == StatisticsPublisherType.WSO2CEP) {
             return new WSO2CEPHealthStatisticsPublisher();
         } else {
             throw new RuntimeException("Unknown statistics publisher type");

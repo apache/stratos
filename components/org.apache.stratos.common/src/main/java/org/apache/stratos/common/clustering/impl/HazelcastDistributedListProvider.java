@@ -44,9 +44,9 @@ public class HazelcastDistributedListProvider implements Serializable {
 
     public List getList(String name, ListEntryListener listEntryListener) {
         List list = listMap.get(name);
-        if(list == null) {
+        if (list == null) {
             synchronized (HazelcastDistributedListProvider.class) {
-                if(list == null) {
+                if (list == null) {
                     list = new DistList(name, listEntryListener);
                 }
             }
@@ -56,7 +56,7 @@ public class HazelcastDistributedListProvider implements Serializable {
 
     public void removeList(String name) {
         DistList list = listMap.get(name);
-        if(list != null) {
+        if (list != null) {
             IList ilist = (IList) list;
             ilist.removeItemListener(list.getListenerId());
             listMap.remove(list);

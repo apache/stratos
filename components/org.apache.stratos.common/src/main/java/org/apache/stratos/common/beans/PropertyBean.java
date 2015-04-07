@@ -27,7 +27,7 @@ public class PropertyBean implements Serializable {
 
     private static final long serialVersionUID = 5756598782384376873L;
 
-	private String name;
+    private String name;
     private String value;
 
     public String getName() {

@@ -127,7 +127,7 @@ public class CommonUtil {
     public static String getAdminUserName() {
         return stratosConfig.getAdminUserName();
     }
-    
+
     public static String getAdminPassword() {
         return stratosConfig.getAdminPassword();
     }
@@ -167,9 +167,9 @@ public class CommonUtil {
             } catch (Exception e) {
                 if (log.isWarnEnabled()) {
                     log.warn("Invalid Email Address provided for tenant creation notification. " +
-                             "Please check whether the parameter NotificationEmail" +
-                             " is set properly in " +
-                             StratosConstants.STRATOS_CONF_FILE, e);
+                            "Please check whether the parameter NotificationEmail" +
+                            " is set properly in " +
+                            StratosConstants.STRATOS_CONF_FILE, e);
                 }
                 return "";
             }
@@ -340,13 +340,13 @@ public class CommonUtil {
             throws RegistryException {
         String domainValidatorInfoPath =
                 StratosConstants.DOMAIN_VALIDATOR_INFO_PATH + RegistryConstants.PATH_SEPARATOR +
-                domain + RegistryConstants.PATH_SEPARATOR +
-                StratosConstants.VALIDATION_KEY_RESOURCE_NAME;
+                        domain + RegistryConstants.PATH_SEPARATOR +
+                        StratosConstants.VALIDATION_KEY_RESOURCE_NAME;
         if (governanceSystemRegistry.resourceExists(domainValidatorInfoPath)) {
             Resource resource = governanceSystemRegistry.get(domainValidatorInfoPath);
             String actualSuccessKey = resource.getProperty("successKey");
             if (actualSuccessKey != null && successKey != null &&
-                actualSuccessKey.trim().equals(successKey.trim())) {
+                    actualSuccessKey.trim().equals(successKey.trim())) {
                 // the domain is correct
                 return true;
             }
@@ -361,7 +361,7 @@ public class CommonUtil {
      */
     public static StratosConfiguration loadStratosConfiguration() {
         // gets the configuration file name from the StratosConstants.
-        String StratosConfigFileName = CarbonUtils.getCarbonConfigDirPath() + File.separator + 
+        String StratosConfigFileName = CarbonUtils.getCarbonConfigDirPath() + File.separator +
                 StratosConstants.MULTITENANCY_CONFIG_FOLDER + File.separator +
                 StratosConstants.STRATOS_CONF_FILE;
         return loadStratosConfiguration(StratosConfigFileName);
@@ -418,7 +418,7 @@ public class CommonUtil {
                         config.setNotificationEmail(element.getText());
                     } else if ("SuperAdminEmail".equals(element.getLocalName())) {
                         config.setSuperAdminEmail(element.getText());
-                    } else if ("TenantActivationModerated".equals(element.getLocalName())){
+                    } else if ("TenantActivationModerated".equals(element.getLocalName())) {
                         String isTenantActivationModerated = element.getText();
                         boolean tenantActivationModerated = false;
                         if (isTenantActivationModerated.trim().equalsIgnoreCase("true")) {
@@ -446,38 +446,37 @@ public class CommonUtil {
                             skipSummaryGenerator = true;
                         }
                         config.setSkipSummaryGenerator(skipSummaryGenerator);
-                    }
-                    else if ("PaypalAPIUsername".equals(element.getLocalName())) {
+                    } else if ("PaypalAPIUsername".equals(element.getLocalName())) {
                         config.setPaypalAPIUsername(element.getText());
                     } else if ("PaypalAPIPassword".equals(element.getLocalName())) {
                         config.setPaypalAPIPassword(element.getText());
                     } else if ("PaypalAPISignature".equals(element.getLocalName())) {
                         config.setPaypalAPISignature(element.getText());
-                    }else if ("PaypalEnvironment".equals(element.getLocalName())){
+                    } else if ("PaypalEnvironment".equals(element.getLocalName())) {
                         config.setPaypalEnvironment(element.getText());
-                    }else if("FinanceNotificationEmail".equals(element.getLocalName())){
-                        config.setFinanceNotificationEmail(element.getText());    
-                    }else if("UsagePlanUrl".equals(element.getLocalName())){
+                    } else if ("FinanceNotificationEmail".equals(element.getLocalName())) {
+                        config.setFinanceNotificationEmail(element.getText());
+                    } else if ("UsagePlanUrl".equals(element.getLocalName())) {
                         config.setUsagePlanURL(element.getText());
-                    }else if("PaidJIRAUrl".equals(element.getLocalName())) {
+                    } else if ("PaidJIRAUrl".equals(element.getLocalName())) {
                         config.setPaidJIRAUrl(element.getText());
-                    }else if("PaidJIRAProject".equals(element.getLocalName())) {
+                    } else if ("PaidJIRAProject".equals(element.getLocalName())) {
                         config.setPaidJIRAProject(element.getText());
-                    }else if("ForumUrl".equals(element.getLocalName())) {
+                    } else if ("ForumUrl".equals(element.getLocalName())) {
                         config.setForumUrl(element.getText());
-                    }else if("PaidUserGroup".equals(element.getLocalName())) {
+                    } else if ("PaidUserGroup".equals(element.getLocalName())) {
                         config.setPaidUserGroup(element.getText());
-                    }else if("NonpaidUserGroup".equals(element.getLocalName())) {
+                    } else if ("NonpaidUserGroup".equals(element.getLocalName())) {
                         config.setNonpaidUserGroup(element.getText());
-                    } else if("SupportInfoUrl".equals(element.getLocalName())) {
+                    } else if ("SupportInfoUrl".equals(element.getLocalName())) {
                         config.setSupportInfoUrl(element.getText());
-                    }else if("IncidentCustomFieldId".equals(element.getLocalName())) {
+                    } else if ("IncidentCustomFieldId".equals(element.getLocalName())) {
                         config.setIncidentCustomFieldId(element.getText());
-                    } else if("IncidentImpactCustomFieldId".equals(element.getLocalName())) {
+                    } else if ("IncidentImpactCustomFieldId".equals(element.getLocalName())) {
                         config.setIncidentImpactCustomFieldId(element.getText());
                     } else if ("GoogleAnalyticsURL".equals(element.getLocalName())) {
                         config.setGoogleAnalyticsURL(element.getText());
-                    } else if("StratosEventListener".equals(element.getLocalName())) {
+                    } else if ("StratosEventListener".equals(element.getLocalName())) {
                         populateEventListenerProperties(config, element);
                     } else if ("managerServiceUrl".equals(element.getLocalName())) {
                         config.setManagerServiceUrl(element.getText());
@@ -485,7 +484,7 @@ public class CommonUtil {
                         config.setAdminUserName(element.getText());
                     } else if ("adminPassword".equals(element.getLocalName())) {
                         config.setAdminPassword(element.getText());
-                    } else if("SSOLoadingMessage".equals(element.getLocalName())){
+                    } else if ("SSOLoadingMessage".equals(element.getLocalName())) {
                         config.setSsoLoadingMessage(element.getText());
                     }
                 }
@@ -504,19 +503,19 @@ public class CommonUtil {
                 }
             }
         }
-		if (log.isDebugEnabled()) {
-			log.debug("Unable to locate the stratos configurations file. "
-					+ "Default Settings will be used.");
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("Unable to locate the stratos configurations file. "
+                    + "Default Settings will be used.");
+        }
         return config; // return the default configuration, if the file not found.
     }
-    
-    
+
+
     private static void populateEventListenerProperties(StratosConfiguration config,
                                                         OMElement element) throws RegistryException {
         config.setStratosEventListenerName(element.getAttributeValue(new QName("class")));
         Iterator<?> ite =
-                          element.getChildrenWithName(new QName("Property"));
+                element.getChildrenWithName(new QName("Property"));
         while (ite.hasNext()) {
             OMElement propElem = (OMElement) ite.next();
             String propName = propElem.getAttributeValue(new QName("name"));
@@ -585,6 +584,7 @@ public class CommonUtil {
 
     /**
      * method to check whether a domain name is available to register given a domain name
+     *
      * @param tenantDomain, domain name
      * @return true, if the domain is available to register
      * @throws Exception, if checking the existence of the tenant is failed.
@@ -592,37 +592,37 @@ public class CommonUtil {
     public static boolean isDomainNameAvailable(String tenantDomain) throws Exception {
 
         TenantManager tenantManager = ServiceReferenceHolder.getInstance().getRealmService().getTenantManager();
-          // The registry reserved words are checked first.
-          if (tenantDomain.equals("atom") || tenantDomain.equals("registry")
-                  || tenantDomain.equals("resource")) {
-              String msg = "You can not use a registry reserved word:" + tenantDomain +
-                           ":as a tenant domain. Please choose a different one.";
-              log.error(msg);
-              throw new Exception(msg);
-          }
+        // The registry reserved words are checked first.
+        if (tenantDomain.equals("atom") || tenantDomain.equals("registry")
+                || tenantDomain.equals("resource")) {
+            String msg = "You can not use a registry reserved word:" + tenantDomain +
+                    ":as a tenant domain. Please choose a different one.";
+            log.error(msg);
+            throw new Exception(msg);
+        }
 
-          int tenantId;
-          try {
-              tenantId = tenantManager.getTenantId(tenantDomain);
-          } catch (UserStoreException e) {
-              String msg = "Error in getting the tenant id for the given domain  " +
-                           tenantDomain + ".";
-              log.error(msg);
-              throw new Exception(msg, e);
-          }
+        int tenantId;
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+        } catch (UserStoreException e) {
+            String msg = "Error in getting the tenant id for the given domain  " +
+                    tenantDomain + ".";
+            log.error(msg);
+            throw new Exception(msg, e);
+        }
 
-          // check a tenant with same domain exist.
-          if ((tenantId != MultitenantConstants.INVALID_TENANT_ID && tenantId != MultitenantConstants.SUPER_TENANT_ID) ||
-                  tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-              String msg =
-                           "A tenant with same domain already exist. " +
-                                   "Please use a different domain name. tenant domain: " +
-                                   tenantDomain + ".";
-              log.info(msg);
-              return false;
-          }
-          return true;
-      }
+        // check a tenant with same domain exist.
+        if ((tenantId != MultitenantConstants.INVALID_TENANT_ID && tenantId != MultitenantConstants.SUPER_TENANT_ID) ||
+                tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            String msg =
+                    "A tenant with same domain already exist. " +
+                            "Please use a different domain name. tenant domain: " +
+                            tenantDomain + ".";
+            log.info(msg);
+            return false;
+        }
+        return true;
+    }
 
     public static boolean isEmptyArray(String[] array) {
         return (array == null) || (array.length == 0) || ((array.length == 1) && (array[0] == null));

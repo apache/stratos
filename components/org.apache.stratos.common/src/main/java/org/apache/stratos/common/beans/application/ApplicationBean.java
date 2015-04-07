@@ -31,7 +31,7 @@ public class ApplicationBean implements Serializable {
 
     private static final long serialVersionUID = -2829206180707597651L;
 
-	private String applicationId;
+    private String applicationId;
     private boolean multiTenant;
     private String name;
     private String description;
@@ -96,11 +96,11 @@ public class ApplicationBean implements Serializable {
         this.status = status;
     }
 
-	public List<PropertyBean> getProperty() {
-		return property;
-	}
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
 
-	public void setProperty(List<PropertyBean> property) {
-		this.property = property;
-	}
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
 }

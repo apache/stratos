@@ -28,11 +28,11 @@ public class ApplicationNetworkPartitionIdListBean implements Serializable {
 
     private List<String> networkPartitionIds;
 
-	public List<String> getNetworkPartitionIds() {
-		return networkPartitionIds;
-	}
+    public List<String> getNetworkPartitionIds() {
+        return networkPartitionIds;
+    }
 
-	public void setNetworkPartitionIds(List<String> networkPartitionIds) {
-		this.networkPartitionIds = networkPartitionIds;
-	}
+    public void setNetworkPartitionIds(List<String> networkPartitionIds) {
+        this.networkPartitionIds = networkPartitionIds;
+    }
 }

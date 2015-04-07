@@ -42,10 +42,10 @@ public class CloudServicesDescConfig {
         Iterator configChildIt = configEle.getChildElements();
         while (configChildIt.hasNext()) {
             Object configChildObj = configChildIt.next();
-            if (!( configChildObj instanceof OMElement)) {
+            if (!(configChildObj instanceof OMElement)) {
                 continue;
             }
-            OMElement configChildEle = (OMElement)configChildObj;
+            OMElement configChildEle = (OMElement) configChildObj;
             if (new QName(CONFIG_NS, CLOUD_SERVICE_ELEMENT_NAME, "").
                     equals(configChildEle.getQName())) {
                 CloudServiceConfig cloudServiceConfig = new CloudServiceConfig(configChildEle);

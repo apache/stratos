@@ -60,18 +60,18 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
         componentActivationCheckInterval = Long.getLong(COMPONENT_ACTIVATION_CHECK_INTERVAL,
                 DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL);
         log.info(String.format("Component activation check interval: %s seconds",
-                (componentActivationCheckInterval/1000)));
+                (componentActivationCheckInterval / 1000)));
 
         componentActivationTimeout = Long.getLong(COMPONENT_ACTIVATION_TIMEOUT,
                 DEFAULT_COMPONENT_ACTIVATION_TIMEOUT);
-        log.info(String.format("Component activation timeout: %s seconds", (componentActivationTimeout/1000)));
+        log.info(String.format("Component activation timeout: %s seconds", (componentActivationTimeout / 1000)));
     }
 
     @Override
     public void setComponentStatus(Component component, boolean active) {
         componentStatusMap.put(component, active);
 
-        if(active) {
+        if (active) {
             notifyComponentActivationEventListeners(component);
             log.info(String.format("%s component became active", component));
         } else {
@@ -80,8 +80,8 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
     }
 
     private void notifyComponentActivationEventListeners(Component component) {
-        for(ComponentStartUpEventListener eventListener : eventListeners) {
-            if(eventListener instanceof ComponentActivationEventListener) {
+        for (ComponentStartUpEventListener eventListener : eventListeners) {
+            if (eventListener instanceof ComponentActivationEventListener) {
                 try {
                     ComponentActivationEventListener componentActivationEventListener =
                             (ComponentActivationEventListener) eventListener;
@@ -95,7 +95,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     @Override
     public boolean isComponentActive(Component component) {
-        if(componentStatusMap.containsKey(component)) {
+        if (componentStatusMap.containsKey(component)) {
             return componentStatusMap.get(component);
         }
         return false;
@@ -105,8 +105,8 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
     public void waitForComponentActivation(Component owner, Component component) {
         long startTime = System.currentTimeMillis();
         boolean logged = false;
-        while(!isComponentActive(component)) {
-            if(!logged) {
+        while (!isComponentActive(component)) {
+            if (!logged) {
                 log.info(String.format("%s component is waiting for %s component to become active...",
                         owner, component));
                 logged = true;
@@ -120,9 +120,9 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
             }
 
             long currentTime = System.currentTimeMillis();
-            if((currentTime - startTime) > componentActivationTimeout) {
+            if ((currentTime - startTime) > componentActivationTimeout) {
                 throw new RuntimeException(String.format("%s component did not become active within %d seconds ",
-                        component, (componentActivationTimeout/1000)));
+                        component, (componentActivationTimeout / 1000)));
             }
         }
     }
@@ -132,7 +132,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
         AxisConfiguration axisConfiguration = CarbonConfigurationContextFactory.getConfigurationContext()
                 .getAxisConfiguration();
         AxisService cloudControllerService = axisConfiguration.getService(serviceName);
-        if(!cloudControllerService.isActive()) {
+        if (!cloudControllerService.isActive()) {
             while (!cloudControllerService.isActive()) {
                 log.info(String.format("Waiting for %s web service to become active...", serviceName));
                 try {
@@ -147,6 +147,6 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     @Override
     public void addEventListener(ComponentStartUpEventListener eventListener) {
-         eventListeners.add(eventListener);
+        eventListeners.add(eventListener);
     }
 }

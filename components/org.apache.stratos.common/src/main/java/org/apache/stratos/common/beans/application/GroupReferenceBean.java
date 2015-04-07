@@ -31,7 +31,7 @@ public class GroupReferenceBean implements Serializable {
 
     private static final long serialVersionUID = 7261380706841894892L;
 
-	private String name;
+    private String name;
     private String alias;
     private int groupMinInstances;
     private int groupMaxInstances;
@@ -72,35 +72,35 @@ public class GroupReferenceBean implements Serializable {
         this.groupMaxInstances = groupMaxInstances;
     }
 
-	public boolean isGroupScalingEnabled() {
-		return isGroupScalingEnabled;
-	}
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
 
-	public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
-		this.isGroupScalingEnabled = isGroupScalingEnabled;
-	}
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
+    }
 
-	public List<CartridgeReferenceBean> getCartridges() {
-		return cartridges;
-	}
+    public List<CartridgeReferenceBean> getCartridges() {
+        return cartridges;
+    }
 
-	public void setCartridges(List<CartridgeReferenceBean> cartridges) {
-		this.cartridges = cartridges;
-	}
+    public void setCartridges(List<CartridgeReferenceBean> cartridges) {
+        this.cartridges = cartridges;
+    }
 
-	public List<GroupReferenceBean> getGroups() {
-		return groups;
-	}
+    public List<GroupReferenceBean> getGroups() {
+        return groups;
+    }
 
-	public void setGroups(List<GroupReferenceBean> groups) {
-		this.groups = groups;
-	}
+    public void setGroups(List<GroupReferenceBean> groups) {
+        this.groups = groups;
+    }
 
-	public String getDeploymentPolicy() {
-		return deploymentPolicy;
-	}
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
 
-	public void setDeploymentPolicy(String deploymentPolicy) {
-		this.deploymentPolicy = deploymentPolicy;
-	}
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
+    }
 }

@@ -20,11 +20,11 @@
 package org.apache.stratos.common.exception;
 
 /**
- *  Lock not released exception.
+ * Lock not released exception.
  */
 public class LockNotReleasedException extends RuntimeException {
 
-    public LockNotReleasedException(){
+    public LockNotReleasedException() {
     }
 
     public LockNotReleasedException(String message) {

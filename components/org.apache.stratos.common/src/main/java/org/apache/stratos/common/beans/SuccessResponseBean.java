@@ -20,35 +20,35 @@ package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name ="success")
+@XmlRootElement(name = "success")
 public class SuccessResponseBean {
 
-	private int statusCode;
-	private String successMessage;
-	
-	public SuccessResponseBean() {	 
+    private int statusCode;
+    private String successMessage;
+
+    public SuccessResponseBean() {
     }
 
-	public SuccessResponseBean(int statusCode, String message) {	 
-	    this.statusCode = statusCode;
-	    this.successMessage = message;
+    public SuccessResponseBean(int statusCode, String message) {
+        this.statusCode = statusCode;
+        this.successMessage = message;
     }
-	
-	public int getStatusCode() {
-		return statusCode;
-	}
 
-	public void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
-	}
+    public int getStatusCode() {
+        return statusCode;
+    }
 
-	public String getSuccessMessage() {
-		return successMessage;
-	}
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
 
-	public void setSuccessMessage(String successMessage) {
-		this.successMessage = successMessage;
-	}
+    public String getSuccessMessage() {
+        return successMessage;
+    }
 
-	
+    public void setSuccessMessage(String successMessage) {
+        this.successMessage = successMessage;
+    }
+
+
 }

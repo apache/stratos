@@ -34,7 +34,8 @@ public class ThriftClientConfig {
     * A private Constructor prevents any other
     * class from instantiating.
     */
-    ThriftClientConfig(){}
+    ThriftClientConfig() {
+    }
 
     public static ThriftClientConfig getInstance() {
         if (instance == null) {
@@ -53,10 +54,10 @@ public class ThriftClientConfig {
      * CEP credential information can be found under thrift-client-config.xml file
      * These credential information then get parsed and assigned into ThriftClientInfo
      * Object.
-     * <p>
+     * <p/>
      * This method is used to return the assigned values in ThriftClientInfo Object
      *
-     * @return   ThriftClientInfo object which consists of username,password,ip and port values
+     * @return ThriftClientInfo object which consists of username,password,ip and port values
      */
     public ThriftClientInfo getThriftClientInfo() {
         return thriftClientInfo;

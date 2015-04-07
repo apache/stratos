@@ -55,8 +55,8 @@ public class Properties implements Serializable {
     }
 
     public Property getProperty(String name) {
-        for(Property property : properties) {
-            if(property.getName().equals(name)) {
+        for (Property property : properties) {
+            if (property.getName().equals(name)) {
                 return property;
             }
         }

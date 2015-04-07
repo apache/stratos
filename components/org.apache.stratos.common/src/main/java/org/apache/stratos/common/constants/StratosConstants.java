@@ -137,13 +137,13 @@ public class StratosConstants {
     public static final String MULTITENANCY_SMALL_PLAN = "SMB";
     public static final String MULTITENANCY_MEDIUM_PLAN = "Professional";
     public static final String MULTITENANCY_LARGE_PLAN = "Enterprise";
-    public static final String EMAIL_CONFIG= "email";
+    public static final String EMAIL_CONFIG = "email";
     public static final String MULTITENANCY_CONFIG_FOLDER = "multitenancy";
-    
+
     // Cloud controller - payload
-    public static final String MEMBER_ID= "MEMBER_ID";
-    public static final String LB_CLUSTER_ID= "LB_CLUSTER_ID";
-    public static final String NETWORK_PARTITION_ID= "NETWORK_PARTITION_ID";
+    public static final String MEMBER_ID = "MEMBER_ID";
+    public static final String LB_CLUSTER_ID = "LB_CLUSTER_ID";
+    public static final String NETWORK_PARTITION_ID = "NETWORK_PARTITION_ID";
 
     // Kubernetes related constants
     public static final String KUBERNETES_CLUSTER_ID = "KUBERNETES_CLUSTER_ID";
@@ -157,26 +157,26 @@ public class StratosConstants {
     public static final String MIN_CHECK_DROOL_FILE = "mincheck.drl";
     public static final String OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
-    
+
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;
-    
+
     // member expiry timeout constants
     public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
     public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
     public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
-	public static final String FILTER_VALUE_SEPARATOR = ",";
-	public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
-	public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
-	public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
+    public static final String FILTER_VALUE_SEPARATOR = ",";
+    public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
+    public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
+    public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
 
-	// to identify a lb cluster
-	public static final String LOAD_BALANCER_REF = "load.balancer.ref";
-	public static final String SERVICE_AWARE_LOAD_BALANCER = "service.aware.load.balancer";
-	public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
-	public static final String NO_LOAD_BALANCER = "no.load.balancer";
-	public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
+    // to identify a lb cluster
+    public static final String LOAD_BALANCER_REF = "load.balancer.ref";
+    public static final String SERVICE_AWARE_LOAD_BALANCER = "service.aware.load.balancer";
+    public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
+    public static final String NO_LOAD_BALANCER = "no.load.balancer";
+    public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
 
     public static final long HAZELCAST_INSTANCE_INIT_TIMEOUT = 300000; // 5 min
 
@@ -193,16 +193,16 @@ public class StratosConstants {
 
     public static final String DEFAULT_CLIENT_SOCKET_TIMEOUT = "300000";
     public static final String DEFAULT_CLIENT_CONNECTION_TIMEOUT = "300000";
-    
+
     // partition algorithm id constants
-	public static final String PARTITION_ROUND_ROBIN_ALGORITHM_ID = "round-robin";
-	public static final String PARTITION_WEIGHTED_ROUND_ROBIN_ALGORITHM_ID = "weighted-round-robin";
-	public static final String PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
-	// network partition algorithm id constants
-	public static final String NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
-	public static final String NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID = "all-at-once";
-	public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS = "networkPartitionGroups";
-	public static final String APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER = "\\|";
-	public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER = ",";
+    public static final String PARTITION_ROUND_ROBIN_ALGORITHM_ID = "round-robin";
+    public static final String PARTITION_WEIGHTED_ROUND_ROBIN_ALGORITHM_ID = "weighted-round-robin";
+    public static final String PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
+    // network partition algorithm id constants
+    public static final String NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
+    public static final String NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID = "all-at-once";
+    public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS = "networkPartitionGroups";
+    public static final String APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER = "\\|";
+    public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER = ",";
 }
 

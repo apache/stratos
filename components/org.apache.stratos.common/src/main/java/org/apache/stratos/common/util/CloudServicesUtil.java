@@ -44,8 +44,8 @@ public class CloudServicesUtil {
     public static void activateAllServices(CloudServicesDescConfig cloudServicesDesc, int tenantId) throws Exception {
 
         java.util.Collection<CloudServiceConfig> cloudServiceConfigList =
-                                                                          cloudServicesDesc.getCloudServiceConfigs().
-                                                                                            values();
+                cloudServicesDesc.getCloudServiceConfigs().
+                        values();
         if (cloudServiceConfigList != null) {
             for (CloudServiceConfig cloudServiceConfig : cloudServiceConfigList) {
                 if (cloudServiceConfig.isDefaultActive()) {
@@ -53,21 +53,21 @@ public class CloudServicesUtil {
                     try {
                         if (!CloudServicesUtil.isCloudServiceActive(cloudServiceName, tenantId)) {
                             CloudServicesUtil.setCloudServiceActive(true,
-                                                                    cloudServiceName,
-                                                                    tenantId,
-                                                                    cloudServicesDesc.getCloudServiceConfigs().
-                                                                                      get(cloudServiceName));
+                                    cloudServiceName,
+                                    tenantId,
+                                    cloudServicesDesc.getCloudServiceConfigs().
+                                            get(cloudServiceName));
                         }
                     } catch (Exception e) {
                         String msg = "Error in activating the cloud service at the tenant" +
-                                     "creation. tenant id: " + tenantId + ", service name: " +
-                                     cloudServiceName;
+                                "creation. tenant id: " + tenantId + ", service name: " +
+                                cloudServiceName;
                         log.error(msg, e);
                         throw new UserStoreException(msg, e);
                     }
                 }
             }
-        }     
+        }
     }
 
     public static void activateOriginalAndCompulsoryServices(CloudServicesDescConfig cloudServicesDesc,
@@ -75,28 +75,28 @@ public class CloudServicesUtil {
                                                              int tenantId) throws Exception {
 
         Map<String, CloudServiceConfig> cloudServiceConfigs =
-                                                              cloudServicesDesc.getCloudServiceConfigs();
+                cloudServicesDesc.getCloudServiceConfigs();
         if (CloudServicesUtil.isServiceNameValid(cloudServicesDesc, originalService)) {
             if (!CloudServicesUtil.isCloudServiceActive(originalService, tenantId)) {
                 CloudServicesUtil.setCloudServiceActive(true, originalService, tenantId,
-                                                        cloudServiceConfigs.get(originalService));
+                        cloudServiceConfigs.get(originalService));
                 log.info("Successfully activated the " + originalService + " for the tenant " +
-                         tenantId);
+                        tenantId);
             }
             // register the compulsory services
             if (!CloudServicesUtil.isCloudServiceActive(StratosConstants.CLOUD_IDENTITY_SERVICE,
-                                                        tenantId)) {
+                    tenantId)) {
                 CloudServicesUtil.setCloudServiceActive(true,
-                                                        StratosConstants.CLOUD_IDENTITY_SERVICE,
-                                                        tenantId,
-                                                        cloudServiceConfigs.get(StratosConstants.CLOUD_IDENTITY_SERVICE));
+                        StratosConstants.CLOUD_IDENTITY_SERVICE,
+                        tenantId,
+                        cloudServiceConfigs.get(StratosConstants.CLOUD_IDENTITY_SERVICE));
             }
             if (!CloudServicesUtil.isCloudServiceActive(StratosConstants.CLOUD_GOVERNANCE_SERVICE,
-                                                        tenantId)) {
+                    tenantId)) {
                 CloudServicesUtil.setCloudServiceActive(true,
-                                                        StratosConstants.CLOUD_GOVERNANCE_SERVICE,
-                                                        tenantId,
-                                                        cloudServiceConfigs.get(StratosConstants.CLOUD_GOVERNANCE_SERVICE));
+                        StratosConstants.CLOUD_GOVERNANCE_SERVICE,
+                        tenantId,
+                        cloudServiceConfigs.get(StratosConstants.CLOUD_GOVERNANCE_SERVICE));
             }
         } else {
             log.warn("Unable to activate the " + originalService + " for the tenant " + tenantId);
@@ -107,7 +107,7 @@ public class CloudServicesUtil {
     public static void setCloudServiceActive(boolean active,
                                              String cloudServiceName,
                                              int tenantId, CloudServiceConfig cloudServiceConfig)
-                                                                                                 throws Exception {
+            throws Exception {
         if (cloudServiceConfig.getLabel() == null) {
             // for the non-labled services, we are not setting/unsetting the
             // service active
@@ -119,9 +119,9 @@ public class CloudServicesUtil {
                         MultitenantConstants.SUPER_TENANT_ID);
         UserRegistry configRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getConfigSystemRegistry(tenantId);
         String cloudServiceInfoPath = StratosConstants.CLOUD_SERVICE_INFO_STORE_PATH +
-                                      RegistryConstants.PATH_SEPARATOR + tenantId +
-                                      RegistryConstants.PATH_SEPARATOR + cloudServiceName;
-        
+                RegistryConstants.PATH_SEPARATOR + tenantId +
+                RegistryConstants.PATH_SEPARATOR + cloudServiceName;
+
         Resource cloudServiceInfoResource;
         if (govRegistry.resourceExists(cloudServiceInfoPath)) {
             cloudServiceInfoResource = govRegistry.get(cloudServiceInfoPath);
@@ -129,7 +129,7 @@ public class CloudServicesUtil {
             cloudServiceInfoResource = govRegistry.newCollection();
         }
         cloudServiceInfoResource.setProperty(StratosConstants.CLOUD_SERVICE_IS_ACTIVE_PROP_KEY,
-                                             active ? "true" : "false");
+                active ? "true" : "false");
         govRegistry.put(cloudServiceInfoPath, cloudServiceInfoResource);
 
         // then we will copy the permissions
@@ -160,29 +160,29 @@ public class CloudServicesUtil {
 
     public static boolean isCloudServiceActive(String cloudServiceName,
                                                int tenantId, UserRegistry govRegistry)
-                                                                                      throws Exception {
+            throws Exception {
         // The cloud manager is always active
         if (StratosConstants.CLOUD_MANAGER_SERVICE.equals(cloudServiceName)) {
             return true;
         }
 
         String cloudServiceInfoPath = StratosConstants.CLOUD_SERVICE_INFO_STORE_PATH +
-                                      RegistryConstants.PATH_SEPARATOR + tenantId +
-                                      RegistryConstants.PATH_SEPARATOR + cloudServiceName;
+                RegistryConstants.PATH_SEPARATOR + tenantId +
+                RegistryConstants.PATH_SEPARATOR + cloudServiceName;
         Resource cloudServiceInfoResource;
         if (govRegistry.resourceExists(cloudServiceInfoPath)) {
             cloudServiceInfoResource = govRegistry.get(cloudServiceInfoPath);
             String isActiveStr =
-                                 cloudServiceInfoResource.getProperty(
-                                                         StratosConstants.CLOUD_SERVICE_IS_ACTIVE_PROP_KEY);
+                    cloudServiceInfoResource.getProperty(
+                            StratosConstants.CLOUD_SERVICE_IS_ACTIVE_PROP_KEY);
             return "true".equals(isActiveStr);
         }
         return false;
     }
 
     public static boolean isServiceNameValid(CloudServicesDescConfig cloudServicesDesc,
-                                               String cloudServiceName) {
-        if(cloudServiceName == null) {
+                                             String cloudServiceName) {
+        if (cloudServiceName == null) {
             return false;
         }
         java.util.Collection<CloudServiceConfig> cloudServiceConfigList =

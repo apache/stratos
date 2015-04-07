@@ -22,21 +22,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
- * Holds a property 
+ * Holds a property
  */
 @XmlRootElement
 public class PropertyBean implements Serializable {
-    
+
     private static final long serialVersionUID = -2191782657999410197L;
 
     private String name;
     private String value;
-    
-    public PropertyBean(){
-        
+
+    public PropertyBean() {
+
     }
-    
-    public PropertyBean(String name, String value){
+
+    public PropertyBean(String name, String value) {
         this.setName(name);
         this.setValue(value);
     }

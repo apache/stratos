@@ -43,7 +43,7 @@ class ReadWriteLockMonitor implements Runnable {
     @Override
     public void run() {
         try {
-            if(readWriteLock.getThreadToLockSetMap() != null) {
+            if (readWriteLock.getThreadToLockSetMap() != null) {
                 for (Map.Entry<Long, Map<LockType, LockMetadata>> entry : readWriteLock.getThreadToLockSetMap().entrySet()) {
                     Map<LockType, LockMetadata> lockTypeLongMap = entry.getValue();
                     LockMetadata lockMetadata = lockTypeLongMap.get(LockType.Read);
@@ -76,9 +76,9 @@ class ReadWriteLockMonitor implements Runnable {
 
     private String stackTraceToString(StackTraceElement[] stackTraceElements) {
         StringBuffer sb = new StringBuffer();
-        if(stackTraceElements != null) {
-            for(StackTraceElement element : stackTraceElements) {
-                if(element != null) {
+        if (stackTraceElements != null) {
+            for (StackTraceElement element : stackTraceElements) {
+                if (element != null) {
                     sb.append(element.toString()).append("\n");
                 }
             }

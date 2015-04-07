@@ -38,7 +38,7 @@ public class StratosConfiguration {
     private String paypalAPIUsername = "";
     private String paypalAPIPassword = "";
     private String paypalAPISignature = "";
-    private String paypalEnvironment="";
+    private String paypalEnvironment = "";
     private String usagePlanURL = "";
     private String paidJIRAUrl = "";
     private String paidJIRAProject = "";
@@ -48,13 +48,13 @@ public class StratosConfiguration {
     private String supportInfoUrl = "";
     private String incidentCustomFieldId = ""; // todo this is a custom field id of JIRA, this need to be dynamically get in jira reporting component
     private String incidentImpactCustomFieldId = "";
-    private String stratosEventListenerName ="";
+    private String stratosEventListenerName = "";
     private Map<String, String> stratosEventProperties = new HashMap<String, String>();
     private String googleAnalyticsURL;
     private String managerServiceUrl = "";
     private String adminUserName = "";
     private String adminPassword = "";
-    private String ssoLoadingMessage="";
+    private String ssoLoadingMessage = "";
 
     /**
      * @return Stratos Manager service url
@@ -90,7 +90,7 @@ public class StratosConfiguration {
     }
 
     //This parameter used to skip usage summary generator
-     private boolean skipSummaryGenerator = false;
+    private boolean skipSummaryGenerator = false;
 
     public boolean isSkipSummaryGenerator() {
         return skipSummaryGenerator;
@@ -257,7 +257,7 @@ public class StratosConfiguration {
     public void setIncidentImpactCustomFieldId(String incidentImpactCustomFieldId) {
         this.incidentImpactCustomFieldId = incidentImpactCustomFieldId;
     }
-    
+
     public String getStratosEventListenerName() {
         return stratosEventListenerName;
     }
@@ -313,6 +313,6 @@ public class StratosConfiguration {
     public void setSsoLoadingMessage(String ssoLoadingMessage) {
         this.ssoLoadingMessage = ssoLoadingMessage;
     }
-    
+
 }
 

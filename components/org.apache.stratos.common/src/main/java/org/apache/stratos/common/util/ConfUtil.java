@@ -33,8 +33,8 @@ import java.io.File;
  */
 public class ConfUtil {
 
-	private static final String CONFIG_FILE_NAME ="stratos-config" ;
-	private static Log log = LogFactory.getLog(ConfUtil.class);
+    private static final String CONFIG_FILE_NAME = "stratos-config";
+    private static Log log = LogFactory.getLog(ConfUtil.class);
 
     private XMLConfiguration config;
 
@@ -49,25 +49,25 @@ public class ConfUtil {
                 confFile = new File(configFilePath);
 
             } else {
-                confFile = new File(CarbonUtils.getCarbonConfigDirPath(),CONFIG_FILE_NAME);
+                confFile = new File(CarbonUtils.getCarbonConfigDirPath(), CONFIG_FILE_NAME);
             }
 
             config = new XMLConfiguration(confFile);
         } catch (ConfigurationException e) {
-            log.error("Unable to load autoscaler configuration file",e);
+            log.error("Unable to load autoscaler configuration file", e);
             config = new XMLConfiguration();  // continue with default values
         }
     }
 
     public static ConfUtil getInstance(String configFilePath) {
         if (instance == null) {
-            instance = new ConfUtil (configFilePath);
+            instance = new ConfUtil(configFilePath);
         }
         return instance;
     }
 
-    public XMLConfiguration getConfiguration(){
+    public XMLConfiguration getConfiguration() {
         return config;
     }
-    
+
 }

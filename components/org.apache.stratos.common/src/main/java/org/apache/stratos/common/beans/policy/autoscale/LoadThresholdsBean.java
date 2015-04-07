@@ -24,31 +24,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class LoadThresholdsBean {
 
-	private RequestsInFlightThresholdsBean requestsInFlight;
-	private MemoryConsumptionThresholdsBean memoryConsumption;
-	private LoadAverageThresholdsBean loadAverage;
+    private RequestsInFlightThresholdsBean requestsInFlight;
+    private MemoryConsumptionThresholdsBean memoryConsumption;
+    private LoadAverageThresholdsBean loadAverage;
 
-	public RequestsInFlightThresholdsBean getRequestsInFlight() {
-		return requestsInFlight;
-	}
+    public RequestsInFlightThresholdsBean getRequestsInFlight() {
+        return requestsInFlight;
+    }
 
-	public void setRequestsInFlight(RequestsInFlightThresholdsBean requestsInFlight) {
-		this.requestsInFlight = requestsInFlight;
-	}
+    public void setRequestsInFlight(RequestsInFlightThresholdsBean requestsInFlight) {
+        this.requestsInFlight = requestsInFlight;
+    }
 
-	public MemoryConsumptionThresholdsBean getMemoryConsumption() {
-		return memoryConsumption;
-	}
+    public MemoryConsumptionThresholdsBean getMemoryConsumption() {
+        return memoryConsumption;
+    }
 
-	public void setMemoryConsumption(MemoryConsumptionThresholdsBean memoryConsumption) {
-		this.memoryConsumption = memoryConsumption;
-	}
+    public void setMemoryConsumption(MemoryConsumptionThresholdsBean memoryConsumption) {
+        this.memoryConsumption = memoryConsumption;
+    }
 
-	public LoadAverageThresholdsBean getLoadAverage() {
-		return loadAverage;
-	}
+    public LoadAverageThresholdsBean getLoadAverage() {
+        return loadAverage;
+    }
 
-	public void setLoadAverage(LoadAverageThresholdsBean loadAverage) {
-		this.loadAverage = loadAverage;
-	}
+    public void setLoadAverage(LoadAverageThresholdsBean loadAverage) {
+        this.loadAverage = loadAverage;
+    }
 }

@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class LoadAverageThresholdsBean {
 
-	private float threshold;
+    private float threshold;
 
     public float getThreshold() {
         return threshold;

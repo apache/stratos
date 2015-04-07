@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class MemoryConsumptionThresholdsBean {
 
-	private float threshold;
+    private float threshold;
 
     public float getThreshold() {
         return threshold;

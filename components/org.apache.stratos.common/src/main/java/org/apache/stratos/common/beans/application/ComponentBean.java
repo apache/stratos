@@ -12,8 +12,8 @@ public class ComponentBean implements Serializable {
 
     private static final long serialVersionUID = -5932265453191494386L;
 
-	private List<GroupReferenceBean> groups;
-	private DependencyBean dependencies;
+    private List<GroupReferenceBean> groups;
+    private DependencyBean dependencies;
     private List<CartridgeReferenceBean> cartridges;
 
     public List<GroupReferenceBean> getGroups() {
@@ -24,19 +24,19 @@ public class ComponentBean implements Serializable {
         this.groups = groups;
     }
 
-	public DependencyBean getDependencies() {
-		return dependencies;
-	}
+    public DependencyBean getDependencies() {
+        return dependencies;
+    }
 
-	public void setDependencies(DependencyBean dependencies) {
-		this.dependencies = dependencies;
-	}
+    public void setDependencies(DependencyBean dependencies) {
+        this.dependencies = dependencies;
+    }
 
-	public List<CartridgeReferenceBean> getCartridges() {
-		return cartridges;
-	}
+    public List<CartridgeReferenceBean> getCartridges() {
+        return cartridges;
+    }
 
-	public void setCartridges(List<CartridgeReferenceBean> cartridges) {
-		this.cartridges = cartridges;
-	}
+    public void setCartridges(List<CartridgeReferenceBean> cartridges) {
+        this.cartridges = cartridges;
+    }
 }

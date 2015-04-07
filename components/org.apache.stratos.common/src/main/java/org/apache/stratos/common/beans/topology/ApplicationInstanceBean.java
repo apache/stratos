@@ -23,11 +23,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name="applicationInstances")
+@XmlRootElement(name = "applicationInstances")
 public class ApplicationInstanceBean implements Serializable {
 
-	private String status;
-	private String instanceId;
+    private String status;
+    private String instanceId;
     private String parentInstanceId;
     private String applicationId;
     private List<GroupInstanceBean> groupInstances;
@@ -38,21 +38,21 @@ public class ApplicationInstanceBean implements Serializable {
         setClusterInstances(new ArrayList<ClusterInstanceBean>());
     }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public String getInstanceId() {
-		return instanceId;
-	}
+    public String getInstanceId() {
+        return instanceId;
+    }
 
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
 
     public String getParentInstanceId() {
         return parentInstanceId;

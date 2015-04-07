@@ -27,7 +27,7 @@ import org.apache.stratos.common.statistics.publisher.wso2.cep.WSO2CEPInFlightRe
 public class InFlightRequestPublisherFactory {
 
     public static InFlightRequestPublisher createInFlightRequestPublisher(StatisticsPublisherType type) {
-        if(type == StatisticsPublisherType.WSO2CEP) {
+        if (type == StatisticsPublisherType.WSO2CEP) {
             return new WSO2CEPInFlightRequestPublisher();
         } else {
             throw new RuntimeException("Unknown statistics publisher type");

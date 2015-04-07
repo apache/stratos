@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Application signup definition.
  */
-@XmlRootElement(name="applicationSignUp")
+@XmlRootElement(name = "applicationSignUp")
 public class ApplicationSignUpBean implements Serializable {
 
     private static final long serialVersionUID = -3055522170914869018L;

@@ -20,7 +20,7 @@
 package org.apache.stratos.common.statistics.publisher;
 
 /**
- *  Statistics publisher interface.
+ * Statistics publisher interface.
  */
 public interface StatisticsPublisher {
 

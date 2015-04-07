@@ -20,36 +20,39 @@ package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name ="error")
+@XmlRootElement(name = "error")
 public class ErrorResponseBean {
-	
-	private int errorCode;
-	private String errorMessage;
-	
-	public ErrorResponseBean() {
-	 
-    }
-			
-	public ErrorResponseBean(String errorMessage) {
-	    this.errorMessage = errorMessage;
+
+    private int errorCode;
+    private String errorMessage;
+
+    public ErrorResponseBean() {
+
     }
 
-	public ErrorResponseBean(int errorCode, String errorMessage) {	
-	    this.errorCode = errorCode;
-	    this.errorMessage = errorMessage;
+    public ErrorResponseBean(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
-	
-	public int getErrorCode() {
-		return errorCode;
-	}
-	public void setErrorCode(int errorCode) {
-		this.errorCode = errorCode;
-	}
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	
+
+    public ErrorResponseBean(int errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
 }

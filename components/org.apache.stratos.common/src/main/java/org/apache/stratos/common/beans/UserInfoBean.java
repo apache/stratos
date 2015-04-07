@@ -32,7 +32,8 @@ public class UserInfoBean {
     private String email;
     private String profileName;
 
-    public UserInfoBean(){}
+    public UserInfoBean() {
+    }
 
     public UserInfoBean(UserInfoBean userInfoBean) {
         this.userName = userInfoBean.getUserName();

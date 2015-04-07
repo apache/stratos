@@ -63,21 +63,22 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
     /**
      * Returns a distributed map if clustering is enabled, else returns a local hash map.
+     *
      * @param name
      * @return
      */
     @Override
     public Map getMap(final String name) {
-        if(mapsMap.containsKey(name)) {
+        if (mapsMap.containsKey(name)) {
             return mapsMap.get(name);
         }
 
         Map map = null;
-        if(isClustered()) {
+        if (isClustered()) {
             map = mapProvider.getMap(name, new MapEntryListener() {
                 @Override
                 public <X> void entryAdded(X key) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Entry added to distributed map: [name] %s [key] %s",
                                 name, key));
                     }
@@ -85,7 +86,7 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
                 @Override
                 public <X> void entryRemoved(X key) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Entry removed from distributed map: [name] %s [key] %s",
                                 name, key));
                     }
@@ -93,7 +94,7 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
                 @Override
                 public <X> void entryUpdated(X key) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Entry updated in distributed map: [name] %s [key] %s",
                                 name, key));
                     }
@@ -102,7 +103,7 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
         } else {
             map = new HashMap<Object, Object>();
         }
-        if(map != null) {
+        if (map != null) {
             mapsMap.put(name, map);
         }
         return map;
@@ -110,11 +111,12 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
     /**
      * Remove map from provider
+     *
      * @param name
      */
     public void removeMap(String name) {
-        if(mapsMap.containsKey(name)) {
-            if(isClustered()) {
+        if (mapsMap.containsKey(name)) {
+            if (isClustered()) {
                 IMap map = (IMap) mapsMap.get(name);
                 mapProvider.removeMap(name);
                 map.destroy();
@@ -125,28 +127,29 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
     /**
      * Returns a distributed list if clustering is enabled, else returns a local array list.
+     *
      * @param name
      * @return
      */
     @Override
     public List getList(final String name) {
-        if(listsMap.containsKey(name)) {
+        if (listsMap.containsKey(name)) {
             return listsMap.get(name);
         }
 
         List list = null;
-        if(isClustered()) {
+        if (isClustered()) {
             list = listProvider.getList(name, new ListEntryListener() {
                 @Override
                 public void itemAdded(Object item) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Item added to distributed list: [list] %s [item] %s", name, item));
                     }
                 }
 
                 @Override
                 public void itemRemoved(Object item) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Item removed from distributed list: [list] %s [item] %s", name, item));
                     }
                 }
@@ -154,7 +157,7 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
         } else {
             list = new ArrayList();
         }
-        if(list != null) {
+        if (list != null) {
             listsMap.put(name, list);
         }
         return list;
@@ -162,13 +165,14 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
     /**
      * Remove a list from the object provider.
+     *
      * @param name
      */
     @Override
     public void removeList(String name) {
-        if(listsMap.containsKey(name)) {
-            if(isClustered()) {
-                IList list = (IList)listsMap.get(name);
+        if (listsMap.containsKey(name)) {
+            if (isClustered()) {
+                IList list = (IList) listsMap.get(name);
                 listProvider.removeList(name);
                 list.destroy();
             }
@@ -179,18 +183,19 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
     /**
      * Acquires a distributed lock if clustering is enabled, else acquires a local reentrant lock and
      * returns the lock object.
+     *
      * @param object
      * @return
      */
     @Override
     public Lock acquireLock(Object object) {
-        if(isClustered()) {
+        if (isClustered()) {
             return acquireDistributedLock(object);
         } else {
             Lock lock = locksMap.get(object);
-            if(lock == null) {
+            if (lock == null) {
                 synchronized (object) {
-                    if(lock == null) {
+                    if (lock == null) {
                         lock = new ReentrantLock();
                         locksMap.put(object, lock);
                     }
@@ -203,15 +208,16 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
     /**
      * Releases a given distributed/local lock.
+     *
      * @param lock
      */
     @Override
     public void releaseLock(Lock lock) {
-         if(isClustered()) {
-             releaseDistributedLock((ILock)lock);
-         } else {
-             lock.unlock();
-         }
+        if (isClustered()) {
+            releaseDistributedLock((ILock) lock);
+        } else {
+            lock.unlock();
+        }
     }
 
     private boolean isClustered() {
@@ -225,8 +231,8 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
     }
 
     protected com.hazelcast.core.ILock acquireDistributedLock(Object object) {
-        if(object == null) {
-            if(log.isWarnEnabled()) {
+        if (object == null) {
+            if (log.isWarnEnabled()) {
                 log.warn("Could not acquire distributed lock, object is null");
             }
             return null;
@@ -243,8 +249,8 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
     }
 
     protected void releaseDistributedLock(ILock lock) {
-        if(lock == null) {
-            if(log.isWarnEnabled()) {
+        if (lock == null) {
+            if (log.isWarnEnabled()) {
                 log.warn("Could not release distributed lock, lock is null");
             }
             return;

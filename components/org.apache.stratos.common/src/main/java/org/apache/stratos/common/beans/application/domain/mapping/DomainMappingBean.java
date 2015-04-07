@@ -22,7 +22,7 @@ package org.apache.stratos.common.beans.application.domain.mapping;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
-@XmlRootElement(name="domainMapping")
+@XmlRootElement(name = "domainMapping")
 public class DomainMappingBean implements Serializable {
 
     private static final long serialVersionUID = -9070100712931939993L;

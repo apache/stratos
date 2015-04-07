@@ -23,23 +23,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ApplicationPolicyNetworkPartitionReferenceBean {
 
-	private String id;
-	private boolean activeByDefault;
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public boolean isActiveByDefault() {
-		return activeByDefault;
-	}
-	
-	public void setActiveByDefault(boolean activeByDefault) {
-		this.activeByDefault = activeByDefault;
-	}	
-	
+    private String id;
+    private boolean activeByDefault;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean isActiveByDefault() {
+        return activeByDefault;
+    }
+
+    public void setActiveByDefault(boolean activeByDefault) {
+        this.activeByDefault = activeByDefault;
+    }
+
 }

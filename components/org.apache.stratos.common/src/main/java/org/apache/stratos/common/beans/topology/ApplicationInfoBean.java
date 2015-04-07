@@ -66,6 +66,7 @@ public class ApplicationInfoBean {
     public void setTenantAdminUsername(String tenantAdminUsername) {
         this.tenantAdminUsername = tenantAdminUsername;
     }
+
     public List<ApplicationInstanceBean> getApplicationInstances() {
         return applicationInstances;
     }

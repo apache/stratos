@@ -29,17 +29,17 @@ public interface TenantMgtListener {
 
     public void onTenantDelete(int tenantId);
 
-    public void onTenantRename(int tenantId, String oldDomainName, 
-                             String newDomainName)throws ApacheStratosException;
-    
+    public void onTenantRename(int tenantId, String oldDomainName,
+                               String newDomainName) throws ApacheStratosException;
+
     public void onTenantInitialActivation(int tenantId) throws ApacheStratosException;
-    
+
     public void onTenantActivation(int tenantId) throws ApacheStratosException;
-    
+
     public void onTenantDeactivation(int tenantId) throws ApacheStratosException;
 
-    public void onSubscriptionPlanChange(int tenentId, String oldPlan, 
+    public void onSubscriptionPlanChange(int tenentId, String oldPlan,
                                          String newPlan) throws ApacheStratosException;
-    
+
     public int getListenerOrder();
 }

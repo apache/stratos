@@ -40,7 +40,7 @@ public class PackageInfoHolder {
     private static final String PACKAGE_DESCRIPTION_CONFIG = "multitenancy-packages.xml";
     private static final String PACKAGE_DESCRIPTION_CONFIG_NS =
             "http://wso2.com/carbon/multitenancy/billing/pacakges";
-    
+
     List<PackageInfo> multitenancyPackages = new ArrayList<PackageInfo>();
 
     public PackageInfoHolder() throws ApacheStratosException {
@@ -77,7 +77,7 @@ public class PackageInfoHolder {
         String configFilePath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
                 StratosConstants.MULTITENANCY_CONFIG_FOLDER + File.separator +
                 PACKAGE_DESCRIPTION_CONFIG;
-        
+
         OMElement packageConfigs;
         try {
             packageConfigs = CommonUtil.buildOMElement(new FileInputStream(configFilePath));
@@ -95,7 +95,7 @@ public class PackageInfoHolder {
                     packageConfigEle.getQName())) {
                 continue;
             }
-            
+
             PackageInfo multitenancyPackage = new PackageInfo();
             String packageName = packageConfigEle.getAttributeValue(new QName("name"));
             String subscriptionCharge = getPackageConfigValue("subscriptionCharge", packageConfigEle);
@@ -128,10 +128,10 @@ public class PackageInfoHolder {
             //enters a float value to the conf file it will cause an exception here
             multitenancyPackage.setSubscriptionCharge(Integer.parseInt(subscriptionCharge));
             multitenancyPackage.setUsersLimit(usersLimitInt);
-       //   multitenancyPackage.setChargePerUser(Integer.parseInt(usersCharge));
+            //   multitenancyPackage.setChargePerUser(Integer.parseInt(usersCharge));
             multitenancyPackage.setResourceVolumeLimit(resourceVolumeLimitInt);
             multitenancyPackage.setBandwidthLimit(bandwidthLimitInt);
-          //  multitenancyPackage.setBandwidthOveruseCharge(Integer.parseInt(bandwidthOveruseCharge));
+            //  multitenancyPackage.setBandwidthOveruseCharge(Integer.parseInt(bandwidthOveruseCharge));
 
             multitenancyPackages.add(multitenancyPackage);
         }
@@ -147,7 +147,7 @@ public class PackageInfoHolder {
             List valueNodes = xpathExpression.selectNodes(packageNode);
             if (valueNodes.isEmpty()) {
                 if (log.isDebugEnabled()) {
-                    String msg = "No results found parsing package configuration for key: " + 
+                    String msg = "No results found parsing package configuration for key: " +
                             qualifiedKey + ".";
                     log.debug(msg);
                 }

@@ -77,9 +77,9 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher 
         List<Object> payload = new ArrayList<Object>();
         payload.add(clusterId);
         payload.add(networkPartitionId);
-        payload.add((double)activeInstancesCount);
-        payload.add((double)inFlightRequestCount);
-        payload.add((double)servedRequestCount);
+        payload.add((double) activeInstancesCount);
+        payload.add((double) inFlightRequestCount);
+        payload.add((double) servedRequestCount);
 
         super.publish(payload.toArray());
     }

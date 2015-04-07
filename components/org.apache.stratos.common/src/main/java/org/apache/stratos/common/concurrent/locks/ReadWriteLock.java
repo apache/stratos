@@ -142,7 +142,7 @@ public class ReadWriteLock {
                     getName(), currentThread.getId(), currentThread.getName()));
         }
 
-        if(lock.writeLock().isHeldByCurrentThread()) {
+        if (lock.writeLock().isHeldByCurrentThread()) {
             lock.writeLock().unlock();
 
             if (readWriteLockMonitorEnabled) {

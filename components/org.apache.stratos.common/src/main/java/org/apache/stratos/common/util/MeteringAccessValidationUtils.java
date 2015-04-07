@@ -24,30 +24,30 @@ import java.util.Set;
 
 public class MeteringAccessValidationUtils {
 
-	public static final String ERROR_MSG_PROPERTY_KEY_POST_FIX = "error_msg";
-	public static final String IS_BLOCKED_PROPERTY_KEY_POST_FIX = "is_blocked";
+    public static final String ERROR_MSG_PROPERTY_KEY_POST_FIX = "error_msg";
+    public static final String IS_BLOCKED_PROPERTY_KEY_POST_FIX = "is_blocked";
 
-	public static String generateIsBlockedPropertyKey(String action) {
-		return action + "_" + IS_BLOCKED_PROPERTY_KEY_POST_FIX;
-	}
+    public static String generateIsBlockedPropertyKey(String action) {
+        return action + "_" + IS_BLOCKED_PROPERTY_KEY_POST_FIX;
+    }
 
-	public static String generateErrorMsgPropertyKey(String action) {
-		return action + "_" + ERROR_MSG_PROPERTY_KEY_POST_FIX;
-	}
+    public static String generateErrorMsgPropertyKey(String action) {
+        return action + "_" + ERROR_MSG_PROPERTY_KEY_POST_FIX;
+    }
 
-	public static Set<String> getAvailableActions(Properties properties) {
-		Set propertyKeys = properties.keySet();
-		Set<String> actions = new HashSet<String>();
-		for (Object propertyKeyObj : propertyKeys) {
-			String propertyKey = (String) propertyKeyObj;
-			if (propertyKey.endsWith(IS_BLOCKED_PROPERTY_KEY_POST_FIX)) {
-			    // -1 for the length of the '_'
-				String action =
-				        propertyKey.substring(0, propertyKey.length() -
-				                IS_BLOCKED_PROPERTY_KEY_POST_FIX.length() - 1);
-				actions.add(action);
-			}
-		}
-		return actions;
-	}
+    public static Set<String> getAvailableActions(Properties properties) {
+        Set propertyKeys = properties.keySet();
+        Set<String> actions = new HashSet<String>();
+        for (Object propertyKeyObj : propertyKeys) {
+            String propertyKey = (String) propertyKeyObj;
+            if (propertyKey.endsWith(IS_BLOCKED_PROPERTY_KEY_POST_FIX)) {
+                // -1 for the length of the '_'
+                String action =
+                        propertyKey.substring(0, propertyKey.length() -
+                                IS_BLOCKED_PROPERTY_KEY_POST_FIX.length() - 1);
+                actions.add(action);
+            }
+        }
+        return actions;
+    }
 }

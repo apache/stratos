@@ -21,7 +21,7 @@ package org.apache.stratos.common.beans.artifact.repository;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="artifactRepository")
+@XmlRootElement(name = "artifactRepository")
 public class ArtifactRepositoryBean {
 
     private String alias;

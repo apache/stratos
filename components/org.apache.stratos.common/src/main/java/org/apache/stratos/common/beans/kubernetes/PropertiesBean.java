@@ -27,7 +27,7 @@ import java.util.List;
  * stub generation.
  */
 @XmlRootElement
-public class PropertiesBean implements Serializable{
+public class PropertiesBean implements Serializable {
 
     private static final long serialVersionUID = 1986895299288322592L;
     private List<PropertyBean> properties;
@@ -44,5 +44,5 @@ public class PropertiesBean implements Serializable{
     public String toString() {
         return "Properties [properties=" + properties + "]";
     }
-    
+
 }

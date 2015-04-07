@@ -29,41 +29,41 @@ public class CartridgeReferenceBean implements Serializable {
 
     private static final long serialVersionUID = 8968224678298479827L;
 
-	private String type;
-	private int cartridgeMin;
-	private int cartridgeMax;
-	private SubscribableInfo subscribableInfo;
+    private String type;
+    private int cartridgeMin;
+    private int cartridgeMax;
+    private SubscribableInfo subscribableInfo;
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public int getCartridgeMin() {
-		return cartridgeMin;
-	}
+    public int getCartridgeMin() {
+        return cartridgeMin;
+    }
 
-	public void setCartridgeMin(int cartridgeMin) {
-		this.cartridgeMin = cartridgeMin;
-	}
+    public void setCartridgeMin(int cartridgeMin) {
+        this.cartridgeMin = cartridgeMin;
+    }
 
-	public int getCartridgeMax() {
-		return cartridgeMax;
-	}
+    public int getCartridgeMax() {
+        return cartridgeMax;
+    }
 
-	public void setCartridgeMax(int cartridgeMax) {
-		this.cartridgeMax = cartridgeMax;
-	}
+    public void setCartridgeMax(int cartridgeMax) {
+        this.cartridgeMax = cartridgeMax;
+    }
 
-	public SubscribableInfo getSubscribableInfo() {
-		return subscribableInfo;
-	}
+    public SubscribableInfo getSubscribableInfo() {
+        return subscribableInfo;
+    }
 
-	public void setSubscribableInfo(SubscribableInfo subscribableInfo) {
-		this.subscribableInfo = subscribableInfo;
-	}	
-	
+    public void setSubscribableInfo(SubscribableInfo subscribableInfo) {
+        this.subscribableInfo = subscribableInfo;
+    }
+
 }

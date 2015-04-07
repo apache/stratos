@@ -27,41 +27,41 @@ import org.apache.stratos.common.beans.PropertyBean;
 
 @XmlRootElement
 public class ApplicationPolicyBean {
-	
-	private String id;
-	private String algorithm;
-	String[] networkPartitions;
-	List<PropertyBean> properties;
 
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public String getAlgorithm() {
-		return algorithm;
-	}
-	
-	public void setAlgorithm(String algorithm) {
-		this.algorithm = algorithm;
-	}
-	
-	public String[] getNetworkPartitions() {
-		return networkPartitions;
-	}
-	
-	public void setNetworkPartitions(String[] networkPartitions) {
-		this.networkPartitions = networkPartitions;
-	}
-	
-	public List<PropertyBean> getProperties() {
-		return properties;
-	}
-	
-	public void setProperties(List<PropertyBean> properties) {
-		this.properties = properties;
-	}
+    private String id;
+    private String algorithm;
+    String[] networkPartitions;
+    List<PropertyBean> properties;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public String[] getNetworkPartitions() {
+        return networkPartitions;
+    }
+
+    public void setNetworkPartitions(String[] networkPartitions) {
+        this.networkPartitions = networkPartitions;
+    }
+
+    public List<PropertyBean> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<PropertyBean> properties) {
+        this.properties = properties;
+    }
 }

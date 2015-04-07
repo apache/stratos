@@ -26,7 +26,7 @@ import java.util.List;
 @XmlRootElement(name = "dependencies")
 public class DependencyBean implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private List<String> startupOrders;
     private List<String> scalingDependants;
@@ -40,20 +40,20 @@ public class DependencyBean implements Serializable {
         this.terminationBehaviour = terminationBehaviour;
     }
 
-	public List<String> getStartupOrders() {
-		return startupOrders;
-	}
+    public List<String> getStartupOrders() {
+        return startupOrders;
+    }
 
-	public void setStartupOrders(List<String> startupOrders) {
-		this.startupOrders = startupOrders;
-	}
+    public void setStartupOrders(List<String> startupOrders) {
+        this.startupOrders = startupOrders;
+    }
 
-	public List<String> getScalingDependants() {
-		return scalingDependants;
-	}
+    public List<String> getScalingDependants() {
+        return scalingDependants;
+    }
 
-	public void setScalingDependants(List<String> scalingDependants) {
-		this.scalingDependants = scalingDependants;
-	}
-	
+    public void setScalingDependants(List<String> scalingDependants) {
+        this.scalingDependants = scalingDependants;
+    }
+
 }
