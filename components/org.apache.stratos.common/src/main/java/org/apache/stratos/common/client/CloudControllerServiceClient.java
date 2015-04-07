@@ -211,41 +211,15 @@ public class CloudControllerServiceClient {
             CloudControllerServiceNonExistingKubernetesHostExceptionException {
         return stub.updateKubernetesHost(kubernetesHost);
     }
-
-	public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy)
-			throws CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException, RemoteException, 
-			CloudControllerServiceInvalidDeploymentPolicyExceptionException {
-		stub.addDeployementPolicy(deploymentPolicy);
-	}
-
-	public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy)
-			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException, 
-			CloudControllerServiceInvalidDeploymentPolicyExceptionException {
-		stub.updateDeployementPolicy(deploymentPolicy);
-	}
-
-	public void removeDeploymentPolicy(String deploymentPolicyID)
-			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException {
-		stub.removeDeployementPolicy(deploymentPolicyID);
-	}
-
-	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID)
-			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException {
-		return stub.getDeploymentPolicy(deploymentPolicyID);
-	}
-	
-    public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException{
-    	return stub.getDeploymentPolicies();
-    }
     
-    public void validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
+    public void validateDeploymentPolicy(String cartridgeType, String networkPartitionId)
     		throws RemoteException, 
     		CloudControllerServiceInvalidPartitionExceptionException, 
     		CloudControllerServiceInvalidCartridgeTypeExceptionException {
-    	stub.validateDeploymentPolicy(cartridgeType, partitions);
+    	stub.validateDeploymentPolicyNetworkPartition(cartridgeType, networkPartitionId);
     }
 	
-    public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException, 
+    public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException,
     CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {
     	stub.addNetworkPartition(networkPartition);
     }

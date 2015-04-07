@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -185,4 +186,30 @@ public class AutoscalerServiceClient {
     public String findClusterId(String applicationId, String alias) throws RemoteException {
         return stub.findClusterId(applicationId, alias);
     }
+
+    public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+            AutoscalerServiceDeploymentPolicyNotExistsExceptionException, AutoscalerServiceRemoteExceptionException,
+            AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException {
+        stub.addDeployementPolicy(deploymentPolicy);
+    }
+
+    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+            AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
+            AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceRemoteExceptionException {
+        stub.updateDeployementPolicy(deploymentPolicy);
+    }
+
+    public void removeDeploymentPolicy(String deploymentPolicyID) throws RemoteException,
+            AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
+        stub.removeDeployementPolicy(deploymentPolicyID);
+    }
+
+    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) throws RemoteException {
+        return stub.getDeploymentPolicy(deploymentPolicyID);
+    }
+
+    public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException{
+        return stub.getDeploymentPolicies();
+    }
+
 }
