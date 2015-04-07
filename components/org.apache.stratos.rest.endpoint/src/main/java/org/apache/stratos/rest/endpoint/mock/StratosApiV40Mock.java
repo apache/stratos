@@ -24,7 +24,7 @@ import org.apache.stratos.common.beans.ApiResponseBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionRefBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -332,7 +332,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public NetworkPartitionRefBean[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public NetworkPartitionBean[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
           return MockContext.getInstance().getPartitionGroups(deploymentPolicyId);
 

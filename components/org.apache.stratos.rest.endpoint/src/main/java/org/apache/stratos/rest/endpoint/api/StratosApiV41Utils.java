@@ -25,15 +25,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
-import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.beans.PropertyBean;
-import org.apache.stratos.common.beans.application.*;
+import org.apache.stratos.common.beans.application.ApplicationBean;
+import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
+import org.apache.stratos.common.beans.application.ComponentBean;
+import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.application.GroupReferenceBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
@@ -2040,17 +2042,16 @@ public class StratosApiV41Utils {
 				                        deployementPolicyDefinitionBean.getId()));
 			}
 
-			DeploymentPolicy deploymentPolicy =
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
 
-					ObjectConverter.convetToCCDeploymentPolicy(deployementPolicyDefinitionBean);
-			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-			cloudControllerServiceClient.addDeploymentPolicy(deploymentPolicy);
+                    ObjectConverter.convertToASDeploymentPolicy(deployementPolicyDefinitionBean);
+            AutoscalerServiceClient.getInstance().addDeploymentPolicy(deploymentPolicy);
 
-			if (log.isDebugEnabled()) {
-				log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
-				                        deployementPolicyDefinitionBean.getId()));
-			}
-		} catch (CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
+                        deployementPolicyDefinitionBean.getId()));
+            }
+        } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
 			String msg =
 					"Deployment policy already exist [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
 			log.error(msg, e);
@@ -2071,8 +2072,9 @@ public class StratosApiV41Utils {
 
         DeploymentPolicyBean deploymentPolicyBean = null;
         try {
-            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-            DeploymentPolicy deploymentPolicy = cloudControllerServiceClient.getDeploymentPolicy(deploymentPolicyID);
+
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy
+                    = AutoscalerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyID);
             if(deploymentPolicy == null) {
                 return null;
             }
@@ -2092,9 +2094,9 @@ public class StratosApiV41Utils {
      */
     public static DeploymentPolicyBean[] getDeployementPolicies() {
         try {
-            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
-            DeploymentPolicy[] deploymentPolicies = serviceClient.getDeploymentPolicies();
-            return ObjectConverter.convertCCStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
+                    = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
+            return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
         } catch (Exception e) {
             String message = "Could not get network partitions";
             log.error(message);
@@ -2115,16 +2117,16 @@ public class StratosApiV41Utils {
 				                        deploymentPolicyDefinitionBean.getId()));
 			}
 
-			DeploymentPolicy deploymentPolicy =
-					ObjectConverter.convetToCCDeploymentPolicy(deploymentPolicyDefinitionBean);
-			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-			cloudControllerServiceClient.updateDeploymentPolicy(deploymentPolicy);
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
+                    ObjectConverter.convertToASDeploymentPolicy(deploymentPolicyDefinitionBean);
+
+            AutoscalerServiceClient.getInstance().updateDeploymentPolicy(deploymentPolicy);
 
 			if (log.isDebugEnabled()) {
 				log.debug(String.format("DeploymentPolicy updates successfully : [deployment-policy-id] %s ",
 				                        deploymentPolicyDefinitionBean.getId()));
 			}
-		} catch (CloudControllerServiceDeploymentPolicyNotExistsExceptionException e) {
+        } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
 			String msg =
 					"Deployment policy already exist [Deployment-policy-id]" + deploymentPolicyDefinitionBean.getId();
 			log.error(msg, e);
@@ -2144,8 +2146,7 @@ public class StratosApiV41Utils {
 	public static void removeDeploymentPolicy(String deploymentPolicyID)
 			throws RestAPIException {
 		try {
-			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-			cloudControllerServiceClient.removeDeploymentPolicy(deploymentPolicyID);
+            AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyID);
 		}
 		catch(Exception e){
 			String msg = "Could not remove deployment policy";
