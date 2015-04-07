@@ -30,13 +30,14 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
-import org.apache.stratos.cloud.controller.stub.domain.PartitionRef;
+import org.apache.stratos.common.partition.NetworkPartition;
+import org.apache.stratos.common.partition.Partition;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
@@ -52,7 +53,7 @@ public class ClusterContext extends AbstractClusterContext {
 
     private static final long serialVersionUID = 17570842529682141L;
 
-	private static final Log log = LogFactory.getLog(ClusterContext.class);
+    private static final Log log = LogFactory.getLog(ClusterContext.class);
 
     // Map<NetworkpartitionId, Network Partition Context>
     protected Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts;
@@ -114,39 +115,32 @@ public class ClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
         ClusterLevelNetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-        
+
         String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(), AutoscalerUtil.getAliasFromClusterId(clusterId));
-   	 	DeploymentPolicy deploymentPolicy;
-   	 	try {
-   	 		deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyName);
-   	 	} catch (Exception e) {
-   	 		String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicyName);
-   	 		log.error(msg, e);
-   	 		throw new AutoScalerException(msg, e);
-   	 	}
-        
+        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
+
         if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             networkPartitionContext = this.networkPartitionCtxts.get(
                     clusterInstance.getNetworkPartitionId());
         } else {
-        	
-        	NetworkPartitionRef[] networkPartitionRefs = deploymentPolicy.getNetworkPartitionsRef();
-        	NetworkPartitionRef networkPartitionRef = null;
-        	if (networkPartitionRefs != null && networkPartitionRefs.length != 0) {
-				for (NetworkPartitionRef i : networkPartitionRefs) {
-					if (i.getId().equals(clusterInstance.getNetworkPartitionId())) {
-						networkPartitionRef = i;
-					}
-				}
-			}
-        	
-        	if (networkPartitionRef == null) {
-        		 //Parent should have the partition specified
-        		networkPartitionContext = new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId());
-			} else {
-				networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionRef.getId(),
-						networkPartitionRef.getPartitionAlgo(), 0);
-			}
+
+            NetworkPartition[] networkPartitions = deploymentPolicy.getNetworkPartitions();
+            NetworkPartition networkPartition = null;
+            if (networkPartitions != null && networkPartitions.length != 0) {
+                for (NetworkPartition i : networkPartitions) {
+                    if (i.getId().equals(clusterInstance.getNetworkPartitionId())) {
+                        networkPartition = i;
+                    }
+                }
+            }
+
+            if (networkPartition == null) {
+                //Parent should have the partition specified
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId());
+            } else {
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getId(),
+                        networkPartition.getPartitionAlgo(), 0);
+            }
         }
 
         if (clusterInstance.getPartitionId() != null) {
@@ -169,76 +163,68 @@ public class ClusterContext extends AbstractClusterContext {
 
     }
 
-	private ClusterLevelNetworkPartitionContext parseDeploymentPolicy(
-			ClusterInstance clusterInstance,
-			Cluster cluster,
-			ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-			boolean hasGroupScalingDependent, boolean groupScalingEnabledSubtree)
-			throws PolicyValidationException, PartitionValidationException {
+    private ClusterLevelNetworkPartitionContext parseDeploymentPolicy(
+            ClusterInstance clusterInstance,
+            Cluster cluster,
+            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
+            boolean hasGroupScalingDependent, boolean groupScalingEnabledSubtree)
+            throws PolicyValidationException, PartitionValidationException {
 
-		String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(), AutoscalerUtil.getAliasFromClusterId(clusterId));
-		DeploymentPolicy deploymentPolicy;
-		try {
-			deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyName);
-		} catch (Exception e) {
-			String msg = String
-					.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s",
-							deploymentPolicyName);
-			log.error(msg, e);
-			throw new AutoScalerException(msg, e);
-		}
+        String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(), AutoscalerUtil.getAliasFromClusterId(clusterId));
+        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
 
-		NetworkPartitionRef[] networkPartitionRefs = deploymentPolicy
-				.getNetworkPartitionsRef();
-		PartitionRef[] partitionRefs = null;
-		if (networkPartitionRefs != null && networkPartitionRefs.length != 0) {
-			for (NetworkPartitionRef networkPartitionRef : networkPartitionRefs) {
-				if (networkPartitionRef.getId().equals(
-						clusterLevelNetworkPartitionContext.getId())) {
-					partitionRefs = networkPartitionRef.getPartitions();
-				}
-			}
-		}
 
-		if (partitionRefs == null) {
-			String msg = "PartitionRefs are null in deployment policy for [cluster-alias] "
-					+ AutoscalerUtil.getAliasFromClusterId(clusterId);
-			log.error(msg);
-			throw new PolicyValidationException(msg);
-		}
+        NetworkPartition[] networkPartitions = deploymentPolicy
+                .getNetworkPartitions();
+        Partition[] partitions = null;
+        if (networkPartitions != null && networkPartitions.length != 0) {
+            for (NetworkPartition networkPartition : networkPartitions) {
+                if (networkPartition.getId().equals(
+                        clusterLevelNetworkPartitionContext.getId())) {
+                    partitions = networkPartition.getPartitions();
+                }
+            }
+        }
 
-		// Retrieving the ChildLevelNetworkPartition and create NP Context
-		NetworkPartitionRef networkPartitionRef = null;
-		if (networkPartitionRefs != null && networkPartitionRefs.length != 0) {
-			for (NetworkPartitionRef networkPartitionRef2 : networkPartitionRefs) {
-				if (networkPartitionRef2.getId().equals(
-						clusterInstance.getNetworkPartitionId())) {
-					networkPartitionRef = networkPartitionRef2;
-				}
-			}
-		}
+        if (partitions == null) {
+            String msg = "Partitions are null in deployment policy for [cluster-alias] "
+                    + AutoscalerUtil.getAliasFromClusterId(clusterId);
+            log.error(msg);
+            throw new PolicyValidationException(msg);
+        }
 
-		// Fill cluster instance context with child level partitions
-		if (networkPartitionRef != null) {
-			for (PartitionRef partitionRef : networkPartitionRef
-					.getPartitions()) {
-				addPartition(clusterInstance, cluster,
-						clusterLevelNetworkPartitionContext, partitionRef,
-						hasGroupScalingDependent, groupScalingEnabledSubtree);
-			}
-		}
+        // Retrieving the ChildLevelNetworkPartition and create NP Context
+        NetworkPartition networkPartition = null;
+        if (networkPartitions != null && networkPartitions.length != 0) {
+            for (NetworkPartition networkPartition2 : networkPartitions) {
+                if (networkPartition2.getId().equals(
+                        clusterInstance.getNetworkPartitionId())) {
+                    networkPartition = networkPartition2;
+                }
+            }
+        }
 
-		return clusterLevelNetworkPartitionContext;
-	}
+        // Fill cluster instance context with child level partitions
+        if (networkPartition != null) {
+            for (Partition partition : networkPartition
+                    .getPartitions()) {
+                addPartition(clusterInstance, cluster,
+                        clusterLevelNetworkPartitionContext, partition,
+                        hasGroupScalingDependent, groupScalingEnabledSubtree);
+            }
+        }
+
+        return clusterLevelNetworkPartitionContext;
+    }
 
     private ClusterLevelNetworkPartitionContext addPartition(
             ClusterInstance clusterInstance,
             Cluster cluster,
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-            PartitionRef partitionRef,
+            Partition partition,
             boolean hasScalingDependents, boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
-    	
+
         if (clusterLevelNetworkPartitionContext == null) {
             String msg = "Network Partition is null in deployment policy : [cluster-alias]: " + clusterInstance.getAlias();
             log.error(msg);
@@ -248,10 +234,10 @@ public class ClusterContext extends AbstractClusterContext {
         String nPartitionId = clusterLevelNetworkPartitionContext.getId();
 
         //Getting the associated  partition
-        if (clusterInstance.getPartitionId() == null && partitionRef == null) {
+        if (clusterInstance.getPartitionId() == null && partition == null) {
             String msg = "[Partition] " + clusterInstance.getPartitionId() + " for [networkPartition] " +
-                            clusterInstance.getNetworkPartitionId() + "is null " +
-                            "in deployment policy: [cluster-alias]: " + clusterInstance.getAlias();
+                    clusterInstance.getNetworkPartitionId() + "is null " +
+                    "in deployment policy: [cluster-alias]: " + clusterInstance.getAlias();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -278,33 +264,35 @@ public class ClusterContext extends AbstractClusterContext {
                     minInstances, maxInstances, nPartitionId, clusterId, hasScalingDependents, groupScalingEnabledSubtree);
         }
         String partitionId;
-        if (partitionRef != null) {
+        if (partition != null) {
             //use it own defined partition
-            partitionId = partitionRef.getId();
-            maxInstances = partitionRef.getMax();
+            partitionId = partition.getId();
+            maxInstances = partition.getPartitionMax();
         } else {
             //handling the partition given by the parent
             partitionId = clusterInstance.getPartitionId();
         }
-        
+
         //Retrieving the actual partition from application
-        Partition[] partitions = null;
-		try {
-			partitions = CloudControllerServiceClient.getInstance().getNetworkPartition(nPartitionId).getPartitions();
-		} catch (Exception e) {
-			String msg = String.format("Error while getting network partitioin from cloud controller : [network-partition-id] %s", nPartitionId);
-			log.error(msg, e);
-			throw new AutoScalerException(msg, e);
-		}
-		
-        Partition partition = null;
+        Partition[] partitions;
+        try {
+            
+            partitions = AutoscalerObjectConverter.convertCCPartitionsToPartitions(
+                    CloudControllerServiceClient.getInstance().getNetworkPartition(nPartitionId).getPartitions());
+        } catch (Exception e) {
+            String msg = String.format("Error while getting network partitioin from cloud controller : [network-partition-id] %s", nPartitionId);
+            log.error(msg, e);
+            throw new AutoScalerException(msg, e);
+        }
+
+        Partition partition3 = null;
         if (partitions != null && partitions.length != 0) {
-			for (Partition partition2 : partitions) {
-				if (partition2.getId().equals(partitionId)) {
-					partition = partition2;
-				}
-			}
-		}
+            for (Partition partition2 : partitions) {
+                if (partition2.getId().equals(partitionId)) {
+                    partition3 = partition2;
+                }
+            }
+        }
 
         //Creating cluster level partition context
         ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
@@ -315,7 +303,7 @@ public class ClusterContext extends AbstractClusterContext {
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
 
         //add members to partition Context
-        addMembersFromTopology(cluster, partition, clusterLevelPartitionContext,
+        addMembersFromTopology(cluster, partition3, clusterLevelPartitionContext,
                 clusterInstanceContext.getId());
 
         //adding it to the monitors context
@@ -335,8 +323,9 @@ public class ClusterContext extends AbstractClusterContext {
         return clusterLevelNetworkPartitionContext;
     }
 
+
     private void addMembersFromTopology(Cluster cluster,
-                                        org.apache.stratos.cloud.controller.stub.domain.Partition partition,
+                                        Partition partition,
                                         ClusterLevelPartitionContext clusterLevelPartitionContext,
                                         String ClusterInstanceId) {
         for (Member member : cluster.getMembers()) {
@@ -347,7 +336,7 @@ public class ClusterContext extends AbstractClusterContext {
                 memberContext.setClusterId(member.getClusterId());
                 memberContext.setMemberId(memberId);
                 memberContext.setInitTime(member.getInitTime());
-                memberContext.setPartition(partition);
+                memberContext.setPartition(AutoscalerObjectConverter.convertPartitionToCCPartition(partition));
                 memberContext.setProperties(AutoscalerUtil.toStubProperties(member.getProperties()));
 
                 if (MemberStatus.Active.equals(member.getStatus())) {
