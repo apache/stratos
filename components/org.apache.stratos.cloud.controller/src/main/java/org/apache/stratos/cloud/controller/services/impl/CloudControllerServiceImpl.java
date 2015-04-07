@@ -34,8 +34,6 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.domain.NetworkPartition;
-
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;

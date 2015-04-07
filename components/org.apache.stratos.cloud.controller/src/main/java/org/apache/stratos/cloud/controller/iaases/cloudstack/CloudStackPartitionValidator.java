@@ -2,12 +2,12 @@ package org.apache.stratos.cloud.controller.iaases.cloudstack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.iaases.ec2.EC2PartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.ec2.EC2PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.messaging.domain.topology.Scope;

@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.iaases.openstack.networking;
 
-import java.util.List;
-
 import org.jclouds.compute.domain.NodeMetadata;
+
+import java.util.List;
 
 /**
  * Openstack can support Neutron Network or Nova Network, but not both at same time.

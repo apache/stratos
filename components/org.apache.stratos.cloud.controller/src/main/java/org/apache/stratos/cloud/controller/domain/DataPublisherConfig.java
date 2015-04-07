@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.domain;
 
-import java.io.Serializable;
-
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+
+import java.io.Serializable;
 
 /**
  *

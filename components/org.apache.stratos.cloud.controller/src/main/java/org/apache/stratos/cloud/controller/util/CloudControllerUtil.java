@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import com.google.common.net.InetAddresses;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -25,23 +26,16 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
-import org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterException;
-import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException;
-import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
-import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
-
-import org.apache.stratos.common.Property;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
+import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.iaases.Iaas;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
-import com.google.common.net.InetAddresses;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

@@ -18,20 +18,26 @@
  */
 package org.apache.stratos.cloud.controller.iaases.gce;
 
-import java.util.*;
-
+import com.google.common.base.Predicate;
+import com.google.common.util.concurrent.Atomics;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
-import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.NetworkInterface;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
+import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
+import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.jclouds.ContextBuilder;
+import org.jclouds.collect.IterableWithMarker;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -39,34 +45,20 @@ import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.jclouds.collect.IterableWithMarker;
 import org.jclouds.googlecomputeengine.GoogleComputeEngineApi;
+import org.jclouds.googlecomputeengine.domain.*;
 import org.jclouds.googlecomputeengine.features.DiskApi;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
 import org.jclouds.googlecomputeengine.features.RegionApi;
 import org.jclouds.googlecomputeengine.features.ZoneApi;
-import org.jclouds.googlecomputeengine.domain.Disk;
-import org.jclouds.googlecomputeengine.domain.Instance;
-import org.jclouds.googlecomputeengine.domain.Region;
-import org.jclouds.googlecomputeengine.domain.Zone;
-import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.options.AttachDiskOptions;
 import org.jclouds.googlecomputeengine.options.AttachDiskOptions.DiskType;
 
-import com.google.inject.Key;
-import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
-import com.google.inject.name.Names;
-
-import static org.jclouds.util.Predicates2.retry;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import com.google.common.base.Predicate;
-
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.util.concurrent.Atomics;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.util.Predicates2.retry;
 
 public class GCEIaas extends JcloudsIaas {
 

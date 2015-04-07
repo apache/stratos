@@ -18,21 +18,19 @@
  */
 package org.apache.stratos.cloud.controller.iaases.openstack.networking;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
+import com.google.inject.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.domain.FloatingNetwork;
 import org.apache.stratos.cloud.controller.domain.FloatingNetworks;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.NetworkInterface;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
@@ -46,12 +44,7 @@ import org.jclouds.openstack.neutron.v2.domain.Port;
 import org.jclouds.openstack.neutron.v2.extensions.FloatingIPApi;
 import org.jclouds.openstack.neutron.v2.features.PortApi;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.net.InetAddresses;
-import com.google.inject.Module;
+import java.util.*;
 
 /**
  * Leveraging openstack-neutron networking apis.

@@ -21,15 +21,15 @@ package org.apache.stratos.cloud.controller.iaases.docker;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
+import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.ec2.EC2Iaas;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;

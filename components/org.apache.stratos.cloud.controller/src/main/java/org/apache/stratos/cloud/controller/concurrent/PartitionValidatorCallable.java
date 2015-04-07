@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.cloud.controller.concurrent;
 
-import java.util.concurrent.Callable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -27,6 +25,8 @@ import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
+
+import java.util.concurrent.Callable;
 
 public class PartitionValidatorCallable implements Callable<IaasProvider> {
 

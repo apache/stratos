@@ -18,13 +18,12 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
-import java.io.File;
-
+import junit.framework.TestCase;
 import org.apache.axiom.om.OMElement;
 import org.apache.stratos.common.util.AxiomXpathParserUtil;
 import org.xml.sax.SAXParseException;
 
-import junit.framework.TestCase;
+import java.io.File;
 
 public class AxiomValidationTest extends TestCase {
 

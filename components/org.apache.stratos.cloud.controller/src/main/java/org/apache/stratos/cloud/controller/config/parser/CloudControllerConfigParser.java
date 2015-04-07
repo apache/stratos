@@ -27,8 +27,8 @@ import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.domain.DataPublisherConfig;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.TopologyConfig;
-import org.apache.stratos.common.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.common.exception.MalformedConfigurationFileException;
 import org.apache.stratos.common.util.AxiomXpathParserUtil;
 
 import javax.xml.namespace.QName;

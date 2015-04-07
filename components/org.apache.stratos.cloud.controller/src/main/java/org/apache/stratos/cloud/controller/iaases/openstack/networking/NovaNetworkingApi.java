@@ -18,17 +18,17 @@
  */
 package org.apache.stratos.cloud.controller.iaases.openstack.networking;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
@@ -36,10 +36,9 @@ import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Leveraging openstack-nova networking apis.

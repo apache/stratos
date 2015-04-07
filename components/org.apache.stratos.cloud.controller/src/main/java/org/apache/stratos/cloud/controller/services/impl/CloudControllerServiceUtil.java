@@ -23,15 +23,16 @@ import com.google.common.net.InetAddresses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
 import java.util.Properties;

@@ -18,10 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.iaases.openstack.networking;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.stratos.cloud.controller.iaases.openstack.networking.NeutronNetworkingApi;
+import junit.framework.TestCase;
 import org.apache.stratos.cloud.controller.domain.FloatingNetwork;
 import org.apache.stratos.cloud.controller.domain.FloatingNetworks;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
@@ -30,7 +27,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.TestCase;
+import java.util.List;
+import java.util.Map;
 
 public class NeutronNetworkingApiTest extends TestCase {
 	

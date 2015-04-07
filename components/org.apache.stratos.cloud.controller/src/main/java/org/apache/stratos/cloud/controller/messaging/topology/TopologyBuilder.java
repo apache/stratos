@@ -24,10 +24,10 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
+import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.common.*;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -42,7 +42,6 @@ import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
 import java.util.*;
-import java.util.Properties;
 
 /**
  * this is to manipulate the received events by cloud controller

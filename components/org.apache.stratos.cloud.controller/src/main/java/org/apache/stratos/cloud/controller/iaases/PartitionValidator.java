@@ -18,11 +18,11 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import java.util.Properties;
-
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
+
+import java.util.Properties;
 
 /**
  * All the IaaSes needs to write a partition validator which implements this interface.

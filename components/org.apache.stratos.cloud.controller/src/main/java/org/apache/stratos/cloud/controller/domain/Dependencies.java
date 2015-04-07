@@ -20,7 +20,6 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Dependencies implements Serializable {
 

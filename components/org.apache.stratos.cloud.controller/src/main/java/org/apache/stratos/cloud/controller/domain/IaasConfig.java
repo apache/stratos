@@ -19,11 +19,11 @@
 
 package org.apache.stratos.cloud.controller.domain;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+
+import java.io.Serializable;
 
 /**
  * This class is used to support <link>CartridgeConfig</link>

@@ -18,7 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 
 /**

@@ -30,7 +30,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderExceptio
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;

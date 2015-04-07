@@ -26,8 +26,8 @@ import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.PortMapping;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
 import org.apache.stratos.kubernetes.client.model.Port;
 

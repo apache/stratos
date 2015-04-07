@@ -33,7 +33,6 @@ import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.domain.NameValuePair;

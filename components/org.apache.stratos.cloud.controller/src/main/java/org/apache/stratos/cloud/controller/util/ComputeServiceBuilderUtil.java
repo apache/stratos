@@ -20,11 +20,10 @@ package org.apache.stratos.cloud.controller.util;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
