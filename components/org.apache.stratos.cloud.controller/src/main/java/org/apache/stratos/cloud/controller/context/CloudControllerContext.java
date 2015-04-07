@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesHostEx
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.domain.NetworkPartition;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
@@ -61,7 +62,6 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP";
     private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
     private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
-	private static final String CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP = "CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP";
 	private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
 
     private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
@@ -145,13 +145,6 @@ public class CloudControllerContext implements Serializable {
     private Map<String, ServiceGroup> serviceGroupNameToServiceGroupMap;
 
 	/**
-	 * Map of deploy policy
-	 * Key - deployment policy id
-	 * Value deployment policy
-	 */
-	private Map<String, DeploymentPolicy> deploymentPolicyIDToDeployPolicyMap;
-	
-	/**
 	 * Map of network partitions
 	 * Key - network partition id
 	 * Value network partition
@@ -199,7 +192,6 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToPartitionIdsMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP);
         cartridgeTypeToCartridgeMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP);
         serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
-		deploymentPolicyIDToDeployPolicyMap=distributedObjectProvider.getMap(CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
 		networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
         partitionToIaasProviderByCartridge = distributedObjectProvider.getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
         cartridgeTypeToIaasProviders = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP);
@@ -282,24 +274,6 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
     }
 
-	public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-		deploymentPolicyIDToDeployPolicyMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
-	}
-
-	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
-		return deploymentPolicyIDToDeployPolicyMap.get(deploymentPolicyID);
-	}
-	
-	public Collection<DeploymentPolicy> getDeploymentPolicies() {
-		return deploymentPolicyIDToDeployPolicyMap.values();
-	}
-
-	public void removeDeploymentPolicy(String deploymentPolicyID) {
-		if (deploymentPolicyIDToDeployPolicyMap.containsKey(deploymentPolicyID)) {
-			deploymentPolicyIDToDeployPolicyMap.remove(deploymentPolicyID);
-		}
-	}
-	
 	public void addNetworkPartition(NetworkPartition networkPartition) {
 		networkPartitionIDToNetworkPartitionMap.put(networkPartition.getId(), networkPartition);
 	}
@@ -709,7 +683,6 @@ public class CloudControllerContext implements Serializable {
                         copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
                         copyMap(serializedObj.cartridgeTypeToCartridgeMap, cartridgeTypeToCartridgeMap);
                         copyMap(serializedObj.serviceGroupNameToServiceGroupMap, serviceGroupNameToServiceGroupMap);
-                        copyMap(serializedObj.deploymentPolicyIDToDeployPolicyMap, deploymentPolicyIDToDeployPolicyMap);
                         copyMap(serializedObj.networkPartitionIDToNetworkPartitionMap, networkPartitionIDToNetworkPartitionMap);
 
                         if (log.isDebugEnabled()) {
@@ -756,18 +729,23 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addIaasProviders(String cartridgeType, Map<String, IaasProvider> map) {
-        Map<String, IaasProvider> partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
+        Map<String, IaasProvider> partitionToIaasProviders;
+        if(partitionToIaasProviderByCartridge.get(cartridgeType) != null) {
+            partitionToIaasProviders = partitionToIaasProviderByCartridge.get(cartridgeType);
+        } else {
+            partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
+        }
         for (Iterator<String> iterator = map.keySet().iterator(); iterator.hasNext(); ) {
             String key = iterator.next();
             IaasProvider value = map.get(key);
 
             partitionToIaasProviders.put(key, value);
-            if (log.isDebugEnabled()) {
-                log.debug("Partition map updated for the Cartridge: " + cartridgeType + ". "
-                        + "Current Partition List: " + partitionToIaasProviders.keySet().toString());
-            }
         }
-        this.partitionToIaasProviderByCartridge.put(cartridgeType, partitionToIaasProviders);
+        partitionToIaasProviderByCartridge.put(cartridgeType, partitionToIaasProviders);
+        if (log.isInfoEnabled()) {
+            log.info("Partition map updated for the Cartridge: " + cartridgeType + ". "
+                    + "Current Partition List: " + partitionToIaasProviderByCartridge.get(cartridgeType).keySet().toString());
+        }
     }
 
     public IaasProvider getIaasProviderOfPartition(String cartridgeType, String partitionId) {

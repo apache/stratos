@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostExcept
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
+
 import org.apache.stratos.common.Property;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
@@ -43,11 +44,9 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import com.google.common.net.InetAddresses;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
