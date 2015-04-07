@@ -4,7 +4,7 @@
                                 <provider>ec2</provider>
                                 <property name="region" value="ap-southeast-1"/>
                                 <property name="zone" value="ap-southeast-1-a"/>
-                                <max>3</max>
+                                <partitionMax>3</partitionMax>
                                 <min>1</min>
                         </partition>
 </partitions>
