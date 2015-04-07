@@ -253,7 +253,8 @@ public class MonitorFactory {
 
 
             // deployment policy validation
-            String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(parentMonitor.appId, AutoscalerUtil.getAliasFromClusterId(clusterId));
+            String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(parentMonitor.appId,
+                    AutoscalerUtil.getAliasFromClusterId(clusterId));
             DeploymentPolicy deploymentPolicy = null;
             try {
                 deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
@@ -300,7 +301,8 @@ public class MonitorFactory {
                 groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
             }
 
-            ClusterMonitor clusterMonitor = new ClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
+            ClusterMonitor clusterMonitor = new ClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree,
+                    deploymentPolicyId);
 
             Properties props = cluster.getProperties();
             if (props != null) {

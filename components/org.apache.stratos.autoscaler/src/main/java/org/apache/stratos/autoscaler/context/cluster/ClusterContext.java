@@ -60,12 +60,15 @@ public class ClusterContext extends AbstractClusterContext {
 
     protected AutoscalePolicy autoscalePolicy;
 
+    private String deploymentPolicyId;
+
     public ClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
-                          boolean hasScalingDependents) {
+                          boolean hasScalingDependents, String deploymentPolicyId) {
 
         super(clusterId, serviceId);
         this.networkPartitionCtxts = new ConcurrentHashMap<String, ClusterLevelNetworkPartitionContext>();
         this.autoscalePolicy = autoscalePolicy;
+        this.deploymentPolicyId = deploymentPolicyId;
     }
 
     public Map<String, ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
@@ -296,9 +299,8 @@ public class ClusterContext extends AbstractClusterContext {
 
         //Creating cluster level partition context
         ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
-                maxInstances,
                 partition3,
-                clusterInstance.getNetworkPartitionId());
+                clusterInstance.getNetworkPartitionId(), this.deploymentPolicyId);
         clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
 

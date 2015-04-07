@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.context.partition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.common.partition.Partition;
 
 import java.io.Serializable;
@@ -36,7 +37,7 @@ public abstract class PartitionContext implements Serializable {
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     protected String partitionId;
     private Partition partition;
-    private int max;
+    private String deploymentPolicyId;
     private String networkPartitionId;
     // properties
     private Properties properties;
@@ -46,15 +47,15 @@ public abstract class PartitionContext implements Serializable {
 
     }
 
-    public PartitionContext(int max, Partition partition, String networkPartitionId) {
+    public PartitionContext(Partition partition, String networkPartitionId, String deploymentPolicyId) {
         this.partition = partition;
-        this.max = max;
+        this.deploymentPolicyId = deploymentPolicyId;
         this.partitionId = partition.getId();
         this.networkPartitionId = networkPartitionId;
     }
 
-    public PartitionContext(int max, String partitionId, String networkPartitionId) {
-        this.max = max;
+    public PartitionContext(String partitionId, String networkPartitionId, String deploymentPolicyId) {
+        this.deploymentPolicyId = deploymentPolicyId;
         this.partitionId = partitionId;
         this.networkPartitionId = networkPartitionId;
     }
@@ -93,6 +94,8 @@ public abstract class PartitionContext implements Serializable {
     public abstract int getNonTerminatedMemberCount();
 
     public int getMax() {
-        return max;
+        return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId)
+                .getNetworkPartitionByNetworkPartitionId(networkPartitionId)
+                .getPartition(partitionId).getPartitionMax();
     }
 }

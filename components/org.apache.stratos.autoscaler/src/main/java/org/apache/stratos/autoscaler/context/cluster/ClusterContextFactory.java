@@ -31,7 +31,8 @@ public class ClusterContextFactory {
 
     private static final Log log = LogFactory.getLog(ClusterContextFactory.class);
 
-    public static ClusterContext getVMClusterContext(String instanceId, Cluster cluster, boolean hasScalingDependents)
+    public static ClusterContext getVMClusterContext(String instanceId, Cluster cluster, boolean hasScalingDependents,
+                                                     String deploymentPolicyId)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
@@ -45,6 +46,7 @@ public class ClusterContextFactory {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
 
-        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy, hasScalingDependents);
+        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy, hasScalingDependents,
+                deploymentPolicyId);
     }
 }

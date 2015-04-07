@@ -489,7 +489,7 @@ public class AutoscalerTopologyEventReceiver {
                                                                                    (ClusterContext) clusterMonitor.getClusterContext();
                                                                            if (clusterContext == null) {
                                                                                clusterContext = ClusterContextFactory.getVMClusterContext(instanceId, cluster,
-                                                                                       clusterMonitor.hasScalingDependents());
+                                                                                       clusterMonitor.hasScalingDependents(), clusterMonitor.getDeploymentPolicyId());
                                                                                clusterMonitor.setClusterContext(clusterContext);
 
                                                                            }

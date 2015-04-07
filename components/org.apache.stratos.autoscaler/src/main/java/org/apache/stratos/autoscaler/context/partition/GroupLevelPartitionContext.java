@@ -81,8 +81,8 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
-    public GroupLevelPartitionContext(int max, String partitionId, String networkPartitionIid) {
-        super(max, partitionId, networkPartitionIid);
+    public GroupLevelPartitionContext(String partitionId, String networkPartitionIid, String deploymentPolicyId) {
+        super(partitionId, networkPartitionIid, deploymentPolicyId);
         this.pendingInstances = new ArrayList<Instance>();
         this.activeInstances = new ArrayList<Instance>();
         this.terminationPendingInstances = new ArrayList<Instance>();

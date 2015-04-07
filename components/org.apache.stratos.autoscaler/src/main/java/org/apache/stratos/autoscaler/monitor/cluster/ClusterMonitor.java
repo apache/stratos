@@ -111,9 +111,11 @@ public class ClusterMonitor extends Monitor implements Runnable {
     private Map<String, ClusterLevelNetworkPartitionContext> networkPartitionIdToClusterLevelNetworkPartitionCtxts;
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
+    private String deploymentPolicyId;
 
 
-    public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
+    public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree,
+                          String deploymentPolicyId) {
 
         scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 50);
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 50);
@@ -143,6 +145,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
         this.clusterId = cluster.getClusterId();
         this.monitoringStarted = new AtomicBoolean(false);
         this.hasScalingDependents = hasScalingDependents;
+        this.deploymentPolicyId = deploymentPolicyId;
     }
 
     @Override
@@ -1419,7 +1422,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 ClusterContext clusterContext = (ClusterContext) this.getClusterContext();
                 if (clusterContext == null) {
                     clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
-                            hasScalingDependents());
+                            hasScalingDependents(), this.deploymentPolicyId);
                     this.setClusterContext(clusterContext);
                 }
 
@@ -1501,5 +1504,9 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 }
             }
         }
+    }
+
+    public String getDeploymentPolicyId() {
+        return deploymentPolicyId;
     }
 }

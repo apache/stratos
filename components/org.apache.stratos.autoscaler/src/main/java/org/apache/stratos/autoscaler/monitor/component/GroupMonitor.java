@@ -633,8 +633,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             if (networkPartitionContext.getPartitionCtxt(partition.getId()) == null) {
 
                                 GroupLevelPartitionContext groupLevelPartitionContext = new GroupLevelPartitionContext(
-                                        networkPartition.getPartition(partition.getId()).getPartitionMax()
-                                        , partition.getId(), networkPartitionId);
+                                        partition.getId(), networkPartitionId, deploymentPolicyId);
 
                                 childPartitionContexts.add(groupLevelPartitionContext);
                                 networkPartitionContext.addPartitionContext(groupLevelPartitionContext);

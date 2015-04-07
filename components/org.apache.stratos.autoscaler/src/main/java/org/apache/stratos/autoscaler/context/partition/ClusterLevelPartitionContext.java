@@ -128,9 +128,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         }
     }
 
-    public ClusterLevelPartitionContext(int max, Partition partition, String networkPartitionId) {
+    public ClusterLevelPartitionContext(Partition partition, String networkPartitionId, String deploymentPolicyId) {
 
-        super(max, partition, networkPartitionId);
+        super(partition, networkPartitionId, deploymentPolicyId);
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
