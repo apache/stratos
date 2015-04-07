@@ -328,7 +328,7 @@ public class TopologyBuilder {
 
 
 
-    public static void handleClusterCreated(Registrant registrant, boolean isLb) {
+    public static void handleClusterCreated(Registrant registrant) {
         /*Topology topology = TopologyManager.getTopology();
         Service service;
         try {
