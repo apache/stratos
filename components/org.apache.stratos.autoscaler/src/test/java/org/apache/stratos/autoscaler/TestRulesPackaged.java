@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 public class TestRulesPackaged {
     private static final Log log = LogFactory.getLog(TestRulesPackaged.class);
     private String minCheckDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/mincheck.drl";
+    private String maxCheckDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/maxcheck.drl";
     private String scalingDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/scaling.drl";
     private String terminateAllDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/terminateall.drl";
     private String dependentScalingDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/dependent-scaling.drl";
@@ -42,6 +43,11 @@ public class TestRulesPackaged {
     @Test
     public void testMinCheckDroolsFile() {
         parseDroolsFile(minCheckDrlFilePath);
+    }
+
+    @Test
+    public void testMaxCheckDroolsFile() {
+        parseDroolsFile(maxCheckDrlFilePath);
     }
 
     //FIXME add this when dependent scaling file is completed
