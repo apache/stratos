@@ -155,6 +155,7 @@ public class StratosConstants {
     public static final String SCALE_CHECK_DROOL_FILE = "scaling.drl";
     public static final String DEPENDENT_SCALE_CHECK_DROOL_FILE = "dependent-scaling.drl";
     public static final String MIN_CHECK_DROOL_FILE = "mincheck.drl";
+    public static final String MAX_CHECK_DROOL_FILE = "maxcheck.drl";
     public static final String OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
 
