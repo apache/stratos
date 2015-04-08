@@ -346,7 +346,8 @@ public class ObjectConverter {
 
         stubPartition.setId(partition.getId());
         stubPartition.setPartitionMax(partition.getPartitionMax());
-
+        stubPartition.setProperties(convertPropertyBeansToCCStubProperties(partition.getProperty()));
+        
         return stubPartition;
     }
 
