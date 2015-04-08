@@ -699,8 +699,14 @@
             <filtered>true</filtered>
             <fileMode>600</fileMode>
         </file>
-	<file>
+        <file>
             <source>src/main/conf/drools/mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>600</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/drools/maxcheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>600</fileMode>
