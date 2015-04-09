@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.autoscaler.algorithms;
 
-import java.util.List;
-
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
+
+import java.util.List;
 
 public interface NetworkPartitionAlgorithm {
 

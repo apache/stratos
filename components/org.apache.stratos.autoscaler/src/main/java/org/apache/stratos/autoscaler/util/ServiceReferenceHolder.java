@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.util;
 */
 
 
+import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
@@ -29,8 +30,6 @@ import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-
-import com.hazelcast.core.HazelcastInstance;
 
 import java.util.concurrent.ExecutorService;
 

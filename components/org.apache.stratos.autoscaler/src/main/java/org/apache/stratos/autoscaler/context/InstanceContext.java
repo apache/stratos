@@ -22,7 +22,6 @@ import org.apache.stratos.autoscaler.monitor.events.ScalingDownBeyondMinEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

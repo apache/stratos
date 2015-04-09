@@ -18,9 +18,6 @@
  */
 package org.apache.stratos.autoscaler.context.cluster;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -36,15 +33,18 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.partition.NetworkPartition;
 import org.apache.stratos.common.partition.Partition;
-import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * It holds the runtime data of a VM cluster

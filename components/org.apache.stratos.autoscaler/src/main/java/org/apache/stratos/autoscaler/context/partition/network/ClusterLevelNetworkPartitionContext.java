@@ -20,12 +20,8 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds runtime data of a network partition.

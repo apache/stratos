@@ -28,8 +28,6 @@ import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class TestRulesPackaged {
     private static final Log log = LogFactory.getLog(TestRulesPackaged.class);
     private String minCheckDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/mincheck.drl";

@@ -24,9 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.common.partition.Partition;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.partition.Partition;
 
 import java.io.Serializable;
 import java.util.*;

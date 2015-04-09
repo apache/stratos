@@ -19,12 +19,11 @@
 
 package org.apache.stratos.autoscaler.commands;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-
-import org.apache.commons.lang.StringUtils;
 
 public class ASPolicyCommands implements CommandProvider {
 

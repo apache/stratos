@@ -36,7 +36,6 @@ import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.partition.NetworkPartition;
 import org.apache.stratos.common.partition.Partition;

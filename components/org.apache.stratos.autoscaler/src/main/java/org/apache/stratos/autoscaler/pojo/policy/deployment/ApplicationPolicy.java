@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
-import java.io.Serializable;
-
 import org.apache.stratos.common.Properties;
+
+import java.io.Serializable;
 
 public class ApplicationPolicy implements Serializable {
 

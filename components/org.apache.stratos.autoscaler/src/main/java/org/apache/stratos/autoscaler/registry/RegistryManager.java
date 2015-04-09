@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
@@ -39,7 +40,6 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 
 import java.io.IOException;
 import java.util.ArrayList;

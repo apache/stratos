@@ -18,16 +18,15 @@
  */
 package org.apache.stratos.autoscaler.algorithms.networkpartition;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.NetworkPartitionAlgorithm;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.common.constants.StratosConstants;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
 

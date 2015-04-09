@@ -18,12 +18,11 @@
  */
 package org.apache.stratos.autoscaler.algorithms.networkpartition;
 
-import java.util.List;
-
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.stratos.autoscaler.algorithms.NetworkPartitionAlgorithm;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.List;
 
 public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm {
 

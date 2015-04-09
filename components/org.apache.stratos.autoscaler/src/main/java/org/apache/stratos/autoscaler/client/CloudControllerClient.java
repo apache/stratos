@@ -31,7 +31,6 @@ import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.cloud.controller.stub.domain.InstanceContext;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;

@@ -23,14 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.exception.policy.DeploymentPolicyAlreadyExistsException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.services.DistributedObjectProvider;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 
 import java.util.Collection;
 import java.util.Map;
@@ -133,7 +132,6 @@ public class PolicyManager {
                     policy.getDeploymentPolicyID()));
         }
     }
-
 
 
     public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {

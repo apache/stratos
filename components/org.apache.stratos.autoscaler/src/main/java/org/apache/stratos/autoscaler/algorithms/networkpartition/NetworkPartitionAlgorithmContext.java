@@ -18,10 +18,10 @@
  */
 package org.apache.stratos.autoscaler.algorithms.networkpartition;
 
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 
 public class NetworkPartitionAlgorithmContext implements Serializable {
 

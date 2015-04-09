@@ -37,9 +37,7 @@ import org.junit.Test;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestObsoletedMemberRule {
     private static final Log log = LogFactory.getLog(TestObsoletedMemberRule.class);

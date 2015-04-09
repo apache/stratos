@@ -34,8 +34,8 @@ public class PayloadFactory {
      * Creates and returns a PayloadData instance
      *
      * @param cartridgeProvider Cartridge provider
-     * @param cartridgeType Cartridge type
-     * @param basicPayloadData BasicPayloadData instance
+     * @param cartridgeType     Cartridge type
+     * @param basicPayloadData  BasicPayloadData instance
      * @return Payload subscription
      */
     public static PayloadData getPayloadDataInstance(String cartridgeProvider, String cartridgeType,

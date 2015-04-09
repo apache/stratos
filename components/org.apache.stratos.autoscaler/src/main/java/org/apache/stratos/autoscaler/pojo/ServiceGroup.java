@@ -19,7 +19,6 @@
 package org.apache.stratos.autoscaler.pojo;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class ServiceGroup implements Serializable {
 

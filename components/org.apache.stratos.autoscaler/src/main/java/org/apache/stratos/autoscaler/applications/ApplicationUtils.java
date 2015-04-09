@@ -31,7 +31,9 @@ import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
 import org.apache.stratos.common.Property;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ApplicationUtils {

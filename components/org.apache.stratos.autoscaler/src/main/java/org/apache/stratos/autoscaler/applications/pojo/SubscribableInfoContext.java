@@ -19,9 +19,9 @@
 
 package org.apache.stratos.autoscaler.applications.pojo;
 
-import java.io.Serializable;
-
 import org.apache.stratos.common.Properties;
+
+import java.io.Serializable;
 
 public class SubscribableInfoContext implements Serializable {
 

@@ -19,10 +19,10 @@
 
 package org.apache.stratos.autoscaler;
 
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
 /**
  * Helper class to keep the state of the consequence of a rule.
