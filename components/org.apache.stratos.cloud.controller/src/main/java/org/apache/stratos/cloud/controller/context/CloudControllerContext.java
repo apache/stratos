@@ -727,16 +727,16 @@ public class CloudControllerContext implements Serializable {
         partitionToIaasProviderByCartridge.put(cartridgeType, partitionToIaasProvider);
     }
 
-    public void addIaasProviders(String cartridgeType, Map<String, IaasProvider> map) {
+    public void addIaasProviders(String cartridgeType, Map<String, IaasProvider> partitionToIaasProvidersMap) {
         Map<String, IaasProvider> partitionToIaasProviders;
         if (partitionToIaasProviderByCartridge.get(cartridgeType) != null) {
             partitionToIaasProviders = partitionToIaasProviderByCartridge.get(cartridgeType);
         } else {
             partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
         }
-        for (Iterator<String> iterator = map.keySet().iterator(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = partitionToIaasProvidersMap.keySet().iterator(); iterator.hasNext(); ) {
             String key = iterator.next();
-            IaasProvider value = map.get(key);
+            IaasProvider value = partitionToIaasProvidersMap.get(key);
 
             partitionToIaasProviders.put(key, value);
         }
