@@ -43,6 +43,7 @@ public class KubernetesIaasUtil {
 
     /**
      * Generate kubernetes service id using clusterId, port protocol and port.
+     *
      * @param portMapping
      * @return
      */
@@ -52,12 +53,13 @@ public class KubernetesIaasUtil {
 
     /**
      * Prepare and returns environment variables for the given member.
+     *
      * @param clusterContext
      * @param memberContext
      * @return
      */
     public static EnvironmentVariable[] prepareEnvironmentVariables(ClusterContext clusterContext,
-                                                                     MemberContext memberContext) {
+                                                                    MemberContext memberContext) {
 
         String kubernetesClusterId = clusterContext.getKubernetesClusterId();
         List<EnvironmentVariable> environmentVariables = new ArrayList<EnvironmentVariable>();
@@ -94,6 +96,7 @@ public class KubernetesIaasUtil {
 
     /**
      * Add name value pair to kubernetes environment variables.
+     *
      * @param environmentVariables
      * @param name
      * @param value
@@ -107,12 +110,13 @@ public class KubernetesIaasUtil {
 
     /**
      * Convert stratos port mappings to kubernetes ports
+     *
      * @param portMappings
      * @return
      */
     public static List<Port> convertPortMappings(List<PortMapping> portMappings) {
         List<Port> ports = new ArrayList<Port>();
-        for(PortMapping portMapping : portMappings) {
+        for (PortMapping portMapping : portMappings) {
             Port port = new Port();
             port.setName(preparePortNameFromPortMapping(portMapping));
             port.setContainerPort(portMapping.getPort());
@@ -123,6 +127,7 @@ public class KubernetesIaasUtil {
 
     /**
      * Prepare port name for port mapping.
+     *
      * @param portMapping
      * @return
      */
@@ -132,6 +137,7 @@ public class KubernetesIaasUtil {
 
     /**
      * Replace dot and underscore with dash character.
+     *
      * @param id
      * @return
      */

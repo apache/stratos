@@ -36,16 +36,16 @@ public class TopologyEventSynchronizer implements Runnable {
         if (log.isDebugEnabled()) {
             log.debug("Executing topology synchronizer");
         }
-        
-        if(!CloudControllerConfig.getInstance().isTopologySyncEnabled()) {
-            if(log.isWarnEnabled()) {
+
+        if (!CloudControllerConfig.getInstance().isTopologySyncEnabled()) {
+            if (log.isWarnEnabled()) {
                 log.warn("Topology synchronization is disabled");
             }
             return;
         }
 
-        if(CloudControllerContext.getInstance().isTopologySyncRunning()) {
-            if(log.isWarnEnabled()) {
+        if (CloudControllerContext.getInstance().isTopologySyncRunning()) {
+            if (log.isWarnEnabled()) {
                 log.warn("Topology synchronization is already running");
             }
             return;

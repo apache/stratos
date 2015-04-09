@@ -32,31 +32,31 @@ import java.util.concurrent.ExecutorService;
  * This is to receive the application topic messages.
  */
 public class ApplicationEventReceiver {
-	private static final Log log = LogFactory.getLog(ApplicationEventReceiver.class);
-	private ApplicationsEventReceiver applicationsEventReceiver;
-	private ExecutorService executorService;
+    private static final Log log = LogFactory.getLog(ApplicationEventReceiver.class);
+    private ApplicationsEventReceiver applicationsEventReceiver;
+    private ExecutorService executorService;
 
-	public ApplicationEventReceiver() {
-		this.applicationsEventReceiver = new ApplicationsEventReceiver();
-		addEventListeners();
+    public ApplicationEventReceiver() {
+        this.applicationsEventReceiver = new ApplicationsEventReceiver();
+        addEventListeners();
 
-	}
+    }
 
-	public void execute() {
+    public void execute() {
 
-		if (log.isInfoEnabled()) {
-			log.info("Cloud controller application event receiver thread started");
-		}
-		applicationsEventReceiver.setExecutorService(executorService);
-		applicationsEventReceiver.execute();
-	}
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller application event receiver thread started");
+        }
+        applicationsEventReceiver.setExecutorService(executorService);
+        applicationsEventReceiver.execute();
+    }
 
     private void addEventListeners() {
         applicationsEventReceiver.addEventListener(new ApplicationDeletedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 // Remove the application related data
-                ApplicationDeletedEvent deletedEvent = (ApplicationDeletedEvent)event;
+                ApplicationDeletedEvent deletedEvent = (ApplicationDeletedEvent) event;
                 log.info("Application deleted event received: [application-id] " + deletedEvent.getAppId());
                 String appId = deletedEvent.getAppId();
                 TopologyBuilder.handleApplicationClustersRemoved(appId, deletedEvent.getClusterData());
@@ -64,7 +64,7 @@ public class ApplicationEventReceiver {
         });
     }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

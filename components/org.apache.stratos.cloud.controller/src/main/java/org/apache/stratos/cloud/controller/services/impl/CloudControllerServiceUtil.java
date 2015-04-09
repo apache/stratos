@@ -51,6 +51,7 @@ public class CloudControllerServiceUtil {
     /**
      * Update the topology, publish statistics to BAM, remove member context
      * and persist cloud controller context.
+     *
      * @param memberContext
      */
     public static void executeMemberTerminationPostProcess(MemberContext memberContext) {
@@ -85,7 +86,7 @@ public class CloudControllerServiceUtil {
         boolean isValid = InetAddresses.isInetAddress(ip);
         return isValid;
     }
-    
+
     public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
         if (iaasProvider != null) {
             // if this is a IaaS based partition
@@ -102,7 +103,7 @@ public class CloudControllerServiceUtil {
             throw new InvalidPartitionException(msg);
         }
     }
-    
+
     public static boolean validatePartition(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
         validatePartitionAndGetIaasProvider(partition, iaasProvider);
         return true;

@@ -60,10 +60,10 @@ public class InstanceCreator implements Runnable {
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             Iaas iaas = iaasProvider.getIaas();
 
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
 
                 log.debug(String.format("Payload passed to instance created, [member] %s [payload] %s",
-                        memberContext.getMemberId(),  new String(payload)));
+                        memberContext.getMemberId(), new String(payload)));
             }
             memberContext = startInstance(iaas, memberContext, payload);
 
@@ -75,7 +75,7 @@ public class InstanceCreator implements Runnable {
                         memberContext.getDefaultPublicIP()));
             }
 
-            if(clusterContext.isVolumeRequired()) {
+            if (clusterContext.isVolumeRequired()) {
                 attachVolumes(iaas, clusterContext, memberContext);
             }
 
@@ -121,7 +121,7 @@ public class InstanceCreator implements Runnable {
         CloudControllerContext.getInstance().updateMemberContext(memberContext);
         CloudControllerContext.getInstance().persist();
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Member context updated: [application] %s [cartridge] %s [member] %s",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId()));
         }

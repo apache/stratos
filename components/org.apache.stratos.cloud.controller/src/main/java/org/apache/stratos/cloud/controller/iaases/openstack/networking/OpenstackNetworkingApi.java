@@ -26,7 +26,7 @@ import java.util.List;
  * Openstack can support Neutron Network or Nova Network, but not both at same time.
  * Each have different ways of assigning and releasing Floating IPs.
  * Networking operation should be implemented by implementing this interface
- * 	for different openstack networks.
+ * for different openstack networks.
  *
  * @author rajkumar
  */
@@ -34,7 +34,7 @@ public interface OpenstackNetworkingApi {
     /**
      * Associate FloatingIPs to the given node.
      * NetworkInterfaces, FloatingNetworks and fixed IPs details
-     * 		will be retrieved from cartridge deployment.
+     * will be retrieved from cartridge deployment.
      *
      * @param node the node to be associated with FloatingIPs
      * @return list of associated FloatinigIPs
@@ -44,7 +44,7 @@ public interface OpenstackNetworkingApi {
     /**
      * Associate the given FloatingIP to the given node.
      * NetworkInterfaces, FloatingNetworks and fixed IPs details
-     * 		will be retrieved from cartridge deployment.
+     * will be retrieved from cartridge deployment.
      *
      * @param node Node to be associated with FloatingIPs
      * @return list of associated FloatinigIPs

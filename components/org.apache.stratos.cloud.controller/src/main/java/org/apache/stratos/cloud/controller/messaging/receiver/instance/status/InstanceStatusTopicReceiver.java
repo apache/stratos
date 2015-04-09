@@ -38,75 +38,75 @@ import java.util.concurrent.ExecutorService;
  * This will handle the instance status events
  */
 public class InstanceStatusTopicReceiver {
-	private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
+    private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
 
-	private InstanceStatusEventReceiver statusEventReceiver;
-	private boolean terminated;
-	private ExecutorService executorService;
+    private InstanceStatusEventReceiver statusEventReceiver;
+    private boolean terminated;
+    private ExecutorService executorService;
 
-	public InstanceStatusTopicReceiver() {
-		this.statusEventReceiver = new InstanceStatusEventReceiver();
-		addEventListeners();
-	}
+    public InstanceStatusTopicReceiver() {
+        this.statusEventReceiver = new InstanceStatusEventReceiver();
+        addEventListeners();
+    }
 
-	public void execute() {
-		statusEventReceiver.setExecutorService(executorService);
-		statusEventReceiver.execute();
-		if (log.isInfoEnabled()) {
-			log.info("Cloud controller application status thread started");
-		}
+    public void execute() {
+        statusEventReceiver.setExecutorService(executorService);
+        statusEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller application status thread started");
+        }
 
-		if (log.isInfoEnabled()) {
-			log.info("Cloud controller application status thread terminated");
-		}
-	}
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller application status thread terminated");
+        }
+    }
 
-	private void addEventListeners() {
-		statusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) event);
-			}
-		});
+    private void addEventListeners() {
+        statusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new InstanceStartedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleMemberStarted((InstanceStartedEvent) event);
-			}
-		});
+        statusEventReceiver.addEventListener(new InstanceStartedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleMemberStarted((InstanceStartedEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new InstanceReadyToShutdownEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				try {
-					TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) event);
-				} catch (Exception e) {
-					String error = "Failed to retrieve the instance status event message";
-					log.error(error, e);
-				}
-			}
-		});
+        statusEventReceiver.addEventListener(new InstanceReadyToShutdownEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                    TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) event);
+                } catch (Exception e) {
+                    String error = "Failed to retrieve the instance status event message";
+                    log.error(error, e);
+                }
+            }
+        });
 
-		statusEventReceiver.addEventListener(new InstanceMaintenanceListener() {
-			@Override
-			protected void onEvent(Event event) {
-				try {
-					TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) event);
-				} catch (Exception e) {
-					String error = "Failed to retrieve the instance status event message";
-					log.error(error, e);
-				}
-			}
-		});
+        statusEventReceiver.addEventListener(new InstanceMaintenanceListener() {
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                    TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) event);
+                } catch (Exception e) {
+                    String error = "Failed to retrieve the instance status event message";
+                    log.error(error, e);
+                }
+            }
+        });
 
-	}
+    }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

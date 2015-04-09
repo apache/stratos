@@ -35,11 +35,9 @@ import java.util.Properties;
 
 /**
  * AWS-EC2 {@link org.apache.stratos.cloud.controller.iaases.PartitionValidator} implementation.
- *
- *
  */
 public class EC2PartitionValidator implements PartitionValidator {
-    
+
     private static final Log log = LogFactory.getLog(EC2PartitionValidator.class);
     private IaasProvider iaasProvider;
     private Iaas iaas;
@@ -50,34 +48,34 @@ public class EC2PartitionValidator implements PartitionValidator {
         try {
             if (properties.containsKey(Scope.region.toString())) {
                 String region = properties.getProperty(Scope.region.toString());
-                
+
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
                     String message = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
-                                         " [region] " + region;
+                            " [region] " + region;
                     log.error(message);
                     throw new InvalidPartitionException(message);
-                } 
-                
+                }
+
                 iaas.isValidRegion(region);
-                
+
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
                 Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
                 updatedIaas.setIaasProvider(updatedIaasProvider);
-                
+
                 if (properties.containsKey(Scope.zone.toString())) {
                     String zone = properties.getProperty(Scope.zone.toString());
                     iaas.isValidZone(region, zone);
                     updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
                     updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
                     updatedIaas.setIaasProvider(updatedIaasProvider);
-                } 
-                
+                }
+
                 updateOtherProperties(updatedIaasProvider, properties);
                 return updatedIaasProvider;
-                
+
             } else {
-                
+
                 return iaasProvider;
             }
         } catch (Exception ex) {
@@ -88,30 +86,30 @@ public class EC2PartitionValidator implements PartitionValidator {
     }
 
     private void updateOtherProperties(IaasProvider updatedIaasProvider,
-			Properties properties) {
-    	Iaas updatedIaas;
-		try {
-			updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+                                       Properties properties) {
+        Iaas updatedIaas;
+        try {
+            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
 
-			for (Object property : properties.keySet()) {
-				if (property instanceof String) {
-					String key = (String) property;
-					updatedIaasProvider.setProperty(key,
-							properties.getProperty(key));
-					if (log.isDebugEnabled()) {
-						log.debug("Added property " + key
-								+ " to the IaasProvider.");
-					}
-				}
-			}
-			updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-			updatedIaas.setIaasProvider(updatedIaasProvider);
-		} catch (InvalidIaasProviderException ignore) {
-		}
-    	
-	}
+            for (Object property : properties.keySet()) {
+                if (property instanceof String) {
+                    String key = (String) property;
+                    updatedIaasProvider.setProperty(key,
+                            properties.getProperty(key));
+                    if (log.isDebugEnabled()) {
+                        log.debug("Added property " + key
+                                + " to the IaasProvider.");
+                    }
+                }
+            }
+            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+            updatedIaas.setIaasProvider(updatedIaasProvider);
+        } catch (InvalidIaasProviderException ignore) {
+        }
 
-	@Override
+    }
+
+    @Override
     public void setIaasProvider(IaasProvider iaas) {
         this.iaasProvider = iaas;
         this.iaas = iaas.getIaas();

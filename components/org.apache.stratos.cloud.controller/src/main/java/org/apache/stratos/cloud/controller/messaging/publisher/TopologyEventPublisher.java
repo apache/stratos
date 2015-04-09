@@ -89,7 +89,7 @@ public class TopologyEventPublisher {
     public static void sendClusterResetEvent(String appId, String serviceName, String clusterId,
                                              String instanceId) {
         ClusterResetEvent clusterResetEvent = new ClusterResetEvent(appId, serviceName,
-                                                                    clusterId, instanceId);
+                clusterId, instanceId);
 
         if (log.isInfoEnabled()) {
             log.info("Publishing cluster reset event: [cluster-id] " + clusterId);
@@ -173,17 +173,17 @@ public class TopologyEventPublisher {
 
         memberInitializedEvent.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
         if (memberContext.getPrivateIPs() != null) {
-        	memberInitializedEvent.setMemberPrivateIPs(Arrays.asList(memberContext.getPrivateIPs()));
+            memberInitializedEvent.setMemberPrivateIPs(Arrays.asList(memberContext.getPrivateIPs()));
         }
         memberInitializedEvent.setDefaultPublicIP(memberContext.getDefaultPublicIP());
         if (memberContext.getPublicIPs() != null) {
-        	memberInitializedEvent.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
+            memberInitializedEvent.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
         }
         memberInitializedEvent.setProperties(CloudControllerUtil
                 .toJavaUtilProperties(memberContext.getProperties()));
 
         log.info(String.format("Publishing member initialized event: [service-name] %s [cluster-id] %s " +
-                "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
+                        "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
                         "[partition-id] %s [lb-cluster-id] %s",
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
@@ -305,7 +305,7 @@ public class TopologyEventPublisher {
             log.info(String.format("Publishing member terminated event: [service-name] %s [cluster-id] %s " +
                             "[cluster-instance-id] %s [member-id] %s [network-partition-id] %s " +
                             "[partition-id] %s [group-id] %s", serviceName, clusterId, clusterInstanceId, memberId,
-                     networkPartitionId, partitionId, groupId));
+                    networkPartitionId, partitionId, groupId));
         }
         publishEvent(memberTerminatedEvent);
     }
