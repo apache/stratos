@@ -117,6 +117,7 @@
             "options": {
                 "collapsed": true
             },
+            "format": "tabs",
             "items": [
                 {
                     "type": "object",
@@ -194,6 +195,7 @@
             "options": {
                 "collapsed": true
             },
+            "format":"tabs",
             "items": {
                 "type": "object",
                 "id": "root/iaasProvider/0",
@@ -223,6 +225,7 @@
                         "title": "Property",
                         "name": "Property",
                         "required": false,
+                        "format":"tabs",
                         "items": [
                             {
                                 "type": "object",
@@ -274,6 +277,7 @@
                         "title": "Network Interfaces",
                         "name": "Network Interfaces",
                         "required":true,
+                        "format":"tabs",
                         "items":[
                             {
                                 "type":"object",
@@ -338,6 +342,7 @@
                     "id": "root/persistence/volume",
                     "title": "Volume",
                     "name": "Volume",
+                    "format":"tabs",
                     "items": {
                         "type": "object",
                         "id": "root/persistence/volume/0",

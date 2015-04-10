@@ -27,6 +27,7 @@
             "type": "array",
             "title": "Network Partitions ",
             "name": "Network Partitions",
+            "format":"tabs",
             "items": {
                 "id": "root/networkPartitions/0",
                 "type": "string",
@@ -39,6 +40,7 @@
             "type": "array",
             "title": "Properties ",
             "name": "Properties",
+            "format":"tabs",
             "items": [
                 {
                     "id": "root/properties/0",

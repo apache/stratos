@@ -23,6 +23,7 @@
         "partitions": {
             "id": "root/partitions",
             "type": "array",
+            "format":"tabs",
             "title":"Partitions",
             "items": {
                 "id": "root/partitions/0",
@@ -37,16 +38,21 @@
                     "property": {
                         "id": "root/partitions/0/property",
                         "type": "array",
+                        "title":"Property",
+                        "format":"tabs",
                         "items": {
                             "id": "root/partitions/0/property/0",
                             "type": "object",
+                            "title":"Property",
                             "properties": {
                                 "name": {
                                     "id": "root/partitions/0/property/0/name",
+                                    "title":"Name",
                                     "type": "string"
                                 },
                                 "value": {
                                     "id": "root/partitions/0/property/0/value",
+                                    "title":"Value",
                                     "type": "string"
                                 }
                             }

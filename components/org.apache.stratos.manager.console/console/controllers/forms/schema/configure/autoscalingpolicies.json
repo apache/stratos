@@ -23,7 +23,8 @@
             "id": "root/description",
             "title": "Description",
             "name": "Description",
-            "maxItems":1
+            "maxItems":1,
+            "format": "textarea"
         },
         "isPublic": {
             "type":"boolean",
@@ -49,6 +50,7 @@
             "options": {
                 "disable_properties": true
             },
+            "format":"grid",
             "properties":{
                 "requestsInFlight": {
                     "type":"object",

@@ -12,12 +12,13 @@
         "id": {
             "id": "root/id",
             "type": "string",
-            "title":"Deployment policy ID"
+            "title":"Deployment Policy ID"
         },
         "networkPartitions": {
             "id": "root/networkPartitions",
             "title":"Network Partitions",
             "type": "array",
+            "format":"tabs",
             "items": {
                 "id": "root/networkPartitions/0",
                 "type": "object",
@@ -39,6 +40,7 @@
                         "id": "root/networkPartitions/0/partitions",
                         "type": "array",
                         "title":"Partitions",
+                        "format":"tabs",
                         "items": {
                             "id": "root/networkPartitions/0/partitions/0",
                             "type": "object",
@@ -52,6 +54,7 @@
                                 "partitionMax": {
                                     "id": "root/networkPartitions/0/partitions/0/partitionMax",
                                     "type": "integer",
+                                    "title":"Partition Max",
                                     "format": "number"
                                 }
                             }
