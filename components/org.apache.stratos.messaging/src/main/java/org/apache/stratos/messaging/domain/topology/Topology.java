@@ -83,7 +83,6 @@ public class Topology implements Serializable {
 
     public void removeFromClusterMap(String cluserId){
         clusterMap.remove(cluserId);
-        TopologyLockHierarchy.getInstance().removeTopologyLockForCluster(cluserId);
     }
 
     public Cluster getCluster(String clusterId){
