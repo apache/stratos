@@ -136,7 +136,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (cloudControllerContext.getCartridge(cartridgeType) != null) {
             Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
             try {
-                removeCartridge(cartridgeToBeRemoved.getType());
+                removeCartridgeFromCC(cartridgeToBeRemoved.getType());
             } catch (InvalidCartridgeTypeException ignore) {
             }
             copyIaasProviders(cartridge, cartridgeToBeRemoved);
@@ -161,25 +161,38 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         Map<String, IaasProvider> iaasProviderMap = CloudControllerContext.getInstance().getPartitionToIaasProvider(sourceCartridge.getType());
 
-        for (Entry<String, IaasProvider> entry : iaasProviderMap.entrySet()) {
-            if (entry == null) {
-                continue;
-            }
-            String partitionId = entry.getKey();
-            IaasProvider iaasProvider = entry.getValue();
-            if (newIaasProviders.contains(iaasProvider)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Copying partition from the cartridge that is undeployed, to the new cartridge: "
-                            + "[partition-id] " + partitionId + " [cartridge-type] " + destCartridge.getType());
+        if(iaasProviderMap != null) {
+            for (Entry<String, IaasProvider> entry : iaasProviderMap.entrySet()) {
+                if (entry == null) {
+                    continue;
                 }
-                CloudControllerContext.getInstance().addIaasProvider(destCartridge.getType(), partitionId,
-                        newIaasProviders.get(newIaasProviders.indexOf(iaasProvider)));
+                String partitionId = entry.getKey();
+                IaasProvider iaasProvider = entry.getValue();
+                if (newIaasProviders.contains(iaasProvider)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Copying partition from the cartridge that is undeployed, to the new cartridge: "
+                                + "[partition-id] " + partitionId + " [cartridge-type] " + destCartridge.getType());
+                    }
+                    CloudControllerContext.getInstance().addIaasProvider(destCartridge.getType(), partitionId,
+                            newIaasProviders.get(newIaasProviders.indexOf(iaasProvider)));
+                }
             }
         }
+
     }
 
     public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException {
+        //Removing the cartridge from CC
+        Cartridge cartridge = removeCartridgeFromCC(cartridgeType);
+        //removing the cartridge from Topology
+        removeCartridgeFromTopology(cartridge);
 
+        if (log.isInfoEnabled()) {
+            log.info("Successfully removed cartridge: [cartridge-type] " + cartridgeType);
+        }
+    }
+
+    private Cartridge removeCartridgeFromCC(String cartridgeType) throws InvalidCartridgeTypeException {
         Cartridge cartridge = null;
         if ((cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType)) != null) {
             if (CloudControllerContext.getInstance().getCartridges().remove(cartridge)) {
@@ -192,20 +205,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 CloudControllerContext.getInstance().persist();
 
-                // sends the service removed event
-                List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
-                cartridgeList.add(cartridge);
-                TopologyBuilder.handleServiceRemoved(cartridgeList);
-
                 if (log.isInfoEnabled()) {
                     log.info("Successfully removed cartridge: [cartridge-type] " + cartridgeType);
                 }
-                return;
+                return cartridge;
             }
         }
         String msg = "Cartridge not found: [cartridge-type] " + cartridgeType;
         log.error(msg);
         throw new InvalidCartridgeTypeException(msg);
+    }
+
+    private void removeCartridgeFromTopology(Cartridge cartridge) throws InvalidCartridgeTypeException {
+        // sends the service removed event
+        List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+        cartridgeList.add(cartridge);
+        TopologyBuilder.handleServiceRemoved(cartridgeList);
     }
 
     public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
