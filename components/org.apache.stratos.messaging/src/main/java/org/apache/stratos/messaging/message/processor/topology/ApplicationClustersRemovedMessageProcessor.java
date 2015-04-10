@@ -72,10 +72,11 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
         Set<ClusterDataHolder> clusterData = event.getClusterData();
         if (clusterData != null) {
             for (ClusterDataHolder aClusterData : clusterData) {
-                TopologyUpdater.acquireWriteLockForService(aClusterData.getServiceType());
+                String serviceType = aClusterData.getServiceType();
+                TopologyUpdater.acquireWriteLockForService(serviceType);
 
                 try {
-                    Service aService = topology.getService(aClusterData.getServiceType());
+                    Service aService = topology.getService(serviceType);
                     if (aService != null) {
                         if (aService.clusterExists(aClusterData.getClusterId())) {
                             aService.removeCluster(aClusterData.getClusterId());
@@ -87,11 +88,11 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
                             }
                         }
                     } else {
-                        log.warn("Service " + aClusterData.getServiceType() + " not found, unable to remove Cluster " + aClusterData.getClusterId());
+                        log.warn("Service " + serviceType + " not found, unable to remove Cluster " + aClusterData.getClusterId());
                     }
 
                 } finally {
-                    TopologyUpdater.releaseWriteLockForService(aClusterData.getServiceType());
+                    TopologyUpdater.releaseWriteLockForService(serviceType);
                 }
             }
 

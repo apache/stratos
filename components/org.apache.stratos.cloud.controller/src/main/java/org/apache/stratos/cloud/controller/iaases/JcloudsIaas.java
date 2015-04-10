@@ -349,6 +349,11 @@ public abstract class JcloudsIaas extends Iaas {
     private void detachVolume(MemberContext ctxt) {
         String clusterId = ctxt.getClusterId();
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+        if(clusterContext == null){
+            log.error(String.format("Could not detach volume, Cluster context not found for the [member] %s [cluster-id]", ctxt.getMemberId(), clusterId));
+            return;
+        }
+
         if (clusterContext.getVolumes() != null) {
             for (Volume volume : clusterContext.getVolumes()) {
                 try {

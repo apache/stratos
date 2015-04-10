@@ -212,7 +212,7 @@ public class ClusterStatusEventPublisher {
     public static void sendClusterTerminatedEvent(String appId, String serviceName,
                                                   String clusterId, String instanceId) {
         try {
-            TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
+            //TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
@@ -240,7 +240,7 @@ public class ClusterStatusEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
+            //TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
 
         }
     }
