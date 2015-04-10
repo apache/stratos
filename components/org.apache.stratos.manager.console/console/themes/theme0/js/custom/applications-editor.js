@@ -616,10 +616,9 @@ var applicationBlockTemplate = {
     "properties": {
         "applicationId": {
             "id": "root/applicationId",
-            "type": "string",
-            "options": {
-                "hidden": true
-            }
+            "title": "Application Id",
+            "name": "Application Id",
+            "type": "string"
         },
         "alias": {
             "id": "root/alias",
@@ -649,11 +648,12 @@ var applicationBlockTemplate = {
                     "type": "array",
                     "title": "Startup Orders",
                     "name": "Startup Orders",
+                    "format":"tabs",
                     "items": {
                         "id": "root/dependencies/startupOrders/0",
                         "type": "string",
-                        "title": "Startup Order",
-                        "name": "Startup Order"
+                        "title": "Order",
+                        "name": "Order"
                     }
                 },
                 "scalingDependents": {
@@ -661,11 +661,12 @@ var applicationBlockTemplate = {
                     "type": "array",
                     "title": "Scaling Dependents",
                     "name": "Scaling Dependents",
+                    "format":"tabs",
                     "items": {
                         "id": "root/dependencies/scalingDependents/0",
                         "type": "string",
-                        "title": "Scaling Dependent",
-                        "name": "Scaling Dependent"
+                        "title": "Dependent",
+                        "name": "Dependent"
                     }
                 },
                 "terminationBehaviour": {
