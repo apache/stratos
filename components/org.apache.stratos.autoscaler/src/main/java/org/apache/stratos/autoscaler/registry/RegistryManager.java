@@ -178,9 +178,10 @@ public class RegistryManager {
                 log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
                         autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
             }
-        } catch (Exception e) {
-            throw new AutoScalerException((String.format("Unable to persist autoscaler policy [autoscaler-policy-id] %s"
-                    , autoscalePolicy.getId())), e);
+        } catch (AutoScalerException e) {
+            String message = "Unable to persist autoscaler policy [autoscaler-policy-id] " + autoscalePolicy.getId();
+            log.error(message, e);
+            throw e;
         } finally {
             endTenantFlow();
         }
