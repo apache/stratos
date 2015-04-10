@@ -19,22 +19,22 @@
 package org.apache.stratos.account.mgt.beans;
 
 public class AccountInfoBean {
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
 
     public String getFirstname() {
-        return firstname;
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstname(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastname(String lastName) {
+        this.lastName = lastName;
     }
 }

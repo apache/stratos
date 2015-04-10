@@ -1,7 +1,7 @@
 {
     "domainMappings": [
         {
-            "cartridgeAlias":"php1",
+            "cartridgeAlias":"my-php",
             "domainName":"abc.com",
             "contextPath":"/abc/app"
         }
