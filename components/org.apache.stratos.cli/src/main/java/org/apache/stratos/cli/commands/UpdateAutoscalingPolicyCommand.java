@@ -32,6 +32,9 @@ import java.io.IOException;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * Update auto scaling policy
+ */
 public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandContext> {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateAutoscalingPolicyCommand.class);
@@ -62,7 +65,7 @@ public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandCon
     }
 
     public String getDescription() {
-        return "Update autoscaling policy";
+        return "Update auto scaling policy";
     }
 
     public String getArgumentSyntax() {
@@ -87,7 +90,7 @@ public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandCon
                 Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Updating autoscaling policy");
+                    log.debug("Updating auto scaling policy");
                 }
 
                 if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -107,9 +110,7 @@ public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandCon
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             } catch (IOException ignore) {

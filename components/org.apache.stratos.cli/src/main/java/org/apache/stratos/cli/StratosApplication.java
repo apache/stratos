@@ -222,9 +222,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddApplicationSignupCommand();
         commands.put(command.getName(), command);
 
-        command = new ListCartridgesByFilterCommand();
-        commands.put(command.getName(), command);
-
         command = new DescribeTenantCommand();
         commands.put(command.getName(),command);
 

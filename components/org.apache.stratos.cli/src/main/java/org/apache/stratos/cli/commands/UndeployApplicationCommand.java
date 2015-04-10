@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Un-deploy application command.
+ * Undeploy application command.
  */
 public class UndeployApplicationCommand implements Command<StratosCommandContext> {
 

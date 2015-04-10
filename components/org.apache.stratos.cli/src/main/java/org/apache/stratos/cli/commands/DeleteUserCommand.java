@@ -28,6 +28,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Remove user command.
+ */
 public class DeleteUserCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DeleteUserCommand.class);
 
@@ -38,7 +41,7 @@ public class DeleteUserCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getDescription() {
-        return "Remove User";
+        return "Remove user";
     }
 
     @Override
@@ -57,11 +60,11 @@ public class DeleteUserCommand implements Command<StratosCommandContext> {
 			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
-			String username = args[0];
+			String userName = args[0];
 			if (log.isDebugEnabled()) {
-				log.debug("Getting delete user info {}", username);
+				log.debug("Getting delete user info {}", userName);
 			}
-			RestCommandLineService.getInstance().deleteUser(username);
+			RestCommandLineService.getInstance().deleteUser(userName);
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());

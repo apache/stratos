@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Add application policy command.
+ */
 public class AddApplicationPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(AddApplicationPolicyCommand.class);
 
@@ -63,7 +66,7 @@ public class AddApplicationPolicyCommand implements Command<StratosCommandContex
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args,Option[] alreadyParsedOpts) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
         if (log.isDebugEnabled()) {
             log.debug("Executing {} command...", getName());
         }
@@ -99,9 +102,7 @@ public class AddApplicationPolicyCommand implements Command<StratosCommandContex
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {

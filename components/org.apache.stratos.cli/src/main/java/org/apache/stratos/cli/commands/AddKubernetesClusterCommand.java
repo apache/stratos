@@ -34,7 +34,7 @@ import java.io.IOException;
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 /**
- * Deploy kubernetes cluster command.
+ * Deploy Kubernetes cluster command.
  */
 public class AddKubernetesClusterCommand implements Command<StratosCommandContext> {
 
@@ -57,7 +57,7 @@ public class AddKubernetesClusterCommand implements Command<StratosCommandContex
 
     @Override
     public String getDescription() {
-        return "Add kubernetes cluster";
+        return "Add Kubernetes cluster";
     }
 
     @Override

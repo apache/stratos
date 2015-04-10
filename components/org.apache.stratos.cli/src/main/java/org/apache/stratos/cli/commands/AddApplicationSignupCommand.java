@@ -34,7 +34,7 @@ import java.io.IOException;
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 /**
- * Deploy application command.
+ * Add application signup command.
  */
 public class AddApplicationSignupCommand implements Command<StratosCommandContext> {
 

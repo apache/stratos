@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Update application policy
+ */
 public class UpdateApplicationPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(UpdateApplicationPolicyCommand.class);
 
@@ -103,12 +106,10 @@ public class UpdateApplicationPolicyCommand implements Command<StratosCommandCon
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
-            } catch (IOException ignore) {
+            } catch (IOException e) {
                 System.out.println("Invalid resource path");
                 return CliConstants.COMMAND_FAILED;
             }

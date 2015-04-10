@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public class ListAutoscalePolicyCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ListAutoscalePolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(ListAutoscalePolicyCommand.class);
 
     public ListAutoscalePolicyCommand() {
     }
@@ -48,8 +48,8 @@ public class ListAutoscalePolicyCommand implements Command<StratosCommandContext
     }
 
     public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
         if (args == null || args.length == 0) {
             RestCommandLineService.getInstance().listAutoscalingPolicies();

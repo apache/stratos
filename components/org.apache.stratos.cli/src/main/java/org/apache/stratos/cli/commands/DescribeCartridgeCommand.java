@@ -27,6 +27,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Describe cartridge command.
+ */
 public class DescribeCartridgeCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DescribeCartridgeCommand.class);
 
@@ -37,7 +40,7 @@ public class DescribeCartridgeCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getDescription() {
-        return "Describing the cartridge";
+        return "Describe cartridge";
     }
 
     @Override
@@ -56,11 +59,11 @@ public class DescribeCartridgeCommand implements Command<StratosCommandContext> 
 			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
-			String id = args[0];
+			String cartridgeType = args[0];
 			if (log.isDebugEnabled()) {
-				log.debug("Getting cartridge info {}", id);
+				log.debug("Getting cartridge info {}", cartridgeType);
 			}
-			 RestCommandLineService.getInstance().describeCartridge(id);
+			 RestCommandLineService.getInstance().describeCartridge(cartridgeType);
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());

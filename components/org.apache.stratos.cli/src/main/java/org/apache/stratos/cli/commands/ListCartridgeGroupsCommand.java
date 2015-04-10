@@ -28,9 +28,12 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * List available cartridge groups
+ */
 public class ListCartridgeGroupsCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListCartridgeGroupsCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(ListCartridgeGroupsCommand.class);
 
 	public ListCartridgeGroupsCommand() {
 	}
@@ -48,8 +51,8 @@ public class ListCartridgeGroupsCommand implements Command<StratosCommandContext
 	}
 
 	public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+		if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
             RestCommandLineService.getInstance().listCartridgeGroups();

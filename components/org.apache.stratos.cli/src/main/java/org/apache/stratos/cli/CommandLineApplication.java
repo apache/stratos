@@ -18,20 +18,19 @@
  */
 package org.apache.stratos.cli;
 
-import java.io.File;
-import java.io.IOException;
-
 import jline.console.ConsoleReader;
 import jline.console.history.FileHistory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+
 public abstract class CommandLineApplication<T extends CommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(CommandLineApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(CommandLineApplication.class);
 
 	protected ConsoleReader reader;
 	protected FileHistory history;
@@ -98,8 +97,8 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 		};
 		Runtime.getRuntime().addShutdownHook(shutdownHookThread);
 		int returnCode = run(args);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Exiting with error code {}", returnCode);
+		if (log.isDebugEnabled()) {
+			log.debug("Exiting with error code {}", returnCode);
 		}
 		System.exit(returnCode);
 	}
@@ -127,17 +126,17 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 
 	private int execute(String line) {
 		try {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Executing command line: \"{}\"", line);
+			if (log.isDebugEnabled()) {
+				log.debug("Executing command line: \"{}\"", line);
 			}
 			int returnCode = executeCommand(line);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Command line executed \"{}\". Return code: {}", line, returnCode);
+			if (log.isDebugEnabled()) {
+				log.debug("Command line executed \"{}\". Return code: {}", line, returnCode);
 			}
 			return returnCode;
 		} catch (RuntimeException e) {
-			if (logger.isErrorEnabled()) {
-				logger.error("Error executing command line: " + line, e);
+			if (log.isErrorEnabled()) {
+				log.error("Error executing command line: " + line, e);
 			}
 			return 1;
 		}
@@ -146,15 +145,15 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 	protected abstract int executeCommand(String line);
 
 	private void performDestroy() {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Shutting down application... Invoking destroy methods");
+		if (log.isDebugEnabled()) {
+			log.debug("Shutting down application... Invoking destroy methods");
 		}
 		if (history != null) {
 			try {
 				history.flush();
 			} catch (IOException e) {
-				if (logger.isErrorEnabled()) {
-					logger.error("Error flushing history.", e);
+				if (log.isErrorEnabled()) {
+					log.error("Error flushing history.", e);
 				}
 			}
 		}

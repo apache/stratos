@@ -27,9 +27,12 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
+/**
+ * Help for commands
+ */
 public class HelpCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(HelpCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(HelpCommand.class);
 
 	public HelpCommand() {
 	}
@@ -51,13 +54,13 @@ public class HelpCommand implements Command<StratosCommandContext> {
 
 	@Override
 	public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+		if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
 			context.getStratosApplication().printHelp();
 			return CliConstants.COMMAND_SUCCESSFULL;
-		} else if (args != null && args.length == 1) {
+		} else if (args.length == 1) {
 			context.getStratosApplication().printHelp(args[0]);
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {

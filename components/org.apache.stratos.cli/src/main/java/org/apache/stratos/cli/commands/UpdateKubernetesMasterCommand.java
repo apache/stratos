@@ -33,7 +33,7 @@ import java.io.IOException;
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 /**
- * Update kubernetes master command.
+ * Update Kubernetes master command.
  */
 public class UpdateKubernetesMasterCommand implements Command<StratosCommandContext> {
 
@@ -60,7 +60,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
 
     @Override
     public String getDescription() {
-        return "Update kubernetes master";
+        return "Update Kubernetes master";
     }
 
     @Override

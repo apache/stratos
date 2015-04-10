@@ -29,6 +29,10 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * Describe Kubernetes master command.
+ */
 public class DescribeKubernetesMasterCommand implements Command<StratosCommandContext> {
 
     private static final Logger log = LoggerFactory.getLogger(DescribeKubernetesMasterCommand.class);
@@ -40,7 +44,7 @@ public class DescribeKubernetesMasterCommand implements Command<StratosCommandCo
 
     @Override
     public String getDescription() {
-        return "Describing the Kubernetes master";
+        return "Describe Kubernetes master";
     }
 
     @Override

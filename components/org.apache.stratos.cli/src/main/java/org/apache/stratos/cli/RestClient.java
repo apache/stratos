@@ -39,7 +39,7 @@ import java.lang.reflect.Type;
 
 public class RestClient implements GenericRestClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestClient.class);
+    private static final Logger log = LoggerFactory.getLogger(RestClient.class);
 
     private String baseURL;
     private String username;
@@ -163,7 +163,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in adding %s", entityName);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -178,7 +178,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in un-deploying %s : %s", entityName,entityId);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -193,7 +193,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in updating %s", entityName);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -208,7 +208,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in deleting %s", entityName);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -219,7 +219,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in getting %s : %s", entityName,identifier);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }
@@ -230,7 +230,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in getting %s : %s", entityName,identifier);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }
@@ -241,7 +241,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in listing %s", entityName);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }
@@ -252,7 +252,7 @@ public class RestClient implements GenericRestClient {
         } catch (Exception e) {
             String message = String.format("Error in listing %s", entityName);
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }

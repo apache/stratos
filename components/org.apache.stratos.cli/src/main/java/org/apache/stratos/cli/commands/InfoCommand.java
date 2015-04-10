@@ -20,17 +20,16 @@ package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InfoCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(InfoCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(InfoCommand.class);
 
 	public InfoCommand() {
 	}
@@ -52,8 +51,8 @@ public class InfoCommand implements Command<StratosCommandContext> {
 
 	@Override
 	public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+		if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		throw new RuntimeException("Not implemented");
 
