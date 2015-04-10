@@ -190,7 +190,7 @@ function update(source) {
                             "<strong>Status: </strong>" + d.status;
 
             } else if (d.type == 'members') {
-                if((d.ports != '') && (d.ports.length > 0)) {
+                if((typeof d.ports != 'undefined') && (d.ports.length > 0)) {
                     var portsHTML = "<strong>Ports: </strong></br>";
                     for(var i=0;i<d.ports.length;i++){
                         portsHTML += "Port: " + d.ports[i].port + ", Protocol: " + d.ports[i].protocol;
