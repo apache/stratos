@@ -302,20 +302,22 @@ var groupBlockTemplate = {
                     "id": "root/dependencies/startupOrders",
                     "type": "array",
                     "title": "Startup Orders: ",
+                    "format":"tabs",
                     "items": {
                         "id": "root/dependencies/startupOrders/0",
                         "type": "string",
-                        "title": "Startup Order "
+                        "title": "Order"
                     }
                 },
                 "scalingDependants": {
                     "id": "root/dependencies/scalingDependants",
                     "type": "array",
                     "title": "Scaling Dependants: ",
+                    "format":"tabs",
                     "items": {
                         "id": "root/dependencies/scalingDependants/0",
                         "type": "string",
-                        "title": "Scaling Dependant "
+                        "title": "Dependant"
                     }
                 },
                 "terminationBehaviour": {
