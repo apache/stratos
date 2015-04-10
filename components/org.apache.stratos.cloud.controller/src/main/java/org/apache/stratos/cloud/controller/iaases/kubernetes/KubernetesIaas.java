@@ -73,9 +73,9 @@ public class KubernetesIaas extends Iaas {
         payload = new ArrayList<NameValuePair>();
 
         podActivationTimeout = Long.getLong("stratos.pod.activation.timeout");
-        if(podActivationTimeout == null) {
+        if (podActivationTimeout == null) {
             podActivationTimeout = DEFAULT_POD_ACTIVATION_TIMEOUT;
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Pod activation timeout was set: " + podActivationTimeout);
             }
         }
@@ -163,7 +163,7 @@ public class KubernetesIaas extends Iaas {
             // Validate partition
             Partition partition = memberContext.getPartition();
             handleNullObject(partition, String.format("partition not found in member context: [application] %s " +
-                    "[cartridge] %s [member] %s", memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                            "[cartridge] %s [member] %s", memberContext.getApplicationId(), memberContext.getCartridgeType(),
                     memberContext.getMemberId()));
 
             // Validate cartridge
@@ -248,11 +248,11 @@ public class KubernetesIaas extends Iaas {
         String memberPublicIPAddress = podHostIPAddress;
         String kubernetesHostPublicIP = findKubernetesHostPublicIPAddress(kubernetesCluster, podHostIPAddress);
 
-        if(StringUtils.isNotBlank(kubernetesHostPublicIP)) {
+        if (StringUtils.isNotBlank(kubernetesHostPublicIP)) {
             memberPublicIPAddress = kubernetesHostPublicIP;
-            if(log.isInfoEnabled()) {
-                 log.info(String.format("Member public IP address set to kubernetes host public IP address:" +
-                         "[pod-host-ip] %s [kubernetes-host-public-ip] %s", podHostIPAddress, kubernetesHostPublicIP));
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member public IP address set to kubernetes host public IP address:" +
+                        "[pod-host-ip] %s [kubernetes-host-public-ip] %s", podHostIPAddress, kubernetesHostPublicIP));
             }
         }
 
@@ -266,7 +266,7 @@ public class KubernetesIaas extends Iaas {
     }
 
     private String findKubernetesHostPublicIPAddress(KubernetesCluster kubernetesCluster, String podHostIP) {
-        if((kubernetesCluster != null) && (StringUtils.isNotBlank(podHostIP))) {
+        if ((kubernetesCluster != null) && (StringUtils.isNotBlank(podHostIP))) {
             for (KubernetesHost kubernetesHost : kubernetesCluster.getKubernetesHosts()) {
                 if (kubernetesHost != null) {
                     if (podHostIP.equals(kubernetesHost.getPrivateIPAddress())) {
@@ -360,7 +360,7 @@ public class KubernetesIaas extends Iaas {
         Partition partition = memberContext.getPartition();
         if (partition == null) {
             String message = String.format("Partition not found in member context: [application] %s [cartridge] %s " +
-                    "[member] %s ", applicationId, cartridgeType,
+                            "[member] %s ", applicationId, cartridgeType,
                     memberId);
             log.error(message);
             throw new RuntimeException(message);
@@ -433,23 +433,23 @@ public class KubernetesIaas extends Iaas {
         }
 
         List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
-        if(kubernetesServices == null) {
+        if (kubernetesServices == null) {
             kubernetesServices = new ArrayList<KubernetesService>();
         }
 
         // Prepare minion public IP addresses
         List<String> minionPublicIPs = new ArrayList<String>();
         KubernetesHost[] kubernetesHosts = kubernetesCluster.getKubernetesHosts();
-        if((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
+        if ((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
             throw new RuntimeException("Hosts not found in kubernetes cluster: [cluster] "
                     + kubernetesCluster.getClusterId());
         }
-        for(KubernetesHost host : kubernetesHosts) {
-            if(host != null) {
+        for (KubernetesHost host : kubernetesHosts) {
+            if (host != null) {
                 minionPublicIPs.add(host.getPublicIPAddress());
             }
         }
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Minion public IPs: %s", minionPublicIPs));
         }
 
@@ -458,7 +458,7 @@ public class KubernetesIaas extends Iaas {
 
                 // Skip if already created
                 int containerPort = portMapping.getPort();
-                if(kubernetesServiceExist(kubernetesServices, containerPort)) {
+                if (kubernetesServiceExist(kubernetesServices, containerPort)) {
                     continue;
                 }
 
@@ -517,8 +517,8 @@ public class KubernetesIaas extends Iaas {
     }
 
     private boolean kubernetesServiceExist(List<KubernetesService> kubernetesServices, int port) {
-        for(KubernetesService kubernetesService : kubernetesServices) {
-            if(kubernetesService.getContainerPort() == port) {
+        for (KubernetesService kubernetesService : kubernetesServices) {
+            if (kubernetesService.getContainerPort() == port) {
                 return true;
             }
         }
@@ -527,6 +527,7 @@ public class KubernetesIaas extends Iaas {
 
     /**
      * Generate kubernetes service ports for cluster.
+     *
      * @param kubernetesClusterContext
      * @param clusterId
      * @param cartridge

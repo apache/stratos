@@ -20,7 +20,6 @@
 package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Calendar;
 
 /**
  * Bean class for Tenant Information
@@ -29,8 +28,8 @@ import java.util.Calendar;
 public class TenantInfoBean {
 
     private String admin; //admin's user name
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String adminPassword;
     private String tenantDomain;
     private int tenantId;
@@ -48,8 +47,8 @@ public class TenantInfoBean {
     /*copy constructor*/
     public TenantInfoBean(TenantInfoBean tenantInfoBean) {
         this.admin = tenantInfoBean.admin;
-        this.firstname = tenantInfoBean.firstname;
-        this.lastname = tenantInfoBean.lastname;
+        this.firstName = tenantInfoBean.firstName;
+        this.lastName = tenantInfoBean.lastName;
         this.adminPassword = tenantInfoBean.adminPassword;
         this.tenantDomain = tenantInfoBean.tenantDomain;
         this.tenantId = tenantInfoBean.tenantId;
@@ -62,19 +61,19 @@ public class TenantInfoBean {
     }
 
     public String getFirstname() {
-        return firstname;
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstname(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastname(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

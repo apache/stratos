@@ -112,7 +112,7 @@ public class DockerIaas extends JcloudsIaas {
         ComputeService computeService = iaasProvider.getComputeService();
         Set<? extends Image> images = computeService.listImages();
         Image image = findImage(images, iaasProvider.getImage());
-        if(image == null) {
+        if (image == null) {
             throw new CloudControllerException(String.format("Docker image not found: %s", iaasProvider.getImage()));
         }
         Template template = computeService.templateBuilder().fromImage(image).build();
@@ -120,8 +120,8 @@ public class DockerIaas extends JcloudsIaas {
     }
 
     private Image findImage(Set<? extends Image> images, String name) {
-        for(Image image : images) {
-            if(image.getDescription().contains(name))
+        for (Image image : images) {
+            if (image.getDescription().contains(name))
                 return image;
         }
         return null;

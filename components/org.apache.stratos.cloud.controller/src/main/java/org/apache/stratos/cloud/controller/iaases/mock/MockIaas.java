@@ -41,7 +41,7 @@ public class MockIaas extends Iaas {
     public MockIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
         String endpoint = iaasProvider.getProperty("api.endpoint");
-        if(StringUtils.isBlank(endpoint)) {
+        if (StringUtils.isBlank(endpoint)) {
             throw new CloudControllerException("api.endpoint property not found in mock iaas provider in" +
                     "cloud-controller.xml file");
         }
@@ -120,12 +120,12 @@ public class MockIaas extends Iaas {
     @Override
     public void allocateIpAddresses(String clusterId, MemberContext memberContext, Partition partition) {
         MockInstanceMetadata mockInstanceMetadata = apiClient.allocateIpAddress(memberContext.getInstanceId());
-        if(mockInstanceMetadata != null) {
+        if (mockInstanceMetadata != null) {
             memberContext.setDefaultPrivateIP(mockInstanceMetadata.getDefaultPrivateIp());
             memberContext.setDefaultPublicIP(mockInstanceMetadata.getDefaultPublicIp());
 
-            String[] privateIPs = new String[] { mockInstanceMetadata.getDefaultPrivateIp()};
-            String[] publicIPs = new String[] { mockInstanceMetadata.getDefaultPublicIp()};
+            String[] privateIPs = new String[]{mockInstanceMetadata.getDefaultPrivateIp()};
+            String[] publicIPs = new String[]{mockInstanceMetadata.getDefaultPublicIp()};
             memberContext.setPrivateIPs(privateIPs);
             memberContext.setPublicIPs(publicIPs);
         }

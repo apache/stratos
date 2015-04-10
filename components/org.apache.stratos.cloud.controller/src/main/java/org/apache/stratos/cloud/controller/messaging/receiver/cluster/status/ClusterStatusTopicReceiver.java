@@ -29,88 +29,88 @@ import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatu
 import java.util.concurrent.ExecutorService;
 
 public class ClusterStatusTopicReceiver {
-	private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
+    private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
-	private ClusterStatusEventReceiver statusEventReceiver;
-	private boolean terminated;
-	private ExecutorService executorService;
+    private ClusterStatusEventReceiver statusEventReceiver;
+    private boolean terminated;
+    private ExecutorService executorService;
 
-	public ClusterStatusTopicReceiver() {
-		this.statusEventReceiver = new ClusterStatusEventReceiver();
+    public ClusterStatusTopicReceiver() {
+        this.statusEventReceiver = new ClusterStatusEventReceiver();
 
-		addEventListeners();
-	}
+        addEventListeners();
+    }
 
-	public void execute() {
-		statusEventReceiver.setExecutorService(executorService);
-		statusEventReceiver.execute();
-		if (log.isInfoEnabled()) {
-			log.info("Cloud controller Cluster status thread started");
-		}
+    public void execute() {
+        statusEventReceiver.setExecutorService(executorService);
+        statusEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller Cluster status thread started");
+        }
 
-	}
+    }
 
-	private void addEventListeners() {
-		// Listen to topology events that affect clusters
-		statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
-			}
-		});
+    private void addEventListeners() {
+        // Listen to topology events that affect clusters
+        statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				//TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
-			}
-		});
+        statusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                //TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
-			}
-		});
+        statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterActivatedEvent((ClusterStatusClusterActivatedEvent) event);
-			}
-		});
+        statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterActivatedEvent((ClusterStatusClusterActivatedEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterTerminatedEvent((ClusterStatusClusterTerminatedEvent) event);
-			}
-		});
+        statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterTerminatedEvent((ClusterStatusClusterTerminatedEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterTerminatingEvent((ClusterStatusClusterTerminatingEvent) event);
-			}
-		});
+        statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterTerminatingEvent((ClusterStatusClusterTerminatingEvent) event);
+            }
+        });
 
-		statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterInactivateEvent((ClusterStatusClusterInactivateEvent) event);
-			}
-		});
-	}
+        statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterInactivateEvent((ClusterStatusClusterInactivateEvent) event);
+            }
+        });
+    }
 
-	public void setTerminated(boolean terminated) {
-		this.terminated = terminated;
-	}
+    public void setTerminated(boolean terminated) {
+        this.terminated = terminated;
+    }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

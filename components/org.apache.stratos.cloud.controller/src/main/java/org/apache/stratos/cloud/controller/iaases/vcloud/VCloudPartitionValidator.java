@@ -31,21 +31,20 @@ import java.util.Properties;
 
 /**
  * The VCloud {@link org.apache.stratos.cloud.controller.iaases.PartitionValidator} implementation.
- *
  */
 public class VCloudPartitionValidator implements PartitionValidator {
-    
+
     @SuppressWarnings("unused")
-	private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
+    private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
     private IaasProvider iaasProvider;
     @SuppressWarnings("unused")
-	private Iaas iaas;
+    private Iaas iaas;
 
     @Override
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
         //TODO: implement real validation logic 
         return iaasProvider;
-       
+
     }
 
     @Override

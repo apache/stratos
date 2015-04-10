@@ -72,7 +72,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Adding cartridge: [cartridge-type] " + cartridgeConfig.getType());
         }
         if (log.isDebugEnabled()) {
@@ -104,56 +104,55 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         TopologyBuilder.handleServiceCreated(cartridgeList);
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
         }
     }
 
-	@Override
-	public void updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
-	                                                                    InvalidIaasProviderException,
-	                                                                    CartridgeDefinitionNotExistsException {
+    @Override
+    public void updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
+            InvalidIaasProviderException,
+            CartridgeDefinitionNotExistsException {
 
-		handleNullObject(cartridgeConfig, "Cartridge definition is null");
+        handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
-		if (log.isInfoEnabled()) {
-			log.info("Updating cartridge: [cartridge-type] " + cartridgeConfig.getType());
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("Cartridge definition: " + cartridgeConfig.toString());
-		}
+        if (log.isInfoEnabled()) {
+            log.info("Updating cartridge: [cartridge-type] " + cartridgeConfig.getType());
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Cartridge definition: " + cartridgeConfig.toString());
+        }
 
-		Cartridge cartridge = null;
-		try {
-			cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
-		} catch (Exception e) {
-			String msg = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
-			log.error(msg, e);
-			throw new InvalidCartridgeDefinitionException(msg, e);
-		}
+        Cartridge cartridge = null;
+        try {
+            cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
+        } catch (Exception e) {
+            String msg = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
+            log.error(msg, e);
+            throw new InvalidCartridgeDefinitionException(msg, e);
+        }
 
-		String cartridgeType = cartridge.getType();
-		if (cloudControllerContext.getCartridge(cartridgeType) != null) {
-			Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
-			try {
-				removeCartridge(cartridgeToBeRemoved.getType());
-			} catch (InvalidCartridgeTypeException ignore) {
-			}
-			copyIaasProviders(cartridge, cartridgeToBeRemoved);
-		}
-		else{
-			throw new CartridgeDefinitionNotExistsException("This cartridge definition not exists");
-		}
+        String cartridgeType = cartridge.getType();
+        if (cloudControllerContext.getCartridge(cartridgeType) != null) {
+            Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
+            try {
+                removeCartridge(cartridgeToBeRemoved.getType());
+            } catch (InvalidCartridgeTypeException ignore) {
+            }
+            copyIaasProviders(cartridge, cartridgeToBeRemoved);
+        } else {
+            throw new CartridgeDefinitionNotExistsException("This cartridge definition not exists");
+        }
 
-		// Add cartridge to the cloud controller context and persist
-		CloudControllerContext.getInstance().addCartridge(cartridge);
-		CloudControllerContext.getInstance().persist();
-		// transaction ends
+        // Add cartridge to the cloud controller context and persist
+        CloudControllerContext.getInstance().addCartridge(cartridge);
+        CloudControllerContext.getInstance().persist();
+        // transaction ends
 
-		if (log.isInfoEnabled()) {
-			log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeType);
-		}
-	}
+        if (log.isInfoEnabled()) {
+            log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeType);
+        }
+    }
 
     private void copyIaasProviders(Cartridge destCartridge,
                                    Cartridge sourceCartridge) {
@@ -341,8 +340,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(instanceContexts, "Instance start-up failed, member contexts is null");
 
         List<MemberContext> memberContextList = new ArrayList<MemberContext>();
-        for(InstanceContext instanceContext : instanceContexts) {
-            if(instanceContext != null) {
+        for (InstanceContext instanceContext : instanceContexts) {
+            if (instanceContext != null) {
                 MemberContext memberContext = startInstance(instanceContext);
                 memberContextList.add(memberContext);
             }
@@ -386,7 +385,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String msg = String.format("Could not start instance, " +
                                 "IaaS provider not found in cartridge %s for partition %s, " +
                                 "partitions found: %s ", cartridgeType, partitionId,
-                       CloudControllerContext.getInstance().getPartitionToIaasProvider(cartridge.getType()).keySet().toString());
+                        CloudControllerContext.getInstance().getPartitionToIaasProvider(cartridge.getType()).keySet().toString());
                 log.error(msg);
                 throw new InvalidIaasProviderException(msg);
             }
@@ -431,7 +430,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //            iaas.setDynamicPayload(iaasProvider.getPayload());
 
             if (clusterContext.isVolumeRequired()) {
-                
+
                 Volume[] volumes = clusterContext.getVolumes();
                 if (volumes != null) {
                     for (int i = 0; i < volumes.length; i++) {
@@ -455,7 +454,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Start instance in a new thread
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Starting instance creator thread: [cluster] %s [cluster-instance] %s " +
-                        "[member] %s", instanceContext.getClusterId(), instanceContext.getClusterInstanceId(),
+                                "[member] %s", instanceContext.getClusterId(), instanceContext.getClusterInstanceId(),
                         memberId));
             }
             executorService.execute(new InstanceCreator(memberContext, iaasProvider, payload.toString().getBytes()));
@@ -487,7 +486,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private Volume createVolumeAndSetInClusterContext(Volume volume,
-                                                    IaasProvider iaasProvider) {
+                                                      IaasProvider iaasProvider) {
         // iaas cannot be null at this state #startInstance method
         Iaas iaas = iaasProvider.getIaas();
         int sizeGB = volume.getSize();
@@ -547,7 +546,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return clusterId + memberId.toString();
     }
 
-    public void terminateInstanceForcefully(String memberId)  {
+    public void terminateInstanceForcefully(String memberId) {
 
         log.info(String.format("Starting to forcefully terminate the member " + memberId));
         boolean memberTerminated = true;
@@ -555,15 +554,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             this.terminateInstance(memberId);
         } catch (InvalidMemberException e) {
             memberTerminated = false;
-        } catch (CloudControllerException e){
+        } catch (CloudControllerException e) {
             memberTerminated = false;
         } catch (InvalidCartridgeTypeException e) {
             memberTerminated = false;
         }
 
-        if(memberTerminated){
+        if (memberTerminated) {
             log.info(String.format("Member terminated [member-id] %s ", memberId));
-        }else{
+        } else {
             log.warn(String.format("Stratos could not terminate the member [member-id] %s. This may due to a issue in the underlying IaaS, Please terminate the member manually", memberId));
             MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
@@ -575,28 +574,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             InvalidCartridgeTypeException, CloudControllerException {
 
         try {
-        handleNullObject(memberId, "Could not terminate instance, member id is null.");
+            handleNullObject(memberId, "Could not terminate instance, member id is null.");
 
-        MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
-        if (memberContext == null) {
-            String msg = "Could not terminate instance, member context not found: [member-id] " + memberId;
-            log.error(msg);
-            throw new InvalidMemberException(msg);
-        }
-
-        if (StringUtils.isBlank(memberContext.getInstanceId())) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format(
-                        "Could not terminate instance, instance id is blank: [member-id] %s " +
-                                ", removing member from topology...",
-                        memberContext.getMemberId()));
+            MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
+            if (memberContext == null) {
+                String msg = "Could not terminate instance, member context not found: [member-id] " + memberId;
+                log.error(msg);
+                throw new InvalidMemberException(msg);
             }
-            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
-        }
 
-        // check if status == active, if true, then this is a termination on member faulty
-        TopologyManager.acquireWriteLock();
-        Topology topology = TopologyManager.getTopology();
+            if (StringUtils.isBlank(memberContext.getInstanceId())) {
+                if (log.isErrorEnabled()) {
+                    log.error(String.format(
+                            "Could not terminate instance, instance id is blank: [member-id] %s " +
+                                    ", removing member from topology...",
+                            memberContext.getMemberId()));
+                }
+                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
+            }
+
+            // check if status == active, if true, then this is a termination on member faulty
+            TopologyManager.acquireWriteLock();
+            Topology topology = TopologyManager.getTopology();
             org.apache.stratos.messaging.domain.topology.Service service = topology.getService(memberContext.getCartridgeType());
 
             if (service != null) {
@@ -772,9 +771,51 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //        if (StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
 //            unregisterDockerService(clusterId_);
 //        } else {
-            Runnable terminateInTimeout = new Runnable() {
-                @Override
-                public void run() {
+        Runnable terminateInTimeout = new Runnable() {
+            @Override
+            public void run() {
+                ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
+                if (ctxt == null) {
+                    String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
+                    log.error(msg);
+                    return;
+                }
+                Collection<Member> members = TopologyManager.getTopology().
+                        getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                //finding the responding members from the existing members in the topology.
+                int sizeOfRespondingMembers = 0;
+                for (Member member : members) {
+                    if (member.getStatus().getCode() >= MemberStatus.Active.getCode()) {
+                        sizeOfRespondingMembers++;
+                    }
+                }
+
+                long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * sizeOfRespondingMembers;
+                while (System.currentTimeMillis() < endTime) {
+                    CloudControllerUtil.sleep(1000);
+
+                }
+
+                // if there're still alive members
+                if (members.size() > 0) {
+                    //forcefully terminate them
+                    for (Member member : members) {
+
+                        try {
+                            terminateInstance(member.getMemberId());
+                        } catch (Exception e) {
+                            // we are not gonna stop the execution due to errors.
+                            log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
+                        }
+                    }
+                }
+            }
+        };
+        Runnable unregister = new Runnable() {
+            public void run() {
+                Lock lock = null;
+                try {
+                    lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
                     ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
                     if (ctxt == null) {
                         String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
@@ -783,104 +824,62 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                     Collection<Member> members = TopologyManager.getTopology().
                             getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                    //finding the responding members from the existing members in the topology.
-                    int sizeOfRespondingMembers = 0;
-                    for (Member member : members) {
-                        if (member.getStatus().getCode() >= MemberStatus.Active.getCode()) {
-                            sizeOfRespondingMembers++;
-                        }
-                    }
 
-                    long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * sizeOfRespondingMembers;
-                    while (System.currentTimeMillis() < endTime) {
+                    while (members.size() > 0) {
+                        //waiting until all the members got removed from the Topology/ timed out
                         CloudControllerUtil.sleep(1000);
-
                     }
 
-                    // if there're still alive members
-                    if (members.size() > 0) {
-                        //forcefully terminate them
-                        for (Member member : members) {
-
-                            try {
-                                terminateInstance(member.getMemberId());
-                            } catch (Exception e) {
-                                // we are not gonna stop the execution due to errors.
-                                log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
-                            }
-                        }
+                    log.info("Unregistration of service cluster: " + clusterId_);
+                    deleteVolumes(ctxt);
+                    onClusterRemoval(clusterId_);
+                } finally {
+                    if (lock != null) {
+                        CloudControllerContext.getInstance().releaseWriteLock(lock);
                     }
                 }
-            };
-            Runnable unregister = new Runnable() {
-                public void run() {
+            }
+
+            private void deleteVolumes(ClusterContext ctxt) {
+                if (ctxt.isVolumeRequired()) {
                     Lock lock = null;
                     try {
-                        lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
-                        ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
-                        if (ctxt == null) {
-                            String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
-                            log.error(msg);
-                            return;
-                        }
-                        Collection<Member> members = TopologyManager.getTopology().
-                                getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                        lock = CloudControllerContext.getInstance().acquireCartridgesWriteLock();
 
-                        while (members.size() > 0) {
-                            //waiting until all the members got removed from the Topology/ timed out
-                            CloudControllerUtil.sleep(1000);
+                        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(ctxt.getCartridgeType());
+                        if (cartridge != null && CloudControllerContext.getInstance().getIaasProviders(cartridge.getType()) != null && ctxt.getVolumes() != null) {
+                            for (Volume volume : ctxt.getVolumes()) {
+                                if (volume.getId() != null) {
+                                    String iaasType = volume.getIaasType();
+                                    Iaas iaas = CloudControllerContext.getInstance().getIaasProvider(cartridge.getType(), iaasType).getIaas();
+                                    if (iaas != null) {
+                                        try {
+                                            // delete the volumes if remove on unsubscription is true.
+                                            if (volume.isRemoveOntermination()) {
+                                                iaas.deleteVolume(volume.getId());
+                                                volume.setId(null);
+                                            }
+                                        } catch (Exception ignore) {
+                                            if (log.isErrorEnabled()) {
+                                                log.error("Error while deleting volume [id] " + volume.getId(), ignore);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            CloudControllerContext.getInstance().updateCartridge(cartridge);
                         }
-
-                        log.info("Unregistration of service cluster: " + clusterId_);
-                        deleteVolumes(ctxt);
-                        onClusterRemoval(clusterId_);
                     } finally {
                         if (lock != null) {
                             CloudControllerContext.getInstance().releaseWriteLock(lock);
                         }
                     }
                 }
-
-                private void deleteVolumes(ClusterContext ctxt) {
-                    if (ctxt.isVolumeRequired()) {
-                        Lock lock = null;
-                        try {
-                            lock = CloudControllerContext.getInstance().acquireCartridgesWriteLock();
-
-                            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(ctxt.getCartridgeType());
-                            if (cartridge != null && CloudControllerContext.getInstance().getIaasProviders(cartridge.getType()) != null && ctxt.getVolumes() != null) {
-                                for (Volume volume : ctxt.getVolumes()) {
-                                    if (volume.getId() != null) {
-                                        String iaasType = volume.getIaasType();
-                                        Iaas iaas = CloudControllerContext.getInstance().getIaasProvider(cartridge.getType(), iaasType).getIaas();
-                                        if (iaas != null) {
-                                            try {
-                                                // delete the volumes if remove on unsubscription is true.
-                                                if (volume.isRemoveOntermination()) {
-                                                    iaas.deleteVolume(volume.getId());
-                                                    volume.setId(null);
-                                                }
-                                            } catch (Exception ignore) {
-                                                if (log.isErrorEnabled()) {
-                                                    log.error("Error while deleting volume [id] " + volume.getId(), ignore);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                CloudControllerContext.getInstance().updateCartridge(cartridge);
-                            }
-                        } finally {
-                            if (lock != null) {
-                                CloudControllerContext.getInstance().releaseWriteLock(lock);
-                            }
-                        }
-                    }
-                }
-            };
-            new Thread(terminateInTimeout).start();
-            new Thread(unregister).start();
-   //     }
+            }
+        };
+        new Thread(terminateInTimeout).start();
+        new Thread(unregister).start();
+        //     }
     }
 
     /**
@@ -1032,18 +1031,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Create a Cluster Context obj. for each of the Clusters in the Application
             List<Cluster> clusters = new ArrayList<Cluster>();
-	        Map<String,List<String>> accessUrls= new HashMap<String, List<String>>();
+            Map<String, List<String>> accessUrls = new HashMap<String, List<String>>();
 
-	        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
-		        if(appClusterCtxt.isLbCluster()) {
-			        String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
-			        if(dependencyClusterIDs!=null) {
-				        for (int i = 0; i < dependencyClusterIDs.length; i++) {
-					        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(
-							        appClusterCtxt.getCartridgeType());
-					        List<String> accessUrlPerCluster = new ArrayList();
-					        List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
-					        for (PortMapping portMap : portMappings) {
+            for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
+                if (appClusterCtxt.isLbCluster()) {
+                    String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
+                    if (dependencyClusterIDs != null) {
+                        for (int i = 0; i < dependencyClusterIDs.length; i++) {
+                            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(
+                                    appClusterCtxt.getCartridgeType());
+                            List<String> accessUrlPerCluster = new ArrayList();
+                            List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
+                            for (PortMapping portMap : portMappings) {
                                 try {
                                     if (portMap.isKubernetesServicePortMapping()) {
                                         URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
@@ -1060,11 +1059,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                     throw new ApplicationClusterRegistrationException(message, e);
                                 }
                             }
-					        accessUrls.put(dependencyClusterIDs[i], accessUrlPerCluster);
-				        }
-			        }
-		        }
-	        }
+                            accessUrls.put(dependencyClusterIDs[i], accessUrlPerCluster);
+                        }
+                    }
+                }
+            }
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
                 ClusterContext clusterContext = new ClusterContext(
@@ -1072,7 +1071,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         appClusterCtxt.getTextPayload(), appClusterCtxt.getHostName(),
                         appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties());
 
-                if(appClusterCtxt.isVolumeRequired()){
+                if (appClusterCtxt.isVolumeRequired()) {
                     clusterContext.setVolumeRequired(true);
                     clusterContext.setVolumes(appClusterCtxt.getVolumes());
                 }
@@ -1084,7 +1083,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 cluster.setLbCluster(false);
                 cluster.setTenantRange(appClusterCtxt.getTenantRange());
                 cluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-	            cluster.setAccessUrls(accessUrls.get(appClusterCtxt.getClusterId()));
+                cluster.setAccessUrls(accessUrls.get(appClusterCtxt.getClusterId()));
 
                 if (appClusterCtxt.getProperties() != null) {
                     Properties properties = CloudControllerUtil.toJavaUtilProperties(appClusterCtxt.getProperties());
@@ -1349,7 +1348,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-	@Override
+    @Override
     public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesHostException {
 
@@ -1387,38 +1386,38 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
         throw new NonExistingKubernetesHostException("Kubernetes host not found [id] " + kubernetesHost.getHostId());
     }
-	
+
     @Override
     public void addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException {
-    	
-        try {
-        	handleNullObject(networkPartition, "Network Partition is null");
-        	handleNullObject(networkPartition.getId(), "Network Partition ID is null");
 
-        	if(log.isInfoEnabled()) {
+        try {
+            handleNullObject(networkPartition, "Network Partition is null");
+            handleNullObject(networkPartition.getId(), "Network Partition ID is null");
+
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getId()));
             }
-            
+
             String networkPartitionID = networkPartition.getId();
             if (cloudControllerContext.getNetworkPartition(networkPartitionID) != null) {
-            	String message = "Network partition already exists: [network-partition-id] " + networkPartitionID;
-            	log.error(message);
-            	throw new NetworkPartitionAlreadyExistsException(message);
+                String message = "Network partition already exists: [network-partition-id] " + networkPartitionID;
+                log.error(message);
+                throw new NetworkPartitionAlreadyExistsException(message);
             }
-            
-            if(networkPartition.getPartitions() != null) {
-                for(Partition partition : networkPartition.getPartitions()) {
-                    if(partition != null) {
-                        if(log.isInfoEnabled()) {
+
+            if (networkPartition.getPartitions() != null) {
+                for (Partition partition : networkPartition.getPartitions()) {
+                    if (partition != null) {
+                        if (log.isInfoEnabled()) {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
                                     networkPartition.getId(), partition.getId()));
                         }
                         // Overwrites partition provider with network partition provider
                         partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
-                        if(log.isInfoEnabled()) {
+                        if (log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
-                                            "[partition-id] %s", networkPartition.getId(), partition.getId()));
+                                    "[partition-id] %s", networkPartition.getId(), partition.getId()));
                         }
                     }
                 }
@@ -1428,7 +1427,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().addNetworkPartition(networkPartition);
             // persisting CC-Context
             CloudControllerContext.getInstance().persist();
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition added successfully: [network-partition-id] %s",
                         networkPartition.getId()));
             }
@@ -1440,24 +1439,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException{
-    	
+    public void removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException {
+
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Removing network partition: [network-partition-id] %s", networkPartitionId));
             }
             handleNullObject(networkPartitionId, "Network Partition ID is null");
-            
+
             if (cloudControllerContext.getNetworkPartition(networkPartitionId) == null) {
-            	String message = "Network partition not exists: [network-partiton-id] " + networkPartitionId;
-    			log.error(message);
-    			throw new NetworkPartitionNotExistsException(message);
-			}
+                String message = "Network partition not exists: [network-partiton-id] " + networkPartitionId;
+                log.error(message);
+                throw new NetworkPartitionNotExistsException(message);
+            }
             // removing from CC-Context
             CloudControllerContext.getInstance().removeNetworkPartition(networkPartitionId);
             // persisting CC-Context
             CloudControllerContext.getInstance().persist();
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition removed successfully: [network-partition-id] %s",
                         networkPartitionId));
             }
@@ -1469,45 +1468,45 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException{
+    public void updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException {
         try {
-        	handleNullObject(networkPartition, "Network Partition is null");
-        	handleNullObject(networkPartition.getId(), "Network Partition ID is null");
+            handleNullObject(networkPartition, "Network Partition is null");
+            handleNullObject(networkPartition.getId(), "Network Partition ID is null");
 
-        	if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Updating network partition: [network-partition-id] %s", networkPartition.getId()));
             }
-            
+
             String networkPartitionID = networkPartition.getId();
             if (cloudControllerContext.getNetworkPartition(networkPartitionID) == null) {
-            	String message = "Network partition not exists: [network-partition-id] " + networkPartitionID;
-            	log.error(message);
-            	throw new NetworkPartitionNotExistsException(message);
+                String message = "Network partition not exists: [network-partition-id] " + networkPartitionID;
+                log.error(message);
+                throw new NetworkPartitionNotExistsException(message);
             }
-            
-            if(networkPartition.getPartitions() != null) {
-                for(Partition partition : networkPartition.getPartitions()) {
-                    if(partition != null) {
-                        if(log.isInfoEnabled()) {
+
+            if (networkPartition.getPartitions() != null) {
+                for (Partition partition : networkPartition.getPartitions()) {
+                    if (partition != null) {
+                        if (log.isInfoEnabled()) {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
                                     networkPartition.getId(), partition.getId()));
                         }
                         // Overwrites partition provider with network partition provider
                         partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
-                        if(log.isInfoEnabled()) {
+                        if (log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
-                                            "[partition-id] %s", networkPartition.getId(), partition.getId()));
+                                    "[partition-id] %s", networkPartition.getId(), partition.getId()));
                         }
                     }
                 }
             }
-            
+
             // overriding network partition to CC-Context
             CloudControllerContext.getInstance().addNetworkPartition(networkPartition);
             // persisting CC-Context
             CloudControllerContext.getInstance().persist();
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition updated successfully: [network-partition-id] %s",
                         networkPartition.getId()));
             }

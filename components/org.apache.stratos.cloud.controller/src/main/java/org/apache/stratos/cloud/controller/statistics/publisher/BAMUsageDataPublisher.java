@@ -42,10 +42,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *  Usage data publisher for publishing instance usage data to BAM.
+ * Usage data publisher for publishing instance usage data to BAM.
  */
 public class BAMUsageDataPublisher {
-    
+
     private static final Log log = LogFactory.getLog(BAMUsageDataPublisher.class);
 
     private static AsyncDataPublisher dataPublisher;
@@ -59,17 +59,17 @@ public class BAMUsageDataPublisher {
                                String serviceName,
                                String status,
                                InstanceMetadata metadata) {
-        if(!CloudControllerConfig.getInstance().isBAMDataPublisherEnabled()){
+        if (!CloudControllerConfig.getInstance().isBAMDataPublisherEnabled()) {
             return;
         }
-        log.debug(CloudControllerConstants.DATA_PUB_TASK_NAME+" cycle started.");
+        log.debug(CloudControllerConstants.DATA_PUB_TASK_NAME + " cycle started.");
 
-        if(dataPublisher==null){
+        if (dataPublisher == null) {
             createDataPublisher();
 
             //If we cannot create a data publisher we should give up
             //this means data will not be published
-            if(dataPublisher == null){
+            if (dataPublisher == null) {
                 log.error("Data Publisher cannot be created or found.");
                 release();
                 return;
@@ -79,7 +79,7 @@ public class BAMUsageDataPublisher {
         MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
         String cartridgeType = memberContext.getCartridgeType();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
-        
+
         //Construct the data to be published
         List<Object> payload = new ArrayList<Object>();
         // Payload values
@@ -89,15 +89,15 @@ public class BAMUsageDataPublisher {
         payload.add(handleNull(memberContext.getLbClusterId()));
         payload.add(handleNull(partitionId));
         payload.add(handleNull(networkId));
-		if (cartridge != null) {
-			payload.add(handleNull(String.valueOf(cartridge.isMultiTenant())));
-		} else {
-			payload.add("");
-		}
+        if (cartridge != null) {
+            payload.add(handleNull(String.valueOf(cartridge.isMultiTenant())));
+        } else {
+            payload.add("");
+        }
         payload.add(handleNull(memberContext.getPartition().getProvider()));
         payload.add(handleNull(status));
 
-        if(metadata != null) {
+        if (metadata != null) {
             payload.add(metadata.getHostname());
             payload.add(metadata.getHypervisor());
             payload.add(String.valueOf(metadata.getRam()));
@@ -138,11 +138,11 @@ public class BAMUsageDataPublisher {
             }
         }
     }
-    
-    private static void release(){
+
+    private static void release() {
         CloudControllerContext.getInstance().setPublisherRunning(false);
     }
-    
+
     private static StreamDefinition initializeStream() throws Exception {
         streamDefinition = new StreamDefinition(
                 CloudControllerConstants.CLOUD_CONTROLLER_EVENT_STREAM,
@@ -177,10 +177,10 @@ public class BAMUsageDataPublisher {
     }
 
 
-    private static void createDataPublisher(){
+    private static void createDataPublisher() {
         //creating the agent
 
-        ServerConfiguration serverConfig =  CarbonUtils.getServerConfiguration();
+        ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
         String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
         String trustStorePassword = serverConfig.getFirstProperty("Security.TrustStore.Password");
         String bamServerUrl = serverConfig.getFirstProperty("BamServerURL");
@@ -192,7 +192,7 @@ public class BAMUsageDataPublisher {
 
 
         try {
-            dataPublisher = new AsyncDataPublisher("tcp://" +  bamServerUrl + "", adminUsername, adminPassword);
+            dataPublisher = new AsyncDataPublisher("tcp://" + bamServerUrl + "", adminUsername, adminPassword);
             CloudControllerContext.getInstance().setDataPublisher(dataPublisher);
             initializeStream();
             dataPublisher.addStreamDefinition(streamDefinition);
@@ -203,7 +203,7 @@ public class BAMUsageDataPublisher {
             throw new CloudControllerException(msg, e);
         }
     }
-    
+
     private static String handleNull(String val) {
         if (val == null) {
             return "";

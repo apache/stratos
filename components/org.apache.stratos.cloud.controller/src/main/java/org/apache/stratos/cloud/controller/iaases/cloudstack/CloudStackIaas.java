@@ -242,7 +242,7 @@ public class CloudStackIaas extends JcloudsIaas {
 
         List<String> associatedIPs = new ArrayList<String>();
         associatedIPs.add(ip);
-        
+
         return associatedIPs;
     }
 

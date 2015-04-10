@@ -31,10 +31,9 @@ import java.util.Properties;
 
 /**
  * The VCloud {@link org.apache.stratos.cloud.controller.iaases.PartitionValidator} implementation.
- *
  */
 public class GCEPartitionValidator implements PartitionValidator {
-    
+
     private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
 
     private IaasProvider iaasProvider;

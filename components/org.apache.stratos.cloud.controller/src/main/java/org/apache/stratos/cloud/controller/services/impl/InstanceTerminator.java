@@ -62,7 +62,7 @@ public class InstanceTerminator implements Runnable {
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }

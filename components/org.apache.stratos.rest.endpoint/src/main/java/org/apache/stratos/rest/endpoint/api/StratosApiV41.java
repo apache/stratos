@@ -595,9 +595,9 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/addApplication")
-    public Response addApplication(
-            ApplicationBean applicationDefinition) throws RestAPIException {
+    public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
+
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
         return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Application added successfully: [application] %s",
@@ -894,6 +894,16 @@ public class StratosApiV41 extends AbstractApi {
     public Response undeployApplication(
             @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force) throws RestAPIException {
 
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+        if(applicationDefinition == null){
+            log.info(String.format("Application does not exist [application-id] ", applicationId));
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_DEPLOYED)){
+            String message = String.format("Could not undeploy since application is not in DEPLOYED status [application-id] %s [current status] %S", applicationId, applicationDefinition.getStatus());
+            log.info(message);
+            return Response.status(Response.Status.CONFLICT).entity(message).build();
+        }
         StratosApiV41Utils.undeployApplication(applicationId, force);
         return Response.accepted().entity(new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
                 String.format("Application undeployed successfully: [application] %s", applicationId))).build();
@@ -941,9 +951,12 @@ public class StratosApiV41 extends AbstractApi {
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        //	    if (StratosApiV41Utils.getApplicationRuntime(applicationId) != null) {
-        //		    return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-        //	    }
+
+        if(!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)){
+            return Response.status(Response.Status.CONFLICT).entity(new SuccessResponseBean(Response.Status.CONFLICT.getStatusCode(),
+                    String.format("Could not delete since application is not in CREATED state : [application] %s [current-status] %S", applicationId, applicationDefinition.getStatus()))).build();
+        }
+
         StratosApiV41Utils.removeApplication(applicationId);
         return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                 String.format("Application deleted successfully: [application] %s", applicationId))).build();

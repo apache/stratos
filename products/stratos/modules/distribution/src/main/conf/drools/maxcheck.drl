@@ -1,0 +1,84 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one 
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * KIND, either express or implied.  See the License for the 
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.stratos.autoscaler.rule;
+
+import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadThresholds;
+import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.commons.logging.Log;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
+
+global org.apache.stratos.autoscaler.rule.RuleLog log;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
+global java.lang.String clusterId;
+global java.lang.Boolean isPrimary;
+global Integer primaryMemberCount;
+global java.util.List primaryMembers;
+
+rule "Max Rule"
+dialect "mvel"
+    when
+        clusterInstanceContext : ClusterInstanceContext ()
+
+        eval(log.debug("Running max rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId()
+         + " [cluster-instance] " + clusterInstanceContext.getId()))
+
+        partitionContext : ClusterLevelPartitionContext() from clusterInstanceContext.getPartitionCtxtsAsAnArray()
+
+        eval(log.debug("[max-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId()
+        + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " [partition] "
+        + partitionContext.getPartitionId() + " Activated member count: " + partitionContext.getActiveInstanceCount()
+        + " Max member count " + partitionContext.getMax()))
+
+        eval(partitionContext.getActiveInstanceCount() > partitionContext.getMax())
+
+        membersToTerminate : Integer() from partitionContext.getActiveInstanceCount() - partitionContext.getMax()
+    then
+
+        while(membersToTerminate > 0){
+            MemberStatsContext selectedMemberStatsContext = null;
+            for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
+
+                if(!primaryMembers.contains(memberStatsContext.getMemberId())) {
+
+                    selectedMemberStatsContext = memberStatsContext;
+                }
+            }
+            if(selectedMemberStatsContext != null) {
+                log.info("[max-check] Trying to terminating an instance to keep to max!" );
+                log.debug("[max-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
+                    + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
+                membersToTerminate--;
+                delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
+
+            }
+        }
+end

@@ -209,7 +209,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     private void publishMemberFault(String memberId){
         Member member = getMemberFromId(memberId);
         if (member == null){
-            log.error("Failed to publish member fault event. Member having [member-id] " + memberId +
+            log.warn("Failed to publish member fault event. Member having [member-id] " + memberId +
                     " does not exist in topology");
             return;
         }

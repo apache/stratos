@@ -45,7 +45,10 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
-import org.apache.stratos.autoscaler.util.*;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
+import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -86,6 +89,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     private final ExecutorService executorService;
 
     protected FactHandle minCheckFactHandle;
+    protected FactHandle maxCheckFactHandle;
     protected FactHandle obsoleteCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
     protected FactHandle dependentScaleCheckFactHandle;
@@ -93,6 +97,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     protected boolean stop = false;
     protected AbstractClusterContext clusterContext;
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
+    protected StatefulKnowledgeSession maxCheckKnowledgeSession;
     protected StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
     protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
     protected StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
@@ -128,6 +133,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.SCALE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MIN_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MAX_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
@@ -136,6 +142,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 StratosConstants.SCALE_CHECK_DROOL_FILE);
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.MIN_CHECK_DROOL_FILE);
+        this.maxCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.MAX_CHECK_DROOL_FILE);
         this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
@@ -253,6 +261,10 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
     public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
         return minCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getMaxCheckKnowledgeSession() {
+        return maxCheckKnowledgeSession;
     }
 
     public void setMinCheckKnowledgeSession(
@@ -518,6 +530,21 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
                                 minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
                                         minCheckFactHandle, instanceContext);
+
+
+                                getMaxCheckKnowledgeSession().setGlobal("primaryMemberCount",
+                                        primaryMemberListInClusterInstance.size());
+                                getMaxCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                getMaxCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                                getMaxCheckKnowledgeSession().setGlobal("primaryMembers",
+                                        primaryMemberListInClusterInstance);
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Running max check for cluster instance %s ",
+                                            instanceContext.getId() + " for the cluster: " + clusterId));
+                                }
+
+                                maxCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMaxCheckKnowledgeSession(),
+                                        maxCheckFactHandle, instanceContext);
 
 
                                 //checking the status of the cluster

@@ -25,17 +25,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
-import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.PropertyBean;
-import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
-import org.apache.stratos.common.beans.application.ComponentBean;
-import org.apache.stratos.common.beans.application.GroupBean;
-import org.apache.stratos.common.beans.application.GroupReferenceBean;
+import org.apache.stratos.common.beans.application.*;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
@@ -87,6 +84,7 @@ public class StratosApiV41Utils {
     public static final String VOLUME_ID = "volume.id";
     public static final String TENANT_RANGE_ALL = "*";
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
+    public static final String APPLICATION_STATUS_CREATED = "Created";
 
     private static Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
@@ -1172,6 +1170,24 @@ public class StratosApiV41Utils {
     public static void deployApplication(String applicationId, String applicationPolicyId)
             throws RestAPIException {
 
+        if(StringUtils.isEmpty(applicationPolicyId)) {
+            String message = "Application policy id is Empty";
+            log.error(message);
+            throw new RestAPIException(message);
+        }
+
+        if(StringUtils.isEmpty(applicationPolicyId)) {
+            String message = "Application policy id is Empty";
+            log.error(message);
+            throw new RestAPIException(message);
+        }
+        if (StringUtils.isEmpty(applicationPolicyId)) {
+            String message = String.format("Application policy id cannot be null : [application-policy-id] %s. "
+                    + "Are you passing application policy?", applicationPolicyId);
+            log.error(message);
+            throw new RestAPIException(message);
+        }
+
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Starting to deploy application: [application-id] %s", applicationId));
@@ -1180,32 +1196,24 @@ public class StratosApiV41Utils {
             AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
             ApplicationContext application = autoscalerServiceClient.getApplication(applicationId);
 
-	        if (StringUtils.isBlank(applicationId)) {
-		        String message ="Please specify the application id of the application";
-		        log.error(message);
-		        throw new RestAPIException(message);
-	        }
             if(application == null) {
                 String message = String.format("Application is not found: [application-id] %s", applicationId);
                 log.error(message);
                 throw new RestAPIException(message);
             }
-            if (application.getStatus().equals(APPLICATION_STATUS_DEPLOYED)) {
-                String message = String.format("Application is already deployed: [application-id] %s", applicationId);
+
+            if (application.getStatus().equalsIgnoreCase(APPLICATION_STATUS_DEPLOYED)) {
+                String message = String.format("Application is already in DEPLOYED state: [application-id] %s [current status] %s ", applicationId, application.getStatus());
                 log.error(message);
                 throw new RestAPIException(message);
             }
-            if(applicationPolicyId == null) {
-                String message = "Application policy id is null: [application-policy-id]";
+
+            // This is a redundant state since there is only CREATED,DEPLOYED state. But this will be usefull when more status are added.
+            if (!application.getStatus().equalsIgnoreCase(APPLICATION_STATUS_CREATED)) {
+                String message = String.format("Application is not in CREATED state: [application-id] %s [current status] %s ", applicationId, application.getStatus());
                 log.error(message);
                 throw new RestAPIException(message);
             }
-            if (StringUtils.isBlank(applicationPolicyId)) {
-                String message = String.format("Application policy id cannot be null : [application-policy-id] %s. "
-                		+ "Are you passing application policy?", applicationPolicyId);
-                log.error(message);
-                throw new RestAPIException(message);
-			}
 
             ApplicationBean applicationBean = getApplication(applicationId);
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -1268,6 +1276,9 @@ public class StratosApiV41Utils {
 	public static void removeApplication(String applicationId) throws RestAPIException {
 
         try {
+
+            log.info(String.format("Starting to remove application [application-id %s", applicationId));
+
         	AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
         	
         	ApplicationBean application = ObjectConverter.convertStubApplicationContextToApplicationDefinition(asServiceClient.getApplication(applicationId));
