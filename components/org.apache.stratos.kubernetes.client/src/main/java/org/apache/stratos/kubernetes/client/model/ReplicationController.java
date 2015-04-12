@@ -21,8 +21,6 @@
 package org.apache.stratos.kubernetes.client.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

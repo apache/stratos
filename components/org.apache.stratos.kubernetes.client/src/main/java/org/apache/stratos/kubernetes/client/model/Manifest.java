@@ -21,10 +21,7 @@
 package org.apache.stratos.kubernetes.client.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/manifest-schema.json

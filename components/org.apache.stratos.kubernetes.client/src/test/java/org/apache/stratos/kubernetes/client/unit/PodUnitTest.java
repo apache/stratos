@@ -21,13 +21,7 @@
 package org.apache.stratos.kubernetes.client.unit;
 
 import junit.framework.TestCase;
-
-import org.apache.stratos.kubernetes.client.model.Container;
-import org.apache.stratos.kubernetes.client.model.Labels;
-import org.apache.stratos.kubernetes.client.model.Manifest;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.Port;
-import org.apache.stratos.kubernetes.client.model.State;
+import org.apache.stratos.kubernetes.client.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

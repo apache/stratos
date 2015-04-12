@@ -20,11 +20,11 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 public class Container {
 

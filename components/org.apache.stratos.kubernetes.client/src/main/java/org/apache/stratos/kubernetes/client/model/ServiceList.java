@@ -20,11 +20,10 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
-import java.util.Arrays;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.Arrays;
 
 @XmlRootElement
 public class ServiceList {
