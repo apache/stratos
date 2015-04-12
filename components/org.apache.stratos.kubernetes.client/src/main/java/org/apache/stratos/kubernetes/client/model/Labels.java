@@ -27,20 +27,20 @@ import java.io.Serializable;
  */
 public class Labels implements Serializable {
 
-	private static final long serialVersionUID = -9019445613544931617L;
+    private static final long serialVersionUID = -9019445613544931617L;
 
-	private String name;
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return "Label [name=" + name + "]";
-	}
+    @Override
+    public String toString() {
+        return "Label [name=" + name + "]";
+    }
 }

@@ -28,58 +28,56 @@ import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/manifest-schema.json
- *
- *
  */
 public class Manifest {
 
-	private String version;
-	private String id;
-	private List<Container> containers;
-	private List<Volume> volumes;
+    private String version;
+    private String id;
+    private List<Container> containers;
+    private List<Volume> volumes;
 
-	public Manifest() {
-		containers = new ArrayList<Container>();
-		volumes = new ArrayList<Volume>();
-	}
+    public Manifest() {
+        containers = new ArrayList<Container>();
+        volumes = new ArrayList<Volume>();
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public List<Container> getContainers() {
-		return containers;
-	}
+    public List<Container> getContainers() {
+        return containers;
+    }
 
-	public void addContainer(Container container) {
-		containers.add(container);
-	}
+    public void addContainer(Container container) {
+        containers.add(container);
+    }
 
-	public List<Volume> getVolumes() {
-		return volumes;
-	}
+    public List<Volume> getVolumes() {
+        return volumes;
+    }
 
-	public void addVolume(Volume volume) {
-		volumes.add(volume);
-	}
+    public void addVolume(Volume volume) {
+        volumes.add(volume);
+    }
 
-	@Override
-	public String toString() {
-		return "Manifest [version=" + version + ", id=" + id + ", containers="
-				+ containers + ", volumes="
-				+ volumes + "]";
-	}
-	
+    @Override
+    public String toString() {
+        return "Manifest [version=" + version + ", id=" + id + ", containers="
+                + containers + ", volumes="
+                + volumes + "]";
+    }
+
 }

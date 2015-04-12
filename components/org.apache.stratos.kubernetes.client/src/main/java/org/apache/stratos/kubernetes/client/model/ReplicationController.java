@@ -31,86 +31,86 @@ import java.util.List;
 @XmlRootElement
 public class ReplicationController {
 
-	private String kind;
-	private String id;
-	private int resourceVersion;
-	private String creationTimestamp;
-	private String selfLink;
-	private String apiVersion;
-	private Labels labels;
-	private State desiredState;
+    private String kind;
+    private String id;
+    private int resourceVersion;
+    private String creationTimestamp;
+    private String selfLink;
+    private String apiVersion;
+    private Labels labels;
+    private State desiredState;
 
-	public String getKind() {
-		return kind;
-	}
+    public String getKind() {
+        return kind;
+    }
 
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getCreationTimestamp() {
-		return creationTimestamp;
-	}
+    public String getCreationTimestamp() {
+        return creationTimestamp;
+    }
 
-	public void setCreationTimestamp(String creationTimestamp) {
-		this.creationTimestamp = creationTimestamp;
-	}
+    public void setCreationTimestamp(String creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+    }
 
-	public String getSelfLink() {
-		return selfLink;
-	}
+    public String getSelfLink() {
+        return selfLink;
+    }
 
-	public void setSelfLink(String selfLink) {
-		this.selfLink = selfLink;
-	}
+    public void setSelfLink(String selfLink) {
+        this.selfLink = selfLink;
+    }
 
-	public Labels getLabels() {
-		return labels;
-	}
+    public Labels getLabels() {
+        return labels;
+    }
 
-	public void setLabels(Labels labels) {
-		this.labels = labels;
-	}
+    public void setLabels(Labels labels) {
+        this.labels = labels;
+    }
 
-	public State getDesiredState() {
-		return desiredState;
-	}
+    public State getDesiredState() {
+        return desiredState;
+    }
 
-	public void setDesiredState(State desiredState) {
-		this.desiredState = desiredState;
-	}
-	
-	public String getApiVersion() {
-		return apiVersion;
-	}
+    public void setDesiredState(State desiredState) {
+        this.desiredState = desiredState;
+    }
 
-	public void setApiVersion(String apiVersion) {
-		this.apiVersion = apiVersion;
-	}
+    public String getApiVersion() {
+        return apiVersion;
+    }
 
-	public int getResourceVersion() {
-		return resourceVersion;
-	}
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
 
-	public void setResourceVersion(int resourceVersion) {
-		this.resourceVersion = resourceVersion;
-	}
+    public int getResourceVersion() {
+        return resourceVersion;
+    }
 
-	@Override
-	public String toString() {
-		return "ReplicationController [kind=" + kind + ", id=" + id
-				+ ", resourceVersion=" + resourceVersion
-				+ ", creationTimestamp=" + creationTimestamp + ", selfLink="
-				+ selfLink + ", apiVersion=" + apiVersion + ", labels="
-				+ labels + ", desiredState=" + desiredState + "]";
-	}
-	
+    public void setResourceVersion(int resourceVersion) {
+        this.resourceVersion = resourceVersion;
+    }
+
+    @Override
+    public String toString() {
+        return "ReplicationController [kind=" + kind + ", id=" + id
+                + ", resourceVersion=" + resourceVersion
+                + ", creationTimestamp=" + creationTimestamp + ", selfLink="
+                + selfLink + ", apiVersion=" + apiVersion + ", labels="
+                + labels + ", desiredState=" + desiredState + "]";
+    }
+
 }

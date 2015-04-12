@@ -22,33 +22,39 @@ package org.apache.stratos.kubernetes.client.model;
 
 public class VolumeMount {
 
-	private String name;
-	private String mountPath;
-	private boolean readOnly;
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getMountPath() {
-		return mountPath;
-	}
-	public void setMountPath(String mountPath) {
-		this.mountPath = mountPath;
-	}
-	public boolean isReadOnly() {
-		return readOnly;
-	}
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
-	}
-	@Override
-	public String toString() {
-		return "VolumeMount [name=" + name + ", mountPath=" + mountPath
-				+ ", readOnly=" + readOnly + "]";
-	}
-	
-	
+    private String name;
+    private String mountPath;
+    private boolean readOnly;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMountPath() {
+        return mountPath;
+    }
+
+    public void setMountPath(String mountPath) {
+        this.mountPath = mountPath;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    @Override
+    public String toString() {
+        return "VolumeMount [name=" + name + ", mountPath=" + mountPath
+                + ", readOnly=" + readOnly + "]";
+    }
+
+
 }

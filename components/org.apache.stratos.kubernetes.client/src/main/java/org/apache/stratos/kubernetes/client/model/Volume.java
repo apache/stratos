@@ -22,20 +22,20 @@ package org.apache.stratos.kubernetes.client.model;
 
 public class Volume {
 
-	private String name;
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return "Volume [name=" + name + "]";
-	}
-	
-	
+    @Override
+    public String toString() {
+        return "Volume [name=" + name + "]";
+    }
+
+
 }

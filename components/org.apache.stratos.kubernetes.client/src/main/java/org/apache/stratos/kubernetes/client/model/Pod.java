@@ -24,131 +24,130 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/pod-schema.json
- *
- *
  */
 @XmlRootElement
 public class Pod {
 
-	private String kind;
-	private String id;
-	private String creationTimestamp;
-	private String selfLink;
-	private String resourceVersion;
-	private String apiVersion;
-	private State desiredState;
-	private State currentState;
-	private String status;
-	private String message;
-	private String code;
-	private Labels labels;
-	
-	public String getKind() {
-		return kind;
-	}
+    private String kind;
+    private String id;
+    private String creationTimestamp;
+    private String selfLink;
+    private String resourceVersion;
+    private String apiVersion;
+    private State desiredState;
+    private State currentState;
+    private String status;
+    private String message;
+    private String code;
+    private Labels labels;
 
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
+    public String getKind() {
+        return kind;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getCreationTimestamp() {
-		return creationTimestamp;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setCreationTimestamp(String creationTimestamp) {
-		this.creationTimestamp = creationTimestamp;
-	}
+    public String getCreationTimestamp() {
+        return creationTimestamp;
+    }
 
-	public String getSelfLink() {
-		return selfLink;
-	}
+    public void setCreationTimestamp(String creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+    }
 
-	public void setSelfLink(String selfLink) {
-		this.selfLink = selfLink;
-	}
+    public String getSelfLink() {
+        return selfLink;
+    }
 
-	public State getDesiredState() {
-		return desiredState;
-	}
+    public void setSelfLink(String selfLink) {
+        this.selfLink = selfLink;
+    }
 
-	public void setDesiredState(State desiredState) {
-		this.desiredState = desiredState;
-	}
+    public State getDesiredState() {
+        return desiredState;
+    }
 
-	public State getCurrentState() {
-		return currentState;
-	}
+    public void setDesiredState(State desiredState) {
+        this.desiredState = desiredState;
+    }
 
-	public void setCurrentState(State currentState) {
-		this.currentState = currentState;
-	}
+    public State getCurrentState() {
+        return currentState;
+    }
 
-	public String getResourceVersion() {
-		return resourceVersion;
-	}
+    public void setCurrentState(State currentState) {
+        this.currentState = currentState;
+    }
 
-	public void setResourceVersion(String resourceVersion) {
-		this.resourceVersion = resourceVersion;
-	}
+    public String getResourceVersion() {
+        return resourceVersion;
+    }
 
-	public String getApiVersion() {
-		return apiVersion;
-	}
+    public void setResourceVersion(String resourceVersion) {
+        this.resourceVersion = resourceVersion;
+    }
 
-	public void setApiVersion(String apiVersion) {
-		this.apiVersion = apiVersion;
-	}
+    public String getApiVersion() {
+        return apiVersion;
+    }
 
-	public Labels getLabels() {
-		return labels;
-	}
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
 
-	public void setLabels(Labels labels) {
-		this.labels = labels;
-	}
+    public Labels getLabels() {
+        return labels;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setLabels(Labels labels) {
+        this.labels = labels;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	@Override
-	public String toString() {
-		return "Pod [kind=" + kind + ", id=" + id + ", creationTimestamp="
-				+ creationTimestamp + ", selfLink=" + selfLink
-				+ ", resourceVersion=" + resourceVersion + ", apiVersion="
-				+ apiVersion + ", desiredState=" + desiredState
-				+ ", currentState=" + currentState + ", status=" + status
-				+ ", message=" + message + ", code=" + code + ", labels="
-				+ labels + "]";
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @Override
+    public String toString() {
+        return "Pod [kind=" + kind + ", id=" + id + ", creationTimestamp="
+                + creationTimestamp + ", selfLink=" + selfLink
+                + ", resourceVersion=" + resourceVersion + ", apiVersion="
+                + apiVersion + ", desiredState=" + desiredState
+                + ", currentState=" + currentState + ", status=" + status
+                + ", message=" + message + ", code=" + code + ", labels="
+                + labels + "]";
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -156,6 +155,7 @@ public class Pod {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

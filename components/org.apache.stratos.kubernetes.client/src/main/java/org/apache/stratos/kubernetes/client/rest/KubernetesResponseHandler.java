@@ -38,7 +38,7 @@ import java.io.InputStreamReader;
 /**
  * Handles a HttpResponse and returns a {@link HttpResponse}
  */
-public class KubernetesResponseHandler implements ResponseHandler<HttpResponse>{
+public class KubernetesResponseHandler implements ResponseHandler<HttpResponse> {
     private static final Log log = LogFactory.getLog(KubernetesResponseHandler.class);
 
     @Override
@@ -63,13 +63,13 @@ public class KubernetesResponseHandler implements ResponseHandler<HttpResponse>{
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatusCode(statusLine.getStatusCode());
         httpResponse.setContent(result);
-        if(StringUtils.isNotBlank(result) && (isJson(result))) {
+        if (StringUtils.isNotBlank(result) && (isJson(result))) {
             httpResponse.setKubernetesResponse(parseKubernetesResponse(result));
         }
         httpResponse.setReason(statusLine.getReasonPhrase());
 
         if (log.isDebugEnabled()) {
-            log.debug("Extracted Kubernetes Response: "+httpResponse.toString());
+            log.debug("Extracted Kubernetes Response: " + httpResponse.toString());
         }
 
         return httpResponse;

@@ -33,17 +33,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(org.apache.stratos.kubernetes.client.UnitTests.class)
-public class PodUnitTest extends TestCase{
+public class PodUnitTest extends TestCase {
 
-	@Before
-	public void setUp() {
-	}
-	
-	@Test
-	public void testPods() throws Exception { 
-	    String podId = "nirmal-test-pod";
-	    String time = "2014/11/02";
-	    String selfLink = "link";
+    @Before
+    public void setUp() {
+    }
+
+    @Test
+    public void testPods() throws Exception {
+        String podId = "nirmal-test-pod";
+        String time = "2014/11/02";
+        String selfLink = "link";
         Pod pod = new Pod();
         String apiVersion = "v1beta1";
         pod.setApiVersion(apiVersion);
@@ -72,7 +72,7 @@ public class PodUnitTest extends TestCase{
         pod.setDesiredState(desiredState);
         State currentState = desiredState;
         pod.setCurrentState(currentState);
-        
+
         assertEquals(podId, pod.getId());
         assertEquals(apiVersion, pod.getApiVersion());
         assertEquals(apiVersion, pod.getResourceVersion());
@@ -82,31 +82,31 @@ public class PodUnitTest extends TestCase{
         assertEquals(selfLink, pod.getSelfLink());
         assertEquals(desiredState, pod.getDesiredState());
         assertEquals(time, pod.getCreationTimestamp());
-        
+
         assertEquals(true, pod.equals(pod));
-        
+
         Pod pod2 = new Pod();
         pod2.setId(podId);
-        
+
         assertEquals(true, pod.equals(pod2));
         assertEquals(true, pod.hashCode() == pod2.hashCode());
-        
+
         pod2.setId("aa");
         assertEquals(false, pod.equals(pod2));
-        
+
         pod2.setId(null);
         assertEquals(false, pod.equals(pod2));
-        
+
         assertEquals(false, pod.equals(null));
         assertEquals(false, pod.equals(desiredState));
-        
+
         pod.setId(null);
         pod2.setId(podId);
         assertEquals(false, pod.equals(pod2));
-        
+
         pod2.setId(null);
         assertEquals(true, pod.equals(pod2));
         assertEquals(true, pod.hashCode() == pod2.hashCode());
-        
-	}
+
+    }
 }

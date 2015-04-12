@@ -50,10 +50,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     /**
      * Create new pod
-     * @param podId Identifier of the pod
-     * @param podLabel Pod name to be used by the pod label
-     * @param dockerImage Docker image to be used by the pod
-     * @param ports Ports exposed by the pod
+     *
+     * @param podId                Identifier of the pod
+     * @param podLabel             Pod name to be used by the pod label
+     * @param dockerImage          Docker image to be used by the pod
+     * @param ports                Ports exposed by the pod
      * @param environmentVariables Environment variables to be passed to the pod
      * @throws KubernetesClientException
      */
@@ -500,9 +501,10 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     /**
      * Create kubernetes service
-     * @param serviceId Service id
-     * @param serviceLabel Service name to be used by the label name
-     * @param servicePort Port to be exposed by the service
+     *
+     * @param serviceId         Service id
+     * @param serviceLabel      Service name to be used by the label name
+     * @param servicePort       Port to be exposed by the service
      * @param containerPortName Container port name defined in the port label
      * @param publicIPs
      * @throws KubernetesClientException
@@ -742,7 +744,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     }
 
     private String extractMessageInResponse(HttpResponse response) {
-        if((response != null) && (response.getKubernetesResponse() != null)) {
+        if ((response != null) && (response.getKubernetesResponse() != null)) {
             return response.getKubernetesResponse().getMessage();
         } else {
             return "";

@@ -26,114 +26,112 @@ import java.util.Arrays;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/service-schema.json
- *
- *
  */
 @XmlRootElement
 public class Service implements Serializable {
 
-	private static final long serialVersionUID = 7766915353839414993L;
+    private static final long serialVersionUID = 7766915353839414993L;
 
-	private String kind;
-	private String id;
-	private String creationTimestamp;
-	private String selfLink;
-	private String name;
-	private int port;
-	private String containerPort;
-	private Selector selector;
-	private String apiVersion;
-	private Labels labels;
-	private String[] publicIPs;
+    private String kind;
+    private String id;
+    private String creationTimestamp;
+    private String selfLink;
+    private String name;
+    private int port;
+    private String containerPort;
+    private Selector selector;
+    private String apiVersion;
+    private Labels labels;
+    private String[] publicIPs;
     private String portalIP;
-	
-	public String getKind() {
-		return kind;
-	}
 
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
+    public String getKind() {
+        return kind;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getCreationTimestamp() {
-		return creationTimestamp;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setCreationTimestamp(String creationTimestamp) {
-		this.creationTimestamp = creationTimestamp;
-	}
+    public String getCreationTimestamp() {
+        return creationTimestamp;
+    }
 
-	public String getSelfLink() {
-		return selfLink;
-	}
+    public void setCreationTimestamp(String creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+    }
 
-	public void setSelfLink(String selfLink) {
-		this.selfLink = selfLink;
-	}
+    public String getSelfLink() {
+        return selfLink;
+    }
 
-	public String getApiVersion() {
-		return apiVersion;
-	}
+    public void setSelfLink(String selfLink) {
+        this.selfLink = selfLink;
+    }
 
-	public void setApiVersion(String apiVersion) {
-		this.apiVersion = apiVersion;
-	}
+    public String getApiVersion() {
+        return apiVersion;
+    }
 
-	public Labels getLabels() {
-		return labels;
-	}
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
 
-	public void setLabels(Labels labels) {
-		this.labels = labels;
-	}
+    public Labels getLabels() {
+        return labels;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setLabels(Labels labels) {
+        this.labels = labels;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public String getContainerPort() {
-		return containerPort;
-	}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-	public void setContainerPort(String containerPort) {
-		this.containerPort = containerPort;
-	}
+    public String getContainerPort() {
+        return containerPort;
+    }
 
-	public Selector getSelector() {
-		return selector;
-	}
+    public void setContainerPort(String containerPort) {
+        this.containerPort = containerPort;
+    }
 
-	public void setSelector(Selector selector) {
-		this.selector = selector;
-	}
+    public Selector getSelector() {
+        return selector;
+    }
 
-	public String[] getPublicIPs() {
-	    return publicIPs;
-	}
+    public void setSelector(Selector selector) {
+        this.selector = selector;
+    }
 
-	public void setPublicIPs(String[] publicIPs) {
-	    this.publicIPs = publicIPs;
-	}
+    public String[] getPublicIPs() {
+        return publicIPs;
+    }
+
+    public void setPublicIPs(String[] publicIPs) {
+        this.publicIPs = publicIPs;
+    }
 
     public String getPortalIP() {
         return portalIP;

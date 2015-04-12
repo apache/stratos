@@ -31,18 +31,23 @@ public class HttpResponse {
     public int getStatusCode() {
         return statusCode;
     }
+
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
+
     public String getContent() {
         return content;
     }
+
     public void setContent(String content) {
         this.content = content;
     }
+
     public String getReason() {
         return reason;
     }
+
     public void setReason(String reason) {
         this.reason = reason;
     }

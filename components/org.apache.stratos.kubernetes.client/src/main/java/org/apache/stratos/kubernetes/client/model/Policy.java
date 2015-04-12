@@ -22,18 +22,18 @@ package org.apache.stratos.kubernetes.client.model;
 
 public class Policy {
 
-	private String type;
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	@Override
-	public String toString() {
-		return "Policy [type=" + type + "]";
-	}
+    @Override
+    public String toString() {
+        return "Policy [type=" + type + "]";
+    }
 }

@@ -29,32 +29,38 @@ import org.apache.commons.lang3.ArrayUtils;
 @XmlRootElement
 public class ReplicationControllerList {
 
-	private String kind;
-	private String apiVersion;
-	private ReplicationController[] items;
-	
-	public String getKind() {
-		return kind;
-	}
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
-	public String getApiVersion() {
-		return apiVersion;
-	}
-	public void setApiVersion(String apiVersion) {
-		this.apiVersion = apiVersion;
-	}
-	public ReplicationController[] getItems() {
-		return items;
-	}
-	public void setItems(ReplicationController[] items) {
-		this.items = ArrayUtils.clone(items);
-	}
-	@Override
-	public String toString() {
-		return "ReplicationControllerList [kind=" + kind + ", apiVersion="
-				+ apiVersion + ", items=" + Arrays.toString(items) + "]";
-	}
-	
+    private String kind;
+    private String apiVersion;
+    private ReplicationController[] items;
+
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
+    public ReplicationController[] getItems() {
+        return items;
+    }
+
+    public void setItems(ReplicationController[] items) {
+        this.items = ArrayUtils.clone(items);
+    }
+
+    @Override
+    public String toString() {
+        return "ReplicationControllerList [kind=" + kind + ", apiVersion="
+                + apiVersion + ", items=" + Arrays.toString(items) + "]";
+    }
+
 }

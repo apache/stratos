@@ -24,20 +24,20 @@ import java.io.Serializable;
 
 public class Selector implements Serializable {
 
-	private static final long serialVersionUID = 8384843252305848574L;
+    private static final long serialVersionUID = 8384843252305848574L;
 
-	private String name;
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return "Selector [name=" + name + "]";
-	}
+    @Override
+    public String toString() {
+        return "Selector [name=" + name + "]";
+    }
 }

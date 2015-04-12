@@ -26,5 +26,5 @@ import org.junit.experimental.categories.Category;
  * Set {@link Category} of all Live tests to be this class.
  */
 public interface LiveTests {
-    
+
 }

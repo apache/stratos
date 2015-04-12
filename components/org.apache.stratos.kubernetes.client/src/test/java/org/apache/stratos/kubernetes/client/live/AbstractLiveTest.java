@@ -64,7 +64,7 @@ public class AbstractLiveTest extends TestCase {
     protected int containerPort;
     protected boolean testPodActivation;
     protected boolean testServiceSocket;
-    protected String[] minionPublicIPs = { "172.17.8.102" };
+    protected String[] minionPublicIPs = {"172.17.8.102"};
     protected List<String> podIdList = new ArrayList<String>();
     protected List<String> serviceIdList = new ArrayList<String>();
 
@@ -108,7 +108,7 @@ public class AbstractLiveTest extends TestCase {
         log.info(TEST_SERVICE_SOCKET + ": " + testServiceSocket);
 
         String minionPublicIPsStr = System.getProperty(MINION_PUBLIC_IPS);
-        if(StringUtils.isNotBlank(minionPublicIPsStr)) {
+        if (StringUtils.isNotBlank(minionPublicIPsStr)) {
             minionPublicIPs = minionPublicIPsStr.split(",");
         }
         log.info(MINION_PUBLIC_IPS + ": " + minionPublicIPsStr);
@@ -137,17 +137,17 @@ public class AbstractLiveTest extends TestCase {
         if (testPodActivation) {
             boolean activated = false;
             long startTime = System.currentTimeMillis();
-            while(!activated) {
-                if((System.currentTimeMillis() - startTime) > POD_ACTIVATION_WAIT_TIME) {
+            while (!activated) {
+                if ((System.currentTimeMillis() - startTime) > POD_ACTIVATION_WAIT_TIME) {
                     log.info(String.format("Pod did not activate within %d seconds: [pod] %s",
-                            POD_ACTIVATION_WAIT_TIME/1000, podId));
+                            POD_ACTIVATION_WAIT_TIME / 1000, podId));
                     break;
                 }
 
                 log.info("Waiting pod status to be changed to running: [pod] " + podId);
                 sleep(2000);
                 pod = client.getPod(podId);
-                if((pod != null) && (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING))) {
+                if ((pod != null) && (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING))) {
                     activated = true;
                     log.info("Pod state changed to running: [pod]" + pod.getId());
                 }
@@ -170,7 +170,7 @@ public class AbstractLiveTest extends TestCase {
 
     public void deletePods() {
         try {
-            for(String podId : podIdList) {
+            for (String podId : podIdList) {
                 deletePod(podId);
             }
         } catch (KubernetesClientException e) {
@@ -179,7 +179,7 @@ public class AbstractLiveTest extends TestCase {
     }
 
     protected void createService(String serviceId, String serviceName, int servicePort, String containerPortName,
-                               String[] publicIPs) throws KubernetesClientException, InterruptedException, IOException {
+                                 String[] publicIPs) throws KubernetesClientException, InterruptedException, IOException {
         log.info("Creating service...");
         client.createService(serviceId, serviceName, servicePort, containerPortName, publicIPs);
         serviceIdList.add(serviceId);
@@ -202,7 +202,7 @@ public class AbstractLiveTest extends TestCase {
 
     protected void deleteServices() {
         try {
-            for(String serviceId : serviceIdList) {
+            for (String serviceId : serviceIdList) {
                 deleteService(serviceId);
             }
         } catch (KubernetesClientException e) {

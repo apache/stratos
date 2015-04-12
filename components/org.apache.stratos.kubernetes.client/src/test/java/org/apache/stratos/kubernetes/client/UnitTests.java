@@ -26,5 +26,5 @@ import org.junit.experimental.categories.Category;
  * Set {@link Category} of all Unit tests to be this class.
  */
 public interface UnitTests {
-    
+
 }

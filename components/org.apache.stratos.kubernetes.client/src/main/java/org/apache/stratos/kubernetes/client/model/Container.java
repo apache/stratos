@@ -28,93 +28,93 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class Container {
 
-	private String name;
-	private String image;
-	private String workingDir;
-	private String[] command;
-	private VolumeMount[] volumeMounts;
-	private List<Port> ports;
-	private String imagePullPolicy;
-	private EnvironmentVariable[] env;
+    private String name;
+    private String image;
+    private String workingDir;
+    private String[] command;
+    private VolumeMount[] volumeMounts;
+    private List<Port> ports;
+    private String imagePullPolicy;
+    private EnvironmentVariable[] env;
 
-	public Container() {
-		ports = new ArrayList<Port>();
-	}
+    public Container() {
+        ports = new ArrayList<Port>();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getImage() {
-		return image;
-	}
+    public String getImage() {
+        return image;
+    }
 
-	public void setImage(String image) {
-		this.image = image;
-	}
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-	public String getWorkingDir() {
-		return workingDir;
-	}
+    public String getWorkingDir() {
+        return workingDir;
+    }
 
-	public void setWorkingDir(String workingDir) {
-		this.workingDir = workingDir;
-	}
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
+    }
 
-	public String[] getCommand() {
-		return command;
-	}
+    public String[] getCommand() {
+        return command;
+    }
 
-	public void setCommand(String[] command) {
-		this.command = ArrayUtils.clone(command);
-	}
+    public void setCommand(String[] command) {
+        this.command = ArrayUtils.clone(command);
+    }
 
-	public VolumeMount[] getVolumeMounts() {
-		return volumeMounts;
-	}
+    public VolumeMount[] getVolumeMounts() {
+        return volumeMounts;
+    }
 
-	public void setVolumeMounts(VolumeMount[] volumeMounts) {
-		this.volumeMounts = ArrayUtils.clone(volumeMounts);
-	}
+    public void setVolumeMounts(VolumeMount[] volumeMounts) {
+        this.volumeMounts = ArrayUtils.clone(volumeMounts);
+    }
 
-	public List<Port> getPorts() {
-		return ports;
-	}
+    public List<Port> getPorts() {
+        return ports;
+    }
 
-	public void addPort(Port port) {
-		this.ports.add(port);
-	}
+    public void addPort(Port port) {
+        this.ports.add(port);
+    }
 
-	public void setPorts(List<Port> ports) {
-		this.ports = ports;
-	}
+    public void setPorts(List<Port> ports) {
+        this.ports = ports;
+    }
 
-	public EnvironmentVariable[] getEnv() {
-		return env;
-	}
+    public EnvironmentVariable[] getEnv() {
+        return env;
+    }
 
-	public void setEnv(EnvironmentVariable[] env) {
-		this.env = ArrayUtils.clone(env);
-	}
+    public void setEnv(EnvironmentVariable[] env) {
+        this.env = ArrayUtils.clone(env);
+    }
 
-	@Override
-	public String toString() {
-		return "Container [name=" + name + ", image=" + image + ", workingDir="
-				+ workingDir + ", command=" + Arrays.toString(command)
-				+ ", volumeMounts=" + Arrays.toString(volumeMounts)
-				+ ", ports=" + ports + ", env="
-				+ Arrays.toString(env) + "]";
-	}
+    @Override
+    public String toString() {
+        return "Container [name=" + name + ", image=" + image + ", workingDir="
+                + workingDir + ", command=" + Arrays.toString(command)
+                + ", volumeMounts=" + Arrays.toString(volumeMounts)
+                + ", ports=" + ports + ", env="
+                + Arrays.toString(env) + "]";
+    }
 
-	public String getImagePullPolicy() {
-		return imagePullPolicy;
-	}
+    public String getImagePullPolicy() {
+        return imagePullPolicy;
+    }
 
-	public void setImagePullPolicy(String imagePullPolicy) {
-		this.imagePullPolicy = imagePullPolicy;
-	}
+    public void setImagePullPolicy(String imagePullPolicy) {
+        this.imagePullPolicy = imagePullPolicy;
+    }
 }
