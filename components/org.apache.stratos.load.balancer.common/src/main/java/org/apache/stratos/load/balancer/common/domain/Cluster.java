@@ -76,8 +76,8 @@ public class Cluster {
 
     public void removeMember(String memberId) {
         Member member = memberMap.get(memberId);
-        if(member == null) {
-            if(log.isWarnEnabled()) {
+        if (member == null) {
+            if (log.isWarnEnabled()) {
                 log.warn(String.format("Could not remove member, member not found: [member] %s", memberId));
             }
             return;

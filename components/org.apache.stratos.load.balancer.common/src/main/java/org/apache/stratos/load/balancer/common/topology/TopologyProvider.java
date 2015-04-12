@@ -58,10 +58,11 @@ public class TopologyProvider {
 
     /**
      * Add service to the topology.
+     *
      * @param service
      */
     public void addService(Service service) {
-        if(service != null) {
+        if (service != null) {
             topology.addService(service);
             log.info(String.format("Service added: [service] %s", service.getServiceName()));
 
@@ -76,30 +77,31 @@ public class TopologyProvider {
 
     /**
      * Add cluster to the topology.
+     *
      * @param cluster
      */
     public void addCluster(Cluster cluster) {
-        if(cluster != null) {
+        if (cluster != null) {
             Service service = topology.getService(cluster.getServiceName());
-            if(service == null) {
+            if (service == null) {
                 throw new RuntimeException(String.format("Could not add cluster, service not found: [service] %s",
                         cluster.getServiceName()));
             }
             service.addCluster(cluster);
             clusterIdToClusterMap.put(cluster.getClusterId(), cluster);
 
-            for(String hostName : cluster.getHostNames()) {
+            for (String hostName : cluster.getHostNames()) {
                 hostNameToClusterMap.put(hostName, cluster);
             }
 
-            if((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
+            if ((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
                 log.info(String.format("Cluster added to service: [service] %s [cluster] %s [hostnames] %s",
                         cluster.getServiceName(), cluster.getClusterId(), cluster.getHostNames()));
             }
 
             Collection<Member> members = cluster.getMembers();
-            if((members != null) && (members.size() > 0)) {
-                for(Member member : members) {
+            if ((members != null) && (members.size() > 0)) {
+                for (Member member : members) {
                     addMember(member);
                 }
             }
@@ -108,23 +110,24 @@ public class TopologyProvider {
 
     /**
      * Add a member to its cluster.
+     *
      * @param member
      */
     public void addMember(Member member) {
         Cluster cluster = getClusterByClusterId(member.getClusterId());
-        if(cluster == null) {
+        if (cluster == null) {
             log.warn(String.format("Could not add member, cluster not found: [cluster] %s",
                     member.getClusterId()));
             return;
         }
-        if(StringUtils.isBlank(member.getHostName())) {
+        if (StringUtils.isBlank(member.getHostName())) {
             log.warn(String.format("Could not add member, member hostname not found: [cluster] %s [member] %s",
                     member.getClusterId(), member.getMemberId()));
             return;
         }
 
         cluster.addMember(member);
-        if((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
+        if ((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
             memberHostNameToClusterHostNameMap.put(member.getHostName(), cluster.getHostNames().iterator().next());
         }
 
@@ -134,21 +137,22 @@ public class TopologyProvider {
 
     /**
      * Remove cluster from the topology.
+     *
      * @param clusterId
      */
     public void removeCluster(String clusterId) {
         Cluster cluster = getClusterByClusterId(clusterId);
-        if(cluster == null) {
+        if (cluster == null) {
             log.warn(String.format("Could not remove cluster, cluster not found: [cluster] %s", clusterId));
             return;
         }
 
-        for(String hostName : cluster.getHostNames()) {
+        for (String hostName : cluster.getHostNames()) {
             hostNameToClusterMap.remove(hostName);
         }
         clusterIdToClusterMap.remove(cluster.getClusterId());
 
-        if((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
+        if ((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
             log.info(String.format("Cluster removed: [cluster] %s [hostnames] %s", cluster.getClusterId(),
                     cluster.getHostNames()));
         }
@@ -156,6 +160,7 @@ public class TopologyProvider {
 
     /**
      * Returns true if cluster exists by cluster id else return false.
+     *
      * @param clusterId
      * @return
      */
@@ -165,6 +170,7 @@ public class TopologyProvider {
 
     /**
      * Returns true if cluster exists by host name else return false.
+     *
      * @param hostName
      * @return
      */
@@ -174,6 +180,7 @@ public class TopologyProvider {
 
     /**
      * Get cluster by cluster id.
+     *
      * @param clusterId
      * @return
      */
@@ -183,23 +190,24 @@ public class TopologyProvider {
 
     /**
      * Add tenant signup for cluster.
+     *
      * @param clusterId
      * @param tenantId
      */
     public void addTenantSignUp(String clusterId, int tenantId) {
         Cluster cluster = getClusterByClusterId(clusterId);
-        if(cluster != null) {
+        if (cluster != null) {
             boolean subscribed = false;
-            for(String hostName : cluster.getHostNames()) {
+            for (String hostName : cluster.getHostNames()) {
                 Map<Integer, Cluster> tenantIdToClusterMap = hostNameToTenantIdToClusterMap.get(hostName);
-                if(tenantIdToClusterMap == null) {
+                if (tenantIdToClusterMap == null) {
                     tenantIdToClusterMap = new ConcurrentHashMap<Integer, Cluster>();
                     hostNameToTenantIdToClusterMap.put(hostName, tenantIdToClusterMap);
                 }
                 tenantIdToClusterMap.put(tenantId, cluster);
                 subscribed = true;
             }
-            if(subscribed) {
+            if (subscribed) {
                 log.info(String.format("Tenant signed up to cluster: [tenant] %d [cluster] %s [hostnames] %s",
                         tenantId, cluster.getClusterId(), cluster.getHostNames()));
             }
@@ -208,16 +216,17 @@ public class TopologyProvider {
 
     /**
      * Remove tenant signup for cluster.
+     *
      * @param clusterId
      * @param tenantId
      */
     public void removeTenantSignUp(String clusterId, int tenantId) {
         Cluster cluster = getClusterByClusterId(clusterId);
-        if(cluster == null) {
+        if (cluster == null) {
             log.warn(String.format("Could not remove tenant signup from cluster, cluster not found: [cluster] %s", clusterId));
         }
 
-        for(String hostName : cluster.getHostNames()) {
+        for (String hostName : cluster.getHostNames()) {
             Map<Integer, Cluster> tenantIdToClusterMap = hostNameToTenantIdToClusterMap.get(hostName);
             if (tenantIdToClusterMap != null) {
                 Cluster cluster_ = tenantIdToClusterMap.get(tenantId);
@@ -232,6 +241,7 @@ public class TopologyProvider {
 
     /**
      * Get cluster by hostname.
+     *
      * @param hostName
      * @return
      */
@@ -241,13 +251,14 @@ public class TopologyProvider {
 
     /**
      * Get cluster by hostname for tenant.
+     *
      * @param hostName
      * @param tenantId
      * @return
      */
     public Cluster getClusterByHostName(String hostName, int tenantId) {
         Map<Integer, Cluster> tenantIdToClusterMap = hostNameToTenantIdToClusterMap.get(hostName);
-        if(tenantIdToClusterMap != null) {
+        if (tenantIdToClusterMap != null) {
             return tenantIdToClusterMap.get(tenantId);
         }
         return null;
@@ -255,27 +266,28 @@ public class TopologyProvider {
 
     /**
      * Remove a member from its cluster.
+     *
      * @param clusterId
      * @param memberId
      */
     public void removeMember(String clusterId, String memberId) {
         Cluster cluster = getClusterByClusterId(clusterId);
-        if(cluster == null) {
+        if (cluster == null) {
             log.warn(String.format("Could not remove member, cluster not found: [cluster] %s", clusterId));
             return;
         }
 
         Member member = cluster.getMember(memberId);
-        if(member != null) {
+        if (member != null) {
             cluster.removeMember(memberId);
-            if(memberHostNameToClusterHostNameMap.containsKey(member.getHostName())) {
+            if (memberHostNameToClusterHostNameMap.containsKey(member.getHostName())) {
                 memberHostNameToClusterHostNameMap.remove(member.getHostName());
             }
 
             log.info(String.format("Member removed from cluster: [cluster] %s [member] %s",
                     clusterId, member.getHostName()));
 
-            if(cluster.getMembers().size() == 0) {
+            if (cluster.getMembers().size() == 0) {
                 log.info(String.format("No members found in cluster, removing cluster: " +
                         "[cluster] %s", cluster.getClusterId()));
                 removeCluster(cluster.getClusterId());
@@ -285,6 +297,7 @@ public class TopologyProvider {
 
     /**
      * Get cluster hostname of member by member hostname/ip address.
+     *
      * @param memberHostName
      * @return
      */

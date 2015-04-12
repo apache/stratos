@@ -28,6 +28,7 @@ public interface LoadBalancerStatisticsReader {
 
     /**
      * Returns in-flight request count of sliding window configured.
+     *
      * @param clusterId
      */
     int getInFlightRequestCount(String clusterId);
@@ -37,6 +38,7 @@ public interface LoadBalancerStatisticsReader {
 
     /**
      * Returns the number of requests served since the last time this method was called.
+     *
      * @param clusterId
      * @return
      */

@@ -50,14 +50,14 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
         addEventListener(new DomainMappingAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                DomainMappingAddedEvent domainMappingAddedEvent = (DomainMappingAddedEvent)event;
+                DomainMappingAddedEvent domainMappingAddedEvent = (DomainMappingAddedEvent) event;
 
                 String domainName = domainMappingAddedEvent.getDomainName();
                 String contextPath = domainMappingAddedEvent.getContextPath();
 
                 String clusterId = domainMappingAddedEvent.getClusterId();
                 Cluster cluster = topologyProvider.getClusterByClusterId(clusterId);
-                if(cluster == null) {
+                if (cluster == null) {
                     log.warn(String.format("Could not add domain mapping, cluster not found: [cluster] %s", clusterId));
                 }
 
@@ -68,11 +68,11 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
         addEventListener(new DomainMappingRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                DomainMappingRemovedEvent domainMappingRemovedEvent = (DomainMappingRemovedEvent)event;
+                DomainMappingRemovedEvent domainMappingRemovedEvent = (DomainMappingRemovedEvent) event;
 
                 String clusterId = domainMappingRemovedEvent.getClusterId();
                 Cluster cluster = topologyProvider.getClusterByClusterId(clusterId);
-                if(cluster == null) {
+                if (cluster == null) {
                     log.warn(String.format("Could not remove domain mapping, cluster not found: [cluster] %s", clusterId));
                 }
 
@@ -84,6 +84,7 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
 
     /**
      * Add domain mapping.
+     *
      * @param cluster
      * @param domainName
      * @param contextPath
@@ -95,6 +96,7 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
 
     /**
      * Remove domain mapping.
+     *
      * @param cluster
      * @param domainName
      */

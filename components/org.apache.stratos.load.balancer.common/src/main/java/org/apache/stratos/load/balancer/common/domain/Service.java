@@ -77,7 +77,7 @@ public class Service {
     }
 
     public Port getPort(int proxy) {
-        if(portMap.containsKey(proxy)) {
+        if (portMap.containsKey(proxy)) {
             return portMap.get(proxy);
         }
         return null;
@@ -88,15 +88,15 @@ public class Service {
     }
 
     public void addPorts(Collection<Port> ports) {
-        for(Port port : ports) {
-            if(!portExists(port)) {
+        for (Port port : ports) {
+            if (!portExists(port)) {
                 addPort(port);
             }
         }
     }
 
     public void removePort(Port port) {
-        if(portExists(port)) {
+        if (portExists(port)) {
             this.portMap.remove(port.getProxy());
         }
     }

@@ -48,7 +48,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     }
 
     public void execute() {
-	    super.execute();
+        super.execute();
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
         }
@@ -72,7 +72,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                     }
                 }
             }
-            if(membersFound) {
+            if (membersFound) {
                 initialized = true;
             }
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
-                if(!initialized) {
+                if (!initialized) {
                     initializeTopology();
                 }
             }
@@ -230,7 +230,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                         }
                         return;
                     }
-                    for(Cluster cluster : service.getClusters()) {
+                    for (Cluster cluster : service.getClusters()) {
                         removeCluster(cluster);
                     }
                 } catch (Exception e) {
@@ -244,16 +244,18 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
     /**
      * Remove cluster from topology provider
+     *
      * @param cluster
      */
     protected void removeCluster(Cluster cluster) {
-        for(Member member : cluster.getMembers()) {
+        for (Member member : cluster.getMembers()) {
             removeMember(member.getServiceName(), member.getClusterId(), member.getMemberId());
         }
     }
 
     /**
      * Add member to topology provider
+     *
      * @param serviceName
      * @param clusterId
      * @param memberId
@@ -279,12 +281,12 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         validateHostNames(cluster);
 
         // Add service if not exists
-        if(!topologyProvider.serviceExists(serviceName)) {
+        if (!topologyProvider.serviceExists(serviceName)) {
             topologyProvider.addService(transformService(service));
         }
 
         // Add cluster if not exists
-        if(!topologyProvider.clusterExistsByClusterId(cluster.getClusterId())) {
+        if (!topologyProvider.clusterExistsByClusterId(cluster.getClusterId())) {
             topologyProvider.addCluster(transformCluster(cluster));
         }
 
@@ -301,7 +303,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         org.apache.stratos.load.balancer.common.domain.Member lbMember = transformMember(member);
         org.apache.stratos.load.balancer.common.domain.Service lbService = topologyProvider.getTopology().
                 getService(serviceName);
-        if(lbService == null) {
+        if (lbService == null) {
             log.warn(String.format("Service not found: %s", serviceName));
             return;
         }
@@ -311,6 +313,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
     /**
      * Remove member from topology provider
+     *
      * @param serviceName
      * @param clusterId
      * @param memberId
@@ -351,7 +354,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     }
 
     private void validateHostNames(Cluster cluster) {
-        if((cluster.getHostNames() == null) || (cluster.getHostNames().size() == 0)) {
+        if ((cluster.getHostNames() == null) || (cluster.getHostNames().size() == 0)) {
             throw new RuntimeException(String.format("Host names not found in cluster: " +
                     "[cluster] %s", cluster.getClusterId()));
         }
@@ -375,7 +378,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                 new org.apache.stratos.load.balancer.common.domain.Cluster(messagingCluster.getServiceName(),
                         messagingCluster.getClusterId());
         cluster.setTenantRange(messagingCluster.getTenantRange());
-        if(messagingCluster.getHostNames() != null) {
+        if (messagingCluster.getHostNames() != null) {
             for (String hostName : messagingCluster.getHostNames()) {
                 cluster.addHostName(hostName);
             }
@@ -386,13 +389,13 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private org.apache.stratos.load.balancer.common.domain.Member transformMember(Member messagingMember) {
 
         String hostName;
-        if(messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Private) {
+        if (messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Private) {
             if (StringUtils.isEmpty(messagingMember.getDefaultPrivateIP())) {
                 throw new RuntimeException(String.format("Default private IP not found: [member] %s",
                         messagingMember.getMemberId()));
             }
             hostName = messagingMember.getDefaultPrivateIP();
-        } else if(messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Public) {
+        } else if (messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Public) {
             if (StringUtils.isEmpty(messagingMember.getDefaultPublicIP())) {
                 throw new RuntimeException(String.format("Default public IP not found: [member] %s",
                         messagingMember.getMemberId()));
