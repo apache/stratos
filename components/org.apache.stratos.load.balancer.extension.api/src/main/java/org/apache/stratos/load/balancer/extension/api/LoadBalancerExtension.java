@@ -44,13 +44,13 @@ import java.util.concurrent.ExecutorService;
  * received from the message broker.
  */
 public class LoadBalancerExtension {
-	private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
+    private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
 
-	private LoadBalancer loadBalancer;
-	private LoadBalancerStatisticsReader statsReader;
-	private boolean loadBalancerStarted;
-	private LoadBalancerStatisticsNotifier statisticsNotifier;
-	private ExecutorService executorService;
+    private LoadBalancer loadBalancer;
+    private LoadBalancerStatisticsReader statsReader;
+    private boolean loadBalancerStarted;
+    private LoadBalancerStatisticsNotifier statisticsNotifier;
+    private ExecutorService executorService;
 
     private TopologyProvider topologyProvider;
     private LoadBalancerCommonTopologyEventReceiver topologyEventReceiver;
@@ -58,48 +58,48 @@ public class LoadBalancerExtension {
     private LoadBalancerCommonApplicationSignUpEventReceiver applicationSignUpEventReceiver;
 
     /**
-	 * Load balancer extension constructor.
-	 *
-	 * @param loadBalancer Load balancer instance: Mandatory.
-	 * @param statsReader  Statistics reader: If null statistics notifier thread will not be started.
-	 */
-	public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader,
+     * Load balancer extension constructor.
+     *
+     * @param loadBalancer Load balancer instance: Mandatory.
+     * @param statsReader  Statistics reader: If null statistics notifier thread will not be started.
+     */
+    public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader,
                                  TopologyProvider topologyProvider) {
 
         this.loadBalancer = loadBalancer;
-		this.statsReader = statsReader;
+        this.statsReader = statsReader;
         this.topologyProvider = topologyProvider;
-	}
+    }
 
 
-	public void execute() {
-		try {
-			if (log.isInfoEnabled()) {
-				log.info("Load balancer extension started");
-			}
+    public void execute() {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("Load balancer extension started");
+            }
 
-			// Start topology receiver thread
-			startTopologyEventReceiver(executorService, topologyProvider);
+            // Start topology receiver thread
+            startTopologyEventReceiver(executorService, topologyProvider);
             startApplicationSignUpEventReceiver(executorService, topologyProvider);
             startDomainMappingEventReceiver(executorService, topologyProvider);
 
-			if (statsReader != null) {
-				// Start stats notifier thread
-				statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader, topologyProvider);
-				Thread statsNotifierThread = new Thread(statisticsNotifier);
-				statsNotifierThread.start();
-			} else {
-				if (log.isWarnEnabled()) {
-					log.warn("Load balancer statistics reader not found");
-				}
-			}
+            if (statsReader != null) {
+                // Start stats notifier thread
+                statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader, topologyProvider);
+                Thread statsNotifierThread = new Thread(statisticsNotifier);
+                statsNotifierThread.start();
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn("Load balancer statistics reader not found");
+                }
+            }
             log.info("Waiting for complete topology event...");
         } catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error("Could not start load balancer extension", e);
-			}
-		}
-	}
+            if (log.isErrorEnabled()) {
+                log.error("Could not start load balancer extension", e);
+            }
+        }
+    }
 
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
 
@@ -112,17 +112,17 @@ public class LoadBalancerExtension {
         }
 
         if (log.isInfoEnabled()) {
-            if(TopologyServiceFilter.getInstance().isActive()) {
+            if (TopologyServiceFilter.getInstance().isActive()) {
                 log.info(String.format("Service filter activated: [filter] %s",
                         TopologyServiceFilter.getInstance().toString()));
             }
 
-            if(TopologyClusterFilter.getInstance().isActive()) {
+            if (TopologyClusterFilter.getInstance().isActive()) {
                 log.info(String.format("Cluster filter activated: [filter] %s",
                         TopologyClusterFilter.getInstance().toString()));
             }
 
-            if(TopologyMemberFilter.getInstance().isActive()) {
+            if (TopologyMemberFilter.getInstance().isActive()) {
                 log.info(String.format("Member filter activated: [filter] %s",
                         TopologyMemberFilter.getInstance().toString()));
             }
@@ -148,7 +148,7 @@ public class LoadBalancerExtension {
     }
 
     private void addTopologyEventListeners(final LoadBalancerCommonTopologyEventReceiver topologyEventReceiver) {
-		topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
+        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
 
             @Override
             protected void onEvent(Event event) {
@@ -176,39 +176,40 @@ public class LoadBalancerExtension {
                 reloadConfiguration();
             }
         });
-		topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-		topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-		topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-	}
+    }
 
     /**
      * Configure and start load balancer
+     *
      * @throws LoadBalancerExtensionException
      */
     private void configureAndStart() throws LoadBalancerExtensionException {
         // Initialize topology
-        if(!topologyEventReceiver.isInitialized()) {
+        if (!topologyEventReceiver.isInitialized()) {
             topologyEventReceiver.initializeTopology();
         }
 
         // Configure load balancer
         Topology topology = topologyProvider.getTopology();
-        if(topologyPopulated(topology) && loadBalancer.configure(topology)) {
+        if (topologyPopulated(topology) && loadBalancer.configure(topology)) {
             // Start load balancer
             loadBalancer.start();
             loadBalancerStarted = true;
@@ -217,11 +218,12 @@ public class LoadBalancerExtension {
 
     /**
      * Configure and reload
+     *
      * @throws LoadBalancerExtensionException
      */
     private void configureAndReload() throws LoadBalancerExtensionException {
         // Configure load balancer
-        if(loadBalancer.configure(topologyProvider.getTopology())) {
+        if (loadBalancer.configure(topologyProvider.getTopology())) {
             // Reload the load balancer
             loadBalancer.reload();
         }
@@ -229,13 +231,14 @@ public class LoadBalancerExtension {
 
     /**
      * Returns true if topology has populated
+     *
      * @param topology
      * @return
      */
     private boolean topologyPopulated(Topology topology) {
-        for(Service service : topology.getServices()) {
-            for(Cluster cluster : service.getClusters()) {
-                if(cluster.getMembers().size() > 0) {
+        for (Service service : topology.getServices()) {
+            for (Cluster cluster : service.getClusters()) {
+                if (cluster.getMembers().size() > 0) {
                     return true;
                 }
             }
@@ -247,25 +250,24 @@ public class LoadBalancerExtension {
      * Configure and reload load balancer configuration.
      */
     private void reloadConfiguration() {
-		try {
+        try {
             if (!loadBalancerStarted) {
                 configureAndStart();
-            }
-			else {
+            } else {
                 configureAndReload();
 
             }
-		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error("Could not reload load balancer configuration", e);
-			}
-		}
-	}
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not reload load balancer configuration", e);
+            }
+        }
+    }
 
     /**
      * Stop load balancer instance.
      */
-	public void stop() {
+    public void stop() {
         try {
             if (topologyEventReceiver != null) {
                 topologyEventReceiver.terminate();
@@ -284,13 +286,13 @@ public class LoadBalancerExtension {
             loadBalancer.stop();
         } catch (Exception ignore) {
         }
-	}
+    }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

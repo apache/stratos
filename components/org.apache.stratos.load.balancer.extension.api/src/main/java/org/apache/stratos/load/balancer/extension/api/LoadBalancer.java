@@ -23,7 +23,7 @@ import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExte
 import org.apache.stratos.load.balancer.common.domain.Topology;
 
 /**
- *  A generic load balancer life-cycle definition.
+ * A generic load balancer life-cycle definition.
  */
 public interface LoadBalancer {
 
@@ -42,6 +42,7 @@ public interface LoadBalancer {
     /**
      * Configure the load balancer using the given topology.
      * Throw an exception is the configure operation fails.
+     *
      * @param topology
      * @return Returns true if configured correctly
      */
