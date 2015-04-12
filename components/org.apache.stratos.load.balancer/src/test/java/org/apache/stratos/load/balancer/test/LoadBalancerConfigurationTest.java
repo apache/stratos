@@ -18,10 +18,10 @@
  */
 package org.apache.stratos.load.balancer.test;
 
-import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.domain.Member;
 import org.apache.stratos.load.balancer.common.domain.Port;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.junit.Assert;

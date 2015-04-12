@@ -19,8 +19,8 @@
 
 package org.apache.stratos.load.balancer.algorithm;
 
-import org.apache.stratos.load.balancer.context.AlgorithmContext;
 import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.context.AlgorithmContext;
 
 import java.util.List;
 

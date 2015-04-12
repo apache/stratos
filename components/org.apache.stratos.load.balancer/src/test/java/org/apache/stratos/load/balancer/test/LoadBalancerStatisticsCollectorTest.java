@@ -19,11 +19,11 @@
 
 package org.apache.stratos.load.balancer.test;
 
+import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
 import org.apache.stratos.load.balancer.statistics.InFlightRequestIncrementCallable;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
-import org.junit.Assert;
-import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

@@ -21,8 +21,8 @@ package org.apache.stratos.load.balancer.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.context.AlgorithmContext;
 import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.context.AlgorithmContext;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
