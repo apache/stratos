@@ -62,7 +62,7 @@ public class ExtensionUtils {
         throw new FileNotFoundException("Script file not found:" + filePath);
     }
 
-    public static void addPayloadParameters(Map<String, String> envParameters){
+    public static void addPayloadParameters(Map<String, String> envParameters) {
         envParameters.put("STRATOS_APP_PATH", CartridgeAgentConfiguration.getInstance().getAppPath());
         envParameters.put("STRATOS_PARAM_FILE_PATH", System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH));
         envParameters.put("STRATOS_SERVICE_NAME", CartridgeAgentConfiguration.getInstance().getServiceName());
@@ -80,18 +80,18 @@ public class ExtensionUtils {
         String[] memberIps = getLbMemberIp(lbClusterIdInPayload);
         String lbIp, lbPublicIp;
         if (memberIps != null && memberIps.length > 1) {
-        	lbIp = memberIps[0];
-        	lbPublicIp = memberIps[1];
+            lbIp = memberIps[0];
+            lbPublicIp = memberIps[1];
         } else {
-        	lbIp = CartridgeAgentConfiguration.getInstance().getLbPrivateIp();
-        	lbPublicIp = CartridgeAgentConfiguration.getInstance().getLbPublicIp();
+            lbIp = CartridgeAgentConfiguration.getInstance().getLbPrivateIp();
+            lbPublicIp = CartridgeAgentConfiguration.getInstance().getLbPublicIp();
         }
-        
+
         envParameters.put("STRATOS_LB_IP", lbIp);
         envParameters.put("STRATOS_LB_PUBLIC_IP", lbPublicIp);
 
         Topology topology = TopologyManager.getTopology();
-        if (topology.isInitialized()){
+        if (topology.isInitialized()) {
             Service service = topology.getService(CartridgeAgentConfiguration.getInstance().getServiceName());
             Cluster cluster = service.getCluster(CartridgeAgentConfiguration.getInstance().getClusterId());
             String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
@@ -101,8 +101,8 @@ public class ExtensionUtils {
         }
     }
 
-    public static void addProperties(Properties properties, Map<String, String> envParameters, String prefix){
-        if (properties == null || properties.entrySet() == null){
+    public static void addProperties(Properties properties, Map<String, String> envParameters, String prefix) {
+        if (properties == null || properties.entrySet() == null) {
             return;
         }
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -489,6 +489,7 @@ public class ExtensionUtils {
 
     /**
      * Check if the specified member is in the topology and is in MemberStatus.Initialized state
+     *
      * @param serviceName
      * @param clusterId
      * @param memberId
@@ -501,7 +502,7 @@ public class ExtensionUtils {
         if (activatedMember == null) {
             if (log.isErrorEnabled()) {
                 //log.error(String.format("Member found in topology, but not in initialized state [member] %s", memberId));
-            	log.error(String.format("Member not found in topology [member] %s %s %s ", memberId, clusterId, serviceName));
+                log.error(String.format("Member not found in topology [member] %s %s %s ", memberId, clusterId, serviceName));
             }
             return false;
         }
@@ -511,6 +512,7 @@ public class ExtensionUtils {
 
     /**
      * Gets the specified member from the topology
+     *
      * @param serviceName
      * @param clusterId
      * @param memberId

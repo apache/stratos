@@ -28,7 +28,7 @@ public interface IHealthStatisticsReader {
 
     /**
      * Called exactly once, before any other method.
-     *
+     * <p/>
      * Should be used, along with {@link #delete()}, to manage "unmanaged"
      * resources, e.g. sockets. Standard objects will of course be managed by
      * GC in the usual way and should be allocated in the ctor.
@@ -37,16 +37,16 @@ public interface IHealthStatisticsReader {
 
     /**
      * Called repeatedly to obtain memory and processor use.
-     *
+     * <p/>
      * Obtained from the cartridge agent hosti.
-     *
+     * <p/>
      * Can throw IOException if the required metrics were not obtainable.
      */
     public CartridgeStatistics getCartridgeStatistics() throws IOException;
 
     /**
      * Called exactly once, after all other methods.
-     *
+     * <p/>
      * Should be used, along with {@link #init()}, to manage "unmanaged"
      * resources, e.g. sockets. Standard objects will of course be managed by
      * GC in the usual way and will be collected when no longer referenced.

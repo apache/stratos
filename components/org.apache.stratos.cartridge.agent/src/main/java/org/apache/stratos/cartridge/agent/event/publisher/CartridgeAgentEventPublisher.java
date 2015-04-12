@@ -39,35 +39,35 @@ import java.util.List;
  * Cartridge agent event publisher.
  */
 public class CartridgeAgentEventPublisher {
-	private static final Log log = LogFactory
-			.getLog(CartridgeAgentEventPublisher.class);
-	private static boolean started;
-	private static boolean activated;
-	private static boolean readyToShutdown;
-	private static boolean maintenance;
+    private static final Log log = LogFactory
+            .getLog(CartridgeAgentEventPublisher.class);
+    private static boolean started;
+    private static boolean activated;
+    private static boolean readyToShutdown;
+    private static boolean maintenance;
 
-	public static void publishInstanceStartedEvent() {
-		if (!isStarted()) {
-			if (log.isInfoEnabled()) {
-				log.info("Publishing instance started event");
-			}
-			InstanceStartedEvent event = new InstanceStartedEvent(
-					//application_id = CartridgeAgentConfiguration().application_id
-					CartridgeAgentConfiguration.getInstance().getApplicationId(),
-					//service_name = CartridgeAgentConfiguration().service_name
-					CartridgeAgentConfiguration.getInstance().getServiceName(),
-					//cluster_id = CartridgeAgentConfiguration().cluster_id
-					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					// member_id = CartridgeAgentConfiguration().member_id
-					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					
-					//cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
-					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
-					//network_partition_id = CartridgeAgentConfiguration().network_partition_id
-					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					//partition_id = CartridgeAgentConfiguration().partition_id
-					CartridgeAgentConfiguration.getInstance().getPartitionId());
-			
+    public static void publishInstanceStartedEvent() {
+        if (!isStarted()) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing instance started event");
+            }
+            InstanceStartedEvent event = new InstanceStartedEvent(
+                    //application_id = CartridgeAgentConfiguration().application_id
+                    CartridgeAgentConfiguration.getInstance().getApplicationId(),
+                    //service_name = CartridgeAgentConfiguration().service_name
+                    CartridgeAgentConfiguration.getInstance().getServiceName(),
+                    //cluster_id = CartridgeAgentConfiguration().cluster_id
+                    CartridgeAgentConfiguration.getInstance().getClusterId(),
+                    // member_id = CartridgeAgentConfiguration().member_id
+                    CartridgeAgentConfiguration.getInstance().getMemberId(),
+
+                    //cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
+                    CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
+                    //network_partition_id = CartridgeAgentConfiguration().network_partition_id
+                    CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+                    //partition_id = CartridgeAgentConfiguration().partition_id
+                    CartridgeAgentConfiguration.getInstance().getPartitionId());
+
 			/*
 			 * 
         
@@ -87,164 +87,164 @@ public class CartridgeAgentEventPublisher {
         log.info("Instance started event published")
 			 */
 
-			String topic = MessagingUtil.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(topic);
-			eventPublisher.publish(event);
-			setStarted(true);
-			if (log.isInfoEnabled()) {
-				log.info("Instance started event published");
-			}
+            String topic = MessagingUtil.getMessageTopicName(event);
+            EventPublisher eventPublisher = EventPublisherPool
+                    .getPublisher(topic);
+            eventPublisher.publish(event);
+            setStarted(true);
+            if (log.isInfoEnabled()) {
+                log.info("Instance started event published");
+            }
 
-		} else {
-			if (log.isWarnEnabled()) {
-				log.warn("Instance already started");
-			}
-		}
-	}
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Instance already started");
+            }
+        }
+    }
 
-	public static void publishInstanceActivatedEvent() {
-		if (!isActivated()) {
-			// Wait for all ports to be active, if ports are not activated, do not publish instance activated since
-			// the service is not up
-			List<Integer> ports = CartridgeAgentConfiguration.getInstance().getPorts();
-			String listenAddress = CartridgeAgentConfiguration.getInstance().getListenAddress();
-			boolean portsActivated = CartridgeAgentUtils.waitUntilPortsActive(listenAddress, ports);
+    public static void publishInstanceActivatedEvent() {
+        if (!isActivated()) {
+            // Wait for all ports to be active, if ports are not activated, do not publish instance activated since
+            // the service is not up
+            List<Integer> ports = CartridgeAgentConfiguration.getInstance().getPorts();
+            String listenAddress = CartridgeAgentConfiguration.getInstance().getListenAddress();
+            boolean portsActivated = CartridgeAgentUtils.waitUntilPortsActive(listenAddress, ports);
 
-			if (portsActivated) {
-				if (log.isInfoEnabled()) {
-					log.info("Publishing instance activated event");
-				}
-				InstanceActivatedEvent event = new InstanceActivatedEvent(
-						CartridgeAgentConfiguration.getInstance().getServiceName(),
-						CartridgeAgentConfiguration.getInstance().getClusterId(),
-						CartridgeAgentConfiguration.getInstance().getMemberId(),
-						CartridgeAgentConfiguration.getInstance().getInstanceId(),
-						CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
-						CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-						CartridgeAgentConfiguration.getInstance().getPartitionId());
+            if (portsActivated) {
+                if (log.isInfoEnabled()) {
+                    log.info("Publishing instance activated event");
+                }
+                InstanceActivatedEvent event = new InstanceActivatedEvent(
+                        CartridgeAgentConfiguration.getInstance().getServiceName(),
+                        CartridgeAgentConfiguration.getInstance().getClusterId(),
+                        CartridgeAgentConfiguration.getInstance().getMemberId(),
+                        CartridgeAgentConfiguration.getInstance().getInstanceId(),
+                        CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
+                        CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+                        CartridgeAgentConfiguration.getInstance().getPartitionId());
 
-				// Event publisher connection will
-				String topic = MessagingUtil.getMessageTopicName(event);
-				EventPublisher eventPublisher = EventPublisherPool
-						.getPublisher(topic);
-				eventPublisher.publish(event);
-				if (log.isInfoEnabled()) {
-					log.info("Instance activated event published");
-				}
+                // Event publisher connection will
+                String topic = MessagingUtil.getMessageTopicName(event);
+                EventPublisher eventPublisher = EventPublisherPool
+                        .getPublisher(topic);
+                eventPublisher.publish(event);
+                if (log.isInfoEnabled()) {
+                    log.info("Instance activated event published");
+                }
 
-				if (log.isInfoEnabled()) {
-					log.info("Starting health statistics notifier");
-				}
-				Thread thread = new Thread(new HealthStatisticsNotifier());
-				thread.start();
-				setActivated(true);
-				if (log.isInfoEnabled()) {
-					log.info("Health statistics notifier started");
-				}
-			} else {
-				if (log.isInfoEnabled()) {
-					// There would not be a large number of ports
-					String portsStr = "";
-					for (Integer port: ports){
-						portsStr += port + ", ";
-					}
-					log.error(String.format(
-							"Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAddress] %s [Ports] %s",
-							listenAddress,
-							portsStr));
-				}
-			}
-		} else {
-			if (log.isWarnEnabled()) {
-				log.warn("Instance already activated");
-			}
-		}
-	}
+                if (log.isInfoEnabled()) {
+                    log.info("Starting health statistics notifier");
+                }
+                Thread thread = new Thread(new HealthStatisticsNotifier());
+                thread.start();
+                setActivated(true);
+                if (log.isInfoEnabled()) {
+                    log.info("Health statistics notifier started");
+                }
+            } else {
+                if (log.isInfoEnabled()) {
+                    // There would not be a large number of ports
+                    String portsStr = "";
+                    for (Integer port : ports) {
+                        portsStr += port + ", ";
+                    }
+                    log.error(String.format(
+                            "Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAddress] %s [Ports] %s",
+                            listenAddress,
+                            portsStr));
+                }
+            }
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Instance already activated");
+            }
+        }
+    }
 
-	public static void publishInstanceReadyToShutdownEvent() {
-		if (!isReadyToShutdown()) {
-			if (log.isInfoEnabled()) {
-				log.info("Publishing instance activated event");
-			}
-			InstanceReadyToShutdownEvent event = new InstanceReadyToShutdownEvent(
-					CartridgeAgentConfiguration.getInstance().getServiceName(),
-					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
-					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId());
-			String topic = MessagingUtil.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(topic);
-			eventPublisher.publish(event);
-			setReadyToShutdown(true);
-			if (log.isInfoEnabled()) {
-				log.info("Instance ReadyToShutDown event published");
-			}
-		} else {
-			if (log.isWarnEnabled()) {
-				log.warn("Instance already sent ReadyToShutDown event....");
-			}
-		}
-	}
+    public static void publishInstanceReadyToShutdownEvent() {
+        if (!isReadyToShutdown()) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing instance activated event");
+            }
+            InstanceReadyToShutdownEvent event = new InstanceReadyToShutdownEvent(
+                    CartridgeAgentConfiguration.getInstance().getServiceName(),
+                    CartridgeAgentConfiguration.getInstance().getClusterId(),
+                    CartridgeAgentConfiguration.getInstance().getMemberId(),
+                    CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
+                    CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+                    CartridgeAgentConfiguration.getInstance().getPartitionId());
+            String topic = MessagingUtil.getMessageTopicName(event);
+            EventPublisher eventPublisher = EventPublisherPool
+                    .getPublisher(topic);
+            eventPublisher.publish(event);
+            setReadyToShutdown(true);
+            if (log.isInfoEnabled()) {
+                log.info("Instance ReadyToShutDown event published");
+            }
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Instance already sent ReadyToShutDown event....");
+            }
+        }
+    }
 
-	public static void publishMaintenanceModeEvent() {
-		if (!isMaintenance()) {
-			if (log.isInfoEnabled()) {
-				log.info("Publishing instance maintenance mode event");
-			}
-			InstanceMaintenanceModeEvent event = new InstanceMaintenanceModeEvent(
-					CartridgeAgentConfiguration.getInstance().getServiceName(),
-					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
-					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId());
-			String topic = MessagingUtil.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(topic);
-			eventPublisher.publish(event);
-			setMaintenance(true);
-			if (log.isInfoEnabled()) {
-				log.info("Instance Maintenance mode event published");
-			}
-		} else {
-			if (log.isWarnEnabled()) {
-				log.warn("Instance already in a Maintenance mode....");
-			}
-		}
-	}
+    public static void publishMaintenanceModeEvent() {
+        if (!isMaintenance()) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing instance maintenance mode event");
+            }
+            InstanceMaintenanceModeEvent event = new InstanceMaintenanceModeEvent(
+                    CartridgeAgentConfiguration.getInstance().getServiceName(),
+                    CartridgeAgentConfiguration.getInstance().getClusterId(),
+                    CartridgeAgentConfiguration.getInstance().getMemberId(),
+                    CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
+                    CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+                    CartridgeAgentConfiguration.getInstance().getPartitionId());
+            String topic = MessagingUtil.getMessageTopicName(event);
+            EventPublisher eventPublisher = EventPublisherPool
+                    .getPublisher(topic);
+            eventPublisher.publish(event);
+            setMaintenance(true);
+            if (log.isInfoEnabled()) {
+                log.info("Instance Maintenance mode event published");
+            }
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Instance already in a Maintenance mode....");
+            }
+        }
+    }
 
-	public static boolean isStarted() {
-		return started;
-	}
+    public static boolean isStarted() {
+        return started;
+    }
 
-	public static void setStarted(boolean started) {
-		CartridgeAgentEventPublisher.started = started;
-	}
+    public static void setStarted(boolean started) {
+        CartridgeAgentEventPublisher.started = started;
+    }
 
-	public static boolean isActivated() {
-		return activated;
-	}
+    public static boolean isActivated() {
+        return activated;
+    }
 
-	public static void setActivated(boolean activated) {
-		CartridgeAgentEventPublisher.activated = activated;
-	}
+    public static void setActivated(boolean activated) {
+        CartridgeAgentEventPublisher.activated = activated;
+    }
 
-	public static boolean isReadyToShutdown() {
-		return readyToShutdown;
-	}
+    public static boolean isReadyToShutdown() {
+        return readyToShutdown;
+    }
 
-	public static void setReadyToShutdown(boolean readyToShutdown) {
-		CartridgeAgentEventPublisher.readyToShutdown = readyToShutdown;
-	}
+    public static void setReadyToShutdown(boolean readyToShutdown) {
+        CartridgeAgentEventPublisher.readyToShutdown = readyToShutdown;
+    }
 
-	public static boolean isMaintenance() {
-		return maintenance;
-	}
+    public static boolean isMaintenance() {
+        return maintenance;
+    }
 
-	public static void setMaintenance(boolean maintenance) {
-		CartridgeAgentEventPublisher.maintenance = maintenance;
-	}
+    public static void setMaintenance(boolean maintenance) {
+        CartridgeAgentEventPublisher.maintenance = maintenance;
+    }
 }

@@ -94,7 +94,7 @@ public class JavaCartridgeAgentTest {
     }
 
     @BeforeClass
-    public static void oneTimeSetUp(){
+    public static void oneTimeSetUp() {
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
     }
 
@@ -172,7 +172,7 @@ public class JavaCartridgeAgentTest {
         try {
             log.info("Deleting source checkout folder...");
             FileUtils.deleteDirectory(new File("/tmp/test-jca-source"));
-        } catch (Exception ignore){
+        } catch (Exception ignore) {
         }
 
         this.instanceStatusEventReceiver.terminate();
@@ -185,10 +185,11 @@ public class JavaCartridgeAgentTest {
     /**
      * This method returns a collection of {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent}
      * objects as parameters to the test
+     *
      * @return
      */
     @Parameterized.Parameters
-    public static Collection getArtifactUpdatedEventsAsParams(){
+    public static Collection getArtifactUpdatedEventsAsParams() {
         ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
 
         ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
@@ -212,6 +213,7 @@ public class JavaCartridgeAgentTest {
     /**
      * Creates an {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent} object with a public
      * repository URL
+     *
      * @return
      */
     private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
@@ -224,6 +226,7 @@ public class JavaCartridgeAgentTest {
 
     /**
      * Setup the JCA test path, copy test configurations
+     *
      * @return
      */
     private String setupJavaAgent() {
@@ -273,7 +276,7 @@ public class JavaCartridgeAgentTest {
             log.info("Changing extension scripts permissions");
             File extensionsPath = new File(agentHome.getCanonicalPath() + "/extensions/");
             File[] extensions = extensionsPath.listFiles();
-            for (File extension:extensions){
+            for (File extension : extensions) {
                 extension.setExecutable(true);
             }
             log.info("Changed permissions for extensions : " + outputStream);
@@ -294,6 +297,7 @@ public class JavaCartridgeAgentTest {
 
     /**
      * Get current folder path
+     *
      * @return
      */
     private static String getResourcesFolderPath() {
@@ -352,7 +356,7 @@ public class JavaCartridgeAgentTest {
 
         communicatorThread.start();
 
-        while (!instanceActivated){
+        while (!instanceActivated) {
             sleep(2000);
         }
 
@@ -362,6 +366,7 @@ public class JavaCartridgeAgentTest {
 
     /**
      * Publish messaging event
+     *
      * @param event
      */
     private void publishEvent(Event event) {
@@ -372,6 +377,7 @@ public class JavaCartridgeAgentTest {
 
     /**
      * Start server socket
+     *
      * @param port
      */
     private void startServerSocket(final int port) {

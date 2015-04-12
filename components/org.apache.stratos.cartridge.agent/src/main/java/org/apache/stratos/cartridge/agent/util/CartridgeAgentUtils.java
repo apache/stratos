@@ -52,11 +52,11 @@ public class CartridgeAgentUtils {
     }
 
     public static String decryptPassword(String repoUserPassword) {
-    	
-    	if(repoUserPassword == null) {
-    		return repoUserPassword;
-    	}
-    	
+
+        if (repoUserPassword == null) {
+            return repoUserPassword;
+        }
+
         String decryptPassword = "";
         String secret = CartridgeAgentConfiguration.getInstance().getCartridgeKey();
         SecretKey key;
@@ -71,16 +71,17 @@ public class CartridgeAgentUtils {
             byte[] decrypted = cipher.doFinal(encrypted);
             decryptPassword = new String(decrypted);
         } catch (Exception e) {
-        	log.error("An error has occurred", e);
+            log.error("An error has occurred", e);
         }
-		if (log.isDebugEnabled()) {
-			log.debug("Decrypted PWD : [" + decryptPassword + "] ");
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("Decrypted PWD : [" + decryptPassword + "] ");
+        }
         return decryptPassword;
     }
 
     /**
      * Blocks until the provided ports are activated on the provided ip address or the port check timeout exceeds
+     *
      * @param ipAddress
      * @param ports
      * @return true if ports are activated, false if timeout exceeded
@@ -98,10 +99,10 @@ public class CartridgeAgentUtils {
         long startTime = System.currentTimeMillis();
         boolean active = false;
         while (!active) {
-            if(log.isInfoEnabled()) {
-                log.info("Waiting for ports to be active: [ip] "+ipAddress+" [ports] "+ports);
+            if (log.isInfoEnabled()) {
+                log.info("Waiting for ports to be active: [ip] " + ipAddress + " [ports] " + ports);
             }
-            active = checkPortsActive(ipAddress,  ports);
+            active = checkPortsActive(ipAddress, ports);
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
             if (duration > portCheckTimeOut) {
@@ -113,8 +114,8 @@ public class CartridgeAgentUtils {
             }
         }
 
-        if(log.isInfoEnabled()) {
-            log.info("Ports activated: [ip] " + ipAddress + " [ports] "+ports);
+        if (log.isInfoEnabled()) {
+            log.info("Ports activated: [ip] " + ipAddress + " [ports] " + ports);
         }
 
         return true;

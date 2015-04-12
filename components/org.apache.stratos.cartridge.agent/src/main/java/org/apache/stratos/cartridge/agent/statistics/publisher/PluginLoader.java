@@ -15,8 +15,7 @@ import java.util.jar.*;
 import java.util.zip.*;
 
 
-public class PluginLoader
-{
+public class PluginLoader {
     private static final Log log = LogFactory.getLog(PluginLoader.class);
 
     /* Built-in plugins are listed here. This is just easier than adding this
@@ -26,60 +25,47 @@ public class PluginLoader
      * that would probably be OK, but it's more logic.
      */
 
-    public static List<Class> loadPluginClassesFromJar( File jarPath, Class pluginInterface )
-    {
-        List<Class> listeners = new LinkedList<Class>( );
+    public static List<Class> loadPluginClassesFromJar(File jarPath, Class pluginInterface) {
+        List<Class> listeners = new LinkedList<Class>();
 
-        try
-        {
-            URLClassLoader loader = new URLClassLoader( new URL[] { jarPath.toURI().toURL() } );
-            JarFile jar = new JarFile( jarPath );
+        try {
+            URLClassLoader loader = new URLClassLoader(new URL[]{jarPath.toURI().toURL()});
+            JarFile jar = new JarFile(jarPath);
             Enumeration<? extends JarEntry> jarEnum = jar.entries();
 
-            log.trace( "Scanning jar file " + jarPath );
+            log.trace("Scanning jar file " + jarPath);
 
-            while( jarEnum.hasMoreElements() )
-            {
+            while (jarEnum.hasMoreElements()) {
                 ZipEntry zipEntry = jarEnum.nextElement();
                 String fileName = zipEntry.getName();
 
-                if( fileName.endsWith( ".class" ) )
-                {
-                    log.trace( "Considering jar entry " + fileName );
-                    try
-                    {
-                        String className = fileName.replace( ".class", "" ).replace( "/", "." );
-                        Class cls = loader.loadClass( className );
-                        log.trace( "Loaded class " + className );
+                if (fileName.endsWith(".class")) {
+                    log.trace("Considering jar entry " + fileName);
+                    try {
+                        String className = fileName.replace(".class", "").replace("/", ".");
+                        Class cls = loader.loadClass(className);
+                        log.trace("Loaded class " + className);
 
-                        if( hasInterface( cls, pluginInterface ) )
-                        {
-                            log.trace( "Class has " + pluginInterface.getName()  + " interface; adding " );
-                            listeners.add( cls );
+                        if (hasInterface(cls, pluginInterface)) {
+                            log.trace("Class has " + pluginInterface.getName() + " interface; adding ");
+                            listeners.add(cls);
                         }
-                    }
-                    catch( ClassNotFoundException e )
-                    {
-                        log.error( "Unable to load class from " + fileName + " in " + jarPath );
+                    } catch (ClassNotFoundException e) {
+                        log.error("Unable to load class from " + fileName + " in " + jarPath);
                     }
                 }
             }
 
-        }
-        catch( IOException e )
-        {
-            log.error( "Unable to open JAR file " + jarPath, e );
+        } catch (IOException e) {
+            log.error("Unable to open JAR file " + jarPath, e);
         }
 
         return listeners;
     }
 
-    private static boolean hasInterface( Class cls, Class iface )
-    {
-        for( Class in : cls.getInterfaces() )
-        {
-            if( in == iface )
-            {
+    private static boolean hasInterface(Class cls, Class iface) {
+        for (Class in : cls.getInterfaces()) {
+            if (in == iface) {
                 return true;
             }
         }

@@ -30,7 +30,7 @@ public class CartridgeStatistics {
     /**
      * Constructor
      *
-     * @param memUsage the consumed memory, as a percentage of the available memory to the cartridge
+     * @param memUsage  the consumed memory, as a percentage of the available memory to the cartridge
      * @param procUsage the processing used, as a percentage of the processing available to the cartridge
      */
     public CartridgeStatistics(double memUsage, double procUsage) {

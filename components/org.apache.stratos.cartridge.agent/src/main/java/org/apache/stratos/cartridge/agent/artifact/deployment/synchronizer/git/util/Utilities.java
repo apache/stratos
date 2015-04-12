@@ -41,15 +41,14 @@ public class Utilities {
      * @param input input String
      * @param regex regex to match
      * @param group grouping,
-     *
      * @return result of the match if found, else empty String
      */
-    public static String getMatch (String input, String regex, int group) {
+    public static String getMatch(String input, String regex, int group) {
 
-        String whitespaceRemovedJsonString = input.replaceAll("\\s+","");
+        String whitespaceRemovedJsonString = input.replaceAll("\\s+", "");
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(whitespaceRemovedJsonString);
-        if(!matcher.find())
+        if (!matcher.find())
             return "";
         else
             return matcher.group(group).trim();
@@ -60,12 +59,12 @@ public class Utilities {
      *
      * @param existingDir folder to delete
      */
-    public static void deleteFolderStructure (File existingDir) {
+    public static void deleteFolderStructure(File existingDir) {
 
         try {
             FileUtils.deleteDirectory(existingDir);
-            if(log.isDebugEnabled()) {
-            	log.debug(" Directory [" + existingDir + "] deleted. ");
+            if (log.isDebugEnabled()) {
+                log.debug(" Directory [" + existingDir + "] deleted. ");
             }
 
         } catch (IOException e) {

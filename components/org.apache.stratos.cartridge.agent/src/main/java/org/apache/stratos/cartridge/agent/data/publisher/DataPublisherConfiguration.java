@@ -43,11 +43,11 @@ public class DataPublisherConfiguration {
     private String adminPassword;
     private static volatile DataPublisherConfiguration dataPublisherConfiguration;
 
-    private DataPublisherConfiguration () {
+    private DataPublisherConfiguration() {
         readConfig();
     }
 
-    private void readConfig () {
+    private void readConfig() {
 
         String enabled = System.getProperty(ENABLE_DATA_PUBLISHER);
 
@@ -61,36 +61,36 @@ public class DataPublisherConfiguration {
         log.info("Data publishing is enabled");
 
         monitoringServerIp = System.getProperty(MONITORING_SERVER_IP);
-        if(StringUtils.isBlank(monitoringServerIp)) {
+        if (StringUtils.isBlank(monitoringServerIp)) {
             throw new RuntimeException("System property not found: " + MONITORING_SERVER_IP);
         }
 
         monitoringServerPort = System.getProperty(MONITORING_SERVER_PORT);
-        if(StringUtils.isBlank(monitoringServerPort)) {
+        if (StringUtils.isBlank(monitoringServerPort)) {
             throw new RuntimeException("System property not found: " + MONITORING_SERVER_PORT);
         }
 
         monitoringServerUrl = "tcp://" + monitoringServerIp + ":" + monitoringServerPort;
 
         monitoringServerSecurePort = System.getProperty(MONITORING_SERVER_SECURE_PORT);
-        if(StringUtils.isBlank(monitoringServerSecurePort)) {
+        if (StringUtils.isBlank(monitoringServerSecurePort)) {
             throw new RuntimeException("System property not found: " + MONITORING_SERVER_SECURE_PORT);
         }
 
         adminUsername = System.getProperty(MONITORING_SERVER_ADMIN_USERNAME);
-        if(StringUtils.isBlank(adminUsername)) {
+        if (StringUtils.isBlank(adminUsername)) {
             throw new RuntimeException("System property not found: " + MONITORING_SERVER_ADMIN_USERNAME);
         }
 
         adminPassword = System.getProperty(MONITORING_SERVER_ADMIN_PASSWORD);
-        if(StringUtils.isBlank(adminPassword)) {
+        if (StringUtils.isBlank(adminPassword)) {
             throw new RuntimeException("System property not found: " + MONITORING_SERVER_ADMIN_PASSWORD);
         }
 
         log.info("Data Publisher configuration initialized");
     }
 
-    public static DataPublisherConfiguration getInstance () {
+    public static DataPublisherConfiguration getInstance() {
 
         if (dataPublisherConfiguration == null) {
             synchronized (DataPublisherConfiguration.class) {

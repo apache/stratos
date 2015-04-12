@@ -41,10 +41,10 @@ import java.util.List;
  */
 public class CartridgeAgent implements Runnable {
 
-   	private static final Log log = LogFactory.getLog(CartridgeAgent.class);
+    private static final Log log = LogFactory.getLog(CartridgeAgent.class);
     private static final ExtensionHandler extensionHandler = new DefaultExtensionHandler();
     private boolean terminated;
-    
+
     private CartridgeAgentEventListeners eventListenerns;
 
     @Override
@@ -52,9 +52,9 @@ public class CartridgeAgent implements Runnable {
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent started");
         }
-        
-        eventListenerns = new  CartridgeAgentEventListeners();
-        
+
+        eventListenerns = new CartridgeAgentEventListeners();
+
         validateRequiredSystemProperties();
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent validated system properties done");
@@ -66,12 +66,12 @@ public class CartridgeAgent implements Runnable {
             log.info("Cartridge agent registerTopologyEventListeners done");
         }
 
-        if (log.isInfoEnabled()){
+        if (log.isInfoEnabled()) {
             log.info("Waiting for CompleteTopologyEvent..");
         }
 
         ExtensionUtils.waitForCompleteTopology();
-        if (log.isInfoEnabled()){
+        if (log.isInfoEnabled()) {
             log.info("CompleteTopologyEvent received.");
         }
 
@@ -95,14 +95,14 @@ public class CartridgeAgent implements Runnable {
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent registerInstanceNotifierEventListeners done");
         }
-        
+
         // Start tenant event receiver thread
         /*
         registerTenantEventListeners();
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent registerTenantEventListeners done");
         } */
-        
+
         // Start application event receiver thread
         registerApplicationEventListeners();
         if (log.isInfoEnabled()) {
@@ -126,7 +126,7 @@ public class CartridgeAgent implements Runnable {
                 log.error("Error processing start servers event", e);
             }
         }
-        
+
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent startServerExtension done");
         }
@@ -150,11 +150,11 @@ public class CartridgeAgent implements Runnable {
                 log.info("Cartridge agent onInstanceActivatedEvent done");
             }
         } else {
-        	if (log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Artifact repository found. Waiting for ArtifactUpdatedEvent to commence cloning.");
             }
         }
-        
+
         String persistenceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistenceMappings();
         if (persistenceMappingsPayload != null) {
             extensionHandler.volumeMountExtension(persistenceMappingsPayload);
@@ -163,7 +163,7 @@ public class CartridgeAgent implements Runnable {
         // start log publishing
         LogPublisherManager logPublisherManager = new LogPublisherManager();
         publishLogs(logPublisherManager);
-        
+
         // Keep the thread live until terminated
         while (!terminated) {
             try {
@@ -176,62 +176,62 @@ public class CartridgeAgent implements Runnable {
     }
 
     protected void registerInstanceNotifierEventListeners() {
-    	if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("SsubscribeToTopicsAndRegisterListeners before");
         }
-    	
-    	eventListenerns.startInstanceNotifierReceiver();
-    	
-    	if (log.isDebugEnabled()) {
+
+        eventListenerns.startInstanceNotifierReceiver();
+
+        if (log.isDebugEnabled()) {
             log.debug("SsubscribeToTopicsAndRegisterListeners after");
         }
     }
 
     protected void registerTopologyEventListeners() {
-    	if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("registerTopologyEventListeners before");
         }
-    	eventListenerns.startTopologyEventReceiver();
-    	
-    	if (log.isDebugEnabled()) {
+        eventListenerns.startTopologyEventReceiver();
+
+        if (log.isDebugEnabled()) {
             log.debug("registerTopologyEventListeners after");
         }
     }
 
     protected void registerTenantEventListeners() {
-    	if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("registerTenantEventListeners before");
         }
-    	
-    	eventListenerns.startTenantEventReceiver();
-    	
-    	if (log.isDebugEnabled()) {
+
+        eventListenerns.startTenantEventReceiver();
+
+        if (log.isDebugEnabled()) {
             log.debug("registerTenantEventListeners after");
         }
     }
-    
+
     protected void registerApplicationEventListeners() {
-    	if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("registerApplicationListeners before");
         }
-    	
-    	eventListenerns.startApplicationsEventReceiver();
-    	
-    	if (log.isDebugEnabled()) {
+
+        eventListenerns.startApplicationsEventReceiver();
+
+        if (log.isDebugEnabled()) {
             log.debug("registerApplicationEventListeners after");
         }
     }
 
     protected void validateRequiredSystemProperties() {
         String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
-        
+
         if (StringUtils.isBlank(jndiPropertiesDir)) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
             }
             return;
         }
-        
+
         String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
         if (StringUtils.isBlank(payloadPath)) {
             if (log.isErrorEnabled()) {
@@ -239,14 +239,14 @@ public class CartridgeAgent implements Runnable {
             }
             return;
         }
-        
+
         String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
         if (StringUtils.isBlank(extensionsDir)) {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
             }
         }
-        
+
     }
 
     private static void publishLogs(LogPublisherManager logPublisherManager) {

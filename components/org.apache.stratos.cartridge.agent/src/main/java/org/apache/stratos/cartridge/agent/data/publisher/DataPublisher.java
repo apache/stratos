@@ -39,14 +39,14 @@ public abstract class DataPublisher implements GenericDataPublisher {
     private AsyncDataPublisher dataPublisher;
     private boolean isDataPublisherInitialized;
 
-    public DataPublisher (DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition) {
+    public DataPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition) {
 
         this.dataPublisherConfig = dataPublisherConfig;
         this.streamDefinition = streamDefinition;
         this.setDataPublisherInitialized(false);
     }
 
-    public void initialize () {
+    public void initialize() {
 
         AgentConfiguration agentConfiguration = new AgentConfiguration();
         //System.setProperty("javax.net.ssl.trustStore", "/home/isuru/wso2/S2/apache/stratos/alpha/wso2bam-2.4.0/repository/resources/security/client-truststore.jks");
@@ -65,7 +65,7 @@ public abstract class DataPublisher implements GenericDataPublisher {
         log.info("DataPublisher initialized");
     }
 
-    public void publish (DataContext dataContext) {
+    public void publish(DataContext dataContext) {
 
         Event event = new Event();
         event.setTimeStamp(new Date().getTime());
@@ -82,7 +82,7 @@ public abstract class DataPublisher implements GenericDataPublisher {
         }
     }
 
-    public void terminate () {
+    public void terminate() {
 
         dataPublisher.stop();
     }

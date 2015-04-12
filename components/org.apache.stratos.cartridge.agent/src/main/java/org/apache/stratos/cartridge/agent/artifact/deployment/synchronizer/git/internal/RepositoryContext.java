@@ -46,7 +46,7 @@ public class RepositoryContext {
     private String repoPassword;
     private ScheduledExecutorService artifactSyncSchedular;
 
-    public RepositoryContext () {
+    public RepositoryContext() {
 
     }
 
@@ -114,21 +114,21 @@ public class RepositoryContext {
         this.keyBasedAuthentication = keyBasedAuthentication;
     }
 
-	public String getRepoUsername() {
-		return repoUsername;
-	}
+    public String getRepoUsername() {
+        return repoUsername;
+    }
 
-	public void setRepoUsername(String repoUsername) {
-		this.repoUsername = repoUsername;
-	}
+    public void setRepoUsername(String repoUsername) {
+        this.repoUsername = repoUsername;
+    }
 
-	public String getRepoPassword() {
-		return repoPassword;
-	}
+    public String getRepoPassword() {
+        return repoPassword;
+    }
 
-	public void setRepoPassword(String repoPassword) {
-		this.repoPassword = repoPassword;
-	}
+    public void setRepoPassword(String repoPassword) {
+        this.repoPassword = repoPassword;
+    }
 
     public ScheduledExecutorService getArtifactSyncSchedular() {
         return artifactSyncSchedular;

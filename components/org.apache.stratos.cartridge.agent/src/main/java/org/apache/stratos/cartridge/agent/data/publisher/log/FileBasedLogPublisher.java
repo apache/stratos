@@ -41,15 +41,15 @@ public class FileBasedLogPublisher extends LogPublisher implements Runnable {
 
     public FileBasedLogPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId, String tenantId, String alias, Long datetime) {
 
-    	super(dataPublisherConfig, streamDefinition, filePath, memberId, tenantId, alias, datetime);
+        super(dataPublisherConfig, streamDefinition, filePath, memberId, tenantId, alias, datetime);
         this.executorService = Executors.newSingleThreadExecutor(new FileBasedLogPublisherTaskThreadFactory(filePath));
     }
 
-    public void start () {
+    public void start() {
         executorService.submit(this);
     }
 
-    public void stop () {
+    public void stop() {
 
         // close the resources
         try {
@@ -87,8 +87,8 @@ public class FileBasedLogPublisher extends LogPublisher implements Runnable {
             DataContext dataContext = new DataContext();
             // set the relevant data
             dataContext.setCorrelationData(null);
-            dataContext.setMetaData(new Object[] {memberId});
-            dataContext.setPayloadData(new Object[] {tenantId, alias, "", datetime, "", scanner.nextLine(), "","",memberId, ""});
+            dataContext.setMetaData(new Object[]{memberId});
+            dataContext.setPayloadData(new Object[]{tenantId, alias, "", datetime, "", scanner.nextLine(), "", "", memberId, ""});
             // publish data
             publish(dataContext);
         }
@@ -98,7 +98,7 @@ public class FileBasedLogPublisher extends LogPublisher implements Runnable {
 
         private String filePath;
 
-        public FileBasedLogPublisherTaskThreadFactory (String filePath) {
+        public FileBasedLogPublisherTaskThreadFactory(String filePath) {
             this.filePath = filePath;
         }
 

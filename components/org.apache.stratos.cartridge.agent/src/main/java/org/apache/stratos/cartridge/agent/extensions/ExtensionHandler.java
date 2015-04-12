@@ -31,9 +31,9 @@ import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 
 public interface ExtensionHandler {
-	
-	public void onMemberCreatedEvent(MemberCreatedEvent memberCreatedEvent);
-	
+
+    public void onMemberCreatedEvent(MemberCreatedEvent memberCreatedEvent);
+
     public void onInstanceStartedEvent();
 
     public void onInstanceActivatedEvent();
@@ -57,8 +57,8 @@ public interface ExtensionHandler {
     public void onMemberSuspendedEvent(MemberSuspendedEvent memberSuspendedEvent);
 
     public void onMemberStartedEvent(MemberStartedEvent memberStartedEvent);
-    
-    public void onMemberInitializedEvent(MemberInitializedEvent memberInitializedEvent); 
+
+    public void onMemberInitializedEvent(MemberInitializedEvent memberInitializedEvent);
 
     public void startServerExtension();
 
@@ -73,7 +73,7 @@ public interface ExtensionHandler {
     public void onTenantSubscribedEvent(TenantSubscribedEvent tenantSubscribedEvent);
 
     public void onTenantUnSubscribedEvent(TenantUnSubscribedEvent tenantUnSubscribedEvent);
-    
+
     public void onApplicationSignUpRemovedEvent(ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent);
 
 }

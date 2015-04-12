@@ -23,9 +23,9 @@ import java.util.Arrays;
 
 public class DataContext {
 
-    private Object [] metaData;
-    private Object [] correlationData;
-    private Object [] payloadData;
+    private Object[] metaData;
+    private Object[] correlationData;
+    private Object[] payloadData;
 
 
     public Object[] getMetaData() {
@@ -33,7 +33,7 @@ public class DataContext {
     }
 
     public void setMetaData(Object[] metaData) {
-        if(metaData == null) {
+        if (metaData == null) {
             this.metaData = new Object[0];
         } else {
             this.metaData = Arrays.copyOf(metaData, metaData.length);
@@ -45,7 +45,7 @@ public class DataContext {
     }
 
     public void setCorrelationData(Object[] correlationData) {
-        if(correlationData == null) {
+        if (correlationData == null) {
             this.correlationData = new Object[0];
         } else {
             this.correlationData = Arrays.copyOf(correlationData, correlationData.length);
@@ -57,7 +57,7 @@ public class DataContext {
     }
 
     public void setPayloadData(Object[] payloadData) {
-        if(payloadData == null) {
+        if (payloadData == null) {
             this.payloadData = new Object[0];
         } else {
             this.payloadData = Arrays.copyOf(payloadData, payloadData.length);

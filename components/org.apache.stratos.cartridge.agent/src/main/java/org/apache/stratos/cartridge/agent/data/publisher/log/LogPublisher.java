@@ -36,7 +36,7 @@ public abstract class LogPublisher extends DataPublisher {
     protected Long datetime;
     protected String serverName;
 
-    public LogPublisher (DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId, String tenantId, String alias, Long datetime) {
+    public LogPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId, String tenantId, String alias, Long datetime) {
 
         super(dataPublisherConfig, streamDefinition);
         this.filePath = filePath;
@@ -46,11 +46,11 @@ public abstract class LogPublisher extends DataPublisher {
         this.datetime = datetime;
     }
 
-    public void start () {
+    public void start() {
 
     }
 
-    public void stop () {
+    public void stop() {
 
     }
 }

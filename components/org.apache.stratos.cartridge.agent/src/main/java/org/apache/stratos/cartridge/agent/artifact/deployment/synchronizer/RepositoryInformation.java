@@ -21,50 +21,61 @@ package org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer;
 
 public class RepositoryInformation {
 
-	private String repoUrl;
-	private String repoUsername;
-	private String repoPassword;
-	private String repoPath;
-	private String tenantId;
-	private boolean isMultitenant;
+    private String repoUrl;
+    private String repoUsername;
+    private String repoPassword;
+    private String repoPath;
+    private String tenantId;
+    private boolean isMultitenant;
     private boolean commitEnabled;
-	
-	public String getRepoUrl() {
-		return repoUrl;
-	}
-	public void setRepoUrl(String repoUrl) {
-		this.repoUrl = repoUrl;
-	}
-	public String getRepoUsername() {
-		return repoUsername;
-	}
-	public void setRepoUsername(String repoUsername) {
-		this.repoUsername = repoUsername;
-	}
-	public String getRepoPassword() {
-		return repoPassword;
-	}
-	public void setRepoPassword(String repoPassword) {
-		this.repoPassword = repoPassword;
-	}
-	public String getRepoPath() {
-		return repoPath;
-	}
-	public void setRepoPath(String repoPath) {
-		this.repoPath = repoPath;
-	}
-	public String getTenantId() {
-		return tenantId;
-	}
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
-	public boolean isMultitenant() {
-		return isMultitenant;
-	}
-	public void setMultitenant(boolean isMultitenant) {
-		this.isMultitenant = isMultitenant;
-	}
+
+    public String getRepoUrl() {
+        return repoUrl;
+    }
+
+    public void setRepoUrl(String repoUrl) {
+        this.repoUrl = repoUrl;
+    }
+
+    public String getRepoUsername() {
+        return repoUsername;
+    }
+
+    public void setRepoUsername(String repoUsername) {
+        this.repoUsername = repoUsername;
+    }
+
+    public String getRepoPassword() {
+        return repoPassword;
+    }
+
+    public void setRepoPassword(String repoPassword) {
+        this.repoPassword = repoPassword;
+    }
+
+    public String getRepoPath() {
+        return repoPath;
+    }
+
+    public void setRepoPath(String repoPath) {
+        this.repoPath = repoPath;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public boolean isMultitenant() {
+        return isMultitenant;
+    }
+
+    public void setMultitenant(boolean isMultitenant) {
+        this.isMultitenant = isMultitenant;
+    }
 
     public boolean isCommitEnabled() {
         return commitEnabled;

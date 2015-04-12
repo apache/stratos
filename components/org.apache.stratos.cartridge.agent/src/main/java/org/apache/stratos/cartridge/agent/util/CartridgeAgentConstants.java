@@ -21,15 +21,15 @@ package org.apache.stratos.cartridge.agent.util;
 
 import java.io.Serializable;
 
-public class CartridgeAgentConstants implements Serializable{
+public class CartridgeAgentConstants implements Serializable {
 
-	public static final String JNDI_PROPERTIES_DIR = "jndi.properties.dir";
-	public static final String PARAM_FILE_PATH = "param.file.path";
+    public static final String JNDI_PROPERTIES_DIR = "jndi.properties.dir";
+    public static final String PARAM_FILE_PATH = "param.file.path";
     public static final String EXTENSIONS_DIR = "extensions.dir";
 
-	public static final String CARTRIDGE_KEY = "CARTRIDGE_KEY";
-	public static final String APPLICATION_PATH = "APPLICATION_PATH";
-	public static final String APPLICATION_ID = "APPLICATION_ID";
+    public static final String CARTRIDGE_KEY = "CARTRIDGE_KEY";
+    public static final String APPLICATION_PATH = "APPLICATION_PATH";
+    public static final String APPLICATION_ID = "APPLICATION_ID";
     public static final String SERVICE_GROUP = "SERIVCE_GROUP";
     public static final String SERVICE_NAME = "SERVICE_NAME";
     public static final String CLUSTER_ID = "CLUSTER_ID";
@@ -37,7 +37,7 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String NETWORK_PARTITION_ID = "NETWORK_PARTITION_ID";
     public static final String PARTITION_ID = "PARTITION_ID";
     public static final String MEMBER_ID = "MEMBER_ID";
-    public static final String TENANT_ID= "TENANT_ID";
+    public static final String TENANT_ID = "TENANT_ID";
     public static final String REPO_URL = "REPO_URL";
     public static final String PORTS = "PORTS";
     public static final String DEPLOYMENT = "DEPLOYMENT";
@@ -87,7 +87,7 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String SERVICE_GROUP_TOPOLOGY_KEY = "payload_parameter.SERIVCE_GROUP";
     public static final String CLUSTERING_TOPOLOGY_KEY = "payload_parameter.CLUSTERING";
     public static final String CLUSTERING_PRIMARY_KEY = "PRIMARY";
-    
+
     public static final String SUPERTENANT_TEMP_PATH = "/tmp/-1234/";
 
     public static final String DEPLOYMENT_MANAGER = "manager";
@@ -95,7 +95,7 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String DEPLOYMENT_DEFAULT = "default";
     public static final String SUPER_TENANT_REPO_PATH = "super.tenant.repository.path";
     public static final String TENANT_REPO_PATH = "tenant.repository.path";
-    
+
     public static final String KUBERNETES_CLUSTER_ID = "KUBERNETES_CLUSTER_ID";
     public static final String KUBERNETES_MASTER_IP = "KUBERNETES_MASTER_IP";
 }

@@ -47,36 +47,26 @@ public class HealthStatisticsNotifier implements Runnable {
 
         /* Find all jars in the current working directory */
         String pluginFileName = System.getProperty("health.stats.reader.plugin");
-        if ((pluginFileName != null) && (pluginFileName.length() != 0))
-        {
+        if ((pluginFileName != null) && (pluginFileName.length() != 0)) {
             File pluginFile = new File(pluginFileName);
-            if (    (pluginFile != null)
-                 && (pluginFile.exists())) {
+            if ((pluginFile != null)
+                    && (pluginFile.exists())) {
                 List<Class> pluginClass = PluginLoader.loadPluginClassesFromJar(pluginFile, IHealthStatisticsReader.class);
-                if (!pluginClass.isEmpty())
-                {
-                    try
-                    {
+                if (!pluginClass.isEmpty()) {
+                    try {
                         log.trace("Instantiating new instance of plugin type " + pluginClass);
-                        this.statsReader = (IHealthStatisticsReader)pluginClass.get(0).newInstance( );
-                    }
-                    catch(InstantiationException e)
-                    {
+                        this.statsReader = (IHealthStatisticsReader) pluginClass.get(0).newInstance();
+                    } catch (InstantiationException e) {
                         log.error("Unable to instantiate plugin " + pluginClass, e);
-                    }
-                    catch(IllegalAccessException e)
-                    {
+                    } catch (IllegalAccessException e) {
                         log.error("Unable to instantiate plugin " + pluginClass, e);
                     }
                 }
-            }
-            else
-            {
-                log.error("Plugin not found or malformed: " + pluginFileName + ((pluginFile == null)? " NULL": "Doesn't exist"));
+            } else {
+                log.error("Plugin not found or malformed: " + pluginFileName + ((pluginFile == null) ? " NULL" : "Doesn't exist"));
             }
         }
-        if (this.statsReader == null)
-        {
+        if (this.statsReader == null) {
             this.statsReader = new HealthStatisticsReader();
         }
 
@@ -88,12 +78,9 @@ public class HealthStatisticsNotifier implements Runnable {
 
     @Override
     public void run() {
-        if (this.statsReader.init() == false)
-        {
-            log.error("Health statistics reader "+this.statsReader.getClass().getName()+" could not initialise");
-        }
-        else
-        {
+        if (this.statsReader.init() == false) {
+            log.error("Health statistics reader " + this.statsReader.getClass().getName() + " could not initialise");
+        } else {
             while (!terminated) {
                 try {
                     try {
@@ -105,7 +92,7 @@ public class HealthStatisticsNotifier implements Runnable {
 
                         CartridgeStatistics stats = statsReader.getCartridgeStatistics();
 
-                        if(log.isDebugEnabled()) {
+                        if (log.isDebugEnabled()) {
                             log.debug(String.format("Publishing memory consumption: %f", stats.getMemoryUsage()));
                         }
                         statsPublisher.publish(
@@ -118,7 +105,7 @@ public class HealthStatisticsNotifier implements Runnable {
                                 stats.getMemoryUsage()
                         );
 
-                        if(log.isDebugEnabled()) {
+                        if (log.isDebugEnabled()) {
                             log.debug(String.format("Publishing load average: %f", stats.getProcessorUsage()));
                         }
                         statsPublisher.publish(

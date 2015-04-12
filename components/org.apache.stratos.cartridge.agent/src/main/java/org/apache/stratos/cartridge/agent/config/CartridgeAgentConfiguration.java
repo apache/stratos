@@ -81,11 +81,11 @@ public class CartridgeAgentConfiguration {
         parameters = loadParametersFile();
 
         try {
-        	//self.application_id = self.read_property(cartridgeagentconstants.APPLICATION_ID)
-        	applicationId = readApplicationId(); 
+            //self.application_id = self.read_property(cartridgeagentconstants.APPLICATION_ID)
+            applicationId = readApplicationId();
             serviceGroup = readServiceGroup();
             isClustered = readClustering();
-          //self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
+            //self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
             serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
             //self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
             clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
@@ -117,7 +117,7 @@ public class CartridgeAgentConfiguration {
             // not mandatory
             lbPrivateIp = System.getProperty(CartridgeAgentConstants.LB_PRIVATE_IP);
             lbPublicIp = System.getProperty(CartridgeAgentConstants.LB_PUBLIC_IP);
-            tenantRepositoryPath =  System.getProperty(CartridgeAgentConstants.TENANT_REPO_PATH);
+            tenantRepositoryPath = System.getProperty(CartridgeAgentConstants.TENANT_REPO_PATH);
             superTenantRepositoryPath = System.getProperty(CartridgeAgentConstants.SUPER_TENANT_REPO_PATH);
 
             deployment = readDeployment();
@@ -125,14 +125,13 @@ public class CartridgeAgentConfiguration {
             workerServiceName = readWorkerServiceType();
             isPrimary = readIsPrimary();
             kubernetesClusterId = readKubernetesClusterIdValue(CartridgeAgentConstants.KUBERNETES_CLUSTER_ID);
-            
+
             //self.cluster_instance_id= self.read_property(cartridgeagentconstants.CLUSTER_INSTANCE_ID)
             clusterInstanceId = readClusterInstanceId();
             //self.dependant_cluster_id = self.read_property(cartridgeagentconstants.DEPENDENCY_CLUSTER_IDS, False)
             dependantClusterId = readDependantClusterId();
-            
-            
-            
+
+
         } catch (ParameterNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -142,8 +141,8 @@ public class CartridgeAgentConfiguration {
         }
 
         if (log.isDebugEnabled()) {
-        	log.debug(String.format("application-id: %s", applicationId));
-        	log.debug(String.format("service-group: %s", serviceGroup));
+            log.debug(String.format("application-id: %s", applicationId));
+            log.debug(String.format("service-group: %s", serviceGroup));
             log.debug(String.format("cluster-id: %s", clusterId));
             log.debug(String.format("service-name: %s", serviceName));
             log.debug(String.format("cluster-id: %s", clusterId));
@@ -162,80 +161,80 @@ public class CartridgeAgentConfiguration {
     }
 
     private String readKubernetesClusterIdValue(String kubernetesClusterId) {
-		String kubernetesClusterIdValue = null;
-		if (parameters.containsKey(kubernetesClusterId)) {
-			kubernetesClusterIdValue = parameters.get(kubernetesClusterId);
-		}
+        String kubernetesClusterIdValue = null;
+        if (parameters.containsKey(kubernetesClusterId)) {
+            kubernetesClusterIdValue = parameters.get(kubernetesClusterId);
+        }
 
-		if (System.getProperty(kubernetesClusterId) != null) {
-			kubernetesClusterIdValue = System.getProperty(kubernetesClusterId);
-		}
-		return kubernetesClusterIdValue;
-	}
+        if (System.getProperty(kubernetesClusterId) != null) {
+            kubernetesClusterIdValue = System.getProperty(kubernetesClusterId);
+        }
+        return kubernetesClusterIdValue;
+    }
 
-	private String readMemberIdValue(String memberId) {
-		String memberIdValue = null;
-		if (parameters.containsKey(memberId) && parameters.get(memberId) != null) {
-			memberIdValue = parameters.get(memberId);
-		} else if (System.getProperty(memberId) != null) {
-			memberIdValue = System.getProperty(memberId);
-		} else {	
-			String hostname = "unknown";
-			try {
-				log.info("Reading hostname from container");
-				InetAddress addr;
-				addr = InetAddress.getLocalHost();
-				hostname = addr.getHostName();
-			} catch (UnknownHostException e) {
-				String msg = "Hostname can not be resolved";
-				log.error(msg, e);
-			}
-			memberIdValue = hostname;
-			if (log.isDebugEnabled()) {
-				log.debug("MemberId  is taking the value of hostname : [" + memberIdValue + "] ");
-			}
-		}
-		return memberIdValue;
-	}
+    private String readMemberIdValue(String memberId) {
+        String memberIdValue = null;
+        if (parameters.containsKey(memberId) && parameters.get(memberId) != null) {
+            memberIdValue = parameters.get(memberId);
+        } else if (System.getProperty(memberId) != null) {
+            memberIdValue = System.getProperty(memberId);
+        } else {
+            String hostname = "unknown";
+            try {
+                log.info("Reading hostname from container");
+                InetAddress addr;
+                addr = InetAddress.getLocalHost();
+                hostname = addr.getHostName();
+            } catch (UnknownHostException e) {
+                String msg = "Hostname can not be resolved";
+                log.error(msg, e);
+            }
+            memberIdValue = hostname;
+            if (log.isDebugEnabled()) {
+                log.debug("MemberId  is taking the value of hostname : [" + memberIdValue + "] ");
+            }
+        }
+        return memberIdValue;
+    }
 
-	private String readDeployment(){
+    private String readDeployment() {
         if (parameters.containsKey(CartridgeAgentConstants.DEPLOYMENT)) {
             return parameters.get(CartridgeAgentConstants.DEPLOYMENT);
         }
         return null;
     }
 
-	private String readLBClusterIdValue(String lbClusterId) {
-		String lbClusterIdValue = null;
-		if (parameters.containsKey(lbClusterId)) {
-			lbClusterIdValue = parameters.get(lbClusterId);
-		}
+    private String readLBClusterIdValue(String lbClusterId) {
+        String lbClusterIdValue = null;
+        if (parameters.containsKey(lbClusterId)) {
+            lbClusterIdValue = parameters.get(lbClusterId);
+        }
 
-		if (System.getProperty(lbClusterId) != null) {
-			lbClusterIdValue = System.getProperty(lbClusterId);
-		}
-		return lbClusterIdValue;
-	}
-    
-	private String readMinCountValue(String minCountParam) throws ParameterNotFoundException {
+        if (System.getProperty(lbClusterId) != null) {
+            lbClusterIdValue = System.getProperty(lbClusterId);
+        }
+        return lbClusterIdValue;
+    }
 
-		String minCountValue = null;
-		if (parameters.containsKey(minCountParam)) {
-			minCountValue = parameters.get(minCountParam);
-		}
-		if (System.getProperty(minCountParam) != null) {
-			minCountValue = System.getProperty(minCountParam);
-		}
+    private String readMinCountValue(String minCountParam) throws ParameterNotFoundException {
 
-		if (Boolean.parseBoolean(isClustered)) {
-			 String message = "Cannot find the value of required parameter: " + minCountParam;
-			throw new ParameterNotFoundException(message);
-		}
-		return minCountValue;
-	}
+        String minCountValue = null;
+        if (parameters.containsKey(minCountParam)) {
+            minCountValue = parameters.get(minCountParam);
+        }
+        if (System.getProperty(minCountParam) != null) {
+            minCountValue = System.getProperty(minCountParam);
+        }
 
-		
-    private String readManagerServiceType(){
+        if (Boolean.parseBoolean(isClustered)) {
+            String message = "Cannot find the value of required parameter: " + minCountParam;
+            throw new ParameterNotFoundException(message);
+        }
+        return minCountValue;
+    }
+
+
+    private String readManagerServiceType() {
 
         if (deployment == null) {
             return null;
@@ -260,7 +259,7 @@ public class CartridgeAgentConfiguration {
         return null;
     }
 
-    private String readWorkerServiceType(){
+    private String readWorkerServiceType() {
 
         if (deployment == null) {
             return null;
@@ -285,7 +284,7 @@ public class CartridgeAgentConfiguration {
         return null;
     }
 
-    private String readIsPrimary(){
+    private String readIsPrimary() {
         if (parameters.containsKey(CartridgeAgentConstants.CLUSTERING_PRIMARY_KEY)) {
             return parameters.get(CartridgeAgentConstants.CLUSTERING_PRIMARY_KEY);
         }
@@ -334,9 +333,9 @@ public class CartridgeAgentConfiguration {
             log.info(" INTERNAL payload parameter is not found");
         }
 
-        if(internalRepoStringValue != null && internalRepoStringValue.equals(CartridgeAgentConstants.INTERNAL)) {
+        if (internalRepoStringValue != null && internalRepoStringValue.equals(CartridgeAgentConstants.INTERNAL)) {
             return true;
-        } else{
+        } else {
             return false;
         }
     }
@@ -388,7 +387,7 @@ public class CartridgeAgentConfiguration {
 
         return parameters;
     }
-    
+
     private String readApplicationId() {
         if (parameters.containsKey(CartridgeAgentConstants.APPLICATION_ID)) {
             return parameters.get(CartridgeAgentConstants.APPLICATION_ID);
@@ -396,7 +395,7 @@ public class CartridgeAgentConfiguration {
             return null;
         }
     }
-    
+
     private String readServiceGroup() {
         if (parameters.containsKey(CartridgeAgentConstants.SERVICE_GROUP)) {
             return parameters.get(CartridgeAgentConstants.SERVICE_GROUP);
@@ -404,17 +403,17 @@ public class CartridgeAgentConfiguration {
             return null;
         }
     }
-    
+
     private String readClusterInstanceId() {
-    	if (parameters.containsKey(CartridgeAgentConstants.CLUSTER_INSTANCE_ID)) {
+        if (parameters.containsKey(CartridgeAgentConstants.CLUSTER_INSTANCE_ID)) {
             return parameters.get(CartridgeAgentConstants.CLUSTER_INSTANCE_ID);
         } else {
             return null;
         }
     }
-    
+
     private String readDependantClusterId() {
-    	if (parameters.containsKey(CartridgeAgentConstants.DEPENDENCY_CLUSTER_IDS)) {
+        if (parameters.containsKey(CartridgeAgentConstants.DEPENDENCY_CLUSTER_IDS)) {
             return parameters.get(CartridgeAgentConstants.DEPENDENCY_CLUSTER_IDS);
         } else {
             return null;
@@ -570,21 +569,21 @@ public class CartridgeAgentConfiguration {
         return isPrimary;
     }
 
-	public String getLbPublicIp() {
-		return lbPublicIp;
-	}
+    public String getLbPublicIp() {
+        return lbPublicIp;
+    }
 
-	public void setLbPublicIp(String lbPublicIp) {
-		this.lbPublicIp = lbPublicIp;
-	}
+    public void setLbPublicIp(String lbPublicIp) {
+        this.lbPublicIp = lbPublicIp;
+    }
 
-	public String getLbPrivateIp() {
-		return lbPrivateIp;
-	}
+    public String getLbPrivateIp() {
+        return lbPrivateIp;
+    }
 
-	public void setLbPrivateIp(String lbPrivateIp) {
-		this.lbPrivateIp = lbPrivateIp;
-	}
+    public void setLbPrivateIp(String lbPrivateIp) {
+        this.lbPrivateIp = lbPrivateIp;
+    }
 
     public String getDeployment() {
         return deployment;
@@ -621,18 +620,18 @@ public class CartridgeAgentConfiguration {
     public boolean isCheckoutEnabled() {
         return isCheckoutEnabled;
     }
-    
+
     public boolean isInitialized() {
-    	return initialized;
-    }
-    
-    public void setInitialized(boolean initialized) {
-    	this.initialized = initialized;
+        return initialized;
     }
 
-	public String getKubernetesClusterId() {
-		return kubernetesClusterId;
-	}
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
 
 
     public String getInstanceId() {

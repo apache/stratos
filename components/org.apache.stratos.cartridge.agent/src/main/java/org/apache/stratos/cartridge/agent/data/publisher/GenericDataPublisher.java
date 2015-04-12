@@ -21,9 +21,9 @@ package org.apache.stratos.cartridge.agent.data.publisher;
 
 public interface GenericDataPublisher {
 
-    public void initialize ();
+    public void initialize();
 
-    public void publish (DataContext dataContext);
+    public void publish(DataContext dataContext);
 
-    public void terminate ();
+    public void terminate();
 }

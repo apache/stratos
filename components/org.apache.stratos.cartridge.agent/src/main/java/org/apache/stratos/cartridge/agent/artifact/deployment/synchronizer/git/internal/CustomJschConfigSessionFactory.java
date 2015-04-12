@@ -48,13 +48,13 @@ public class CustomJschConfigSessionFactory extends JschConfigSessionFactory {
         String keyPath = ServerConfiguration.getInstance().
                 getFirstProperty(GitDeploymentSynchronizerConstants.SSH_PRIVATE_KEY_PATH);
 
-        if(keyName == null || keyName.isEmpty())
+        if (keyName == null || keyName.isEmpty())
             keyName = GitDeploymentSynchronizerConstants.SSH_KEY;
 
-        if(keyPath == null || keyPath.isEmpty())
+        if (keyPath == null || keyPath.isEmpty())
             keyPath = System.getProperty("user.home") + "/" + GitDeploymentSynchronizerConstants.SSH_KEY_DIRECTORY;
 
-        if(keyPath.endsWith("/"))
+        if (keyPath.endsWith("/"))
             def.addIdentity(keyPath + keyName);
         else
             def.addIdentity(keyPath + "/" + keyName);

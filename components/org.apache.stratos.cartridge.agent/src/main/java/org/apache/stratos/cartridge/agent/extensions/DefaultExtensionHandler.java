@@ -246,12 +246,12 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
-        
+
         Map<String, String> env = new HashMap<String, String>();
 
         ExtensionUtils.executeMemberActivatedExtension(env);
     }
-    
+
     @Override
     public void onCompleteTopologyEvent(CompleteTopologyEvent completeTopologyEvent) {
         if (log.isDebugEnabled()) {
@@ -293,11 +293,11 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         Member activatedMember = ExtensionUtils.getMemberFromTopology(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
         if (activatedMember == null) {
             // if this member isn't there in the complete topology
-        	if (log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Member does not exist in topology, or not in initialized state.");
             }
         } else {
-        	if (log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Member has initialized, topology is consistent, agent is initialized");
             }
 
@@ -355,7 +355,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
-        
+
         Map<String, String> env = new HashMap<String, String>();
 
         ExtensionUtils.executeMemberTerminatedExtension(env);
@@ -381,7 +381,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
-        
+
         Map<String, String> env = new HashMap<String, String>();
 
         ExtensionUtils.executeMemberSuspendedExtension(env);
@@ -407,7 +407,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
-        
+
         Map<String, String> env = new HashMap<String, String>();
 
         ExtensionUtils.executeMemberStartedExtension(env);
@@ -433,7 +433,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
-        
+
         Map<String, String> env = new HashMap<String, String>();
 
         ExtensionUtils.executeStartServersExtension(env);
@@ -558,13 +558,13 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         Map<String, String> env = new HashMap<String, String>();
         ExtensionUtils.executeTenantUnSubscribedExtension(env);
     }
-    
+
     //ApplicationSignUpRemovedEvent
     @Override
     public void onApplicationSignUpRemovedEvent(ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent) {
         if (log.isInfoEnabled()) {
             log.info(String.format("applicationSignUpRemovedEvent event received: [appId] %s [tenantId] %s ",
-            		applicationSignUpRemovedEvent.getApplicationId(), applicationSignUpRemovedEvent.getTenantId()));
+                    applicationSignUpRemovedEvent.getApplicationId(), applicationSignUpRemovedEvent.getTenantId()));
         }
 
         try {
@@ -574,7 +574,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         } catch (Exception e) {
             log.error(e);
         }
-        
+
     }
 
 }

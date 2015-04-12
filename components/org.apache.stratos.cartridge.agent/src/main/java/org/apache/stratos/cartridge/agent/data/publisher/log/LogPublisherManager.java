@@ -46,7 +46,7 @@ public class LogPublisherManager {
     private static StreamDefinition streamDefinition = null;
     private static List<LogPublisher> fileBasedLogPublishers = new ArrayList<LogPublisher>();
 
-    public void init (DataPublisherConfiguration dataPublisherConfig) throws DataPublisherException {
+    public void init(DataPublisherConfiguration dataPublisherConfig) throws DataPublisherException {
 
         this.dataPublisherConfig = dataPublisherConfig;
 
@@ -56,13 +56,13 @@ public class LogPublisherManager {
 
         // wait till monitoring server ports are active
         CartridgeAgentUtils.waitUntilPortsActive(dataPublisherConfig.getMonitoringServerIp(), ports);
-        if(!CartridgeAgentUtils.checkPortsActive(dataPublisherConfig.getMonitoringServerIp(), ports)) {
+        if (!CartridgeAgentUtils.checkPortsActive(dataPublisherConfig.getMonitoringServerIp(), ports)) {
             throw new DataPublisherException("Monitoring server not active, data publishing is aborted");
         }
 
         // stream definition identifier = {log.publisher.<cluster id>}
         try {
-        	streamDefinition = new StreamDefinition(Constants.LOG_PUBLISHER_STREAM_PREFIX + getValidTenantId(CartridgeAgentConfiguration.getInstance().getTenantId()) + "." + getAlias(CartridgeAgentConfiguration.getInstance().getClusterId()) + "." + getCurrentDate(),
+            streamDefinition = new StreamDefinition(Constants.LOG_PUBLISHER_STREAM_PREFIX + getValidTenantId(CartridgeAgentConfiguration.getInstance().getTenantId()) + "." + getAlias(CartridgeAgentConfiguration.getInstance().getClusterId()) + "." + getCurrentDate(),
                     Constants.LOG_PUBLISHER_STREAM_VERSION);
 
         } catch (MalformedStreamDefinitionException e) {
@@ -85,23 +85,23 @@ public class LogPublisherManager {
         payloadDataDefinition.add(new Attribute(Constants.IP, AttributeType.STRING));
         payloadDataDefinition.add(new Attribute(Constants.INSTANCE, AttributeType.STRING));
         payloadDataDefinition.add(new Attribute(Constants.STACKTRACE, AttributeType.STRING));
-                 
+
         streamDefinition.setMetaData(metaDataDefinition);
         streamDefinition.setPayloadData(payloadDataDefinition);
     }
 
-    public void start (String filePath) throws DataPublisherException {
+    public void start(String filePath) throws DataPublisherException {
 
-        File logFile = new File (filePath);
+        File logFile = new File(filePath);
         if (!logFile.exists() || !logFile.canRead() || logFile.isDirectory()) {
             throw new DataPublisherException("Unable to read the file at path " + filePath);
         }
 
         LogPublisher fileBasedLogPublisher = new FileBasedLogPublisher(dataPublisherConfig, streamDefinition, filePath,
-        		CartridgeAgentConfiguration.getInstance().getMemberId(),
-        		getValidTenantId(CartridgeAgentConfiguration.getInstance().getTenantId()),
-        		getAlias(CartridgeAgentConfiguration.getInstance().getClusterId()),
-        		getDateTime());
+                CartridgeAgentConfiguration.getInstance().getMemberId(),
+                getValidTenantId(CartridgeAgentConfiguration.getInstance().getTenantId()),
+                getAlias(CartridgeAgentConfiguration.getInstance().getClusterId()),
+                getDateTime());
 
         fileBasedLogPublisher.initialize();
         fileBasedLogPublisher.start();
@@ -110,45 +110,45 @@ public class LogPublisherManager {
         fileBasedLogPublishers.add(fileBasedLogPublisher);
     }
 
-    public void stop () {
+    public void stop() {
 
-       if (dataPublisherConfig.isEnabled()) {
-           for (LogPublisher fileBasedLogPublisher : fileBasedLogPublishers) {
-               fileBasedLogPublisher.stop();
-           }
-       }
+        if (dataPublisherConfig.isEnabled()) {
+            for (LogPublisher fileBasedLogPublisher : fileBasedLogPublishers) {
+                fileBasedLogPublisher.stop();
+            }
+        }
     }
-    
-	private String getCurrentDate() {
-		Date now = new Date();
-		DateFormat formatter = new SimpleDateFormat(Constants.DATE_FORMATTER);
-		String formattedDate = formatter.format(now);
-		return formattedDate.replace("-", ".");
-	}
 
-	private String getAlias(String clusterId) {
-		String alias;
-		try {
-			alias = clusterId.split("\\.")[0];
-		} catch (Exception e) {
+    private String getCurrentDate() {
+        Date now = new Date();
+        DateFormat formatter = new SimpleDateFormat(Constants.DATE_FORMATTER);
+        String formattedDate = formatter.format(now);
+        return formattedDate.replace("-", ".");
+    }
+
+    private String getAlias(String clusterId) {
+        String alias;
+        try {
+            alias = clusterId.split("\\.")[0];
+        } catch (Exception e) {
             log.error(e);
-			alias = clusterId;
-		}
-		return alias;
-	}
+            alias = clusterId;
+        }
+        return alias;
+    }
 
-	private Long getDateTime() {
-		Date date = new Date();
-		return date.getTime();
-	}
+    private Long getDateTime() {
+        Date date = new Date();
+        return date.getTime();
+    }
 
-	private String getValidTenantId(String tenantId) {
-		if (tenantId.equals(String
-				.valueOf(MultitenantConstants.INVALID_TENANT_ID))
-				|| tenantId.equals(String
-						.valueOf(MultitenantConstants.SUPER_TENANT_ID))) {
-			return "0";
-		}
-		return tenantId;
-	}
+    private String getValidTenantId(String tenantId) {
+        if (tenantId.equals(String
+                .valueOf(MultitenantConstants.INVALID_TENANT_ID))
+                || tenantId.equals(String
+                .valueOf(MultitenantConstants.SUPER_TENANT_ID))) {
+            return "0";
+        }
+        return tenantId;
+    }
 }
