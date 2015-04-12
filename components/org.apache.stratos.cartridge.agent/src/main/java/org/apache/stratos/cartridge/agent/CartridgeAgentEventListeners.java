@@ -1,7 +1,7 @@
 package org.apache.stratos.cartridge.agent;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.extensions.DefaultExtensionHandler;
 import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;

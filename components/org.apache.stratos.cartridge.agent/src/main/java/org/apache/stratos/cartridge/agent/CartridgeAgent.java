@@ -33,7 +33,6 @@ import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 
-
 import java.util.List;
 
 /**

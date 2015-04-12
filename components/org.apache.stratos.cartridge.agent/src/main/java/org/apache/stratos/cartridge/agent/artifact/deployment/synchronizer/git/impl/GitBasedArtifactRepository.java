@@ -19,6 +19,7 @@
 
 package org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.impl;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.CartridgeAgent;
@@ -39,7 +40,6 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.apache.commons.io.*;
 
 import java.io.File;
 import java.io.IOException;

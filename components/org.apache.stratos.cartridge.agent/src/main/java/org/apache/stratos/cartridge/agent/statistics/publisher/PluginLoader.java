@@ -1,18 +1,18 @@
 package org.apache.stratos.cartridge.agent.statistics.publisher;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.LinkedList;
-import java.util.jar.*;
-import java.util.zip.*;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 
 public class PluginLoader {

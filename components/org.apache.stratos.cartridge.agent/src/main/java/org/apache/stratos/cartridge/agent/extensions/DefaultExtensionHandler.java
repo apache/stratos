@@ -21,7 +21,6 @@ package org.apache.stratos.cartridge.agent.extensions;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,21 +32,26 @@ import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
-import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
-import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultExtensionHandler implements ExtensionHandler {
 
