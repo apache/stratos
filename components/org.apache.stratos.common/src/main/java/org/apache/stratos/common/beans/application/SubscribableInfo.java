@@ -23,10 +23,9 @@ import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBean;
 import org.apache.stratos.common.beans.cartridge.PersistenceBean;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "subscribableInfo")
 public class SubscribableInfo implements Serializable {

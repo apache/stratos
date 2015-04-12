@@ -19,9 +19,8 @@
 
 package org.apache.stratos.common.beans.cartridge;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "networkInterfaces")
 public class NetworkInterfaceBean {

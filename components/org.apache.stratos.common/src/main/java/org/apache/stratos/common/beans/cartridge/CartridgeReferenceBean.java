@@ -20,9 +20,8 @@ package org.apache.stratos.common.beans.cartridge;
 
 import org.apache.stratos.common.beans.application.SubscribableInfo;
 
-import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @XmlRootElement
 public class CartridgeReferenceBean implements Serializable {

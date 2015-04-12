@@ -18,9 +18,6 @@
  */
 package org.apache.stratos.common.util;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.config.CloudServiceConfig;
@@ -35,6 +32,9 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+
+import java.util.List;
+import java.util.Map;
 
 public class CloudServicesUtil {
 

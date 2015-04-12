@@ -33,7 +33,6 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 /**
  * Stratos manager service client.

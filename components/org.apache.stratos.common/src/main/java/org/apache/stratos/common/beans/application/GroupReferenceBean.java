@@ -22,7 +22,6 @@ package org.apache.stratos.common.beans.application;
 import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.io.Serializable;
 import java.util.List;
 

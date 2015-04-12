@@ -19,11 +19,10 @@
 
 package org.apache.stratos.common.beans.policy.deployment;
 
-import java.util.List;
+import org.apache.stratos.common.beans.PropertyBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.stratos.common.beans.PropertyBean;
+import java.util.List;
 
 @XmlRootElement
 public class ApplicationPolicyBean {
