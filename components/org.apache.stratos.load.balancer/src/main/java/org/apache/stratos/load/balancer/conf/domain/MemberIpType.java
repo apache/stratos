@@ -26,6 +26,6 @@ package org.apache.stratos.load.balancer.conf.domain;
  * Time: 11:18 AM
  * To change this template use File | Settings | File Templates.
  */
-public enum  MemberIpType {
+public enum MemberIpType {
     Private, Public
 }

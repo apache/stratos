@@ -68,21 +68,21 @@ import java.util.concurrent.ExecutorService;
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
  * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.services.DistributedObjectProvider"
- *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
+ * cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  * @scr.reference name="configuration.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
- *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+ * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  * @scr.reference name="synapse.config.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
- *                cardinality="1..1" policy="dynamic" bind="setSynapseConfigurationService" unbind="unsetSynapseConfigurationService"
+ * cardinality="1..1" policy="dynamic" bind="setSynapseConfigurationService" unbind="unsetSynapseConfigurationService"
  * @scr.reference name="synapse.env.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService"
- *                cardinality="1..n" policy="dynamic" bind="setSynapseEnvironmentService" unbind="unsetSynapseEnvironmentService"
+ * cardinality="1..n" policy="dynamic" bind="setSynapseEnvironmentService" unbind="unsetSynapseEnvironmentService"
  * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="dependency.mgt.service" interface="org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService"
- *                cardinality="0..1" policy="dynamic" bind="setDependencyManager" unbind="unsetDependencyManager"
+ * cardinality="0..1" policy="dynamic" bind="setDependencyManager" unbind="unsetDependencyManager"
  * @scr.reference name="synapse.registrations.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseRegistrationsService"
- *                cardinality="1..n" policy="dynamic" bind="setSynapseRegistrationsService" unbind="unsetSynapseRegistrationsService"
+ * cardinality="1..n" policy="dynamic" bind="setSynapseRegistrationsService" unbind="unsetSynapseRegistrationsService"
  * @scr.reference name="user.realmservice.default" interface="org.wso2.carbon.user.core.service.RealmService"
- *                cardinality="1..1" policy="dynamic" bind="setRealmService" unbind="unsetRealmService"
+ * cardinality="1..1" policy="dynamic" bind="setRealmService" unbind="unsetRealmService"
  */
 @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
 public class LoadBalancerServiceComponent {
@@ -101,7 +101,7 @@ public class LoadBalancerServiceComponent {
         try {
             ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
             boolean clusteringEnabled = (clusteringAgent != null);
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Load balancer clustering is %s", (clusteringEnabled ? "enabled" : "disabled")));
             }
 
@@ -127,7 +127,7 @@ public class LoadBalancerServiceComponent {
                     threadPoolSize);
 
             TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
-            if(topologyProvider == null) {
+            if (topologyProvider == null) {
                 topologyProvider = new TopologyProvider();
                 LoadBalancerConfiguration.getInstance().setTopologyProvider(topologyProvider);
             }
@@ -138,7 +138,7 @@ public class LoadBalancerServiceComponent {
                 startApplicationSignUpEventReceiver(executorService, topologyProvider);
             }
 
-            if(configuration.isDomainMappingEnabled()) {
+            if (configuration.isDomainMappingEnabled()) {
                 // Start domain mapping event receiver
                 startDomainMappingEventReceiver(executorService, topologyProvider);
             }
@@ -148,7 +148,7 @@ public class LoadBalancerServiceComponent {
                 startTopologyEventReceiver(executorService, topologyProvider);
             }
 
-            if(configuration.isCepStatsPublisherEnabled()) {
+            if (configuration.isCepStatsPublisherEnabled()) {
                 // Start statistics notifier
                 startStatisticsNotifier(topologyProvider);
             }
@@ -165,7 +165,7 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        if(domainMappingEventReceiver != null) {
+        if (domainMappingEventReceiver != null) {
             return;
         }
 
@@ -178,7 +178,7 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        if(applicationSignUpEventReceiver != null) {
+        if (applicationSignUpEventReceiver != null) {
             return;
         }
 
@@ -191,29 +191,29 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        if(topologyEventReceiver != null) {
+        if (topologyEventReceiver != null) {
             return;
         }
 
         topologyEventReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
-	    topologyEventReceiver.setExecutorService(executorService);
-	    topologyEventReceiver.execute();
+        topologyEventReceiver.setExecutorService(executorService);
+        topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
         }
 
         if (log.isInfoEnabled()) {
-            if(TopologyServiceFilter.getInstance().isActive()) {
+            if (TopologyServiceFilter.getInstance().isActive()) {
                 log.info(String.format("Service filter activated: [filter] %s",
                         TopologyServiceFilter.getInstance().toString()));
             }
 
-            if(TopologyClusterFilter.getInstance().isActive()) {
+            if (TopologyClusterFilter.getInstance().isActive()) {
                 log.info(String.format("Cluster filter activated: [filter] %s",
                         TopologyClusterFilter.getInstance().toString()));
             }
 
-            if(TopologyMemberFilter.getInstance().isActive()) {
+            if (TopologyMemberFilter.getInstance().isActive()) {
                 log.info(String.format("Member filter activated: [filter] %s",
                         TopologyMemberFilter.getInstance().toString()));
             }
@@ -254,7 +254,7 @@ public class LoadBalancerServiceComponent {
         }
 
         // Terminate topology receiver
-        if(topologyEventReceiver != null) {
+        if (topologyEventReceiver != null) {
             try {
                 topologyEventReceiver.terminate();
             } catch (Exception e) {
@@ -263,7 +263,7 @@ public class LoadBalancerServiceComponent {
         }
 
         // Terminate application signup event receiver
-        if(applicationSignUpEventReceiver != null) {
+        if (applicationSignUpEventReceiver != null) {
             try {
                 applicationSignUpEventReceiver.terminate();
             } catch (Exception e) {
@@ -272,7 +272,7 @@ public class LoadBalancerServiceComponent {
         }
 
         // Terminate domain mapping event receiver
-        if(domainMappingEventReceiver != null) {
+        if (domainMappingEventReceiver != null) {
             try {
                 domainMappingEventReceiver.terminate();
             } catch (Exception e) {
@@ -281,7 +281,7 @@ public class LoadBalancerServiceComponent {
         }
 
         // Terminate statistics notifier
-        if(statisticsNotifier != null) {
+        if (statisticsNotifier != null) {
             try {
                 statisticsNotifier.terminate();
             } catch (Exception e) {
@@ -290,7 +290,7 @@ public class LoadBalancerServiceComponent {
         }
 
         // Shutdown executor service
-        if(executorService != null) {
+        if (executorService != null) {
             try {
                 executorService.shutdownNow();
             } catch (Exception e) {
@@ -390,7 +390,7 @@ public class LoadBalancerServiceComponent {
             if (!alreadyCreated) {
                 try {
                     registerDeployer(synapseEnvironmentService
-                            .getConfigurationContext().getAxisConfiguration(),
+                                    .getConfigurationContext().getAxisConfiguration(),
                             synapseEnvironmentService.getSynapseEnvironment());
                     if (log.isDebugEnabled()) {
                         log.debug("Endpoint admin bundle is activated ");

@@ -90,7 +90,7 @@ public class LoadBalancerContext {
     }
 
     public void removeDomainMappingContextPath(String hostName) {
-        if(containsDomainMappingContextPath(hostName)) {
+        if (containsDomainMappingContextPath(hostName)) {
             hostNameToDomainMappingContextPathMap.remove(hostName);
         }
     }

@@ -52,7 +52,7 @@ public class AlgorithmContext {
             lock = acquireCurrentMemberIndexLock();
             putCurrentMemberIndex(serviceName, clusterId, 0);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 releaseCurrentMemberIndexLock(lock);
             }
         }
@@ -76,7 +76,7 @@ public class AlgorithmContext {
             lock = acquireCurrentMemberIndexLock();
             putCurrentMemberIndex(getServiceName(), getClusterId(), currentMemberIndex);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 releaseCurrentMemberIndexLock(lock);
             }
         }
@@ -91,7 +91,7 @@ public class AlgorithmContext {
     }
 
     private void releaseCurrentMemberIndexLock(Lock lock) {
-        if(lock != null) {
+        if (lock != null) {
             distributedObjectProvider.releaseLock(lock);
         }
     }

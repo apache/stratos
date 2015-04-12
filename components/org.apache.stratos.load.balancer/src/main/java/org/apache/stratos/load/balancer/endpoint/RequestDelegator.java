@@ -48,7 +48,8 @@ public class RequestDelegator {
 
     /**
      * Find the next member in a cluster by applying a load balancing algorithm by the given host name.
-     * @param hostName host name of the cluster
+     *
+     * @param hostName  host name of the cluster
      * @param messageId synapse message id to be included in debugging logs
      * @return
      */
@@ -73,9 +74,8 @@ public class RequestDelegator {
                 }
             }
             return member;
-        }
-        else {
-            if(log.isWarnEnabled()) {
+        } else {
+            if (log.isWarnEnabled()) {
                 log.warn(String.format("Could not find a cluster for hostname %s", hostName));
             }
         }
@@ -84,6 +84,7 @@ public class RequestDelegator {
 
     /**
      * Find the next member in a cluster by applying a load balancing algorithm by the given host name and tenant id.
+     *
      * @param hostName host name of the cluster
      * @param tenantId tenant id of the incoming request
      * @return
@@ -104,22 +105,21 @@ public class RequestDelegator {
                 }
             }
             return member;
-        }
-        else {
-            if(log.isWarnEnabled()) {
+        } else {
+            if (log.isWarnEnabled()) {
                 log.warn(String.format("Could not find a cluster for hostname %s and tenant-id %d", hostName, tenantId));
             }
         }
         return null;
     }
 
-	/**
+    /**
      * Find next member in the cluster by applying a load balancing algorithm.
-     *
-	 * This operation should be synchronized in order to find a member
-	 * correctly. This has no performance impact as per the load tests
-	 * carried out. 
-	 */
+     * <p/>
+     * This operation should be synchronized in order to find a member
+     * correctly. This has no performance impact as per the load tests
+     * carried out.
+     */
     private synchronized Member findNextMemberInCluster(Cluster cluster) {
         // Find algorithm context of the cluster
         ClusterContext clusterContext = LoadBalancerContext.getInstance().getClusterContext(cluster.getClusterId());

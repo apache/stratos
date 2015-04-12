@@ -76,7 +76,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     /* Sessions time out interval */
     private long sessionTimeout = -1;
-    
+
     private final static Pattern LAST_INT_PATTERN = Pattern.compile("[^0-9]+([0-9]+)$");
 
     @Override
@@ -156,15 +156,15 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private void setupLoadBalancerContextProperties(MessageContext synCtx, org.apache.axis2.clustering.Member currentMember) {
         String targetHostname = extractTargetHost(synCtx);
         org.apache.axis2.context.MessageContext axis2MsgCtx = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
-        
+
         String httpTransportName = "http", httpsTransportName = "https";
         String transportId = getTransportId(extractIncomingTransport(synCtx));
-               
-		if (transportId != null) {
-			httpsTransportName = httpsTransportName.concat(transportId);
-			httpTransportName = httpTransportName.concat(transportId);
-		}
-        
+
+        if (transportId != null) {
+            httpsTransportName = httpsTransportName.concat(transportId);
+            httpTransportName = httpTransportName.concat(transportId);
+        }
+
         TransportInDescription httpTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn(httpTransportName);
         TransportInDescription httpsTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn(httpsTransportName);
         String lbHttpPort = (String) httpTransportIn.getParameter("port").getValue();
@@ -176,16 +176,16 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         synCtx.setProperty(LoadBalancerConstants.LB_HTTPS_PORT, lbHttpsPort);
         synCtx.setProperty(LoadBalancerConstants.CLUSTER_ID, clusterId);
     }
-    
-	protected String getTransportId(String incomingTransportName) {
-		// pattern match and find the transport id.
-		Matcher matcher = LAST_INT_PATTERN.matcher(incomingTransportName);
-		if (matcher.find()) {
-			return matcher.group(1);
-		}
 
-		return null;
-	}
+    protected String getTransportId(String incomingTransportName) {
+        // pattern match and find the transport id.
+        Matcher matcher = LAST_INT_PATTERN.matcher(incomingTransportName);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return null;
+    }
 
 
     /**
@@ -241,8 +241,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             String url = extractUrl(synCtx);
             int tenantId = scanUrlForTenantId(url);
 
-            if(tenantId == -1) {
-               // If there is no tenant involves in the URL, Find next member from host name
+            if (tenantId == -1) {
+                // If there is no tenant involves in the URL, Find next member from host name
                 member = requestDelegator.findNextMemberFromHostName(targetHost, synCtx.getMessageID());
             } else if (tenantExists(tenantId)) {
                 // Tenant found, find member from hostname and tenant id
@@ -264,6 +264,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     /**
      * Create axis2 member from load balancer member object.
+     *
      * @param synCtx
      * @param member
      * @return
@@ -290,7 +291,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * @param axis2Member
      */
     private void updateAxis2MemberPorts(MessageContext synCtx, org.apache.axis2.clustering.Member axis2Member) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Updating axis2 member port");
         }
 
@@ -437,7 +438,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private int scanUrlForTenantId(String url) {
         int tenantId = -1;
         List<String> regexList = LoadBalancerConfiguration.getInstance().getTenantIdentifierRegexList();
-        for(String regex : regexList) {
+        for (String regex : regexList) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Request URL: %s ", url));
                 log.debug(String.format("Tenant identifier regex: %s ", regex));
@@ -475,6 +476,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     /**
      * Check tenant exists.
+     *
      * @param tenantId
      * @return
      */
@@ -489,6 +491,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     /**
      * Find tenant id from tenant domain.
+     *
      * @param tenantDomain
      * @return
      */
@@ -507,6 +510,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     /**
      * Extract target host from incoming request.
+     *
      * @param synCtx
      * @return
      */
@@ -528,7 +532,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         return axis2MessageContext.getTransportIn().getName();
     }
-    
+
     private String extractIncomingTransport(MessageContext synCtx) {
         org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         return axis2MessageContext.getIncomingTransportName();
@@ -591,7 +595,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             String hostName = extractTargetHost(synCtx);
             if (LoadBalancerContext.getInstance().containsDomainMappingContextPath(hostName)) {
                 String appContext = LoadBalancerContext.getInstance().getDomainMappingContextPath(hostName);
-                if(StringUtils.isNotBlank(appContext)) {
+                if (StringUtils.isNotBlank(appContext)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Domain mapping found with application context: [domain-name] %s " +
                                 "[app-context] %s", hostName, appContext));

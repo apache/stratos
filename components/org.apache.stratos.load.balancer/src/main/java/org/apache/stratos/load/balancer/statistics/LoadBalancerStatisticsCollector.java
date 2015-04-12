@@ -70,7 +70,7 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
         synchronized (LoadBalancerStatisticsCollector.class) {
             if (clusterIdRequestCountMap.containsKey(clusterId)) {
                 Integer count = clusterIdRequestCountMap.get(clusterId);
-                if(count != null) {
+                if (count != null) {
                     return count;
                 }
             }
@@ -81,7 +81,7 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     /**
      * Returns the number of requests served since the last time this function was called.
      */
-    public int getServedRequestCount(String clusterId){
+    public int getServedRequestCount(String clusterId) {
         synchronized (LoadBalancerStatisticsCollector.class) {
             if (clusterIdServedRequestCountMap.containsKey(clusterId)) {
                 Integer servedCount = clusterIdServedRequestCountMap.get(clusterId);

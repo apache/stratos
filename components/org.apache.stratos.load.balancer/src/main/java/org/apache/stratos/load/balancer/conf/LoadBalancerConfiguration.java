@@ -538,13 +538,11 @@ public class LoadBalancerConfiguration {
         }
 
         private MemberIpType transformMemberIpType(String topologyMemberIpType) {
-            if("private".equals(topologyMemberIpType)) {
+            if ("private".equals(topologyMemberIpType)) {
                 return MemberIpType.Private;
-            }
-            else if("public".equals(topologyMemberIpType)) {
+            } else if ("public".equals(topologyMemberIpType)) {
                 return MemberIpType.Public;
-            }
-            else {
+            } else {
                 throw new InvalidConfigurationException(String.format("Topology member ip address type is not valid: %s", topologyMemberIpType));
             }
         }
