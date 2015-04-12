@@ -36,7 +36,12 @@ public class StratosPrincipal implements Principal {
     }
 
     public boolean equals(Object another) {
-        return userName.equals((another));
+        if (another == null || another.getClass() != this.getClass()) {
+            return false;
+        }
+
+        StratosPrincipal principal = (StratosPrincipal) another;
+        return userName.equals((principal.getName()));
     }
 
     public String toString() {
