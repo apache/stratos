@@ -19,7 +19,9 @@
 
 package org.apache.stratos.load.balancer.common.domain;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Load balancer member definition.

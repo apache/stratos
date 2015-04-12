@@ -21,8 +21,8 @@ package org.apache.stratos.load.balancer.common.event.receivers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
