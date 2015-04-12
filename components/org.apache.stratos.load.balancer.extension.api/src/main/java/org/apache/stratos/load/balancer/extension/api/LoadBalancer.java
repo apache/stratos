@@ -19,8 +19,8 @@
 
 package org.apache.stratos.load.balancer.extension.api;
 
-import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.load.balancer.common.domain.Topology;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 /**
  * A generic load balancer life-cycle definition.
