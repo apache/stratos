@@ -52,7 +52,7 @@ public class CloudControllerServiceClient {
 
         try {
             stub = new CloudControllerServiceStub(epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(ccSocketTimeout));
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(ccSocketTimeout));
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(ccConnectionTimeout));
 
         } catch (AxisFault axisFault) {

@@ -362,8 +362,7 @@ public class StratosApiV40Utils {
             log.debug("Getting available cartridges. Search String: " + cartridgeSearchString + ", Multi-Tenant: " + multiTenant);
         }
 
-        boolean allowMultipleSubscription = new Boolean(
-                System.getProperty(CartridgeConstants.FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED));
+        boolean allowMultipleSubscription = Boolean.valueOf(System.getProperty(CartridgeConstants.FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED));
 
         try {
             Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);

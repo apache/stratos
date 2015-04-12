@@ -56,8 +56,8 @@ public class StratosManagerServiceClient {
 
         try {
             stub = new StratosManagerServiceStub(epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(ccSocketTimeout));
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(ccConnectionTimeout));
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(ccSocketTimeout));
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf(ccConnectionTimeout));
 
         } catch (AxisFault axisFault) {
             String msg = "Could not initialize stratos manager service client";
