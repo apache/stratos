@@ -312,7 +312,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Gets a single cartridge by type
-     * @param cartridgeType
+     * @param cartridgeType Cartridge type
      * @return 200 if specified cartridge exists, 404 if not
      * @throws RestAPIException
      */
@@ -333,8 +333,8 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Returns cartridges by category.
      *
-     * @param filter
-     * @param criteria
+     * @param filter Filter
+     * @param criteria Criteria
      * @return 200 if cartridges are found for specified filter, 404 if none found
      * @throws RestAPIException
      */
@@ -360,8 +360,8 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Returns a specific cartridge by category.
      *
-     * @param filter
-     * @param cartridgeType
+     * @param filter Filter
+     * @param cartridgeType Cartridge Type
      * @return 200 if a cartridge is found for specified filter, 404 if none found
      * @throws RestAPIException
      */
@@ -500,7 +500,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Add network partition
      *
-     * @param networkPartitionBean
+     * @param networkPartitionBean Network Partition
      * @return 201 if network partition successfully added, 409 if network partition already exists
      * @throws RestAPIException
      */
@@ -588,7 +588,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Add application
      *
-     * @param applicationDefinition
+     * @param applicationDefinition Application Definition
      * @return 201 if application is successfully added
      * @throws RestAPIException
      */
@@ -648,7 +648,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Deploy application.
      *
-     * @param applicationId
+     * @param applicationId Application Id
      * @param applicationPolicyId the application policy id
      * @return 202 after deployment process is started. Deployment is asynchronous
      * @throws RestAPIException the rest api exception
@@ -668,7 +668,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Adds an application policy
-     * @param applicationPolicy
+     * @param applicationPolicy Application Policy
      * @return 201 if the application policy is successfully added
      * @throws RestAPIException
      */
@@ -689,7 +689,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Retrieve specified application policy
      *
-     * @param applicationPolicyId
+     * @param applicationPolicyId Application Policy Id
      * @return 200 if application policy is found
      * @throws RestAPIException
      */
@@ -723,7 +723,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Remove specified application policy
      *
-     * @param applicationPolicyId
+     * @param applicationPolicyId Application Policy Id
      * @return 200 if application policy is successfully removed
      * @throws RestAPIException
      */
@@ -744,7 +744,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Update application policy
      *
-     * @param applicationPolicy
+     * @param applicationPolicy Application Policy
      * @return 200 if application policies successfully updated
      * @throws RestAPIException
      */
@@ -844,7 +844,7 @@ public class StratosApiV41 extends AbstractApi {
      * Adds the domain mappings for an application.
      *
      * @param applicationId       the application id
-     * @param domainMapppingsBean the domain mapppings bean
+     * @param domainMappingsBean the domain mappings bean
      * @return 200
      * @throws RestAPIException the rest api exception
      */
@@ -854,10 +854,10 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/addDomainMappings")
     public Response addDomainMappings(
-            @PathParam("applicationId") String applicationId, ApplicationDomainMappingsBean domainMapppingsBean)
+            @PathParam("applicationId") String applicationId, ApplicationDomainMappingsBean domainMappingsBean)
             throws RestAPIException {
-        StratosApiV41Utils.addApplicationDomainMappings(applicationId, domainMapppingsBean);
-        List<DomainMappingBean> mappings = domainMapppingsBean.getDomainMappings();
+        StratosApiV41Utils.addApplicationDomainMappings(applicationId, domainMappingsBean);
+        List<DomainMappingBean> mappings = domainMappingsBean.getDomainMappings();
         List<String> domainMappingList = new ArrayList<String>();
         for (DomainMappingBean domainMappingBean : mappings) {
             domainMappingList.add(domainMappingBean.getDomainName());
@@ -1083,7 +1083,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Updates a network partition
-     * @param networkPartition
+     * @param networkPartition Network Partition
      * @return 200 if network partition is successfully updated
      * @throws RestAPIException
      */
@@ -1199,7 +1199,7 @@ public class StratosApiV41 extends AbstractApi {
                 .initializeTenant(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
         TenantPersistor persistor = ServiceHolder.getTenantPersistor();
         // not validating the domain ownership, since created by super tenant
-        int tenantId = 0; //TODO verify whether this is the correct approach (isSkeleton)
+        int tenantId; //TODO verify whether this is the correct approach (isSkeleton)
         try {
             tenantId = persistor
                     .persistTenant(tenant, false, tenantInfoBean.getSuccessKey(), tenantInfoBean.getOriginatedService(),
@@ -1680,7 +1680,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Notify artifact update event for specified repository
-     * @param payload
+     * @param payload Git notification Payload
      * @return 204
      * @throws RestAPIException
      */
