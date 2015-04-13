@@ -69,51 +69,50 @@ public class StratosAuthorizingHandler implements RequestHandler {
     }
 
 
-
     public Response handleRequest(Message message, ClassResourceInfo resourceClass) {
         try {
             AuthenticationContext.setAuthenticated(false); // TODO : fix this properly
             String userName = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("authorizing the action using" + StratosAuthorizingHandler.class.getName());
-                log.debug("username :"+ userName);
+                log.debug("username :" + userName);
                 log.debug("tenantDomain" + tenantDomain);
-                log.debug("tenantId :"+ tenantId);
+                log.debug("tenantId :" + tenantId);
             }
             Method targetMethod = getTargetMethod(message);
-            if (!authorize(userName,tenantDomain,tenantId,targetMethod)) {
-               log.warn("User :"+ userName + "trying to perform unauthrorized action" +
-                       " against the resource :"+ targetMethod);
-               return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).
-                       entity(new ErrorResponseBean(Response.Status.FORBIDDEN.getStatusCode(), "The user does not have required permissions to " +
-                               "perform this operation")).build();
+            if (!authorize(userName, tenantDomain, tenantId, targetMethod)) {
+                log.warn("User :" + userName + "trying to perform unauthrorized action" +
+                        " against the resource :" + targetMethod);
+                return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).
+                        entity(new ErrorResponseBean(Response.Status.FORBIDDEN.getStatusCode(), "The user does not have required permissions to " +
+                                "perform this operation")).build();
             }
             return null;
 
         } catch (Exception exception) {
-            log.error("Unexpected error occured while REST api, authorization process",exception);
+            log.error("Unexpected error occured while REST api, authorization process", exception);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
                     entity(new ErrorResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    		"Unexpected error. Please contact the system admin")).build();
+                            "Unexpected error. Please contact the system admin")).build();
         }
     }
 
-    private boolean authorize(String userName, String tenantDomain,int tenantId, Method targetMethod) throws Exception{
-            // first we try to see whether this is a super.tenant only operation
-            if (superTenantServiceSet.contains(targetMethod.getName()) && !isCurrentUserSuperTenant(tenantDomain, tenantId)) {
-                return false;
-            }
-            // authorize using permissionString given as annotation in the service class
-            String permissionString = authorizationActionMap.get(targetMethod.getName());
+    private boolean authorize(String userName, String tenantDomain, int tenantId, Method targetMethod) throws Exception {
+        // first we try to see whether this is a super.tenant only operation
+        if (superTenantServiceSet.contains(targetMethod.getName()) && !isCurrentUserSuperTenant(tenantDomain, tenantId)) {
+            return false;
+        }
+        // authorize using permissionString given as annotation in the service class
+        String permissionString = authorizationActionMap.get(targetMethod.getName());
 
-            // get the authorization manager for this tenant..
-            UserRealm userRealm = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm();
-            AuthorizationManager authorizationManager = userRealm.getAuthorizationManager();
+        // get the authorization manager for this tenant..
+        UserRealm userRealm = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm();
+        AuthorizationManager authorizationManager = userRealm.getAuthorizationManager();
 
-            boolean isAuthorized = isAuthorized(authorizationManager, userName, permissionString, ACTION_ON_RESOURCE);
-            return isAuthorized;
+        boolean isAuthorized = isAuthorized(authorizationManager, userName, permissionString, ACTION_ON_RESOURCE);
+        return isAuthorized;
 
     }
 
@@ -140,7 +139,8 @@ public class StratosAuthorizingHandler implements RequestHandler {
     /**
      * Here we are getting the target invocation method. The method get set as a property in the
      * message by the {@link org.apache.cxf.jaxrs.interceptor.JAXRSInInterceptor}
-     * @param message   incoming message
+     *
+     * @param message incoming message
      * @return
      */
     protected Method getTargetMethod(Message message) {
@@ -160,6 +160,7 @@ public class StratosAuthorizingHandler implements RequestHandler {
 
     /**
      * The instance of the secured bean get injected by the IOC framework
+     *
      * @param securedObject
      */
     public void setSecuredObject(Object securedObject) {
@@ -184,8 +185,9 @@ public class StratosAuthorizingHandler implements RequestHandler {
     /**
      * Goes through the class hierarchy and find the authorization annotations attached to a certain
      * method.
-     * @param clazz   class to be scanned
-     * @param authorizationActionMap    the map to be populated
+     *
+     * @param clazz                  class to be scanned
+     * @param authorizationActionMap the map to be populated
      */
     private void findAuthorizationActions(Class<?> clazz, Map<String, String> authorizationActionMap) {
         if (clazz == null || clazz == Object.class) {
@@ -219,6 +221,7 @@ public class StratosAuthorizingHandler implements RequestHandler {
 
     /**
      * Goes through the class hierarchy and figure out the supertenant annotations coupled with operations/methods.
+     *
      * @param clazz
      * @param superTenantServiceSet
      */

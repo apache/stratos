@@ -58,26 +58,27 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
     private static Log log = LogFactory.getLog(StratosAuthenticationHandler.class);
     private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
 
-    public boolean canHandle(String authHeaderPrefix){
+    public boolean canHandle(String authHeaderPrefix) {
         return SUPPORTED_AUTHENTICATION_TYPE.equals(authHeaderPrefix);
     }
 
     /**
      * Authenticate the user against the user store. Once authenticate, populate the {@link org.wso2.carbon.context.CarbonContext}
      * to be used by the downstream code.
+     *
      * @param message
      * @param classResourceInfo
      * @return
      */
     public Response handle(Message message, ClassResourceInfo classResourceInfo) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Authenticating request: [message-id] %s", message.getId()));
         }
 
-    	// If Mutual SSL is enabled
+        // If Mutual SSL is enabled
         HttpServletRequest request = (HttpServletRequest) message.get("HTTP.REQUEST");
         Object certObject = request.getAttribute("javax.servlet.request.X509Certificate");
-        
+
         AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
         String username = policy.getUserName().trim();
         String password = policy.getPassword().trim();
@@ -86,28 +87,28 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
         if (StringUtils.isEmpty(username)) {
             log.error("username is seen as null/empty values");
             return Response.status(Response.Status.UNAUTHORIZED)
-                           .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                           .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), 
-                   				"Username cannot be null")).build();
+                    .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
+                    .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                            "Username cannot be null")).build();
         } else if (certObject == null && (StringUtils.isEmpty(password))) {
             log.error("password is seen as null/empty values");
             return Response.status(Response.Status.UNAUTHORIZED)
-                           .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                           .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), 
-                   				"password cannot be null")).build();
+                    .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
+                    .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                            "password cannot be null")).build();
         }
-        
+
         try {
             RealmService realmService = ServiceHolder.getRealmService();
             RegistryService registryService = ServiceHolder.getRegistryService();
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             int tenantId = realmService.getTenantManager().getTenantId(tenantDomain);
-            
+
             UserRealm userRealm = null;
             if (certObject == null) {
                 userRealm = AnonymousSessionUtil.getRealmByTenantDomain(registryService, realmService, tenantDomain);
                 if (userRealm == null) {
-                    log .error("Invalid domain or unactivated tenant login");
+                    log.error("Invalid domain or unactivated tenant login");
                     // is this the correct HTTP code for this scenario ? (401)
                     return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
                             type(MediaType.APPLICATION_JSON).entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), "Tenant not found")).build();
@@ -136,15 +137,15 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
                 log.warn(String.format("Unable to authenticate the request: [message-id] %s", message.getId()));
                 // authentication failed, request the authetication, add the realm name if needed to the value of WWW-Authenticate
                 return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                        type(MediaType.APPLICATION_JSON).entity(new ErrorResponseBean ( Response.Status.UNAUTHORIZED.getStatusCode(), 
-                        		"Authentication failed. Please check your username/password")).build();
+                        type(MediaType.APPLICATION_JSON).entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                        "Authentication failed. Please check your username/password")).build();
             }
         } catch (Exception exception) {
-            log.error(String.format("Authentication failed: [message-id] %s", message.getId()),exception);
+            log.error(String.format("Authentication failed: [message-id] %s", message.getId()), exception);
             // server error in the eyes of the client. Hence 5xx HTTP code.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
                     entity(new ErrorResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    		"Unexpected error. Please contact the system admin")).build();
+                            "Unexpected error. Please contact the system admin")).build();
         }
     }
 }

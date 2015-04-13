@@ -37,7 +37,7 @@ public class ValidationServiceClient {
     private static final Log log = LogFactory.getLog(OAuth2TokenValidationServiceStub.class);
 
 
-    public ValidationServiceClient(String backendServerURL, String username, String password) throws Exception{
+    public ValidationServiceClient(String backendServerURL, String username, String password) throws Exception {
         String serviceURL = backendServerURL + "OAuth2TokenValidationService";
         try {
             stub = new OAuth2TokenValidationServiceStub(serviceURL);
@@ -49,8 +49,8 @@ public class ValidationServiceClient {
     }
 
 
-    public OAuth2TokenValidationResponseDTO validateAuthenticationRequest(String accessToken) throws Exception{
-        OAuth2TokenValidationRequestDTO  oauthReq = new OAuth2TokenValidationRequestDTO();
+    public OAuth2TokenValidationResponseDTO validateAuthenticationRequest(String accessToken) throws Exception {
+        OAuth2TokenValidationRequestDTO oauthReq = new OAuth2TokenValidationRequestDTO();
         oauthReq.setAccessToken(accessToken);
         oauthReq.setTokenType(OAuthConstants.BEARER_TOKEN_TYPE);
         try {

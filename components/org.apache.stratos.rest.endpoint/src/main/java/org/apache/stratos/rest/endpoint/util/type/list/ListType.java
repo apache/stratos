@@ -28,7 +28,7 @@ public class ListType<T> {
 
     private List<T> list;
 
-    @XmlElement(name="Item")
+    @XmlElement(name = "Item")
     public List<T> getList() {
         return list;
     }

@@ -83,8 +83,10 @@
 
     <bean id="stratosApiBeanV40" class="org.apache.stratos.rest.endpoint.api.StratosApiV40"/>
     <bean id="stratosApiBeanV41" class="org.apache.stratos.rest.endpoint.api.StratosApiV41"/>
-    <bean id="basicAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthenticationHandler"/>
-    <bean id="sessionAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.CookieBasedAuthenticationHandler"/>
+    <bean id="basicAuthenticationFilter"
+          class="org.apache.stratos.rest.endpoint.handlers.StratosAuthenticationHandler"/>
+    <bean id="sessionAuthenticationFilter"
+          class="org.apache.stratos.rest.endpoint.handlers.CookieBasedAuthenticationHandler"/>
     <bean id="authorizationFilterV40" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthorizingHandler">
         <property name="securedObject" ref="stratosApiBeanV40"/>
     </bean>
@@ -94,8 +96,10 @@
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
-    <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
-    <bean id="componentSynchronizerHandler" class="org.apache.stratos.rest.endpoint.handlers.ComponentSynchronizerHandler"/>
+    <bean id="throwableExceptionHandler"
+          class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
+    <bean id="componentSynchronizerHandler"
+          class="org.apache.stratos.rest.endpoint.handlers.ComponentSynchronizerHandler"/>
     <!--The below config enables OAuth based authentication/authorization for REST API-->
     <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
         <property name="password" value="admin"/>
@@ -105,7 +109,7 @@
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
         <property name="supportUnwrapped" value="true"/>
         <property name="serializeAsArray" value="true"/>
-        <property name="dropRootElement" value="true" />
+        <property name="dropRootElement" value="true"/>
         <property name="dropCollectionWrapperElement" value="true"/>
         <property name="arrayKeys">
             <list>

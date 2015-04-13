@@ -54,15 +54,15 @@ public class AbstractApi {
         }
     }
 
-    protected String getTenantDomain(){
+    protected String getTenantDomain() {
         return CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
     }
 
-    protected String getUsername(){
+    protected String getUsername() {
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
     }
-    
-    protected int getTenantId(){
+
+    protected int getTenantId() {
         return CarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 }

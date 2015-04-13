@@ -200,7 +200,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
         DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
-        if(deploymentPolicyBean == null) {
+        if (deploymentPolicyBean == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(deploymentPolicyBean).build();
@@ -539,7 +539,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getNetworkPartitions")
     public Response getNetworkPartitions()
             throws RestAPIException {
-         NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
+        NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
         return Response.ok(networkPartitions).build();
     }
 
@@ -895,11 +895,11 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force) throws RestAPIException {
 
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
-        if(applicationDefinition == null){
+        if (applicationDefinition == null) {
             log.info(String.format("Application does not exist [application-id] ", applicationId));
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        if(!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_DEPLOYED)){
+        if (!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_DEPLOYED)) {
             String message = String.format("Could not undeploy since application is not in DEPLOYED status [application-id] %s [current status] %S", applicationId, applicationDefinition.getStatus());
             log.info(message);
             return Response.status(Response.Status.CONFLICT).entity(message).build();
@@ -952,7 +952,7 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if(!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)){
+        if (!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)) {
             return Response.status(Response.Status.CONFLICT).entity(new SuccessResponseBean(Response.Status.CONFLICT.getStatusCode(),
                     String.format("Could not delete since application is not in CREATED state : [application] %s [current-status] %S", applicationId, applicationDefinition.getStatus()))).build();
         }
@@ -1096,9 +1096,9 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("clusterId") String clusterId) throws RestAPIException {
 
         ClusterBean clusterBean = StratosApiV41Utils.getClusterInfo(clusterId);
-        if(clusterBean == null){
+        if (clusterBean == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        }else{
+        } else {
             return Response.ok().entity(clusterBean).build();
         }
     }
@@ -1204,8 +1204,8 @@ public class StratosApiV41 extends AbstractApi {
 
         URI url = uriInfo.getAbsolutePathBuilder().path(tenant.getDomain()).build();
         return Response.created(url).entity(
-		        new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-		                                String.format("Tenant added successfully: [tenant] %s", tenantDomain))).build();
+                new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                        String.format("Tenant added successfully: [tenant] %s", tenantDomain))).build();
     }
 
     /**

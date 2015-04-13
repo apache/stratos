@@ -24,5 +24,5 @@ package org.apache.stratos.rest.endpoint;
 public class Constants {
 
     public static final String SUPER_TENANT_SERVICE = "super.tenant.service";
-    
+
 }

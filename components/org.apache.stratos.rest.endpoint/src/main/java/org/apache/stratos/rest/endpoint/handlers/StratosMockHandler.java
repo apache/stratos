@@ -57,22 +57,23 @@ public class StratosMockHandler extends AbstractAuthenticationAuthorizationHandl
     private static Log log = LogFactory.getLog(StratosAuthenticationHandler.class);
     private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
 
-    public boolean canHandle(String authHeaderPrefix){
+    public boolean canHandle(String authHeaderPrefix) {
         return SUPPORTED_AUTHENTICATION_TYPE.equals(authHeaderPrefix);
     }
 
     /**
      * Authenticate the user against the user store. Once authenticate, populate the {@link org.wso2.carbon.context.CarbonContext}
      * to be used by the downstream code.
+     *
      * @param message
      * @param classResourceInfo
      * @return
      */
     public Response handle(Message message, ClassResourceInfo classResourceInfo) {
-    	// If Mutual SSL is enabled
+        // If Mutual SSL is enabled
         HttpServletRequest request = (HttpServletRequest) message.get("HTTP.REQUEST");
         Object certObject = request.getAttribute("javax.servlet.request.X509Certificate");
-        
+
         AuthorizationPolicy policy = (AuthorizationPolicy) message.get(AuthorizationPolicy.class);
         String username = policy.getUserName().trim();
         String password = policy.getPassword().trim();
@@ -81,29 +82,29 @@ public class StratosMockHandler extends AbstractAuthenticationAuthorizationHandl
         if ((username == null) || username.equals("")) {
             log.error("username is seen as null/empty values.");
             return Response.status(Response.Status.UNAUTHORIZED)
-                           .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                           .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
-                        		   "Username cannot be null")).build();
+                    .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
+                    .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                            "Username cannot be null")).build();
         } else if (certObject == null && ((password == null) || password.equals(""))) {
             log.error("password is seen as null/empty values.");
             return Response.status(Response.Status.UNAUTHORIZED)
-                           .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                           .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), 
-                        		   "password cannot be null")).build();
+                    .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
+                    .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                            "password cannot be null")).build();
         }
-        
+
         try {
-        	// setting the correct tenant info for downstream code..
+            // setting the correct tenant info for downstream code..
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             carbonContext.setUsername(username);
-            
+
             return null;
         } catch (Exception exception) {
-            log.error("Authentication failed",exception);
+            log.error("Authentication failed", exception);
             // server error in the eyes of the client. Hence 5xx HTTP code.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
-                    entity(new ErrorResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 
-                    		"Unexpected error. Please contact the system admin")).build();
+                    entity(new ErrorResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                            "Unexpected error. Please contact the system admin")).build();
         }
 
     }

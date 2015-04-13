@@ -35,12 +35,12 @@ public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestExce
     private static Log log = LogFactory.getLog(BadRequestExceptionMapper.class);
 
     public Response toResponse(BadRequestException badRequestException) {
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Error in input format", badRequestException);
         }
         String errorMsg = badRequestException.getMessage() != null ? badRequestException.getMessage() : "please check" +
                 "your input format";
         return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).
-                entity(new ErrorResponseBean(Response.Status.BAD_REQUEST.getStatusCode(),errorMsg)).build();
+                entity(new ErrorResponseBean(Response.Status.BAD_REQUEST.getStatusCode(), errorMsg)).build();
     }
 }

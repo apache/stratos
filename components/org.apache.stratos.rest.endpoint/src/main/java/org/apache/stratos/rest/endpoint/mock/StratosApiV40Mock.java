@@ -56,7 +56,7 @@ public class StratosApiV40Mock {
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean initialize ()
+    public ApiResponseBean initialize()
             throws RestAPIException {
 
         ApiResponseBean stratosApiResponse = new ApiResponseBean();
@@ -70,7 +70,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getCookie(){
+    public Response getCookie() {
         HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
         String sessionId = httpSession.getId();
         return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
@@ -83,7 +83,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public CartridgeBean[] getAvailableMultiTenantCartridges() throws RestAPIException {
-          return MockContext.getInstance().getAvailableMultiTenantCartridges();
+        return MockContext.getInstance().getAvailableMultiTenantCartridges();
     }
 
     @GET
@@ -92,7 +92,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public CartridgeBean[] getAvailableSingleTenantCartridges() throws RestAPIException {
-         return MockContext.getInstance().getAvailableSingleTenantCartridges();
+        return MockContext.getInstance().getAvailableSingleTenantCartridges();
     }
 
     @GET
@@ -101,7 +101,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public CartridgeBean[] getAvailableCartridges() throws RestAPIException {
-         return MockContext.getInstance().getAvailableCartridges();
+        return MockContext.getInstance().getAvailableCartridges();
     }
 
     @GET
@@ -110,7 +110,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public CartridgeBean[] getSubscribedCartridges() throws RestAPIException {
-         return MockContext.getInstance().getSubscribedCartridges();
+        return MockContext.getInstance().getSubscribedCartridges();
     }
 
     @POST
@@ -118,8 +118,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response subscribe(Object cartridgeInfoBean) throws RestAPIException{
-          throw new RuntimeException("Not implemented");
+    public Response subscribe(Object cartridgeInfoBean) throws RestAPIException {
+        throw new RuntimeException("Not implemented");
     }
 
 
@@ -137,8 +137,8 @@ public class StratosApiV40Mock {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean unsubscribe(String alias) throws RestAPIException{
-          return MockContext.getInstance().unsubscribe(alias);
+    public ApiResponseBean unsubscribe(String alias) throws RestAPIException {
+        return MockContext.getInstance().unsubscribe(alias);
     }
 
     @POST
@@ -148,7 +148,7 @@ public class StratosApiV40Mock {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public ApiResponseBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
-    	return MockContext.getInstance().addTenant(tenantInfoBean);
+        return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
 
@@ -178,7 +178,7 @@ public class StratosApiV40Mock {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public ApiResponseBean deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
-         return  MockContext.getInstance().deleteTenant(tenantDomain);
+        return MockContext.getInstance().deleteTenant(tenantDomain);
     }
 
 
@@ -188,7 +188,7 @@ public class StratosApiV40Mock {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public TenantInfoBean[] retrieveTenants() throws RestAPIException {
-    	return MockContext.getInstance().getTenants();
+        return MockContext.getInstance().getTenants();
     }
 
     @GET
@@ -197,8 +197,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws RestAPIException {
-            return MockContext.getInstance().retrievePartialSearchTenants(domain);
+    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain") String domain) throws RestAPIException {
+        return MockContext.getInstance().retrievePartialSearchTenants(domain);
     }
 
 
@@ -208,7 +208,7 @@ public class StratosApiV40Mock {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public void activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
-            MockContext.getInstance().activateTenant(tenantDomain);
+        MockContext.getInstance().activateTenant(tenantDomain);
     }
 
     @POST
@@ -217,19 +217,19 @@ public class StratosApiV40Mock {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public ApiResponseBean deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
-        return  MockContext.getInstance().deactivateTenant(tenantDomain);
+        return MockContext.getInstance().deactivateTenant(tenantDomain);
     }
 
-   @POST
-   @Path("/service/definition")
-   @Produces("application/json")
-   @Consumes("application/json")
-   @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-   @SuperTenantService(true)
-   public ApiResponseBean deployService(Object serviceDefinitionBean)
-           throws RestAPIException {
-       throw new RestAPIException("Not implemented");
-   }
+    @POST
+    @Path("/service/definition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public ApiResponseBean deployService(Object serviceDefinitionBean)
+            throws RestAPIException {
+        throw new RestAPIException("Not implemented");
+    }
 
     @POST
     @Path("/cartridge/definition/")
@@ -237,7 +237,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployCartridgeDefinition (CartridgeBean cartridgeDefinitionBean)
+    public ApiResponseBean deployCartridgeDefinition(CartridgeBean cartridgeDefinitionBean)
             throws RestAPIException {
         return MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
     }
@@ -248,8 +248,8 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public void unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-         MockContext.getInstance().deleteCartridgeDefinition(cartridgeType);
+    public void unDeployCartridgeDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+        MockContext.getInstance().deleteCartridgeDefinition(cartridgeType);
     }
 
     @GET
@@ -272,14 +272,13 @@ public class StratosApiV40Mock {
     }
 
 
-
     @POST
     @Path("/policy/deployment/partition")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployPartition (PartitionBean partition)
+    public ApiResponseBean deployPartition(PartitionBean partition)
             throws RestAPIException {
         return MockContext.getInstance().addPartition(partition);
     }
@@ -290,9 +289,9 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployAutoscalingPolicyDefintion (AutoscalePolicyBean autoscalePolicy)
+    public ApiResponseBean deployAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
-          return MockContext.getInstance().addAutoScalingPolicyDefinition(autoscalePolicy);
+        return MockContext.getInstance().addAutoScalingPolicyDefinition(autoscalePolicy);
 
     }
 
@@ -302,9 +301,9 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployDeploymentPolicyDefinition (DeploymentPolicyBean deploymentPolicy)
+    public ApiResponseBean deployDeploymentPolicyDefinition(DeploymentPolicyBean deploymentPolicy)
             throws RestAPIException {
-           throw new RestAPIException("Not supported");
+        throw new RestAPIException("Not supported");
     }
 
     @GET
@@ -312,8 +311,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean[] getPartitions () throws RestAPIException {
-            return MockContext.getInstance().getPartitions();
+    public PartitionBean[] getPartitions() throws RestAPIException {
+        return MockContext.getInstance().getPartitions();
 
     }
 
@@ -322,8 +321,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
-            return MockContext.getInstance().getPartition(partitionId);
+    public PartitionBean getPartition(@PathParam("partitionId") String partitionId) throws RestAPIException {
+        return MockContext.getInstance().getPartition(partitionId);
 
     }
 
@@ -332,9 +331,9 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public NetworkPartitionBean[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public NetworkPartitionBean[] getPartitionGroups(@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
-          return MockContext.getInstance().getPartitionGroups(deploymentPolicyId);
+        return MockContext.getInstance().getPartitionGroups(deploymentPolicyId);
 
     }
 
@@ -343,9 +342,9 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean[] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
-                                       @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
-           return MockContext.getInstance().getPartitions(deploymentPolicyId, partitionGroupId);
+    public PartitionBean[] getPartitions(@PathParam("deploymentPolicyId") String deploymentPolicyId,
+                                         @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
+        return MockContext.getInstance().getPartitions(deploymentPolicyId, partitionGroupId);
 
     }
 
@@ -354,9 +353,9 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean[] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public PartitionBean[] getPartitionsOfPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
-             return MockContext.getInstance().getPartitionsOfPolicy(deploymentPolicyId);
+        return MockContext.getInstance().getPartitionsOfPolicy(deploymentPolicyId);
 
     }
 
@@ -365,8 +364,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public AutoscalePolicyBean[] getAutoscalePolicies () throws RestAPIException {
-            return MockContext.getInstance().getAutoscalePolicies();
+    public AutoscalePolicyBean[] getAutoscalePolicies() throws RestAPIException {
+        return MockContext.getInstance().getAutoscalePolicies();
 
     }
 
@@ -375,7 +374,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public AutoscalePolicyBean getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
+    public AutoscalePolicyBean getAutoscalePolicies(@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
         return MockContext.getInstance().getAutoscalePolicies(autoscalePolicyId);
 
@@ -386,8 +385,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public DeploymentPolicyBean[] getDeploymentPolicies () throws RestAPIException {
-          return MockContext.getInstance().getDeploymentPolicies();
+    public DeploymentPolicyBean[] getDeploymentPolicies() throws RestAPIException {
+        return MockContext.getInstance().getDeploymentPolicies();
 
     }
 
@@ -396,7 +395,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public DeploymentPolicyBean getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public DeploymentPolicyBean getDeploymentPolicies(@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
         return MockContext.getInstance().getDeploymentPolicies(deploymentPolicyId);
 
@@ -428,7 +427,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public ClusterBean[] getCluster(@PathParam("cartridgeType") String cartridgeType,
-                              @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException, RestAPIException {
+                                    @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException, RestAPIException {
 
         return MockContext.getInstance().getClusters();
     }
@@ -447,27 +446,27 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public DeploymentPolicyBean[] getValidDeploymentPolicies (@PathParam("cartridgeType") String cartridgeType)
+    public DeploymentPolicyBean[] getValidDeploymentPolicies(@PathParam("cartridgeType") String cartridgeType)
             throws RestAPIException {
 
         return MockContext.getInstance().getDeploymentPoliciesForCartridgeType(cartridgeType);
     }
-    
+
     @POST
-	@Path("/cartridge/sync")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
-	public Response synchronizeRepository(String alias) throws RestAPIException {
-		return Response.noContent().build();
-	}
-    
+    @Path("/cartridge/sync")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response synchronizeRepository(String alias) throws RestAPIException {
+        return Response.noContent().build();
+    }
+
     @POST
     @Path("/user")
     @Consumes("application/json")
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
     public Response addUser(UserInfoBean userInfoBean) throws RestAPIException {
-    	MockContext.getInstance().addUser(userInfoBean);
+        MockContext.getInstance().addUser(userInfoBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
         return Response.created(url).build();
     }
@@ -478,7 +477,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
     public Response deleteUser(@PathParam("userName") String userName) throws RestAPIException {
-    	MockContext.getInstance().deleteUser(userName);
+        MockContext.getInstance().deleteUser(userName);
         return Response.noContent().build();
     }
 
@@ -488,7 +487,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
     public Response updateUser(UserInfoBean userInfoBean) throws RestAPIException {
-    	MockContext.getInstance().updateUser(userInfoBean);
+        MockContext.getInstance().updateUser(userInfoBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
         return Response.created(url).build();
     }

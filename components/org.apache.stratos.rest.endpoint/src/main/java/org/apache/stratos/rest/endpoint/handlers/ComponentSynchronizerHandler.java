@@ -37,7 +37,7 @@ public class ComponentSynchronizerHandler implements RequestHandler {
     public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-        if(!componentStartUpSynchronizer.isComponentActive(Component.StratosManager)) {
+        if (!componentStartUpSynchronizer.isComponentActive(Component.StratosManager)) {
             ApiResponseBean responseBean = new ApiResponseBean();
             responseBean.setMessage("Stratos manager component is not active");
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(responseBean).build();

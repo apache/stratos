@@ -36,7 +36,7 @@ public class StratosPrincipal implements Principal {
     }
 
     public boolean equals(Object another) {
-      return userName.equals((another));
+        return userName.equals((another));
     }
 
     public String toString() {

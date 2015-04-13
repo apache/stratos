@@ -22,7 +22,7 @@ package org.apache.stratos.rest.endpoint.util.type.map;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
-public class MapEntryType <S,T> {
+public class MapEntryType<S, T> {
 
     @XmlAttribute
     public S key;

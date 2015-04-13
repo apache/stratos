@@ -50,14 +50,14 @@ public class AuthenticationApi extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getCookie(){
-       HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
-       PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-       httpSession.setAttribute("userName",carbonContext.getUsername());
-       httpSession.setAttribute("tenantDomain",carbonContext.getTenantDomain());
-       httpSession.setAttribute("tenantId",carbonContext.getTenantId());
+    public Response getCookie() {
+        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        httpSession.setAttribute("userName", carbonContext.getUsername());
+        httpSession.setAttribute("tenantDomain", carbonContext.getTenantDomain());
+        httpSession.setAttribute("tenantId", carbonContext.getTenantId());
 
-       String sessionId = httpSession.getId();
+        String sessionId = httpSession.getId();
         return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }

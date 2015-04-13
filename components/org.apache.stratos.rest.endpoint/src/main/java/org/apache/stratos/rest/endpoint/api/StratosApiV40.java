@@ -71,13 +71,14 @@ public class StratosApiV40 extends AbstractApi {
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean initialize ()
+    public ApiResponseBean initialize()
             throws RestAPIException {
 
         ApiResponseBean stratosApiResponse = new ApiResponseBean();
         stratosApiResponse.setMessage("Successfully logged in");
         return stratosApiResponse;
     }
+
     /*
     This method gets called by the client who are interested in using session mechanism to authenticate themselves in
     subsequent calls. This method call get authenticated by the basic authenticator.
@@ -88,13 +89,13 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getCookie(){
+    public Response getCookie() {
 
         HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        httpSession.setAttribute("userName",carbonContext.getUsername());
-        httpSession.setAttribute("tenantDomain",carbonContext.getTenantDomain());
-        httpSession.setAttribute("tenantId",carbonContext.getTenantId());
+        httpSession.setAttribute("userName", carbonContext.getUsername());
+        httpSession.setAttribute("tenantDomain", carbonContext.getTenantDomain());
+        httpSession.setAttribute("tenantId", carbonContext.getTenantId());
 
         String sessionId = httpSession.getId();
         return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
@@ -121,7 +122,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean unDeployCartridgeBeanDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+    public ApiResponseBean unDeployCartridgeBeanDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         return StratosApiV40Utils.undeployCartridge(cartridgeType);
     }
@@ -132,7 +133,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response deployPartition (PartitionBean partition)
+    public Response deployPartition(PartitionBean partition)
             throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
@@ -144,7 +145,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployAutoscalingPolicyDefintion (AutoscalePolicyBean autoscalePolicy)
+    public ApiResponseBean deployAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
 
         return StratosApiV40Utils.deployAutoscalingPolicy(autoscalePolicy);
@@ -177,7 +178,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
+    public PartitionBean getPartition(@PathParam("partitionId") String partitionId) throws RestAPIException {
 
         return StratosApiV40Utils.getPartition(partitionId);
     }
@@ -187,7 +188,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public Response getPartitionGroups(@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
@@ -198,8 +199,8 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean[] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
-                                       @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
+    public PartitionBean[] getPartitions(@PathParam("deploymentPolicyId") String deploymentPolicyId,
+                                         @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
 
         return StratosApiV40Utils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId);
     }
@@ -209,7 +210,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public PartitionBean[] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public PartitionBean[] getPartitionsOfPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
         return StratosApiV40Utils.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
@@ -220,7 +221,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public AutoscalePolicyBean[] getAutoscalePolicies () throws RestAPIException {
+    public AutoscalePolicyBean[] getAutoscalePolicies() throws RestAPIException {
 
         return StratosApiV40Utils.getAutoScalePolicies();
     }
@@ -230,7 +231,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public AutoscalePolicyBean getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
+    public AutoscalePolicyBean getAutoscalePolicies(@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
 
         return StratosApiV40Utils.getAutoScalePolicy(autoscalePolicyId);
@@ -471,7 +472,7 @@ public class StratosApiV40 extends AbstractApi {
         int tenantId = 0; //TODO verify whether this is the correct approach (isSkeleton)
         try {
             tenantId = persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
-                    tenantInfoBean.getOriginatedService(),false);
+                    tenantInfoBean.getOriginatedService(), false);
         } catch (Exception e) {
             String msg = "Error in persisting tenant " + tenantDomain;
             log.error(msg, e);
@@ -675,7 +676,7 @@ public class StratosApiV40 extends AbstractApi {
         }
     }
 
-    private TenantInfoBean getTenantForDomain (String tenantDomain) throws Exception {
+    private TenantInfoBean getTenantForDomain(String tenantDomain) throws Exception {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
 
@@ -709,9 +710,9 @@ public class StratosApiV40 extends AbstractApi {
         String activePlan = "";
         //TODO: usage plan using billing service
 
-        if(activePlan != null && activePlan.trim().length() > 0){
+        if (activePlan != null && activePlan.trim().length() > 0) {
             bean.setUsagePlan(activePlan);
-        }else{
+        } else {
             bean.setUsagePlan("");
         }
 
@@ -776,7 +777,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws RestAPIException {
+    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain") String domain) throws RestAPIException {
         List<TenantInfoBean> tenantList = null;
         try {
             tenantList = searchPartialTenantsDomains(domain);
@@ -806,7 +807,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(msg, e);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
 
-            throw new RestAPIException( e);
+            throw new RestAPIException(e);
         }
 
         ApiResponseBean stratosApiResponse = new ApiResponseBean();
@@ -815,7 +816,7 @@ public class StratosApiV40 extends AbstractApi {
             TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
 
         } catch (Exception e) {
-            throw new RestAPIException( e);
+            throw new RestAPIException(e);
         }
 
         //Notify tenant activation all listeners
@@ -867,7 +868,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(msg, e);
 
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
-            throw new RestAPIException( e);
+            throw new RestAPIException(e);
         }
 
         ApiResponseBean stratosApiResponse = new ApiResponseBean();
@@ -875,7 +876,7 @@ public class StratosApiV40 extends AbstractApi {
         try {
             TenantMgtUtil.deactivateTenant(tenantDomain, tenantManager, tenantId);
         } catch (Exception e) {
-            throw new RestAPIException( e);
+            throw new RestAPIException(e);
         }
 
         //Notify tenant deactivation all listeners
@@ -918,7 +919,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getService(@PathParam("serviceType") String serviceType)throws RestAPIException {
+    public Response getService(@PathParam("serviceType") String serviceType) throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
     }
@@ -928,7 +929,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getActiveService()throws RestAPIException {
+    public Response getActiveService() throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
     }
@@ -939,7 +940,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response unDeployService (@PathParam("serviceType") String serviceType)
+    public Response unDeployService(@PathParam("serviceType") String serviceType)
             throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
@@ -1040,8 +1041,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
-                                                         @PathParam("subscriptionAlias") String subscriptionAlias,
-                                                         @PathParam("domainName") String domainName) throws RestAPIException {
+                                             @PathParam("subscriptionAlias") String subscriptionAlias,
+                                             @PathParam("domainName") String domainName) throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
     }

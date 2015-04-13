@@ -37,7 +37,7 @@ public class RestAPIException extends Exception {
         this.message = message;
     }
 
-    public RestAPIException(Response.Status httpStatusCode,String message, Throwable cause) {
+    public RestAPIException(Response.Status httpStatusCode, String message, Throwable cause) {
         super(message, cause);
         this.message = message;
         this.httpStatusCode = httpStatusCode;

@@ -60,10 +60,10 @@ public class StratosApiV40Utils {
 
     private static Log log = LogFactory.getLog(StratosApiV40Utils.class);
 
-    static ApiResponseBean deployCartridge (CartridgeBean cartridgeDefinitionBean, ConfigurationContext ctxt,
-                                               String userName, String tenantDomain) throws RestAPIException {
+    static ApiResponseBean deployCartridge(CartridgeBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+                                           String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a Cartridge [type] "+ cartridgeDefinitionBean.getType());
+        log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.getType());
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
 
@@ -71,7 +71,7 @@ public class StratosApiV40Utils {
 
             Cartridge cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinitionBean);
 
-            if(cartridgeConfig == null) {
+            if (cartridgeConfig == null) {
                 throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
             }
 
@@ -100,7 +100,7 @@ public class StratosApiV40Utils {
         ApiResponseBean stratosApiResponse = new ApiResponseBean();
         String message = "Successfully added cartridge definition: [cartridge-type] " + cartridgeDefinitionBean.getType();
         stratosApiResponse.setMessage(message);
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(message);
         }
         return stratosApiResponse;
@@ -178,22 +178,22 @@ public class StratosApiV40Utils {
         return stratosApiResponse;
     }
 
-    private static CloudControllerServiceClient getCloudControllerServiceClient () throws RestAPIException {
+    private static CloudControllerServiceClient getCloudControllerServiceClient() throws RestAPIException {
 
         try {
             return CloudControllerServiceClient.getInstance();
 
         } catch (AxisFault axisFault) {
             String errorMsg = "Error while getting CloudControllerServiceClient instance to connect to the "
-                    + "Cloud Controller. Cause: "+axisFault.getMessage();
+                    + "Cloud Controller. Cause: " + axisFault.getMessage();
             log.error(errorMsg, axisFault);
             throw new RestAPIException(errorMsg, axisFault);
         }
     }
 
-    public static PartitionBean[] getAvailablePartitions () throws RestAPIException {
+    public static PartitionBean[] getAvailablePartitions() throws RestAPIException {
 
-       org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions = null;
+        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 //            try {
@@ -250,7 +250,7 @@ public class StratosApiV40Utils {
         return ObjectConverter.populatePartitionPojos(partitions);
     }
 
-    public static PartitionBean getPartition (String partitionId) throws RestAPIException {
+    public static PartitionBean getPartition(String partitionId) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.stub.domain.Partition partition = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -268,7 +268,7 @@ public class StratosApiV40Utils {
         return ObjectConverter.populatePartitionPojo(partition);
     }
 
-    private static AutoscalerServiceClient getAutoscalerServiceClient () throws RestAPIException {
+    private static AutoscalerServiceClient getAutoscalerServiceClient() throws RestAPIException {
 
         try {
             return AutoscalerServiceClient.getInstance();
@@ -280,7 +280,7 @@ public class StratosApiV40Utils {
         }
     }
 
-    public static AutoscalePolicyBean[] getAutoScalePolicies () throws RestAPIException {
+    public static AutoscalePolicyBean[] getAutoScalePolicies() throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -297,7 +297,7 @@ public class StratosApiV40Utils {
         return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalePolicies);
     }
 
-    public static AutoscalePolicyBean getAutoScalePolicy (String autoscalePolicyId) throws RestAPIException {
+    public static AutoscalePolicyBean getAutoScalePolicy(String autoscalePolicyId) throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -307,7 +307,7 @@ public class StratosApiV40Utils {
 
             } catch (RemoteException e) {
                 String errorMsg = "Error while getting information for autoscaling policy with id " +
-                        autoscalePolicyId+".  Cause: "+e.getMessage();
+                        autoscalePolicyId + ".  Cause: " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg, e);
             }
@@ -326,18 +326,18 @@ public class StratosApiV40Utils {
 
     static CartridgeBean getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
         List<CartridgeBean> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
-        for(CartridgeBean cartridge : cartridges) {
-            if(cartridge.getType().equals(cartridgeType)) {
+        for (CartridgeBean cartridge : cartridges) {
+            if (cartridge.getType().equals(cartridgeType)) {
                 return cartridge;
             }
         }
         String msg = "Unavailable cartridge type: " + cartridgeType;
         log.error(msg);
-        throw new RestAPIException(msg) ;
+        throw new RestAPIException(msg);
     }
 
     static List<CartridgeBean> getAvailableLbCartridges(Boolean multiTenant,
-                                                    ConfigurationContext configurationContext) throws RestAPIException {
+                                                        ConfigurationContext configurationContext) throws RestAPIException {
         List<CartridgeBean> cartridges = getAvailableCartridges(null, multiTenant,
                 configurationContext);
         List<CartridgeBean> lbCartridges = new ArrayList<CartridgeBean>();
@@ -348,7 +348,7 @@ public class StratosApiV40Utils {
         }
 
 		/*if(lbCartridges == null || lbCartridges.isEmpty()) {
-			String msg = "Load balancer Cartridges are not available.";
+            String msg = "Load balancer Cartridges are not available.";
 	        log.error(msg);
 	        throw new RestAPIException(msg) ;
 		}*/
@@ -430,7 +430,7 @@ public class StratosApiV40Utils {
                 }
             }
         } catch (Exception e) {
-            String msg = "Error while getting available cartridges. Cause: "+e.getMessage();
+            String msg = "Error while getting available cartridges. Cause: " + e.getMessage();
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
@@ -905,7 +905,7 @@ public class StratosApiV40Utils {
     }
 
     public static ApiResponseBean removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
-                                                              String subscriptionAlias, String domain) throws RestAPIException {
+                                                           String subscriptionAlias, String domain) throws RestAPIException {
         throw new RestAPIException("Not implemented");
     }
 }

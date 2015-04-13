@@ -38,19 +38,19 @@ public class ServiceHolder {
 
     public static TenantManager getTenantManager() {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        RealmService realmService = (RealmService)carbonContext.getOSGiService(RealmService.class);
+        RealmService realmService = (RealmService) carbonContext.getOSGiService(RealmService.class);
         return realmService.getTenantManager();
     }
 
     public static TenantBillingService getBillingService() {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        TenantBillingService tenantBillingService = (TenantBillingService)carbonContext.getOSGiService(TenantBillingService.class);
+        TenantBillingService tenantBillingService = (TenantBillingService) carbonContext.getOSGiService(TenantBillingService.class);
         return tenantBillingService;
     }
 
-    public static RealmService getRealmService(){
+    public static RealmService getRealmService() {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        RealmService realmService = (RealmService)carbonContext.getOSGiService(RealmService.class);
+        RealmService realmService = (RealmService) carbonContext.getOSGiService(RealmService.class);
         return realmService;
     }
 

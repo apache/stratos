@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 /*
 * authenticate an incoming request using the session availability. Session is first established using the
 * basic auth authentication. This handler will be the last to get executed in the current handler chain. Hence failure
@@ -41,45 +42,45 @@ public class CookieBasedAuthenticationHandler implements RequestHandler {
     private Log log = LogFactory.getLog(CookieBasedAuthenticationHandler.class);
 
     public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
-       if(AuthenticationContext.isAthenticated()){
-           return null;
-       }
+        if (AuthenticationContext.isAthenticated()) {
+            return null;
+        }
 
-       HttpServletRequest httpServletRequest =  (HttpServletRequest)message.get("HTTP.REQUEST");
-       HttpSession httpSession = httpServletRequest.getSession(false);
-       if(httpSession != null && isUserLoggedIn(httpSession)){ // if sesion is avaialble
-           String userName = (String)httpSession.getAttribute("userName");
-           String tenantDomain = (String)httpSession.getAttribute("tenantDomain");
-           int tenantId = (Integer)httpSession.getAttribute("tenantId");
-           // the following will get used by the authorization handler..
-           PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-           carbonContext.setUsername(userName);
-           carbonContext.setTenantDomain(tenantDomain);
-           carbonContext.setTenantId(tenantId);
+        HttpServletRequest httpServletRequest = (HttpServletRequest) message.get("HTTP.REQUEST");
+        HttpSession httpSession = httpServletRequest.getSession(false);
+        if (httpSession != null && isUserLoggedIn(httpSession)) { // if sesion is avaialble
+            String userName = (String) httpSession.getAttribute("userName");
+            String tenantDomain = (String) httpSession.getAttribute("tenantDomain");
+            int tenantId = (Integer) httpSession.getAttribute("tenantId");
+            // the following will get used by the authorization handler..
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setUsername(userName);
+            carbonContext.setTenantDomain(tenantDomain);
+            carbonContext.setTenantId(tenantId);
 
-           AuthenticationContext.setAuthenticated(true);
-           if (log.isDebugEnabled()) {
-               log.debug("authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
-                       userName + "tenantDomain : " + tenantDomain + " tenantId : " + tenantId);
-           }
-           return null;
+            AuthenticationContext.setAuthenticated(true);
+            if (log.isDebugEnabled()) {
+                log.debug("authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
+                        userName + "tenantDomain : " + tenantDomain + " tenantId : " + tenantId);
+            }
+            return null;
 
-       }
+        }
         return Response.status(Response.Status.FORBIDDEN).
                 type(MediaType.APPLICATION_JSON).entity(
-                		new ErrorResponseBean(Response.Status.FORBIDDEN.getStatusCode(), 
-                				"The endpoint requires authentication")).build();
+                new ErrorResponseBean(Response.Status.FORBIDDEN.getStatusCode(),
+                        "The endpoint requires authentication")).build();
     }
 
     /*
     * if the userName and tenantDomain is present in the session, we conclude this as an authenticated session.
     * Thos params get set by the AuthenticationAdmin endpoint.
     * */
-    private boolean isUserLoggedIn(HttpSession httpSession){
-        String userName = (String)httpSession.getAttribute("userName");
-        String tenantDomain = (String)httpSession.getAttribute("tenantDomain");
-        Integer tenantId = (Integer)httpSession.getAttribute("tenantId");
-        if(userName != null && tenantDomain!=null && tenantId!=null) {
+    private boolean isUserLoggedIn(HttpSession httpSession) {
+        String userName = (String) httpSession.getAttribute("userName");
+        String tenantDomain = (String) httpSession.getAttribute("tenantDomain");
+        Integer tenantId = (Integer) httpSession.getAttribute("tenantId");
+        if (userName != null && tenantDomain != null && tenantId != null) {
             return true;
         }
         return false;
