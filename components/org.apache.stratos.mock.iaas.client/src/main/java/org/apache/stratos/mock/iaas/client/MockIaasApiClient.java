@@ -58,12 +58,12 @@ public class MockIaasApiClient {
             }
             URI uri = new URIBuilder(endpoint + INSTANCES_CONTEXT).build();
             HttpResponse response = restClient.doPost(uri, content);
-            if(response != null) {
-                if((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return gson.fromJson(response.getContent(), MockInstanceMetadata.class);
                 } else {
                     ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if(errorResponse != null) {
+                    if (errorResponse != null) {
                         throw new RuntimeException(errorResponse.getErrorMessage());
                     }
                 }
@@ -82,14 +82,14 @@ public class MockIaasApiClient {
             }
             URI uri = new URIBuilder(endpoint + INSTANCES_CONTEXT + instanceId).build();
             HttpResponse response = restClient.doDelete(uri);
-            if(response != null) {
-                if((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
                     ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if(errorResponse != null) {
+                    if (errorResponse != null) {
                         throw new RuntimeException(errorResponse.getErrorMessage());
                     }
                 }
@@ -108,15 +108,15 @@ public class MockIaasApiClient {
             }
             URI uri = new URIBuilder(endpoint + INSTANCES_CONTEXT + instanceId + "/allocateIpAddress").build();
             HttpResponse response = restClient.doPost(uri, new String());
-            if(response != null) {
+            if (response != null) {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
 
-                if((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return gson.fromJson(response.getContent(), MockInstanceMetadata.class);
                 } else {
                     ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if(errorResponse != null) {
+                    if (errorResponse != null) {
                         throw new RuntimeException(errorResponse.getErrorMessage());
                     }
                 }

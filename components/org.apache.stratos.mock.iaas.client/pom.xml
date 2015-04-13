@@ -93,7 +93,7 @@
                             org.apache.stratos.mock.iaas.client.*,
                         </Export-Package>
                         <Private-Package>
-                        	org.apache.stratos.mock.iaas.client.internal;
+                            org.apache.stratos.mock.iaas.client.internal;
                         </Private-Package>
                         <Import-Package>
                             !org.apache.commons.logging,

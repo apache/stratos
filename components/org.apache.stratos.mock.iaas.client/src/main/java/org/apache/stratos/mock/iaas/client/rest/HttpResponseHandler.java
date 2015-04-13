@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 /**
  * Handles a HttpResponse and returns a {@link HttpResponse}
  */
-public class HttpResponseHandler implements ResponseHandler<HttpResponse>{
+public class HttpResponseHandler implements ResponseHandler<HttpResponse> {
 
     private static final Log log = LogFactory.getLog(HttpResponseHandler.class);
 
