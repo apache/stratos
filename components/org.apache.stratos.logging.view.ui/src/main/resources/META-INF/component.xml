@@ -17,7 +17,7 @@
     under the License.
 -->
 <component xmlns="http://products.wso2.org/carbon">
-        <!-- sample menu configuration -->
+    <!-- sample menu configuration -->
     <menus>
         <menu>
             <id>logs_menu</id>
@@ -32,7 +32,7 @@
             <require-permission>/permission/admin/monitor/logging</require-permission>
             <!--require-super-tenant>true</require-super-tenant-->
         </menu>
-         <menu>
+        <menu>
             <id>app_log_menu</id>
             <i18n-key>applogsmenutext</i18n-key>
             <i18n-bundle>org.apache.stratos.logging.view.ui.i18n.Resources</i18n-bundle>
@@ -43,7 +43,7 @@
             <style-class>monitor</style-class>
             <icon>../log-view/images/script_gear.gif</icon>
             <require-permission>/permission/admin/monitor/logging</require-permission>
-          
+
         </menu>
     </menus>
 </component>
