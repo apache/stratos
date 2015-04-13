@@ -28,9 +28,9 @@ import org.apache.stratos.manager.internal.ServiceReferenceHolder;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.user.api.UserRealm;
 
 /**
  * Listener for Tenant create event to create a new Role

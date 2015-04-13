@@ -30,7 +30,8 @@ import org.apache.stratos.messaging.util.MessagingUtil;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tenant event synchronizer publishes complete tenant event periodically.

@@ -19,15 +19,15 @@
 
 package org.apache.stratos.manager.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 public class CartridgeConfigFileReader {
 

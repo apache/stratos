@@ -19,12 +19,10 @@
 
 package org.apache.stratos.manager.services;
 
-import java.util.List;
-
-import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
 import org.apache.stratos.manager.exception.DomainMappingException;
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 
 /**

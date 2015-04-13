@@ -19,8 +19,6 @@
 
 package org.apache.stratos.manager.services.impl;
 
-import java.util.concurrent.locks.Lock;
-
 import org.apache.stratos.manager.components.ApplicationSignUpHandler;
 import org.apache.stratos.manager.components.ArtifactDistributionCoordinator;
 import org.apache.stratos.manager.components.DomainMappingHandler;
@@ -31,6 +29,8 @@ import org.apache.stratos.manager.exception.DomainMappingException;
 import org.apache.stratos.manager.services.StratosManagerService;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
+
+import java.util.concurrent.locks.Lock;
 
 /**
  * Stratos manager service implementation.

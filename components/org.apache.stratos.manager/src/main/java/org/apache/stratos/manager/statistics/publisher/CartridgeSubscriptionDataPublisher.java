@@ -19,10 +19,6 @@
 
 package org.apache.stratos.manager.statistics.publisher;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.exception.StratosManagerException;
@@ -35,6 +31,10 @@ import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This will publish the subscription details of tenants to a data receiver.
