@@ -1504,7 +1504,7 @@ public class StratosApiV41Utils {
                     ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
 
             try {
-                return cloudControllerServiceClient.deployKubernetesHost(kubernetesClusterId, kubernetesHost);
+                return cloudControllerServiceClient.addKubernetesHost(kubernetesClusterId, kubernetesHost);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);

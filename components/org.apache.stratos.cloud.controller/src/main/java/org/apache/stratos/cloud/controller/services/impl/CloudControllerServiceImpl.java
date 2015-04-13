@@ -1377,10 +1377,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             try {
                 KubernetesCluster kubernetesClusterStored = CloudControllerContext.getInstance().getKubernetesClusterContainingHost(kubernetesHost.getHostId());
-                for (int i = 0; i < kubernetesClusterStored.getKubernetesHosts().length; i++) {
-                    if (kubernetesClusterStored.getKubernetesHosts()[i].getHostId().equals(kubernetesHost.getHostId())) {
+                KubernetesHost[] kubernetesHosts = kubernetesClusterStored.getKubernetesHosts();
+                for (int i = 0; i < kubernetesHosts.length; i++) {
+                    if (kubernetesHosts[i].getHostId().equals(kubernetesHost.getHostId())) {
                         // Update the information model
-                        kubernetesClusterStored.getKubernetesHosts()[i] = kubernetesHost;
+                        kubernetesHosts[i] = kubernetesHost;
 
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Kubernetes host updated successfully: [id] %s", kubernetesHost.getHostId()));

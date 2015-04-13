@@ -164,7 +164,7 @@ public class CloudControllerServiceClient {
         return stub.addKubernetesCluster(kubernetesCluster);
     }
 
-    public boolean deployKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost)
+    public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost)
             throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
             CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
