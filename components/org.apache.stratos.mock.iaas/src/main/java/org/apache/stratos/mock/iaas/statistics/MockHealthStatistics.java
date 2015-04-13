@@ -19,8 +19,8 @@
 
 package org.apache.stratos.mock.iaas.statistics;
 
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
 import org.apache.stratos.mock.iaas.exceptions.NoStatisticsFoundException;
+import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

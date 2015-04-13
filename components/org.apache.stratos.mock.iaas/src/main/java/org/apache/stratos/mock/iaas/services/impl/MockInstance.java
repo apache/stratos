@@ -21,9 +21,6 @@ package org.apache.stratos.mock.iaas.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
-import org.apache.stratos.mock.iaas.event.publisher.MockMemberEventPublisher;
-import org.apache.stratos.mock.iaas.statistics.publisher.MockHealthStatisticsNotifier;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
@@ -31,6 +28,9 @@ import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMembe
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
+import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
+import org.apache.stratos.mock.iaas.event.publisher.MockMemberEventPublisher;
+import org.apache.stratos.mock.iaas.statistics.publisher.MockHealthStatisticsNotifier;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;

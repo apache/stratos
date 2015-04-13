@@ -25,8 +25,8 @@ import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
 import org.apache.stratos.mock.iaas.persistence.PersistenceManagerType;
-import org.apache.stratos.mock.iaas.services.impl.MockIaasServiceImpl;
 import org.apache.stratos.mock.iaas.services.impl.MockConstants;
+import org.apache.stratos.mock.iaas.services.impl.MockIaasServiceImpl;
 import org.junit.Test;
 
 import java.net.URL;

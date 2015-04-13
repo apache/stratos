@@ -21,8 +21,8 @@ package org.apache.stratos.mock.iaas.statistics.generator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 
 import java.util.Iterator;
 import java.util.List;

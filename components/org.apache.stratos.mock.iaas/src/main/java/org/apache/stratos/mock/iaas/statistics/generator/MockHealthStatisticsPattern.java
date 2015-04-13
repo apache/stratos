@@ -19,10 +19,10 @@
 
 package org.apache.stratos.mock.iaas.statistics.generator;
 
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
 import org.apache.stratos.mock.iaas.exceptions.ContinueLastSampleValueException;
 import org.apache.stratos.mock.iaas.exceptions.NoSampleValuesFoundException;
 import org.apache.stratos.mock.iaas.exceptions.StopStatisticsPublishingException;
+import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
 import org.apache.stratos.mock.iaas.statistics.StatisticsPatternMode;
 
 import java.util.Iterator;
