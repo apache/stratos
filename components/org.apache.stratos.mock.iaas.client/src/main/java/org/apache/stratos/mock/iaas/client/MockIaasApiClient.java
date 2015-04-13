@@ -24,11 +24,11 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.stratos.mock.iaas.client.rest.HttpResponse;
+import org.apache.stratos.mock.iaas.client.rest.RestClient;
 import org.apache.stratos.mock.iaas.domain.ErrorResponse;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
-import org.apache.stratos.mock.iaas.client.rest.HttpResponse;
-import org.apache.stratos.mock.iaas.client.rest.RestClient;
 
 import java.net.URI;
 
