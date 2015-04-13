@@ -114,7 +114,7 @@ public class StratosApiV41Utils {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
+                log.debug(String.format("Updating cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
             }
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
@@ -122,7 +122,7 @@ public class StratosApiV41Utils {
             cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Successfully update cartridge: [cartridge-type] %s ",
+                log.debug(String.format("Successfully updated cartridge: [cartridge-type] %s ",
                         cartridgeDefinition.getType()));
             }
         } catch (CloudControllerServiceCartridgeDefinitionNotExistsExceptionException e) {
@@ -971,7 +971,8 @@ public class StratosApiV41Utils {
 
             // Validate whether cartridge group can be removed
             if (!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
-                String message = "Cannot remove cartridge group: [group-name] " + name + " since it is used in another cartridge group or an application";
+                String message = "Cannot remove cartridge group: [group-name] " + name +
+                        " since it is used in another cartridge group or an application";
                 log.error(message);
                 throw new RestAPIException(message);
             }
@@ -980,7 +981,8 @@ public class StratosApiV41Utils {
 
             asServiceClient.undeployServiceGroupDefinition(name);
 
-            // Remove the dependent cartridges and cartridge groups from Stratos Manager cache - done after service group has been removed
+            // Remove the dependent cartridges and cartridge groups from Stratos Manager cache
+            // - done after service group has been removed
             if (serviceGroup.getCartridges() != null) {
                 List<String> cartridgeList = new ArrayList<String>();
                 findCartridgesInServiceGroup(serviceGroup, cartridgeList);
@@ -2107,7 +2109,7 @@ public class StratosApiV41Utils {
                     = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
             return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
         } catch (Exception e) {
-            String message = "Could not get network partitions";
+            String message = "Could not get deployment policies";
             log.error(message);
             throw new RuntimeException(message, e);
         }
@@ -2122,7 +2124,7 @@ public class StratosApiV41Utils {
             throws RestAPIException {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ",
+                log.debug(String.format("Updating deployment policy: [deployment-policy-id] %s ",
                         deploymentPolicyDefinitionBean.getId()));
             }
 
@@ -2132,16 +2134,16 @@ public class StratosApiV41Utils {
             AutoscalerServiceClient.getInstance().updateDeploymentPolicy(deploymentPolicy);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("DeploymentPolicy updates successfully : [deployment-policy-id] %s ",
+                log.debug(String.format("DeploymentPolicy updated successfully : [deployment-policy-id] %s ",
                         deploymentPolicyDefinitionBean.getId()));
             }
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             String msg =
-                    "Deployment policy already exist [Deployment-policy-id]" + deploymentPolicyDefinitionBean.getId();
+                    "Deployment policy does not exist [Deployment-policy-id]" + deploymentPolicyDefinitionBean.getId();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not add deployment policy";
+            String msg = "Could not update deployment policy";
             log.error(msg, e);
             throw new RestAPIException(msg);
         }

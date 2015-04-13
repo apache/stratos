@@ -20,10 +20,7 @@ package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.ApiResponseBean;
-import org.apache.stratos.common.beans.ErrorResponseBean;
-import org.apache.stratos.common.beans.SuccessResponseBean;
-import org.apache.stratos.common.beans.UserInfoBean;
+import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
 import org.apache.stratos.common.beans.application.GroupBean;
@@ -111,7 +108,7 @@ public class StratosApiV41 extends AbstractApi {
      * themselves in subsequent calls. This method call get authenticated by the basic authenticator.
      * Once the authenticated call received, the method creates a session and returns the session id.
      *
-     * @return
+     * @return The session id related with the session
      */
     @GET
     @Path("/session")
@@ -130,13 +127,11 @@ public class StratosApiV41 extends AbstractApi {
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
 
-    // API methods for cartridges
-
     /**
      * Creates the cartridge definition.
      *
      * @param cartridgeDefinitionBean the cartridge definition bean
-     * @return the response
+     * @return 201 if cartridge is successfully created, 409 if cartridge already exists.
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -163,10 +158,10 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Creates the Deployement Policy Definition.
+     * Creates the Deployment Policy Definition.
      *
      * @param deploymentPolicyDefinitionBean the deployment policy bean
-     * @return the response
+     * @return 201 if deployment policy is successfully added
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -189,7 +184,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Get deployment policy by deployment policy id
      *
-     * @return the response
+     * @return 200 if deployment policy is found, 404 if not
      * @throws RestAPIException
      */
     @GET
@@ -209,7 +204,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Get deployment policies
      *
-     * @return the response
+     * @return 200 with the list of deployment policies
      * @throws RestAPIException
      */
     @GET
@@ -227,7 +222,7 @@ public class StratosApiV41 extends AbstractApi {
      * Updates the Deployment Policy Definition.
      *
      * @param deploymentPolicyDefinitionBean the deployment policy bean
-     * @return the response
+     * @return 200 if deployment policy is successfully updated
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -243,7 +238,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+        return Response.ok(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                 String.format("Deployment policy updated successfully: " + "[deployment-policy-id] %s",
                         deploymentPolicyID))).build();
     }
@@ -252,7 +247,7 @@ public class StratosApiV41 extends AbstractApi {
      * Updates the Deployment Policy Definition.
      *
      * @param deploymentPolicyID the deployment policy id
-     * @return the response
+     * @return 200 if deployment policy is successfully removed
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -265,7 +260,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+        return Response.ok(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                 String.format("Deployment policy removed successfully: " + "[deployment-policy-id] %s",
                         deploymentPolicyID))).build();
     }
@@ -274,7 +269,7 @@ public class StratosApiV41 extends AbstractApi {
      * Updates the cartridge definition.
      *
      * @param cartridgeDefinitionBean the cartridge definition bean
-     * @return the response
+     * @return 201 if cartridge successfully updated
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -295,7 +290,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets all available cartridges.
      *
-     * @return the cartridges
+     * @return 200 if cartridges exists, 404 if no cartridges found
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -315,6 +310,12 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(cartridgeArray).build();
     }
 
+    /**
+     * Gets a single cartridge by type
+     * @param cartridgeType
+     * @return 200 if specified cartridge exists, 404 if not
+     * @throws RestAPIException
+     */
     @GET
     @Path("/cartridges/{cartridgeType}")
     @Produces("application/json")
@@ -334,7 +335,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param filter
      * @param criteria
-     * @return
+     * @return 200 if cartridges are found for specified filter, 404 if none found
      * @throws RestAPIException
      */
     @GET
@@ -361,7 +362,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param filter
      * @param cartridgeType
-     * @return
+     * @return 200 if a cartridge is found for specified filter, 404 if none found
      * @throws RestAPIException
      */
     @GET
@@ -383,7 +384,7 @@ public class StratosApiV41 extends AbstractApi {
      * Deletes a cartridge definition.
      *
      * @param cartridgeType the cartridge type
-     * @return the response
+     * @return 200 if cartridge is successfully removed
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -405,7 +406,7 @@ public class StratosApiV41 extends AbstractApi {
      * Creates the cartridge group definition.
      *
      * @param serviceGroupDefinition the cartridge group definition
-     * @return the response
+     * @return 201 if group added successfully
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -427,7 +428,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the cartridge group definition.
      *
      * @param groupDefinitionName the group definition name
-     * @return the cartridge group definition
+     * @return 200 if cartridge group found for group definition, 404 if none is found
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -451,7 +452,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets all cartridge groups created.
      *
-     * @return the cartridge groups
+     * @return 200 if cartridge groups are found, 404 if none found
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -476,7 +477,7 @@ public class StratosApiV41 extends AbstractApi {
      * Delete cartridge group definition.
      *
      * @param groupDefinitionName the group definition name
-     * @return the response
+     * @return 200 if cartridge group is successfully removed
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -500,7 +501,7 @@ public class StratosApiV41 extends AbstractApi {
      * Add network partition
      *
      * @param networkPartitionBean
-     * @return
+     * @return 201 if network partition successfully added, 409 if network partition already exists
      * @throws RestAPIException
      */
     @POST
@@ -529,7 +530,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Get network partitions
      *
-     * @return
+     * @return 200 if network partitions are found
      * @throws RestAPIException
      */
     @GET
@@ -546,7 +547,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Get network partition by network partition id
      *
-     * @return
+     * @return 200 if specified network partition is found
      * @throws RestAPIException
      */
     @GET
@@ -563,7 +564,8 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Remove network partition by network partition id
      *
-     * @return
+     * @return 200 if specified network partition is successfully deleted, 404 if specified network partition is not
+     * found
      * @throws RestAPIException
      */
     @DELETE
@@ -587,7 +589,7 @@ public class StratosApiV41 extends AbstractApi {
      * Add application
      *
      * @param applicationDefinition
-     * @return
+     * @return 201 if application is successfully added
      * @throws RestAPIException
      */
     @POST
@@ -607,7 +609,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Return applications
      *
-     * @return
+     * @return 200 if applications are found
      * @throws RestAPIException
      */
     @GET
@@ -626,7 +628,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the application.
      *
      * @param applicationId the application id
-     * @return the application
+     * @return 200 if specified application is found, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -648,7 +650,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param applicationId
      * @param applicationPolicyId the application policy id
-     * @return the response
+     * @return 202 after deployment process is started. Deployment is asynchronous
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -664,6 +666,12 @@ public class StratosApiV41 extends AbstractApi {
                 String.format("Application deployed successfully: [application] %s", applicationId))).build();
     }
 
+    /**
+     * Adds an application policy
+     * @param applicationPolicy
+     * @return 201 if the application policy is successfully added
+     * @throws RestAPIException
+     */
     @POST
     @Path("/applicationPolicies")
     @Produces("application/json")
@@ -678,6 +686,13 @@ public class StratosApiV41 extends AbstractApi {
                         applicationPolicy.getId()))).build();
     }
 
+    /**
+     * Retrieve specified application policy
+     *
+     * @param applicationPolicyId
+     * @return 200 if application policy is found
+     * @throws RestAPIException
+     */
     @GET
     @Path("/applicationPolicies/{applicationPolicyId}")
     @Produces("application/json")
@@ -689,6 +704,12 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok(applicationPolicyBean).build();
     }
 
+    /**
+     * Retrieve all application policies
+     *
+     * @return 200
+     * @throws RestAPIException
+     */
     @GET
     @Path("/applicationPolicies")
     @Produces("application/json")
@@ -699,6 +720,13 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(StratosApiV41Utils.getApplicationPolicies()).build();
     }
 
+    /**
+     * Remove specified application policy
+     *
+     * @param applicationPolicyId
+     * @return 200 if application policy is successfully removed
+     * @throws RestAPIException
+     */
     @DELETE
     @Path("/applicationPolicies/{applicationPolicyId}")
     @Produces("application/json")
@@ -709,10 +737,17 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.removeApplicationPolicy(applicationPolicyId);
         return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-                String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s",
+                String.format("Application policy deleted successfully: [application-policy] %s",
                         applicationPolicyId))).build();
     }
 
+    /**
+     * Update application policy
+     *
+     * @param applicationPolicy
+     * @return 200 if application policies successfully updated
+     * @throws RestAPIException
+     */
     @PUT
     @Path("/applicationPolicies")
     @Produces("application/json")
@@ -730,7 +765,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Get network partition ids used in an application
      *
-     * @return
+     * @return 200
      * @throws RestAPIException
      */
     @GET
@@ -750,7 +785,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param applicationId         the application id
      * @param applicationSignUpBean the application sign up bean
-     * @return the response
+     * @return 200 if application sign up was successfull
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -770,7 +805,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the application sign up.
      *
      * @param applicationId the application id
-     * @return the application sign up
+     * @return 200 if specified application signup is found, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -791,7 +826,7 @@ public class StratosApiV41 extends AbstractApi {
      * Removes the application sign up.
      *
      * @param applicationId the application id
-     * @return the response
+     * @return 200 if specified application sign up is removed
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -810,7 +845,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param applicationId       the application id
      * @param domainMapppingsBean the domain mapppings bean
-     * @return the response
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -837,7 +872,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param applicationId       the application id
      * @param domainMapppingsBean the domain mapppings bean
-     * @return the response
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -863,7 +898,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the domain mappings for an application.
      *
      * @param applicationId the application id
-     * @return the domain mappings
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -883,7 +918,8 @@ public class StratosApiV41 extends AbstractApi {
      * Undeploy an application.
      *
      * @param applicationId the application id
-     * @return the response
+     * @return 202 if undeployment process started, 404 if specified application is not found, 409 if application
+     * status is not in DEPLOYED state
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -896,7 +932,7 @@ public class StratosApiV41 extends AbstractApi {
 
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
         if (applicationDefinition == null) {
-            log.info(String.format("Application does not exist [application-id] ", applicationId));
+            log.info(String.format("Application does not exist [application-id] %s", applicationId));
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         if (!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_DEPLOYED)) {
@@ -936,7 +972,8 @@ public class StratosApiV41 extends AbstractApi {
      * Delete an application.
      *
      * @param applicationId the application id
-     * @return the response
+     * @return 200 if application is successfully removed, 404 if specified application is not found, 409 if
+     * application is not in CREATED state
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -967,7 +1004,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets the autoscaling policies.
      *
-     * @return the autoscaling policies
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -984,7 +1021,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the autoscaling policy.
      *
      * @param autoscalePolicyId the autoscale policy id
-     * @return the autoscaling policy
+     * @return 200 if specified autoscaling policy is found, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1005,7 +1042,7 @@ public class StratosApiV41 extends AbstractApi {
      * Creates the autoscaling policy defintion.
      *
      * @param autoscalePolicy the autoscale policy
-     * @return the response
+     * @return 201 if autoscale policy is successfully added
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -1027,7 +1064,7 @@ public class StratosApiV41 extends AbstractApi {
      * Update autoscaling policy.
      *
      * @param autoscalePolicy the autoscale policy
-     * @return the response
+     * @return 200 if autoscale policy is successfully updated
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1044,6 +1081,12 @@ public class StratosApiV41 extends AbstractApi {
                         autoscalePolicy.getId()))).build();
     }
 
+    /**
+     * Updates a network partition
+     * @param networkPartition
+     * @return 200 if network partition is successfully updated
+     * @throws RestAPIException
+     */
     @PUT
     @Path("/networkPartitions")
     @Produces("application/json")
@@ -1062,7 +1105,7 @@ public class StratosApiV41 extends AbstractApi {
      * Remove autoscaling policy.
      *
      * @param autoscalingPolicyId the autoscale policy
-     * @return the response
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -1084,7 +1127,7 @@ public class StratosApiV41 extends AbstractApi {
      * Get cluster for a given cluster id
      *
      * @param clusterId id of the cluster
-     * @return the response
+     * @return 200 if specified cluster is found, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1110,7 +1153,7 @@ public class StratosApiV41 extends AbstractApi {
      * Adds the tenant.
      *
      * @param tenantInfoBean the tenant info bean
-     * @return the response
+     * @return 201 if the tenant is successfully added
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -1212,7 +1255,7 @@ public class StratosApiV41 extends AbstractApi {
      * Update tenant.
      *
      * @param tenantInfoBean the tenant info bean
-     * @return the response
+     * @return 200 if tenant is successfully updated, 404 if specified tenant not found
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1359,7 +1402,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the tenant by domain.
      *
      * @param tenantDomain the tenant domain
-     * @return the tenant by domain
+     * @return 200 if tenant for specified tenant domain found
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1368,11 +1411,12 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/getTenantForDomain")
     @SuperTenantService(true)
-    public org.apache.stratos.common.beans.TenantInfoBean getTenantForDomain(
+    public Response getTenantForDomain(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
         try {
-            return getTenantByDomain(tenantDomain);
+            TenantInfoBean tenantInfo = getTenantByDomain(tenantDomain);
+            return Response.ok().entity(tenantInfo).build();
         } catch (Exception e) {
             String msg = "Error in getting tenant information for tenant " + tenantDomain;
             log.error(msg, e);
@@ -1426,7 +1470,7 @@ public class StratosApiV41 extends AbstractApi {
      * Delete tenant.
      *
      * @param tenantDomain the tenant domain
-     * @return the response
+     * @return 406 - Use tenantDeactivate method
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -1447,7 +1491,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets the tenants.
      *
-     * @return the tenants
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1455,17 +1499,17 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/getTenants")
     @SuperTenantService(true)
-    public org.apache.stratos.common.beans.TenantInfoBean[] getTenants()
+    public Response getTenants()
             throws RestAPIException {
-        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = null;
         try {
-            tenantList = getAllTenants();
+            List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = getAllTenants();
+            return Response.ok().entity(tenantList.toArray(
+                    new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()])).build();
         } catch (Exception e) {
             String msg = "Error in retrieving tenants";
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
-        return tenantList.toArray(new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()]);
     }
 
     private List<org.apache.stratos.common.beans.TenantInfoBean> getAllTenants() throws RestAPIException {
@@ -1493,7 +1537,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the partial search tenants.
      *
      * @param tenantDomain the tenant domain
-     * @return the partial search tenants
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1502,18 +1546,17 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/getTenants")
     @SuperTenantService(true)
-    public org.apache.stratos.common.beans.TenantInfoBean[] getPartialSearchTenants(
+    public Response getPartialSearchTenants(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
-        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = null;
         try {
-            tenantList = searchPartialTenantsDomains(tenantDomain);
+            List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = searchPartialTenantsDomains(tenantDomain);
+            return Response.ok().entity(tenantList.toArray(new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()])).build();
         } catch (Exception e) {
             String msg = "Error in getting information for tenant " + tenantDomain;
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
-        return tenantList.toArray(new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()]);
     }
 
     private List<org.apache.stratos.common.beans.TenantInfoBean> searchPartialTenantsDomains(String domain)
@@ -1543,7 +1586,7 @@ public class StratosApiV41 extends AbstractApi {
      * Activate tenant.
      *
      * @param tenantDomain the tenant domain
-     * @return the response
+     * @return 200 if tenant activated successfully
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1589,7 +1632,7 @@ public class StratosApiV41 extends AbstractApi {
      * Deactivate tenant.
      *
      * @param tenantDomain the tenant domain
-     * @return the response
+     * @return 200 if tenant deactivated successfully
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1635,6 +1678,12 @@ public class StratosApiV41 extends AbstractApi {
 
     // API methods for repositories
 
+    /**
+     * Notify artifact update event for specified repository
+     * @param payload
+     * @return 204
+     * @throws RestAPIException
+     */
     @POST
     @Path("/repo/notify")
     @Produces("application/json")
@@ -1656,7 +1705,7 @@ public class StratosApiV41 extends AbstractApi {
      * Adds the user.
      *
      * @param userInfoBean the user info bean
-     * @return the response
+     * @return 201 if the user is successfully created
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -1677,7 +1726,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         log.info("Successfully added an user with Username " + userInfoBean.getUserName());
         URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("User added successfully: [user] %s", userInfoBean.getUserName()))).build();
     }
 
@@ -1685,7 +1734,7 @@ public class StratosApiV41 extends AbstractApi {
      * Delete user.
      *
      * @param userName the user name
-     * @return the response
+     * @return 200 if the user is successfully deleted
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -1712,7 +1761,7 @@ public class StratosApiV41 extends AbstractApi {
      * Update user.
      *
      * @param userInfoBean the user info bean
-     * @return the response
+     * @return 200 if the user is successfully updated
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1740,26 +1789,24 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets the users.
      *
-     * @return the users
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @GET
     @Path("/users")
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/getUsers")
-    public UserInfoBean[] getUsers()
+    public Response getUsers()
             throws RestAPIException {
 
         StratosUserManager stratosUserManager = new StratosUserManager();
-        List<UserInfoBean> userList;
 
         try {
-            userList = stratosUserManager.getAllUsers(getTenantUserStoreManager());
-
+            List<UserInfoBean> userList = stratosUserManager.getAllUsers(getTenantUserStoreManager());
+            return Response.ok().entity(userList.toArray(new UserInfoBean[userList.size()])).build();
         } catch (UserManagerException e) {
             throw new RestAPIException(e.getMessage());
         }
-        return userList.toArray(new UserInfoBean[userList.size()]);
     }
 
     /**
@@ -1793,7 +1840,7 @@ public class StratosApiV41 extends AbstractApi {
      * Deploy kubernetes host cluster.
      *
      * @param kubernetesCluster the kubernetes cluster
-     * @return the response
+     * @return 201 if the kubernetes cluster is successfully created
      * @throws RestAPIException the rest api exception
      */
     @POST
@@ -1806,7 +1853,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Kubernetes Host Cluster added successfully: [kub-host-cluster] %s",
                         kubernetesCluster.getClusterId()))).build();
     }
@@ -1816,7 +1863,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param kubernetesClusterId the kubernetes cluster id
      * @param kubernetesHost      the kubernetes host
-     * @return the response
+     * @return 201 if the kubernetes host is successfully added
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1830,7 +1877,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.addKubernetesHost(kubernetesClusterId, kubernetesHost);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Kubernetes Host added successfully: [kub-host] %s", kubernetesHost.getHostId())))
                 .build();
     }
@@ -1839,7 +1886,7 @@ public class StratosApiV41 extends AbstractApi {
      * Update kubernetes master.
      *
      * @param kubernetesMaster the kubernetes master
-     * @return the response
+     * @return 200 if the kubernetes master is updated successfully, 404 if the kubernetes master is not found
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1852,7 +1899,7 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateKubernetesMaster(kubernetesMaster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
-            return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+            return Response.ok(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                     String.format("Kubernetes Master updated successfully: [kub-master] %s",
                             kubernetesMaster.getHostId()))).build();
         } catch (RestAPIException e) {
@@ -1882,7 +1929,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets the kubernetes host clusters.
      *
-     * @return the kubernetes host clusters
+     * @return 200
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1899,7 +1946,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the kubernetes host cluster.
      *
      * @param kubernetesClusterId the kubernetes cluster id
-     * @return the kubernetes host cluster
+     * @return 200 if specified kubernetes host cluster is found, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1920,7 +1967,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the kubernetes hosts of kubernetes cluster.
      *
      * @param kubernetesClusterId the kubernetes cluster id
-     * @return the kubernetes hosts of kubernetes cluster
+     * @return 200 if hosts are found in the specified kubernetes host cluster, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1941,7 +1988,7 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the kubernetes master of kubernetes cluster.
      *
      * @param kubernetesClusterId the kubernetes cluster id
-     * @return the kubernetes master of kubernetes cluster
+     * @return 200 if master is found for specified kubernetes cluster, 404 if not
      * @throws RestAPIException the rest api exception
      */
     @GET
@@ -1962,7 +2009,7 @@ public class StratosApiV41 extends AbstractApi {
      * Un deploy kubernetes host cluster.
      *
      * @param kubernetesClusterId the kubernetes cluster id
-     * @return the response
+     * @return 204 if Kubernetes cluster is successfully removed, 404 if the specified Kubernetes cluster is not found
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -1976,8 +2023,8 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId);
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-                            String.format("Kubernetes Host Cluster removed successfully: [kub-cluster] %s",
+                    .entity(new SuccessResponseBean(Response.Status.NOT_FOUND.getStatusCode(),
+                            String.format("Could not find specified Kubernetes cluster: [kub-cluster] %s",
                                     kubernetesClusterId))).build();
         }
         return Response.noContent().build();
@@ -1987,7 +2034,8 @@ public class StratosApiV41 extends AbstractApi {
      * Undeploy kubernetes host of kubernetes cluster.
      *
      * @param kubernetesHostId the kubernetes host id
-     * @return the response
+     * @return 200 if hosts are successfully removed from the specified Kubernetes cluster, 404 if specified Kubernetes
+     * cluster is not found.
      * @throws RestAPIException the rest api exception
      */
     @DELETE
@@ -1999,12 +2047,12 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("hostId") String kubernetesHostId) throws RestAPIException {
         try {
             StratosApiV41Utils.removeKubernetesHost(kubernetesHostId);
+            return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                    String.format("Kubernetes Host removed successfully: [kub-host] %s", kubernetesHostId)))
+                    .build();
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-                String.format("Kubernetes Host removed successfully: [kub-host] %s", kubernetesHostId)))
-                .build();
     }
 
 }
