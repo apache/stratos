@@ -33,12 +33,10 @@ import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingB
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBean;
 import org.apache.stratos.common.beans.cartridge.*;
-import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesServiceBean;
-import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
-import org.apache.stratos.common.beans.partition.*;
+import org.apache.stratos.common.beans.cartridge.PropertyBean;
+import org.apache.stratos.common.beans.kubernetes.*;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.*;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;

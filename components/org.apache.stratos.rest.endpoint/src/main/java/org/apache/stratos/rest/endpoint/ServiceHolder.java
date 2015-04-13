@@ -23,10 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.TenantBillingService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
-import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
 
 /**
  * Some of the admin services needs objects with states inside the runtime. There are

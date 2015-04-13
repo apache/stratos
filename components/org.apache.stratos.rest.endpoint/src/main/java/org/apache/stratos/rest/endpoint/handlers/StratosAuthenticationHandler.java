@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.rest.endpoint.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,22 +28,18 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.stratos.common.beans.ErrorResponseBean;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
-import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
-import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.security.StratosSecurityContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.core.common.AuthenticationException;
 import org.wso2.carbon.core.util.AnonymousSessionUtil;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import java.util.List;
 
 /**
  * Here we are doing the request authentication within a {@link RequestHandler}. The request handlers

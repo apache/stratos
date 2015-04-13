@@ -20,7 +20,6 @@ package org.apache.stratos.rest.endpoint.handlers;/*
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.ErrorResponseBean;
-import org.apache.stratos.rest.endpoint.Utils;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

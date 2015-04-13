@@ -21,7 +21,6 @@ package org.apache.stratos.rest.endpoint.handlers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.ErrorResponseBean;
-import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.MediaType;

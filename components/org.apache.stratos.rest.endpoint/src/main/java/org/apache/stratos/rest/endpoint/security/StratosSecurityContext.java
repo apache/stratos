@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.security.SecurityContext;
 
 import java.security.Principal;
-import java.util.Set;
 
 /**
  * {@link StratosSecurityContext} is what get passed between authentication handlers
