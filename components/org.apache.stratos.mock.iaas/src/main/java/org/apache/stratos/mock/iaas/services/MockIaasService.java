@@ -32,6 +32,7 @@ public interface MockIaasService {
 
     /**
      * Start mock instance.
+     *
      * @param mockInstanceContext
      * @return
      * @throws MockIaasException
@@ -40,18 +41,21 @@ public interface MockIaasService {
 
     /**
      * Terminate mock instance.
+     *
      * @param instanceId
      */
     void terminateInstance(String instanceId);
 
     /**
      * Get mock instances.
+     *
      * @return
      */
     List<MockInstanceMetadata> getInstances();
 
     /**
      * Get mock instance by instance id.
+     *
      * @param instanceId
      * @return
      */
@@ -59,6 +63,7 @@ public interface MockIaasService {
 
     /**
      * Allocate ip address to mock instance.
+     *
      * @param instanceId
      * @return
      */

@@ -56,6 +56,7 @@ public class MockHealthStatisticsPattern {
 
     /**
      * Returns autoscaling factor
+     *
      * @return
      */
     public MockAutoscalingFactor getFactor() {
@@ -64,6 +65,7 @@ public class MockHealthStatisticsPattern {
 
     /**
      * Returns statistics pattern mode
+     *
      * @return
      */
     public StatisticsPatternMode getMode() {
@@ -72,25 +74,26 @@ public class MockHealthStatisticsPattern {
 
     /**
      * Returns next sample value
+     *
      * @return
      */
     public int getNextSample() throws NoSampleValuesFoundException, StopStatisticsPublishingException,
             ContinueLastSampleValueException {
-        if((sampleValues == null) || (sampleValues.size() < 1)) {
+        if ((sampleValues == null) || (sampleValues.size() < 1)) {
             throw new NoSampleValuesFoundException();
         }
 
-        if(!sampleValuesIterator.hasNext()) {
+        if (!sampleValuesIterator.hasNext()) {
             // Iterator has come to the end of the list
-            if(getMode() == StatisticsPatternMode.Loop) {
+            if (getMode() == StatisticsPatternMode.Loop) {
                 // Looping: reset the iterator
                 sampleValuesIterator = sampleValues.iterator();
                 return Integer.parseInt(sampleValuesIterator.next().toString());
-            } else if(getMode() == StatisticsPatternMode.Continue) {
+            } else if (getMode() == StatisticsPatternMode.Continue) {
                 // Continue: return the last value
                 int lastSampleValue = Integer.parseInt(sampleValues.get(sampleValues.size() - 1).toString());
                 throw new ContinueLastSampleValueException(lastSampleValue);
-            } else if(getMode() == StatisticsPatternMode.Stop) {
+            } else if (getMode() == StatisticsPatternMode.Stop) {
                 throw new StopStatisticsPublishingException();
             } else {
                 throw new RuntimeException("An unknown statistics pattern mode found");
@@ -102,6 +105,7 @@ public class MockHealthStatisticsPattern {
 
     /**
      * Returns sample duration in seconds
+     *
      * @return
      */
     public int getSampleDuration() {

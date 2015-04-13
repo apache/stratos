@@ -34,7 +34,7 @@ public class MockIaasConfig {
 
     private boolean enabled;
     private MockHealthStatisticsConfig mockHealthStatisticsConfig;
-    
+
     public static MockIaasConfig getInstance() {
         if (instance == null) {
             synchronized (MockIaasConfig.class) {

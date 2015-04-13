@@ -64,16 +64,16 @@ public class MockIaasServiceUtil {
                 StratosThreadPool.getExecutorService(MockConstants.MOCK_MEMBER_THREAD_POOL,
                         MockConstants.MOCK_MEMBER_THREAD_POOL_SIZE);
 
-        if(instanceIdToMockMemberMap != null) {
+        if (instanceIdToMockMemberMap != null) {
             log.info("Starting mock instances persisted...");
 
             Set<String> serviceNameSet = new HashSet<String>();
-            for(MockInstance mockInstance : instanceIdToMockMemberMap.values()) {
+            for (MockInstance mockInstance : instanceIdToMockMemberMap.values()) {
                 mockMemberExecutorService.submit(mockInstance);
 
                 // Schedule statistics updater tasks for service
                 String serviceName = mockInstance.getMockInstanceContext().getServiceName();
-                if(!serviceNameSet.contains(serviceName)) {
+                if (!serviceNameSet.contains(serviceName)) {
                     MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceName);
                     serviceNameSet.add(serviceName);
                 }

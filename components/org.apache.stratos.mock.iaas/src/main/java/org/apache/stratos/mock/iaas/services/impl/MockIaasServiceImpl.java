@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Mock IaaS service implementation. This is a singleton class that simulates a standard Infrastructure as a Service
  * platform by creating mock instances and managing their lifecycle states.
- *
+ * <p/>
  * How does this work:
  * - Mock IaaS starts a Mock Member thread or each instance created
  * - A sample private IP and a public IP will be assigned to the instance
@@ -77,7 +77,7 @@ public class MockIaasServiceImpl implements MockIaasService {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
-        if(instanceIdToMockInstanceMap == null) {
+        if (instanceIdToMockInstanceMap == null) {
             // No instances found in registry, create a new map
             instanceIdToMockInstanceMap = new ConcurrentHashMap<String, MockInstance>();
         }
@@ -85,6 +85,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Start mock instance.
+     *
      * @param mockInstanceContext
      * @return
      * @throws MockIaasException
@@ -93,7 +94,7 @@ public class MockIaasServiceImpl implements MockIaasService {
     public MockInstanceMetadata startInstance(MockInstanceContext mockInstanceContext) throws MockIaasException {
         synchronized (MockIaasServiceImpl.class) {
 
-            if(mockInstanceContext == null) {
+            if (mockInstanceContext == null) {
                 throw new MockIaasException("Mock instance context is null");
             }
 
@@ -127,12 +128,13 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Get mock instance contexts.
+     *
      * @return
      */
     @Override
     public List<MockInstanceMetadata> getInstances() {
         List<MockInstanceMetadata> mockInstanceMetadataList = new ArrayList<MockInstanceMetadata>();
-        for(Map.Entry<String, MockInstance> entry : instanceIdToMockInstanceMap.entrySet()) {
+        for (Map.Entry<String, MockInstance> entry : instanceIdToMockInstanceMap.entrySet()) {
             MockInstanceContext mockMemberContext = entry.getValue().getMockInstanceContext();
             mockInstanceMetadataList.add(new MockInstanceMetadata(mockMemberContext));
         }
@@ -141,12 +143,13 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Get mock instance context by instance id.
+     *
      * @param instanceId
      * @return
      */
     @Override
     public MockInstanceMetadata getInstance(String instanceId) {
-        if(instanceIdToMockInstanceMap.containsKey(instanceId)) {
+        if (instanceIdToMockInstanceMap.containsKey(instanceId)) {
             MockInstanceContext mockInstanceContext = instanceIdToMockInstanceMap.get(instanceId).getMockInstanceContext();
             return new MockInstanceMetadata(mockInstanceContext);
         }
@@ -155,6 +158,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Allocate ip address to mock instance.
+     *
      * @param instanceId
      * @return
      * @throws MockIaasException
@@ -162,7 +166,7 @@ public class MockIaasServiceImpl implements MockIaasService {
     @Override
     public MockInstanceMetadata allocateIpAddress(String instanceId) throws MockIaasException {
         MockInstance mockInstance = instanceIdToMockInstanceMap.get(instanceId);
-        if(mockInstance == null) {
+        if (mockInstance == null) {
             throw new MockIaasException(String.format("Mock instance not found: [instance-id] %s", instanceId));
         }
 
@@ -176,6 +180,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Terminate mock instance by instance id.
+     *
      * @param instanceId
      */
     @Override
@@ -204,13 +209,14 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Find number of instances available for service type.
+     *
      * @param serviceName
      * @return
      */
     private int getMemberCount(String serviceName) {
         int count = 0;
-        for(Map.Entry<String, MockInstance> entry : instanceIdToMockInstanceMap.entrySet()) {
-            if(serviceName.equals(entry.getValue().getMockInstanceContext().getServiceName())) {
+        for (Map.Entry<String, MockInstance> entry : instanceIdToMockInstanceMap.entrySet()) {
+            if (serviceName.equals(entry.getValue().getMockInstanceContext().getServiceName())) {
                 count++;
             }
         }

@@ -94,8 +94,8 @@ public class MockIaasServiceTest {
     }
 
     private boolean instanceExist(List<MockInstanceMetadata> instances, String instanceId) {
-        for(MockInstanceMetadata instance : instances) {
-            if(instance.getInstanceId().equals(instanceId)) {
+        for (MockInstanceMetadata instance : instances) {
+            if (instance.getInstanceId().equals(instanceId)) {
                 return true;
             }
         }

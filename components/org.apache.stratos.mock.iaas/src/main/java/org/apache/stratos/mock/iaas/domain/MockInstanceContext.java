@@ -41,7 +41,7 @@ public class MockInstanceContext implements Serializable {
     private String defaultPublicIP;
     private String instanceId;
 
-    public MockInstanceContext(){
+    public MockInstanceContext() {
     }
 
     public MockInstanceContext(String applicationId, String serviceName, String clusterId, String memberId,

@@ -54,15 +54,16 @@ public class MockHealthStatistics {
 
     /**
      * Add statistics value for a cartridge type, autoscaling factor
+     *
      * @param cartridgeType
      * @param autoscalingFactor
      * @param value
      */
     public void addStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor, Integer value) {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
-        if(factorValueMap == null) {
+        if (factorValueMap == null) {
             synchronized (MockHealthStatistics.class) {
-                if(factorValueMap == null) {
+                if (factorValueMap == null) {
                     factorValueMap = new ConcurrentHashMap<String, Integer>();
                     statisticsMap.put(cartridgeType, factorValueMap);
                 }
@@ -73,14 +74,15 @@ public class MockHealthStatistics {
 
     /**
      * Returns current statistics of the given cartridge type, autoscaling factor
+     *
      * @param cartridgeType
      * @param autoscalingFactor
      * @return
      */
     public int getStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor) throws NoStatisticsFoundException {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
-        if(factorValueMap != null) {
-            if(factorValueMap.containsKey(autoscalingFactor.toString())) {
+        if (factorValueMap != null) {
+            if (factorValueMap.containsKey(autoscalingFactor.toString())) {
                 return factorValueMap.get(autoscalingFactor.toString());
             } else {
                 throw new NoStatisticsFoundException();
@@ -92,13 +94,14 @@ public class MockHealthStatistics {
 
     /**
      * Remove statistics found for the cartridge type, autoscaling factor
+     *
      * @param cartridgeType
      * @param autoscalingFactor
      */
     public void removeStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor) {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
-        if(factorValueMap != null) {
-            if(factorValueMap.containsKey(autoscalingFactor.toString())) {
+        if (factorValueMap != null) {
+            if (factorValueMap.containsKey(autoscalingFactor.toString())) {
                 factorValueMap.remove(autoscalingFactor.toString());
             }
         }
@@ -106,15 +109,16 @@ public class MockHealthStatistics {
 
     /**
      * Find default statistics value of the given autoscaling factor
+     *
      * @param autoscalingFactor
      * @return
      */
     private int findDefault(MockAutoscalingFactor autoscalingFactor) {
-        if(autoscalingFactor == MockAutoscalingFactor.MemoryConsumption) {
+        if (autoscalingFactor == MockAutoscalingFactor.MemoryConsumption) {
             return DEFAULT_MEMORY_CONSUMPTION;
-        } else if(autoscalingFactor == MockAutoscalingFactor.LoadAverage) {
+        } else if (autoscalingFactor == MockAutoscalingFactor.LoadAverage) {
             return DEFAULT_LOAD_AVERAGE;
-        } else if(autoscalingFactor == MockAutoscalingFactor.RequestInFlight) {
+        } else if (autoscalingFactor == MockAutoscalingFactor.RequestInFlight) {
             return DEFAULT_REQUESTS_IN_FLIGHT;
         }
         throw new RuntimeException("An unknown autoscaling factor found: " + autoscalingFactor);

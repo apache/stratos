@@ -36,12 +36,11 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 /**
- *
  * @scr.component name="org.apache.stratos.mock.iaas.internal.MockIaasServiceComponent" immediate="true"
  * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="componentStartUpSynchronizer" interface="org.apache.stratos.common.services.ComponentStartUpSynchronizer"
- *                cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
+ * cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
  */
 public class MockIaasServiceComponent {
 
@@ -52,7 +51,7 @@ public class MockIaasServiceComponent {
             @Override
             public void run() {
                 try {
-                    if(!MockIaasConfig.getInstance().isEnabled()) {
+                    if (!MockIaasConfig.getInstance().isEnabled()) {
                         log.debug("Mock IaaS is disabled, Mock IaaS service component is not activated");
                         return;
                     }

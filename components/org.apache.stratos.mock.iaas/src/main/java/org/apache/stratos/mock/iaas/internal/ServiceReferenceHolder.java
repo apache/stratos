@@ -37,7 +37,7 @@ public class ServiceReferenceHolder {
     public static ServiceReferenceHolder getInstance() {
         if (instance == null) {
             synchronized (ServiceReferenceHolder.class) {
-                if(instance == null) {
+                if (instance == null) {
                     instance = new ServiceReferenceHolder();
                 }
             }

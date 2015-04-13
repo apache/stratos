@@ -77,7 +77,7 @@ public class MockInstance implements Runnable, Serializable {
         while (!terminated) {
             sleep(1000);
         }
-        
+
         stopInstanceNotifierReceiver();
         stopHealthStatisticsPublisher();
 
@@ -146,13 +146,13 @@ public class MockInstance implements Runnable, Serializable {
     }
 
     private void stopHealthStatisticsPublisher() {
-        if(healthStatNotifierScheduledFuture != null) {
+        if (healthStatNotifierScheduledFuture != null) {
             healthStatNotifierScheduledFuture.cancel(true);
         }
-	}
-    
+    }
+
     private void stopInstanceNotifierReceiver() {
-        if(instanceNotifierEventReceiver != null) {
+        if (instanceNotifierEventReceiver != null) {
             instanceNotifierEventReceiver.terminate();
         }
     }

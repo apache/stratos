@@ -106,7 +106,7 @@ public class MockHealthStatisticsGenerator {
             Map<String, ScheduledFuture> taskMap = serviceNameToTaskListMap.get(serviceName);
             if ((taskMap != null) && (taskMap.size() > 0)) {
                 Iterator<String> factorIterator = taskMap.keySet().iterator();
-                while(factorIterator.hasNext()) {
+                while (factorIterator.hasNext()) {
                     String factor = factorIterator.next();
                     stopStatisticsUpdaterTask(serviceName, factor);
                 }
@@ -116,14 +116,15 @@ public class MockHealthStatisticsGenerator {
 
     /**
      * Stop statistics updater task of a service/cartridge type, factor.
+     *
      * @param serviceName
      * @param factor
      */
     public void stopStatisticsUpdaterTask(String serviceName, String factor) {
         Map<String, ScheduledFuture> factorToTaskMap = serviceNameToTaskListMap.get(serviceName);
-        if(factorToTaskMap != null) {
+        if (factorToTaskMap != null) {
             ScheduledFuture task = factorToTaskMap.get(factor);
-            if(task != null) {
+            if (task != null) {
                 task.cancel(true);
                 factorToTaskMap.remove(factor);
 
@@ -138,6 +139,7 @@ public class MockHealthStatisticsGenerator {
     /**
      * Returns true if there are statistics updater tasks scheduled for the given service/cartridge type
      * else returns false.
+     *
      * @param serviceName
      * @return
      */

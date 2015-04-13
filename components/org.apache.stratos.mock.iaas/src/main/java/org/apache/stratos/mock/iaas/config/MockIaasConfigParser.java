@@ -48,6 +48,7 @@ public class MockIaasConfigParser {
 
     /**
      * Parse mock iaas configuration and return configuration object.
+     *
      * @param filePath
      * @return
      */
@@ -59,7 +60,7 @@ public class MockIaasConfigParser {
 
             OMElement document = AxiomXpathParserUtil.parse(new File(filePath));
             String enabledStr = document.getAttributeValue(ENABLED_ATTRIBUTE);
-            if(StringUtils.isEmpty(enabledStr)) {
+            if (StringUtils.isEmpty(enabledStr)) {
                 throw new RuntimeException("Enabled attribute not found in mock-iaas element");
             }
             mockIaasConfig.setEnabled(Boolean.parseBoolean(enabledStr));
@@ -93,7 +94,7 @@ public class MockIaasConfigParser {
                             MockAutoscalingFactor autoscalingFactor = convertAutoscalingFactor(factorStr);
 
                             OMAttribute modeAttribute = patternElement.getAttribute(MODE_ATTRIBUTE);
-                            if(modeAttribute == null) {
+                            if (modeAttribute == null) {
                                 throw new RuntimeException("Mode attribute not found in pattern element: " +
                                         "[cartridge-type] " + cartridgeType);
                             }
@@ -138,26 +139,22 @@ public class MockIaasConfigParser {
     }
 
     private static StatisticsPatternMode convertMode(String modeStr) {
-        if("loop".equals(modeStr)) {
+        if ("loop".equals(modeStr)) {
             return StatisticsPatternMode.Loop;
-        }
-        else if("continue".equals(modeStr)) {
+        } else if ("continue".equals(modeStr)) {
             return StatisticsPatternMode.Continue;
-        }
-        else if("stop".equals(modeStr)) {
+        } else if ("stop".equals(modeStr)) {
             return StatisticsPatternMode.Stop;
         }
         throw new RuntimeException("An unknown statistics pattern mode found: " + modeStr);
     }
 
     private static MockAutoscalingFactor convertAutoscalingFactor(String factorStr) {
-        if("memory-consumption".equals(factorStr)) {
+        if ("memory-consumption".equals(factorStr)) {
             return MockAutoscalingFactor.MemoryConsumption;
-        }
-        else if("load-average".equals(factorStr)) {
+        } else if ("load-average".equals(factorStr)) {
             return MockAutoscalingFactor.LoadAverage;
-        }
-        else if("request-in-flight".equals(factorStr)) {
+        } else if ("request-in-flight".equals(factorStr)) {
             return MockAutoscalingFactor.RequestInFlight;
         }
         throw new RuntimeException("An unknown autoscaling factor found: " + factorStr);

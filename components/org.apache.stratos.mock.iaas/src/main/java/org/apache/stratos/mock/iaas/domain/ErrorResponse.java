@@ -31,7 +31,7 @@ public class ErrorResponse implements Serializable {
     private int errorCode;
     private String errorMessage;
 
-    public ErrorResponse(){
+    public ErrorResponse() {
     }
 
     public ErrorResponse(int errorCode, String errorMessage) {

@@ -25,10 +25,9 @@ package org.apache.stratos.mock.iaas.persistence;
 public class PersistenceManagerFactory {
 
     public static PersistenceManager getPersistenceManager(PersistenceManagerType persistenceManagerType) {
-        if(persistenceManagerType == PersistenceManagerType.Registry) {
+        if (persistenceManagerType == PersistenceManagerType.Registry) {
             return new RegistryManager();
-        }
-        else if(persistenceManagerType == PersistenceManagerType.Mock) {
+        } else if (persistenceManagerType == PersistenceManagerType.Mock) {
             return new MockPersistenceManager();
         }
         throw new RuntimeException("Invalid persistence manager type");
