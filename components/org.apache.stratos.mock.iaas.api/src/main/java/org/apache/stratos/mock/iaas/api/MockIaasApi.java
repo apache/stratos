@@ -102,7 +102,7 @@ public class MockIaasApi {
             log.debug(String.format("Get mock instance: [instance-id] %s", instanceId));
 
             MockInstanceMetadata mockInstanceMetadata = getMockIaasService().getInstance(instanceId);
-            if(mockInstanceMetadata == null) {
+            if (mockInstanceMetadata == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
@@ -126,12 +126,12 @@ public class MockIaasApi {
             log.info(String.format("Allocating ip addresses: [instance-id] %s", instanceId));
 
             MockInstanceMetadata mockInstanceMetadata = getMockIaasService().getInstance(instanceId);
-            if(mockInstanceMetadata == null) {
+            if (mockInstanceMetadata == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             mockInstanceMetadata = getMockIaasService().allocateIpAddress(instanceId);
             log.info(String.format("IP addresses allocated: [instance-id] %s [default-private-ip] %s " +
-                    "[default-public-ip] %s", instanceId, mockInstanceMetadata.getDefaultPrivateIp(),
+                            "[default-public-ip] %s", instanceId, mockInstanceMetadata.getDefaultPrivateIp(),
                     mockInstanceMetadata.getDefaultPublicIp()));
             return Response.ok(mockInstanceMetadata).build();
         } catch (Exception e) {
@@ -161,12 +161,13 @@ public class MockIaasApi {
 
     /**
      * Get mock iaas service instance
+     *
      * @return
      */
     private MockIaasService getMockIaasService() {
-        if(mockIaasService == null) {
+        if (mockIaasService == null) {
             synchronized (MockIaasApi.class) {
-                if(mockIaasService == null) {
+                if (mockIaasService == null) {
                     try {
                         try {
                             mockIaasService = (MockIaasService) PrivilegedCarbonContext.getThreadLocalCarbonContext().
@@ -189,7 +190,7 @@ public class MockIaasApi {
      * Validate mock iaas service.
      */
     private void validateMockIaasService() {
-        if(getMockIaasService() == null) {
+        if (getMockIaasService() == null) {
             throw new RuntimeException(String.format("Mock IaaS may have been disabled, please check %s file",
                     MockIaasConfig.MOCK_IAAS_CONFIG_FILE_NAME));
         }

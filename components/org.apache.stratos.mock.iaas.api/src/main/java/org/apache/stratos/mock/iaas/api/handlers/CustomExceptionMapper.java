@@ -35,16 +35,16 @@ public class CustomExceptionMapper implements ExceptionMapper<MockIaasApiExcepti
     private static Log log = LogFactory.getLog(CustomExceptionMapper.class);
 
     public Response toResponse(MockIaasApiException restAPIException) {
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Error while invoking the admin rest api", restAPIException);
         }
         // if no specific error message specified, spitting out a generaic error message
-        String errorMessage = (restAPIException.getMessage() != null)?
-                restAPIException.getMessage():"Error while fulfilling the request";
+        String errorMessage = (restAPIException.getMessage() != null) ?
+                restAPIException.getMessage() : "Error while fulfilling the request";
         // if no specific error specified we are throwing the bad request http status code by default
-        Response.Status httpStatus= (restAPIException.getHTTPStatusCode() != null)?
-                restAPIException.getHTTPStatusCode():Response.Status.BAD_REQUEST;
-           
+        Response.Status httpStatus = (restAPIException.getHTTPStatusCode() != null) ?
+                restAPIException.getHTTPStatusCode() : Response.Status.BAD_REQUEST;
+
         log.error(errorMessage, restAPIException);
         return Response.status(httpStatus.getStatusCode()).type(MediaType.APPLICATION_JSON).
                 entity(MockIaasApiUtils.buildMessage(httpStatus.getStatusCode(), errorMessage)).build();

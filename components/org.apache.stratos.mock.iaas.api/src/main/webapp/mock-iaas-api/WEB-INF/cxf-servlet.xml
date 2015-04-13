@@ -45,12 +45,13 @@
     <bean id="exceptionHandler" class="org.apache.stratos.mock.iaas.api.handlers.CustomExceptionMapper"/>
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.mock.iaas.api.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.mock.iaas.api.handlers.GenericExceptionMapper"/>
-    <bean id="throwableExceptionHandler" class="org.apache.stratos.mock.iaas.api.handlers.CustomThrowableExceptionMapper"/>
+    <bean id="throwableExceptionHandler"
+          class="org.apache.stratos.mock.iaas.api.handlers.CustomThrowableExceptionMapper"/>
 
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
         <property name="supportUnwrapped" value="true"/>
         <property name="serializeAsArray" value="true"/>
-        <property name="dropRootElement" value="true" />
+        <property name="dropRootElement" value="true"/>
         <property name="dropCollectionWrapperElement" value="true"/>
         <property name="arrayKeys">
             <list>

@@ -48,7 +48,7 @@ public class CustomThrowableExceptionMapper implements ExceptionMapper<Throwable
     private static Log log = LogFactory.getLog(CustomThrowableExceptionMapper.class);
 
     public Response toResponse(Throwable throwable) {
-        if(log.isErrorEnabled()){
+        if (log.isErrorEnabled()) {
             log.error("Internal server error", throwable);
         }
 
