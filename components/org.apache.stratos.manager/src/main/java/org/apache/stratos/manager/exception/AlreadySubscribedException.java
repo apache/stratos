@@ -20,29 +20,29 @@ package org.apache.stratos.manager.exception;
 
 public class AlreadySubscribedException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final String message;
+    private final String message;
 
-	private final String cartridgeType;
+    private final String cartridgeType;
 
-	public AlreadySubscribedException(String message, String cartridgeType, Throwable cause) {
-		super(message, cause);
-		this.message = message;
-		this.cartridgeType = cartridgeType;
-	}
+    public AlreadySubscribedException(String message, String cartridgeType, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+        this.cartridgeType = cartridgeType;
+    }
 
-	public AlreadySubscribedException(String message, String cartridgeType) {
-		super(message);
-		this.message = message;
-		this.cartridgeType = cartridgeType;
-	}
+    public AlreadySubscribedException(String message, String cartridgeType) {
+        super(message);
+        this.message = message;
+        this.cartridgeType = cartridgeType;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public String getCartridgeType() {
-		return cartridgeType;
-	}
+    public String getCartridgeType() {
+        return cartridgeType;
+    }
 }

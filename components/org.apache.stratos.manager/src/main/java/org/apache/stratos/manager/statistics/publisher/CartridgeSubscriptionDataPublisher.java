@@ -42,136 +42,136 @@ import org.wso2.carbon.utils.CarbonUtils;
  */
 public class CartridgeSubscriptionDataPublisher {
 
-	private static final Log log = LogFactory
-			.getLog(CartridgeSubscriptionDataPublisher.class);
-	private static AsyncDataPublisher dataPublisher;
-	private static StreamDefinition streamDefinition;
-	private static final String stratosManagerEventStreamVersion = "1.0.0";
+    private static final Log log = LogFactory
+            .getLog(CartridgeSubscriptionDataPublisher.class);
+    private static AsyncDataPublisher dataPublisher;
+    private static StreamDefinition streamDefinition;
+    private static final String stratosManagerEventStreamVersion = "1.0.0";
 
-	@SuppressWarnings("deprecation")
-	public static void publish(int tenantID, String adminUser,
-			String cartridgeAlias, String cartridgeType, String repositoryUrl,
-			boolean isMultiTenant, String autoScalingPolicy,
-			String deploymentPolicy, String clusterID, String hostName,
-			String mappedDomain, String action) throws StratosManagerException {
-		
-		//check if bam is enabled in cartridge-config.properties
-		if(! Boolean.parseBoolean(System.getProperty(CartridgeConstants.BAM_PUBLISHER_ENABLED))){
+    @SuppressWarnings("deprecation")
+    public static void publish(int tenantID, String adminUser,
+                               String cartridgeAlias, String cartridgeType, String repositoryUrl,
+                               boolean isMultiTenant, String autoScalingPolicy,
+                               String deploymentPolicy, String clusterID, String hostName,
+                               String mappedDomain, String action) throws StratosManagerException {
+
+        //check if bam is enabled in cartridge-config.properties
+        if (!Boolean.parseBoolean(System.getProperty(CartridgeConstants.BAM_PUBLISHER_ENABLED))) {
             return;
         }
-		
-		log.debug(CartridgeConstants.DATA_PUB_TASK_NAME+" cycle started.");
 
-		if (dataPublisher == null) {
-			createDataPublisher();
+        log.debug(CartridgeConstants.DATA_PUB_TASK_NAME + " cycle started.");
 
-			// If we cannot create a data publisher we should give up
-			// this means data will not be published
-			if (dataPublisher == null) {
-				log.error("Data Publisher cannot be created or found.");
-				return;
-			}
-		}
+        if (dataPublisher == null) {
+            createDataPublisher();
 
-		//Construct the data to be published
-		List<Object> payload = new ArrayList<Object>();
-		
-		// Payload values
-		payload.add(String.valueOf(tenantID));
-		payload.add(handleNull(adminUser));
-		payload.add(handleNull(cartridgeAlias));
-		payload.add(cartridgeType);
-		payload.add(handleNull(repositoryUrl));
-		payload.add(handleNull(String.valueOf(isMultiTenant)));
-		payload.add(handleNull(autoScalingPolicy));
-		payload.add(handleNull(deploymentPolicy));
-		payload.add(String.valueOf(clusterID));
-		payload.add(handleNull(hostName));
-		payload.add(handleNull(mappedDomain));
-		payload.add(handleNull(action));
+            // If we cannot create a data publisher we should give up
+            // this means data will not be published
+            if (dataPublisher == null) {
+                log.error("Data Publisher cannot be created or found.");
+                return;
+            }
+        }
 
-		Event event = new Event();
-		event.setPayloadData(payload.toArray());
-		event.setArbitraryDataMap(new HashMap<String, String>());
+        //Construct the data to be published
+        List<Object> payload = new ArrayList<Object>();
 
-		try {
-			if (log.isDebugEnabled()) {
-				log.debug(String.format(
-						"Publishing BAM event: [stream] %s [version] %s",
-						streamDefinition.getName(),
-						streamDefinition.getVersion()));
-			}
-			dataPublisher.publish(streamDefinition.getName(),
-					streamDefinition.getVersion(), event);
-		} catch (AgentException e) {
-			if (log.isErrorEnabled()) {
-				log.error(
-						String.format(
-								"Could not publish BAM event: [stream] %s [version] %s",
-								streamDefinition.getName(),
-								streamDefinition.getVersion()), e);
-			}
-		}
-	}
+        // Payload values
+        payload.add(String.valueOf(tenantID));
+        payload.add(handleNull(adminUser));
+        payload.add(handleNull(cartridgeAlias));
+        payload.add(cartridgeType);
+        payload.add(handleNull(repositoryUrl));
+        payload.add(handleNull(String.valueOf(isMultiTenant)));
+        payload.add(handleNull(autoScalingPolicy));
+        payload.add(handleNull(deploymentPolicy));
+        payload.add(String.valueOf(clusterID));
+        payload.add(handleNull(hostName));
+        payload.add(handleNull(mappedDomain));
+        payload.add(handleNull(action));
 
-	private static StreamDefinition initializeStream() throws Exception {
-		streamDefinition = new StreamDefinition( CartridgeConstants.STRATOS_MANAGER_EVENT_STREAM,
-				stratosManagerEventStreamVersion);
-		streamDefinition.setNickName("stratos.manager");
-		streamDefinition.setDescription("Tenant Subscription Data");
-		// Payload definition
-		List<Attribute> payloadData = new ArrayList<Attribute>();
-		payloadData.add(new Attribute(CartridgeConstants.TENANT_ID_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.ADMIN_USER_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.CARTRIDGE_ALIAS_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.CARTRIDGE_TYPE_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.REPOSITORY_URL_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.MULTI_TENANT_BEHAVIOR_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.AUTO_SCALE_POLICY_COL, AttributeType.STRING));
-		payloadData
-				.add(new Attribute(CartridgeConstants.DEPLOYMENT_POLICY_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.CLUSTER_ID_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.HOST_NAME_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.MAPPED_DOMAIN_COL, AttributeType.STRING));
-		payloadData.add(new Attribute(CartridgeConstants.ACTION_COL, AttributeType.STRING));
-		streamDefinition.setPayloadData(payloadData);
-		return streamDefinition;
-	}
+        Event event = new Event();
+        event.setPayloadData(payload.toArray());
+        event.setArbitraryDataMap(new HashMap<String, String>());
 
-	private static void createDataPublisher() throws StratosManagerException {
-		// creating the agent
-		ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
-		String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
-		String trustStorePassword = serverConfig.getFirstProperty("Security.TrustStore.Password");
-		
-		//value is in the carbon.xml file and should be set to the thrift port of BAM
-		String bamServerUrl = serverConfig.getFirstProperty("BamServerURL");
-        
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Publishing BAM event: [stream] %s [version] %s",
+                        streamDefinition.getName(),
+                        streamDefinition.getVersion()));
+            }
+            dataPublisher.publish(streamDefinition.getName(),
+                    streamDefinition.getVersion(), event);
+        } catch (AgentException e) {
+            if (log.isErrorEnabled()) {
+                log.error(
+                        String.format(
+                                "Could not publish BAM event: [stream] %s [version] %s",
+                                streamDefinition.getName(),
+                                streamDefinition.getVersion()), e);
+            }
+        }
+    }
+
+    private static StreamDefinition initializeStream() throws Exception {
+        streamDefinition = new StreamDefinition(CartridgeConstants.STRATOS_MANAGER_EVENT_STREAM,
+                stratosManagerEventStreamVersion);
+        streamDefinition.setNickName("stratos.manager");
+        streamDefinition.setDescription("Tenant Subscription Data");
+        // Payload definition
+        List<Attribute> payloadData = new ArrayList<Attribute>();
+        payloadData.add(new Attribute(CartridgeConstants.TENANT_ID_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.ADMIN_USER_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.CARTRIDGE_ALIAS_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.CARTRIDGE_TYPE_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.REPOSITORY_URL_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.MULTI_TENANT_BEHAVIOR_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.AUTO_SCALE_POLICY_COL, AttributeType.STRING));
+        payloadData
+                .add(new Attribute(CartridgeConstants.DEPLOYMENT_POLICY_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.CLUSTER_ID_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.HOST_NAME_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.MAPPED_DOMAIN_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CartridgeConstants.ACTION_COL, AttributeType.STRING));
+        streamDefinition.setPayloadData(payloadData);
+        return streamDefinition;
+    }
+
+    private static void createDataPublisher() throws StratosManagerException {
+        // creating the agent
+        ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
+        String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
+        String trustStorePassword = serverConfig.getFirstProperty("Security.TrustStore.Password");
+
+        //value is in the carbon.xml file and should be set to the thrift port of BAM
+        String bamServerUrl = serverConfig.getFirstProperty("BamServerURL");
+
         //getting the BAM related values from cartridge-config.properties
-		String adminUsername = System.getProperty(CartridgeConstants.BAM_ADMIN_USERNAME);
-		String adminPassword = System.getProperty(CartridgeConstants.BAM_ADMIN_PASSWORD); 
+        String adminUsername = System.getProperty(CartridgeConstants.BAM_ADMIN_USERNAME);
+        String adminPassword = System.getProperty(CartridgeConstants.BAM_ADMIN_PASSWORD);
 
-		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-		System.setProperty("javax.net.ssl.trustStorePassword",
-				trustStorePassword);
+        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+        System.setProperty("javax.net.ssl.trustStorePassword",
+                trustStorePassword);
 
-		try {
-			dataPublisher = new AsyncDataPublisher(
-					"tcp://" + bamServerUrl + "", adminUsername, adminPassword);
-			initializeStream();
-			dataPublisher.addStreamDefinition(streamDefinition);
-		} catch (Exception e) {
-			String msg = "Unable to create a data publisher to "+ bamServerUrl;
-			log.error(msg, e);
-			throw new StratosManagerException(msg, e);
-		}
-	}
-	
-	private static String handleNull(String val) {
-	    if (val == null) {
-	        return "";
-	    }
-	    return val;
-	}
+        try {
+            dataPublisher = new AsyncDataPublisher(
+                    "tcp://" + bamServerUrl + "", adminUsername, adminPassword);
+            initializeStream();
+            dataPublisher.addStreamDefinition(streamDefinition);
+        } catch (Exception e) {
+            String msg = "Unable to create a data publisher to " + bamServerUrl;
+            log.error(msg, e);
+            throw new StratosManagerException(msg, e);
+        }
+    }
+
+    private static String handleNull(String val) {
+        if (val == null) {
+            return "";
+        }
+        return val;
+    }
 
 }

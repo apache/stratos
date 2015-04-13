@@ -55,7 +55,7 @@ public class DomainMappingHandler {
             // Add domain name to application signup
             ApplicationSignUp applicationSignUp = applicationSignUpHandler.getApplicationSignUp(applicationId, tenantId);
             DomainMapping[] domainMappingArray = applicationSignUp.getDomainMappings();
-            if(domainMappingArray == null) {
+            if (domainMappingArray == null) {
                 domainMappingArray = new DomainMapping[1];
                 domainMappingArray[0] = domainMapping;
             } else {
@@ -71,7 +71,7 @@ public class DomainMappingHandler {
                     domainMapping.getServiceName(), domainMapping.getClusterId(),
                     domainMapping.getDomainName(), domainMapping.getContextPath());
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Domain mapping added successfully: [application-id] %s [tenant-id] %d " +
                         "[domain-name] %s", applicationId, tenantId, domainName));
             }
@@ -84,8 +84,8 @@ public class DomainMappingHandler {
 
     private List<DomainMapping> convertDomainMappingArrayToList(DomainMapping[] domainMappingArray) {
         List<DomainMapping> domainMappingList = new ArrayList<DomainMapping>();
-        for(DomainMapping arrayItem : domainMappingArray) {
-            if(arrayItem != null) {
+        for (DomainMapping arrayItem : domainMappingArray) {
+            if (arrayItem != null) {
                 domainMappingList.add(arrayItem);
             }
         }
@@ -93,7 +93,7 @@ public class DomainMappingHandler {
     }
 
     private void checkDomainNameAvailability(String domainName) throws DomainMappingException {
-        if(domainNameExist(domainName)) {
+        if (domainNameExist(domainName)) {
             throw new RuntimeException(String.format("Domain name is already mapped: [domain-name] %s", domainName));
         }
     }
@@ -101,12 +101,12 @@ public class DomainMappingHandler {
     public boolean domainNameExist(String domainName) throws DomainMappingException {
         try {
             List<ApplicationSignUp> applicationSignUps = applicationSignUpHandler.getApplicationSignUps();
-            if(applicationSignUps != null) {
-                for(ApplicationSignUp applicationSignUp : applicationSignUps) {
-                    if(applicationSignUp.getDomainMappings() != null) {
-                        for(DomainMapping domainMapping : applicationSignUp.getDomainMappings()) {
-                            if((domainMapping != null) && (domainMapping.getDomainName().equals(domainName))) {
-                                 return true;
+            if (applicationSignUps != null) {
+                for (ApplicationSignUp applicationSignUp : applicationSignUps) {
+                    if (applicationSignUp.getDomainMappings() != null) {
+                        for (DomainMapping domainMapping : applicationSignUp.getDomainMappings()) {
+                            if ((domainMapping != null) && (domainMapping.getDomainName().equals(domainName))) {
+                                return true;
                             }
                         }
                     }
@@ -123,7 +123,7 @@ public class DomainMappingHandler {
     public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws DomainMappingException {
         try {
             ApplicationSignUp applicationSignUp = applicationSignUpHandler.getApplicationSignUp(applicationId, tenantId);
-            if(applicationSignUp != null) {
+            if (applicationSignUp != null) {
                 return applicationSignUp.getDomainMappings();
             }
             return null;
@@ -143,9 +143,9 @@ public class DomainMappingHandler {
             List<DomainMapping> domainMappingList = convertDomainMappingArrayToList(domainMappingArray);
 
             Iterator<DomainMapping> iterator = domainMappingList.iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 DomainMapping domainMapping = iterator.next();
-                if(domainMapping.getDomainName().equals(domainName)) {
+                if (domainMapping.getDomainName().equals(domainName)) {
                     iterator.remove();
 
                     domainMappingArray = domainMappingList.toArray(new DomainMapping[domainMappingList.size()]);
@@ -155,7 +155,7 @@ public class DomainMappingHandler {
                     DomainMappingEventPublisher.publishDomainNameRemovedEvent(applicationId, tenantId,
                             domainMapping.getServiceName(), domainMapping.getClusterId(), domainName);
 
-                    if(log.isInfoEnabled()) {
+                    if (log.isInfoEnabled()) {
                         String.format("Domain mapping removed: [application-id] %s [tenant-id] %d " +
                                 "[domain-name] %s", applicationId, tenantId, domainName);
                     }
@@ -164,7 +164,7 @@ public class DomainMappingHandler {
             }
         } catch (Exception e) {
             String message = String.format("Could not remove domain mappings: [application-id] %s [tenant-id] %d " +
-                            "[domain-name] %s", applicationId, tenantId, domainName);
+                    "[domain-name] %s", applicationId, tenantId, domainName);
             log.error(message, e);
             throw new DomainMappingException(message, e);
         }

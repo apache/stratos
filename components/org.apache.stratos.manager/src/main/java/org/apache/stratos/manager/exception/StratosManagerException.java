@@ -20,30 +20,30 @@ package org.apache.stratos.manager.exception;
 
 public class StratosManagerException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String message;
+    private String message;
 
-	public StratosManagerException() {
-		super();
-	}
+    public StratosManagerException() {
+        super();
+    }
 
-	public StratosManagerException(String message, Throwable cause) {
-		super(message, cause);
-		this.message = message;
-	}
+    public StratosManagerException(String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+    }
 
-	public StratosManagerException(String message) {
-		super(message);
-		this.message = message;
-	}
+    public StratosManagerException(String message) {
+        super(message);
+        this.message = message;
+    }
 
-	public StratosManagerException(Throwable cause) {
-		super(cause);
-	}
+    public StratosManagerException(Throwable cause) {
+        super(cause);
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
 }

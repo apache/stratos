@@ -32,9 +32,9 @@ public class StratosManagerTopologyEventReceiver extends TopologyEventReceiver {
 
     @Override
     public void execute() {
-	    super.execute();
+        super.execute();
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Stratos manager topology event receiver thread started");
         }
     }

@@ -21,7 +21,7 @@ package org.apache.stratos.manager.exception;
 
 public class ApplicationSubscriptionException extends Exception {
 
-	private static final long serialVersionUID = 603387881177162687L;
+    private static final long serialVersionUID = 603387881177162687L;
 
     private String message;
 

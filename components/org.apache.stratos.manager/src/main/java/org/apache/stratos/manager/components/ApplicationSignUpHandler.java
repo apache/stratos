@@ -59,7 +59,7 @@ public class ApplicationSignUpHandler {
         int tenantId = applicationSignUp.getTenantId();
         String[] clusterIdArray = applicationSignUp.getClusterIds();
         List<String> clusterIdList = new ArrayList<String>();
-        if(clusterIdArray != null) {
+        if (clusterIdArray != null) {
             for (String clusterId : clusterIdArray) {
                 clusterIdList.add(clusterId);
             }
@@ -95,6 +95,7 @@ public class ApplicationSignUpHandler {
 
     /**
      * Check application signup availability.
+     *
      * @param applicationId
      * @param tenantId
      * @return
@@ -214,6 +215,7 @@ public class ApplicationSignUpHandler {
 
     /**
      * Get all application signups.
+     *
      * @return
      * @throws ApplicationSignUpException
      */

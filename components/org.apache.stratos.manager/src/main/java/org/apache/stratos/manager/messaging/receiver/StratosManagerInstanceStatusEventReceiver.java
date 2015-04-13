@@ -56,7 +56,7 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
     public void execute() {
         super.execute();
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Stratos manager instance status event receiver thread started");
         }
     }

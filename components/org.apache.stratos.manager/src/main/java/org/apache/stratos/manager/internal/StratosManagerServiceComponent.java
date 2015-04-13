@@ -54,33 +54,33 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @scr.component name="org.wso2.carbon.hosting.mgt.internal.StratosManagerServiceComponent"
- *                immediate="true"
+ * immediate="true"
  * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
- *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
+ * cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
  * @scr.reference name="config.context.service"
- *                interface="org.wso2.carbon.utils.ConfigurationContextService"
- *                cardinality="1..1" policy="dynamic"
- *                bind="setConfigurationContextService"
- *                unbind="unsetConfigurationContextService"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="1..1" policy="dynamic"
+ * bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  * @scr.reference name="user.realmservice.default"
- *                interface="org.wso2.carbon.user.core.service.RealmService"
- *                cardinality="1..1" policy="dynamic" bind="setRealmService"
- *                unbind="unsetRealmService"
+ * interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1" policy="dynamic" bind="setRealmService"
+ * unbind="unsetRealmService"
  * @scr.reference name="registry.service"
- *                interface="org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"
+ * interface="org.wso2.carbon.registry.core.service.RegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService"
+ * unbind="unsetRegistryService"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
- *                cardinality="1..1" policy="dynamic" bind="setTaskService"
- *                unbind="unsetTaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService"
+ * unbind="unsetTaskService"
  * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.services.DistributedObjectProvider"
- *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
+ * cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  * @scr.reference name="componentStartUpSynchronizer" interface="org.apache.stratos.common.services.ComponentStartUpSynchronizer"
- *                cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
+ * cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
  */
 public class StratosManagerServiceComponent {
 
-	private static final Log log = LogFactory.getLog(StratosManagerServiceComponent.class);
+    private static final Log log = LogFactory.getLog(StratosManagerServiceComponent.class);
 
     private static final String THREAD_POOL_ID = "stratos.manager.thread.pool";
     private static final String SCHEDULER_THREAD_POOL_ID = "stratos.manager.scheduler.thread.pool";
@@ -91,11 +91,11 @@ public class StratosManagerServiceComponent {
     private StratosManagerTopologyEventReceiver topologyEventReceiver;
     private StratosManagerInstanceStatusEventReceiver instanceStatusEventReceiver;
     private StratosManagerApplicationEventReceiver applicationEventReceiver;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
     private ScheduledExecutorService scheduler;
 
     protected void activate(final ComponentContext componentContext) throws Exception {
-		try {
+        try {
             executorService = StratosThreadPool.getExecutorService(THREAD_POOL_ID, THREAD_POOL_SIZE);
             scheduler = StratosThreadPool.getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID,
                     SCHEDULER_THREAD_POOL_SIZE);
@@ -160,13 +160,14 @@ public class StratosManagerServiceComponent {
             };
             Thread stratosManagerActivatorThread = new Thread(stratosManagerActivator);
             stratosManagerActivatorThread.start();
-		} catch (Exception e) {
+        } catch (Exception e) {
             log.error("Could not activate stratos manager service component", e);
-		}
-	}
+        }
+    }
 
     /**
      * Execute coordinator tasks
+     *
      * @param componentContext
      * @throws UserStoreException
      * @throws UserManagerException
@@ -211,6 +212,7 @@ public class StratosManagerServiceComponent {
 
     /**
      * Create internal user role if not exists.
+     *
      * @param componentContext
      * @throws UserStoreException
      * @throws UserManagerException
@@ -229,18 +231,19 @@ public class StratosManagerServiceComponent {
 
     /**
      * Schedule complete tenant event synchronizer and initialize tenant event publisher
+     *
      * @param componentContext
      */
     private void initializeTenantEventPublisher(ComponentContext componentContext) {
         // Register tenant event publisher
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Initializing tenant event publisher...");
         }
         final TenantEventPublisher tenantEventPublisher = new TenantEventPublisher();
         componentContext.getBundleContext().registerService(
                 org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                 tenantEventPublisher, null);
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Tenant event publisher initialized");
         }
     }
@@ -251,7 +254,7 @@ public class StratosManagerServiceComponent {
         componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
             @Override
             public void activated(Component component) {
-                if(component == Component.StratosManager) {
+                if (component == Component.StratosManager) {
                     Runnable tenantSynchronizer = new TenantEventSynchronizer();
                     scheduler.scheduleAtFixedRate(tenantSynchronizer, 0, 1, TimeUnit.MINUTES);
 
@@ -314,7 +317,7 @@ public class StratosManagerServiceComponent {
         }
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
-    
+
     protected void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
         ServiceReferenceHolder.getInstance().setDistributedObjectProvider(distributedObjectProvider);
     }
@@ -342,14 +345,14 @@ public class StratosManagerServiceComponent {
 
     private void shutdownExecutorService(String executorServiceId) {
         ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
-        if(executorService != null) {
+        if (executorService != null) {
             shutdownExecutorService(executorService);
         }
     }
 
     private void shutdownScheduledExecutorService(String executorServiceId) {
         ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
-        if(executorService != null) {
+        if (executorService != null) {
             shutdownExecutorService(executorService);
         }
     }

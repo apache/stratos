@@ -48,6 +48,7 @@ public class ArtifactDistributionCoordinator {
 
     /**
      * Notify artifact updated event for an application signup.
+     *
      * @param applicationId
      * @param tenantId
      * @throws ArtifactDistributionCoordinatorException
@@ -58,6 +59,7 @@ public class ArtifactDistributionCoordinator {
 
     /**
      * Notify artifact updated event for an application signup, cluster.
+     *
      * @param applicationId
      * @param tenantId
      * @param clusterId
@@ -81,7 +83,7 @@ public class ArtifactDistributionCoordinator {
                 for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
                     if (artifactRepository != null) {
                         String artifactRepositoryClusterId = findClusterId(applicationId, artifactRepository.getAlias());
-                        if(StringUtils.isBlank(clusterId) || (clusterId.equals(artifactRepositoryClusterId))) {
+                        if (StringUtils.isBlank(clusterId) || (clusterId.equals(artifactRepositoryClusterId))) {
 
                             publisher.publishArtifactUpdatedEvent(artifactRepositoryClusterId,
                                     String.valueOf(applicationSignUp.getTenantId()),
@@ -103,30 +105,31 @@ public class ArtifactDistributionCoordinator {
                 }
             }
         } catch (Exception e) {
-                String message = "Could not notify artifact updated event";
-                log.error(message, e);
+            String message = "Could not notify artifact updated event";
+            log.error(message, e);
             throw new ArtifactDistributionCoordinatorException(message, e);
         }
     }
 
     /**
      * Notify artifact updated event for artifact repository.
+     *
      * @param repoUrl
      */
     public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws ArtifactDistributionCoordinatorException {
         try {
             List<ApplicationSignUp> applicationSignUps = applicationSignUpManager.getApplicationSignUpsForRepository(repoUrl);
-            if((applicationSignUps == null) || (applicationSignUps.size() == 0)) {
-                if(log.isWarnEnabled()) {
+            if ((applicationSignUps == null) || (applicationSignUps.size() == 0)) {
+                if (log.isWarnEnabled()) {
                     log.warn(String.format("Artifact updated event not sent, " +
                             "application signups not found for repository: [repo-url] %s", repoUrl));
                     return;
                 }
 
-                for(ApplicationSignUp applicationSignUp : applicationSignUps) {
-                    if(applicationSignUp.getArtifactRepositories() != null) {
-                        for(ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
-                            if((artifactRepository != null) && (artifactRepository.getRepoUrl().equals(repoUrl))) {
+                for (ApplicationSignUp applicationSignUp : applicationSignUps) {
+                    if (applicationSignUp.getArtifactRepositories() != null) {
+                        for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                            if ((artifactRepository != null) && (artifactRepository.getRepoUrl().equals(repoUrl))) {
 
                                 String applicationId = applicationSignUp.getApplicationId();
                                 int tenantId = applicationSignUp.getTenantId();

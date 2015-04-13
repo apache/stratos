@@ -47,7 +47,7 @@ public class DomainMappingEventPublisher {
                 serviceName, clusterId, domainName, contextPath);
         publish(domainMappingAddedEvent);
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(String.format("Domain mapping added event published: %s", domainMappingAddedEvent.toString()));
         }
     }
@@ -58,7 +58,7 @@ public class DomainMappingEventPublisher {
                 serviceName, clusterId, domainName);
         publish(domainNameRemovedEvent);
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(String.format("Domain mapping removed event published: %s", domainNameRemovedEvent.toString()));
         }
     }

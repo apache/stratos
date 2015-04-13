@@ -20,29 +20,29 @@ package org.apache.stratos.manager.exception;
 
 public class InvalidCartridgeAliasException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final String message;
+    private final String message;
 
-	private final String cartridgeType;
+    private final String cartridgeType;
 
-	private final String cartridgeAlias;
+    private final String cartridgeAlias;
 
     private int tenantId;
 
-	public InvalidCartridgeAliasException(String message, String cartridgeType, String cartridgeAlias, Throwable cause) {
-		super(message, cause);
-		this.message = message;
-		this.cartridgeType = cartridgeType;
-		this.cartridgeAlias = cartridgeAlias;
-	}
+    public InvalidCartridgeAliasException(String message, String cartridgeType, String cartridgeAlias, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+        this.cartridgeType = cartridgeType;
+        this.cartridgeAlias = cartridgeAlias;
+    }
 
-	public InvalidCartridgeAliasException(String message, String cartridgeType, String cartridgeAlias) {
-		super(message);
-		this.message = message;
-		this.cartridgeType = cartridgeType;
-		this.cartridgeAlias = cartridgeAlias;
-	}
+    public InvalidCartridgeAliasException(String message, String cartridgeType, String cartridgeAlias) {
+        super(message);
+        this.message = message;
+        this.cartridgeType = cartridgeType;
+        this.cartridgeAlias = cartridgeAlias;
+    }
 
     public InvalidCartridgeAliasException(String message, int tenantId, String cartridgeType, String cartridgeAlias) {
         super(message);
@@ -52,16 +52,16 @@ public class InvalidCartridgeAliasException extends Exception {
         this.cartridgeAlias = cartridgeAlias;
     }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public String getCartridgeType() {
-		return cartridgeType;
-	}
+    public String getCartridgeType() {
+        return cartridgeType;
+    }
 
-	public String getCartridgeAlias() {
-		return cartridgeAlias;
-	}
+    public String getCartridgeAlias() {
+        return cartridgeAlias;
+    }
 
 }

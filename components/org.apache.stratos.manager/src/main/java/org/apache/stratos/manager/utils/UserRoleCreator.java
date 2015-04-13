@@ -49,18 +49,18 @@ public class UserRoleCreator {
                 }
                 //Set permissions to the Internal/user role
                 Permission[] tenantUserPermissions = new Permission[]{new Permission(PermissionConstants.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_CLUSTER, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_INSTANCE, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.VIEW_KUBERNETES, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.ADD_GIT_SYNC, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.ADD_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.ADD_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                                                                      new Permission(PermissionConstants.REST_LOGIN, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_CLUSTER, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_INSTANCE, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.VIEW_KUBERNETES, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.ADD_GIT_SYNC, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.ADD_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.ADD_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
+                        new Permission(PermissionConstants.REST_LOGIN, UserMgtConstants.EXECUTE_ACTION),
                 };
 
                 String[] userList = new String[]{};

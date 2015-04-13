@@ -45,11 +45,12 @@ public class ServiceReferenceHolder {
     private DistributedObjectProvider distributedObjectProvider;
     private ComponentStartUpSynchronizer componentStartUpSynchronizer;
 
-    private ServiceReferenceHolder() {       }
+    private ServiceReferenceHolder() {
+    }
 
     public static ServiceReferenceHolder getInstance() {
         if (instance == null) {
-            synchronized (ServiceReferenceHolder .class){
+            synchronized (ServiceReferenceHolder.class) {
                 if (instance == null) {
                     instance = new ServiceReferenceHolder();
                 }
@@ -115,7 +116,7 @@ public class ServiceReferenceHolder {
     public AxisConfiguration getAxisConfiguration() {
         return axisConfiguration;
     }
-    
+
     public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
         this.distributedObjectProvider = distributedObjectProvider;
     }

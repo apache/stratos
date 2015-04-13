@@ -44,7 +44,7 @@ public class ApplicationSignUpEventSynchronizer implements Runnable {
     public void run() {
         try {
             List<ApplicationSignUp> applicationSignUps = applicationSignUpHandler.getApplicationSignUps();
-            if((applicationSignUps != null) && (applicationSignUps.size() > 0)) {
+            if ((applicationSignUps != null) && (applicationSignUps.size() > 0)) {
                 log.debug("Publishing complete application signup event");
                 ApplicationSignUpEventPublisher.publishCompleteApplicationSignUpsEvent(applicationSignUps);
             }

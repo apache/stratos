@@ -45,7 +45,7 @@ public class RegistryManager {
     public static RegistryManager getInstance() {
         return instance;
     }
-    
+
     private RegistryManager() {
     }
 
@@ -55,7 +55,7 @@ public class RegistryManager {
      * @param serializableObject object to be persisted.
      */
     public synchronized void persist(String resourcePath, Serializable serializableObject) throws RegistryException {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Persisting resource in registry: [resource-path] %s", resourcePath));
         }
 
@@ -63,8 +63,8 @@ public class RegistryManager {
 
         try {
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
             registry.beginTransaction();
 
@@ -74,7 +74,7 @@ public class RegistryManager {
 
             registry.commitTransaction();
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("Resource persisted successfully in registry: [resource-path] %s",
                         resourcePath));
             }
@@ -88,6 +88,7 @@ public class RegistryManager {
 
     /**
      * Returns an object stored in the given resource path.
+     *
      * @param resourcePath
      * @return
      * @throws org.wso2.carbon.registry.core.exceptions.RegistryException
@@ -97,8 +98,8 @@ public class RegistryManager {
             Registry registry = getRegistry();
 
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             Resource resource = registry.get(resourcePath);
             Object content = resource.getContent();
             if ((content != null) && (content instanceof byte[])) {
@@ -119,7 +120,7 @@ public class RegistryManager {
         }
     }
 
-    public synchronized void remove(String resourcePath) throws RegistryException{
+    public synchronized void remove(String resourcePath) throws RegistryException {
         Registry registry = getRegistry();
 
         try {
@@ -144,11 +145,12 @@ public class RegistryManager {
 
     /**
      * Serialize an object to a byte array.
+     *
      * @param serializableObject
      * @return
      * @throws java.io.IOException
      */
-    private byte[]  serializeToByteArray(Serializable serializableObject) throws IOException {
+    private byte[] serializeToByteArray(Serializable serializableObject) throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
@@ -168,6 +170,7 @@ public class RegistryManager {
 
     /**
      * Deserialize a byte array and retrieve the object.
+     *
      * @param bytes bytes to be deserialized
      * @return the deserialized {@link Object}
      * @throws Exception if the deserialization is failed.

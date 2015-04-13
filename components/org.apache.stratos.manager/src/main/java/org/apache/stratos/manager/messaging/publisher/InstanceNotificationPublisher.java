@@ -32,38 +32,38 @@ import org.apache.stratos.messaging.util.MessagingUtil;
  */
 public class InstanceNotificationPublisher {
 
-	private static final Log log = LogFactory.getLog(InstanceNotificationPublisher.class);
+    private static final Log log = LogFactory.getLog(InstanceNotificationPublisher.class);
 
-	public InstanceNotificationPublisher() {
-	}
+    public InstanceNotificationPublisher() {
+    }
 
-	private void publish(Event event) {
-		String topic = MessagingUtil.getMessageTopicName(event);
-		EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
-		eventPublisher.publish(event);
-	}
+    private void publish(Event event) {
+        String topic = MessagingUtil.getMessageTopicName(event);
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+        eventPublisher.publish(event);
+    }
 
-	/**
-	 * Publishing the artifact update event to the instances
-	 *
-	 * @param clusterId
-	 * @param tenantId
-	 * @param repoUrl
-	 * @param repoUsername
-	 * @param repoPassword
-	 * @param isCommitEnabled
-	 */
-	public void publishArtifactUpdatedEvent(String clusterId, String tenantId, String repoUrl, String repoUsername,
-											String repoPassword, boolean isCommitEnabled) {
+    /**
+     * Publishing the artifact update event to the instances
+     *
+     * @param clusterId
+     * @param tenantId
+     * @param repoUrl
+     * @param repoUsername
+     * @param repoPassword
+     * @param isCommitEnabled
+     */
+    public void publishArtifactUpdatedEvent(String clusterId, String tenantId, String repoUrl, String repoUsername,
+                                            String repoPassword, boolean isCommitEnabled) {
 
-		ArtifactUpdatedEvent artifactUpdateEvent = new ArtifactUpdatedEvent();
-		artifactUpdateEvent.setClusterId(clusterId);
-		artifactUpdateEvent.setRepoUserName(repoUsername);
-		artifactUpdateEvent.setRepoPassword(repoPassword);
-		artifactUpdateEvent.setRepoURL(repoUrl);
-		artifactUpdateEvent.setTenantId(tenantId);
-		artifactUpdateEvent.setCommitEnabled(isCommitEnabled);
+        ArtifactUpdatedEvent artifactUpdateEvent = new ArtifactUpdatedEvent();
+        artifactUpdateEvent.setClusterId(clusterId);
+        artifactUpdateEvent.setRepoUserName(repoUsername);
+        artifactUpdateEvent.setRepoPassword(repoPassword);
+        artifactUpdateEvent.setRepoURL(repoUrl);
+        artifactUpdateEvent.setTenantId(tenantId);
+        artifactUpdateEvent.setCommitEnabled(isCommitEnabled);
 
-		publish(artifactUpdateEvent);
-	}
+        publish(artifactUpdateEvent);
+    }
 }

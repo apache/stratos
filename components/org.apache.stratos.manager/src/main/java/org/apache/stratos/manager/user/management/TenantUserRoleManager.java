@@ -41,38 +41,39 @@ public class TenantUserRoleManager implements TenantMgtListener {
 
     /**
      * Create an 'user' role at tenant creation time
+     *
      * @param tenantInfo TenantInfoBean
      * @throws org.apache.stratos.common.exception.ApacheStratosException
      */
     @Override
     public void onTenantCreate(TenantInfoBean tenantInfo) throws ApacheStratosException {
 
-            try {
+        try {
 
-                PrivilegedCarbonContext.startTenantFlow();
-                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                carbonContext.setTenantDomain(tenantInfo.getTenantDomain());
-                carbonContext.setTenantId(tenantInfo.getTenantId());
-                //Get tenant UserRealm & UserStoreManager
-                UserRealm userRealm = ServiceReferenceHolder.getRealmService().getTenantUserRealm(tenantInfo.getTenantId());
-                UserStoreManager userStoreManager = userRealm.getUserStoreManager();
-                //Call Util class to create the user role
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(tenantInfo.getTenantDomain());
+            carbonContext.setTenantId(tenantInfo.getTenantId());
+            //Get tenant UserRealm & UserStoreManager
+            UserRealm userRealm = ServiceReferenceHolder.getRealmService().getTenantUserRealm(tenantInfo.getTenantId());
+            UserStoreManager userStoreManager = userRealm.getUserStoreManager();
+            //Call Util class to create the user role
 
-                UserRoleCreator.createInternalUserRole(userStoreManager);
+            UserRoleCreator.createInternalUserRole(userStoreManager);
 
-            } catch (UserStoreException e) {
-                String msg = "Error while retrieving the user store for tenant: "+ tenantInfo.getTenantDomain();
-                log.error(msg, e);
-                throw new ApacheStratosException(e.getMessage(), e);
-            } catch (UserManagerException e) {
-                String msg = "Error while creating the user role in tenant: "+ tenantInfo.getTenantDomain();
-                log.error(msg, e);
-                throw new ApacheStratosException(e.getMessage(), e);
-            } finally {
-                PrivilegedCarbonContext.endTenantFlow();
-            }
-
+        } catch (UserStoreException e) {
+            String msg = "Error while retrieving the user store for tenant: " + tenantInfo.getTenantDomain();
+            log.error(msg, e);
+            throw new ApacheStratosException(e.getMessage(), e);
+        } catch (UserManagerException e) {
+            String msg = "Error while creating the user role in tenant: " + tenantInfo.getTenantDomain();
+            log.error(msg, e);
+            throw new ApacheStratosException(e.getMessage(), e);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
+
+    }
 
 
     @Override

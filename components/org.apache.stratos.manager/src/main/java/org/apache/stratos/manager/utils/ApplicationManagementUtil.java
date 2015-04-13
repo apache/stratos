@@ -36,12 +36,12 @@ public class ApplicationManagementUtil {
 
     public static int getTenantId(ConfigurationContext configurationContext) {
         int tenantId = MultitenantUtils.getTenantId(configurationContext);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Returning tenant ID : " + tenantId);
         }
         return tenantId;
     }
-    
+
     public static org.apache.stratos.cloud.controller.stub.Properties toCCStubProperties(
             org.apache.stratos.common.Properties properties) {
         org.apache.stratos.cloud.controller.stub.Properties stubProps = new org.apache.stratos.cloud.controller.stub.Properties();
