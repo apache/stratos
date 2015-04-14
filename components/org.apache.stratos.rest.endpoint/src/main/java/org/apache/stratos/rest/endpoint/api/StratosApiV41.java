@@ -1918,7 +1918,7 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateKubernetesHost(kubernetesHost);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
-            return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+            return Response.ok(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                     String.format("Kubernetes Host updated successfully: [kub-host] %s",
                             kubernetesHost.getHostId()))).build();
         } catch (RestAPIException e) {
