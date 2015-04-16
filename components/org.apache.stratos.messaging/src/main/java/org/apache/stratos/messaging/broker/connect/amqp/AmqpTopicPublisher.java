@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.broker.connect.RetryTimer;
 import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 
+import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSession;
@@ -57,6 +58,8 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
     public void publish(String message, boolean retry) {
         boolean published = false;
         while (!published) {
+            TopicSession topicSession = null;
+            javax.jms.TopicPublisher topicPublisher = null;
             try {
                 while (connectionStatus == ConnectionStatus.ReConnecting) {
                     // Connection has been broken, wait until reconnected
@@ -73,13 +76,13 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
                     connectionStatus = ConnectionStatus.Connected;
                 }
 
-                TopicSession topicSession = newSession();
+                topicSession = newSession();
                 Topic topic = lookupTopic(topicName);
                 if (topic == null) {
                     // if the topic doesn't exist, create it.
                     topic = topicSession.createTopic(topicName);
                 }
-                javax.jms.TopicPublisher topicPublisher = topicSession.createPublisher(topic);
+                topicPublisher = topicSession.createPublisher(topic);
                 TextMessage textMessage = topicSession.createTextMessage(message);
                 topicPublisher.publish(textMessage);
                 published = true;
@@ -92,6 +95,22 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
                 }
                 // Try to reconnect
                 reconnect();
+            }finally {
+
+                try{
+                    if (topicSession != null) {
+                        topicSession.close();
+                    }
+                    if (topicPublisher != null) {
+                        topicPublisher.close();
+                    }
+
+                }catch (JMSException e) {
+                    message = "Error cleaning up pubisher";
+                    log.error(message, e);
+                    throw new MessagingException(message, e);
+                }
+
             }
         }
     }

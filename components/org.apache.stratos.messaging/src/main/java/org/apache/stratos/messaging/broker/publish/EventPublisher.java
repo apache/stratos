@@ -70,6 +70,8 @@ public class EventPublisher {
 
             topicPublisher.connect();
             topicPublisher.publish(message, retry);
+            topicPublisher.disconnect();
+
         }
     }
 }
