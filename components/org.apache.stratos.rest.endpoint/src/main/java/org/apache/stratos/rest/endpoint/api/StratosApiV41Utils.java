@@ -940,7 +940,7 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             ServiceGroup[] serviceGroups = asServiceClient.getServiceGroups();
-            if (serviceGroups == null || serviceGroups.length == 0) {
+            if (serviceGroups == null || serviceGroups.length == 0 || (serviceGroups.length == 1 && serviceGroups[0] == null)) {
                 return null;
             }
 
@@ -1587,6 +1587,11 @@ public class StratosApiV41Utils {
             try {
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[]
                         kubernetesClusters = cloudControllerServiceClient.getAvailableKubernetesClusters();
+                if (kubernetesClusters == null) {
+                    log.error("Could not find any Kubernetes Clusters.");
+                    return null;
+                }
+
                 return ObjectConverter.convertStubKubernetesClustersToKubernetesClusters(kubernetesClusters);
 
             } catch (RemoteException e) {
@@ -1611,7 +1616,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
+                log.error(message);
                 throw new RestAPIException(message, e);
             }
         }
@@ -1674,7 +1679,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
+                log.error(message);
                 throw new RestAPIException(message, e);
             }
         }
@@ -1694,7 +1699,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
+                log.error(message);
                 throw new RestAPIException(message, e);
             }
         }
@@ -2226,6 +2231,11 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Cluster Id can not be empty");
         }
 
-        return ObjectConverter.convertClusterToClusterBean(TopologyManager.getTopology().getCluster(clusterId), clusterId);
+        Cluster cluster = TopologyManager.getTopology().getCluster(clusterId);
+        if (cluster == null){
+            return null;
+        }
+
+        return ObjectConverter.convertClusterToClusterBean(cluster, clusterId);
     }
 }
