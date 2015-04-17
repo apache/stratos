@@ -422,11 +422,19 @@ public class StratosApiV41 extends AbstractApi {
     @SuperTenantService(true)
     public Response addServiceGroup(
             GroupBean serviceGroupDefinition) throws RestAPIException {
-        StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
-        URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                String.format("Service Group added successfully: [service-group] %s",
-                        serviceGroupDefinition.getName()))).build();
+        try {
+            StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
+            URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Service Group added successfully: [service-group] %s",
+                            serviceGroupDefinition.getName()))).build();
+        } catch (RestAPIException e) {
+            if (e.getCause().getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**

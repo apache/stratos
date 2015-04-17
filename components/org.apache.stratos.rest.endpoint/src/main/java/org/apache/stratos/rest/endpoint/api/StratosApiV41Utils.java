@@ -884,6 +884,7 @@ public class StratosApiV41Utils {
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
         } catch (Exception e) {
+            // TODO: InvalidServiceGroupException is not received, only AxisFault. Need to fix get the custom exception
             String message = "Could not add cartridge group";
             log.error(message, e);
             throw new RestAPIException(message, e);
