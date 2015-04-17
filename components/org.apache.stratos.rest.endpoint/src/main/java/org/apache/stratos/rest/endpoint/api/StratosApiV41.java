@@ -172,13 +172,21 @@ public class StratosApiV41 extends AbstractApi {
     public Response addDeploymentPolicy(
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
-        String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
-        // TODO :: Deployment policy validation
-        StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                String.format("Deployment policy added successfully: " + "[deployment-policy-id] %s",
-                        deploymentPolicyID))).build();
+        try {
+            String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+            // TODO :: Deployment policy validation
+            StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
+            URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Deployment policy added successfully: " + "[deployment-policy-id] %s",
+                            deploymentPolicyID))).build();
+        } catch (RestAPIException e) {
+            if (e.getCause().getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -704,11 +712,19 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/addApplicationPolicy")
     public Response addApplicationPolicy(
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
-        StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                String.format("Application policy added successfully: [application-policy] %s",
-                        applicationPolicy.getId()))).build();
+        try {
+            StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Application policy added successfully: [application-policy] %s",
+                            applicationPolicy.getId()))).build();
+        } catch (RestAPIException e) {
+            if (e.getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -855,7 +871,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getApplicationSignUp")
     public Response getApplicationSignUp(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
-        ApplicationSignUpBean applicationSignUpBean = null;
+        ApplicationSignUpBean applicationSignUpBean;
         try {
             applicationSignUpBean = StratosApiV41Utils.getApplicationSignUp(applicationId);
             if (applicationSignUpBean == null) {

@@ -573,7 +573,7 @@ public class StratosApiV41Utils {
             }
             serviceClient.addApplicationPolicy(applicationPolicy);
         } catch (RemoteException e) {
-            String msg = "Could not add application policy" + e.getLocalizedMessage();
+            String msg = "Could not add application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
@@ -581,7 +581,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceRemoteExceptionException e) {
-            String msg = "Could not add application policy" + e.getLocalizedMessage();
+            String msg = "Could not add application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
@@ -2121,13 +2121,13 @@ public class StratosApiV41Utils {
             }
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             String msg =
-                    "Deployment policy already exist [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
+                    "Deployment policy already exists [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not add deployment policy";
+            String msg = "Could not add deployment policy.";
             log.error(msg, e);
-            throw new RestAPIException(msg);
+            throw new RestAPIException(msg, e);
         }
     }
 
