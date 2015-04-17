@@ -146,7 +146,7 @@ public class AutoscalerServiceClient {
         stub.deleteApplication(applicationId);
     }
 
-    public boolean deployAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
+    public boolean addAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException {
         return stub.addAutoScalingPolicy(autoScalePolicy);
     }

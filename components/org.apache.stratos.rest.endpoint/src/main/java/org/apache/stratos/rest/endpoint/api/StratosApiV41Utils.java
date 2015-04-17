@@ -541,7 +541,7 @@ public class StratosApiV41Utils {
 
             try {
                 autoscalerServiceClient
-                        .deployAutoscalingPolicy(autoscalePolicy);
+                        .addAutoscalingPolicy(autoscalePolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);

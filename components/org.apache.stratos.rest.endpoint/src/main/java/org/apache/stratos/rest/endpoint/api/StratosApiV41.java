@@ -627,12 +627,20 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/addApplication")
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
-        StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
+        try {
+            StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
 
-        URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                String.format("Application added successfully: [application] %s",
-                        applicationDefinition.getApplicationId()))).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Application added successfully: [application] %s",
+                            applicationDefinition.getApplicationId()))).build();
+        } catch (RestAPIException e) {
+            if (e.getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -694,9 +702,17 @@ public class StratosApiV41 extends AbstractApi {
     public Response deployApplication(
             @PathParam("applicationId") String applicationId,
             @PathParam("applicationPolicyId") String applicationPolicyId) throws RestAPIException {
-        StratosApiV41Utils.deployApplication(applicationId, applicationPolicyId);
-        return Response.accepted().entity(new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
-                String.format("Application deployed successfully: [application] %s", applicationId))).build();
+        try {
+            StratosApiV41Utils.deployApplication(applicationId, applicationPolicyId);
+            return Response.accepted().entity(new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
+                    String.format("Application deployed successfully: [application] %s", applicationId))).build();
+        } catch (RestAPIException e) {
+            if (e.getMessage().contains("already in DEPLOYED")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -1124,11 +1140,19 @@ public class StratosApiV41 extends AbstractApi {
     public Response addAutoscalingPolicy(
             AutoscalePolicyBean autoscalePolicy) throws RestAPIException {
 
-        StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                String.format("Autoscaling policy added successfully: [autoscale-policy] %s",
-                        autoscalePolicy.getId()))).build();
+        try {
+            StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
+            URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Autoscaling policy added successfully: [autoscale-policy] %s",
+                            autoscalePolicy.getId()))).build();
+        } catch (RestAPIException e) {
+            if (e.getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -1779,7 +1803,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response notifyRepository(
             GitNotificationPayloadBean payload) throws RestAPIException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Git update"));
+            log.info(String.format("Git update notification received."));
         }
 
         StratosApiV41Utils.notifyArtifactUpdatedEvent(payload);
@@ -1942,11 +1966,19 @@ public class StratosApiV41 extends AbstractApi {
     public Response addKubernetesHostCluster(
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
-        StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
-        URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                String.format("Kubernetes Host Cluster added successfully: [kub-host-cluster] %s",
-                        kubernetesCluster.getClusterId()))).build();
+        try {
+            StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Kubernetes Host Cluster added successfully: [kub-host-cluster] %s",
+                            kubernetesCluster.getClusterId()))).build();
+        } catch (RestAPIException e) {
+            if (e.getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
