@@ -17,7 +17,8 @@
        specific language governing permissions and limitations
        under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
@@ -47,12 +48,13 @@
                             org.apache.stratos.tenant.activity.ui.*,
                         </Export-Package>
                         <Import-Package>
-			    org.apache.stratos.tenant.activity.stub.*; version="${carbon.platform.package.import.version.range}",
+                            org.apache.stratos.tenant.activity.stub.*;
+                            version="${carbon.platform.package.import.version.range}",
                             org.apache.stratos.common.*,
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             !javax.xml.namespace,
-                            javax.xml.namespace; version=0.0.0,                            
+                            javax.xml.namespace; version=0.0.0,
                             org.apache.lucene.*,
                             *;resolution:=optional
                         </Import-Package>
@@ -70,15 +72,15 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>commons-codec.wso2</groupId>
             <artifactId>commons-codec</artifactId>
-	    <version>${version.commons.codec}</version>
+            <version>${version.commons.codec}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
-	    <version>${wso2carbon.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -91,7 +93,7 @@
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>javax.servlet</artifactId>
-	    <version>3.0.0.v201112011016</version>
+            <version>3.0.0.v201112011016</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -101,12 +103,12 @@
         <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-	    <version>${axiom.wso2.version}</version>
+            <version>${axiom.wso2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ui</artifactId>
-	    <version>${wso2carbon.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -115,17 +117,17 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.activity.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
+
     <properties>
-	<version.commons.codec>1.4.0.wso2v1</version.commons.codec>
+        <version.commons.codec>1.4.0.wso2v1</version.commons.codec>
     </properties>
-    
+
 </project>
