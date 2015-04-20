@@ -115,7 +115,7 @@ public class TopologyUpdater {
         // acquire read lock for all Applications
         TopologyManager.acquireReadLockForServices();
 
-        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName, true);
         if (topologyServiceLock == null) {
             handleLockNotFound("Topology lock not found for Service " + serviceName);
 
@@ -134,7 +134,7 @@ public class TopologyUpdater {
      */
     public static void releaseWriteLockForService(String serviceName) {
 
-        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName, false);
         if (topologyServiceLock == null) {
             handleLockNotFound("Topology lock not found for Service " + serviceName);
 
@@ -162,7 +162,7 @@ public class TopologyUpdater {
         // acquire read lock for the relevant Services
         TopologyManager.acquireReadLockForService(serviceName);
 
-        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
+        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId, true);
         if (topologyClusterLock == null) {
             handleLockNotFound("Topology lock not found for Cluster " + clusterId);
 
@@ -184,7 +184,7 @@ public class TopologyUpdater {
      */
     public static void releaseWriteLockForCluster(String serviceName, String clusterId) {
 
-        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
+        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId, false);
         if (topologyClusterLock == null) {
             handleLockNotFound("Topology lock not found for Cluster " + clusterId);
 

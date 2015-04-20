@@ -117,7 +117,7 @@ public class TopologyManager {
         // acquire read lock for all Services
         acquireReadLockForServices();
 
-        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName, true);
         if (topologyServiceLock == null) {
             handleLockNotFound("Topology lock not found for Service " + serviceName);
 
@@ -136,7 +136,7 @@ public class TopologyManager {
      */
     public static void releaseReadLockForService(String serviceName) {
 
-        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName, false);
         if (topologyServiceLock == null) {
             handleLockNotFound("Topology lock not found for Service " + serviceName);
 
@@ -164,7 +164,7 @@ public class TopologyManager {
         // acquire read lock for the relevant Services
         acquireReadLockForService(serviceName);
 
-        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
+        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId, true);
         if (topologyClusterLock == null) {
             handleLockNotFound("Topology lock not found for Cluster " + clusterId);
 
@@ -187,7 +187,7 @@ public class TopologyManager {
      */
     public static void releaseReadLockForCluster(String serviceName, String clusterId) {
 
-        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
+        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId, false);
         if (topologyClusterLock == null) {
             handleLockNotFound("Topology lock not found for Cluster " + clusterId);
 
@@ -204,7 +204,7 @@ public class TopologyManager {
     }
 
     private static void handleLockNotFound(String errorMsg) {
-        log.warn(errorMsg);
+        log.error(errorMsg);
         //throw new RuntimeException(errorMsg);
     }
 
