@@ -66,7 +66,7 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getDescription() {
-        return "deploy application";
+        return "Deploy application";
     }
 
     @Override
@@ -104,13 +104,13 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
 
                 if (opts.hasOption(CliConstants.APPLICATION_ID_OPTION)) {
                     if (log.isTraceEnabled()) {
-                        log.trace("Application Id option is passed");
+                        log.trace("Application id option is passed");
                     }
                     applicationId = opts.getOption(CliConstants.APPLICATION_ID_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.APPLICATION_POLICY_ID_OPTION)) {
                     if (log.isTraceEnabled()) {
-                        log.trace("Application policy Id option is passed");
+                        log.trace("Application policy id option is passed");
                     }
                     applicationPolicyId = opts.getOption(CliConstants.APPLICATION_POLICY_ID_OPTION).getValue();
                 }
@@ -124,9 +124,7 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

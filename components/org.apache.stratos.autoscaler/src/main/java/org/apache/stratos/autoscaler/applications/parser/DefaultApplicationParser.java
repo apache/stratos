@@ -58,6 +58,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     private static final String METADATA_APPENDER = "-";
     public static final String ALIAS = "alias";
     public static final String CARTRIDGE_TYPE = "type";
+    public static final String LOAD_BALANCER = "lb";
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private List<ApplicationClusterContext> applicationClusterContexts;
@@ -438,7 +439,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             // Find tenant range of cluster
             String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridge.getTenantPartitions());
             Boolean isLB = false;
-            if (cartridge.getCategory().equals("lb")) {
+            if (cartridge.getCategory().equals(LOAD_BALANCER)) {
                 isLB = true;
             }
             // create and collect this cluster's information

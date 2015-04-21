@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * Add user command.
+ */
 public class AddUserCommand implements Command<StratosCommandContext> {
 
     private static final Logger log = LoggerFactory.getLogger(AddUserCommand.class);
@@ -48,12 +51,12 @@ public class AddUserCommand implements Command<StratosCommandContext> {
         options.addOption(usernameOption);
 
         Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
-                                           "User credential");
+                "User credential");
         passwordOption.setArgName("credential");
         options.addOption(passwordOption);
 
         Option roleOption = new Option(CliConstants.ROLE_NAME_OPTION, CliConstants.ROLE_NAME_LONG_OPTION, true,
-                                           "User Role");
+                "User Role");
         roleOption.setArgName("role");
         options.addOption(roleOption);
 
@@ -67,13 +70,12 @@ public class AddUserCommand implements Command<StratosCommandContext> {
         lastnameOption.setArgName("lastname");
         options.addOption(lastnameOption);
 
-        Option emailOption = new Option(CliConstants.EMAIL_OPTION, CliConstants.EMAIL_LONG_OPTION, true,
-                                        "User email");
+        Option emailOption = new Option(CliConstants.EMAIL_OPTION, CliConstants.EMAIL_LONG_OPTION, true, "User email");
         emailOption.setArgName("email");
         options.addOption(emailOption);
 
-        Option profileNameOption = new Option(CliConstants.PROFILE_NAME_OPTION, CliConstants.PROFILE_NAME_LONG_OPTION, true,
-                "Profile name");
+        Option profileNameOption = new Option(CliConstants.PROFILE_NAME_OPTION, CliConstants.PROFILE_NAME_LONG_OPTION,
+                true, "Profile name");
         profileNameOption.setArgName("profileName");
         options.addOption(profileNameOption);
 
@@ -171,9 +173,7 @@ public class AddUserCommand implements Command<StratosCommandContext> {
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

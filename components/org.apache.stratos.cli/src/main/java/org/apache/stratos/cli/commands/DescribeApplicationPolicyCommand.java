@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Describe application policy command.
+ */
 public class DescribeApplicationPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DescribeApplicationPolicyCommand.class);
 
@@ -39,7 +42,7 @@ public class DescribeApplicationPolicyCommand implements Command<StratosCommandC
 
     @Override
     public String getDescription() {
-        return "Describing the application Policy";
+        return "Describe application policy";
     }
 
     @Override

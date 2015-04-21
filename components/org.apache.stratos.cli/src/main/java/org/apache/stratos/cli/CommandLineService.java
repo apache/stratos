@@ -40,7 +40,7 @@ import java.util.HashMap;
 
 public class CommandLineService {
 
-	private static final Logger logger = LoggerFactory.getLogger(CommandLineService.class);
+	private static final Logger log = LoggerFactory.getLogger(CommandLineService.class);
 
 	private ApplicationManagementServiceStub stub;
 
@@ -126,8 +126,8 @@ public class CommandLineService {
 		try {
 			if (validateLogin) {
 				String tenantDomain = stub.getTenantDomain();
-				if (logger.isDebugEnabled()) {
-					logger.debug("Tenant Domain {}", tenantDomain);
+				if (log.isDebugEnabled()) {
+					log.debug("Tenant Domain {}", tenantDomain);
 				}
 				return (tenantDomain != null);
 			} else {
@@ -496,8 +496,8 @@ public class CommandLineService {
 //	}
 
 	private void handleException(Exception e) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Displaying message from Exception {}\n{}", e.getClass(), e.getMessage());
+		if (log.isDebugEnabled()) {
+			log.debug("Displaying message from Exception {}\n{}", e.getClass(), e.getMessage());
 		}
 		// TODO: Fix handling error message.
 		// Sometimes the Axis2 stub throws only the RemoteException (an
@@ -507,21 +507,17 @@ public class CommandLineService {
 		if (message == null || (message != null && message.contains("Exception"))) {
 			message = "Error executing command!";
 		}
-		if (logger.isErrorEnabled()) {
-			logger.error(message);
-		}
+		log.error(message);
 		System.out.println(message);
 		throw new CommandException(message, e);
 	}
     
     private void handleException(String key, Exception e, Object... args) throws CommandException {
-    	if (logger.isDebugEnabled()) {
-    		logger.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
+    	if (log.isDebugEnabled()) {
+    		log.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
     	}
     	String message = CliUtils.getMessage(key, args);
-        if (logger.isErrorEnabled()) {
-        	logger.error(message);
-        }
+        log.error(message);
         System.out.println(message);
         throw new CommandException(message, e);
     }

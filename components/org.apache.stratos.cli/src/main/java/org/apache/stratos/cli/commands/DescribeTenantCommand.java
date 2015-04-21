@@ -26,11 +26,15 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**nant
+ * Describe te command.
+ */
 public class DescribeTenantCommand implements Command<StratosCommandContext> {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DescribeAutoScalingPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(DescribeAutoScalingPolicyCommand.class);
     /**
      * @return The name of the command
      */
@@ -46,7 +50,7 @@ public class DescribeTenantCommand implements Command<StratosCommandContext> {
      */
     @Override
     public String getDescription() {
-        return "Describing the tenant";
+        return "Describe tenant";
     }
 
     /**
@@ -81,13 +85,13 @@ public class DescribeTenantCommand implements Command<StratosCommandContext> {
      */
     @Override
     public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
         if (args != null && args.length == 1) {
             String domainName = args[0];
-            if (logger.isDebugEnabled()) {
-                logger.debug("Getting tenant info {}", domainName);
+            if (log.isDebugEnabled()) {
+                log.debug("Getting tenant info {}", domainName);
             }
             RestCommandLineService.getInstance().describeTenant(domainName);
             return CliConstants.COMMAND_SUCCESSFULL;

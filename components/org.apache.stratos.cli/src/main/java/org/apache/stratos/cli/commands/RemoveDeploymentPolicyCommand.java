@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Remove deployment policy
+ */
 public class RemoveDeploymentPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(RemoveDeploymentPolicyCommand.class);
 
@@ -39,7 +42,7 @@ public class RemoveDeploymentPolicyCommand implements Command<StratosCommandCont
 
     @Override
     public String getDescription() {
-        return "Remove Deployment policy";
+        return "Remove deployment policy";
     }
 
     @Override

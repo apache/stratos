@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * List domain mappings
+ */
 public class ListDomainMappingsCommand implements Command<StratosCommandContext> {
 
 	private static final Logger log = LoggerFactory.getLogger(ListDomainMappingsCommand.class);

@@ -147,7 +147,7 @@ public class RestCommandLineService {
 
     public Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        return gsonBuilder.create();
+        return gsonBuilder.setPrettyPrinting().create();
     }
 
     /**
@@ -1149,10 +1149,10 @@ public class RestCommandLineService {
                 System.out.println("Kubernetes clusters found:");
                 CliUtils.printTable(array, partitionMapper, "Group ID", "Description");
             } else {
-                System.out.println("No kubernetes clusters found");
+                System.out.println("No Kubernetes clusters found");
             }
         } catch (Exception e) {
-            String message = "Could not list kubernetes clusters";
+            String message = "Could not list Kubernetes clusters";
             printError(message, e);
         }
     }
@@ -1245,7 +1245,7 @@ public class RestCommandLineService {
      * @param clusterId cluster id
      * @throws CommandException
      */
-    public void getKubernetesMaster(final String clusterId) throws CommandException {
+    public void getKubernetesMaster(String clusterId) throws CommandException {
         try {
             Type listType = new TypeToken<KubernetesMasterBean>() {
             }.getType();
@@ -1271,7 +1271,7 @@ public class RestCommandLineService {
      * @param clusterId cluster id
      * @throws CommandException
      */
-    public void describeKubernetesCluster(final String clusterId) throws CommandException {
+    public void describeKubernetesCluster(String clusterId) throws CommandException {
         try {
             Type listType = new TypeToken<KubernetesClusterBean>() {
             }.getType();
@@ -1287,7 +1287,7 @@ public class RestCommandLineService {
             System.out.println("Kubernetes cluster: " + clusterId);
             System.out.println(getGson().toJson(cluster));
         } catch (Exception e) {
-            String message = "Could not describe kubernetes cluster: " + clusterId;
+            String message = "Could not describe Kubernetes cluster: " + clusterId;
             printError(message, e);
         }
     }
@@ -1533,7 +1533,8 @@ public class RestCommandLineService {
      * Remove application
      * @param applicationId  application id
      * @throws CommandException
-     */// This method helps to remove applications
+     * This method helps to remove applications
+     */
     public void deleteApplication (String applicationId) throws CommandException{
         restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{appId}", applicationId), applicationId,
                 "application");
@@ -1650,11 +1651,7 @@ public class RestCommandLineService {
         }
 
         String message = CliUtils.getMessage(key, args);
-
-        if (log.isErrorEnabled()) {
-            log.error(message);
-        }
-
+        log.error(message);
         System.out.println(message);
         throw new CommandException(message, e);
     }

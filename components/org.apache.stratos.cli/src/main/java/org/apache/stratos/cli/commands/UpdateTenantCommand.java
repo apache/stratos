@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * Update an existing tenant
+ */
 public class UpdateTenantCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(UpdateTenantCommand.class);
 
@@ -42,20 +45,20 @@ public class UpdateTenantCommand implements Command<StratosCommandContext> {
     private Options constructOptions() {
         final Options options = new Options();
 
-        Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
+        Option userNameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
                 "Tenant user name");
-        usernameOption.setArgName("username");
-        options.addOption(usernameOption);
+        userNameOption.setArgName("username");
+        options.addOption(userNameOption);
 
-        Option firstnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
+        Option firstNameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
                 "Tenant first name");
-        firstnameOption.setArgName("firstname");
-        options.addOption(firstnameOption);
+        firstNameOption.setArgName("firstname");
+        options.addOption(firstNameOption);
 
-        Option lastnameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
+        Option lastNameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
                 "Tenant last name");
-        lastnameOption.setArgName("lastname");
-        options.addOption(lastnameOption);
+        lastNameOption.setArgName("lastname");
+        options.addOption(lastNameOption);
 
         Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
                 "Tenant password");
@@ -173,9 +176,7 @@ public class UpdateTenantCommand implements Command<StratosCommandContext> {
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

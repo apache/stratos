@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Remove network partition definition
+ */
 public class RemoveNetworkPartitionCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(RemoveNetworkPartitionCommand.class);
 
@@ -60,7 +63,7 @@ public class RemoveNetworkPartitionCommand implements Command<StratosCommandCont
         if (args != null && args.length == 1) {
             String networkPartitionId = args[0];
             if (log.isDebugEnabled()) {
-                log.debug("Getting Remove network partition info {}", networkPartitionId);
+                log.debug("Getting remove network partition info {}", networkPartitionId);
             }
             RestCommandLineService.getInstance().removeNetworkPartition(networkPartitionId);
             return CliConstants.COMMAND_SUCCESSFULL;
