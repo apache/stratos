@@ -873,7 +873,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException {
 
         validateDeploymentPolicy(deploymentPolicy);
