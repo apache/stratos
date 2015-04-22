@@ -644,6 +644,35 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
+     * Add application
+     *
+     * @param applicationDefinition Application Definition
+     * @return 201 if application is successfully added
+     * @throws RestAPIException
+     */
+    @PUT
+    @Path("/applications")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/addApplication")
+    public Response updateApplication(ApplicationBean applicationDefinition) throws RestAPIException {
+        try {
+            StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
+
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
+            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+                    String.format("Application added successfully: [application] %s",
+                            applicationDefinition.getApplicationId()))).build();
+        } catch (RestAPIException e) {
+            if (e.getMessage().contains("already exists")) {
+                return Response.status(Response.Status.CONFLICT).build();
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
      * Return applications
      *
      * @return 200 if applications are found

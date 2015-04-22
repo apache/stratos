@@ -1111,6 +1111,54 @@ public class StratosApiV41Utils {
         }
     }
 
+    /**
+     * Update the existence of the application and update it.
+     *
+     * @param appDefinition Application definition
+     * @param ctxt Configuration context
+     * @param userName Username
+     * @param tenantDomain Tenant Domain
+     * @throws RestAPIException
+     */
+    public static void updateApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
+                                      String userName, String tenantDomain)
+            throws RestAPIException {
+
+        if (StringUtils.isBlank(appDefinition.getApplicationId())) {
+            String message = "Please specify the application name";
+            log.error(message);
+            throw new RestAPIException(message);
+        }
+
+        validateApplication(appDefinition);
+
+        ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(
+                appDefinition);
+        applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
+        applicationContext.setTenantDomain(tenantDomain);
+        applicationContext.setTenantAdminUsername(userName);
+
+        if (appDefinition.getProperty() != null) {
+            org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
+            for (PropertyBean propertyBean : appDefinition.getProperty()) {
+                org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
+                property.setName(propertyBean.getName());
+                property.setValue(propertyBean.getValue());
+                properties.addProperties(property);
+            }
+            applicationContext.setProperties(properties);
+        }
+
+        try {
+            AutoscalerServiceClient.getInstance().updateApplication(applicationContext);
+        } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
+            throw new RestAPIException(e);
+        } catch (RemoteException e) {
+            throw new RestAPIException(e);
+        }
+    }
+
+
     private static void findCartridgesAndGroupsInApplication(
             ApplicationBean applicationBean, List<String> cartridges, List<String> cartridgeGroups) {
 

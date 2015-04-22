@@ -264,6 +264,28 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     }
 
     /**
+     * Collects the Group for the parent component and all the
+     * child components recursively
+     *
+     * @return Set of Group objects if available, else null
+     */
+    public Set<Group> getAllGroupsRecursively() {
+
+        Set<Group> appGroups = new HashSet<Group>();
+
+        // get top level Cluster Data
+        if (this.aliasToGroupMap != null && !this.aliasToGroupMap.isEmpty()) {
+            appGroups.addAll(this.aliasToGroupMap.values());
+        }
+
+        // find other nested Cluster Data (in the Groups)
+        if (getGroups() != null) {
+            getGroupsRecursively(appGroups, getGroups());
+        }
+
+        return appGroups;
+    }
+    /**
      * Adds InstanceContext of a child to the instanceIdToInstanceContextMap.
      *
      * @param instanceId instance id of child
@@ -359,6 +381,18 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
                 clusterData.addAll(group.getClusterDataMap().values());
                 if (group.getGroups() != null) {
                     getClusterData(clusterData, group.getGroups());
+                }
+            }
+        }
+    }
+
+    protected void getGroupsRecursively(Set<Group> groupsSet, Collection<Group> groups) {
+
+        for (Group group : groups) {
+            if (group.getGroups() != null && !group.getGroups().isEmpty()) {
+                groupsSet.addAll(group.getGroups());
+                if (group.getGroups() != null) {
+                    getGroupsRecursively(groupsSet, group.getGroups());
                 }
             }
         }

@@ -149,6 +149,55 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
+    public void updateApplication(ApplicationContext applicationContext)
+            throws ApplicationDefinitionException {
+
+        String applicationId = applicationContext.getApplicationId();
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Updating application: [application-id] %s",
+                    applicationContext.getApplicationId()));
+        }
+
+        if(AutoscalerContext.getInstance().getApplicationContext(applicationId) == null) {
+            String msg = "Application is not found as ApplicationContext. Please add application before updating it";
+            log.error(msg);
+            throw new ApplicationDefinitionException(msg);
+        }
+
+        if(ApplicationHolder.getApplications().getApplication(applicationId) == null) {
+            String msg = "Application is not found as Application. Please add application before updating it";
+            log.error(msg);
+            throw new ApplicationDefinitionException(msg);
+        }
+
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        Application application = applicationParser.parse(applicationContext);
+
+        //Need to update the application
+        AutoscalerUtil.getInstance().updateApplicationsTopology(application);
+
+        //Update the clusterMonitors
+        AutoscalerUtil.getInstance().updateClusterMonitor(application);
+
+        List<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
+        ApplicationClusterContext[] applicationClusterContextsArray = applicationClusterContexts.toArray(
+                new ApplicationClusterContext[applicationClusterContexts.size()]);
+        applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContextsArray);
+
+        ApplicationContext existingApplicationContext = AutoscalerContext.getInstance().
+                getApplicationContext(applicationId);
+        applicationContext.setStatus(existingApplicationContext.getStatus());
+        //updating the applicationContext
+        AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Application added successfully: [application-id] %s",
+                    applicationId));
+        }
+    }
+
+    @Override
     public ApplicationContext getApplication(String applicationId) {
         return AutoscalerContext.getInstance().getApplicationContext(applicationId);
     }

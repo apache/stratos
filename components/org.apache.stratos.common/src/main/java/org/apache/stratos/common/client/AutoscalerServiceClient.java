@@ -90,8 +90,14 @@ public class AutoscalerServiceClient {
         return stub.getAutoscalingPolicy(autoscalingPolicyId);
     }
 
-    public void addApplication(ApplicationContext applicationContext) throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+    public void addApplication(ApplicationContext applicationContext)
+                throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
         stub.addApplication(applicationContext);
+    }
+
+    public void updateApplication(ApplicationContext applicationContext)
+                throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+        stub.updateApplication(applicationContext);
     }
 
     public ApplicationContext getApplication(String applicationId) throws RemoteException {

@@ -101,7 +101,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public synchronized void monitor() {
         final Collection<NetworkPartitionContext> networkPartitionContexts =
-                this.networkPartitionCtxts.values();
+                this.getNetworkPartitionCtxts().values();
 
         Runnable monitoringRunnable = new Runnable() {
             @Override
@@ -400,7 +400,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //adding to instance map
         this.instanceIdToInstanceMap.put(instanceId, instance);
         //adding ApplicationLevelNetworkPartitionContext to networkPartitionContexts map
-        this.networkPartitionCtxts.put(context.getId(), context);
+        this.getNetworkPartitionCtxts().put(context.getId(), context);
 
         return instanceId;
     }
@@ -453,7 +453,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
 
         for (String networkPartitionId : nextNetworkPartitions) {
-            if (!this.networkPartitionCtxts.containsKey(networkPartitionId)) {
+            if (!this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
 
                 ApplicationLevelNetworkPartitionContext context = new ApplicationLevelNetworkPartitionContext(networkPartitionId);
 

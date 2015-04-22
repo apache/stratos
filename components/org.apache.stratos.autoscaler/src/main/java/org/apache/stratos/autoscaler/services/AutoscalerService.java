@@ -88,6 +88,15 @@ public interface AutoscalerService {
     public void addApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
 
     /**
+     * update an application
+     *
+     * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext}
+     * @throws ApplicationDefinitionException if an error occurs
+     */
+    public void updateApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+
+
+    /**
      * Get an application
      *
      * @param applicationId

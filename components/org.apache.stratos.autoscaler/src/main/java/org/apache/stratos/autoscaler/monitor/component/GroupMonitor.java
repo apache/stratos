@@ -109,7 +109,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
     public synchronized void monitor() {
         final Collection<NetworkPartitionContext> networkPartitionContexts =
-                this.networkPartitionCtxts.values();
+                this.getNetworkPartitionCtxts().values();
 
         Runnable monitoringRunnable = new Runnable() {
             @Override
@@ -138,6 +138,23 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 //scale down only when extra instances found
                                 handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
                             }
+                        }
+                    }
+
+                    int nonTerminatedInstancesCount = networkPartitionContext.
+                                                getNonTerminatedInstancesCount();
+                    int minInstances = ((GroupLevelNetworkPartitionContext)networkPartitionContext).
+                            getMinInstanceCount();
+                    if(nonTerminatedInstancesCount < minInstances) {
+                        int instancesToBeCreated = minInstances - nonTerminatedInstancesCount;
+                        for(int i = 0; i < instancesToBeCreated; i++) {
+                            for(InstanceContext parentInstanceContext : parent.
+                                    getNetworkPartitionContext(networkPartitionContext.getId()).
+                                    getInstanceIdToInstanceContextMap().values()) {
+                                //Creating new group instance based on the existing parent instances
+                                createInstanceOnDemand(parentInstanceContext.getId());
+                            }
+
                         }
                     }
                 }
@@ -468,7 +485,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         //Parent notification always brings up new group instances in order to keep the ratio.
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
         final String parentInstanceId = scalingEvent.getInstanceId();
-        final NetworkPartitionContext networkPartitionContext = this.networkPartitionCtxts.
+        final NetworkPartitionContext networkPartitionContext = this.getNetworkPartitionCtxts().
                 get(networkPartitionId);
 
         float factor = scalingEvent.getFactor();
@@ -544,8 +561,8 @@ public class GroupMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
 
         String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
-        if (this.networkPartitionCtxts.containsKey(networkPartitionId)) {
-            groupLevelNetworkPartitionContext = (GroupLevelNetworkPartitionContext) this.networkPartitionCtxts.
+        if (this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
+            groupLevelNetworkPartitionContext = (GroupLevelNetworkPartitionContext) this.getNetworkPartitionCtxts().
                     get(networkPartitionId);
         } else {
             if (deploymentPolicy != null) {
@@ -885,7 +902,7 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
     public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
-        this.networkPartitionCtxts.put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
+        this.getNetworkPartitionCtxts().put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
     }
 
 
@@ -915,7 +932,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         if (!groupInstances.isEmpty()) {
             GroupLevelNetworkPartitionContext networkPartitionContext =
-                    (GroupLevelNetworkPartitionContext) this.networkPartitionCtxts.
+                    (GroupLevelNetworkPartitionContext) this.getNetworkPartitionCtxts().
                             get(networkPartitionId);
             int minInstances = networkPartitionContext.getMinInstanceCount();
             //if terminated all the instances in this instances map should be in terminated state
