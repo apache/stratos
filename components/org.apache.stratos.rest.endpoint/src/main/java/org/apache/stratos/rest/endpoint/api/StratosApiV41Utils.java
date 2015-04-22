@@ -32,6 +32,8 @@ import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.PropertyBean;
+import org.apache.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.application.*;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
@@ -55,10 +57,13 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
+import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
+import org.apache.stratos.manager.user.management.StratosUserManager;
+import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -67,9 +72,24 @@ import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
+import org.wso2.carbon.tenant.mgt.util.TenantMgtUtil;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.core.tenant.Tenant;
+import org.wso2.carbon.user.core.tenant.TenantManager;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -126,7 +146,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not update cartridge";
+            String msg = "Could not update cartridge "+e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -173,7 +193,7 @@ public class StratosApiV41Utils {
                 log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
             }
         } catch (Exception e) {
-            String msg = "Could not remove cartridge";
+            String msg = "Could not remove cartridge "+e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(e.getMessage(), e);
         }
@@ -688,7 +708,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-            String msg = "Could not update application policy. " + e.getLocalizedMessage();
+            String msg = "Could not remove application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -703,7 +723,6 @@ public class StratosApiV41Utils {
 
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
                     convertToCCAutoscalerPojo(autoscalePolicyBean);
-
             try {
                 autoscalerServiceClient.updateAutoscalingPolicy(autoscalePolicy);
             } catch (RemoteException e) {
@@ -2203,7 +2222,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not update deployment policy";
+            String msg = "Could not update deployment policy "+e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -2220,7 +2239,7 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyID);
         } catch (Exception e) {
-            String msg = "Could not remove deployment policy";
+            String msg = "Could not remove deployment policy "+e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -2239,4 +2258,501 @@ public class StratosApiV41Utils {
 
         return ObjectConverter.convertClusterToClusterBean(cluster, clusterId);
     }
+
+    //util methods for Tenants
+
+    /**
+     * Add Tenant
+     *
+     * @param tenantInfoBean
+     * @throws RestAPIException
+     */
+    public static void addTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException {
+
+        try {
+            CommonUtil.validateEmail(tenantInfoBean.getEmail());
+        } catch (Exception e) {
+            String msg = "Invalid email is provided";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        String tenantDomain = tenantInfoBean.getTenantDomain();
+        try {
+            TenantMgtUtil.validateDomain(tenantDomain);
+        } catch (Exception e) {
+            String msg = "Tenant domain validation error for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        UserRegistry userRegistry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext().
+                getRegistry(RegistryType.USER_GOVERNANCE);
+        if (userRegistry == null) {
+            log.error("Security alert! User registry is null. A user is trying create a tenant "
+                    + " without an authenticated session.");
+            throw new RestAPIException("Security alert! User registry is null. A user is trying create a tenant "
+                    + " without an authenticated session.");
+        }
+
+        if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
+            log.error("Security alert! None super tenant trying to create a tenant.");
+            throw new RestAPIException("Security alert! None super tenant trying to create a tenant.");
+        }
+
+        Tenant tenant = TenantMgtUtil
+                .initializeTenant(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
+        TenantPersistor persistor = ServiceHolder.getTenantPersistor();
+        // not validating the domain ownership, since created by super tenant
+        int tenantId; //TODO verify whether this is the correct approach (isSkeleton)
+        try {
+            tenantId = persistor
+                    .persistTenant(tenant, false, tenantInfoBean.getSuccessKey(), tenantInfoBean.getOriginatedService(),
+                            false);
+        } catch (Exception e) {
+            String msg = "Could not add tenant: " + e.getMessage();
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+        tenantInfoBean.setTenantId(tenantId);
+
+        try {
+            TenantMgtUtil.addClaimsToUserStoreManager(tenant);
+        } catch (Exception e) {
+            String msg = "Error in granting permissions for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        //Notify tenant addition
+        try {
+            TenantMgtUtil.triggerAddTenant(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
+        } catch (StratosException e) {
+            String msg = "Error in notifying tenant addition.";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+        // For the super tenant tenant creation, tenants are always activated as they are created.
+        try {
+            TenantMgtUtil.activateTenantInitially(
+                    ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean), tenantId);
+        } catch (Exception e) {
+            String msg = "Error in initial activation of tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        try {
+            TenantMgtUtil.prepareStringToShowThemeMgtPage(tenant.getId());
+        } catch (RegistryException e) {
+            String msg = "Error in preparing theme mgt page for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+    }
+
+    /**
+     * Update Existing Tenant
+     *
+     * @param tenantInfoBean
+     * @throws Exception
+     */
+    public static void updateExistingTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws Exception {
+
+        TenantManager tenantManager = ServiceHolder.getTenantManager();
+        UserStoreManager userStoreManager;
+
+        // filling the non-set admin and admin password first
+        UserRegistry configSystemRegistry = ServiceHolder.getRegistryService()
+                .getConfigSystemRegistry(tenantInfoBean.getTenantId());
+
+        String tenantDomain = tenantInfoBean.getTenantDomain();
+        int tenantId;
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving the tenant id for the tenant domain: " + tenantDomain + ".";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+
+        Tenant tenant;
+        try {
+            tenant = (Tenant) tenantManager.getTenant(tenantId);
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving the tenant id for the tenant domain: " +
+                    tenantDomain + ".";
+            log.error(msg, e);
+            throw new TenantNotFoundException(msg, e);
+        }
+
+        // filling the first and last name values
+        if (tenantInfoBean.getFirstname() != null && !tenantInfoBean.getFirstname().trim().equals("")) {
+            try {
+                CommonUtil.validateName(tenantInfoBean.getFirstname(), "First Name");
+            } catch (Exception e) {
+                String msg = "Invalid first name is provided.";
+                log.error(msg, e);
+                throw new Exception(msg, e);
+            }
+        }
+        if (tenantInfoBean.getLastname() != null && !tenantInfoBean.getLastname().trim().equals("")) {
+            try {
+                CommonUtil.validateName(tenantInfoBean.getLastname(), "Last Name");
+            } catch (Exception e) {
+                String msg = "Invalid last name is provided.";
+                log.error(msg, e);
+                throw new Exception(msg, e);
+            }
+        }
+
+        tenant.setAdminFirstName(tenantInfoBean.getFirstname());
+        tenant.setAdminLastName(tenantInfoBean.getLastname());
+        TenantMgtUtil.addClaimsToUserStoreManager(tenant);
+
+        // filling the email value
+        if (tenantInfoBean.getEmail() != null && !tenantInfoBean.getEmail().equals("")) {
+            // validate the email
+            try {
+                CommonUtil.validateEmail(tenantInfoBean.getEmail());
+            } catch (Exception e) {
+                String msg = "Invalid email is provided.";
+                log.error(msg, e);
+                throw new Exception(msg, e);
+            }
+            tenant.setEmail(tenantInfoBean.getEmail());
+        }
+
+        UserRealm userRealm = configSystemRegistry.getUserRealm();
+        try {
+            userStoreManager = userRealm.getUserStoreManager();
+        } catch (UserStoreException e) {
+            String msg = "Error in getting the user store manager for tenant, tenant domain: " +
+                    tenantDomain + ".";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+
+        boolean updatePassword = false;
+        if (tenantInfoBean.getAdminPassword() != null && !tenantInfoBean.getAdminPassword().equals("")) {
+            updatePassword = true;
+        }
+        if (!userStoreManager.isReadOnly() && updatePassword) {
+            // now we will update the tenant admin with the admin given
+            // password.
+            try {
+                userStoreManager.updateCredentialByAdmin(tenantInfoBean.getAdmin(), tenantInfoBean.getAdminPassword());
+            } catch (UserStoreException e) {
+                String msg = "Error in changing the tenant admin password, tenant domain: " +
+                        tenantInfoBean.getTenantDomain() + ". " + e.getMessage() + " for: " +
+                        tenantInfoBean.getAdmin();
+                log.error(msg, e);
+                throw new Exception(msg, e);
+            }
+        } else {
+            //Password should be empty since no password update done
+            tenantInfoBean.setAdminPassword("");
+        }
+
+        try {
+            tenantManager.updateTenant(tenant);
+        } catch (UserStoreException e) {
+            String msg = "Error in updating the tenant for tenant domain: " + tenantDomain + ".";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+
+        //Notify tenant update to all listeners
+        try {
+            TenantMgtUtil
+                    .triggerUpdateTenant(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
+        } catch (StratosException e) {
+            String msg = "Error in notifying tenant update.";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+    }
+
+    /**
+     * Get a Tenant by Domain
+     *
+     * @param tenantDomain
+     * @return
+     * @throws Exception
+     */
+    public static org.apache.stratos.common.beans.TenantInfoBean getTenantByDomain(String tenantDomain) throws Exception {
+
+        TenantManager tenantManager = ServiceHolder.getTenantManager();
+
+        int tenantId;
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving the tenant id for the tenant domain: " +
+                    tenantDomain + ".";
+            log.error(msg);
+            throw new Exception(msg, e);
+        }
+        Tenant tenant;
+        try {
+            tenant = (Tenant) tenantManager.getTenant(tenantId);
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving the tenant from the tenant manager.";
+            log.error(msg);
+            throw new Exception(msg, e);
+        }
+
+        TenantInfoBean bean;
+        try {
+            bean = ObjectConverter
+                    .convertCarbonTenantInfoBeanToTenantInfoBean(TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant));
+        } catch (NullPointerException e) {
+            log.error(String.format("Couldn't find tenant for provided tenant domain. [Tenant Domain] %s", tenantDomain));
+            return null;
+        }
+
+        // retrieve first and last names from the UserStoreManager
+        bean.setFirstname(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+        bean.setLastname(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+
+        //getting the subscription plan
+        String activePlan = "";
+        //TODO: usage plan using billing service
+
+        if (activePlan != null && activePlan.trim().length() > 0) {
+            bean.setUsagePlan(activePlan);
+        } else {
+            bean.setUsagePlan("");
+        }
+
+        return bean;
+    }
+
+    /**
+     * Get a list of available Tenants
+     *
+     * @return
+     * @throws RestAPIException
+     */
+    public static List<org.apache.stratos.common.beans.TenantInfoBean> getAllTenants() throws RestAPIException {
+        TenantManager tenantManager = ServiceHolder.getTenantManager();
+        Tenant[] tenants;
+        try {
+            tenants = (Tenant[]) tenantManager.getAllTenants();
+        } catch (Exception e) {
+            String msg = "Error in retrieving the tenant information";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
+        for (Tenant tenant : tenants) {
+            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter
+                    .convertCarbonTenantInfoBeanToTenantInfoBean(
+                            TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
+            tenantList.add(bean);
+        }
+        return tenantList;
+    }
+
+    /**
+     * Get List of Partial Tenant Domains
+     *
+     * @param domain
+     * @return
+     * @throws RestAPIException
+     */
+    public static List<org.apache.stratos.common.beans.TenantInfoBean> searchPartialTenantsDomains(String domain)
+            throws RestAPIException {
+        TenantManager tenantManager = ServiceHolder.getTenantManager();
+        Tenant[] tenants;
+        try {
+            domain = domain.trim();
+            tenants = (Tenant[]) tenantManager.getAllTenantsForTenantDomainStr(domain);
+        } catch (Exception e) {
+            String msg = "Error in retrieving the tenant information.";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
+        for (Tenant tenant : tenants) {
+            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter
+                    .convertCarbonTenantInfoBeanToTenantInfoBean(
+                            TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
+            tenantList.add(bean);
+        }
+        return tenantList;
+    }
+
+
+    /**
+     * Activate a Tenant
+     *
+     * @param tenantDomain
+     * @throws RestAPIException
+     */
+    public static void activateTenant(String tenantDomain) throws RestAPIException {
+        TenantManager tenantManager = ServiceHolder.getTenantManager();
+        int tenantId;
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving the tenant id for the tenant domain: " + tenantDomain + ".";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+
+        try {
+            TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
+
+        } catch (Exception e) {
+            throw new RestAPIException(e);
+        }
+
+        //Notify tenant activation all listeners
+        try {
+            TenantMgtUtil.triggerTenantActivation(tenantId);
+        } catch (StratosException e) {
+            String msg = "Error in notifying tenant activate.";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+    }
+
+    /**
+     * Deactivate Tenant
+     *
+     * @param tenantDomain
+     * @throws RestAPIException
+     */
+    public static void deactivateTenant(String tenantDomain) throws RestAPIException {
+        TenantManager tenantManager = ServiceHolder.getTenantManager();
+        int tenantId;
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving the tenant id for the tenant domain: " +
+                    tenantDomain + ".";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+
+        }
+
+        try {
+            TenantMgtUtil.deactivateTenant(tenantDomain, tenantManager, tenantId);
+        } catch (Exception e) {
+            throw new RestAPIException(e);
+        }
+
+        //Notify tenant deactivation all listeners
+        try {
+            TenantMgtUtil.triggerTenantDeactivation(tenantId);
+        } catch (StratosException e) {
+            String msg = "Error in notifying tenant deactivate.";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+
+    }
+
+    //Util methods for Users
+
+    /**
+     * Adds an User
+     *
+     * @param userInfoBean
+     * @throws RestAPIException
+     */
+    public static void addUser(UserInfoBean userInfoBean) throws RestAPIException {
+        StratosUserManager stratosUserManager = new StratosUserManager();
+
+        try {
+            stratosUserManager.addUser(getTenantUserStoreManager(), userInfoBean);
+
+        } catch (UserManagerException e) {
+            throw new RestAPIException(e.getMessage());
+        }
+
+    }
+
+
+    /**
+     * Get Tenant UserStoreManager
+     *
+     * @return UserStoreManager
+     * @throws UserManagerException
+     */
+    private static UserStoreManager getTenantUserStoreManager() throws UserManagerException {
+
+        CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
+        UserRealm userRealm;
+        UserStoreManager userStoreManager;
+
+        try {
+            userRealm = carbonContext.getUserRealm();
+            userStoreManager = userRealm.getUserStoreManager();
+
+        } catch (UserStoreException e) {
+            String msg = "Error in retrieving UserStore Manager";
+            log.error(msg, e);
+            throw new UserManagerException(msg, e);
+        }
+
+        return userStoreManager;
+    }
+
+    /**
+     * Delete an user
+     *
+     * @param userName
+     * @throws RestAPIException
+     */
+    public static void removeUser(String userName) throws RestAPIException{
+        StratosUserManager stratosUserManager = new StratosUserManager();
+
+        try {
+            stratosUserManager.removeUser(getTenantUserStoreManager(), userName);
+        } catch (UserManagerException e) {
+            throw new RestAPIException(e.getMessage());
+        }
+    }
+
+    /**
+     * Update User
+     *
+     * @param userInfoBean
+     * @throws RestAPIException
+     */
+    public static void updateUser(UserInfoBean userInfoBean) throws RestAPIException {
+        StratosUserManager stratosUserManager = new StratosUserManager();
+
+        try {
+            stratosUserManager.updateUser(getTenantUserStoreManager(), userInfoBean);
+
+        } catch (UserManagerException e) {
+            throw new RestAPIException(e.getMessage());
+        }
+
+    }
+
+    /**
+     * Get List of Users
+     *
+     * @return
+     * @throws RestAPIException
+     */
+    public static List<UserInfoBean> getUsers() throws RestAPIException {
+        StratosUserManager stratosUserManager = new StratosUserManager();
+        List<UserInfoBean> userList;
+        try {
+           userList  = stratosUserManager.getAllUsers(getTenantUserStoreManager());
+        }catch (UserManagerException e){
+            throw new RestAPIException(e.getMessage());
+        }
+        return userList;
+    }
+
 }
