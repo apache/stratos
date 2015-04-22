@@ -4,6 +4,12 @@ This sample application demonstrate how Single Sign On (SSO) can be implemented 
 application server. It includes a cartridge for Tomcat 7 and WSO2 Identity Server 5.0.0 and set of cartridge agent
 extensions for handling the SSO configuration.
 
+Tomcat Dockerfile:
+(https://github.com/apache/stratos/tree/master/tools/docker-images/cartridge-docker-images/service-images/tomcat-saml-sso)
+
+WSO2 Identity Server Dockerfile:
+(https://github.com/apache/stratos/tree/master/tools/docker-images/cartridge-docker-images/service-images/wso2is-saml-sso)
+
 Application folder structure
 ----------------------------
 ```
