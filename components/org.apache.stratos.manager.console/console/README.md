@@ -11,3 +11,4 @@ Initial version with improved UXDesigns.
 4. Carbon based user Management
 5. Mobile friendly design
 6. Improved UXD [STRATOS-810]
+7. Include Application and Group Editor
