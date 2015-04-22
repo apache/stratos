@@ -30,6 +30,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * Add tenant command.
+ */
 public class AddTenantCommand implements Command<StratosCommandContext> {
 
     private static final Logger log = LoggerFactory.getLogger(AddTenantCommand.class);
@@ -160,9 +163,7 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

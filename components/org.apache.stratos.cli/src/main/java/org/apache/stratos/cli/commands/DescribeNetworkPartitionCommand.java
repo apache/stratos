@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Describe network partition command.
+ */
 public class DescribeNetworkPartitionCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DescribeNetworkPartitionCommand.class);
 
@@ -39,7 +42,7 @@ public class DescribeNetworkPartitionCommand implements Command<StratosCommandCo
 
     @Override
     public String getDescription() {
-        return "Describing the network partition";
+        return "Describe network partition";
     }
 
     @Override
@@ -58,11 +61,11 @@ public class DescribeNetworkPartitionCommand implements Command<StratosCommandCo
             log.debug("Executing {} command...", getName());
         }
         if (args != null && args.length == 1) {
-            String id = args[0];
+            String networkPartitionId = args[0];
             if (log.isDebugEnabled()) {
-                log.debug("Getting cartridge info {}", id);
+                log.debug("Getting cartridge info {}", networkPartitionId);
             }
-            RestCommandLineService.getInstance().describeNetworkPartition(id);
+            RestCommandLineService.getInstance().describeNetworkPartition(networkPartitionId);
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());

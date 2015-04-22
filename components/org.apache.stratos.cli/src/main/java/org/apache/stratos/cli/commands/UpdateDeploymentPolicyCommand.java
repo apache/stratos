@@ -107,9 +107,7 @@ public class UpdateDeploymentPolicyCommand implements Command<StratosCommandCont
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             } catch (IOException ignore) {

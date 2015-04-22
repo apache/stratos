@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Remove application policy
+ */
 public class RemoveApplicationPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(RemoveApplicationPolicyCommand.class);
 
@@ -53,7 +56,8 @@ public class RemoveApplicationPolicyCommand implements Command<StratosCommandCon
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args,Option[] alreadyParsedOpts) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws
+            CommandException {
         if (log.isDebugEnabled()) {
             log.debug("Executing {} command...", getName());
         }

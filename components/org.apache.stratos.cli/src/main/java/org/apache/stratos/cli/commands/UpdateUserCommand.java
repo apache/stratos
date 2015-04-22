@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * Update an existing user
+ */
 public class UpdateUserCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(UpdateUserCommand.class);
 
@@ -42,10 +45,10 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
     private Options constructOptions() {
         final Options options = new Options();
 
-        Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
+        Option userNameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
                 "Username");
-        usernameOption.setArgName("username");
-        options.addOption(usernameOption);
+        userNameOption.setArgName("username");
+        options.addOption(userNameOption);
 
         Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
                 "User credential");
@@ -57,15 +60,15 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
         roleOption.setArgName("role");
         options.addOption(roleOption);
 
-        Option firstnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
+        Option firstNameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
                 "User first name");
-        firstnameOption.setArgName("firstName");
-        options.addOption(firstnameOption);
+        firstNameOption.setArgName("firstName");
+        options.addOption(firstNameOption);
 
-        Option lastnameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
+        Option lastNameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
                 "User last name");
-        lastnameOption.setArgName("lastName");
-        options.addOption(lastnameOption);
+        lastNameOption.setArgName("lastName");
+        options.addOption(lastNameOption);
 
         Option emailOption = new Option(CliConstants.EMAIL_OPTION, CliConstants.EMAIL_LONG_OPTION, true,
                 "User email");
@@ -171,9 +174,7 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

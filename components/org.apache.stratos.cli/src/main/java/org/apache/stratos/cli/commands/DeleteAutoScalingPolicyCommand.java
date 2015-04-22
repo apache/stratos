@@ -28,6 +28,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Remove autoscaling policy command.
+ */
 public class DeleteAutoScalingPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DeleteAutoScalingPolicyCommand.class);
 
@@ -38,7 +41,7 @@ public class DeleteAutoScalingPolicyCommand implements Command<StratosCommandCon
 
     @Override
     public String getDescription() {
-        return "Remove Auto-Scaling policy";
+        return "Remove auto scaling policy";
     }
 
     @Override

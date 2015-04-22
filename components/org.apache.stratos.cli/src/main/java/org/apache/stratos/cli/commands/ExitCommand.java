@@ -27,9 +27,12 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
+/**
+ * Exit from stratos client tool
+ */
 public class ExitCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExitCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(ExitCommand.class);
 
 	public ExitCommand() {
 	}
@@ -52,8 +55,8 @@ public class ExitCommand implements Command<StratosCommandContext> {
 	@Override
 	public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
 		// Nothing to execute here. This is a special command.
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+		if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
 			return CliConstants.COMMAND_SUCCESSFULL;

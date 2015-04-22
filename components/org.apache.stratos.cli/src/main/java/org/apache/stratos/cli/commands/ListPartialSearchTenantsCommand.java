@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * List cartridges by partial domain search
+ */
 public class ListPartialSearchTenantsCommand implements Command<StratosCommandContext>{
 
     private static final Logger log = LoggerFactory.getLogger(ListPartialSearchTenantsCommand.class);
@@ -99,9 +102,7 @@ public class ListPartialSearchTenantsCommand implements Command<StratosCommandCo
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

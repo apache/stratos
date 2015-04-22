@@ -146,7 +146,7 @@ public class AutoscalerServiceClient {
         stub.deleteApplication(applicationId);
     }
 
-    public boolean deployAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
+    public boolean addAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException {
         return stub.addAutoScalingPolicy(autoScalePolicy);
     }
@@ -197,7 +197,7 @@ public class AutoscalerServiceClient {
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
             AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceRemoteExceptionException,
             AutoscalerServiceInvalidPolicyExceptionException {
-        stub.updateDeployementPolicy(deploymentPolicy);
+        stub.updateDeploymentPolicy(deploymentPolicy);
     }
 
     public void removeDeploymentPolicy(String deploymentPolicyID) throws RemoteException,

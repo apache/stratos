@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * List List Kubernetes clusters
+ */
 public class ListKubernetesClustersCommand implements Command<StratosCommandContext> {
 
 	private static final Logger log = LoggerFactory.getLogger(ListKubernetesClustersCommand.class);
@@ -41,7 +44,7 @@ public class ListKubernetesClustersCommand implements Command<StratosCommandCont
 	}
 
 	public String getDescription() {
-		return "List kubernetes clusters";
+		return "List Kubernetes clusters";
 	}
 
 	public String getArgumentSyntax() {

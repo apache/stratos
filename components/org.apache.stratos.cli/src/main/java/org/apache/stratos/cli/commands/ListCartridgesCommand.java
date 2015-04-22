@@ -28,6 +28,9 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
+/**
+ * List available cartridges
+ */
 public class ListCartridgesCommand implements Command<StratosCommandContext> {
 
 	private static final Logger log = LoggerFactory.getLogger(ListCartridgesCommand.class);

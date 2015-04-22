@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Describe Kubernetes cluster command.
+ */
 public class DescribeKubernetesClusterCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DescribeKubernetesClusterCommand.class);
 
@@ -39,7 +42,7 @@ public class DescribeKubernetesClusterCommand implements Command<StratosCommandC
 
     @Override
     public String getDescription() {
-        return "Describing a kubernetes cluster";
+        return "Describe Kubernetes cluster";
     }
 
     @Override
@@ -58,11 +61,11 @@ public class DescribeKubernetesClusterCommand implements Command<StratosCommandC
             log.debug("Executing {} command...", getName());
         }
         if (args != null && args.length == 1) {
-            String id = args[0];
+            String clusterId = args[0];
             if (log.isDebugEnabled()) {
-                log.debug("Getting Kubernetes cluster info {}", id);
+                log.debug("Getting Kubernetes cluster info {}", clusterId);
             }
-            RestCommandLineService.getInstance().describeKubernetesCluster(id);
+            RestCommandLineService.getInstance().describeKubernetesCluster(clusterId);
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());

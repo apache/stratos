@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Un-deploy kubernetes host command.
+ * Undeploy Kubernetes host
  */
 public class RemoveKubernetesHostCommand implements Command<StratosCommandContext> {
 
@@ -46,7 +46,7 @@ public class RemoveKubernetesHostCommand implements Command<StratosCommandContex
 
     @Override
     public String getDescription() {
-        return "Remove kubernetes host";
+        return "Remove Kubernetes host";
     }
 
     @Override

@@ -516,15 +516,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             String msg = "Cartridge group can not be null service name can not be empty.";
             log.error(msg);
             throw new IllegalArgumentException(msg);
-
         }
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding cartridge group: [group-name] %s", servicegroup.getName()));
         }
+
         String groupName = servicegroup.getName();
         if (RegistryManager.getInstance().serviceGroupExist(groupName)) {
-            throw new InvalidServiceGroupException("Cartridge group with the name " + groupName + " already exist.");
+            throw new InvalidServiceGroupException("Cartridge group with the name " + groupName + " already exists.");
         }
 
         if (log.isDebugEnabled()) {
@@ -533,7 +533,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         String[] subGroups = servicegroup.getCartridges();
         if (log.isDebugEnabled()) {
-            log.debug("SubGroups" + subGroups);
+            log.debug("SubGroups" + Arrays.toString(subGroups));
             if (subGroups != null) {
                 log.debug("subGroups:size" + subGroups.length);
             } else {
@@ -550,7 +550,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             String[] startupOrders = dependencies.getStartupOrders();
 
             if (log.isDebugEnabled()) {
-                log.debug("StartupOrders " + startupOrders);
+                log.debug("StartupOrders " + Arrays.toString(startupOrders));
 
                 if (startupOrders != null) {
                     log.debug("StartupOrder:size  " + startupOrders.length);
@@ -558,10 +558,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     log.debug("StartupOrder: is null");
                 }
             }
+
             String[] scalingDependents = dependencies.getScalingDependants();
 
             if (log.isDebugEnabled()) {
-                log.debug("ScalingDependent " + scalingDependents);
+                log.debug("ScalingDependent " + Arrays.toString(scalingDependents));
 
                 if (scalingDependents != null) {
                     log.debug("ScalingDependents:size " + scalingDependents.length);
@@ -872,7 +873,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException {
 
         validateDeploymentPolicy(deploymentPolicy);

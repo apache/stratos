@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * List Kubernetes hosts
+ */
 public class ListKubernetesHostsCommand implements Command<StratosCommandContext> {
 
 	private static final Logger log = LoggerFactory.getLogger(ListKubernetesHostsCommand.class);
@@ -56,7 +59,7 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
 	}
 
 	public String getDescription() {
-		return "List kubernetes hosts";
+		return "List Kubernetes hosts";
 	}
 
 	public String getArgumentSyntax() {
@@ -80,7 +83,7 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
                 Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
                 if (log.isDebugEnabled()) {
-                    log.debug("List kubernetes hosts of a cluster");
+                    log.debug("List Kubernetes hosts of a cluster");
                 }
 
                 if (opts.hasOption(CliConstants.CLUSTER_ID_OPTION)) {
@@ -99,9 +102,7 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }

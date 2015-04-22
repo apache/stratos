@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * List available deployment policies
+ */
 public class ListDeploymentPoliciesCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(ListDeploymentPoliciesCommand.class);
 

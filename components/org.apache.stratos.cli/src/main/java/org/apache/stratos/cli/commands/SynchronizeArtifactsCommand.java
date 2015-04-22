@@ -28,9 +28,12 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Synchronize artifacts with Git repository for cartridge subscriptions
+ */
 public class SynchronizeArtifactsCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(SynchronizeArtifactsCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(SynchronizeArtifactsCommand.class);
 
 	public SynchronizeArtifactsCommand() {
 	}
@@ -52,13 +55,13 @@ public class SynchronizeArtifactsCommand implements Command<StratosCommandContex
 
 	@Override
 	public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+		if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
 			String cartridgeSubscriptionAlias = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Synchronizing repository for cartridge subscription alias {}", cartridgeSubscriptionAlias);
+			if (log.isDebugEnabled()) {
+				log.debug("Synchronizing repository for cartridge subscription alias {}", cartridgeSubscriptionAlias);
 			}
 
 			RestCommandLineService.getInstance().synchronizeArtifacts(cartridgeSubscriptionAlias);

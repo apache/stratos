@@ -28,6 +28,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Undeploy cartridge definition
+ */
 public class RemoveCartridgeCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(RemoveCartridgeCommand.class);
 

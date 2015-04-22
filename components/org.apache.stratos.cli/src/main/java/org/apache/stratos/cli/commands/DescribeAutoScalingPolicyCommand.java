@@ -27,6 +27,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Describe auto scaling policy command.
+ */
 public class DescribeAutoScalingPolicyCommand implements Command<StratosCommandContext> {
     private static final Logger log = LoggerFactory.getLogger(DescribeAutoScalingPolicyCommand.class);
 
@@ -37,7 +40,7 @@ public class DescribeAutoScalingPolicyCommand implements Command<StratosCommandC
 
     @Override
     public String getDescription() {
-        return "Describing the autoscaling policy";
+        return "Describe autoscaling policy";
     }
 
     @Override

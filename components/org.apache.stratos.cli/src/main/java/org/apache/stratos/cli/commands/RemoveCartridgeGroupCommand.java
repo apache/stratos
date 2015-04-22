@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Un-deploy cartridge group command.
+ * Undeploy cartridge group command.
  */
 public class RemoveCartridgeGroupCommand implements Command<StratosCommandContext> {
 

@@ -61,9 +61,9 @@ public class TopologyLockHierarchy {
         return topologyLockHierarchy;
     }
 
-    public TopologyLock getTopologyLockForService(String serviceName) {
+    public TopologyLock getTopologyLockForService(String serviceName, boolean forceCreationIfNotFound) {
         TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceName);
-        if (topologyLock == null) {
+        if (topologyLock == null && forceCreationIfNotFound) {
             synchronized (TopologyLockHierarchy.class) {
                 if (topologyLock == null) {
                     topologyLock = new TopologyLock();
@@ -74,9 +74,9 @@ public class TopologyLockHierarchy {
         return topologyLock;
     }
 
-    public TopologyLock getTopologyLockForCluster(String clusterId) {
+    public TopologyLock getTopologyLockForCluster(String clusterId, boolean forceCreationIfNotFound) {
         TopologyLock topologyLock = clusterIdToTopologyLockMap.get(clusterId);
-        if (topologyLock == null) {
+        if (topologyLock == null && forceCreationIfNotFound) {
             synchronized (TopologyLockHierarchy.class) {
                 if (topologyLock == null) {
                     topologyLock = new TopologyLock();

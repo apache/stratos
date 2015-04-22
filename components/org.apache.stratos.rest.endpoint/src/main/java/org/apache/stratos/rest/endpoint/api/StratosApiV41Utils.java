@@ -541,7 +541,7 @@ public class StratosApiV41Utils {
 
             try {
                 autoscalerServiceClient
-                        .deployAutoscalingPolicy(autoscalePolicy);
+                        .addAutoscalingPolicy(autoscalePolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -573,7 +573,7 @@ public class StratosApiV41Utils {
             }
             serviceClient.addApplicationPolicy(applicationPolicy);
         } catch (RemoteException e) {
-            String msg = "Could not add application policy" + e.getLocalizedMessage();
+            String msg = "Could not add application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
@@ -581,7 +581,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceRemoteExceptionException e) {
-            String msg = "Could not add application policy" + e.getLocalizedMessage();
+            String msg = "Could not add application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
@@ -884,6 +884,7 @@ public class StratosApiV41Utils {
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
         } catch (Exception e) {
+            // TODO: InvalidServiceGroupException is not received, only AxisFault. Need to fix get the custom exception
             String message = "Could not add cartridge group";
             log.error(message, e);
             throw new RestAPIException(message, e);
@@ -940,7 +941,7 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             ServiceGroup[] serviceGroups = asServiceClient.getServiceGroups();
-            if (serviceGroups == null || serviceGroups.length == 0) {
+            if (serviceGroups == null || serviceGroups.length == 0 || (serviceGroups.length == 1 && serviceGroups[0] == null)) {
                 return null;
             }
 
@@ -1587,6 +1588,11 @@ public class StratosApiV41Utils {
             try {
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[]
                         kubernetesClusters = cloudControllerServiceClient.getAvailableKubernetesClusters();
+                if (kubernetesClusters == null) {
+                    log.error("Could not find any Kubernetes Clusters.");
+                    return null;
+                }
+
                 return ObjectConverter.convertStubKubernetesClustersToKubernetesClusters(kubernetesClusters);
 
             } catch (RemoteException e) {
@@ -1611,7 +1617,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
+                log.error(message);
                 throw new RestAPIException(message, e);
             }
         }
@@ -1674,7 +1680,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
+                log.error(message);
                 throw new RestAPIException(message, e);
             }
         }
@@ -1694,7 +1700,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
+                log.error(message);
                 throw new RestAPIException(message, e);
             }
         }
@@ -2115,13 +2121,13 @@ public class StratosApiV41Utils {
             }
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             String msg =
-                    "Deployment policy already exist [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
+                    "Deployment policy already exists [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not add deployment policy";
+            String msg = "Could not add deployment policy.";
             log.error(msg, e);
-            throw new RestAPIException(msg);
+            throw new RestAPIException(msg, e);
         }
     }
 
@@ -2226,6 +2232,11 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Cluster Id can not be empty");
         }
 
-        return ObjectConverter.convertClusterToClusterBean(TopologyManager.getTopology().getCluster(clusterId), clusterId);
+        Cluster cluster = TopologyManager.getTopology().getCluster(clusterId);
+        if (cluster == null){
+            return null;
+        }
+
+        return ObjectConverter.convertClusterToClusterBean(cluster, clusterId);
     }
 }

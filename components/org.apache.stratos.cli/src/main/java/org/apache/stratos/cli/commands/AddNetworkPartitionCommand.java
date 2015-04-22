@@ -33,6 +33,9 @@ import java.io.IOException;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
+/**
+ * Add network partition command.
+ */
 public class AddNetworkPartitionCommand implements Command<StratosCommandContext> {
 
     private static final Logger log = LoggerFactory.getLogger(AddNetworkPartitionCommand.class);
@@ -142,9 +145,7 @@ public class AddNetworkPartitionCommand implements Command<StratosCommandContext
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Error parsing arguments", e);
-                }
+                log.error("Error parsing arguments", e);
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {

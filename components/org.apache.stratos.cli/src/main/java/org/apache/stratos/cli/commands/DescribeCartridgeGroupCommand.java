@@ -29,6 +29,9 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Describe cartridge group command.
+ */
 public class DescribeCartridgeGroupCommand implements Command<StratosCommandContext> {
 
 	private static final Logger log = LoggerFactory.getLogger(DescribeCartridgeGroupCommand.class);
@@ -41,7 +44,7 @@ public class DescribeCartridgeGroupCommand implements Command<StratosCommandCont
 	}
 
 	public String getDescription() {
-		return "Describe cartridge groups";
+		return "Describe cartridge group";
 	}
 
 	public String getArgumentSyntax() {
