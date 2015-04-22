@@ -239,7 +239,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         String instanceId = scalingEvent.getInstanceId();
         String id = scalingEvent.getId();
         NetworkPartitionContext networkPartitionContext =
-                this.networkPartitionCtxts.get(networkPartitionId);
+                this.getNetworkPartitionCtxts().get(networkPartitionId);
         if (networkPartitionContext != null) {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
@@ -277,7 +277,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         String instanceId = scalingUpBeyondMaxEvent.getInstanceId();
         String id = scalingUpBeyondMaxEvent.getId();
         NetworkPartitionContext networkPartitionContext =
-                this.networkPartitionCtxts.get(networkPartitionId);
+                this.getNetworkPartitionCtxts().get(networkPartitionId);
         if (networkPartitionContext != null) {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
@@ -296,7 +296,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     }
 
     public NetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
-        return this.networkPartitionCtxts.get(networkPartitionId);
+        return this.getNetworkPartitionCtxts().get(networkPartitionId);
     }
 
 
@@ -750,6 +750,10 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     public DependencyTree getStartupDependencyTree() {
         return startupDependencyTree;
+    }
+
+    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
+        return networkPartitionCtxts;
     }
 
     private class MonitorAdder implements Runnable {

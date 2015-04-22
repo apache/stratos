@@ -32,7 +32,13 @@ import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.InstanceContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
+import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -40,7 +46,9 @@ import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExist
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
@@ -53,6 +61,7 @@ import org.apache.stratos.common.partition.NetworkPartition;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -477,7 +486,7 @@ public class AutoscalerUtil {
     /**
      * Get alias to deployment policy id map in the given application.
      *
-     * @param applicationId the application id
+     * @param applicationContext the application context
      * @return alias to deployment policy map
      */
     public static Map<String, String> getAliasToDeploymentPolicyIdMapOfApplication(ApplicationContext applicationContext) {
@@ -535,10 +544,14 @@ public class AutoscalerUtil {
                         String deploymentPolicyId = groupContext.getDeploymentPolicy();
                         aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyId);
                         if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
-                            setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
+                            setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap,
+                                                                            deploymentPolicyId,
+                                    groupContext.getCartridgeContexts());
                         }
                         if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
-                            setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getGroupContexts());
+                            setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap,
+                                                                        deploymentPolicyId,
+                                                                        groupContext.getGroupContexts());
                         }
 
                     }
@@ -548,12 +561,14 @@ public class AutoscalerUtil {
     }
 
     private static void setDeploymentPolicyIdToChildCartridgeContexts(
-            Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId, CartridgeContext[] cartridgeContexts) {
+            Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId,
+                                                            CartridgeContext[] cartridgeContexts) {
 
         if (cartridgeContexts != null && cartridgeContexts.length != 0) {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
                 if (cartridgeContext != null) {
-                    aliasToDeploymentPolicyIdMap.put(cartridgeContext.getSubscribableInfoContext().getAlias(), deploymentPolicyId);
+                    aliasToDeploymentPolicyIdMap.put(cartridgeContext.getSubscribableInfoContext().getAlias(),
+                                                        deploymentPolicyId);
                 }
             }
         }
@@ -566,10 +581,14 @@ public class AutoscalerUtil {
             for (GroupContext groupContext : groupContexts) {
                 if (groupContext != null) {
                     if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
-                        setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
+                        setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap,
+                                                                deploymentPolicyId,
+                                                                groupContext.getCartridgeContexts());
                     }
                     if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
-                        setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getGroupContexts());
+                        setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap,
+                                                                deploymentPolicyId,
+                                                                groupContext.getGroupContexts());
                     }
                 }
             }
@@ -603,7 +622,8 @@ public class AutoscalerUtil {
         // network partition algorithm can't null or empty
         String algorithm = applicationPolicy.getAlgorithm();
         if (algorithm == null || StringUtils.isBlank(algorithm)) {
-            String msg = "Invalid Application Policy. Cause -> Network partition algorithm is null or empty";
+            String msg = "Invalid Application Policy. Cause -> Network " +
+                                    "partition algorithm is null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
         }
@@ -611,7 +631,8 @@ public class AutoscalerUtil {
         // network partition algorithm should be either one-after-another or all-at-once
         if (!algorithm.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID)
                 && !algorithm.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
-            String msg = String.format("Invalid Application Policy. Cause -> Invalid network partition algorithm. "
+            String msg = String.format("Invalid Application Policy. Cause -> " +
+                            "Invalid network partition algorithm. "
                             + "It should be either %s or %s, but found %s",
                     StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID,
                     StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID, algorithm);
@@ -640,9 +661,11 @@ public class AutoscalerUtil {
             }
 
             // network partitions should be added already
-            if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId)) {
+            if (null == CloudControllerServiceClient.getInstance().
+                                                getNetworkPartition(networkPartitionId)) {
                 String msg = String.format("Invalid Application Policy. "
-                        + "Cause -> Network partition not found for network-partition-id : %s", networkPartitionId);
+                        + "Cause -> Network partition not found for network-partition-id : %s",
+                        networkPartitionId);
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -652,28 +675,34 @@ public class AutoscalerUtil {
         // if networkPartitionGroups property is set, we need to validate that too
         Properties properties = applicationPolicy.getProperties();
         if (properties != null) {
-            Property networkPartitionGroupsProperty = properties.getProperty(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS);
+            Property networkPartitionGroupsProperty = properties.
+                    getProperty(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS);
             if (networkPartitionGroupsProperty != null) {
                 String networkPartitionGroupsPropertyValue = networkPartitionGroupsProperty.getValue();
                 if (networkPartitionGroupsPropertyValue != null) {
-                    String[] networkPartitionGroups = networkPartitionGroupsPropertyValue.split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER);
+                    String[] networkPartitionGroups = networkPartitionGroupsPropertyValue.
+                            split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER);
                     if (networkPartitionGroups != null) {
                         for (String networkPartitionIdsString : networkPartitionGroups) {
-                            networkPartitionIds = networkPartitionIdsString.split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
+                            networkPartitionIds = networkPartitionIdsString.
+                                    split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
                             if (networkPartitionIds != null) {
                                 for (String networkPartitionId : networkPartitionIds) {
                                     // network-partition-id can't be null or empty
                                     if (null == networkPartitionId || networkPartitionId.isEmpty()) {
                                         String msg = String.format("Invalid Application Policy. "
-                                                + "Cause -> Invalid network-partition-id : %s", networkPartitionId);
+                                                + "Cause -> Invalid network-partition-id : %s",
+                                                networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
                                     }
 
                                     // network partitions should be added already
-                                    if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId)) {
+                                    if (null == CloudControllerServiceClient.getInstance().
+                                            getNetworkPartition(networkPartitionId)) {
                                         String msg = String.format("Invalid Application Policy. "
-                                                + "Cause -> Network partition not found for network-partition-id : %s", networkPartitionId);
+                                                + "Cause -> Network partition not found for " +
+                                                "network-partition-id : %s", networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
                                     }
@@ -735,5 +764,98 @@ public class AutoscalerUtil {
             }
         }
         return false;
+    }
+
+    public void updateApplicationsTopology(Application application)
+                                                throws  ApplicationDefinitionException{
+        Application existingApplication = ApplicationHolder.getApplications().
+                                                getApplication(application.getUniqueIdentifier());
+        //Retrieve all the groups in order to update it
+        Set<Group> existingGroups = existingApplication.getAllGroupsRecursively();
+
+        //updating all the groups by traversing the existing application
+        for(Group existingGroup : existingGroups) {
+            Group newGroup = application.getGroupRecursively(existingGroup.getUniqueIdentifier());
+            if(newGroup != null) {
+                //Finding the GroupMonitor based on ApplicationMonitor
+                GroupMonitor groupMonitor = (GroupMonitor) AutoscalerContext.getInstance().
+                        getAppMonitor(application.getUniqueIdentifier()).
+                        findGroupMonitorWithId(existingGroup.getUniqueIdentifier());
+                //Updating the GroupMonitor
+                for(NetworkPartitionContext networkPartitionContext : groupMonitor.
+                        getNetworkPartitionCtxts().values()) {
+                    ((GroupLevelNetworkPartitionContext)networkPartitionContext).
+                            setMinInstanceCount(newGroup.getGroupMinInstances());
+                    ((GroupLevelNetworkPartitionContext)networkPartitionContext).
+                            setMaxInstanceCount(newGroup.getGroupMaxInstances());
+                }
+
+                try{
+                    ApplicationHolder.acquireWriteLock();
+                    //update the min and max of Group instances
+                    existingGroup.setGroupMinInstances(newGroup.getGroupMinInstances());
+                    //TODO applications Topology update
+                    existingGroup.setGroupMaxInstances(newGroup.getGroupMaxInstances());
+                } finally {
+                    ApplicationHolder.releaseWriteLock();
+                }
+            } else {
+                String msg = "Application is inconsistent. Please check whether the updated " +
+                        "application has same structure as existing application";
+                log.error(msg);
+                throw new ApplicationDefinitionException(msg);
+            }
+
+        }
+
+    }
+
+    public void updateClusterMonitor(Application application) throws ApplicationDefinitionException{
+        Application existingApplication = ApplicationHolder.getApplications().
+                getApplication(application.getUniqueIdentifier());
+
+        Set<ClusterDataHolder> clusterDataHolders = application.getClusterDataRecursively();
+
+        for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+            ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
+                                            getClusterMonitor(clusterDataHolder.getClusterId());
+            if(clusterMonitor != null) {
+                for(ClusterLevelNetworkPartitionContext networkPartitionContext :
+                        clusterMonitor.getNetworkPartitionCtxts()) {
+                    for(InstanceContext instanceContext :
+                            networkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
+                        //Updating the min and max instances of cluster instance context
+                        ((ClusterInstanceContext)instanceContext).
+                                setMinInstanceCount(clusterDataHolder.getMinInstances());
+                        ((ClusterInstanceContext)instanceContext).
+                                setMaxInstanceCount(clusterDataHolder.getMaxInstances());
+
+                        try {
+                            ApplicationHolder.acquireWriteLock();
+                            //Updating the existing application
+                            ClusterDataHolder existingClusterDataHolder = existingApplication.
+                                    getClusterDataHolderRecursivelyByAlias(
+                                            AutoscalerUtil.getAliasFromClusterId(
+                                                            clusterDataHolder.getClusterId()));
+                            existingClusterDataHolder.setMinInstances(clusterDataHolder.
+                                    getMinInstances());
+                            existingClusterDataHolder.setMaxInstances(clusterDataHolder.
+                                    getMaxInstances());
+                        } finally {
+                            ApplicationHolder.releaseWriteLock();
+                        }
+                    }
+                }
+            } else {
+                String msg = "Application is inconsistent. Please check whether the updated " +
+                        "application has same structure as existing application";
+                log.error(msg);
+                throw new ApplicationDefinitionException(msg);
+            }
+        }
+    }
+
+    public void updateMonitors() {
+
     }
 }

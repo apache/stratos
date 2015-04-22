@@ -6,8 +6,8 @@
             {
                 "name": "tomcat2-group",
                 "alias": "my-tomcat2-group",
-                "groupMinInstances": 2,
-                "groupMaxInstances": 3,
+                "groupMinInstances": 3,
+                "groupMaxInstances": 4,
                 "deploymentPolicy":"deployment-policy-1",
                 "cartridges": [
                     {
