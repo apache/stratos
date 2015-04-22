@@ -1,6 +1,8 @@
-Tomcat Application
-==================
-Tomcat application provides an Apache Tomcat 7 cluster. It has no cartridge groups or any dependencies.
+Tomcat Single Sign On Sample Application
+========================================
+This sample application demonstrate how Single Sign On (SSO) can be implemented with WSO2 Identity Server and Tomcat
+application server. It includes a cartridge for Tomcat 7 and WSO2 Identity Server 5.0.0 and set of cartridge agent
+extensions for handling the SSO configuration.
 
 Application folder structure
 ----------------------------
