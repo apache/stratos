@@ -1,0 +1,26 @@
+{
+    "name": "group6",
+    "groups": [
+        {
+            "name": "group7",
+            "cartridges": [
+                "tomcat", "tomcat1"
+            ],
+            "dependencies": {
+                "terminationBehaviour": "terminate-none",
+                "startupOrders": []
+            }
+        },
+	{
+            "name": "group-tom2",
+            "dependencies": {
+                "terminationBehaviour": "terminate-none",
+                "startupOrders": []
+            },
+            "cartridges": [
+                "tomcat2","tomcat3"
+            ]
+        }
+    ]
+}
+
