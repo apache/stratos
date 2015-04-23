@@ -1,0 +1,97 @@
+{
+    "applicationId": "nested-group-app",
+    "alias": "my-nested-group-app",
+    "components": {
+        "groups": [
+            {
+                "name": "group6",
+                "alias": "my-group6",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 1,
+                "deploymentPolicy":"deployment-policy-2",
+                "groups": [
+                    {
+                        "name": "group7",
+                        "alias": "my-group7",
+                        "groupMinInstances": 1,
+                        "groupMaxInstances": 1,
+                        "cartridges": [
+                            {
+                                "type": "tomcat",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "my-tomcat-group7",
+                                    "autoscalingPolicy": "autoscaling-policy-1",
+                                    "artifactRepository":{
+                                        "privateRepo":false,
+                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername":"",
+                                        "repoPassword":""
+                                    }
+                                }
+                            },
+                            {
+                                "type": "tomcat1",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "my-tomcat1-group7",
+                                    "autoscalingPolicy": "autoscaling-policy-1",
+                                    "artifactRepository":{
+                                        "privateRepo":false,
+                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername":"",
+                                        "repoPassword":""
+                                    }
+                                }
+                            }
+                        ],
+                        "groups": []
+                    },
+                    {
+                        "name": "group-tom2",
+                        "alias": "my-group-tmo2",
+                        "groupMinInstances": 1,
+                        "groupMaxInstances": 1,
+                        "cartridges": [
+                            {
+                                "type": "tomcat2",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "my-tomcat2-group",
+                                    "autoscalingPolicy": "autoscaling-policy-1",
+                                    "artifactRepository":{
+                                        "privateRepo":false,
+                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername":"",
+                                        "repoPassword":""
+                                    }
+                                }
+                            },
+                            {
+                                "type": "tomcat3",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "my-tomcat3-group",
+                                    "autoscalingPolicy": "autoscaling-policy-1",
+                                    "artifactRepository":{
+                                        "privateRepo":false,
+                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername":"",
+                                        "repoPassword":""
+                                    }
+                                }
+                            }
+                        ],
+                        "groups": []
+                        }
+                ]
+            }
+        ]
+
+    }
+}
+
