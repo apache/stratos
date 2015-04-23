@@ -28,10 +28,12 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
 import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.policy.InvalidDeploymentPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
@@ -149,7 +151,8 @@ public class AutoscalerServiceComponent {
         }
     }
 
-    private void executeCoordinatorTasks() throws InvalidPolicyException {
+    private void executeCoordinatorTasks() throws InvalidPolicyException,
+            InvalidDeploymentPolicyException {
 
         // Start topology receiver
         asTopologyReceiver = new AutoscalerTopologyEventReceiver();
@@ -176,8 +179,20 @@ public class AutoscalerServiceComponent {
             PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);
         }
 
-        // Add application policies to information model
-        List<ApplicationPolicy> applicationPolicies = RegistryManager.getInstance().retrieveApplicationPolicies();
+        // Add Deployment policies to information model
+        List<DeploymentPolicy> depPolicies = RegistryManager.getInstance().
+                retrieveDeploymentPolicies();
+        Iterator<DeploymentPolicy> depPolicyIterator = depPolicies.iterator();
+        while (depPolicyIterator.hasNext()) {
+            DeploymentPolicy depPolicy = depPolicyIterator.next();
+            PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
+        }
+
+
+
+                // Add application policies to information model
+        List<ApplicationPolicy> applicationPolicies = RegistryManager.getInstance().
+                retrieveApplicationPolicies();
         Iterator<ApplicationPolicy> applicationPolicyIterator = applicationPolicies.iterator();
         while (applicationPolicyIterator.hasNext()) {
             ApplicationPolicy applicationPolicy = applicationPolicyIterator.next();

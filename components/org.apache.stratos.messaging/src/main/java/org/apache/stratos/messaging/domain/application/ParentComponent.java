@@ -285,6 +285,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
 
         return appGroups;
     }
+
     /**
      * Adds InstanceContext of a child to the instanceIdToInstanceContextMap.
      *
@@ -379,9 +380,9 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         for (Group group : groups) {
             if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
                 clusterData.addAll(group.getClusterDataMap().values());
-                if (group.getGroups() != null) {
-                    getClusterData(clusterData, group.getGroups());
-                }
+            }
+            if (group.getGroups() != null && !group.getGroups().isEmpty()) {
+                getClusterData(clusterData, group.getGroups());
             }
         }
     }

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.policy.InvalidDeploymentPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
@@ -133,6 +134,26 @@ public class PolicyManager {
         }
     }
 
+    /**
+     * Retrieve deployment policies from registy and add it to in memory model
+     *
+     * @param deploymentPolicy
+     * @throws InvalidDeploymentPolicyException
+     */
+    public void addDeploymentPolicyToInformationModel(DeploymentPolicy deploymentPolicy)
+            throws InvalidDeploymentPolicyException {
+        if (!deploymentPolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+            if (log.isDebugEnabled()) {
+                log.debug("Adding deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
+            }
+            deploymentPolicyListMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
+        } else {
+            String errMsg = "Specified deployment policy [" +
+                    deploymentPolicy.getDeploymentPolicyID() + "] already exists";
+            log.error(errMsg);
+            throw new InvalidDeploymentPolicyException(errMsg);
+        }
+    }
 
     public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
         if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {

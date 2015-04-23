@@ -510,7 +510,8 @@ public class CloudControllerContext implements Serializable {
     /**
      * Remove a registered Kubernetes host from registry
      */
-    public synchronized boolean removeKubernetesHost(String kubernetesHostId) throws NonExistingKubernetesHostException {
+    public synchronized boolean removeKubernetesHost(String kubernetesHostId)
+            throws NonExistingKubernetesHostException {
         if (kubernetesHostId == null) {
             throw new NonExistingKubernetesHostException("Kubernetes host id can not be null");
         }
@@ -518,11 +519,13 @@ public class CloudControllerContext implements Serializable {
             log.info("Removing Kubernetes Host: " + kubernetesHostId);
         }
         try {
-            KubernetesCluster kubernetesClusterStored = getKubernetesClusterContainingHost(kubernetesHostId);
+            KubernetesCluster kubernetesClusterStored = getKubernetesClusterContainingHost(
+                    kubernetesHostId);
 
             // Kubernetes master can not be removed
             if (kubernetesClusterStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
-                throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
+                throw new NonExistingKubernetesHostException("Kubernetes master is not allowed " +
+                        "to be removed [id] " + kubernetesHostId);
             }
 
             List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
@@ -533,7 +536,8 @@ public class CloudControllerContext implements Serializable {
             }
             // member count will be equal only when host object was not found
             if (kubernetesHostList.size() == kubernetesClusterStored.getKubernetesHosts().length) {
-                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] " + kubernetesHostId);
+                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] "
+                        + kubernetesHostId);
             }
             KubernetesHost[] kubernetesHostsArray = new KubernetesHost[kubernetesHostList.size()];
             kubernetesHostList.toArray(kubernetesHostsArray);
@@ -542,7 +546,8 @@ public class CloudControllerContext implements Serializable {
             kubernetesClusterStored.setKubernetesHosts(kubernetesHostsArray);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes host removed successfully: [id] %s", kubernetesHostId));
+                log.info(String.format("Kubernetes host removed successfully: [id] %s",
+                        kubernetesHostId));
             }
 
             return true;
@@ -583,7 +588,8 @@ public class CloudControllerContext implements Serializable {
     }
 
 
-    public KubernetesHost[] getKubernetesHostsInGroup(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public KubernetesHost[] getKubernetesHostsInGroup(String kubernetesClusterId)
+            throws NonExistingKubernetesClusterException {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id is null");
         }
@@ -592,7 +598,8 @@ public class CloudControllerContext implements Serializable {
         if (kubernetesCluster != null) {
             return kubernetesCluster.getKubernetesHosts();
         }
-        throw new NonExistingKubernetesClusterException("Kubernetes cluster not found: [kubernetes-cluster-id] "
+        throw new NonExistingKubernetesClusterException("Kubernetes cluster " +
+                "not found: [kubernetes-cluster-id] "
                 + kubernetesClusterId);
     }
 
@@ -605,7 +612,8 @@ public class CloudControllerContext implements Serializable {
         if (kubernetesCluster != null) {
             return kubernetesCluster.getKubernetesMaster();
         }
-        throw new NonExistingKubernetesClusterException("Kubernetes master not found: [kubernetes-cluster-id] "
+        throw new NonExistingKubernetesClusterException("Kubernetes master " +
+                "not found: [kubernetes-cluster-id] "
                 + kubernetesClusterId);
     }
 
@@ -618,10 +626,12 @@ public class CloudControllerContext implements Serializable {
         if (kubernetesCluster != null) {
             return kubernetesCluster;
         }
-        throw new NonExistingKubernetesClusterException("Kubernetes cluster not found: [kubernetes-cluster-id] " + kubernetesClusterId);
+        throw new NonExistingKubernetesClusterException("Kubernetes cluster " +
+                "not found: [kubernetes-cluster-id] " + kubernetesClusterId);
     }
 
-    public KubernetesCluster getKubernetesClusterContainingHost(String hostId) throws NonExistingKubernetesClusterException {
+    public KubernetesCluster getKubernetesClusterContainingHost(String hostId)
+            throws NonExistingKubernetesClusterException {
         if (StringUtils.isEmpty(hostId)) {
             return null;
         }
@@ -637,11 +647,13 @@ public class CloudControllerContext implements Serializable {
                 }
             }
         }
-        throw new NonExistingKubernetesClusterException("Kubernetes cluster not found containing host id: " + hostId);
+        throw new NonExistingKubernetesClusterException("Kubernetes cluster not " +
+                "found containing host id: " + hostId);
     }
 
     public KubernetesCluster[] getKubernetesClusters() {
-        return kubernetesClustersMap.values().toArray(new KubernetesCluster[kubernetesClustersMap.size()]);
+        return kubernetesClustersMap.values().toArray(
+                new KubernetesCluster[kubernetesClustersMap.size()]);
     }
 
     public boolean isClustered() {
@@ -669,20 +681,32 @@ public class CloudControllerContext implements Serializable {
     private void updateContextFromRegistry() {
         if ((!isClustered()) || (isCoordinator())) {
             try {
-                Object dataObj = RegistryManager.getInstance().read(CloudControllerConstants.DATA_RESOURCE);
+                Object dataObj = RegistryManager.getInstance().
+                        read(CloudControllerConstants.DATA_RESOURCE);
                 if (dataObj != null) {
                     if (dataObj instanceof CloudControllerContext) {
                         CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
 
                         copyMap(serializedObj.kubernetesClustersMap, kubernetesClustersMap);
-                        copyMap(serializedObj.clusterIdToMemberContextListMap, clusterIdToMemberContextListMap);
-                        copyMap(serializedObj.memberIdToMemberContextMap, memberIdToMemberContextMap);
-                        copyMap(serializedObj.kubClusterIdToKubClusterContextMap, kubClusterIdToKubClusterContextMap);
+                        copyMap(serializedObj.clusterIdToMemberContextListMap,
+                                clusterIdToMemberContextListMap);
+                        copyMap(serializedObj.memberIdToMemberContextMap,
+                                memberIdToMemberContextMap);
+                        copyMap(serializedObj.kubClusterIdToKubClusterContextMap,
+                                kubClusterIdToKubClusterContextMap);
                         copyMap(serializedObj.clusterIdToContextMap, clusterIdToContextMap);
-                        copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
-                        copyMap(serializedObj.cartridgeTypeToCartridgeMap, cartridgeTypeToCartridgeMap);
-                        copyMap(serializedObj.serviceGroupNameToServiceGroupMap, serviceGroupNameToServiceGroupMap);
-                        copyMap(serializedObj.networkPartitionIDToNetworkPartitionMap, networkPartitionIDToNetworkPartitionMap);
+                        copyMap(serializedObj.cartridgeTypeToPartitionIdsMap,
+                                cartridgeTypeToPartitionIdsMap);
+                        copyMap(serializedObj.cartridgeTypeToCartridgeMap,
+                                cartridgeTypeToCartridgeMap);
+                        copyMap(serializedObj.serviceGroupNameToServiceGroupMap,
+                                serviceGroupNameToServiceGroupMap);
+                        copyMap(serializedObj.networkPartitionIDToNetworkPartitionMap,
+                                networkPartitionIDToNetworkPartitionMap);
+                        copyMap(serializedObj.partitionToIaasProviderByCartridge,
+                                partitionToIaasProviderByCartridge);
+                        copyMap(serializedObj.cartridgeTypeToIaasProviders,
+                                cartridgeTypeToIaasProviders);
 
                         if (log.isDebugEnabled()) {
                             log.debug("Cloud controller context is read from the registry");

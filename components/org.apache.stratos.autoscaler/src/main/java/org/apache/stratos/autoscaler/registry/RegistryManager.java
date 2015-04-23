@@ -353,6 +353,11 @@ public class RegistryManager {
         return resourceExist(resourcePath);
     }
 
+    /**
+     * Retrieve Autoscaling policies from registry
+     *
+     * @return all the Autoscaling policies
+     */
     public List<AutoscalePolicy> retrieveASPolicies() {
         try {
             startTenantFlow();
@@ -390,36 +395,46 @@ public class RegistryManager {
         }
     }
 
+    /**
+     * Retrieve deployment policies from registry
+     *
+     * @return all the deployment policies
+     */
     public List<DeploymentPolicy> retrieveDeploymentPolicies() {
-        List<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
-        RegistryManager registryManager = RegistryManager.getInstance();
-        String[] depPolicyResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE
-                + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE);
+        try{
+            startTenantFlow();
+            List<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
+            RegistryManager registryManager = RegistryManager.getInstance();
+            String[] depPolicyResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE
+                    + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE);
 
-        if (depPolicyResourceList != null) {
-            DeploymentPolicy depPolicy;
-            for (String resourcePath : depPolicyResourceList) {
-                Object serializedObj = registryManager.retrieve(resourcePath);
-                if (serializedObj != null) {
-                    try {
-                        Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-                        if (dataObj instanceof DeploymentPolicy) {
-                            depPolicy = (DeploymentPolicy) dataObj;
-                            if (log.isDebugEnabled()) {
-                                log.debug(depPolicy.toString());
+            if (depPolicyResourceList != null) {
+                DeploymentPolicy depPolicy;
+                for (String resourcePath : depPolicyResourceList) {
+                    Object serializedObj = registryManager.retrieve(resourcePath);
+                    if (serializedObj != null) {
+                        try {
+                            Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+                            if (dataObj instanceof DeploymentPolicy) {
+                                depPolicy = (DeploymentPolicy) dataObj;
+                                if (log.isDebugEnabled()) {
+                                    log.debug(depPolicy.toString());
+                                }
+                                depPolicyList.add(depPolicy);
+                            } else {
+                                return null;
                             }
-                            depPolicyList.add(depPolicy);
-                        } else {
-                            return null;
+                        } catch (Exception e) {
+                            String msg = "Unable to retrieve data from Registry. Hence, any historical deployment policies will not get reflected.";
+                            log.warn(msg, e);
                         }
-                    } catch (Exception e) {
-                        String msg = "Unable to retrieve data from Registry. Hence, any historical deployment policies will not get reflected.";
-                        log.warn(msg, e);
                     }
                 }
             }
+            return depPolicyList;
+        } finally {
+            endTenantFlow();
         }
-        return depPolicyList;
     }
 
     public List<ApplicationPolicy> retrieveApplicationPolicies() {
