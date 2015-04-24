@@ -142,13 +142,13 @@ public class GroupMonitor extends ParentComponentMonitor {
                     }
 
                     int nonTerminatedInstancesCount = networkPartitionContext.
-                                                getNonTerminatedInstancesCount();
-                    int minInstances = ((GroupLevelNetworkPartitionContext)networkPartitionContext).
+                            getNonTerminatedInstancesCount();
+                    int minInstances = ((GroupLevelNetworkPartitionContext) networkPartitionContext).
                             getMinInstanceCount();
-                    if(nonTerminatedInstancesCount < minInstances) {
+                    if (nonTerminatedInstancesCount < minInstances) {
                         int instancesToBeCreated = minInstances - nonTerminatedInstancesCount;
-                        for(int i = 0; i < instancesToBeCreated; i++) {
-                            for(InstanceContext parentInstanceContext : parent.
+                        for (int i = 0; i < instancesToBeCreated; i++) {
+                            for (InstanceContext parentInstanceContext : parent.
                                     getNetworkPartitionContext(networkPartitionContext.getId()).
                                     getInstanceIdToInstanceContextMap().values()) {
                                 //Creating new group instance based on the existing parent instances

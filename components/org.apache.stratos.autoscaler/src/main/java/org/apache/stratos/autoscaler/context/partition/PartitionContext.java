@@ -39,6 +39,7 @@ public abstract class PartitionContext implements Serializable {
     private Partition partition;
     private String deploymentPolicyId;
     private String networkPartitionId;
+    private boolean isObsoletePartition = false;
     // properties
     private Properties properties;
 
@@ -98,4 +99,13 @@ public abstract class PartitionContext implements Serializable {
                 .getNetworkPartitionByNetworkPartitionId(networkPartitionId)
                 .getPartition(partitionId).getPartitionMax();
     }
+
+    public void setIsObsoletePartition(boolean isObsoletePartition) {
+        this.isObsoletePartition = isObsoletePartition;
+    }
+
+    public boolean isObsoletePartition() {
+        return isObsoletePartition;
+    }
+
 }

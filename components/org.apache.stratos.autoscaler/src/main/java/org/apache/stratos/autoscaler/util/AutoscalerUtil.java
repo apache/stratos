@@ -545,13 +545,13 @@ public class AutoscalerUtil {
                         aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyId);
                         if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
                             setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap,
-                                                                            deploymentPolicyId,
+                                    deploymentPolicyId,
                                     groupContext.getCartridgeContexts());
                         }
                         if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
                             setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap,
-                                                                        deploymentPolicyId,
-                                                                        groupContext.getGroupContexts());
+                                    deploymentPolicyId,
+                                    groupContext.getGroupContexts());
                         }
 
                     }
@@ -562,13 +562,13 @@ public class AutoscalerUtil {
 
     private static void setDeploymentPolicyIdToChildCartridgeContexts(
             Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId,
-                                                            CartridgeContext[] cartridgeContexts) {
+            CartridgeContext[] cartridgeContexts) {
 
         if (cartridgeContexts != null && cartridgeContexts.length != 0) {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
                 if (cartridgeContext != null) {
                     aliasToDeploymentPolicyIdMap.put(cartridgeContext.getSubscribableInfoContext().getAlias(),
-                                                        deploymentPolicyId);
+                            deploymentPolicyId);
                 }
             }
         }
@@ -582,13 +582,13 @@ public class AutoscalerUtil {
                 if (groupContext != null) {
                     if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
                         setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap,
-                                                                deploymentPolicyId,
-                                                                groupContext.getCartridgeContexts());
+                                deploymentPolicyId,
+                                groupContext.getCartridgeContexts());
                     }
                     if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
                         setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap,
-                                                                deploymentPolicyId,
-                                                                groupContext.getGroupContexts());
+                                deploymentPolicyId,
+                                groupContext.getGroupContexts());
                     }
                 }
             }
@@ -623,7 +623,7 @@ public class AutoscalerUtil {
         String algorithm = applicationPolicy.getAlgorithm();
         if (algorithm == null || StringUtils.isBlank(algorithm)) {
             String msg = "Invalid Application Policy. Cause -> Network " +
-                                    "partition algorithm is null or empty";
+                    "partition algorithm is null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
         }
@@ -662,9 +662,9 @@ public class AutoscalerUtil {
 
             // network partitions should be added already
             if (null == CloudControllerServiceClient.getInstance().
-                                                getNetworkPartition(networkPartitionId)) {
+                    getNetworkPartition(networkPartitionId)) {
                 String msg = String.format("Invalid Application Policy. "
-                        + "Cause -> Network partition not found for network-partition-id : %s",
+                                + "Cause -> Network partition not found for network-partition-id : %s",
                         networkPartitionId);
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
@@ -691,7 +691,7 @@ public class AutoscalerUtil {
                                     // network-partition-id can't be null or empty
                                     if (null == networkPartitionId || networkPartitionId.isEmpty()) {
                                         String msg = String.format("Invalid Application Policy. "
-                                                + "Cause -> Invalid network-partition-id : %s",
+                                                        + "Cause -> Invalid network-partition-id : %s",
                                                 networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
@@ -767,30 +767,30 @@ public class AutoscalerUtil {
     }
 
     public void updateApplicationsTopology(Application application)
-                                                throws  ApplicationDefinitionException{
+            throws ApplicationDefinitionException {
         Application existingApplication = ApplicationHolder.getApplications().
-                                                getApplication(application.getUniqueIdentifier());
+                getApplication(application.getUniqueIdentifier());
         //Retrieve all the groups in order to update it
         Set<Group> existingGroups = existingApplication.getAllGroupsRecursively();
 
         //updating all the groups by traversing the existing application
-        for(Group existingGroup : existingGroups) {
+        for (Group existingGroup : existingGroups) {
             Group newGroup = application.getGroupRecursively(existingGroup.getUniqueIdentifier());
-            if(newGroup != null) {
+            if (newGroup != null) {
                 //Finding the GroupMonitor based on ApplicationMonitor
                 GroupMonitor groupMonitor = (GroupMonitor) AutoscalerContext.getInstance().
                         getAppMonitor(application.getUniqueIdentifier()).
                         findGroupMonitorWithId(existingGroup.getUniqueIdentifier());
                 //Updating the GroupMonitor
-                for(NetworkPartitionContext networkPartitionContext : groupMonitor.
+                for (NetworkPartitionContext networkPartitionContext : groupMonitor.
                         getNetworkPartitionCtxts().values()) {
-                    ((GroupLevelNetworkPartitionContext)networkPartitionContext).
+                    ((GroupLevelNetworkPartitionContext) networkPartitionContext).
                             setMinInstanceCount(newGroup.getGroupMinInstances());
-                    ((GroupLevelNetworkPartitionContext)networkPartitionContext).
+                    ((GroupLevelNetworkPartitionContext) networkPartitionContext).
                             setMaxInstanceCount(newGroup.getGroupMaxInstances());
                 }
 
-                try{
+                try {
                     ApplicationHolder.acquireWriteLock();
                     //update the min and max of Group instances
                     existingGroup.setGroupMinInstances(newGroup.getGroupMinInstances());
@@ -810,24 +810,24 @@ public class AutoscalerUtil {
 
     }
 
-    public void updateClusterMonitor(Application application) throws ApplicationDefinitionException{
+    public void updateClusterMonitor(Application application) throws ApplicationDefinitionException {
         Application existingApplication = ApplicationHolder.getApplications().
                 getApplication(application.getUniqueIdentifier());
 
         Set<ClusterDataHolder> clusterDataHolders = application.getClusterDataRecursively();
 
-        for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+        for (ClusterDataHolder clusterDataHolder : clusterDataHolders) {
             ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
-                                            getClusterMonitor(clusterDataHolder.getClusterId());
-            if(clusterMonitor != null) {
-                for(ClusterLevelNetworkPartitionContext networkPartitionContext :
+                    getClusterMonitor(clusterDataHolder.getClusterId());
+            if (clusterMonitor != null) {
+                for (ClusterLevelNetworkPartitionContext networkPartitionContext :
                         clusterMonitor.getNetworkPartitionCtxts()) {
-                    for(InstanceContext instanceContext :
+                    for (InstanceContext instanceContext :
                             networkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
                         //Updating the min and max instances of cluster instance context
-                        ((ClusterInstanceContext)instanceContext).
+                        ((ClusterInstanceContext) instanceContext).
                                 setMinInstanceCount(clusterDataHolder.getMinInstances());
-                        ((ClusterInstanceContext)instanceContext).
+                        ((ClusterInstanceContext) instanceContext).
                                 setMaxInstanceCount(clusterDataHolder.getMaxInstances());
 
                         try {
@@ -836,7 +836,7 @@ public class AutoscalerUtil {
                             ClusterDataHolder existingClusterDataHolder = existingApplication.
                                     getClusterDataHolderRecursivelyByAlias(
                                             AutoscalerUtil.getAliasFromClusterId(
-                                                            clusterDataHolder.getClusterId()));
+                                                    clusterDataHolder.getClusterId()));
                             existingClusterDataHolder.setMinInstances(clusterDataHolder.
                                     getMinInstances());
                             existingClusterDataHolder.setMaxInstances(clusterDataHolder.

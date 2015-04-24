@@ -401,7 +401,7 @@ public class RegistryManager {
      * @return all the deployment policies
      */
     public List<DeploymentPolicy> retrieveDeploymentPolicies() {
-        try{
+        try {
             startTenantFlow();
             List<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
             RegistryManager registryManager = RegistryManager.getInstance();

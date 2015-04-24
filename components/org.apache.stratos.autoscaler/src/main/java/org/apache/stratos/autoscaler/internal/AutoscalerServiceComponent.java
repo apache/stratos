@@ -189,8 +189,7 @@ public class AutoscalerServiceComponent {
         }
 
 
-
-                // Add application policies to information model
+        // Add application policies to information model
         List<ApplicationPolicy> applicationPolicies = RegistryManager.getInstance().
                 retrieveApplicationPolicies();
         Iterator<ApplicationPolicy> applicationPolicyIterator = applicationPolicies.iterator();
