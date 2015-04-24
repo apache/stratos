@@ -39,7 +39,7 @@ public class OneAfterAnother implements PartitionAlgorithm {
 
         for (PartitionContext partitionContext : partitionContexts) {
 
-            if (partitionContext.getNonTerminatedMemberCount() < partitionContext.getMax()) {
+            if (partitionContext.getNonTerminatedMemberCount() < partitionContext.getMax() && !partitionContext.isObsoletePartition()) {
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("[one-after-another algorithm] [scale-up] [partition] %s has space to create " +
@@ -57,7 +57,8 @@ public class OneAfterAnother implements PartitionAlgorithm {
 
         for (int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
 
-            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() > 0) {
+            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() > 0
+                    && !partitionContexts[partitionIndex].isObsoletePartition()) {
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("[one-after-another algorithm] [scale-down] [partition] %s has members that" +

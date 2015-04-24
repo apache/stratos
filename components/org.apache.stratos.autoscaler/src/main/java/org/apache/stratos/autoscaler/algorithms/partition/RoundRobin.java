@@ -50,7 +50,8 @@ public class RoundRobin implements PartitionAlgorithm {
                 break;
             }
 
-            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() < lowestInstanceCount) {
+            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() < lowestInstanceCount
+                    && !partitionContexts[partitionIndex].isObsoletePartition()) {
                 lowestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
             }
@@ -84,7 +85,8 @@ public class RoundRobin implements PartitionAlgorithm {
 
         for (int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
 
-            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() > highestInstanceCount) {
+            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() > highestInstanceCount
+                    && !partitionContexts[partitionIndex].isObsoletePartition()) {
 
                 highestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
