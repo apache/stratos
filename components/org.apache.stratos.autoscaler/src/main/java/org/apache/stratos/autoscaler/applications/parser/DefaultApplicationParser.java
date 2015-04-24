@@ -613,7 +613,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             if (group.getGroups() != null) {
                 for (Group childGroup : group.getGroups()) {
                     ClusterDataHolder dataHolder = findClusterDataInGroup(childGroup, cartridgeType);
-                    if(dataHolder != null) {
+                    if (dataHolder != null) {
                         return dataHolder;
                     }
                 }
