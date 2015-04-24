@@ -79,7 +79,8 @@ dialect "mvel"
         while(count != additionalInstances && partitionsAvailable){
 
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)partitionAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
-             if(partitionContext != null){
+
+            if(partitionContext != null){
 
                 log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterId);
                 log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId);

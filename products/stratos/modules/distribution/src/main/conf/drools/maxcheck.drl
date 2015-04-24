@@ -53,6 +53,8 @@ dialect "mvel"
 
         partitionContext : ClusterLevelPartitionContext() from clusterInstanceContext.getPartitionCtxtsAsAnArray()
 
+        eval(!partitionContext.isObsoletePartition)
+
         eval(log.debug("[max-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId()
         + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " [partition] "
         + partitionContext.getPartitionId() + " Activated member count: " + partitionContext.getActiveInstanceCount()
