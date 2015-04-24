@@ -273,9 +273,8 @@ public class MonitorFactory {
                     }
 
                     try {
-                        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions
-                                = convertPartitionsToCCPartitions(partitionList.toArray(new Partition[partitionList.size()]));
-                        CloudControllerServiceClient.getInstance().validateDeploymentPolicy(serviceName, networkPartition.getId());
+
+                        CloudControllerServiceClient.getInstance().validateNetworkPartitionOfDeploymentPolicy(serviceName, networkPartition.getId());
                     } catch (Exception e) {
                         String msg = String.format("Error while validating deployment policy from cloud controller [network-partition-id] %s", networkPartition.getId());
                         log.error(msg, e);

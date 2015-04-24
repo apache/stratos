@@ -95,7 +95,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     protected FactHandle dependentScaleCheckFactHandle;
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
-    protected AbstractClusterContext clusterContext;
+    protected ClusterContext clusterContext;
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
     protected StatefulKnowledgeSession maxCheckKnowledgeSession;
     protected StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
@@ -113,7 +113,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     private boolean groupScalingEnabledSubtree;
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
-    private Map<String, ClusterLevelNetworkPartitionContext> networkPartitionIdToClusterLevelNetworkPartitionCtxts;
+        private Map<String, ClusterLevelNetworkPartitionContext> networkPartitionIdToClusterLevelNetworkPartitionCtxts;
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
     private String deploymentPolicyId;
@@ -349,11 +349,11 @@ public class ClusterMonitor extends Monitor implements Runnable {
         this.dependentScaleCheckKnowledgeSession = dependentScaleCheckKnowledgeSession;
     }
 
-    public AbstractClusterContext getClusterContext() {
+    public ClusterContext getClusterContext() {
         return clusterContext;
     }
 
-    public void setClusterContext(AbstractClusterContext clusterContext) {
+    public void setClusterContext(ClusterContext clusterContext) {
         this.clusterContext = clusterContext;
     }
 
@@ -608,6 +608,13 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                 getObsoleteCheckKnowledgeSession().setGlobal("clusterId", clusterId);
                                 obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
                                         getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
+
+                                if (partitionContext.isObsoletePartition()
+                                        && partitionContext.getTerminationPendingMembers().size() == 0
+                                        && partitionContext.getObsoletedMembers().size() == 0) {
+
+                                    instanceContext.removePartitionCtxt(partitionContext.getPartition().getId());
+                                }
                             }
                         };
                         executorService.execute(monitoringRunnable);
