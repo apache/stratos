@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
-import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
@@ -113,7 +112,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
     private boolean groupScalingEnabledSubtree;
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
-        private Map<String, ClusterLevelNetworkPartitionContext> networkPartitionIdToClusterLevelNetworkPartitionCtxts;
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
     private String deploymentPolicyId;
@@ -127,7 +125,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
         executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
 
-        networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
@@ -393,14 +390,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
         }
 
 
-    }
-
-    public void addClusterLevelNWPartitionContext(ClusterLevelNetworkPartitionContext clusterLevelNWPartitionCtxt) {
-        networkPartitionIdToClusterLevelNetworkPartitionCtxts.put(clusterLevelNWPartitionCtxt.getId(), clusterLevelNWPartitionCtxt);
-    }
-
-    public ClusterLevelNetworkPartitionContext getClusterLevelNWPartitionContext(String nwPartitionId) {
-        return networkPartitionIdToClusterLevelNetworkPartitionCtxts.get(nwPartitionId);
     }
 
     public void handleAverageLoadAverageEvent(
