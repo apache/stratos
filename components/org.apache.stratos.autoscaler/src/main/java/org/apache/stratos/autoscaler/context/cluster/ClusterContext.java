@@ -119,7 +119,8 @@ public class ClusterContext extends AbstractClusterContext {
         ClusterLevelNetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
 
-        String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(), AutoscalerUtil.getAliasFromClusterId(clusterId));
+        String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(),
+                AutoscalerUtil.getAliasFromClusterId(clusterId));
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
 
         if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {

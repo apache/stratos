@@ -121,6 +121,10 @@ public class ClusterInstanceContext extends InstanceContext {
         this.partitionCtxts.add(ctxt);
     }
 
+    public void removePartitionCtxt(String partitionId) {
+        this.partitionCtxts.remove(partitionId);
+    }
+
     public ClusterLevelPartitionContext getPartitionCtxt(String id) {
 
         for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
