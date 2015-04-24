@@ -966,6 +966,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         for (ClusterMonitor clusterMonitor : AutoscalerContext.getInstance().getClusterMonitors().values()) {
 
+            //Following if statement checks the relevant clusters for the updated deployment policy
             if (deploymentPolicy.getDeploymentPolicyID().equals(clusterMonitor.getDeploymentPolicyId())) {
 
                 for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
@@ -1011,7 +1012,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 if (null == networkPartition.getPartition(clusterLevelPartitionContext.getPartitionId())) {
 
-                    //We have found that this partition context which is in cluster monitor is removed in updated policy
+                    //It has found that this partition context which is in cluster monitor is removed in updated policy
+                    clusterLevelPartitionContext.setIsObsoletePartition(true);
 
                     while (clusterLevelPartitionContext.getActiveMembers().size() != 0) {
 
@@ -1024,7 +1026,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         MemberContext member = clusterLevelPartitionContext.getPendingMembers().get(0);
                         clusterLevelPartitionContext.movePendingMemberToObsoleteMembers(member.getMemberId());
                     }
-                    clusterLevelPartitionContext.setIsObsoletePartition(true);
                 }
             }
         }
@@ -1039,13 +1040,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         boolean validationOfNetworkPartitionRequired = false;
         for (Partition partition : networkPartition.getPartitions()) {
 
-            //Iterating through active instances
+            //Iterating through instances
             for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
 
                 ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) instanceContext;
                 if (null == clusterInstanceContext.getPartitionCtxt(partition.getId())) {
 
-                    //We have found that this partition which is in deployment policy/network partition is new
+                    //It has found that this partition which is in deployment policy/network partition is new
                     ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
                             partition, networkPartition.getId(), deploymentPolicyID);
                     validationOfNetworkPartitionRequired = true;
