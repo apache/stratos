@@ -954,12 +954,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         PolicyManager.getInstance().updateDeploymentPolicy(deploymentPolicy);
         //        PolicyManager.getInstance().persist();
 
-        if (log.isInfoEnabled()) {
-            log.info("Successfully updated deployment policy: [deployment-policy-id] " + deploymentPolicyID);
-        }
 
         updateClusterMonitors(deploymentPolicy);
 
+        if (log.isInfoEnabled()) {
+            log.info("Successfully updated deployment policy: [deployment-policy-id] " + deploymentPolicyID);
+        }
     }
 
     private void updateClusterMonitors(DeploymentPolicy deploymentPolicy) throws InvalidDeploymentPolicyException {
@@ -994,9 +994,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         log.error(message);
                         throw new InvalidDeploymentPolicyException(message);
                     }
-
                     removeOldPartitionsFromClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition);
-
                 }
             }
         }
