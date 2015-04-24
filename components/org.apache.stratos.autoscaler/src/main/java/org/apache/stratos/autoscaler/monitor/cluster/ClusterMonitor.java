@@ -113,7 +113,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private boolean hasPrimary;
-    private float scalingFactorBasedOnDependencies = 1.0f;
     private String deploymentPolicyId;
 
 
@@ -687,8 +686,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
                 + ", [factor] " + scalingEvent.getFactor());
 
-
-        this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
+        float scalingFactorBasedOnDependencies = scalingFactorBasedOnDependencies = scalingEvent.getFactor();
         ClusterContext vmClusterContext = (ClusterContext) clusterContext;
         String instanceId = scalingEvent.getInstanceId();
 
@@ -1397,9 +1395,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
             throw new RuntimeException("Network partition context not found: [network-partition-id] " +
                     networkPartitionId);
         }
-        ClusterInstanceContext instanceContext = (ClusterInstanceContext) networkPartitionContext.
-                getInstanceContext(instanceId);
-        return instanceContext;
+
+        return (ClusterInstanceContext) networkPartitionContext.getInstanceContext(instanceId);
     }
 
     public Collection<ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
