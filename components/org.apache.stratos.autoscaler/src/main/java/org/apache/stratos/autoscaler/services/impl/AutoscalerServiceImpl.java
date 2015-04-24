@@ -1013,21 +1013,17 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 if (null == networkPartition.getPartition(clusterLevelPartitionContext.getPartitionId())) {
 
-                    log.info(" +++ " + "We have found that this partition context which is in cluster monitor is removed in updated policy"
-                            + " clusterLevelPartitionContext.getPartitionId() " + clusterLevelPartitionContext.getPartitionId());
                     //We have found that this partition context which is in cluster monitor is removed in updated policy
 
                     while (clusterLevelPartitionContext.getActiveMembers().size() != 0) {
 
                         MemberContext member = clusterLevelPartitionContext.getActiveMembers().get(0);
-                        log.info(" +++ " + " Active member to be terminate " + member.getMemberId());
                         clusterLevelPartitionContext.moveActiveMemberToTerminationPendingMembers(member.getMemberId());
                     }
 
                     while (clusterLevelPartitionContext.getPendingMembers().size() != 0) {
 
                         MemberContext member = clusterLevelPartitionContext.getPendingMembers().get(0);
-                        log.info(" +++ " + " Pending member to be terminate " + member.getMemberId());
                         clusterLevelPartitionContext.movePendingMemberToObsoleteMembers(member.getMemberId());
                     }
                     clusterLevelPartitionContext.setIsObsoletePartition(true);
@@ -1050,9 +1046,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) instanceContext;
                 if (null == clusterInstanceContext.getPartitionCtxt(partition.getId())) {
-
-                    log.info(" +++ " + "We have found that this partition which is in deployment policy/network partition is new"
-                            + " clusterLevelPartitionContext.getPartitionId() " + partition.getId());
 
                     //We have found that this partition which is in deployment policy/network partition is new
                     ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
