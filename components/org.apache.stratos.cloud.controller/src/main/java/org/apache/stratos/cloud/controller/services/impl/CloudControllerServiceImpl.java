@@ -161,7 +161,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         Map<String, IaasProvider> iaasProviderMap = CloudControllerContext.getInstance().getPartitionToIaasProvider(sourceCartridge.getType());
 
-        if(iaasProviderMap != null) {
+        if (iaasProviderMap != null) {
             for (Entry<String, IaasProvider> entry : iaasProviderMap.entrySet()) {
                 if (entry == null) {
                     continue;

@@ -53,9 +53,9 @@ public class AutoscalerServiceClient {
         try {
             stub = new AutoscalerServiceStub(epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT,
-                     Integer.valueOf(autosclaerSocketTimeout));
+                    Integer.valueOf(autosclaerSocketTimeout));
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
-                     Integer.valueOf(autosclaerConnectionTimeout));
+                    Integer.valueOf(autosclaerConnectionTimeout));
 
         } catch (AxisFault axisFault) {
             String msg = "Could not initialize autoscaler service client";
@@ -91,12 +91,12 @@ public class AutoscalerServiceClient {
     }
 
     public void addApplication(ApplicationContext applicationContext)
-                throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+            throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
         stub.addApplication(applicationContext);
     }
 
     public void updateApplication(ApplicationContext applicationContext)
-                throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+            throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
         stub.updateApplication(applicationContext);
     }
 
