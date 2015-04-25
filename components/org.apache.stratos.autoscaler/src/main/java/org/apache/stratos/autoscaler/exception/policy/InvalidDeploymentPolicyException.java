@@ -23,4 +23,8 @@ public class InvalidDeploymentPolicyException extends Exception {
     public InvalidDeploymentPolicyException(String message) {
         super(message);
     }
+
+    public InvalidDeploymentPolicyException(String message, Exception e) {
+        super(message, e);
+    }
 }

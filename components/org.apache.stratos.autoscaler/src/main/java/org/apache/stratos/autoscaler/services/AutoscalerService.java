@@ -23,6 +23,7 @@ package org.apache.stratos.autoscaler.services;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.CloudControllerConnectionException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
@@ -235,7 +236,8 @@ public interface AutoscalerService {
      * @param deploymentPolicy DeployementPolicy
      * @throws IllegalArgumentException if the provided argument is not valid.
      */
-    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException, RemoteException, InvalidPolicyException;
+    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException,
+            InvalidDeploymentPolicyException, RemoteException, InvalidPolicyException, CloudControllerConnectionException;
 
     /**
      * Remove deployment policy
@@ -243,7 +245,8 @@ public interface AutoscalerService {
      * @param deploymentPolicyID deploymentPolicyID
      * @throws IllegalArgumentException if the provided argument is not valid.
      */
-    public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException, DeploymentPolicyNotExistsException;
+    public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException,
+            DeploymentPolicyNotExistsException;
 
     /**
      * Get deployment policy definition

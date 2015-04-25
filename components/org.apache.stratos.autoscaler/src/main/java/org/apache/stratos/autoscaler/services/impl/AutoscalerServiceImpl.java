@@ -34,6 +34,7 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.CloudControllerConnectionException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
@@ -53,6 +54,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.cloud.controller.stub.exception.CloudControllerException;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
@@ -932,7 +934,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException {
+            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException, CloudControllerConnectionException {
 
         validateDeploymentPolicy(deploymentPolicy);
 
@@ -962,7 +964,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private void updateClusterMonitors(DeploymentPolicy deploymentPolicy) throws InvalidDeploymentPolicyException {
+    private void updateClusterMonitors(DeploymentPolicy deploymentPolicy) throws InvalidDeploymentPolicyException,
+            CloudControllerConnectionException {
 
         for (ClusterMonitor clusterMonitor : AutoscalerContext.getInstance().getClusterMonitors().values()) {
 
@@ -981,13 +984,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         String message = "Cluster monitor update failed for [deployment-policy] "
                                 + deploymentPolicy.getDeploymentPolicyID();
                         log.error(message);
-                        throw new InvalidDeploymentPolicyException(message);
+                        throw new CloudControllerConnectionException(message, e);
                     } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
 
-                        String message = "Cluster monitor update failed for [deployment-policy] "
+                        String message = "Invalid partition, Cluster monitor update failed for [deployment-policy] "
                                 + deploymentPolicy.getDeploymentPolicyID();
                         log.error(message);
-                        throw new InvalidDeploymentPolicyException(message);
+                        throw new InvalidDeploymentPolicyException(message, e);
                     } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
 
                         String message = "Cluster monitor update failed for [deployment-policy] "
