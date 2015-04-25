@@ -847,7 +847,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private boolean validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException,
+    private void validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException,
             InvalidDeploymentPolicyException, RemoteException {
 
         // deployment policy can't be null
@@ -928,8 +928,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
         }
-        return true;
-
     }
 
     @Override
