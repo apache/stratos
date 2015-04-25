@@ -978,7 +978,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
 
                     try {
-                        
+
                         addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
                                 deploymentPolicy.getDeploymentPolicyID(), clusterMonitor.getClusterContext().getServiceId());
                     } catch (RemoteException e) {
@@ -995,8 +995,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         throw new InvalidDeploymentPolicyException(message, e);
                     } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
 
-                        String message = "Cluster monitor update failed for [deployment-policy] "
-                                + deploymentPolicy.getDeploymentPolicyID() + " [cluster] " + clusterMonitor.getClusterId();
+                        String message = "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
+                                + deploymentPolicy.getDeploymentPolicyID() + " [cartridge] "
+                                + clusterMonitor.getClusterContext().getServiceId();
                         log.error(message);
                         throw new InvalidDeploymentPolicyException(message, e);
                     }
@@ -1019,17 +1020,18 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                     //It has found that this partition context which is in cluster monitor is removed in updated policy
                     clusterLevelPartitionContext.setIsObsoletePartition(true);
+                    Iterator<MemberContext> memberContextIterator = clusterLevelPartitionContext.getActiveMembers().iterator();
+                    while (memberContextIterator.hasNext()) {
 
-                    while (clusterLevelPartitionContext.getActiveMembers().size() != 0) {
-
-                        MemberContext member = clusterLevelPartitionContext.getActiveMembers().get(0);
-                        clusterLevelPartitionContext.moveActiveMemberToTerminationPendingMembers(member.getMemberId());
+                        clusterLevelPartitionContext.moveActiveMemberToTerminationPendingMembers(
+                                memberContextIterator.next().getMemberId());
                     }
 
-                    while (clusterLevelPartitionContext.getPendingMembers().size() != 0) {
+                    memberContextIterator = clusterLevelPartitionContext.getPendingMembers().iterator();
+                    while (memberContextIterator.hasNext()) {
 
-                        MemberContext member = clusterLevelPartitionContext.getPendingMembers().get(0);
-                        clusterLevelPartitionContext.movePendingMemberToObsoleteMembers(member.getMemberId());
+                        clusterLevelPartitionContext.movePendingMemberToObsoleteMembers(
+                                memberContextIterator.next().getMemberId());
                     }
                 }
             }
