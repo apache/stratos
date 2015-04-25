@@ -146,7 +146,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not update cartridge "+e.getLocalizedMessage();
+            String msg = "Could not update cartridge " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -193,7 +193,7 @@ public class StratosApiV41Utils {
                 log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
             }
         } catch (Exception e) {
-            String msg = "Could not remove cartridge "+e.getLocalizedMessage();
+            String msg = "Could not remove cartridge " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(e.getMessage(), e);
         }
@@ -1065,9 +1065,9 @@ public class StratosApiV41Utils {
      * Verify the existence of the application and add it.
      *
      * @param appDefinition Application definition
-     * @param ctxt Configuration context
-     * @param userName Username
-     * @param tenantDomain Tenant Domain
+     * @param ctxt          Configuration context
+     * @param userName      Username
+     * @param tenantDomain  Tenant Domain
      * @throws RestAPIException
      */
     public static void addApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
@@ -1134,13 +1134,13 @@ public class StratosApiV41Utils {
      * Update the existence of the application and update it.
      *
      * @param appDefinition Application definition
-     * @param ctxt Configuration context
-     * @param userName Username
-     * @param tenantDomain Tenant Domain
+     * @param ctxt          Configuration context
+     * @param userName      Username
+     * @param tenantDomain  Tenant Domain
      * @throws RestAPIException
      */
     public static void updateApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
-                                      String userName, String tenantDomain)
+                                         String userName, String tenantDomain)
             throws RestAPIException {
 
         if (StringUtils.isBlank(appDefinition.getApplicationId())) {
@@ -1245,7 +1245,7 @@ public class StratosApiV41Utils {
     /**
      * Deploy application with an application policy.
      *
-     * @param applicationId Application ID
+     * @param applicationId       Application ID
      * @param applicationPolicyId Application policy Id
      * @throws RestAPIException
      */
@@ -1879,7 +1879,7 @@ public class StratosApiV41Utils {
      * Encrypt artifact repository passwords.
      *
      * @param applicationSignUp Application Signup
-     * @param applicationKey Application Key
+     * @param applicationKey    Application Key
      */
     private static void encryptRepositoryPasswords(ApplicationSignUp applicationSignUp, String applicationKey) {
         if (applicationSignUp.getArtifactRepositories() != null) {
@@ -2220,7 +2220,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
-        
+
         return deploymentPolicyBean;
     }
 
@@ -2270,7 +2270,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (Exception e) {
-            String msg = "Could not update deployment policy "+e.getLocalizedMessage();
+            String msg = "Could not update deployment policy " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -2287,7 +2287,7 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyID);
         } catch (Exception e) {
-            String msg = "Could not remove deployment policy "+e.getLocalizedMessage();
+            String msg = "Could not remove deployment policy " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -2300,7 +2300,7 @@ public class StratosApiV41Utils {
         }
 
         Cluster cluster = TopologyManager.getTopology().getCluster(clusterId);
-        if (cluster == null){
+        if (cluster == null) {
             return null;
         }
 
@@ -2758,7 +2758,7 @@ public class StratosApiV41Utils {
      * @param userName
      * @throws RestAPIException
      */
-    public static void removeUser(String userName) throws RestAPIException{
+    public static void removeUser(String userName) throws RestAPIException {
         StratosUserManager stratosUserManager = new StratosUserManager();
 
         try {
@@ -2796,8 +2796,8 @@ public class StratosApiV41Utils {
         StratosUserManager stratosUserManager = new StratosUserManager();
         List<UserInfoBean> userList;
         try {
-           userList  = stratosUserManager.getAllUsers(getTenantUserStoreManager());
-        }catch (UserManagerException e){
+            userList = stratosUserManager.getAllUsers(getTenantUserStoreManager());
+        } catch (UserManagerException e) {
             throw new RestAPIException(e.getMessage());
         }
         return userList;

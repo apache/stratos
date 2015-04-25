@@ -37,7 +37,7 @@ import java.util.concurrent.FutureTask;
 @RunWith(JUnit4.class)
 public class LoadBalancerStatisticsCollectorTest {
 
-    /***
+    /**
      * Test in-flight request count calculation.
      */
     @Test

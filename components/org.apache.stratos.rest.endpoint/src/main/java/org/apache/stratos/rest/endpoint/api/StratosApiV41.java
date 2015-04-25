@@ -204,7 +204,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getDeploymentPolicies()
             throws RestAPIException {
         DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
-        if (deploymentPolicies == null || deploymentPolicies.length == 0){
+        if (deploymentPolicies == null || deploymentPolicies.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -294,7 +294,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridges()
             throws RestAPIException {
         List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
-        if (cartridges == null ||  cartridges.isEmpty()) {
+        if (cartridges == null || cartridges.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         CartridgeBean[] cartridgeArray = cartridges.toArray(new CartridgeBean[cartridges.size()]);
@@ -303,6 +303,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Gets a single cartridge by type
+     *
      * @param cartridgeType Cartridge type
      * @return 200 if specified cartridge exists, 404 if not
      * @throws RestAPIException
@@ -326,7 +327,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Returns cartridges by category.
      *
-     * @param filter Filter
+     * @param filter   Filter
      * @param criteria Criteria
      * @return 200 if cartridges are found for specified filter, 404 if none found
      * @throws RestAPIException
@@ -352,7 +353,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Returns a specific cartridge by category.
      *
-     * @param filter Filter
+     * @param filter        Filter
      * @param cartridgeType Cartridge Type
      * @return 200 if a cartridge is found for specified filter, 404 if none found
      * @throws RestAPIException
@@ -543,7 +544,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getNetworkPartitions()
             throws RestAPIException {
         NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
-        if (networkPartitions == null || networkPartitions.length == 0){
+        if (networkPartitions == null || networkPartitions.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -564,7 +565,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getNetworkPartition(
             @PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
         NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
-        if (networkPartition == null){
+        if (networkPartition == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -666,7 +667,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getApplications")
     public Response getApplications() throws RestAPIException {
         List<ApplicationBean> applicationDefinitions = StratosApiV41Utils.getApplications();
-        if (applicationDefinitions == null || applicationDefinitions.isEmpty()){
+        if (applicationDefinitions == null || applicationDefinitions.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -699,7 +700,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Deploy application.
      *
-     * @param applicationId Application Id
+     * @param applicationId       Application Id
      * @param applicationPolicyId the application policy id
      * @return 202 after deployment process is started. Deployment is asynchronous
      * @throws RestAPIException the rest api exception
@@ -727,6 +728,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Adds an application policy
+     *
      * @param applicationPolicy Application Policy
      * @return 201 if the application policy is successfully added
      * @throws RestAPIException
@@ -768,7 +770,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplicationPolicy(
             @PathParam("applicationPolicyId") String applicationPolicyId) throws RestAPIException {
         ApplicationPolicyBean applicationPolicyBean = StratosApiV41Utils.getApplicationPolicy(applicationPolicyId);
-        if (applicationPolicyBean == null){
+        if (applicationPolicyBean == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -789,7 +791,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplicationPolicies()
             throws RestAPIException {
         ApplicationPolicyBean[] applicationPolicies = StratosApiV41Utils.getApplicationPolicies();
-        if (applicationPolicies == null || applicationPolicies.length == 0){
+        if (applicationPolicies == null || applicationPolicies.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -855,7 +857,7 @@ public class StratosApiV41 extends AbstractApi {
                 .getApplicationNetworkPartitions(applicationId);
         if (appNetworkPartitionsBean == null ||
                 (appNetworkPartitionsBean.getNetworkPartitionIds().size() == 1 &&
-                        appNetworkPartitionsBean.getNetworkPartitionIds().get(0) == null)){
+                        appNetworkPartitionsBean.getNetworkPartitionIds().get(0) == null)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -931,7 +933,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Adds the domain mappings for an application.
      *
-     * @param applicationId       the application id
+     * @param applicationId      the application id
      * @param domainMappingsBean the domain mappings bean
      * @return 200
      * @throws RestAPIException the rest api exception
@@ -997,7 +999,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getDomainMappings(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         List<DomainMappingBean> domainMappingsBeanList = StratosApiV41Utils.getApplicationDomainMappings(applicationId);
-        if (domainMappingsBeanList == null || domainMappingsBeanList.isEmpty()){
+        if (domainMappingsBeanList == null || domainMappingsBeanList.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -1107,7 +1109,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getAutoscalingPolicies()
             throws RestAPIException {
         AutoscalePolicyBean[] autoScalePolicies = StratosApiV41Utils.getAutoScalePolicies();
-        if (autoScalePolicies == null || autoScalePolicies.length == 0){
+        if (autoScalePolicies == null || autoScalePolicies.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -1188,6 +1190,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Updates a network partition
+     *
      * @param networkPartition Network Partition
      * @return 200 if network partition is successfully updated
      * @throws RestAPIException
@@ -1308,7 +1311,6 @@ public class StratosApiV41 extends AbstractApi {
     }
 
 
-
     /**
      * Gets the tenant by domain.
      *
@@ -1327,7 +1329,7 @@ public class StratosApiV41 extends AbstractApi {
 
         try {
             TenantInfoBean tenantInfo = StratosApiV41Utils.getTenantByDomain(tenantDomain);
-            if (tenantInfo == null){
+            if (tenantInfo == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
@@ -1375,7 +1377,7 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         try {
             List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = StratosApiV41Utils.getAllTenants();
-            if (tenantList == null || tenantList.isEmpty()){
+            if (tenantList == null || tenantList.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
@@ -1407,7 +1409,7 @@ public class StratosApiV41 extends AbstractApi {
 
         try {
             List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = StratosApiV41Utils.searchPartialTenantsDomains(tenantDomain);
-            if (tenantList == null || tenantList.isEmpty()){
+            if (tenantList == null || tenantList.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
@@ -1418,7 +1420,6 @@ public class StratosApiV41 extends AbstractApi {
             throw new RestAPIException(msg);
         }
     }
-
 
 
     /**
@@ -1467,6 +1468,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Notify artifact update event for specified repository
+     *
      * @param payload Git notification Payload
      * @return 204
      * @throws RestAPIException
@@ -1569,7 +1571,6 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(userList.toArray(new UserInfoBean[userList.size()])).build();
 
     }
-
 
 
     // API methods for Kubernetes clusters
@@ -1686,7 +1687,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getKubernetesHostClusters()
             throws RestAPIException {
         KubernetesClusterBean[] availableKubernetesClusters = StratosApiV41Utils.getAvailableKubernetesClusters();
-        if (availableKubernetesClusters == null || availableKubernetesClusters.length == 0){
+        if (availableKubernetesClusters == null || availableKubernetesClusters.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
