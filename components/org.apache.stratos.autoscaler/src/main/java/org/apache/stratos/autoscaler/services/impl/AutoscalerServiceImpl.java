@@ -978,11 +978,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
 
                     try {
+                        
                         addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
                                 deploymentPolicy.getDeploymentPolicyID(), clusterMonitor.getClusterContext().getServiceId());
                     } catch (RemoteException e) {
-                        String message = "Cluster monitor update failed for [deployment-policy] "
-                                + deploymentPolicy.getDeploymentPolicyID();
+
+                        String message = "Connection to cloud controller failed, Cluster monitor update failed for" +
+                                " [deployment-policy] " + deploymentPolicy.getDeploymentPolicyID();
                         log.error(message);
                         throw new CloudControllerConnectionException(message, e);
                     } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
@@ -996,7 +998,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         String message = "Cluster monitor update failed for [deployment-policy] "
                                 + deploymentPolicy.getDeploymentPolicyID() + " [cluster] " + clusterMonitor.getClusterId();
                         log.error(message);
-                        throw new InvalidDeploymentPolicyException(message);
+                        throw new InvalidDeploymentPolicyException(message, e);
                     }
                     removeOldPartitionsFromClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition);
                 }
