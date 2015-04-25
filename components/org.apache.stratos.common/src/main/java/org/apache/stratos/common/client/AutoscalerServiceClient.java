@@ -202,7 +202,7 @@ public class AutoscalerServiceClient {
     public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
             AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceRemoteExceptionException,
-            AutoscalerServiceInvalidPolicyExceptionException {
+            AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceCloudControllerConnectionExceptionException {
         stub.updateDeploymentPolicy(deploymentPolicy);
     }
 
