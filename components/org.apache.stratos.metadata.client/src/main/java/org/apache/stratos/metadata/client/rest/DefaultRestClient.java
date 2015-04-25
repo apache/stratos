@@ -95,7 +95,7 @@ public class DefaultRestClient implements RestClient {
     }
 
     private void setAuthHeader(HttpRequestBase post) {
-        if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             return;
         }
         String identity = username + ":" + password;

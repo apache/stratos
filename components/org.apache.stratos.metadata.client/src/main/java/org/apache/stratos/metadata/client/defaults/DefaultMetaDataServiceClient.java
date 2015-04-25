@@ -54,7 +54,7 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
         }
     }
 
-    public DefaultMetaDataServiceClient(String baseUrl, RestClient restClient){
+    public DefaultMetaDataServiceClient(String baseUrl, RestClient restClient) {
         this.baseUrl = baseUrl;
         this.restClient = restClient;
     }
@@ -96,13 +96,13 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
         return gson.fromJson(responseContent, PropertyBean.class);
     }
 
-    public void deleteApplicationProperties(String appId) throws MetaDataServiceClientException{
+    public void deleteApplicationProperties(String appId) throws MetaDataServiceClientException {
         StringBuilder applicationPath = new StringBuilder(baseUrl).append("application/").append(appId);
         HttpResponse response;
         try {
             response = restClient.doDelete(String.valueOf(applicationPath));
         } catch (RestClientException e) {
-            String msg= "Error occured while deleting application";
+            String msg = "Error occured while deleting application";
             throw new MetaDataServiceClientException(msg, e);
         }
     }
