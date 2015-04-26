@@ -199,7 +199,8 @@ public class AutoscalerServiceComponent {
         }
 
         // Add application policies to information model
-        List<NetworkPartitionAlgorithmContext> networkPartitionAlgorithmContexts = RegistryManager.getInstance().retrieveNetworkPartitionAlgorithmContexts();
+        List<NetworkPartitionAlgorithmContext> networkPartitionAlgorithmContexts =
+                RegistryManager.getInstance().retrieveNetworkPartitionAlgorithmContexts();
         Iterator<NetworkPartitionAlgorithmContext> networkPartitionAlgoCtxtIterator = networkPartitionAlgorithmContexts.iterator();
         while (networkPartitionAlgoCtxtIterator.hasNext()) {
             NetworkPartitionAlgorithmContext algorithmContext = networkPartitionAlgoCtxtIterator.next();

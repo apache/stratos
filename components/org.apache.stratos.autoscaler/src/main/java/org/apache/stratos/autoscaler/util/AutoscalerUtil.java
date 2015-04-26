@@ -796,6 +796,8 @@ public class AutoscalerUtil {
                     existingGroup.setGroupMinInstances(newGroup.getGroupMinInstances());
                     //TODO applications Topology update
                     existingGroup.setGroupMaxInstances(newGroup.getGroupMaxInstances());
+                    //Persisting the existing application
+                    ApplicationHolder.persistApplication(existingApplication);
                 } finally {
                     ApplicationHolder.releaseWriteLock();
                 }
@@ -807,7 +809,6 @@ public class AutoscalerUtil {
             }
 
         }
-
     }
 
     public void updateClusterMonitor(Application application) throws ApplicationDefinitionException {
@@ -837,10 +838,13 @@ public class AutoscalerUtil {
                                     getClusterDataHolderRecursivelyByAlias(
                                             AutoscalerUtil.getAliasFromClusterId(
                                                     clusterDataHolder.getClusterId()));
+                            //Updating the in-memory model
                             existingClusterDataHolder.setMinInstances(clusterDataHolder.
                                     getMinInstances());
                             existingClusterDataHolder.setMaxInstances(clusterDataHolder.
                                     getMaxInstances());
+                            //Persisting the existing application
+                            ApplicationHolder.persistApplication(existingApplication);
                         } finally {
                             ApplicationHolder.releaseWriteLock();
                         }
