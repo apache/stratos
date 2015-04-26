@@ -34,6 +34,10 @@ public class LoadBalancerExtensionAPIServiceComponent {
 
     private static final Log log = LogFactory.getLog(LoadBalancerExtensionAPIServiceComponent.class);
 
+    /**
+     * Service component activate method.
+     * @param context component context
+     */
     protected void activate(ComponentContext context) {
         try {
             if (log.isDebugEnabled()) {
@@ -44,9 +48,17 @@ public class LoadBalancerExtensionAPIServiceComponent {
         }
     }
 
+    /**
+     * Set configuration context service.
+     * @param contextService
+     */
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
     }
 
+    /**
+     * Unset configuration context service.
+     * @param contextService
+     */
     protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
     }
 }

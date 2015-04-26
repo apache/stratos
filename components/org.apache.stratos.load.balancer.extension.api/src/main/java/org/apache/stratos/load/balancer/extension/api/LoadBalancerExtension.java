@@ -44,6 +44,7 @@ import java.util.concurrent.ExecutorService;
  * received from the message broker.
  */
 public class LoadBalancerExtension {
+
     private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
 
     private LoadBalancer loadBalancer;
@@ -72,6 +73,9 @@ public class LoadBalancerExtension {
     }
 
 
+    /**
+     * Set executor service and invoke execute() method to start the load balancer extension.
+     */
     public void execute() {
         try {
             if (log.isInfoEnabled()) {
@@ -101,6 +105,11 @@ public class LoadBalancerExtension {
         }
     }
 
+    /**
+     * Start topology event receiver thread.
+     * @param executorService executor service instance
+     * @param topologyProvider topology provider instance
+     */
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
 
         topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider);
@@ -129,6 +138,11 @@ public class LoadBalancerExtension {
         }
     }
 
+    /**
+     * Start domain mapping event receiver thread.
+     * @param executorService executor service instance
+     * @param topologyProvider topology receiver instance
+     */
     private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
         domainMappingEventReceiver = new LoadBalancerCommonDomainMappingEventReceiver(topologyProvider);
         domainMappingEventReceiver.setExecutorService(executorService);
@@ -138,6 +152,11 @@ public class LoadBalancerExtension {
         }
     }
 
+    /**
+     * Start application signup event receiver thread.
+     * @param executorService executor service instance
+     * @param topologyProvider topology provider instance
+     */
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
         applicationSignUpEventReceiver.setExecutorService(executorService);
@@ -147,6 +166,10 @@ public class LoadBalancerExtension {
         }
     }
 
+    /**
+     * Add topology event listeners to the topology event receiver.
+     * @param topologyEventReceiver topology event receiver instance
+     */
     private void addTopologyEventListeners(final LoadBalancerCommonTopologyEventReceiver topologyEventReceiver) {
         topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
 
@@ -194,12 +217,17 @@ public class LoadBalancerExtension {
                 reloadConfiguration();
             }
         });
+        topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
+            @Override
+            protected void onEvent(Event event) {
+                reloadConfiguration();
+            }
+        });
     }
 
     /**
-     * Configure and start load balancer
-     *
-     * @throws LoadBalancerExtensionException
+     * Configure and start the load balancer
+     * @throws LoadBalancerExtensionException if configuration or start process fails
      */
     private void configureAndStart() throws LoadBalancerExtensionException {
         // Initialize topology
@@ -217,9 +245,8 @@ public class LoadBalancerExtension {
     }
 
     /**
-     * Configure and reload
-     *
-     * @throws LoadBalancerExtensionException
+     * Configure and reload the load balancer
+     * @throws LoadBalancerExtensionException if the configuration or reload process fails
      */
     private void configureAndReload() throws LoadBalancerExtensionException {
         // Configure load balancer
@@ -230,10 +257,9 @@ public class LoadBalancerExtension {
     }
 
     /**
-     * Returns true if topology has populated
-     *
-     * @param topology
-     * @return
+     * Returns true if topology has populated with at least one member.
+     * @param topology topology to be validated
+     * @return true if at least one member was found else false
      */
     private boolean topologyPopulated(Topology topology) {
         for (Service service : topology.getServices()) {
@@ -288,10 +314,18 @@ public class LoadBalancerExtension {
         }
     }
 
+    /**
+     * Get executor service of the load balancer extension.
+     * @return executor service
+     */
     public ExecutorService getExecutorService() {
         return executorService;
     }
 
+    /**
+     * Set executor service for the load balancer extension.
+     * @param executorService executor service instance
+     */
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }

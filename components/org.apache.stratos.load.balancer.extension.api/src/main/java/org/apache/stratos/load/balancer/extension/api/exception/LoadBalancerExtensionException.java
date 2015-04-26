@@ -24,6 +24,8 @@ package org.apache.stratos.load.balancer.extension.api.exception;
  */
 public class LoadBalancerExtensionException extends Exception {
 
+    private static final long serialVersionUID = -9143761765422725709L;
+
     public LoadBalancerExtensionException() {
     }
 

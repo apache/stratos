@@ -23,34 +23,33 @@ import org.apache.stratos.load.balancer.common.domain.Topology;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 /**
- * A generic load balancer life-cycle definition.
+ * Load balancer interface for managing its lifecycle.
  */
 public interface LoadBalancer {
 
     /**
      * Start a new load balancer instance.
-     * Throw an exception if the start operation fails.
+     * @throws LoadBalancerExtensionException if the start operation fails
      */
     void start() throws LoadBalancerExtensionException;
 
     /**
      * Stop running load balancer instance.
-     * Throw an exception if the stop operation fails.
+     * @throws LoadBalancerExtensionException if the stop operation fails.
      */
     void stop() throws LoadBalancerExtensionException;
 
     /**
      * Configure the load balancer using the given topology.
-     * Throw an exception is the configure operation fails.
-     *
-     * @param topology
+     * @param topology latest topology to be configured
      * @return Returns true if configured correctly
+     * @throws LoadBalancerExtensionException if the configuration operation fails.
      */
     boolean configure(Topology topology) throws LoadBalancerExtensionException;
 
     /**
      * Reload load balancer configuration using the configuration written in configure() method.
-     * Throw an exception if the reload operation fails.
+     * @throws LoadBalancerExtensionException if the reload operation fails.
      */
     void reload() throws LoadBalancerExtensionException;
 }
