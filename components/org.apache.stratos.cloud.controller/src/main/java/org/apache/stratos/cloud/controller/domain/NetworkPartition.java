@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import org.apache.stratos.common.Properties;
+
 
 /**
  * The model class for NetworkPartition definition.
@@ -34,6 +36,7 @@ public class NetworkPartition implements Serializable {
     private boolean activeByDefault;
     private Partition[] partitions;
     private String partitionAlgo;
+    private Properties properties;
 
     public void setPartitions(Partition[] partitions) {
         if (partitions == null) {
@@ -98,5 +101,13 @@ public class NetworkPartition implements Serializable {
 
     public void setPartitionAlgo(String partitionAlgo) {
         this.partitionAlgo = partitionAlgo;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

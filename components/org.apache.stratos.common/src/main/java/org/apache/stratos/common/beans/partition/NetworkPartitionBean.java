@@ -19,6 +19,8 @@
 
 package org.apache.stratos.common.beans.partition;
 
+import org.apache.stratos.common.beans.cartridge.PropertyBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class NetworkPartitionBean {
     private String provider;
     private List<PartitionBean> partitions;
     private String partitionAlgo;
+    private List<PropertyBean> properties;
 
     public String getId() {
         return id;
@@ -60,5 +63,13 @@ public class NetworkPartitionBean {
 
     public void setPartitionAlgo(String partitionAlgo) {
         this.partitionAlgo = partitionAlgo;
+    }
+
+    public List<PropertyBean> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<PropertyBean> properties) {
+        this.properties = properties;
     }
 }

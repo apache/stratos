@@ -413,6 +413,23 @@ public class ObjectConverter {
             }
             networkPartition.setPartitions(partitionList);
         }
+
+        if (stubNetworkPartition.getProperties() != null) {
+            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList
+                    = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
+            if (stubNetworkPartition.getProperties() != null) {
+                if (stubNetworkPartition.getProperties().getProperties() != null) {
+                    for (org.apache.stratos.cloud.controller.stub.Property stubProperty :
+                            stubNetworkPartition.getProperties().getProperties()) {
+                        if (stubProperty != null) {
+                            propertyBeanList.add(convertStubPropertyToPropertyBean(stubProperty));
+                        }
+                    }
+                }
+            }
+            networkPartition.setProperties(propertyBeanList);
+        }
+
         return networkPartition;
     }
 
@@ -572,6 +589,9 @@ public class ObjectConverter {
         networkPartition.setProvider(networkPartitionBean.getProvider());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertToStubPartitions(networkPartitionBean.getPartitions()));
+        }
+        if (networkPartitionBean.getProperties() != null && !networkPartitionBean.getProperties().isEmpty()) {
+            networkPartition.setProperties(convertPropertyBeansToCCStubProperties(networkPartitionBean.getProperties()));
         }
         return networkPartition;
     }

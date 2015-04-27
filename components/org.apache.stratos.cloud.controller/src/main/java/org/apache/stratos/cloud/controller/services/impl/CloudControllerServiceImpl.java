@@ -58,6 +58,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
 
     private static final String PERSISTENCE_MAPPING = "PERSISTENCE_MAPPING";
+    public static final String PAYLOAD_PARAMETER = "payload_parameter.";
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
     private ExecutorService executorService;
@@ -428,6 +429,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (properties != null) {
                     for (Property prop : properties.getProperties()) {
                         addToPayload(payload, prop.getName(), String.valueOf(prop.getValue()));
+                    }
+                }
+            }
+
+            NetworkPartition networkPartition =
+                    CloudControllerContext.getInstance().getNetworkPartition(memberContext.getNetworkPartitionId());
+
+
+            if (networkPartition.getProperties() != null) {
+                if (networkPartition.getProperties().getProperties() != null) {
+                    for (Property property : networkPartition.getProperties().getProperties()) {
+                        // check if a property is related to the payload. Currently
+                        // this is done by checking if the
+                        // property name starts with 'payload_parameter.' suffix. If
+                        // so the payload param name will
+                        // be taken as the substring from the index of '.' to the
+                        // end of the property name.
+                        if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
+                            String propertyName = property.getName();
+                            String payloadParamName = propertyName.substring(propertyName.indexOf(".") + 1);
+                            addToPayload(payload, payloadParamName, property.getValue());
+                        }
                     }
                 }
             }
