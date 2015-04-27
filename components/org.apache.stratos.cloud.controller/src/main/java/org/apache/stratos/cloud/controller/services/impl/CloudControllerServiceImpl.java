@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.services.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationUtils;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -58,7 +59,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
 
     private static final String PERSISTENCE_MAPPING = "PERSISTENCE_MAPPING";
-    public static final String PAYLOAD_PARAMETER = "payload_parameter.";
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
     private ExecutorService executorService;
@@ -446,7 +446,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         // so the payload param name will
                         // be taken as the substring from the index of '.' to the
                         // end of the property name.
-                        if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
+                        if (property.getName().startsWith(ApplicationUtils.PAYLOAD_PARAMETER)) {
                             String propertyName = property.getName();
                             String payloadParamName = propertyName.substring(propertyName.indexOf(".") + 1);
                             addToPayload(payload, payloadParamName, property.getValue());

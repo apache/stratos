@@ -587,10 +587,10 @@ public class ObjectConverter {
                 = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
         networkPartition.setProvider(networkPartitionBean.getProvider());
-        if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
+        if ((networkPartitionBean.getPartitions() != null) && (!networkPartitionBean.getPartitions().isEmpty())) {
             networkPartition.setPartitions(convertToStubPartitions(networkPartitionBean.getPartitions()));
         }
-        if (networkPartitionBean.getProperties() != null && !networkPartitionBean.getProperties().isEmpty()) {
+        if ((networkPartitionBean.getProperties() != null) && (!networkPartitionBean.getProperties().isEmpty())) {
             networkPartition.setProperties(convertPropertyBeansToCCStubProperties(networkPartitionBean.getProperties()));
         }
         return networkPartition;
