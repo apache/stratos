@@ -96,8 +96,6 @@
                                                     nillable="true"/>
                                         <xs:element name="partitionMax" type="xs:int" minOccurs="1" maxOccurs="1"
                                                     nillable="false"/>
-                                        <xs:element name="partitionMin" type="xs:int" minOccurs="1" maxOccurs="1"
-                                                    nillable="false"/>
                                     </xs:all>
                                 </xs:complexType>
                             </xs:element>

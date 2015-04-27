@@ -837,7 +837,6 @@ public class ObjectConverter {
         partitionBeans.setId(partition.getId());
         partitionBeans.setDescription(partition.getDescription());
         partitionBeans.setPublic(partition.getIsPublic());
-//        partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.setPartitionMax(partition.getPartitionMax());
         //properties
         if (partition.getProperties() != null) {
