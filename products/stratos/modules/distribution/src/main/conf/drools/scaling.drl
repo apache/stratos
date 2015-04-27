@@ -206,8 +206,7 @@ dialect "mvel"
                         MemberStatsContext selectedMemberStatsContext = null;
                         double lowestOverallLoad = 0.0;
                         boolean foundAValue = false;
-                        ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)
-                            partitionAlgorithm.getNextScaleDownPartitionContext((clusterInstanceContext.getPartitionCtxtsAsAnArray()));
+                        ClusterLevelPartitionContext partitionContext = (ClusterLevelPartitionContext) partitionAlgorithm.getNextScaleDownPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                         if(partitionContext != null){
                             log.info("[scale-down] Partition available to scale down ");
         //                    log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
