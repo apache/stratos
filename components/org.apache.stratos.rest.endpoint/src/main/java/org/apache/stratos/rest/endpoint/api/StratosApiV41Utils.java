@@ -73,6 +73,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
+import org.apache.stratos.rest.endpoint.exception.ApplicationAlreadyExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
@@ -1072,12 +1073,12 @@ public class StratosApiV41Utils {
      */
     public static void addApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
                                       String userName, String tenantDomain)
-            throws RestAPIException {
+            throws RestAPIException, ApplicationAlreadyExistException {
 
         if (StringUtils.isBlank(appDefinition.getApplicationId())) {
             String message = "Please specify the application name";
             log.error(message);
-            throw new RestAPIException(message);
+            throw new ApplicationAlreadyExistException(message);
         }
         // check if an application with same id already exists
         try {

@@ -41,6 +41,7 @@ import org.apache.stratos.common.beans.topology.ClusterBean;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
+import org.apache.stratos.rest.endpoint.exception.ApplicationAlreadyExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -616,12 +617,12 @@ public class StratosApiV41 extends AbstractApi {
             return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                     String.format("Application added successfully: [application] %s",
                             applicationDefinition.getApplicationId()))).build();
+        } catch (ApplicationAlreadyExistException e) {
+
+            return Response.status(Response.Status.CONFLICT).build();
         } catch (RestAPIException e) {
-            if (e.getMessage().contains("already exists")) {
-                return Response.status(Response.Status.CONFLICT).build();
-            } else {
-                throw e;
-            }
+
+            throw e;
         }
     }
 
