@@ -410,8 +410,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             markInstanceAsTerminating(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
-            //Verifying whether all the minimum no of instances of child
-            // became active to take next action
+            //Act upon child instance termination
             onTerminationOfInstance(childId, instanceId);
         }
     }
@@ -423,14 +422,20 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
         if (instance != null) {
+            // If this parent instance is terminating, then based on child notification,
+            // it has to decide its state
             if (instance.getStatus() == GroupStatus.Terminating ||
                     instance.getStatus() == GroupStatus.Terminated) {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
                         appId, instanceId);
             } else {
+                //Checking whether the child who notified is still active.
+                // If it is active(scale down case), no need to act upon it.
+                // Otherwise act upon Termination and see whether it is required to start
+                // instance again based on termination behavior
                 boolean active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
                 if (!active) {
-                    onTerminationOfInstance(childId, instanceId);
+                    onChildTerminatedEvent(childId, instanceId);
                 } else {
                     log.info("[Group Instance] " + instanceId + " is still active upon termination" +
                             " of the [child] " + childId);

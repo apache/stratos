@@ -283,7 +283,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
             ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
-                if (this.isTerminating()) {
+                if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
+                        instance.getStatus() == ApplicationStatus.Terminated) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
