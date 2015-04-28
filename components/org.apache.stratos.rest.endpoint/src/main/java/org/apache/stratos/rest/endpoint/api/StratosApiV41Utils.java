@@ -1082,7 +1082,7 @@ public class StratosApiV41Utils {
         }
         // check if an application with same id already exists
         try {
-            if (AutoscalerServiceClient.getInstance().getApplication(appDefinition.getApplicationId()) != null) {
+            if (AutoscalerServiceClient.getInstance().existApplication(appDefinition.getApplicationId())) {
                 String msg = "Application already exists: [application-id] " + appDefinition.getApplicationId();
                 throw new RestAPIException(msg);
             }
