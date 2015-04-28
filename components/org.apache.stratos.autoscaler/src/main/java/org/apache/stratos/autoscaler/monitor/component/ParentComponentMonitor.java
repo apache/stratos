@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.InstanceContext;
+import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
@@ -51,6 +52,7 @@ import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.application.ParentComponent;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -517,10 +519,9 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                 Monitor monitor = this.aliasToActiveMonitorsMap.get(context1.getId());
 
                 if (monitor instanceof GroupMonitor) {
-                    GroupMonitor monitor1 = (GroupMonitor) monitor;
                     try {
                         ApplicationHolder.acquireReadLock();
-                        if (monitor1.verifyGroupStatus(context1.getId(), instanceId, GroupStatus.Active)) {
+                        if (verifyGroupStatus(context1.getId(), instanceId, GroupStatus.Active)) {
                             parentsActive = true;
 
                         }
@@ -546,6 +547,57 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         }
         return parentsActive;
     }
+
+    public boolean verifyGroupStatus(String childId, String instanceId, GroupStatus requiredStatus) {
+        Monitor monitor = this.getMonitor(childId);
+        if(!(monitor instanceof GroupMonitor)) {
+            return false;
+        }
+        List<String> groupInstances;
+        GroupInstance groupInstance = (GroupInstance) monitor.getInstance(instanceId);
+        if (groupInstance == null) {
+            groupInstances = monitor.getInstancesByParentInstanceId(instanceId);
+        } else {
+            if (groupInstance.getStatus() == requiredStatus) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        String networkPartitionId = null;
+        int noOfInstancesOfRequiredStatus = 0;
+        for (String childInstanceId : groupInstances) {
+            GroupInstance childGroupInstance = (GroupInstance) monitor.getInstance(childInstanceId);
+            networkPartitionId = childGroupInstance.getNetworkPartitionId();
+            if (childGroupInstance.getStatus() == requiredStatus) {
+                noOfInstancesOfRequiredStatus++;
+            }
+        }
+
+        if (!groupInstances.isEmpty()) {
+                GroupLevelNetworkPartitionContext networkPartitionContext =
+                    (GroupLevelNetworkPartitionContext) ((GroupMonitor)monitor).
+                            getNetworkPartitionCtxts().get(networkPartitionId);
+            int minInstances = networkPartitionContext.getMinInstanceCount();
+            //if terminated all the instances in this instances map should be in terminated state
+            //if terminated all the instances in this instances map should be in terminated state
+            if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
+                    requiredStatus == GroupStatus.Terminated) {
+                return true;
+            } else if (noOfInstancesOfRequiredStatus >= minInstances) {
+                return true;
+            } else {
+                //of only one is inActive implies that the whole group is Inactive
+                if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
 
     protected void handleDependentScaling(InstanceContext instanceContext,
                                           NetworkPartitionContext networkPartitionContext) {

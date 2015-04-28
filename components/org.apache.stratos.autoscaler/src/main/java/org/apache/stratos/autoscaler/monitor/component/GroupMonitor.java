@@ -48,7 +48,6 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
-import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -159,7 +158,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 int activeAppInstances = appMonitor.
                                         getNetworkPartitionContext(networkPartitionContext.getId()).
                                         getActiveInstancesCount();
-                                if(activeAppInstances > 0) {
+                                if (activeAppInstances > 0) {
                                     //Creating new group instance based on the existing parent instances
                                     createInstanceOnDemand(parentInstanceContext.getId());
                                 }
@@ -413,16 +412,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Verifying whether all the minimum no of instances of child
             // became active to take next action
-            if (status1 == GroupStatus.Terminated) {
-                /*boolean childTerminated = verifyGroupStatus(instanceId, (GroupStatus) status1);
-                if (childTerminated) {*/
-                onTerminationOfInstance(childId, instanceId);
-                /*} else {
-                    log.info("Waiting for other group instances to be terminated");
-                }*/
-            } else {
-                onTerminationOfInstance(childId, instanceId);
-            }
+            onTerminationOfInstance(childId, instanceId);
         }
     }
 
@@ -438,7 +428,13 @@ public class GroupMonitor extends ParentComponentMonitor {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
                         appId, instanceId);
             } else {
-                onChildTerminatedEvent(childId, instanceId);
+                boolean active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                if (!active) {
+                    onTerminationOfInstance(childId, instanceId);
+                } else {
+                    log.info("[Group Instance] " + instanceId + " is still active upon termination" +
+                            " of the [child] " + childId);
+                }
             }
         } else {
             log.warn("The required instance cannot be found in the the [GroupMonitor] " +
@@ -916,52 +912,6 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
 
-    public boolean verifyGroupStatus(String childId, String instanceId, GroupStatus requiredStatus) {
-        Monitor monitor = this.getMonitor(childId);
-        List<String> groupInstances;
-        GroupInstance groupInstance = (GroupInstance) monitor.getInstance(instanceId);
-        if (groupInstance == null) {
-            groupInstances = monitor.getInstancesByParentInstanceId(instanceId);
-        } else {
-            if (groupInstance.getStatus() == requiredStatus) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        String networkPartitionId = null;
-        int noOfInstancesOfRequiredStatus = 0;
-        for (String childInstanceId : groupInstances) {
-            GroupInstance childGroupInstance = (GroupInstance) monitor.getInstance(childInstanceId);
-            networkPartitionId = childGroupInstance.getNetworkPartitionId();
-            if (childGroupInstance.getStatus() == requiredStatus) {
-                noOfInstancesOfRequiredStatus++;
-            }
-        }
-
-        if (!groupInstances.isEmpty()) {
-            GroupLevelNetworkPartitionContext networkPartitionContext =
-                    (GroupLevelNetworkPartitionContext) this.getNetworkPartitionCtxts().
-                            get(networkPartitionId);
-            int minInstances = networkPartitionContext.getMinInstanceCount();
-            //if terminated all the instances in this instances map should be in terminated state
-            //if terminated all the instances in this instances map should be in terminated state
-            if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
-                    requiredStatus == GroupStatus.Terminated) {
-                return true;
-            } else if (noOfInstancesOfRequiredStatus >= minInstances) {
-                return true;
-            } else {
-                //of only one is inActive implies that the whole group is Inactive
-                if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
 
 
     @Override

@@ -38,6 +38,7 @@ public interface EventHandler {
      * Triggered when a status event is received from the parent.
      *
      * @param statusEvent
+     * @throws MonitorNotFoundException
      */
     public abstract void onParentStatusEvent(MonitorStatusEvent statusEvent) throws
             MonitorNotFoundException;
@@ -45,7 +46,7 @@ public interface EventHandler {
     /**
      * Triggered when a scaling event is received from a child.
      *
-     * @param scalingEvent
+     * @param scalingEvent the event which passed when scaling
      */
     public abstract void onChildScalingEvent(ScalingEvent scalingEvent);
 

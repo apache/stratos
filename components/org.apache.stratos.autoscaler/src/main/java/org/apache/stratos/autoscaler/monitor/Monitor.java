@@ -51,7 +51,7 @@ public abstract class Monitor implements EventHandler {
     }
 
     /**
-     * This will destroy the monitor thread
+     * Implement this method to destroy the monitor thread
      */
     public abstract void destroy();
 
@@ -141,7 +141,7 @@ public abstract class Monitor implements EventHandler {
      * @param hasDependent whether monitor has dependent or not
      */
     public void setHasStartupDependents(boolean hasDependent) {
-        this.hasStartupDependents = hasDependent;
+        hasStartupDependents = hasDependent;
     }
 
     /**
@@ -150,7 +150,7 @@ public abstract class Monitor implements EventHandler {
      * @param instance instance to be added
      */
     public void addInstance(Instance instance) {
-        this.instanceIdToInstanceMap.put(instance.getInstanceId(), instance);
+        instanceIdToInstanceMap.put(instance.getInstanceId(), instance);
 
     }
 
@@ -161,7 +161,7 @@ public abstract class Monitor implements EventHandler {
      * @return the instance
      */
     public Instance getInstance(String instanceId) {
-        return this.instanceIdToInstanceMap.get(instanceId);
+        return instanceIdToInstanceMap.get(instanceId);
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class Monitor implements EventHandler {
      * @param instanceId instance id
      */
     public void removeInstance(String instanceId) {
-        this.instanceIdToInstanceMap.remove(instanceId);
+        instanceIdToInstanceMap.remove(instanceId);
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class Monitor implements EventHandler {
      */
     public List<String> getInstancesByParentInstanceId(String parentInstanceId) {
         List<String> instances = new ArrayList<String>();
-        for (Instance instance : this.instanceIdToInstanceMap.values()) {
+        for (Instance instance : instanceIdToInstanceMap.values()) {
             if (instance.getParentId().equals(parentInstanceId)) {
                 instances.add(instance.getInstanceId());
             }

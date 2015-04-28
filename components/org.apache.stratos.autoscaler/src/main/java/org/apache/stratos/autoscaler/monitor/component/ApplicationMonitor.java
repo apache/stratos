@@ -70,7 +70,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
-    // Flag to set if forcefull undeployment is invoked for the application.
+    // Flag to set if forceful undeployment is invoked for the application.
     private boolean force;
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
@@ -221,10 +221,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         for (Monitor monitor : monitors.values()) {
             if (monitor instanceof ParentComponentMonitor) {
-                Monitor monitor1 = findGroupMonitor(id, ((ParentComponentMonitor) monitor).
+                Monitor groupMonitor = findGroupMonitor(id, ((ParentComponentMonitor) monitor).
                         getAliasToActiveMonitorsMap());
-                if (monitor1 != null) {
-                    return monitor1;
+                if (groupMonitor != null) {
+                    return groupMonitor;
                 }
             }
         }
@@ -287,7 +287,17 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
-                    onChildTerminatedEvent(childId, instanceId);
+                    Monitor monitor = this.getMonitor(childId);
+                    boolean active = false;
+                    if (monitor instanceof GroupMonitor) {
+                        active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                    }
+                    if (!active) {
+                        onChildTerminatedEvent(childId, instanceId);
+                    } else {
+                        log.info("[Group Instance] " + instanceId + " is still active " +
+                                "upon termination of the [child ] " + childId);
+                    }
                 }
             } else {
                 log.warn("The required instance cannot be found in the the [GroupMonitor] " +
@@ -548,6 +558,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     /**
      * Whether application is in-terminating or not
+     *
      * @return application state
      */
     public boolean isTerminating() {
