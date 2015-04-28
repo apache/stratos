@@ -214,6 +214,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
+    public boolean existApplication(String applicationId) {
+        return AutoscalerContext.getInstance().getApplicationContext(applicationId) == null;
+    }
+
+    @Override
     public ApplicationContext[] getApplications() {
         return AutoscalerContext.getInstance().getApplicationContexts().
                 toArray(new ApplicationContext[AutoscalerContext.getInstance().getApplicationContexts().size()]);

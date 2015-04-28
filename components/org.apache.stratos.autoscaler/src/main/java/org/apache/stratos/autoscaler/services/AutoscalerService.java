@@ -105,6 +105,14 @@ public interface AutoscalerService {
     public ApplicationContext getApplication(String applicationId);
 
     /**
+     * Check if the application exists
+     *
+     * @param applicationId
+     * @return whether application exists or not
+     */
+    boolean existApplication(String applicationId);
+
+    /**
      * Get all applications
      */
     public ApplicationContext[] getApplications();
