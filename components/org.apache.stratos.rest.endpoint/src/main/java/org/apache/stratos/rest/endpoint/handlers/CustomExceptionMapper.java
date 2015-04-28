@@ -43,7 +43,7 @@ public class CustomExceptionMapper implements ExceptionMapper<RestAPIException> 
                 restAPIException.getMessage() : "Error while fulfilling the request";
         // if no specific error specified we are throwing the bad request http status code by default
         Response.Status httpStatus = (restAPIException.getHTTPStatusCode() != null) ?
-                restAPIException.getHTTPStatusCode() : Response.Status.BAD_REQUEST;
+                restAPIException.getHTTPStatusCode() : Response.Status.INTERNAL_SERVER_ERROR;
 
         log.error(errorMessage, restAPIException);
         return Response.status(httpStatus.getStatusCode()).type(MediaType.APPLICATION_JSON).
