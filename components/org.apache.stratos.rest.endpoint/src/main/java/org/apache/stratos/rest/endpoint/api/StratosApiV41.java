@@ -274,8 +274,8 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
         StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
-        return Response.created(url)
-                .entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(), "Cartridge updated successfully"))
+        return Response.ok(url)
+                .entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(), "Cartridge updated successfully"))
                 .build();
 
     }
@@ -881,7 +881,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("applicationId") String applicationId, ApplicationSignUpBean applicationSignUpBean)
             throws RestAPIException {
         StratosApiV41Utils.addApplicationSignUp(applicationId, applicationSignUpBean);
-        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationId).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Successfully signed up for: [application] %s", applicationId))).build();
     }
 
@@ -952,7 +953,8 @@ public class StratosApiV41 extends AbstractApi {
         for (DomainMappingBean domainMappingBean : mappings) {
             domainMappingList.add(domainMappingBean.getDomainName());
         }
-        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationId).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Domain Mappings added successfully: [domain-mappings] %s", domainMappingList)))
                 .build();
     }
@@ -1485,7 +1487,8 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         StratosApiV41Utils.notifyArtifactUpdatedEvent(payload);
-        return Response.noContent().build();
+        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format("Repository notificaton sent successfully"))).build();
     }
 
     // API methods for users
@@ -1779,7 +1782,9 @@ public class StratosApiV41 extends AbstractApi {
                             String.format("Could not find specified Kubernetes cluster: [kub-cluster] %s",
                                     kubernetesClusterId))).build();
         }
-        return Response.noContent().build();
+        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format("Kubernetes Cluster removed successfully: [kub-cluster] %s", kubernetesClusterId)))
+                .build();
     }
 
     /**
@@ -1799,12 +1804,12 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("hostId") String kubernetesHostId) throws RestAPIException {
         try {
             StratosApiV41Utils.removeKubernetesHost(kubernetesHostId);
-            return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-                    String.format("Kubernetes Host removed successfully: [kub-host] %s", kubernetesHostId)))
-                    .build();
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format("Kubernetes Host removed successfully: [kub-host] %s", kubernetesHostId)))
+                .build();
     }
 
 }
