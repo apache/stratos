@@ -41,6 +41,7 @@ import org.apache.stratos.common.beans.topology.ClusterBean;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
+import org.apache.stratos.rest.endpoint.exception.ApplicationAlreadyDeployedException;
 import org.apache.stratos.rest.endpoint.exception.ApplicationAlreadyExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
@@ -647,11 +648,8 @@ public class StratosApiV41 extends AbstractApi {
                     String.format("Application added successfully: [application] %s",
                             applicationDefinition.getApplicationId()))).build();
         } catch (RestAPIException e) {
-            if (e.getMessage().contains("already exists")) {
-                return Response.status(Response.Status.CONFLICT).build();
-            } else {
-                throw e;
-            }
+
+            throw e;
         }
     }
 
@@ -718,12 +716,12 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.deployApplication(applicationId, applicationPolicyId);
             return Response.accepted().entity(new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
                     String.format("Application deployed successfully: [application] %s", applicationId))).build();
+        } catch (ApplicationAlreadyDeployedException e) {
+
+            return Response.status(Response.Status.CONFLICT).build();
         } catch (RestAPIException e) {
-            if (e.getMessage().contains("already in DEPLOYED")) {
-                return Response.status(Response.Status.CONFLICT).build();
-            } else {
-                throw e;
-            }
+
+            throw e;
         }
     }
 
