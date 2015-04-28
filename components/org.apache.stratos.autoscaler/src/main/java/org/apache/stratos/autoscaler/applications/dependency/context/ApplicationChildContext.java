@@ -35,6 +35,7 @@ public abstract class ApplicationChildContext {
     private ClusterStatus status;
     private Stack<ClusterStatus> statusLifeCycle;
     private List<ApplicationChildContext> applicationChildContextList;
+    private ApplicationChildContext parent;
 
     protected boolean hasStartupDependents;
     protected boolean isGroupScalingEnabled;
@@ -116,5 +117,13 @@ public abstract class ApplicationChildContext {
 
     public void setGroupScalingEnabled(boolean isDependent) {
         this.isGroupScalingEnabled = isDependent;
+    }
+
+    public ApplicationChildContext getParent() {
+        return parent;
+    }
+
+    public void setParent(ApplicationChildContext parent) {
+        this.parent = parent;
     }
 }

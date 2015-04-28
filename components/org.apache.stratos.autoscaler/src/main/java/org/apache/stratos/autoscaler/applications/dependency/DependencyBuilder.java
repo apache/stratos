@@ -111,6 +111,7 @@ public class DependencyBuilder {
                                                 applicationChildContext.getId(), parentContext.getId(), dependencyTree));
                                     }
                                     parentContext = applicationChildContext;
+                                    applicationChildContext.setParent(parentContext);
                                 } else {
                                     // This is the first element, add it as the root
                                     dependencyTree.addPrimaryApplicationContext(applicationChildContext);

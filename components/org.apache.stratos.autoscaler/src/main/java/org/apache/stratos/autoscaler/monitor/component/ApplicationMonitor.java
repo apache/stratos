@@ -241,7 +241,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 get(instanceId);
 
         if (applicationInstance == null) {
-            log.warn("The required application [instance] " + instanceId + " not found in the AppMonitor");
+            log.warn("The required application [instance] " + instanceId + " not found " +
+                    "in the AppMonitor");
         } else {
             if (applicationInstance.getStatus() != status) {
                 applicationInstance.setStatus(status);
@@ -250,7 +251,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         //notify the children about the state change
         try {
-            MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId, instanceId));
+            MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status,
+                    appId, instanceId));
         } catch (MonitorNotFoundException e) {
             log.error("Error while notifying the children from [application] " + appId, e);
             //TODO revert siblings
@@ -305,48 +307,72 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     }
 
+    /**
+     * This will start the minimum dependencies
+     *
+     * @param application the application which used to create monitors
+     * @return whether monitor created or not
+     * @throws TopologyInConsistentException
+     * @throws PolicyValidationException
+     */
     public boolean startMinimumDependencies(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
 
         return createInstanceAndStartDependency(application);
     }
 
+    /**
+     * Utility to create application instance by parsing the deployment policy for a monitor
+     *
+     * @param application the application
+     * @return whether the instance created or not
+     * @throws TopologyInConsistentException
+     * @throws PolicyValidationException
+     */
     private boolean createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
         boolean initialStartup = true;
         List<String> instanceIds = new ArrayList<String>();
         String instanceId;
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(application.getApplicationPolicyId());
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
+                getApplicationPolicy(application.getApplicationPolicyId());
         if (applicationPolicy == null) {
-            String msg = String.format("Application policy not found in registry or in-memory [application-id] %s", appId);
+            String msg = String.format("Application policy not found in registry or " +
+                    "in-memory [application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
-        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().getNetworkPartitionAlgorithmContext(appId);
+        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
+                getNetworkPartitionAlgorithmContext(appId);
         if (algorithmContext == null) {
-            String msg = String.format("Network partition algorithm context not found in registry or in-memory [application-id] %s", appId);
+            String msg = String.format("Network partition algorithm context not found " +
+                    "in registry or in-memory [application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
         String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
         if (log.isDebugEnabled()) {
-            String msg = String.format("Network partition algorithm is %s [application-id] %s", networkPartitionAlgorithmName, appId);
+            String msg = String.format("Network partition algorithm is %s [application-id] %s",
+                    networkPartitionAlgorithmName, appId);
             log.debug(msg);
         }
 
-        NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(networkPartitionAlgorithmName);
+        NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
+                networkPartitionAlgorithmName);
         if (algorithm == null) {
-            String msg = String.format("Coudln't create network partition algorithm [application-id] %s", appId);
+            String msg = String.format("Coudln't create network partition algorithm " +
+                    "[application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
         List<String> nextNetworkPartitions = algorithm.getNextNetworkPartitions(algorithmContext);
         if (nextNetworkPartitions == null || nextNetworkPartitions.isEmpty()) {
-            String msg = String.format("No network partitions available for application bursting [application-id] %s", appId);
+            String msg = String.format("No network partitions available for application bursting " +
+                    "[application-id] %s", appId);
             log.warn(msg);
             return false;
         }
@@ -376,6 +402,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         return initialStartup;
     }
 
+    /**
+     * Utility method to create application instance inside a network partition and
+     * add data structure to monitor
+     *
+     * @param application   the application where the application instance needs to be created
+     * @param context       networkPartition where instance needs to be created
+     * @param instanceExist whether application instance exists or not
+     * @return instance Id
+     */
     private String handleApplicationInstanceCreation(Application application,
                                                      ApplicationLevelNetworkPartitionContext context,
                                                      ApplicationInstance instanceExist) {
@@ -405,6 +440,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         return instanceId;
     }
 
+    /**
+     * Handling the application bursting into available network partition
+     *
+     * @throws TopologyInConsistentException
+     * @throws PolicyValidationException
+     * @throws MonitorNotFoundException
+     */
     public void handleApplicationBursting() throws TopologyInConsistentException,
             PolicyValidationException,
             MonitorNotFoundException {
@@ -418,36 +460,44 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         boolean burstNPFound = false;
         String instanceId = null;
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(application.getApplicationPolicyId());
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
+                getApplicationPolicy(application.getApplicationPolicyId());
         if (applicationPolicy == null) {
-            String msg = String.format("Application policy not found in registry or in-memory [application-id] %s", appId);
+            String msg = String.format("Application policy not found in registry or in-memory " +
+                    "[application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
-        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().getNetworkPartitionAlgorithmContext(appId);
+        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
+                getNetworkPartitionAlgorithmContext(appId);
         if (algorithmContext == null) {
-            String msg = String.format("Network partition algorithm context not found in registry or in-memory [application-id] %s", appId);
+            String msg = String.format("Network partition algorithm context not found in" +
+                    " registry or in-memory [application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
         String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
         if (log.isDebugEnabled()) {
-            String msg = String.format("Network partition algorithm is %s [application-id] %s", networkPartitionAlgorithmName, appId);
+            String msg = String.format("Network partition algorithm is %s [application-id] %s",
+                    networkPartitionAlgorithmName, appId);
             log.debug(msg);
         }
 
-        NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(networkPartitionAlgorithmName);
+        NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
+                networkPartitionAlgorithmName);
         if (algorithm == null) {
-            String msg = String.format("Coudln't create network partition algorithm [application-id] %s", appId);
+            String msg = String.format("Coudln't create network partition algorithm " +
+                    "[application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
         }
 
         List<String> nextNetworkPartitions = algorithm.getNextNetworkPartitions(algorithmContext);
         if (nextNetworkPartitions == null || nextNetworkPartitions.isEmpty()) {
-            String msg = String.format("No network partitions available for application bursting [application-id] %s", appId);
+            String msg = String.format("No network partitions available for application " +
+                    "bursting [application-id] %s", appId);
             log.warn(msg);
             return;
         }
@@ -455,7 +505,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         for (String networkPartitionId : nextNetworkPartitions) {
             if (!this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
 
-                ApplicationLevelNetworkPartitionContext context = new ApplicationLevelNetworkPartitionContext(networkPartitionId);
+                ApplicationLevelNetworkPartitionContext context = new
+                        ApplicationLevelNetworkPartitionContext(networkPartitionId);
 
                 //Setting flags saying that it has been created by burst
                 context.setCreatedOnBurst(true);
@@ -481,13 +532,25 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
     }
 
-    private ApplicationInstance createApplicationInstance(Application application, String networkPartitionId) {
+    /**
+     * Creating application instance into applications Topology
+     *
+     * @param application        application where instance needs to be added
+     * @param networkPartitionId network partition of the application Instance
+     * @return the create application instance in the topology
+     */
+    private ApplicationInstance createApplicationInstance(Application application,
+                                                          String networkPartitionId) {
         //String instanceId = this.generateInstanceId(application);
         ApplicationInstance instance = ApplicationBuilder.handleApplicationInstanceCreatedEvent(
                 appId, networkPartitionId);
         return instance;
     }
 
+    /**
+     * Whether application is in-terminating or not
+     * @return application state
+     */
     public boolean isTerminating() {
         return isTerminating;
     }
@@ -515,14 +578,16 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID)) {
             if (log.isDebugEnabled()) {
-                String msg = String.format("Network partition algorithm is set to %s in applicatioin policy",
+                String msg = String.format("Network partition algorithm is set to %s in " +
+                                "applicatioin policy",
                         StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID);
                 log.debug(msg);
             }
             return new OneAfterAnotherAlgorithm();
         } else if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
             if (log.isDebugEnabled()) {
-                String msg = String.format("Network partition algorithm is set to %s in applicatioin policy",
+                String msg = String.format("Network partition algorithm is set to %s " +
+                                "in applicatioin policy",
                         StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID);
                 log.debug(msg);
             }
@@ -530,7 +595,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
 
         if (log.isDebugEnabled()) {
-            String msg = String.format("Invalid network partition algorithm %s found in applicatioin policy",
+            String msg = String.format("Invalid network partition algorithm %s found " +
+                            "in applicatioin policy",
                     StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID);
             log.debug(msg);
         }

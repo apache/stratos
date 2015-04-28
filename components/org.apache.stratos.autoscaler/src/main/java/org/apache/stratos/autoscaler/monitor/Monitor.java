@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract class for the monitoring functionality in autoscaler.
+ * Abstract class for the monitoring functionality in Autoscaler.
  */
 public abstract class Monitor implements EventHandler {
-
-    public enum MonitorType {Application, Group, Cluster}
+    //Monitor types
+    public enum MonitorType {
+        Application, Group, Cluster
+    }
 
     //Id of the monitor, cluster=clusterId, group=group-alias, application=app-alias
     protected String id;
@@ -44,13 +46,23 @@ public abstract class Monitor implements EventHandler {
     //monitors map, key=InstanceId and value=ClusterInstance/GroupInstance/ApplicationInstance
     protected Map<String, Instance> instanceIdToInstanceMap;
 
-    public abstract void destroy();
-
-    public abstract boolean createInstanceOnDemand(String instanceId);
-
     public Monitor() {
         this.instanceIdToInstanceMap = new HashMap<String, Instance>();
     }
+
+    /**
+     * This will destroy the monitor thread
+     */
+    public abstract void destroy();
+
+    /**
+     * This will create Instance on demand as requested by monitors
+     *
+     * @param instanceId instance Id of the instance to be created
+     * @return whether it is created or not
+     */
+    public abstract boolean createInstanceOnDemand(String instanceId);
+
 
     /**
      * Return the id of the monitor
@@ -64,14 +76,14 @@ public abstract class Monitor implements EventHandler {
     /**
      * Return the type of the monitor.
      *
-     * @return
+     * @return monitor type
      */
     public abstract MonitorType getMonitorType();
 
     /**
      * Set the id of the monitor
      *
-     * @param id
+     * @param id id of the monitor
      */
     public void setId(String id) {
         this.id = id;
@@ -89,7 +101,7 @@ public abstract class Monitor implements EventHandler {
     /**
      * To set the app id of the monitor
      *
-     * @param appId
+     * @param appId application id
      */
     public void setAppId(String appId) {
         this.appId = appId;
@@ -107,7 +119,7 @@ public abstract class Monitor implements EventHandler {
     /**
      * To set the parent of the monitor
      *
-     * @param parent
+     * @param parent parent of the monitor
      */
     public void setParent(ParentComponentMonitor parent) {
         this.parent = parent;
@@ -126,7 +138,7 @@ public abstract class Monitor implements EventHandler {
     /**
      * To set whether monitor has any startup dependencies
      *
-     * @param hasDependent
+     * @param hasDependent whether monitor has dependent or not
      */
     public void setHasStartupDependents(boolean hasDependent) {
         this.hasStartupDependents = hasDependent;
@@ -183,10 +195,6 @@ public abstract class Monitor implements EventHandler {
      * @return true/false
      */
     public boolean hasInstance() {
-        if (this.instanceIdToInstanceMap.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !instanceIdToInstanceMap.isEmpty();
     }
 }

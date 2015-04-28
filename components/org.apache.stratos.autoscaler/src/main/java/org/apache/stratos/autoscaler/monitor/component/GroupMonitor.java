@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
@@ -47,6 +48,7 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -151,8 +153,16 @@ public class GroupMonitor extends ParentComponentMonitor {
                             for (InstanceContext parentInstanceContext : parent.
                                     getNetworkPartitionContext(networkPartitionContext.getId()).
                                     getInstanceIdToInstanceContextMap().values()) {
-                                //Creating new group instance based on the existing parent instances
-                                createInstanceOnDemand(parentInstanceContext.getId());
+                                //keep on scaleup/scaledown only if the application is active
+                                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
+                                        getAppMonitor(appId);
+                                int activeAppInstances = appMonitor.
+                                        getNetworkPartitionContext(networkPartitionContext.getId()).
+                                        getActiveInstancesCount();
+                                if(activeAppInstances > 0) {
+                                    //Creating new group instance based on the existing parent instances
+                                    createInstanceOnDemand(parentInstanceContext.getId());
+                                }
                             }
 
                         }

@@ -114,13 +114,16 @@ public class DependencyTree {
                                                             List<ApplicationChildContext> contexts) {
         for (ApplicationChildContext context : contexts) {
             //TODO check for the status
-            if (context.getId().equals(id)) {
+            if (context.getParent() != null && context.getParent().equals(id)) {
                 return context;
             }
         }
         //if not found in the top level search recursively
         for (ApplicationChildContext context : this.primaryApplicationContextList) {
-            return findParentContextWithId(context, id, context.getApplicationChildContextList());
+            if(context.getApplicationChildContextList() != null &&
+                    !context.getApplicationChildContextList().isEmpty()) {
+                return findParentContextWithId(context, id, context.getApplicationChildContextList());
+            }
         }
         return null;
     }
