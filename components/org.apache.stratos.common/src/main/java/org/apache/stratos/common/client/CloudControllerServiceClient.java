@@ -160,7 +160,8 @@ public class CloudControllerServiceClient {
     }
 
     public boolean deployKubernetesCluster(KubernetesCluster kubernetesCluster) throws RemoteException,
-            CloudControllerServiceInvalidKubernetesClusterExceptionException {
+            CloudControllerServiceInvalidKubernetesClusterExceptionException,
+            CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException {
         return stub.addKubernetesCluster(kubernetesCluster);
     }
 
