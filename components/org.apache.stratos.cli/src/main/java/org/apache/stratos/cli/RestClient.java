@@ -42,7 +42,7 @@ import java.lang.reflect.Type;
  * 1. doPost, doPut, doGet, doDelete
  * 2. deployEntity, updateEntity, getEntity, listEntity, deleteEntity
  * 3. executePost, executePut, executeGet, executeDelete
- *
+ * <p/>
  * All the status code handling happens at category #2
  */
 public class RestClient implements GenericRestClient {

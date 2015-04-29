@@ -25,7 +25,6 @@ package org.apache.stratos.cli;
 public class Main {
     /**
      * Main executable method used to call from CLI.
-     *
      */
     public static void main(final String[] args) {
         CliTool cliTool = new CliTool();

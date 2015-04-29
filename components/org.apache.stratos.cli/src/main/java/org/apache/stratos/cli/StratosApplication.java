@@ -1,20 +1,20 @@
 /**
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
-
- *  http://www.apache.org/licenses/LICENSE-2.0
-
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.stratos.cli;
 
@@ -201,13 +201,13 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new RemoveDomainMappingsCommand();
         commands.put(command.getName(), command);
 
-        command=new DeleteAutoScalingPolicyCommand();
+        command = new DeleteAutoScalingPolicyCommand();
         commands.put(command.getName(), command);
 
-        command=new AddNetworkPartitionCommand();
+        command = new AddNetworkPartitionCommand();
         commands.put(command.getName(), command);
 
-        command=new RemoveNetworkPartitionCommand();
+        command = new RemoveNetworkPartitionCommand();
         commands.put(command.getName(), command);
 
         command = new ListNetworkPartitionCommand();
@@ -223,16 +223,16 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         commands.put(command.getName(), command);
 
         command = new DescribeTenantCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new ListPartialSearchTenantsCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new DescribeApplicationSignupCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new DeleteApplicationSignupCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new AddDeploymentPolicyCommand();
         commands.put(command.getName(), command);
@@ -271,25 +271,25 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         commands.put(command.getName(), command);
 
         command = new DescribeApplicationSignupCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new DeleteApplicationSignupCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new AddApplicationPolicyCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new ListApplicationPoliciesCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new DescribeApplicationPolicyCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new RemoveApplicationPolicyCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         command = new UpdateApplicationPolicyCommand();
-        commands.put(command.getName(),command);
+        commands.put(command.getName(), command);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
@@ -343,7 +343,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
             CommandLine commandLine;
             try {
                 // Must add all options. Otherwise actions cannot be performed directly by command line.
-            	// This is because the parser trips over unrecognised options.
+                // This is because the parser trips over unrecognised options.
                 Options allCommandOptions = new Options();
                 for (Command<StratosCommandContext> command : commands.values()) {
                     Options commandOptions = command.getOptions();
@@ -522,7 +522,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
             return CliConstants.COMMAND_FAILED;
         }
         try {
-        	return command.execute(context, actionArgs, new Option[0]);
+            return command.execute(context, actionArgs, new Option[0]);
         } catch (CommandException e) {
             if (logger.isErrorEnabled()) {
                 logger.error("Error executing command: " + action, e);
@@ -564,12 +564,12 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         int slashCount = StringUtils.countMatches(stratosURL, "/");
         int colonCount = StringUtils.countMatches(stratosURL, ":");
 
-        UrlValidator urlValidator = new UrlValidator(new String[] { "https" },UrlValidator.ALLOW_LOCAL_URLS);
+        UrlValidator urlValidator = new UrlValidator(new String[]{"https"}, UrlValidator.ALLOW_LOCAL_URLS);
 
         // port must be provided, so colonCount must be 2
         // context path must not be provided, so slashCount must not be >3
 
-        if (!urlValidator.isValid(stratosURL) || colonCount != 2 || slashCount >3) {
+        if (!urlValidator.isValid(stratosURL) || colonCount != 2 || slashCount > 3) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Stratos Controller URL {} is not valid", stratosURL);
             }
