@@ -164,8 +164,8 @@ public class ClusterContext extends AbstractClusterContext {
                 log.info(String.format("Cluster instance context has been added to network partition," +
                                 " [application] %s [cluster] %s  [cluster instance] %s " +
                                 "[network partition] %s", cluster.getAppId(), cluster.getClusterId(),
-                                clusterInstance.getInstanceId(),
-                                clusterInstance.getNetworkPartitionId()));
+                        clusterInstance.getInstanceId(),
+                        clusterInstance.getNetworkPartitionId()));
             }
         }
 
@@ -249,7 +249,7 @@ public class ClusterContext extends AbstractClusterContext {
         //Getting the associated  partition
         if (clusterInstance.getPartitionId() == null && partition == null) {
             String msg = "[Partition] " + clusterInstance.getPartitionId() + " for [application] " +
-                    cluster.getAppId() +" [networkPartition] " +
+                    cluster.getAppId() + " [networkPartition] " +
                     clusterInstance.getNetworkPartitionId() + "is null " +
                     "in deployment policy: [cluster-alias]: " + clusterInstance.getAlias();
             log.error(msg);
@@ -258,7 +258,7 @@ public class ClusterContext extends AbstractClusterContext {
 
         ClusterInstanceContext clusterInstanceContext =
                 (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
-                getInstanceContext(clusterInstance.getInstanceId());
+                        getInstanceContext(clusterInstance.getInstanceId());
         int maxInstances = 1;
         if (clusterInstanceContext == null) {
             int minInstances = 1;
@@ -363,8 +363,8 @@ public class ClusterContext extends AbstractClusterContext {
                     clusterLevelPartitionContext.addActiveMember(memberContext);
                     if (log.isDebugEnabled()) {
                         String msg = String.format("Active member read from topology and added " +
-                                "to active member list: [application] %s [cluster] %s " +
-                                "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                        "to active member list: [application] %s [cluster] %s " +
+                                        "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
                                 cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
                                 clusterLevelPartitionContext.getPartitionId(), member.toString());
                         log.debug(msg);
@@ -374,8 +374,8 @@ public class ClusterContext extends AbstractClusterContext {
                     clusterLevelPartitionContext.addPendingMember(memberContext);
                     if (log.isDebugEnabled()) {
                         String msg = String.format("Pending member read from topology and added to " +
-                                "pending member list: [application] %s [cluster] %s " +
-                                "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                        "pending member list: [application] %s [cluster] %s " +
+                                        "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
                                 cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
                                 clusterLevelPartitionContext.getPartitionId(), member.toString());
                         log.debug(msg);
@@ -384,7 +384,7 @@ public class ClusterContext extends AbstractClusterContext {
                 clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Member stat context has been added: [application] %s " +
-                            "[cluster] %s [clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                    "[cluster] %s [clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
                             cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
                             clusterLevelPartitionContext.getPartitionId(), memberId));
                 }

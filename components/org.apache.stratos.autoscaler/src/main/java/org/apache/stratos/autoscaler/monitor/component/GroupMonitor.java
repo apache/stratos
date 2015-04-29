@@ -917,8 +917,6 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
 
-
-
     @Override
     public void destroy() {
         stopScheduler();

@@ -550,7 +550,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     public boolean verifyGroupStatus(String childId, String instanceId, GroupStatus requiredStatus) {
         Monitor monitor = this.getMonitor(childId);
-        if(!(monitor instanceof GroupMonitor)) {
+        if (!(monitor instanceof GroupMonitor)) {
             return false;
         }
         List<String> groupInstances;
@@ -576,8 +576,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         }
 
         if (!groupInstances.isEmpty()) {
-                GroupLevelNetworkPartitionContext networkPartitionContext =
-                    (GroupLevelNetworkPartitionContext) ((GroupMonitor)monitor).
+            GroupLevelNetworkPartitionContext networkPartitionContext =
+                    (GroupLevelNetworkPartitionContext) ((GroupMonitor) monitor).
                             getNetworkPartitionCtxts().get(networkPartitionId);
             int minInstances = networkPartitionContext.getMinInstanceCount();
             //if terminated all the instances in this instances map should be in terminated state

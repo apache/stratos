@@ -44,7 +44,6 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
-import org.apache.stratos.autoscaler.exception.policy.PolicyDoesNotExistException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
@@ -88,7 +87,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws AutoScalingPolicyAlreadyExistException{
+    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws AutoScalingPolicyAlreadyExistException {
         return PolicyManager.getInstance().addAutoscalePolicy(autoscalePolicy);
     }
 

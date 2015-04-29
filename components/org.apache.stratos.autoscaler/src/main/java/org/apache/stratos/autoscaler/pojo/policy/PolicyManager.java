@@ -80,7 +80,7 @@ public class PolicyManager {
     }
 
     // Add the policy to information model and persist.
-    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException{
+    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException {
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding autoscaling policy: [id] %s", policy.getId()));
         }
@@ -185,7 +185,7 @@ public class PolicyManager {
         }
     }
 
-    public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws AutoScalingPolicyAlreadyExistException{
+    public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws AutoScalingPolicyAlreadyExistException {
         if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding autoscaling policy: " + asPolicy.getId());
