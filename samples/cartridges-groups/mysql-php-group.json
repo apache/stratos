@@ -9,8 +9,9 @@
         "startupOrders": [
             "cartridge.my-mysql,cartridge.my-php"
         ],
-        "scalingDependants": [
-        ],
+        "scalingDependents": [
+            "cartridge.my-mysql,cartridge.my-php"
+	],
         "terminationBehaviour": "terminate-none"
     }
 }
