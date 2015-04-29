@@ -119,7 +119,8 @@ public class ParserUtils {
     }
 
 
-    public static Set<ScalingDependentList> convertScalingDependentList(String[] scalingDependentListArr) throws ApplicationDefinitionException {
+    public static Set<ScalingDependentList> convertScalingDependentList(String[] scalingDependentListArr)
+            throws ApplicationDefinitionException {
 
         Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
         if (scalingDependentListArr == null) {
@@ -155,7 +156,8 @@ public class ParserUtils {
         for (String commaSeparatedScalingDependentList : scalingDependentListArr) {
             // convertScalingDependentList all scaling dependents to aliases-based
             List<String> components = Arrays.asList(commaSeparatedScalingDependentList.split(","));
-            scalingDependentLists.add(getScalingDependentList(components, groupContext));
+            ScalingDependentList dependentList = new ScalingDependentList(components);
+            scalingDependentLists.add(dependentList);
         }
         return scalingDependentLists;
     }
