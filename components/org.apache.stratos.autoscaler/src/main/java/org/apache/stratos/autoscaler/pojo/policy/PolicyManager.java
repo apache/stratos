@@ -23,8 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.AutoScalingPolicyAlreadyExistException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidDeploymentPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyDoesNotExistException;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
@@ -78,15 +80,15 @@ public class PolicyManager {
     }
 
     // Add the policy to information model and persist.
-    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
+    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException{
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding autoscaling policy: [id] %s", policy.getId()));
         }
         if (StringUtils.isEmpty(policy.getId())) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
-        RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         this.addASPolicyToInformationModel(policy);
+        RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
             log.info(String.format("Autoscaling policy is added successfully: [id] %s", policy.getId()));
         }
@@ -105,7 +107,7 @@ public class PolicyManager {
         return true;
     }
 
-    public boolean removeAutoscalePolicy(String policyID) throws InvalidPolicyException {
+    public boolean removeAutoscalePolicy(String policyID) {
         if (StringUtils.isEmpty(policyID)) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
@@ -183,7 +185,7 @@ public class PolicyManager {
         }
     }
 
-    public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
+    public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws AutoScalingPolicyAlreadyExistException{
         if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding autoscaling policy: " + asPolicy.getId());
@@ -192,7 +194,7 @@ public class PolicyManager {
         } else {
             String errMsg = "Specified autoscaling policy [" + asPolicy.getId() + "] already exists";
             log.error(errMsg);
-            throw new InvalidPolicyException(errMsg);
+            throw new AutoScalingPolicyAlreadyExistException(errMsg);
         }
     }
 
@@ -214,14 +216,14 @@ public class PolicyManager {
         }
     }
 
-    public void removeASPolicyInInformationModel(String policyID) throws InvalidPolicyException {
+    public void removeASPolicyInInformationModel(String policyID) throws PolicyDoesNotExistException {
         if (autoscalePolicyListMap.containsKey(policyID)) {
             if (log.isDebugEnabled()) {
                 log.debug("Updating autoscaling policy: " + policyID);
             }
             autoscalePolicyListMap.remove(policyID);
         } else {
-            throw new InvalidPolicyException("No such policy ID [" + policyID + "] exists");
+            throw new PolicyDoesNotExistException("No such policy ID [" + policyID + "] exists");
         }
     }
 

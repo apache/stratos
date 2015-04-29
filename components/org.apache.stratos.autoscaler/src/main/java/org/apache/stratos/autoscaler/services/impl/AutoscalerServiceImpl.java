@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.autoscaler.services.impl;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +33,7 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.AutoScalingPolicyAlreadyExistException;
 import org.apache.stratos.autoscaler.exception.CloudControllerConnectionException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
@@ -44,6 +44,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
+import org.apache.stratos.autoscaler.exception.policy.PolicyDoesNotExistException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
@@ -54,7 +55,6 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.cloud.controller.stub.exception.CloudControllerException;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
@@ -88,7 +88,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException {
+    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws AutoScalingPolicyAlreadyExistException{
         return PolicyManager.getInstance().addAutoscalePolicy(autoscalePolicy);
     }
 
@@ -98,11 +98,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean removeAutoScalingPolicy(String autoscalePolicyId) throws InvalidPolicyException {
-        if (validateAutoScalerPolicy(autoscalePolicyId)) {
+    public boolean removeAutoScalingPolicy(String autoscalePolicyId) throws UnremovablePolicyException,
+            PolicyDoesNotExistException {
+        if (removableAutoScalerPolicy(autoscalePolicyId)) {
             return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
         } else {
-            throw new InvalidPolicyException("This autoscaler policy cannot be removed, since it is used in applications.");
+            throw new UnremovablePolicyException("This autoscaler policy cannot be removed, since it is used in " +
+                    "applications.");
         }
     }
 
@@ -112,7 +114,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
      * @param autoscalePolicyId Auto Scalar policy id boolean
      * @return
      */
-    private boolean validateAutoScalerPolicy(String autoscalePolicyId) {
+    private boolean removableAutoScalerPolicy(String autoscalePolicyId) {
         boolean canRemove = true;
         Collection<ApplicationContext> appContexts = AutoscalerContext.getInstance().getApplicationContexts();
         for (ApplicationContext app : appContexts) {
@@ -825,7 +827,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, DeploymentPolicyAlreadyExistsException {
+            InvalidDeploymentPolicyException, DeploymentPolicyAlreadyExistsException {
 
         validateDeploymentPolicy(deploymentPolicy);
 
@@ -852,7 +854,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private void validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException,
+    private void validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws
             InvalidDeploymentPolicyException, RemoteException {
 
         // deployment policy can't be null
