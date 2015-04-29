@@ -1288,7 +1288,6 @@ public class ObjectConverter {
                     groupDefinition.setAlias(groupContext.getAlias());
                     groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
                     groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
-                    groupDefinition.setGroupScalingEnabled(groupContext.getGroupScalingEnabled());
                     groupDefinition.setName(groupContext.getName());
                     groupDefinition.setGroups(convertStubGroupContextsToGroupDefinitions(groupContext.getGroupContexts()));
                     groupDefinition.setCartridges(convertStubCartridgeContextsToCartridgeReferenceBeans(
@@ -1557,7 +1556,6 @@ public class ObjectConverter {
             groupContext.setAlias(groupDefinition.getAlias());
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
-            groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled());
             groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
 
             // Groups
@@ -1736,20 +1734,19 @@ public class ObjectConverter {
         return carbonTenantInfoBean;
     }
 
-    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(GroupBean serviceGroupDefinition)
+    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(GroupBean groupBean)
             throws ServiceGroupDefinitionException {
 
-        if (serviceGroupDefinition == null) {
+        if (groupBean == null) {
             return null;
         }
 
         ServiceGroup servicegroup = new ServiceGroup();
         // implement conversion (mostly List -> Array)
-        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
-        List<GroupBean> groupsDef = serviceGroupDefinition.getGroups();
-        List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
+        List<GroupBean> groupsDef = groupBean.getGroups();
+        List<String> cartridgesDef = groupBean.getCartridges();
 
-        servicegroup.setName(serviceGroupDefinition.getName());
+        servicegroup.setName(groupBean.getName());
 
         if (groupsDef == null) {
             groupsDef = new ArrayList<GroupBean>(0);
@@ -1772,7 +1769,7 @@ public class ObjectConverter {
         cartridges = cartridgesDef.toArray(cartridges);
         servicegroup.setCartridges(cartridges);
 
-        DependencyBean depDefs = serviceGroupDefinition.getDependencies();
+        DependencyBean depDefs = groupBean.getDependencies();
 
         if (depDefs != null) {
             Dependencies dependencies = new Dependencies();
@@ -1802,7 +1799,6 @@ public class ObjectConverter {
 
         GroupBean servicegroupDef = new GroupBean();
         servicegroupDef.setName(serviceGroup.getName());
-        servicegroupDef.setGroupScalingEnabled(serviceGroup.getGroupscalingEnabled());
         String[] cartridges = serviceGroup.getCartridges();
         ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();

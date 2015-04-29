@@ -35,18 +35,9 @@ public class GroupContext implements Serializable {
 
     private String deploymentPolicy;
 
-    //private boolean isGroupInstanceMonitoringEnabled;
-
-    private boolean isGroupScalingEnabled;
-
-    //private String autoscalingPolicy;
-
     private CartridgeContext[] cartridgeContexts;
 
-    //private SubscribableContext[] subscribableContexts;
-
     private GroupContext[] groupContexts;
-
 
     public String getName() {
         return name;
@@ -63,22 +54,6 @@ public class GroupContext implements Serializable {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-
-    /*public String getAutoscalingPolicy() {
-        return autoscalingPolicy;
-    }
-
-    public void setAutoscalingPolicy(String autoscalingPolicy) {
-        this.autoscalingPolicy = autoscalingPolicy;
-    }*/
-
-    /*    public SubscribableContext[] getSubscribableContexts() {
-        return subscribableContexts;
-    }
-
-    public void setSubscribableContexts(SubscribableContext[] subscribableContexts) {
-        this.subscribableContexts = subscribableContexts;
-    }*/
 
     public GroupContext[] getGroupContexts() {
         return groupContexts;
@@ -104,22 +79,6 @@ public class GroupContext implements Serializable {
         this.groupMaxInstances = groupMaxInstances;
     }
 
-    /*public boolean isGroupInstanceMonitoringEnabled() {
-        return isGroupInstanceMonitoringEnabled;
-    }
-
-    public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
-        this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
-    }*/
-
-    public boolean isGroupScalingEnabled() {
-        return isGroupScalingEnabled;
-    }
-
-    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
-        this.isGroupScalingEnabled = isGroupScalingEnabled;
-    }
-
     public CartridgeContext[] getCartridgeContexts() {
         return cartridgeContexts;
     }
@@ -135,6 +94,4 @@ public class GroupContext implements Serializable {
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
     }
-
-
 }

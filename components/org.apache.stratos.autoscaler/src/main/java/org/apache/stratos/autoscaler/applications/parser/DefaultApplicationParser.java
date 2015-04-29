@@ -707,7 +707,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         Group group = new Group(appId, groupCtxt.getName(), groupCtxt.getAlias());
-        group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName(), serviceGroup));
+        group.setGroupScalingEnabled(groupCtxt.getGroupMaxInstances() > 1);
         group.setGroupMinInstances(groupCtxt.getGroupMinInstances());
         group.setGroupMaxInstances(groupCtxt.getGroupMaxInstances());
 
@@ -871,24 +871,6 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         return null;
 
-    }
-
-    /**
-     * Checks if group scaling is enabled for Service Group with name serviceGroupName
-     *
-     * @param serviceGroupName name of the Service Group
-     * @return true if group scaling is enabled, else false
-     * @throws ApplicationDefinitionException if no Service Group found for the given serviceGroupName
-     */
-    private boolean isGroupScalingEnabled(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
-
-        ServiceGroup nestedGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
-
-        if (nestedGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);
-        }
-
-        return nestedGroup.isGroupscalingEnabled();
     }
 
     private ServiceGroup getNestedServiceGroup(String serviceGroupName, ServiceGroup serviceGroup) {

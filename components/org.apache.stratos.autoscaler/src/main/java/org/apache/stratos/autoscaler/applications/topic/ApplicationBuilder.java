@@ -515,7 +515,7 @@ public class ApplicationBuilder {
             * When min != 1 or max != 1, we need to generate
             * instance ids as it is having more than one group instances
             */
-            if (minGroupInstances > 1 || maxGroupInstances > 1 || group.isGroupScalingEnabled()) {
+            if (group.isGroupScalingEnabled()) {
                 instanceId = group.getNextInstanceId(groupId);
             }
 

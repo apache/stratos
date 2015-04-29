@@ -29,7 +29,6 @@ public class GroupBean implements Serializable {
     private String name;
     private List<GroupBean> groups;
     private List<String> cartridges;
-    private boolean groupScalingEnabled;
     private DependencyBean dependencies;
 
     public String getName() {
@@ -62,13 +61,5 @@ public class GroupBean implements Serializable {
 
     public void setGroups(List<GroupBean> groups) {
         this.groups = groups;
-    }
-
-    public boolean isGroupScalingEnabled() {
-        return groupScalingEnabled;
-    }
-
-    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
-        this.groupScalingEnabled = isGroupScalingEnabled;
     }
 }

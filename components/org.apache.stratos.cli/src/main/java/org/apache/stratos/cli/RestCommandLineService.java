@@ -369,11 +369,10 @@ public class RestCommandLineService {
 
             RowMapper<GroupBean> cartridgeGroupMapper = new RowMapper<GroupBean>() {
                 public String[] getData(GroupBean cartridgeGroup) {
-                    String[] data = new String[4];
+                    String[] data = new String[3];
                     data[0] = cartridgeGroup.getName();
                     data[1] = cartridgeGroup.getCartridges()==null ? "" :String.valueOf(cartridgeGroup.getCartridges().size());
                     data[2] = cartridgeGroup.getGroups() == null ? "0" : String.valueOf(cartridgeGroup.getGroups().size());
-                    data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());
                     return data;
                 }
             };
