@@ -1,20 +1,20 @@
 /**
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
-
- *  http://www.apache.org/licenses/LICENSE-2.0
-
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.stratos.cli;
 
@@ -37,6 +37,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+/**
+ * This class has three types of methods
+ * 1. doPost, doPut, doGet, doDelete
+ * 2. deployEntity, updateEntity, getEntity, listEntity, deleteEntity
+ * 3. executePost, executePut, executeGet, executeDelete
+ *
+ * All the status code handling happens at category #2
+ */
 public class RestClient implements GenericRestClient {
 
     private static final Logger log = LoggerFactory.getLogger(RestClient.class);
@@ -159,6 +167,8 @@ public class RestClient implements GenericRestClient {
             int responseCode = executePost(serviceEndpoint, entityBody);
             if (responseCode == 201 || responseCode == 200) {
                 System.out.println(String.format("Successfully added %s", entityName));
+            } else if (responseCode == 500) {
+                System.out.println("Internal server error occurred");
             }
         } catch (Exception e) {
             String message = String.format("Error in adding %s", entityName);
@@ -172,11 +182,13 @@ public class RestClient implements GenericRestClient {
             int responseCode = executeDelete(serviceEndpoint.replace("{id}", entityId));
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode >= 200 && responseCode <300) {
-                System.out.println(String.format("Successfully un-deployed %s : %s", entityName,entityId));
+            } else if (responseCode == 500) {
+                System.out.println("Internal server error occurred");
+            } else if (responseCode >= 200 && responseCode < 300) {
+                System.out.println(String.format("Successfully un-deployed %s : %s", entityName, entityId));
             }
         } catch (Exception e) {
-            String message = String.format("Error in un-deploying %s : %s", entityName,entityId);
+            String message = String.format("Error in un-deploying %s : %s", entityName, entityId);
             System.out.println(message);
             log.error(message, e);
         }
@@ -187,7 +199,9 @@ public class RestClient implements GenericRestClient {
             int responseCode = executePut(serviceEndpoint, entityBody);
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode >= 200 && responseCode <300) {
+            } else if (responseCode == 500) {
+                System.out.println("Internal server error occurred");
+            } else if (responseCode >= 200 && responseCode < 300) {
                 System.out.println(String.format("Successfully updated %s", entityName));
             }
         } catch (Exception e) {
@@ -202,8 +216,10 @@ public class RestClient implements GenericRestClient {
             int responseCode = executeDelete(serviceEndpoint);
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
+            } else if (responseCode == 500) {
+                System.out.println("Internal server error occurred");
             } else if (responseCode >= 200 && responseCode < 300) {
-                System.out.println(String.format("Successfully deleted %s : %s", entityName,identifier));
+                System.out.println(String.format("Successfully deleted %s : %s", entityName, identifier));
             }
         } catch (Exception e) {
             String message = String.format("Error in deleting %s", entityName);
@@ -217,7 +233,7 @@ public class RestClient implements GenericRestClient {
         try {
             return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseJsonClass);
         } catch (Exception e) {
-            String message = String.format("Error in getting %s : %s", entityName,identifier);
+            String message = String.format("Error in getting %s : %s", entityName, identifier);
             System.out.println(message);
             log.error(message, e);
             return null;
@@ -228,7 +244,7 @@ public class RestClient implements GenericRestClient {
         try {
             return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseType);
         } catch (Exception e) {
-            String message = String.format("Error in getting %s : %s", entityName,identifier);
+            String message = String.format("Error in getting %s : %s", entityName, identifier);
             System.out.println(message);
             log.error(message, e);
             return null;
@@ -260,7 +276,7 @@ public class RestClient implements GenericRestClient {
     private int executePost(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = doPost(httpClient, getBaseURL()+ serviceEndpoint, postBody);
+            HttpResponse response = doPost(httpClient, getBaseURL() + serviceEndpoint, postBody);
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
@@ -302,7 +318,7 @@ public class RestClient implements GenericRestClient {
             response = doGet(httpClient, getBaseURL() + serviceEndpoint);
             int responseCode = response.getStatusLine().getStatusCode();
 
-            if((responseCode >= 400) && (responseCode < 500)) {
+            if ((responseCode >= 400) && (responseCode < 500)) {
                 // Entity not found
                 return null;
             } else if (responseCode < 200 || responseCode >= 300) {
