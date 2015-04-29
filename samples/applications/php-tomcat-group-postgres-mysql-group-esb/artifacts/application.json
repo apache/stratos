@@ -1,0 +1,121 @@
+{
+    "alias": "mycompositeapp",
+    "applicationId": "my-compositeapp",
+    "components": {
+      "groups": [
+        {
+          "name": "app-group",
+          "alias": "my-appgroup",
+          "cartridges": [
+            {
+              "type": "tomcat",
+              "cartridgeMax": 2,
+              "cartridgeMin": 1,
+              "subscribableInfo": {
+                "alias": "my-tomcat",
+                "artifactRepository": {
+                  "alias": "my-tomcat",
+                  "privateRepo": true,
+                  "repoPassword": "password",
+                  "repoUrl": "http://xxx:10080/git/default.git",
+                  "repoUsername": "user"
+                },
+                "autoscalingPolicy": "autoscaling-policy-1",
+                "deploymentPolicy": "deployment-policy-2"
+              }
+            },
+            {
+              "type": "php",
+              "cartridgeMax": 2,
+              "cartridgeMin": 1,
+              "subscribableInfo": {
+                "alias": "my-php",
+                "artifactRepository": {
+
+                  "privateRepo": true,
+                  "repoPassword": "password",
+                  "repoUrl": "http://xxx:10080/git/default.git",
+                  "repoUsername": "user"
+                },
+                "autoscalingPolicy": "autoscaling-policy-1",
+                "deploymentPolicy": "deployment-policy-2"
+              }
+            }
+          ],
+          "groupMaxInstances": 2,
+          "groupMinInstances": 1,
+          "groupScalingEnabled": true
+        },
+        {
+          "name": "db-group",
+          "alias": "my-dbgroup",
+          "cartridges": [
+            {
+              "type": "postgres",
+              "cartridgeMax": 2,
+              "cartridgeMin": 1,
+              "subscribableInfo": {
+                "alias": "my-postgres",
+                "artifactRepository": {
+                  "alias": "my-postgres",
+                  "privateRepo": false,
+                  "repoPassword": "password",
+                  "repoUrl": "http://xxx:10080/git/default.git",
+                  "repoUsername": "user"
+                },
+                "autoscalingPolicy": "autoscaling-policy-1",
+                "deploymentPolicy": "deployment-policy-2"
+              }
+            },
+            {
+              "type": "mysql",
+              "cartridgeMax": 2,
+              "cartridgeMin": 1,
+              "subscribableInfo": {
+                "alias": "my-mysql",
+                "artifactRepository": {
+                  "alias": "my-mysql",
+                  "privateRepo": true,
+                  "repoPassword": "password",
+                  "repoUrl": "http://xxx:10080/git/default.git",
+                  "repoUsername": "user"
+                },
+                "autoscalingPolicy": "autoscaling-policy-1",
+                "deploymentPolicy": "deployment-policy-2"
+              }
+            }
+          ],
+          "groupMaxInstances": 2,
+          "groupMinInstances": 1,
+          "groupScalingEnabled": true
+        }
+      ],
+      "cartridges": [
+        {
+          "type": "esb",
+          "cartridgeMax": 2,
+          "cartridgeMin": 1,
+          "subscribableInfo": {
+            "alias": "my-esb",
+            "artifactRepository": {
+              "privateRepo": true,
+              "repoPassword": "password",
+              "repoUrl": "http://xxx:10080/git/default.git",
+              "repoUsername": "user"
+            },
+            "autoscalingPolicy": "autoscaling-policy-1",
+            "deploymentPolicy": "deployment-policy-2"
+          }
+        }
+      ],
+      "dependencies": {
+        "scalingDependants": {
+          "@xsi.nil": "true"
+        },
+       "startupOrders": [
+          "group.my-dbgroup,group.my-appgroup","group.my-dbgroup,cartridge.my-esb"
+        ],
+        "terminationBehaviour": "terminate-none"
+      }
+    }
+  }

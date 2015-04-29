@@ -1,0 +1,14 @@
+{
+        "name": "db-group",
+        "cartridges": [
+            "mysql",
+            "postgres"
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-all"
+        ]
+        },
+        "groupScalingEnabled": true
+    }
+
+

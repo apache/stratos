@@ -1,5 +1,5 @@
 {
-    "type": "esb",
+    "type": "postgres",
     "provider": "apache",
     "host": "stratos.apache.org",
     "category": "data",

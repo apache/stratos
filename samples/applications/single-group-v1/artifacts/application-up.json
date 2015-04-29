@@ -1,0 +1,38 @@
+{
+    "applicationId": "single-group-v1",
+    "alias": "my-single-group-v1",
+    "components": {
+        "groups": [
+            {
+                "name": "group6",
+                "alias": "my-group6",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 6,
+                "deploymentPolicy":"deployment-policy-1",
+                "cartridges": [
+                    {
+                        "type": "tomcat1",
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 10,
+                        "subscribableInfo": {
+                            "alias": "my-tomcat1",
+                            "autoscalingPolicy": "autoscaling-policy-1",
+                            "artifactRepository":{
+                               "privateRepo":false,
+                               "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
+                               "repoUsername":"",
+                               "repoPassword":""
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "cartridges": [
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}
+

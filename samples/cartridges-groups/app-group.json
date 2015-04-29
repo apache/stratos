@@ -1,0 +1,15 @@
+{
+        "name": "app-group",
+        "cartridges": [
+            "tomcat",
+            "php"
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-all",
+	    "startupOrders": [
+            "cartridge.my-php,cartridge.my-tomcat"
+        ]
+        },
+        "groupScalingEnabled": true
+}
+

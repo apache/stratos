@@ -1,0 +1,9 @@
+{
+    "domainMappings": [
+        {
+            "cartridgeAlias":"my-php",
+            "domainName":"abc.com",
+            "contextPath":"/abc/app"
+        }
+    ]
+}
