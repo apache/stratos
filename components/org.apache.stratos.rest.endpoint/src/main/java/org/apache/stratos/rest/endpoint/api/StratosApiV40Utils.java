@@ -22,6 +22,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeAlreadyExistsExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
@@ -164,11 +165,9 @@ public class StratosApiV40Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage()
-                        .getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
+            } catch (AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException e) {
+                log.error(e.getMessage(), e);
+                throw new RestAPIException(e.getMessage(), e);
             }
 
         }

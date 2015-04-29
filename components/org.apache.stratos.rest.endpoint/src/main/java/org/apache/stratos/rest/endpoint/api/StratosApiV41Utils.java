@@ -57,8 +57,10 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
+import org.apache.stratos.common.exception.InvalidEmailException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
@@ -73,10 +75,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
-import org.apache.stratos.rest.endpoint.exception.ApplicationAlreadyDeployedException;
-import org.apache.stratos.rest.endpoint.exception.ApplicationAlreadyExistException;
-import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
+import org.apache.stratos.rest.endpoint.exception.*;
 import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -322,7 +321,8 @@ public class StratosApiV41Utils {
         List<CartridgeBean> cartridges = new ArrayList<CartridgeBean>();
 
         if (log.isDebugEnabled()) {
-            log.debug("Getting available cartridges. [Search String]: " + cartridgeSearchString + ", [Multi-Tenant]: " + multiTenant);
+            log.debug("Getting available cartridges. [Search String]: " + cartridgeSearchString + ", [Multi-Tenant]: "
+                    + multiTenant);
         }
 
 
@@ -551,7 +551,9 @@ public class StratosApiV41Utils {
 
     // Util methods for Autoscaling policies
 
-    public static void addAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
+    public static void addAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException,
+            AutoscalerServiceInvalidPolicyExceptionException,
+            AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException {
 
         log.info(String.format("Adding autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
@@ -562,26 +564,22 @@ public class StratosApiV41Utils {
                     convertToCCAutoscalerPojo(autoscalePolicyBean);
 
             try {
-                autoscalerServiceClient
-                        .addAutoscalingPolicy(autoscalePolicy);
+                autoscalerServiceClient.addAutoscalingPolicy(autoscalePolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage()
-                        .getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
             }
         }
     }
 
-    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException {
+    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
+            AutoscalerServiceInvalidPolicyExceptionException,
+            AutoscalerServiceInvalidApplicationPolicyExceptionException {
 
         if (applicationPolicyBean == null) {
             String msg = "Application policy bean is null";
             log.error(msg);
-            throw new RestAPIException(msg);
+            throw new ApplicationPolicyIsEmptyException(msg);
         }
 
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
@@ -591,29 +589,23 @@ public class StratosApiV41Utils {
             if (applicationPolicy == null) {
                 String msg = "Application policy is null";
                 log.error(msg);
-                throw new RestAPIException(msg);
+                throw new ApplicationPolicyIsEmptyException(msg);
             }
             serviceClient.addApplicationPolicy(applicationPolicy);
         } catch (RemoteException e) {
             String msg = "Could not add application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
-        } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-            String msg = "Could not add application policy. Invalid policy. " + e.getLocalizedMessage();
-            log.error(msg, e);
-            throw new RestAPIException(msg);
         } catch (AutoscalerServiceRemoteExceptionException e) {
             String msg = "Could not add application policy. " + e.getLocalizedMessage();
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
-            String msg = "Could not add application policy. Invalid application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
     }
 
-    public static void updateApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException {
+    public static void updateApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
+            AutoscalerServiceInvalidApplicationPolicyExceptionException,
+            AutoscalerServiceApplicatioinPolicyNotExistsExceptionException {
 
         log.info(String.format("Updating application policy: [id] %s", applicationPolicyBean.getId()));
 
@@ -629,17 +621,8 @@ public class StratosApiV41Utils {
                 String msg = "Could not update application policy" + e.getLocalizedMessage();
                 log.error(msg, e);
                 throw new RestAPIException(msg);
-            } catch (AutoscalerServiceApplicatioinPolicyNotExistsExceptionException e) {
-                String msg = "Could not update application policy. Application policy not exists" +
-                        e.getLocalizedMessage();
-                log.error(msg, e);
-                throw new RestAPIException(msg);
             } catch (AutoscalerServiceRemoteExceptionException e) {
                 String msg = "Could not update application policy" + e.getLocalizedMessage();
-                log.error(msg, e);
-                throw new RestAPIException(msg);
-            } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
-                String msg = "Could not update application policy. Invalid application policy" + e.getLocalizedMessage();
                 log.error(msg, e);
                 throw new RestAPIException(msg);
             }
@@ -667,39 +650,40 @@ public class StratosApiV41Utils {
         if (applicationPolicyId == null) {
             String msg = "Application policy bean id null";
             log.error(msg);
-            throw new RestAPIException(msg);
+            throw new ApplicationPolicyIdIsEmptyException(msg);
         }
 
         if (StringUtils.isBlank(applicationPolicyId)) {
             String msg = "Application policy id is empty";
             log.error(msg);
-            throw new RestAPIException(msg);
+            throw new ApplicationPolicyIdIsEmptyException(msg);
         }
 
         try {
             AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
             ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicy(applicationPolicyId);
             return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = String.format("Could not get application policy [application-policy-id] %s",
                     applicationPolicyId);
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
-    public static void removeApplicationPolicy(String applicationPolicyId) throws RestAPIException {
+    public static void removeApplicationPolicy(String applicationPolicyId) throws RestAPIException,
+            AutoscalerServiceInvalidPolicyExceptionException {
 
         if (applicationPolicyId == null) {
             String msg = "Application policy bean id null";
             log.error(msg);
-            throw new RestAPIException(msg);
+            throw new ApplicationPolicyIdIsEmptyException(msg);
         }
 
         if (StringUtils.isBlank(applicationPolicyId)) {
             String msg = "Application policy id is empty";
             log.error(msg);
-            throw new RestAPIException(msg);
+            throw new ApplicationPolicyIdIsEmptyException(msg);
         }
 
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
@@ -709,14 +693,11 @@ public class StratosApiV41Utils {
             String msg = "Could not remove application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
-        } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-            String msg = "Could not remove application policy. " + e.getLocalizedMessage();
-            log.error(msg, e);
-            throw new RestAPIException(msg);
         }
     }
 
-    public static void updateAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
+    public static void updateAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException,
+            AutoscalerServiceInvalidPolicyExceptionException {
 
         log.info(String.format("Updating autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
@@ -730,15 +711,13 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
             }
         }
     }
 
-    public static void removeAutoscalingPolicy(String autoscalePolicyId) throws RestAPIException {
+    public static void removeAutoscalingPolicy(String autoscalePolicyId) throws RestAPIException,
+            AutoscalerServicePolicyDoesNotExistExceptionException,
+            AutoscalerServiceUnremovablePolicyExceptionException {
 
         log.info(String.format("Removing autoscaling policy: [id] %s", autoscalePolicyId));
 
@@ -750,10 +729,6 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
             }
         }
     }
@@ -962,7 +937,8 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             ServiceGroup[] serviceGroups = asServiceClient.getServiceGroups();
-            if (serviceGroups == null || serviceGroups.length == 0 || (serviceGroups.length == 1 && serviceGroups[0] == null)) {
+            if (serviceGroups == null || serviceGroups.length == 0 || (serviceGroups.length == 1 && serviceGroups[0]
+                    == null)) {
                 return null;
             }
 
@@ -2003,7 +1979,8 @@ public class StratosApiV41Utils {
     }
 
     public static void addApplicationDomainMappings(
-            String applicationId, ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
+            String applicationId, ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException,
+            StratosManagerServiceDomainMappingExceptionException {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -2030,7 +2007,7 @@ public class StratosApiV41Utils {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = "Could not add domain mappings: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
@@ -2053,7 +2030,7 @@ public class StratosApiV41Utils {
 
     public static void removeApplicationDomainMappings(String applicationId,
                                                        ApplicationDomainMappingsBean domainMapppingsBean)
-            throws RestAPIException {
+            throws RestAPIException, StratosManagerServiceDomainMappingExceptionException {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -2070,14 +2047,15 @@ public class StratosApiV41Utils {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = "Could not remove domain mappings: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
     }
 
-    public static List<DomainMappingBean> getApplicationDomainMappings(String applicationId) throws RestAPIException {
+    public static List<DomainMappingBean> getApplicationDomainMappings(String applicationId) throws RestAPIException,
+            StratosManagerServiceDomainMappingExceptionException {
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             List<DomainMappingBean> domainMappingsBeans = new ArrayList<DomainMappingBean>();
@@ -2093,76 +2071,79 @@ public class StratosApiV41Utils {
                 }
             }
             return domainMappingsBeans;
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = "Could not get domain mappings: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
     }
 
-    public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean) {
+    public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean) throws RestAPIException,
+            CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.addNetworkPartition(
                     ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition(networkPartitionBean));
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = "Could not add network partition";
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
-    public static NetworkPartitionBean[] getNetworkPartitions() {
+    public static NetworkPartitionBean[] getNetworkPartitions() throws RestAPIException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions =
                     serviceClient.getNetworkPartitions();
             return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitions);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = "Could not get network partitions";
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
-    public static void removeNetworkPartition(String networkPartitionId) {
+    public static void removeNetworkPartition(String networkPartitionId) throws RestAPIException,
+            CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = String.format(
                     "Could not remove network partition: [network-partition-id] %s",
                     networkPartitionId);
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
-    public static NetworkPartitionBean getNetworkPartition(String networkPartitionId) {
+    public static NetworkPartitionBean getNetworkPartition(String networkPartitionId) throws RestAPIException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition =
                     serviceClient.getNetworkPartition(networkPartitionId);
             return ObjectConverter.convertCCStubNetworkPartitionToNetworkPartition(networkPartition);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = String.format(
                     "Could not get network partition: [network-partition-id] %s",
                     networkPartitionId);
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
-    public static void updateNetworkPartition(NetworkPartitionBean networkPartition) {
+    public static void updateNetworkPartition(NetworkPartitionBean networkPartition) throws RestAPIException,
+            CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.updateNetworkPartition(ObjectConverter.
                     convertNetworkPartitionToCCStubNetworkPartition(networkPartition));
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = String.format("Could not update network partition: [network-partition-id] %s,",
                     networkPartition.getId());
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
@@ -2172,7 +2153,9 @@ public class StratosApiV41Utils {
      * @param deployementPolicyDefinitionBean DeploymentPolicyBean
      */
     public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean)
-            throws RestAPIException {
+            throws RestAPIException,
+            AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException,
+            AutoscalerServiceInvalidDeploymentPolicyExceptionException{
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ",
@@ -2188,12 +2171,11 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
                         deployementPolicyDefinitionBean.getId()));
             }
-        } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
-            String msg =
-                    "Deployment policy already exists [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
+        } catch (RemoteException e) {
+            String msg = "Could not add deployment policy.";
             log.error(msg, e);
-            throw new RestAPIException(msg);
-        } catch (Exception e) {
+            throw new RestAPIException(msg, e);
+        } catch (AutoscalerServiceRemoteExceptionException e) {
             String msg = "Could not add deployment policy.";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -2217,7 +2199,7 @@ public class StratosApiV41Utils {
                 return null;
             }
             deploymentPolicyBean = ObjectConverter.convetCCStubDeploymentPolicytoDeploymentPolicy(deploymentPolicy);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String msg = "Could not find deployment policy: [deployment-policy-id] " + deploymentPolicyID;
             log.error(msg, e);
             throw new RestAPIException(msg);
@@ -2231,15 +2213,15 @@ public class StratosApiV41Utils {
      *
      * @return array of {@link DeploymentPolicyBean}
      */
-    public static DeploymentPolicyBean[] getDeployementPolicies() {
+    public static DeploymentPolicyBean[] getDeployementPolicies() throws RestAPIException {
         try {
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
                     = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
             return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String message = "Could not get deployment policies";
             log.error(message);
-            throw new RuntimeException(message, e);
+            throw new RestAPIException(message, e);
         }
     }
 
@@ -2250,7 +2232,9 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
-            throws RestAPIException {
+            throws RestAPIException, AutoscalerServiceInvalidPolicyExceptionException,
+            AutoscalerServiceInvalidDeploymentPolicyExceptionException,
+            AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Updating deployment policy: [deployment-policy-id] %s ",
@@ -2266,12 +2250,18 @@ public class StratosApiV41Utils {
                 log.debug(String.format("DeploymentPolicy updated successfully : [deployment-policy-id] %s ",
                         deploymentPolicyDefinitionBean.getId()));
             }
-        } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
-            String msg =
-                    "Deployment policy does not exist [Deployment-policy-id]" + deploymentPolicyDefinitionBean.getId();
+        } catch (RemoteException e) {
+
+            String msg = "Could not update deployment policy " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
-        } catch (Exception e) {
+        } catch (AutoscalerServiceCloudControllerConnectionExceptionException e) {
+
+            String msg = "Could not update deployment policy " + e.getLocalizedMessage();
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        } catch (AutoscalerServiceRemoteExceptionException e) {
+
             String msg = "Could not update deployment policy " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
@@ -2285,10 +2275,10 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void removeDeploymentPolicy(String deploymentPolicyID)
-            throws RestAPIException {
+            throws RestAPIException, AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
         try {
             AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyID);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             String msg = "Could not remove deployment policy " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
@@ -2298,7 +2288,7 @@ public class StratosApiV41Utils {
 
     public static ClusterBean getClusterInfo(String clusterId) throws RestAPIException {
         if (StringUtils.isEmpty(clusterId)) {
-            throw new RestAPIException("Cluster Id can not be empty");
+            throw new ClusterIdIsEmptyException("Cluster Id can not be empty");
         }
 
         Cluster cluster = TopologyManager.getTopology().getCluster(clusterId);
@@ -2317,14 +2307,13 @@ public class StratosApiV41Utils {
      * @param tenantInfoBean
      * @throws RestAPIException
      */
-    public static void addTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public static void addTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException,
+            InvalidEmailException {
 
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
-            String msg = "Invalid email is provided";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
+            throw new InvalidEmailException(e.getMessage());
         }
 
         String tenantDomain = tenantInfoBean.getTenantDomain();
@@ -2333,7 +2322,7 @@ public class StratosApiV41Utils {
         } catch (Exception e) {
             String msg = "Tenant domain validation error for tenant " + tenantDomain;
             log.error(msg, e);
-            throw new RestAPIException(msg);
+            throw new InvalidDomainException(msg);
         }
 
         UserRegistry userRegistry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext().
@@ -2407,7 +2396,8 @@ public class StratosApiV41Utils {
      * @param tenantInfoBean
      * @throws Exception
      */
-    public static void updateExistingTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws Exception {
+    public static void updateExistingTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws
+            Exception, InvalidEmailException {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         UserStoreManager userStoreManager;
