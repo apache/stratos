@@ -6,7 +6,6 @@
         ],
         "dependencies": {
             "terminationBehaviour": "terminate-all"
-        ]
         },
         "groupScalingEnabled": true
     }
