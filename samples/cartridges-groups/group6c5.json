@@ -1,6 +1,5 @@
 {
     "name": "group6",
-    "groupScalingEnabled": "true",
     "cartridges": [
         "tomcat1"
     ],

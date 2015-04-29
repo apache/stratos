@@ -1,6 +1,5 @@
 {
     "name": "mysql-php-group",
-    "groupScalingEnabled": "true",
     "cartridges": [
         "mysql",
         "php"

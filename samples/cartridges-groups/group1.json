@@ -3,7 +3,6 @@
     "groups": [
         {
             "name": "group2",
-            "groupScalingEnabled": "true",
             "cartridges": [
                 "c3",
                 "c2"

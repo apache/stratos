@@ -1,6 +1,5 @@
 {
     "name": "group2",
-    "groupScalingEnabled": "true",
     "cartridges": [
         "c2",
         "c3"

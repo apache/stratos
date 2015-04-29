@@ -1,6 +1,5 @@
 {
     "name": "esb-php-group",
-    "groupScalingEnabled": "true",
     "cartridges": [
         "esb",
         "php"

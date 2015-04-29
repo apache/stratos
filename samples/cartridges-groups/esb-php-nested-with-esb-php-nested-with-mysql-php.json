@@ -1,14 +1,11 @@
 {
     "name": "esb-php-nested-with-esb-php-nested-with-mysql-php",
-    "groupScalingEnabled": "true",
     "groups": [
         {
             "name": "esb-php-nested-with-mysql-php",
-            "groupScalingEnabled": "true",
     	    "groups": [
         	{
             	    "name": "mysql-php",
-            	    "groupScalingEnabled": "true",
             	    "cartridges": [
                   	   "mysql",
                 	   "php"

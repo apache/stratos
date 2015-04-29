@@ -1,6 +1,5 @@
 {
     "name": "n-level-nesting",
-    "groupScalingEnabled": "true",
     "groups": [
         {
             "name": "level-one-group",
