@@ -121,7 +121,8 @@ public class ClusterContext extends AbstractClusterContext {
 
         String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(),
                 AutoscalerUtil.getAliasFromClusterId(clusterId));
-        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
+        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
+                getDeploymentPolicy(deploymentPolicyName);
 
         if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             networkPartitionContext = this.networkPartitionCtxts.get(
@@ -140,7 +141,8 @@ public class ClusterContext extends AbstractClusterContext {
 
             if (networkPartition == null) {
                 //Parent should have the partition specified
-                networkPartitionContext = new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId());
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(
+                        clusterInstance.getNetworkPartitionId());
             } else {
                 networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getId(),
                         networkPartition.getPartitionAlgo(), 0);
@@ -159,9 +161,11 @@ public class ClusterContext extends AbstractClusterContext {
             this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionId(),
                     networkPartitionContext);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster instance context has been added to network partition, [cluster instance]" +
-                                " %s [network partition] %s", clusterInstance.getInstanceId(),
-                        clusterInstance.getNetworkPartitionId()));
+                log.info(String.format("Cluster instance context has been added to network partition," +
+                                " [application] %s [cluster] %s  [cluster instance] %s " +
+                                "[network partition] %s", cluster.getAppId(), cluster.getClusterId(),
+                                clusterInstance.getInstanceId(),
+                                clusterInstance.getNetworkPartitionId()));
             }
         }
 
@@ -174,8 +178,10 @@ public class ClusterContext extends AbstractClusterContext {
             boolean hasGroupScalingDependent, boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
-        String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(), AutoscalerUtil.getAliasFromClusterId(clusterId));
-        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
+        String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(),
+                AutoscalerUtil.getAliasFromClusterId(clusterId));
+        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
+                getDeploymentPolicy(deploymentPolicyName);
 
 
         NetworkPartition[] networkPartitions = deploymentPolicy
@@ -191,7 +197,8 @@ public class ClusterContext extends AbstractClusterContext {
         }
 
         if (partitions == null) {
-            String msg = "Partitions are null in deployment policy for [cluster-alias] "
+            String msg = "Partitions are null in deployment policy for [application] " +
+                    cluster.getAppId() + " [cluster-alias] "
                     + AutoscalerUtil.getAliasFromClusterId(clusterId);
             log.error(msg);
             throw new PolicyValidationException(msg);
@@ -230,7 +237,9 @@ public class ClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
 
         if (clusterLevelNetworkPartitionContext == null) {
-            String msg = "Network Partition is null in deployment policy : [cluster-alias]: " + clusterInstance.getAlias();
+            String msg = "Network Partition is null in deployment policy :  [application]" +
+                    cluster.getAppId() + "[cluster-alias]: " +
+                    clusterInstance.getAlias();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -239,14 +248,16 @@ public class ClusterContext extends AbstractClusterContext {
 
         //Getting the associated  partition
         if (clusterInstance.getPartitionId() == null && partition == null) {
-            String msg = "[Partition] " + clusterInstance.getPartitionId() + " for [networkPartition] " +
+            String msg = "[Partition] " + clusterInstance.getPartitionId() + " for [application] " +
+                    cluster.getAppId() +" [networkPartition] " +
                     clusterInstance.getNetworkPartitionId() + "is null " +
                     "in deployment policy: [cluster-alias]: " + clusterInstance.getAlias();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
 
-        ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
+        ClusterInstanceContext clusterInstanceContext =
+                (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
                 getInstanceContext(clusterInstance.getInstanceId());
         int maxInstances = 1;
         if (clusterInstanceContext == null) {
@@ -265,7 +276,8 @@ public class ClusterContext extends AbstractClusterContext {
             }
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     clusterLevelNetworkPartitionContext.getPartitionAlgorithm(),
-                    minInstances, maxInstances, nPartitionId, clusterId, hasScalingDependents, groupScalingEnabledSubtree);
+                    minInstances, maxInstances, nPartitionId, clusterId, hasScalingDependents,
+                    groupScalingEnabledSubtree);
         }
         String partitionId;
         if (partition != null) {
@@ -282,9 +294,11 @@ public class ClusterContext extends AbstractClusterContext {
         try {
 
             partitions = AutoscalerObjectConverter.convertCCPartitionsToPartitions(
-                    CloudControllerServiceClient.getInstance().getNetworkPartition(nPartitionId).getPartitions());
+                    CloudControllerServiceClient.getInstance().
+                            getNetworkPartition(nPartitionId).getPartitions());
         } catch (Exception e) {
-            String msg = String.format("Error while getting network partitioin from cloud controller : [network-partition-id] %s", nPartitionId);
+            String msg = String.format("Error while getting network partitioin from cloud controller " +
+                    ": [application] %s [network-partition-id] %s", cluster.getAppId(), nPartitionId);
             log.error(msg, e);
             throw new AutoScalerException(msg, e);
         }
@@ -312,15 +326,18 @@ public class ClusterContext extends AbstractClusterContext {
         //adding it to the monitors context
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Partition context has been added: [partition] %s",
+            log.info(String.format("Partition context has been added: [application] %s  [cluster] %s " +
+                            "[ClusterInstanceContext] %s [partition] %s", cluster.getAppId(),
+                    cluster.getClusterId(), clusterInstanceContext.getId(),
                     clusterLevelPartitionContext.getPartitionId()));
         }
 
         clusterLevelNetworkPartitionContext.addInstanceContext(clusterInstanceContext);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Cluster Instance context has been added: " +
-                    "[ClusterInstanceContext] %s", clusterInstanceContext.getId()));
+            log.info(String.format("Cluster Instance context has been added: [application] %s " +
+                            "[cluster] %s [ClusterInstanceContext] %s", cluster.getAppId(),
+                    cluster.getClusterId(), clusterInstanceContext.getId()));
         }
 
         return clusterLevelNetworkPartitionContext;
@@ -345,19 +362,31 @@ public class ClusterContext extends AbstractClusterContext {
                 if (MemberStatus.Active.equals(member.getStatus())) {
                     clusterLevelPartitionContext.addActiveMember(memberContext);
                     if (log.isDebugEnabled()) {
-                        String msg = String.format("Active member read from topology and added to active member list: %s", member.toString());
+                        String msg = String.format("Active member read from topology and added " +
+                                "to active member list: [application] %s [cluster] %s " +
+                                "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                                clusterLevelPartitionContext.getPartitionId(), member.toString());
                         log.debug(msg);
                     }
-                } else if (MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())) {
+                } else if (MemberStatus.Created.equals(member.getStatus()) ||
+                        MemberStatus.Starting.equals(member.getStatus())) {
                     clusterLevelPartitionContext.addPendingMember(memberContext);
                     if (log.isDebugEnabled()) {
-                        String msg = String.format("Pending member read from topology and added to pending member list: %s", member.toString());
+                        String msg = String.format("Pending member read from topology and added to " +
+                                "pending member list: [application] %s [cluster] %s " +
+                                "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                                clusterLevelPartitionContext.getPartitionId(), member.toString());
                         log.debug(msg);
                     }
                 }
                 clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Member stat context has been added: [member-id] %s", memberId));
+                    log.info(String.format("Member stat context has been added: [application] %s " +
+                            "[cluster] %s [clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                            cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                            clusterLevelPartitionContext.getPartitionId(), memberId));
                 }
             }
         }
