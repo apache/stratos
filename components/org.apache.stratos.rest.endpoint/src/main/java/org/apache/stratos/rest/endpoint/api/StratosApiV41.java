@@ -1277,7 +1277,7 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.removeAutoscalingPolicy(autoscalingPolicyId);
         } catch (AutoscalerServiceUnremovablePolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponseBean(
-                    Response.Status.NOT_ACCEPTABLE.getStatusCode(), e.getMessage())).build();
+                    Response.Status.NOT_ACCEPTABLE.getStatusCode(), "Autoscaling policy is in use")).build();
         } catch (AutoscalerServicePolicyDoesNotExistExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
