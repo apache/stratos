@@ -1162,27 +1162,37 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws
+            NonExistingKubernetesClusterException {
         return CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId);
     }
 
     @Override
-    public KubernetesMaster getMasterForKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public KubernetesMaster getMasterForKubernetesCluster(String kubernetesClusterId) throws
+            NonExistingKubernetesClusterException {
         return CloudControllerContext.getInstance().getKubernetesMasterInGroup(kubernetesClusterId);
     }
 
     @Override
-    public KubernetesHost[] getHostsForKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public KubernetesHost[] getHostsForKubernetesCluster(String kubernetesClusterId) throws
+            NonExistingKubernetesClusterException {
         return CloudControllerContext.getInstance().getKubernetesHostsInGroup(kubernetesClusterId);
     }
 
 
     @Override
-    public boolean addKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
+    public boolean addKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException,
+            KubernetesClusterAlreadyExistsException {
         if (kubernetesCluster == null) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster can not be null");
         }
 
+        try {
+            if(CloudControllerContext.getInstance().getKubernetesCluster(kubernetesCluster.getClusterId()) != null){
+                throw new KubernetesClusterAlreadyExistsException("Kubernetes cluster already exists");
+            }
+        } catch (NonExistingKubernetesClusterException ignore) {
+        }
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
