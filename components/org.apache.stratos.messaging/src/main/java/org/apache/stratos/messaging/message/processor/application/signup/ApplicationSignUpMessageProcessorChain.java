@@ -25,8 +25,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpAddedEventListener;
 import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpRemovedEventListener;
 import org.apache.stratos.messaging.listener.application.signup.CompleteApplicationSignUpsEventListener;
-import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
-import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**

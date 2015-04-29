@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.topology.locking;
 
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Topology;
 
 public class TopologyLockingTest {
 

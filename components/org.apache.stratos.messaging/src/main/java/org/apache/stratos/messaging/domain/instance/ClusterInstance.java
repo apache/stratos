@@ -20,8 +20,8 @@
 package org.apache.stratos.messaging.domain.instance;
 
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateTransitionBehavior;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateTransitionBehavior;
 
 import java.util.Stack;
 

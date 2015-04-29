@@ -20,7 +20,6 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterCreatedEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;

@@ -19,14 +19,10 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.apache.stratos.messaging.domain.topology.Port;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 
 
 /**

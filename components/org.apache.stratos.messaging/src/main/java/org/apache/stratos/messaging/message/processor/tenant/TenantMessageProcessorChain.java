@@ -22,7 +22,10 @@ package org.apache.stratos.messaging.message.processor.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.tenant.*;
+import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantCreatedEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantRemovedEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantUpdatedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**

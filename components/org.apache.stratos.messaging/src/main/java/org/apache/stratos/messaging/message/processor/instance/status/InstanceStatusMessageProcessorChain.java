@@ -22,17 +22,11 @@ package org.apache.stratos.messaging.message.processor.instance.status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceMaintenanceListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceReadyToShutdownEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.instance.notifier.ArtifactUpdateMessageProcessor;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceCleanupClusterNotifierMessageProcessor;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceCleanupMemberNotifierMessageProcessor;
 
 /**
  * Defines default instance notifier message processor chain.

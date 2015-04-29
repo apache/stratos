@@ -20,7 +20,8 @@
 package org.apache.stratos.messaging.event.tenant;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This event is fired when a tenant is subscribed to a service.

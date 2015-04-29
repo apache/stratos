@@ -28,7 +28,9 @@ import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 
-import javax.jms.*;
+import javax.jms.Message;
+import javax.jms.Topic;
+import javax.jms.TopicSession;
 
 /**
  * AMQP topic subscriber.

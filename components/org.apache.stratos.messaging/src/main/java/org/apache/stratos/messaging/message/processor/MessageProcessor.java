@@ -19,7 +19,6 @@
 
 package org.apache.stratos.messaging.message.processor;
 
-import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.EventObservable;
 
 /**

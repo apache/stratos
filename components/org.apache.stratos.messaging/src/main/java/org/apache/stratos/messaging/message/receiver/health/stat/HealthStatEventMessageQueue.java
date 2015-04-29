@@ -22,7 +22,6 @@ package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.stratos.messaging.domain.Message;
 
-import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**

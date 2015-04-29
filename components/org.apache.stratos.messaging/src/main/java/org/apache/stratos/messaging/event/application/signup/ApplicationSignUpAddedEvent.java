@@ -19,7 +19,6 @@
 
 package org.apache.stratos.messaging.event.application.signup;
 
-import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
