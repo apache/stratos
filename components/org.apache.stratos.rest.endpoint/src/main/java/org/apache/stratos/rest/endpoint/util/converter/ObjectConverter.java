@@ -1316,7 +1316,7 @@ public class ObjectConverter {
             for (String item : dependencyContext.getScalingDependents()) {
                 scalingDependents.add(item);
             }
-            dependencyDefinitions.setScalingDependants(scalingDependents);
+            dependencyDefinitions.setScalingDependents(scalingDependents);
         }
         return dependencyDefinitions;
     }
@@ -1533,9 +1533,9 @@ public class ObjectConverter {
                 startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
                 dependencyContext.setStartupOrdersContexts(startupOrders);
             }
-            if (dependencyDefinitions.getScalingDependants() != null) {
-                String[] scalingDependents = new String[dependencyDefinitions.getScalingDependants().size()];
-                scalingDependents = dependencyDefinitions.getScalingDependants().toArray(scalingDependents);
+            if (dependencyDefinitions.getScalingDependents() != null) {
+                String[] scalingDependents = new String[dependencyDefinitions.getScalingDependents().size()];
+                scalingDependents = dependencyDefinitions.getScalingDependents().toArray(scalingDependents);
                 dependencyContext.setScalingDependents(scalingDependents);
             }
         }
@@ -1785,9 +1785,9 @@ public class ObjectConverter {
             // validate termination behavior
             validateTerminationBehavior(depDefs.getTerminationBehaviour());
             dependencies.setTerminationBehaviour(depDefs.getTerminationBehaviour());
-            if (depDefs.getScalingDependants() != null) {
-                dependencies.setScalingDependants(depDefs.getScalingDependants()
-                        .toArray(new String[depDefs.getScalingDependants().size()]));
+            if (depDefs.getScalingDependents() != null) {
+                dependencies.setScalingDependants(depDefs.getScalingDependents()
+                        .toArray(new String[depDefs.getScalingDependents().size()]));
             }
             servicegroup.setDependencies(dependencies);
         }
@@ -1825,7 +1825,7 @@ public class ObjectConverter {
             String[] scalingDependants = deps.getScalingDependants();
             if (scalingDependants != null && scalingDependants[0] != null) {
                 List<String> scalingDependenciesDef = Arrays.asList(scalingDependants);
-                depsDef.setScalingDependants(scalingDependenciesDef);
+                depsDef.setScalingDependents(scalingDependenciesDef);
             }
 
             depsDef.setTerminationBehaviour(deps.getTerminationBehaviour());

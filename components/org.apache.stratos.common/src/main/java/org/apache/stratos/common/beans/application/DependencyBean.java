@@ -29,7 +29,7 @@ public class DependencyBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<String> startupOrders;
-    private List<String> scalingDependants;
+    private List<String> scalingDependents;
     private String terminationBehaviour;
 
     public String getTerminationBehaviour() {
@@ -48,12 +48,12 @@ public class DependencyBean implements Serializable {
         this.startupOrders = startupOrders;
     }
 
-    public List<String> getScalingDependants() {
-        return scalingDependants;
+    public List<String> getScalingDependents() {
+        return scalingDependents;
     }
 
-    public void setScalingDependants(List<String> scalingDependants) {
-        this.scalingDependants = scalingDependants;
+    public void setScalingDependents(List<String> scalingDependants) {
+        this.scalingDependents = scalingDependants;
     }
 
 }
