@@ -77,19 +77,19 @@ public class Topology implements Serializable {
         return this.serviceMap.containsKey(serviceName);
     }
 
-    public void addToCluterMap(Cluster cluster){
+    public void addToCluterMap(Cluster cluster) {
         this.clusterMap.put(cluster.getClusterId(), cluster);
     }
 
-    public void removeFromClusterMap(String cluserId){
+    public void removeFromClusterMap(String cluserId) {
         clusterMap.remove(cluserId);
     }
 
-    public Cluster getCluster(String clusterId){
+    public Cluster getCluster(String clusterId) {
         return this.clusterMap.get(clusterId);
     }
 
-    public boolean clusterExist(String clusterId){
+    public boolean clusterExist(String clusterId) {
         return clusterMap.get(clusterId) != null;
     }
 

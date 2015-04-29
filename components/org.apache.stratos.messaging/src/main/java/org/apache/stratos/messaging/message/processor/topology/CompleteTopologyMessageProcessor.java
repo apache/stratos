@@ -94,9 +94,9 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             for (Cluster cluster : service.getClusters()) {
                 if (TopologyClusterFilter.apply(cluster.getClusterId())) {
                     clustersToRemove.add(cluster);
-                }else{
+                } else {
                     // Add non filtered clusters to clusterId-cluster map
-                    if(!topology.clusterExist(cluster.getClusterId())){
+                    if (!topology.clusterExist(cluster.getClusterId())) {
                         topology.addToCluterMap(cluster);
                     }
                 }

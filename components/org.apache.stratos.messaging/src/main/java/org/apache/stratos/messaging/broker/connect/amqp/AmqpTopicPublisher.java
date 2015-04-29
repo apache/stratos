@@ -95,9 +95,9 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
                 }
                 // Try to reconnect
                 reconnect();
-            }finally {
+            } finally {
 
-                try{
+                try {
                     if (topicSession != null) {
                         topicSession.close();
                     }
@@ -105,7 +105,7 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
                         topicPublisher.close();
                     }
 
-                }catch (JMSException e) {
+                } catch (JMSException e) {
                     message = "Error cleaning up pubisher";
                     log.error(message, e);
                     throw new MessagingException(message, e);

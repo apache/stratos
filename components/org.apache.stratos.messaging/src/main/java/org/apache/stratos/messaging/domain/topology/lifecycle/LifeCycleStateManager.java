@@ -128,7 +128,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      */
     public T getPreviousState() {
         int index = stateStack.size() - 2;
-        if((index >= 0) && (index < stateStack.size())) {
+        if ((index >= 0) && (index < stateStack.size())) {
             return stateStack.get(index);
         }
         return null;

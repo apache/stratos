@@ -19,10 +19,10 @@
 
 package org.apache.stratos.cloud.controller.domain;
 
+import org.apache.stratos.common.Properties;
+
 import java.io.Serializable;
 import java.util.Arrays;
-
-import org.apache.stratos.common.Properties;
 
 
 /**
