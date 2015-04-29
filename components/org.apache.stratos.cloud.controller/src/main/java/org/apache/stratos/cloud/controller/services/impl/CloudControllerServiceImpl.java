@@ -1188,7 +1188,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         try {
-            if(CloudControllerContext.getInstance().getKubernetesCluster(kubernetesCluster.getClusterId()) != null){
+            if (CloudControllerContext.getInstance().getKubernetesCluster(kubernetesCluster.getClusterId()) != null) {
                 throw new KubernetesClusterAlreadyExistsException("Kubernetes cluster already exists");
             }
         } catch (NonExistingKubernetesClusterException ignore) {
