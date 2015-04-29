@@ -152,9 +152,10 @@ public class RestCommandLineService {
 
     /**
      * Authenticate and login to stratos server.
-     * @param serverURL URL of the server
-     * @param username username
-     * @param password password
+     *
+     * @param serverURL     URL of the server
+     * @param username      username
+     * @param password      password
      * @param validateLogin validate login
      * @return boolean
      * @throws Exception
@@ -238,9 +239,10 @@ public class RestCommandLineService {
 
     /**
      * Initialize the rest client and set username and password of the user
+     *
      * @param serverURL server URL
-     * @param username username
-     * @param password password
+     * @param username  username
+     * @param password  password
      * @throws AxisFault
      */
     private void initializeRestClient(String serverURL, String username, String password) throws AxisFault {
@@ -267,6 +269,7 @@ public class RestCommandLineService {
 
     /**
      * List available cartridges
+     *
      * @throws CommandException
      */
     public void listCartridges() throws CommandException {
@@ -308,6 +311,7 @@ public class RestCommandLineService {
 
     /**
      * List cartridges By Filter
+     *
      * @param filter cartridge-type
      * @throws CommandException
      */
@@ -353,6 +357,7 @@ public class RestCommandLineService {
 
     /**
      * List cartridge groups
+     *
      * @throws CommandException
      */
     public void listCartridgeGroups() throws CommandException {
@@ -389,6 +394,7 @@ public class RestCommandLineService {
 
     /**
      * Describe a cartridge
+     *
      * @param cartridgeType Type of the cartridge
      * @throws CommandException
      */
@@ -464,12 +470,13 @@ public class RestCommandLineService {
 
     /**
      * Add new tenant
-     * @param admin username
+     *
+     * @param admin     username
      * @param firstName first name
-     * @param lastName last name
-     * @param password password
-     * @param domain domain name
-     * @param email email
+     * @param lastName  last name
+     * @param password  password
+     * @param domain    domain name
+     * @param email     email
      * @throws CommandException
      */
     public void addTenant(String admin, String firstName, String lastName, String password, String domain, String email)
@@ -507,6 +514,7 @@ public class RestCommandLineService {
 
     /**
      * Describe a tenant
+     *
      * @param domainName domain name
      * @throws org.apache.stratos.cli.exception.CommandException
      */
@@ -547,6 +555,7 @@ public class RestCommandLineService {
 
     /**
      * List tenants by a partial domain search
+     *
      * @param partialDomain Part of the domain name
      * @throws org.apache.stratos.cli.exception.CommandException
      */
@@ -587,13 +596,14 @@ public class RestCommandLineService {
 
     /**
      * Update an existing tenant
-     * @param id tenant id
-     * @param admin username
+     *
+     * @param id        tenant id
+     * @param admin     username
      * @param firstName first name
-     * @param lastName last name
-     * @param password password
-     * @param domain domain name
-     * @param email email
+     * @param lastName  last name
+     * @param password  password
+     * @param domain    domain name
+     * @param email     email
      * @throws CommandException
      */
     public void updateTenant(int id, String admin, String firstName, String lastName, String password, String domain, String email)
@@ -633,12 +643,13 @@ public class RestCommandLineService {
 
     /**
      * Add user
-     * @param userName username
-     * @param credential password
-     * @param role user role
-     * @param firstName first name
-     * @param lastName last name
-     * @param email email
+     *
+     * @param userName    username
+     * @param credential  password
+     * @param role        user role
+     * @param firstName   first name
+     * @param lastName    last name
+     * @param email       email
      * @param profileName profile name
      * @throws CommandException
      */
@@ -679,12 +690,13 @@ public class RestCommandLineService {
 
     /**
      * Update user
-     * @param userName username
-     * @param credential password
-     * @param role user role
-     * @param firstName first name
-     * @param lastName last name
-     * @param email email
+     *
+     * @param userName    username
+     * @param credential  password
+     * @param role        user role
+     * @param firstName   first name
+     * @param lastName    last name
+     * @param email       email
      * @param profileName profile name
      * @throws CommandException
      */
@@ -725,6 +737,7 @@ public class RestCommandLineService {
 
     /**
      * Delete tenant
+     *
      * @param tenantDomain domain name of the tenant
      * @throws CommandException
      */
@@ -757,6 +770,7 @@ public class RestCommandLineService {
 
     /**
      * Delete user
+     *
      * @param userName username
      * @throws CommandException
      */
@@ -789,6 +803,7 @@ public class RestCommandLineService {
 
     /**
      * Deactivate tenant
+     *
      * @param tenantDomain domain name of the tenant
      * @throws CommandException
      */
@@ -822,6 +837,7 @@ public class RestCommandLineService {
 
     /**
      * Activate tenant
+     *
      * @param tenantDomain domain name of the tenant
      * @throws CommandException
      */
@@ -854,6 +870,7 @@ public class RestCommandLineService {
 
     /**
      * List tenants
+     *
      * @throws CommandException
      */
     public void listTenants() throws CommandException {
@@ -893,6 +910,7 @@ public class RestCommandLineService {
 
     /**
      * List all users
+     *
      * @throws CommandException
      */
     public void listAllUsers() throws CommandException {
@@ -929,6 +947,7 @@ public class RestCommandLineService {
 
     /**
      * Add cartridge
+     *
      * @param cartridgeDefinition cartridge definition
      * @throws CommandException
      */
@@ -938,6 +957,7 @@ public class RestCommandLineService {
 
     /**
      * Update cartridge
+     *
      * @param cartridgeDefinition cartridge definition
      * @throws CommandException
      */
@@ -947,6 +967,7 @@ public class RestCommandLineService {
 
     /**
      * Undeploy cartridge
+     *
      * @param cartridgeId cartridge Id
      * @throws CommandException
      */
@@ -956,6 +977,7 @@ public class RestCommandLineService {
 
     /**
      * Deploy autoscaling policy
+     *
      * @param autoScalingPolicy autoscaling policy definition
      * @throws CommandException
      */
@@ -965,6 +987,7 @@ public class RestCommandLineService {
 
     /**
      * Update autoscaling policy
+     *
      * @param autoScalingPolicy autoscaling policy definition
      * @throws CommandException
      */
@@ -974,6 +997,7 @@ public class RestCommandLineService {
 
     /**
      * List applications
+     *
      * @throws CommandException
      */
     public void listApplications() throws CommandException {
@@ -1011,6 +1035,7 @@ public class RestCommandLineService {
 
     /**
      * List autoscaling policies
+     *
      * @throws CommandException
      */
     public void listAutoscalingPolicies() throws CommandException {
@@ -1048,6 +1073,7 @@ public class RestCommandLineService {
 
     /**
      * Describe deployment policy
+     *
      * @param deploymentPolicyId deployment policy id
      * @throws CommandException
      */
@@ -1071,6 +1097,7 @@ public class RestCommandLineService {
 
     /**
      * Describe application policy
+     *
      * @param applicationPolicyId application policy id
      * @throws CommandException
      */
@@ -1094,6 +1121,7 @@ public class RestCommandLineService {
 
     /**
      * Describe autoscaling policy
+     *
      * @param autoscalingPolicyId application policy id
      * @throws CommandException
      */
@@ -1117,6 +1145,7 @@ public class RestCommandLineService {
 
     /**
      * Add Kubernetes Cluster
+     *
      * @param entityBody Kubernetes Cluster definition
      * @throws CommandException
      */
@@ -1126,6 +1155,7 @@ public class RestCommandLineService {
 
     /**
      * List Kubernetes Clusters
+     *
      * @throws CommandException
      */
     public void listKubernetesClusters() throws CommandException {
@@ -1159,6 +1189,7 @@ public class RestCommandLineService {
 
     /**
      * Undeploy Kubernetes Cluster
+     *
      * @param clusterId cluster id
      * @throws CommandException
      */
@@ -1168,8 +1199,9 @@ public class RestCommandLineService {
 
     /**
      * Add Kubernetes Host
+     *
      * @param entityBody kubernetes host definition
-     * @param clusterId cluster id
+     * @param clusterId  cluster id
      * @throws CommandException
      */
     public void addKubernetesHost(String entityBody, String clusterId) throws CommandException {
@@ -1201,6 +1233,7 @@ public class RestCommandLineService {
 
     /**
      * List Kubernetes Hosts
+     *
      * @param clusterId cluster id
      * @throws CommandException
      */
@@ -1242,6 +1275,7 @@ public class RestCommandLineService {
 
     /**
      * Get the master of a Kubernetes Cluster
+     *
      * @param clusterId cluster id
      * @throws CommandException
      */
@@ -1268,6 +1302,7 @@ public class RestCommandLineService {
 
     /**
      * Describe a Kubernetes cluster
+     *
      * @param clusterId cluster id
      * @throws CommandException
      */
@@ -1294,7 +1329,8 @@ public class RestCommandLineService {
 
     /**
      * Add Domain mappings
-     * @param applicationId application id
+     *
+     * @param applicationId       application id
      * @param resourceFileContent domain mapping definition
      * @throws CommandException
      */
@@ -1305,6 +1341,7 @@ public class RestCommandLineService {
 
     /**
      * List domain mappings
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1341,6 +1378,7 @@ public class RestCommandLineService {
 
     /**
      * Remove Domain Mappings
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1351,8 +1389,9 @@ public class RestCommandLineService {
 
     /**
      * Undeploy Kubernetes Host
+     *
      * @param clusterId cluster id
-     * @param hostId host id
+     * @param hostId    host id
      * @throws CommandException
      */
     public void undeployKubernetesHost(String clusterId, String hostId) throws CommandException {
@@ -1361,8 +1400,9 @@ public class RestCommandLineService {
 
     /**
      * Update Kubernetes Master
+     *
      * @param entityBody Kubernetes master definition
-     * @param clusterId cluster id
+     * @param clusterId  cluster id
      * @throws CommandException
      */
     public void updateKubernetesMaster(String entityBody, String clusterId) throws CommandException {
@@ -1372,9 +1412,10 @@ public class RestCommandLineService {
 
     /**
      * Update Kubernetes Host
+     *
      * @param entityBody Kubernetes host definition
-     * @param clusterId cluster id
-     * @param hostId host id
+     * @param clusterId  cluster id
+     * @param hostId     host id
      * @throws CommandException
      */
     public void updateKubernetesHost(String entityBody, String clusterId, String hostId) throws CommandException {
@@ -1384,6 +1425,7 @@ public class RestCommandLineService {
 
     /**
      * Synchronize artifacts
+     *
      * @param cartridgeAlias alias of the cartridge
      * @throws CommandException
      */
@@ -1413,6 +1455,7 @@ public class RestCommandLineService {
 
     /**
      * Add cartridge group
+     *
      * @param entityBody cartridge group definition
      * @throws CommandException
      */
@@ -1422,6 +1465,7 @@ public class RestCommandLineService {
 
     /**
      * Undeploy Cartridge group
+     *
      * @param groupDefinitionName cartridge group name
      * @throws CommandException
      */
@@ -1431,6 +1475,7 @@ public class RestCommandLineService {
 
     /**
      * Describe service group
+     *
      * @param groupDefinitionName cartridge group name
      * @throws CommandException
      */
@@ -1454,6 +1499,7 @@ public class RestCommandLineService {
 
     /**
      * Add application
+     *
      * @param entityBody application definition
      * @throws CommandException
      */
@@ -1463,7 +1509,8 @@ public class RestCommandLineService {
 
     /**
      * Deploy application
-     * @param applicationId application id
+     *
+     * @param applicationId       application id
      * @param applicationPolicyId application policy id
      * @throws CommandException
      */
@@ -1499,6 +1546,7 @@ public class RestCommandLineService {
 
     /**
      * Undeploy application
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1531,9 +1579,9 @@ public class RestCommandLineService {
 
     /**
      * Remove application
-     * @param applicationId  application id
-     * @throws CommandException
-     * This method helps to remove applications
+     *
+     * @param applicationId application id
+     * @throws CommandException This method helps to remove applications
      */
     public void deleteApplication(String applicationId) throws CommandException {
         restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{appId}", applicationId), applicationId,
@@ -1542,7 +1590,8 @@ public class RestCommandLineService {
 
     /**
      * Delete autoscaling policy
-     * @param autoscalingPolicyId  autoscaling policy id
+     *
+     * @param autoscalingPolicyId autoscaling policy id
      * @throws CommandException
      */
     public void deleteAutoSclaingPolicy(String autoscalingPolicyId) throws CommandException {
@@ -1552,6 +1601,7 @@ public class RestCommandLineService {
 
     /**
      * Describe application
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1576,6 +1626,7 @@ public class RestCommandLineService {
 
     /**
      * Describe application runtime
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1600,8 +1651,9 @@ public class RestCommandLineService {
 
     /**
      * Add application signup
+     *
      * @param applicationId application id
-     * @param entityBody application signup definition
+     * @param entityBody    application signup definition
      * @throws CommandException
      */
     public void addApplicationSignup(String entityBody, String applicationId) throws CommandException {
@@ -1610,6 +1662,7 @@ public class RestCommandLineService {
 
     /**
      * Describe application signup
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1633,6 +1686,7 @@ public class RestCommandLineService {
 
     /**
      * Delete application signup
+     *
      * @param applicationId application id
      * @throws CommandException
      */
@@ -1643,6 +1697,7 @@ public class RestCommandLineService {
 
     /**
      * Handle exception
+     *
      * @throws CommandException
      */
     private void handleException(String key, Exception e, Object... args) throws CommandException {
@@ -1658,8 +1713,9 @@ public class RestCommandLineService {
 
     /**
      * Print error on console and log
+     *
      * @param message message
-     * @param e exception
+     * @param e       exception
      */
     private void printError(String message, Throwable e) {
         // CLI console only get system output
@@ -1670,6 +1726,7 @@ public class RestCommandLineService {
 
     /**
      * Add network partitions
+     *
      * @param networkPartitionDefinition network partition definition
      * @throws CommandException
      */
@@ -1679,6 +1736,7 @@ public class RestCommandLineService {
 
     /**
      * Remove network partition
+     *
      * @param networkPartitionId application id
      * @throws CommandException
      */
@@ -1689,6 +1747,7 @@ public class RestCommandLineService {
 
     /**
      * List network partitions
+     *
      * @throws CommandException
      */
     public void listNetworkPartitions() throws CommandException {
@@ -1726,6 +1785,7 @@ public class RestCommandLineService {
 
     /**
      * Update network partitions
+     *
      * @param networkPartitionDefinition network partition definition
      * @throws CommandException
      */
@@ -1735,6 +1795,7 @@ public class RestCommandLineService {
 
     /**
      * Describe a network partition
+     *
      * @param partitionId partition id
      * @throws CommandException
      */
@@ -1759,6 +1820,7 @@ public class RestCommandLineService {
 
     /**
      * Deploy deployment policy
+     *
      * @param deploymentPolicy deployment policy definition
      * @throws CommandException
      */
@@ -1768,6 +1830,7 @@ public class RestCommandLineService {
 
     /**
      * Deploy application policy
+     *
      * @param applicationPolicy application policy definition
      * @throws CommandException
      */
@@ -1777,6 +1840,7 @@ public class RestCommandLineService {
 
     /**
      * Update deployment policy
+     *
      * @param deploymentPolicy deployment policy definition
      * @throws CommandException
      */
@@ -1786,6 +1850,7 @@ public class RestCommandLineService {
 
     /**
      * Delete deployment policy
+     *
      * @param deploymentPolicyId deployment policy definition
      * @throws CommandException
      */
@@ -1796,6 +1861,7 @@ public class RestCommandLineService {
 
     /**
      * List deployment policies
+     *
      * @throws CommandException
      */
     public void listDeploymentPolicies() throws CommandException {
@@ -1833,6 +1899,7 @@ public class RestCommandLineService {
 
     /**
      * List application policies
+     *
      * @throws CommandException
      */
     public void listApplicationPolicies() throws CommandException {
@@ -1872,6 +1939,7 @@ public class RestCommandLineService {
     /**
      * Delete application policy
      * param applicationPolicyId application policy id
+     *
      * @throws CommandException
      */
     public void deleteApplicationPolicy(String applicationPolicyId) throws CommandException {
@@ -1881,6 +1949,7 @@ public class RestCommandLineService {
 
     /**
      * Update application policy
+     *
      * @param applicationPolicy application policy definition
      * @throws CommandException
      */

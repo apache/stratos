@@ -38,7 +38,7 @@ public interface Command<T extends CommandContext> {
 
     /**
      * This should return the syntax required for the command.
-     *
+     * <p/>
      * Used to display help.
      *
      * @return The syntax for this command
@@ -55,15 +55,11 @@ public interface Command<T extends CommandContext> {
     /**
      * Executing the commands. Returns a code
      *
-     * @param context
-     *            The context assoicated with the Command Line Application
-     * @param args
-     *            The arguments for the command
-     * @param alreadyParsedOpts
-     *            Options parsed by any parent parsers.
+     * @param context           The context assoicated with the Command Line Application
+     * @param args              The arguments for the command
+     * @param alreadyParsedOpts Options parsed by any parent parsers.
      * @return The status code
-     * @throws org.apache.stratos.cli.exception.CommandException
-     *             if any errors occur when executing the command
+     * @throws org.apache.stratos.cli.exception.CommandException if any errors occur when executing the command
      */
     int execute(T context, String[] args, Option[] alreadyParsedOpts) throws CommandException;
 

@@ -46,10 +46,8 @@ public class CommandContext extends Observable {
     /**
      * Set property in the context
      *
-     * @param key
-     *            The key
-     * @param o
-     *            The value for the key
+     * @param key The key
+     * @param o   The value for the key
      * @return The previous value or null
      */
     public Object put(String key, Object o) {
@@ -62,8 +60,7 @@ public class CommandContext extends Observable {
     /**
      * Get property value from the context
      *
-     * @param key
-     *            The key
+     * @param key The key
      * @return The value
      */
     public Object getObject(String key) {
@@ -73,8 +70,7 @@ public class CommandContext extends Observable {
     /**
      * Get the string value, or null
      *
-     * @param key
-     *            The key
+     * @param key The key
      * @return The string value, or null.
      */
     public String getString(String key) {

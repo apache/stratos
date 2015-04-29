@@ -18,12 +18,12 @@
  */
 package org.apache.stratos.cli;
 
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
 
 /**
  * This class is used for input the commands through CLITool, command prompt.
@@ -35,8 +35,7 @@ public class CliTool {
     /**
      * Here is the place all the command line inputs get processed
      *
-     * @param arguments
-     *            passed to CLI tool.
+     * @param arguments passed to CLI tool.
      */
     void handleConsoleInputs(String[] arguments) {
         if (log.isInfoEnabled()) {

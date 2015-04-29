@@ -21,8 +21,6 @@ package org.apache.stratos.cli.exception;
 
 /**
  * To map RestApiException of back-end.
- *
- *
  */
 public class ExceptionMapper {
     @Override

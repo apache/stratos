@@ -18,27 +18,21 @@
  */
 package org.apache.stratos.cli.completer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
-import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.StratosApplication;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class CommandCompleter implements Completer {
 

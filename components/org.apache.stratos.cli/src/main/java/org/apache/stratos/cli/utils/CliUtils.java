@@ -128,6 +128,7 @@ public class CliUtils {
 
     /**
      * Extract HTTP response body as a string
+     *
      * @param response
      * @return
      */

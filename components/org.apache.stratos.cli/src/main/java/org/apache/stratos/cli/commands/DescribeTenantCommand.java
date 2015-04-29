@@ -29,7 +29,8 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**nant
+/**
+ * nant
  * Describe te command.
  */
 public class DescribeTenantCommand implements Command<StratosCommandContext> {

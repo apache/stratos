@@ -26,8 +26,6 @@ import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
 
 import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 

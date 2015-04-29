@@ -1,11 +1,10 @@
 package org.apache.stratos.cli.completer;
 
-import java.io.File;
-import java.util.List;
-
+import jline.console.completer.FileNameCompleter;
 import org.apache.stratos.cli.utils.CliConstants;
 
-import jline.console.completer.FileNameCompleter;
+import java.io.File;
+import java.util.List;
 
 public class StratosFileNameCompleter extends FileNameCompleter {
 

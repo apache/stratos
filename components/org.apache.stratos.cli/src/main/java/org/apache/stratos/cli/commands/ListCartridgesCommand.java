@@ -20,13 +20,13 @@ package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.stratos.cli.RestCommandLineService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * List available cartridges
