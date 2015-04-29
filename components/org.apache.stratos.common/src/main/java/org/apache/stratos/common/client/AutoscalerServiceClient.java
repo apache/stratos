@@ -157,7 +157,7 @@ public class AutoscalerServiceClient {
     }
 
     public boolean addAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
-            AutoscalerServiceInvalidPolicyExceptionException {
+            AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException {
         return stub.addAutoScalingPolicy(autoScalePolicy);
     }
 
@@ -167,7 +167,7 @@ public class AutoscalerServiceClient {
     }
 
     public boolean removeAutoscalingPolicy(String autoScalePolicyId) throws RemoteException,
-            AutoscalerServiceInvalidPolicyExceptionException {
+            AutoscalerServicePolicyDoesNotExistExceptionException, AutoscalerServiceUnremovablePolicyExceptionException {
         return stub.removeAutoScalingPolicy(autoScalePolicyId);
     }
 
@@ -198,7 +198,7 @@ public class AutoscalerServiceClient {
     }
 
     public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            AutoscalerServiceDeploymentPolicyNotExistsExceptionException, AutoscalerServiceRemoteExceptionException,
+            AutoscalerServiceRemoteExceptionException,
             AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException {
         stub.addDeployementPolicy(deploymentPolicy);
     }
