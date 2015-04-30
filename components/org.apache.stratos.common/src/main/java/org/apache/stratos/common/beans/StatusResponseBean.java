@@ -42,12 +42,12 @@ public class StatusResponseBean {
         this.statusCode = statusCode;
     }
 
-    public String getSuccessMessage() {
-        return successMessage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setSuccessMessage(String successMessage) {
-        this.successMessage = successMessage;
+    public void setMessage(String successMessage) {
+        this.message = successMessage;
     }
 
 
