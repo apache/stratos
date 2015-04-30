@@ -99,8 +99,16 @@ def update(data):
     raise NotImplementedError
 
 
-def delete(keys):
-    raise NotImplementedError
+def delete_property_value(property_name, value):
+    log.info("*********** removing property %s value %s " % (property_name, value))
+    opener = urllib2.build_opener(urllib2.HTTPHandler)
+    request = urllib2.Request(mds_url + "/metadata/api/application/" + app_id + "/property/" + property_name + "/value/" + value)
+    request.add_header("Authorization", "Bearer %s" % token)
+    request.add_header('Content-Type', 'application/json')
+    request.get_method = lambda: 'DELETE'
+    url = opener.open(request)
+
+    log.info("*********** property value removed %s " % (url))
 
 
 class MDSPutRequest:

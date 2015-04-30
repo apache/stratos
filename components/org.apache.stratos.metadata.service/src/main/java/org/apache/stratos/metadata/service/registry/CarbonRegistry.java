@@ -145,8 +145,12 @@ public class CarbonRegistry implements DataStore {
                     log.debug("Registry resource is create at path for application: " + nodeResource.getPath());
                 }
             }
+            
+            for(String value : property.getValues()){
+                //log.info(String.format("*** application property value is added to the registry key=%s value=%s", property.getKey(), value));
+                nodeResource.addProperty(property.getKey(), value);
+            }
 
-            nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
             registry.put(resourcePath, nodeResource);
             registry.commitTransaction();
 
@@ -159,6 +163,41 @@ public class CarbonRegistry implements DataStore {
             throw new RegistryException(msg, e);
         }
     }
+
+    public boolean removePropertyFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException {
+        Registry registry = getRegistry();
+        String resourcePath = mainResource + applicationId;
+
+        try {
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+            registry.beginTransaction();
+            Resource nodeResource;
+            if (registry.resourceExists(resourcePath)) {
+                nodeResource = registry.get(resourcePath);
+            } else {
+                log.warn(String.format("Registry [resource] %s not found ", resourcePath));
+                return false;
+            }
+
+            nodeResource.removePropertyValue(propertyName, valueToRemove);
+            registry.put(resourcePath, nodeResource);
+            registry.commitTransaction();
+
+            log.info(String.format("****** Application %s property %s value %s is removed from metadata ", applicationId, propertyName, valueToRemove));
+        } catch (Exception e) {
+            String msg = "Failed to persist properties in registry: " + resourcePath;
+            registry.rollbackTransaction();
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        }
+
+        return true;
+    }
+
+
 
     /**
      * Add property to cluster
@@ -203,6 +242,48 @@ public class CarbonRegistry implements DataStore {
             throw new RegistryException(msg, e);
         }
     }
+
+    public void addPropertyToGroup(String applicationId, String groupId, NewProperty property) throws RegistryException {
+        Registry registry = getRegistry();
+        String resourcePath = mainResource + applicationId + "/groups/" + groupId;
+
+        try {
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+            registry.beginTransaction();
+            Resource nodeResource = null;
+            if (registry.resourceExists(resourcePath)) {
+                nodeResource = registry.get(resourcePath);
+            } else {
+                nodeResource = registry.newResource();
+                if (log.isDebugEnabled()) {
+                    log.debug("Registry resource is create at path for cluster" + nodeResource.getPath() + " for cluster");
+                }
+            }
+
+            for(String value : property.getValues()){
+                log.info(String.format("*** groups property value is added to the registry key=%s value=%s", property.getKey(), value));
+                nodeResource.addProperty(property.getKey(), value);
+            }
+
+            registry.put(resourcePath, nodeResource);
+
+            registry.commitTransaction();
+
+            log.info(String.format("Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
+                    resourcePath, property.getKey(), Arrays.asList(property.getValues())));
+
+        } catch (Exception e) {
+            String msg = "Failed to persist properties in registry: " + resourcePath;
+            registry.rollbackTransaction();
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        }
+    }
+
+
 
     private UserRegistry getRegistry() throws RegistryException {
         return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();

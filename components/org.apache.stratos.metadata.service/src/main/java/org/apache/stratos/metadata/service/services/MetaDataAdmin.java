@@ -305,5 +305,25 @@ public class MetaDataAdmin {
         return Response.ok().build();
     }
 
+    @DELETE
+    @Path("application/{application_id}/property/{property_name}/value/{value}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response deleteApplicationPropertValue(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName,
+                                                  @PathParam("value") String propertyValue                      )
+            throws RestAPIException {
+
+        try {
+            log.info("***************************** application/{application_id}/property/{property_name}/value/{value}");
+            registry.removePropertyFromApplication(applicationId, propertyName, propertyValue);
+        } catch (RegistryException e) {
+            String msg = "Resource value deletion failed ";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+
+        return Response.ok().build();
+    }
 
 }
