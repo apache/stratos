@@ -1229,8 +1229,8 @@ public class StratosApiV41Utils {
     /**
      * This method is to validate the application definition to have unique aliases among its groups
      *
-     * @param applicationDefinition
-     * @return
+     * @param applicationDefinition - the application definition
+     * @throws RestAPIException
      */
     private static void validateGroupAliasesInApplicationDefinition(ApplicationBean applicationDefinition) throws RestAPIException {
 
@@ -1261,7 +1261,9 @@ public class StratosApiV41Utils {
      *
      * @param groupsSet - the group collection in which the groups are added to
      * @param groups - the group collection in which it traverses through
+     * @throws RestAPIException
      */
+
     private static void validateGroupsRecursively(ConcurrentHashMap<String, GroupReferenceBean> groupsSet,
                                                   Collection<GroupReferenceBean> groups) throws RestAPIException{
         for (GroupReferenceBean group : groups) {
