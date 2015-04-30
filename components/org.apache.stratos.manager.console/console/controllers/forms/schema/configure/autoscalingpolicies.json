@@ -26,14 +26,6 @@
             "maxItems":1,
             "format": "textarea"
         },
-        "isPublic": {
-            "type":"boolean",
-            "id": "root/isPublic",
-            "title": "Is Public",
-            "name": "Is Public",
-            "default": false,
-            "maxItems":1
-        },
 /*        "instanceRoundingFactor": {
             "type":"number",
             "id": "root/instanceRoundingFactor",
