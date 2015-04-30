@@ -18,7 +18,9 @@
 import paho.mqtt.publish as publish
 
 from .. event.instance.status.events import *
-from .. healthstatspublisher.healthstats import *
+from .. util.log import *
+from .. util import cartridgeagentutils
+import healthstats
 import constants
 from config import CartridgeAgentConfiguration
 
@@ -48,8 +50,16 @@ def publish_instance_started_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         partition_id = CartridgeAgentConfiguration().partition_id
 
-        instance_started_event = InstanceStartedEvent(application_id, service_name, cluster_id, cluster_instance_id, member_id,
-                                                      instance_id, network_partition_id, partition_id)
+        instance_started_event = InstanceStartedEvent(
+            application_id,
+            service_name,
+            cluster_id,
+            cluster_instance_id,
+            member_id,
+            instance_id,
+            network_partition_id,
+            partition_id)
+
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)
         started = True
@@ -58,7 +68,7 @@ def publish_instance_started_event():
         log.warn("Instance already started")
 
 
-def publish_instance_activated_event():
+def publish_instance_activated_event(health_stat_plugin):
     global activated, log
     if not activated:
         # Wait for all ports to be active
@@ -90,7 +100,10 @@ def publish_instance_activated_event():
             log.info("Instance activated event published")
             log.info("Starting health statistics notifier")
 
-            if CEPPublisherConfiguration.get_instance().enabled:
+            health_stat_publishing_enabled = True if CartridgeAgentConfiguration().read_property(
+                constants.CEP_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
+
+            if health_stat_publishing_enabled:
                 interval_default = 15  # seconds
                 interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval", False)
                 if interval is not None and len(interval) > 0:
@@ -101,7 +114,7 @@ def publish_instance_activated_event():
                 else:
                     interval = interval_default
 
-                health_stats_publisher = HealthStatisticsPublisherManager(interval)
+                health_stats_publisher = healthstats.HealthStatisticsPublisherManager(interval, health_stat_plugin)
                 log.info("Starting Health statistics publisher with interval %r" % interval)
                 health_stats_publisher.start()
             else:
@@ -110,7 +123,7 @@ def publish_instance_activated_event():
             activated = True
             log.info("Health statistics notifier started")
         else:
-            log.error("Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAddress] %s [Ports] %s"
+            log.error("Ports activation timed out. Aborting InstanceActivatedEvent publishing [IPAddress] %s [Ports] %s"
                       % (listen_address, configuration__ports))
     else:
         log.warn("Instance already activated")
@@ -129,8 +142,14 @@ def publish_maintenance_mode_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         partition_id = CartridgeAgentConfiguration().partition_id
 
-        instance_maintenance_mode_event = InstanceMaintenanceModeEvent(service_name, cluster_id, cluster_instance_id, member_id,
-                                                                       instance_id, network_partition_id, partition_id)
+        instance_maintenance_mode_event = InstanceMaintenanceModeEvent(
+            service_name,
+            cluster_id,
+            cluster_instance_id,
+            member_id,
+            instance_id,
+            network_partition_id,
+            partition_id)
 
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_MAINTENANCE_MODE_EVENT)
         publisher.publish(instance_maintenance_mode_event)

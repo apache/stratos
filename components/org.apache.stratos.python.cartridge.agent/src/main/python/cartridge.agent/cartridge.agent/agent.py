@@ -99,7 +99,7 @@ class CartridgeAgent(threading.Thread):
         if repo_url is None or str(repo_url).strip() == "":
             self.__log.info("No artifact repository found")
             self.__event_handler.on_instance_activated_event()
-            cartridgeagentpublisher.publish_instance_activated_event()
+            cartridgeagentpublisher.publish_instance_activated_event(self.__event_handler.health_stat_plugin)
         else:
             self.__log.info(
                 "Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s",

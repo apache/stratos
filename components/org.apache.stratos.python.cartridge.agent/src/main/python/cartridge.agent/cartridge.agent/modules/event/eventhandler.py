@@ -20,7 +20,7 @@ from threading import Thread
 
 from ..util import cartridgeagentutils
 from yapsy.PluginManager import PluginManager
-from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin
+from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin, IHealthStatReaderPlugin
 from ..artifactmgt.git.agentgithandler import *
 from ..artifactmgt.repository import Repository
 from config import CartridgeAgentConfiguration
@@ -35,6 +35,7 @@ from exception import ParameterNotFoundException
 AGENT_PLUGIN_EXT = "agent-plugin"
 ARTIFACT_MGT_PLUGIN = "ArtifactManagementPlugin"
 CARTRIDGE_AGENT_PLUGIN = "CartridgeAgentPlugin"
+HEALTH_STAT_PLUGIN = "HealthStatReaderPlugin"
 SUPER_TENANT_ID = -1234
 SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
 TENANT_REPO_PATH = "/repository/tenants/"
@@ -51,7 +52,7 @@ class EventHandler:
         self.__plugins = {}
         """ :type dict{str: [PluginInfo]} : """
         self.__artifact_mgt_plugins = []
-        self.__plugins, self.__artifact_mgt_plugins = self.initialize_plugins()
+        self.__plugins, self.__artifact_mgt_plugins, self.health_stat_plugin = self.initialize_plugins()
         self.__extension_executor = self.initialize_extensions()
 
     def on_instance_started_event(self):
@@ -117,7 +118,7 @@ class EventHandler:
 
             if subscribe_run:
                 # publish instanceActivated
-                cartridgeagentpublisher.publish_instance_activated_event()
+                cartridgeagentpublisher.publish_instance_activated_event(self.health_stat_plugin)
             elif updated:
                 # updated on pull
                 self.on_artifact_update_scheduler_event(tenant_id)
@@ -384,13 +385,15 @@ class EventHandler:
         try:
             # TODO: change plugin descriptor ext, plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
             plugins_dir = self.__config.read_property(constants.PLUGINS_DIR)
-            category_filter = {CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin, ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin}
+            category_filter = {CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin,
+                               ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin,
+                               HEALTH_STAT_PLUGIN: IHealthStatReaderPlugin}
 
             plugin_manager = EventHandler.create_plugin_manager(category_filter, plugins_dir)
 
             # activate cartridge agent plugins
             plugins = plugin_manager.getPluginsOfCategory(CARTRIDGE_AGENT_PLUGIN)
-            grouped_plugins = {}
+            grouped_ca_plugins = {}
             for plugin_info in plugins:
                 self.__log.debug("Found plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
@@ -399,19 +402,32 @@ class EventHandler:
                 mapped_events = plugin_info.description.split(",")
                 for mapped_event in mapped_events:
                     if mapped_event.strip() != "":
-                        if grouped_plugins.get(mapped_event) is None:
-                            grouped_plugins[mapped_event] = []
+                        if grouped_ca_plugins.get(mapped_event) is None:
+                            grouped_ca_plugins[mapped_event] = []
 
-                        grouped_plugins[mapped_event].append(plugin_info)
+                        grouped_ca_plugins[mapped_event].append(plugin_info)
 
             # activate artifact management plugins
             artifact_mgt_plugins = plugin_manager.getPluginsOfCategory(ARTIFACT_MGT_PLUGIN)
             for plugin_info in artifact_mgt_plugins:
+                # TODO: Fix this to only load the first plugin
                 self.__log.debug("Found artifact management plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
                 self.__log.info("Activated artifact management plugin [%s]" % plugin_info.name)
 
-            return grouped_plugins, artifact_mgt_plugins
+            health_stat_plugins = plugin_manager.getPluginsOfCategory(HEALTH_STAT_PLUGIN)
+            health_stat_plugin = None
+
+            # If there are any health stat reader plugins, load the first one and ignore the rest
+            if len(health_stat_plugins) > 0:
+                plugin_info = health_stat_plugins[0]
+                self.__log.debug("Found health statistics reader plugin [%s] at [%s]" %
+                                 (plugin_info.name, plugin_info.path))
+                plugin_manager.activatePluginByName(plugin_info.name)
+                self.__log.info("Activated health statistics reader plugin [%s]" % plugin_info.name)
+                health_stat_plugin = plugin_info
+
+            return grouped_ca_plugins, artifact_mgt_plugins, health_stat_plugin
         except ParameterNotFoundException as e:
             self.__log.exception("Could not load plugins. Plugins directory not set: %s" % e)
             return None, None

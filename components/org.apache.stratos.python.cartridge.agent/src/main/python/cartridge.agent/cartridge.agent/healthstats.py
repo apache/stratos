@@ -20,17 +20,16 @@ import multiprocessing
 
 import psutil
 
-from abstracthealthstatisticspublisher import *
-from ..databridge.agent import *
+from modules.databridge.agent import *
 from config import CartridgeAgentConfiguration
-from ..util import cartridgeagentutils
-from exception import ThriftReceiverOfflineException
+from modules.util import cartridgeagentutils
+from exception import ThriftReceiverOfflineException, CEPPublisherException
 import constants
 
 
 class HealthStatisticsPublisherManager(Thread):
     """
-    Read from an implementation of AbstractHealthStatisticsPublisher the value for memory usage and
+    Read from provided health stat reader plugin or the default health stat reader, the value for memory usage and
     load average and publishes them as ThriftEvents to a CEP server
     """
     STREAM_NAME = "cartridge_agent_health_stats"
@@ -38,9 +37,9 @@ class HealthStatisticsPublisherManager(Thread):
     STREAM_NICKNAME = "agent health stats"
     STREAM_DESCRIPTION = "agent health stats"
 
-    def __init__(self, publish_interval):
+    def __init__(self, publish_interval, health_stat_plugin):
         """
-        Initializes a new HealthStatistsPublisherManager with a given number of seconds as the interval
+        Initializes a new HealthStatisticsPublisherManager with a given number of seconds as the interval
         :param int publish_interval: Number of seconds as the interval
         :return: void
         """
@@ -55,16 +54,16 @@ class HealthStatisticsPublisherManager(Thread):
 
         self.publisher = HealthStatisticsPublisher()
         """:type : HealthStatisticsPublisher"""
-        # TODO: load plugins for the reader
-        self.stats_reader = DefaultHealthStatisticsReader()
-        """:type : AbstractHealthStatisticsReader"""
+        # If there are no health stat reader plugins, create the default reader instance
+        self.stats_reader = health_stat_plugin if health_stat_plugin is not None else DefaultHealthStatisticsReader()
 
     def run(self):
         while not self.terminated:
             time.sleep(self.publish_interval)
 
             try:
-                cartridge_stats = self.stats_reader.stat_cartridge_health()
+                ca_health_stat = CartridgeHealthStatistics()
+                cartridge_stats = self.stats_reader.stat_cartridge_health(ca_health_stat)
                 self.log.debug("Publishing memory consumption: %r" % cartridge_stats.memory_usage)
                 self.publisher.publish_memory_usage(cartridge_stats.memory_usage)
 
@@ -72,10 +71,7 @@ class HealthStatisticsPublisherManager(Thread):
                 self.publisher.publish_load_average(cartridge_stats.load_avg)
             except ThriftReceiverOfflineException:
                 self.log.error("Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
-                try:
-                    self.publisher = HealthStatisticsPublisher()
-                except:
-                    self.log.error("Couldn't connect. CEP Offline.")
+                self.publisher = HealthStatisticsPublisher()
 
         self.publisher.publisher.disconnect()
 
@@ -86,28 +82,55 @@ class HealthStatisticsPublisher:
     """
     log = LogFactory().get_log(__name__)
 
+    def read_config(self, conf_key):
+        """
+        Read a given key from the cartridge agent configuration
+        :param conf_key: The key to look for in the CA config
+        :return: The value for the key from the CA config
+        :raise: RuntimeError if the given key is not found in the CA config
+        """
+        if self.cartridge_agent_config is None:
+            self.cartridge_agent_config = CartridgeAgentConfiguration()
+
+        conf_value = self.cartridge_agent_config.read_property(conf_key, False)
+
+        if conf_value is None or conf_value.strip() == "":
+            raise RuntimeError("System property not found: " + conf_key)
+
+        return conf_value
+
     def __init__(self):
-
-        self.ports = []
-        self.ports.append(CEPPublisherConfiguration.get_instance().server_port)
-
         self.cartridge_agent_config = CartridgeAgentConfiguration()
 
+        self.ports = []
+        cep_port = self.read_config(constants.CEP_RECEIVER_PORT)
+        self.ports.append(cep_port)
+
+        cep_ip = self.read_config(constants.CEP_RECEIVER_IP)
+
         cartridgeagentutils.wait_until_ports_active(
-            CEPPublisherConfiguration.get_instance().server_ip,
+            cep_ip,
             self.ports,
             int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
-        cep_active = cartridgeagentutils.check_ports_active(CEPPublisherConfiguration.get_instance().server_ip, self.ports)
+
+        cep_active = cartridgeagentutils.check_ports_active(
+            cep_ip,
+            self.ports)
+
         if not cep_active:
             raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
 
+        cep_admin_username = self.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
+        cep_admin_password = self.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+
         self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
         HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
+
         self.publisher = ThriftPublisher(
-            CEPPublisherConfiguration.get_instance().server_ip,
-            CEPPublisherConfiguration.get_instance().server_port,
-            CEPPublisherConfiguration.get_instance().admin_username,
-            CEPPublisherConfiguration.get_instance().admin_password,
+            cep_ip,
+            cep_port,
+            cep_admin_username,
+            cep_admin_password,
             self.stream_definition)
 
         HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
@@ -148,8 +171,14 @@ class HealthStatisticsPublisher:
         event.payloadData.append(self.cartridge_agent_config.partition_id)
         event.payloadData.append(constants.MEMORY_CONSUMPTION)
         event.payloadData.append(float(memory_usage))
+        # event.payloadData.append(str(memory_usage))
 
-        HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [payload_data} %r [version] %r" % (self.stream_definition.name,event.payloadData, self.stream_definition.version))
+        HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [payload_data] %r [version] %r"
+                                            % (
+                                                self.stream_definition.name,
+                                                event.payloadData,
+                                                self.stream_definition.version))
+
         self.publisher.publish(event)
 
     def publish_load_average(self, load_avg):
@@ -166,26 +195,32 @@ class HealthStatisticsPublisher:
         event.payloadData.append(self.cartridge_agent_config.partition_id)
         event.payloadData.append(constants.LOAD_AVERAGE)
         event.payloadData.append(float(load_avg))
+        # event.payloadData.append(str(load_avg))
 
-        HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
+        HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [payload_data] %r [version] %r"
+                                            % (
+                                                self.stream_definition.name,
+                                                event.payloadData,
+                                                self.stream_definition.version))
+
         self.publisher.publish(event)
 
 
-class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
+class DefaultHealthStatisticsReader:
     """
-    Default implementation of the AbstractHealthStatisticsReader
+    Default implementation for the health statistics reader. If no Health Statistics Reader plugins are provided,
+    this will be used to read health stats from the instance.
     """
 
     def __init__(self):
         self.log = LogFactory().get_log(__name__)
 
-    def stat_cartridge_health(self):
-        cartridge_stats = CartridgeHealthStatistics()
-        cartridge_stats.memory_usage = DefaultHealthStatisticsReader.__read_mem_usage()
-        cartridge_stats.load_avg = DefaultHealthStatisticsReader.__read_load_avg()
+    def stat_cartridge_health(self, ca_health_stat):
+        ca_health_stat.memory_usage = DefaultHealthStatisticsReader.__read_mem_usage()
+        ca_health_stat.load_avg = DefaultHealthStatisticsReader.__read_load_avg()
 
-        self.log.debug("Memory read: %r, CPU read: %r" % (cartridge_stats.memory_usage, cartridge_stats.load_avg))
-        return cartridge_stats
+        self.log.debug("Memory read: %r, CPU read: %r" % (ca_health_stat.memory_usage, ca_health_stat.load_avg))
+        return ca_health_stat
 
     @staticmethod
     def __read_mem_usage():
@@ -199,63 +234,13 @@ class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
         return (one/cores) * 100
 
 
-class CEPPublisherConfiguration:
+class CartridgeHealthStatistics:
     """
-    TODO: Extract common functionality
+    Holds the memory usage and load average reading
     """
-
-    __instance = None
-    log = LogFactory().get_log(__name__)
-
-    @staticmethod
-    def get_instance():
-        """
-        Singleton instance retriever
-        :return: Instance
-        :rtype : CEPPublisherConfiguration
-        """
-        if CEPPublisherConfiguration.__instance is None:
-            CEPPublisherConfiguration.__instance = CEPPublisherConfiguration()
-
-        return CEPPublisherConfiguration.__instance
 
     def __init__(self):
-        self.enabled = False
-        self.server_ip = None
-        self.server_port = None
-        self.admin_username = None
-        self.admin_password = None
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
-
-        self.read_config()
-
-    def read_config(self):
-        self.enabled = True if self.cartridge_agent_config.read_property(
-            constants.CEP_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
-        if not self.enabled:
-            CEPPublisherConfiguration.log.info("CEP Publisher disabled")
-            return
-
-        CEPPublisherConfiguration.log.info("CEP Publisher enabled")
-
-        self.server_ip = self.cartridge_agent_config.read_property(
-            constants.CEP_RECEIVER_IP, False)
-        if self.server_ip is None or self.server_ip.strip() == "":
-            raise RuntimeError("System property not found: " + constants.CEP_RECEIVER_IP)
-
-        self.server_port = self.cartridge_agent_config.read_property(
-            constants.CEP_RECEIVER_PORT, False)
-        if self.server_port is None or self.server_port.strip() == "":
-            raise RuntimeError("System property not found: " + constants.CEP_RECEIVER_PORT)
-
-        self.admin_username = self.cartridge_agent_config.read_property(
-            constants.CEP_SERVER_ADMIN_USERNAME, False)
-        if self.admin_username is None or self.admin_username.strip() == "":
-            raise RuntimeError("System property not found: " + constants.CEP_SERVER_ADMIN_USERNAME)
-
-        self.admin_password = self.cartridge_agent_config.read_property(
-            constants.CEP_SERVER_ADMIN_PASSWORD, False)
-        if self.admin_password is None or self.admin_password.strip() == "":
-            raise RuntimeError("System property not found: " + constants.CEP_SERVER_ADMIN_PASSWORD)
-
-        CEPPublisherConfiguration.log.info("CEP Publisher configuration initialized")
+        self.memory_usage = None
+        """:type : float"""
+        self.load_avg = None
+        """:type : float"""

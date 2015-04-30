@@ -78,3 +78,12 @@ class ThriftReceiverOfflineException(CartridgeAgentException):
 
     def __init__(self, message):
         super(ThriftReceiverOfflineException, self).__init__(message)
+
+
+class CEPPublisherException(CartridgeAgentException):
+    """
+    Exception to be used during CEP publishing operations
+    """
+
+    def __init__(self, message):
+        super(CEPPublisherException, self).__init__(message)
