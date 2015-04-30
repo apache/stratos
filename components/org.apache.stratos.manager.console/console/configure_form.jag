@@ -104,7 +104,7 @@ if(isEdit == false && elements.action != 'new') {
 
         case "cartridges":
             formTitle = "Cartridge",
-                    buttonText = "Cartridge";
+                    buttonText = "Cartridge Definition";
             list_data = util.RESTCalls.getCartridges();
             if (list_data && list_data.length === 0) {
                 list_data = null;
