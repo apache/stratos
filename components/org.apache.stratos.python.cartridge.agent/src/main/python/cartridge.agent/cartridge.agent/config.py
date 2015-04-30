@@ -21,6 +21,8 @@ import os
 from modules.util.log import LogFactory
 from exception import ParameterNotFoundException
 import constants
+from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin, IHealthStatReaderPlugin
+from yapsy.PluginManager import PluginManager
 
 
 class Config:
@@ -28,12 +30,23 @@ class Config:
     Handles the configuration information of the particular Cartridge Agent
     """
 
+    AGENT_PLUGIN_EXT = "agent-plugin"
+    ARTIFACT_MGT_PLUGIN = "ArtifactManagementPlugin"
+    CARTRIDGE_AGENT_PLUGIN = "CartridgeAgentPlugin"
+    HEALTH_STAT_PLUGIN = "HealthStatReaderPlugin"
+
     # set log level
     log = LogFactory().get_log(__name__)
 
     payload_params = {}
     properties = None
     """ :type : ConfigParser.SafeConfigParser """
+
+    plugins = {}
+    """ :type dict{str: [PluginInfo]} : """
+    artifact_mgt_plugins = []
+    health_stat_plugin = None
+    extension_executor = None
 
     application_id = None
     """ :type : str """
@@ -362,3 +375,118 @@ class Config:
         Config.log.debug("artifact.update.interval: %r" % Config.artifact_update_interval)
         Config.log.debug("lvs-virtual-ip: %r" % Config.lvs_virtual_ip)
         Config.log.debug("log_file_paths: %s" % Config.log_file_paths)
+
+        Config.log.info("Initializing plugins")
+        Config.plugins, Config.artifact_mgt_plugins, Config.health_stat_plugin = Config.initialize_plugins()
+        Config.extension_executor = Config.initialize_extensions()
+
+    @staticmethod
+    def initialize_plugins():
+        """ Find, load, activate and group plugins for Python CA
+        :return: a tuple of (PluginManager, plugins, artifact management plugins)
+        """
+        Config.log.info("Collecting and loading plugins")
+
+        try:
+            # TODO: change plugin descriptor ext, plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
+            plugins_dir = Config.read_property(constants.PLUGINS_DIR)
+            category_filter = {Config.CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin,
+                               Config.ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin,
+                               Config.HEALTH_STAT_PLUGIN: IHealthStatReaderPlugin}
+
+            plugin_manager = Config.create_plugin_manager(category_filter, plugins_dir)
+
+            # activate cartridge agent plugins
+            plugins = plugin_manager.getPluginsOfCategory(Config.CARTRIDGE_AGENT_PLUGIN)
+            grouped_ca_plugins = {}
+            for plugin_info in plugins:
+                Config.log.debug("Found plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
+                plugin_manager.activatePluginByName(plugin_info.name)
+                Config.log.info("Activated plugin [%s]" % plugin_info.name)
+
+                mapped_events = plugin_info.description.split(",")
+                for mapped_event in mapped_events:
+                    if mapped_event.strip() != "":
+                        if grouped_ca_plugins.get(mapped_event) is None:
+                            grouped_ca_plugins[mapped_event] = []
+
+                        grouped_ca_plugins[mapped_event].append(plugin_info)
+
+            # activate artifact management plugins
+            artifact_mgt_plugins = plugin_manager.getPluginsOfCategory(Config.ARTIFACT_MGT_PLUGIN)
+            for plugin_info in artifact_mgt_plugins:
+                # TODO: Fix this to only load the first plugin
+                Config.log.debug("Found artifact management plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
+                plugin_manager.activatePluginByName(plugin_info.name)
+                Config.log.info("Activated artifact management plugin [%s]" % plugin_info.name)
+
+            health_stat_plugins = plugin_manager.getPluginsOfCategory(Config.HEALTH_STAT_PLUGIN)
+            health_stat_plugin = None
+
+            # If there are any health stat reader plugins, load the first one and ignore the rest
+            if len(health_stat_plugins) > 0:
+                plugin_info = health_stat_plugins[0]
+                Config.log.debug("Found health statistics reader plugin [%s] at [%s]" %
+                                 (plugin_info.name, plugin_info.path))
+                plugin_manager.activatePluginByName(plugin_info.name)
+                Config.log.info("Activated health statistics reader plugin [%s]" % plugin_info.name)
+                health_stat_plugin = plugin_info
+
+            return grouped_ca_plugins, artifact_mgt_plugins, health_stat_plugin
+        except ParameterNotFoundException as e:
+            Config.log.exception("Could not load plugins. Plugins directory not set: %s" % e)
+            return None, None
+        except Exception as e:
+            Config.log.exception("Error while loading plugin: %s" % e)
+            return None, None
+
+    @staticmethod
+    def initialize_extensions():
+        """ Find, load and activate extension scripts for Python CA. The extensions are mapped to the event by the
+        name used in the plugin descriptor.
+        :return:a tuple of (PluginManager, extensions)
+        """
+        Config.log.info("Collecting and loading extensions")
+
+        try:
+            extensions_dir = Config.read_property(constants.EXTENSIONS_DIR)
+            category_filter = {Config.CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin}
+
+            extension_manager = Config.create_plugin_manager(category_filter, extensions_dir)
+
+            all_extensions = extension_manager.getPluginsOfCategory(Config.CARTRIDGE_AGENT_PLUGIN)
+            for plugin_info in all_extensions:
+                try:
+                    Config.log.debug("Found extension executor [%s] at [%s]" % (plugin_info.name, plugin_info.path))
+                    extension_manager.activatePluginByName(plugin_info.name)
+                    extension_executor = plugin_info
+                    Config.log.info("Activated extension executor [%s]" % plugin_info.name)
+                    # extension executor found. break loop and return
+                    return extension_executor
+                except Exception as ignored:
+                    pass
+
+            # no extension executor plugin could be loaded or activated
+            raise RuntimeError("Couldn't activated any ExtensionExecutor plugin")
+        except ParameterNotFoundException as e:
+            Config.log.exception("Could not load extensions. Extensions directory not set: %s" % e)
+            return None
+        except Exception as e:
+            Config.log.exception("Error while loading extension: %s" % e)
+            return None
+
+    @staticmethod
+    def create_plugin_manager(category_filter, plugin_place):
+        """ Creates a PluginManager object from the given folder according to the given filter
+        :param category_filter:
+        :param plugin_place:
+        :return:
+        :rtype: PluginManager
+        """
+        plugin_manager = PluginManager()
+        plugin_manager.setCategoriesFilter(category_filter)
+        plugin_manager.setPluginPlaces([plugin_place])
+
+        plugin_manager.collectPlugins()
+
+        return plugin_manager

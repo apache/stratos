@@ -19,8 +19,6 @@ import json
 from threading import Thread
 
 from ..util import cartridgeagentutils
-from yapsy.PluginManager import PluginManager
-from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin, IHealthStatReaderPlugin
 from ..artifactmgt.git.agentgithandler import *
 from ..artifactmgt.repository import Repository
 from config import Config
@@ -29,13 +27,7 @@ from ..topology.topologycontext import *
 from ..tenant.tenantcontext import *
 from ..util.log import LogFactory
 import constants
-from exception import ParameterNotFoundException
 
-
-AGENT_PLUGIN_EXT = "agent-plugin"
-ARTIFACT_MGT_PLUGIN = "ArtifactManagementPlugin"
-CARTRIDGE_AGENT_PLUGIN = "CartridgeAgentPlugin"
-HEALTH_STAT_PLUGIN = "HealthStatReaderPlugin"
 SUPER_TENANT_ID = -1234
 SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
 TENANT_REPO_PATH = "/repository/tenants/"
@@ -48,11 +40,6 @@ class EventHandler:
 
     def __init__(self):
         self.__log = LogFactory().get_log(__name__)
-        self.__plugins = {}
-        """ :type dict{str: [PluginInfo]} : """
-        self.__artifact_mgt_plugins = []
-        self.__plugins, self.__artifact_mgt_plugins, self.health_stat_plugin = self.initialize_plugins()
-        self.__extension_executor = self.initialize_extensions()
 
     def on_instance_started_event(self):
         self.__log.debug("Processing instance started event...")
@@ -117,7 +104,7 @@ class EventHandler:
 
             if subscribe_run:
                 # publish instanceActivated
-                cartridgeagentpublisher.publish_instance_activated_event(self.health_stat_plugin)
+                cartridgeagentpublisher.publish_instance_activated_event(Config.health_stat_plugin)
             elif updated:
                 # updated on pull
                 self.on_artifact_update_scheduler_event(tenant_id)
@@ -374,115 +361,6 @@ class EventHandler:
         self.__log.info("publishing ready to shutdown event...")
         cartridgeagentpublisher.publish_instance_ready_to_shutdown_event()
 
-    def initialize_plugins(self):
-        """ Find, load, activate and group plugins for Python CA
-        :return: a tuple of (PluginManager, plugins, artifact management plugins)
-        """
-        self.__log.info("Collecting and loading plugins")
-
-        try:
-            # TODO: change plugin descriptor ext, plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
-            plugins_dir = Config.read_property(constants.PLUGINS_DIR)
-            category_filter = {CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin,
-                               ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin,
-                               HEALTH_STAT_PLUGIN: IHealthStatReaderPlugin}
-
-            plugin_manager = EventHandler.create_plugin_manager(category_filter, plugins_dir)
-
-            # activate cartridge agent plugins
-            plugins = plugin_manager.getPluginsOfCategory(CARTRIDGE_AGENT_PLUGIN)
-            grouped_ca_plugins = {}
-            for plugin_info in plugins:
-                self.__log.debug("Found plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
-                plugin_manager.activatePluginByName(plugin_info.name)
-                self.__log.info("Activated plugin [%s]" % plugin_info.name)
-
-                mapped_events = plugin_info.description.split(",")
-                for mapped_event in mapped_events:
-                    if mapped_event.strip() != "":
-                        if grouped_ca_plugins.get(mapped_event) is None:
-                            grouped_ca_plugins[mapped_event] = []
-
-                        grouped_ca_plugins[mapped_event].append(plugin_info)
-
-            # activate artifact management plugins
-            artifact_mgt_plugins = plugin_manager.getPluginsOfCategory(ARTIFACT_MGT_PLUGIN)
-            for plugin_info in artifact_mgt_plugins:
-                # TODO: Fix this to only load the first plugin
-                self.__log.debug("Found artifact management plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
-                plugin_manager.activatePluginByName(plugin_info.name)
-                self.__log.info("Activated artifact management plugin [%s]" % plugin_info.name)
-
-            health_stat_plugins = plugin_manager.getPluginsOfCategory(HEALTH_STAT_PLUGIN)
-            health_stat_plugin = None
-
-            # If there are any health stat reader plugins, load the first one and ignore the rest
-            if len(health_stat_plugins) > 0:
-                plugin_info = health_stat_plugins[0]
-                self.__log.debug("Found health statistics reader plugin [%s] at [%s]" %
-                                 (plugin_info.name, plugin_info.path))
-                plugin_manager.activatePluginByName(plugin_info.name)
-                self.__log.info("Activated health statistics reader plugin [%s]" % plugin_info.name)
-                health_stat_plugin = plugin_info
-
-            return grouped_ca_plugins, artifact_mgt_plugins, health_stat_plugin
-        except ParameterNotFoundException as e:
-            self.__log.exception("Could not load plugins. Plugins directory not set: %s" % e)
-            return None, None
-        except Exception as e:
-            self.__log.exception("Error while loading plugin: %s" % e)
-            return None, None
-
-    def initialize_extensions(self):
-        """ Find, load and activate extension scripts for Python CA. The extensions are mapped to the event by the
-        name used in the plugin descriptor.
-        :return:a tuple of (PluginManager, extensions)
-        """
-        self.__log.info("Collecting and loading extensions")
-
-        try:
-            extensions_dir = Config.read_property(constants.EXTENSIONS_DIR)
-            category_filter = {CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin}
-
-            extension_manager = EventHandler.create_plugin_manager(category_filter, extensions_dir)
-
-            all_extensions = extension_manager.getPluginsOfCategory(CARTRIDGE_AGENT_PLUGIN)
-            for plugin_info in all_extensions:
-                try:
-                    self.__log.debug("Found extension executor [%s] at [%s]" % (plugin_info.name, plugin_info.path))
-                    extension_manager.activatePluginByName(plugin_info.name)
-                    extension_executor = plugin_info
-                    self.__log.info("Activated extension executor [%s]" % plugin_info.name)
-                    # extension executor found. break loop and return
-                    return extension_executor
-                except Exception as ignored:
-                    pass
-
-            # no extension executor plugin could be loaded or activated
-            raise RuntimeError("Couldn't activated any ExtensionExecutor plugin")
-        except ParameterNotFoundException as e:
-            self.__log.exception("Could not load extensions. Extensions directory not set: %s" % e)
-            return None
-        except Exception as e:
-            self.__log.exception("Error while loading extension: %s" % e)
-            return None
-
-    @staticmethod
-    def create_plugin_manager(category_filter, plugin_place):
-        """ Creates a PluginManager object from the given folder according to the given filter
-        :param category_filter:
-        :param plugin_place:
-        :return:
-        :rtype: PluginManager
-        """
-        plugin_manager = PluginManager()
-        plugin_manager.setCategoriesFilter(category_filter)
-        plugin_manager.setPluginPlaces([plugin_place])
-
-        plugin_manager.collectPlugins()
-
-        return plugin_manager
-
     def execute_event_extendables(self, event, input_values):
         """ Execute the extensions and plugins related to the event
         :param event: The event name string
@@ -507,7 +385,7 @@ class EventHandler:
        :return:
        """
         try:
-            plugins_for_event = self.__plugins.get(event)
+            plugins_for_event = Config.plugins.get(event)
             if plugins_for_event is not None:
                 for plugin_info in plugins_for_event:
                     self.__log.debug("Executing plugin %s for event %s" % (plugin_info.name, event))
@@ -528,9 +406,9 @@ class EventHandler:
         :return:
         """
         try:
-            if self.__extension_executor is not None:
+            if Config.extension_executor is not None:
                 self.__log.debug("Executing extension for event [%s]" % event)
-                extension_thread = PluginExecutor(self.__extension_executor, extension_values)
+                extension_thread = PluginExecutor(Config.extension_executor, extension_values)
                 extension_thread.start()
 
                 # block till plugin run completes.
