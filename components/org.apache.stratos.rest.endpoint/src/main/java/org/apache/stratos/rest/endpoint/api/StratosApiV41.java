@@ -683,7 +683,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplications() throws RestAPIException {
         List<ApplicationBean> applicationDefinitions = StratosApiV41Utils.getApplications();
         if (applicationDefinitions == null || applicationDefinitions.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "No applications found")).build();
         }
 
         ApplicationBean[] applicationDefinitionsArray = applicationDefinitions
@@ -707,7 +708,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
         if (applicationDefinition == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Application not found")).build();
         }
         return Response.ok(applicationDefinition).build();
     }
@@ -734,7 +736,8 @@ public class StratosApiV41 extends AbstractApi {
                     String.format("Application deployed successfully: [application] %s", applicationId))).build();
         } catch (ApplicationAlreadyDeployedException e) {
 
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorResponseBean(
+                    Response.Status.CONFLICT.getStatusCode(), "Application policy already deployed")).build();
         } catch (RestAPIException e) {
 
             throw e;
