@@ -96,6 +96,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 
@@ -1070,6 +1071,10 @@ public class StratosApiV41Utils {
 
         validateApplication(appDefinition);
 
+        // To validate groups have unique alias in the application definition
+        validateGroupAliasesInApplicationDefinition(appDefinition);
+
+
         ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(
                 appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
@@ -1218,6 +1223,58 @@ public class StratosApiV41Utils {
             String message = "Please specify the application alias";
             log.error(message);
             throw new RestAPIException(message);
+        }
+    }
+
+    /**
+     * This method is to validate the application definition to have unique aliases among its groups
+     *
+     * @param applicationDefinition
+     * @return
+     */
+    private static void validateGroupAliasesInApplicationDefinition(ApplicationBean applicationDefinition) throws RestAPIException {
+
+        ConcurrentHashMap<String, GroupReferenceBean> groupsInApplicationDefinition = new ConcurrentHashMap<String, GroupReferenceBean>();
+
+        if ((applicationDefinition.getComponents().getGroups() != null) &&
+                (!applicationDefinition.getComponents().getGroups().isEmpty())) {
+
+            //This is to validate the top level groups in the application definition
+            for (GroupReferenceBean group : applicationDefinition.getComponents().getGroups()) {
+                if (groupsInApplicationDefinition.get(group.getAlias()) != null) {
+                    String message = "Cartridge group alias exists more than once: [group-alias] " +
+                            group.getAlias();
+                    throw new RestAPIException(message);
+                }
+                groupsInApplicationDefinition.put(group.getAlias(), group);
+
+                if (group.getGroups() != null) {
+                    //This is to validate the groups aliases recursively
+                    validateGroupsRecursively(groupsInApplicationDefinition, group.getGroups());
+                }
+            }
+        }
+    }
+
+    /**
+     * This method validates group aliases recursively
+     *
+     * @param groupsSet - the group collection in which the groups are added to
+     * @param groups - the group collection in which it traverses through
+     */
+    private static void validateGroupsRecursively(ConcurrentHashMap<String, GroupReferenceBean> groupsSet,
+                                                  Collection<GroupReferenceBean> groups) throws RestAPIException{
+        for (GroupReferenceBean group : groups) {
+            if (groupsSet.get(group.getAlias()) != null) {
+                String message = "Cartridge group alias exists more than once: [group-alias] " +
+                        group.getAlias();
+                throw new RestAPIException(message);
+            }
+            groupsSet.put(group.getAlias(), group);
+
+            if (group.getGroups() != null) {
+                validateGroupsRecursively(groupsSet, group.getGroups());
+            }
         }
     }
 
