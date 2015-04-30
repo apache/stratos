@@ -726,7 +726,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy)
-            throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException {
+            throws RemoteException, InvalidApplicationPolicyException {
 
         // validating application policy
         AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
