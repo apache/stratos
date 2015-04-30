@@ -24,14 +24,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class StatusResponseBean {
 
     private int statusCode;
-    private String successMessage;
+    private String message;
 
     public StatusResponseBean() {
     }
 
     public StatusResponseBean(int statusCode, String message) {
         this.statusCode = statusCode;
-        this.successMessage = message;
+        this.message = message;
     }
 
     public int getStatusCode() {
