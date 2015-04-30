@@ -588,12 +588,6 @@ var groupBlockTemplate = {
             "id": "root/groupMinInstances",
             "default":1,
             "required":false
-        },
-        "groupScalingEnabled": {
-            "type":"boolean",
-            "id": "root/groupScalingEnabled",
-            "default": "false",
-            "required":false
         }
     }
 };
@@ -602,8 +596,7 @@ var groupBlockDefault = {
     "name":"group2",
     "alias":"group2alias",
     "groupMinInstances":1,
-    "groupMaxInstances":2,
-    "groupScalingEnabled":"false"
+    "groupMaxInstances":2
 };
 
 var applicationBlockTemplate = {

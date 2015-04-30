@@ -285,11 +285,6 @@ var groupBlockTemplate = {
             "type": "string",
             "title": "Group Name: "
         },
-        "groupScalingEnabled": {
-            "id": "root/groupScalingEnabled",
-            "type": "boolean",
-            "title": "Group Scaling Enabled: "
-        },
         "dependencies": {
             "id": "root/dependencies",
             "type": "object",
@@ -335,7 +330,6 @@ var groupBlockTemplate = {
         },
         "required": [
             "name",
-            "groupScalingEnabled",
             "dependencies"
         ]
     }
@@ -343,7 +337,6 @@ var groupBlockTemplate = {
 
 var groupBlockDefault = {
     "name": "",
-    "groupScalingEnabled": "true",
     "dependencies": {
         "startupOrders": [
             "cartridge.type, group.name"
