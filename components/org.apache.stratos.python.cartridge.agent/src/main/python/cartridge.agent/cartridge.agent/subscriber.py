@@ -114,4 +114,4 @@ class EventExecutor(threading.Thread):
         self.terminate()
 
 
-from .. util.log import LogFactory
+from modules.util.log import LogFactory

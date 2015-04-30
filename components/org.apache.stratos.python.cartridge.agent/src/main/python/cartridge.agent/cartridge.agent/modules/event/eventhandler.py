@@ -22,9 +22,8 @@ from ..util import cartridgeagentutils
 from ..artifactmgt.git.agentgithandler import *
 from ..artifactmgt.repository import Repository
 from config import Config
-from ..publisher import cartridgeagentpublisher
-from ..topology.topologycontext import *
-from ..tenant.tenantcontext import *
+import publisher
+from entity import *
 from ..util.log import LogFactory
 import constants
 
@@ -104,7 +103,7 @@ class EventHandler:
 
             if subscribe_run:
                 # publish instanceActivated
-                cartridgeagentpublisher.publish_instance_activated_event(Config.health_stat_plugin)
+                publisher.publish_instance_activated_event(Config.health_stat_plugin)
             elif updated:
                 # updated on pull
                 self.on_artifact_update_scheduler_event(tenant_id)
@@ -152,7 +151,7 @@ class EventHandler:
                            member_activated_event.cluster_id,
                            member_activated_event.member_id))
 
-        member_initialized = self.check_member_state_in_topology(
+        member_initialized = self.is_member_initialized_in_topology(
             member_activated_event.service_name,
             member_activated_event.cluster_id,
             member_activated_event.member_id)
@@ -170,7 +169,7 @@ class EventHandler:
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
 
-        member_initialized = self.check_member_state_in_topology(
+        member_initialized = self.is_member_initialized_in_topology(
             service_name_in_payload,
             cluster_id_in_payload,
             member_id_in_payload)
@@ -226,7 +225,7 @@ class EventHandler:
                         (member_terminated_event.service_name, member_terminated_event.cluster_id,
                          member_terminated_event.member_id))
 
-        member_initialized = self.check_member_state_in_topology(
+        member_initialized = self.is_member_initialized_in_topology(
             member_terminated_event.service_name,
             member_terminated_event.cluster_id,
             member_terminated_event.member_id
@@ -243,7 +242,7 @@ class EventHandler:
                         (member_suspended_event.service_name, member_suspended_event.cluster_id,
                          member_suspended_event.member_id))
 
-        member_initialized = self.check_member_state_in_topology(
+        member_initialized = self.is_member_initialized_in_topology(
             member_suspended_event.service_name,
             member_suspended_event.cluster_id,
             member_suspended_event.member_id
@@ -260,7 +259,7 @@ class EventHandler:
                         (member_started_event.service_name, member_started_event.cluster_id,
                          member_started_event.member_id))
 
-        member_initialized = self.check_member_state_in_topology(
+        member_initialized = self.is_member_initialized_in_topology(
             member_started_event.service_name,
             member_started_event.cluster_id,
             member_started_event.member_id
@@ -278,7 +277,7 @@ class EventHandler:
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
 
-        member_initialized = self.check_member_state_in_topology(service_name_in_payload, cluster_id_in_payload,
+        member_initialized = self.is_member_initialized_in_topology(service_name_in_payload, cluster_id_in_payload,
                                                                  member_id_in_payload)
 
         if not member_initialized:
@@ -353,13 +352,13 @@ class EventHandler:
     def cleanup(self, event):
         self.__log.info("Executing cleaning up the data in the cartridge instance...")
 
-        cartridgeagentpublisher.publish_maintenance_mode_event()
+        publisher.publish_maintenance_mode_event()
 
         self.execute_event_extendables("clean", {})
         self.__log.info("cleaning up finished in the cartridge instance...")
 
         self.__log.info("publishing ready to shutdown event...")
-        cartridgeagentpublisher.publish_instance_ready_to_shutdown_event()
+        publisher.publish_instance_ready_to_shutdown_event()
 
     def execute_event_extendables(self, event, input_values):
         """ Execute the extensions and plugins related to the event
@@ -471,28 +470,16 @@ class EventHandler:
         self.__log.debug("Repo path returned : %r" % repo_path)
         return repo_path
 
-    def check_member_state_in_topology(self, service_name, cluster_id, member_id):
-        # TODO: refactor
-        topology = TopologyContext.get_topology()
-        service = topology.get_service(service_name)
-        if service is None:
-            self.__log.error("Service not found in topology [service] %s" % service_name)
-            return False
+    def is_member_initialized_in_topology(self, service_name, cluster_id, member_id):
+        if self.member_exists_in_topology(service_name, cluster_id, member_id):
+            topology = TopologyContext.get_topology()
+            service = topology.get_service(service_name)
+            cluster = service.get_cluster(cluster_id)
+            found_member = cluster.get_member(member_id)
+            if found_member.status == MemberStatus.Initialized:
+                return True
 
-        cluster = service.get_cluster(cluster_id)
-        if cluster is None:
-            self.__log.error("Cluster id not found in topology [cluster] %s" % cluster_id)
-            return False
-
-        activated_member = cluster.get_member(member_id)
-        if activated_member is None:
-            self.__log.error("Member id not found in topology [member] %s" % member_id)
-            return False
-
-        if activated_member.status != MemberStatus.Initialized:
-            return False
-
-        return True
+        return False
 
     def member_exists_in_topology(self, service_name, cluster_id, member_id):
         topology = TopologyContext.get_topology()

@@ -18,16 +18,15 @@
 
 import threading
 
-from modules.subscriber.eventsubscriber import EventSubscriber
-from modules.publisher import cartridgeagentpublisher
+from subscriber import EventSubscriber
+import publisher
 from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
 from modules.event.topology.events import *
 from modules.event.application.signup.events import *
 from modules.event.domain.mapping.events import *
-from modules.tenant.tenantcontext import *
-from modules.topology.topologycontext import *
-from modules.datapublisher.logpublisher import *
+from entity import *
+from logpublisher import *
 from config import Config
 from modules.event.eventhandler import EventHandler
 import constants
@@ -85,7 +84,7 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_instance_started_event()
 
         # Publish instance started event
-        cartridgeagentpublisher.publish_instance_started_event()
+        publisher.publish_instance_started_event()
 
         # Execute start servers extension
         try:
@@ -98,7 +97,7 @@ class CartridgeAgent(threading.Thread):
         if repo_url is None or str(repo_url).strip() == "":
             self.__log.info("No artifact repository found")
             self.__event_handler.on_instance_activated_event()
-            cartridgeagentpublisher.publish_instance_activated_event(Config.health_stat_plugin)
+            publisher.publish_instance_activated_event(Config.health_stat_plugin)
         else:
             self.__log.info(
                 "Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s",

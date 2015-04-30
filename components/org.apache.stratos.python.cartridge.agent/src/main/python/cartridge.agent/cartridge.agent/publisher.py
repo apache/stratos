@@ -17,9 +17,9 @@
 
 import paho.mqtt.publish as publish
 
-from .. event.instance.status.events import *
-from .. util.log import *
-from .. util import cartridgeagentutils
+from modules.event.instance.status.events import *
+from modules.util.log import *
+from modules.util import cartridgeagentutils
 import healthstats
 import constants
 from config import Config

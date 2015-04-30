@@ -18,9 +18,9 @@
 import datetime
 from threading import Thread, current_thread
 
-from ..databridge.agent import *
+from modules.databridge.agent import *
 from config import Config
-from ..util import cartridgeagentutils
+from modules.util import cartridgeagentutils
 from exception import DataPublisherException
 import constants
 
@@ -141,13 +141,11 @@ class LogPublisherManager(Thread):
         self.ports.append(DataPublisherConfiguration.get_instance().monitoring_server_port)
         self.ports.append(DataPublisherConfiguration.get_instance().monitoring_server_secure_port)
 
-        self.cartridge_agent_config = Config
-
         self.log.debug("Checking if Monitoring server is active.")
         ports_active = cartridgeagentutils.wait_until_ports_active(
             DataPublisherConfiguration.get_instance().monitoring_server_ip,
             self.ports,
-            int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
+            int(Config.read_property("port.check.timeout", critical=False)))
 
         if not ports_active:
             self.log.debug("Monitoring server is not active")
@@ -183,7 +181,7 @@ class LogPublisherManager(Thread):
                 self.tenant_id,
                 self.alias,
                 self.date_time,
-                self.cartridge_agent_config.member_id)
+                Config.member_id)
 
         return self.publishers[log_path]
 
