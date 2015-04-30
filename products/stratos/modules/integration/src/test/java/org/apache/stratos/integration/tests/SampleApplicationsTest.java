@@ -59,7 +59,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     public void testSingleCartridgeApplication() {
         try {
             initializeApplicationEventReceiver();
-            runApplicationTest("single-cartridge", "single-cartridge-app");
+            runApplicationTest("simple/single-cartridge-app", "single-cartridge-app");
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred", false);
