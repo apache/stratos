@@ -694,7 +694,7 @@ var applicationBlockDefault = {
 //create cartridge list
 var cartridgeListHtml='';
 function generateCartridges(data){
-    if(data.length == 0){
+    if(data == null || data.length == 0){
         cartridgeListHtml = 'No Cartridges found..';
     }else{
         for(var cartridge in data){
@@ -715,7 +715,7 @@ function generateCartridges(data){
 //create group list
 var groupListHtml='';
 function generateGroups(data){
-    if(data.length == 0){
+    if(data == null || data.length == 0){
         groupListHtml = 'No Groups found..';
     }else {
         for (var group in data) {
