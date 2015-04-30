@@ -109,8 +109,8 @@
         }
       ],
       "dependencies": {
-        "scalingDependants": {
-          "@xsi.nil": "true"
+        "scalingDependents": {
+          "group.my-appgroup, cartridge.my-esb"
         },
        "startupOrders": [
           "group.my-dbgroup,group.my-appgroup","group.my-dbgroup,cartridge.my-esb"
