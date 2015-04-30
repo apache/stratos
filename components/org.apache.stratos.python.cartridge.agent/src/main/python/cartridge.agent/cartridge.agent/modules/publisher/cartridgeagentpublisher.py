@@ -22,7 +22,7 @@ from .. util.log import *
 from .. util import cartridgeagentutils
 import healthstats
 import constants
-from config import CartridgeAgentConfiguration
+from config import Config
 
 
 log = LogFactory().get_log(__name__)
@@ -41,14 +41,14 @@ def publish_instance_started_event():
     if not started:
         log.info("Publishing instance started event")
 
-        application_id = CartridgeAgentConfiguration().application_id
-        service_name = CartridgeAgentConfiguration().service_name
-        cluster_id = CartridgeAgentConfiguration().cluster_id
-        member_id = CartridgeAgentConfiguration().member_id
-        instance_id = CartridgeAgentConfiguration().instance_id
-        cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
-        network_partition_id = CartridgeAgentConfiguration().network_partition_id
-        partition_id = CartridgeAgentConfiguration().partition_id
+        application_id = Config.application_id
+        service_name = Config.service_name
+        cluster_id = Config.cluster_id
+        member_id = Config.member_id
+        instance_id = Config.instance_id
+        cluster_instance_id = Config.cluster_instance_id
+        network_partition_id = Config.network_partition_id
+        partition_id = Config.partition_id
 
         instance_started_event = InstanceStartedEvent(
             application_id,
@@ -72,27 +72,31 @@ def publish_instance_activated_event(health_stat_plugin):
     global activated, log
     if not activated:
         # Wait for all ports to be active
-
-        listen_address = CartridgeAgentConfiguration().listen_address
-        configuration__ports = CartridgeAgentConfiguration().ports
+        listen_address = Config.listen_address
+        configuration_ports = Config.ports
         ports_active = cartridgeagentutils.wait_until_ports_active(
             listen_address,
-            configuration__ports,
-            int(CartridgeAgentConfiguration().read_property("port.check.timeout", critical=False))
-        )
-        log.info("Publishing instance activated event")
+            configuration_ports,
+            int(Config.read_property("port.check.timeout", critical=False)))
 
         if ports_active:
-            service_name = CartridgeAgentConfiguration().service_name
-            cluster_id = CartridgeAgentConfiguration().cluster_id
-            member_id = CartridgeAgentConfiguration().member_id
-            instance_id = CartridgeAgentConfiguration().instance_id
-            cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
-            network_partition_id = CartridgeAgentConfiguration().network_partition_id
-            partition_id = CartridgeAgentConfiguration().partition_id
+            log.info("Publishing instance activated event")
+            service_name = Config.service_name
+            cluster_id = Config.cluster_id
+            member_id = Config.member_id
+            instance_id = Config.instance_id
+            cluster_instance_id = Config.cluster_instance_id
+            network_partition_id = Config.network_partition_id
+            partition_id = Config.partition_id
 
-            instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, cluster_instance_id, member_id,
-                                                              instance_id, network_partition_id, partition_id)
+            instance_activated_event = InstanceActivatedEvent(
+                service_name,
+                cluster_id,
+                cluster_instance_id,
+                member_id,
+                instance_id,
+                network_partition_id,
+                partition_id)
 
             publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_ACTIVATED_EVENT)
             publisher.publish(instance_activated_event)
@@ -100,12 +104,11 @@ def publish_instance_activated_event(health_stat_plugin):
             log.info("Instance activated event published")
             log.info("Starting health statistics notifier")
 
-            health_stat_publishing_enabled = True if CartridgeAgentConfiguration().read_property(
-                constants.CEP_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
+            health_stat_publishing_enabled = Config.read_property(constants.CEP_PUBLISHER_ENABLED, False)
 
             if health_stat_publishing_enabled:
                 interval_default = 15  # seconds
-                interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval", False)
+                interval = Config.read_property("stats.notifier.interval", False)
                 if interval is not None and len(interval) > 0:
                     try:
                         interval = int(interval)
@@ -124,7 +127,7 @@ def publish_instance_activated_event(health_stat_plugin):
             log.info("Health statistics notifier started")
         else:
             log.error("Ports activation timed out. Aborting InstanceActivatedEvent publishing [IPAddress] %s [Ports] %s"
-                      % (listen_address, configuration__ports))
+                      % (listen_address, configuration_ports))
     else:
         log.warn("Instance already activated")
 
@@ -134,13 +137,13 @@ def publish_maintenance_mode_event():
     if not maintenance:
         log.info("Publishing instance maintenance mode event")
 
-        service_name = CartridgeAgentConfiguration().service_name
-        cluster_id = CartridgeAgentConfiguration().cluster_id
-        member_id = CartridgeAgentConfiguration().member_id
-        instance_id = CartridgeAgentConfiguration().instance_id
-        cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
-        network_partition_id = CartridgeAgentConfiguration().network_partition_id
-        partition_id = CartridgeAgentConfiguration().partition_id
+        service_name = Config.service_name
+        cluster_id = Config.cluster_id
+        member_id = Config.member_id
+        instance_id = Config.instance_id
+        cluster_instance_id = Config.cluster_instance_id
+        network_partition_id = Config.network_partition_id
+        partition_id = Config.partition_id
 
         instance_maintenance_mode_event = InstanceMaintenanceModeEvent(
             service_name,
@@ -165,16 +168,22 @@ def publish_instance_ready_to_shutdown_event():
     if not ready_to_shutdown:
         log.info("Publishing instance activated event")
 
-        service_name = CartridgeAgentConfiguration().service_name
-        cluster_id = CartridgeAgentConfiguration().cluster_id
-        member_id = CartridgeAgentConfiguration().member_id
-        instance_id = CartridgeAgentConfiguration().instance_id
-        cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
-        network_partition_id = CartridgeAgentConfiguration().network_partition_id
-        partition_id = CartridgeAgentConfiguration().partition_id
+        service_name = Config.service_name
+        cluster_id = Config.cluster_id
+        member_id = Config.member_id
+        instance_id = Config.instance_id
+        cluster_instance_id = Config.cluster_instance_id
+        network_partition_id = Config.network_partition_id
+        partition_id = Config.partition_id
         
-        instance_shutdown_event = InstanceReadyToShutdownEvent(service_name, cluster_id, cluster_instance_id, member_id,
-                                                               instance_id, network_partition_id, partition_id)
+        instance_shutdown_event = InstanceReadyToShutdownEvent(
+            service_name,
+            cluster_id,
+            cluster_instance_id,
+            member_id,
+            instance_id,
+            network_partition_id,
+            partition_id)
 
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_READY_TO_SHUTDOWN_EVENT)
         publisher.publish(instance_shutdown_event)
@@ -200,7 +209,7 @@ class EventPublisher:
         self.__topic = topic
 
     def publish(self, event):
-        mb_ip = CartridgeAgentConfiguration().read_property(constants.MB_IP)
-        mb_port = CartridgeAgentConfiguration().read_property(constants.MB_PORT)
+        mb_ip = Config.read_property(constants.MB_IP)
+        mb_port = Config.read_property(constants.MB_PORT)
         payload = event.to_json()
         publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port)

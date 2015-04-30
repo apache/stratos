@@ -19,7 +19,7 @@ import datetime
 from threading import Thread, current_thread
 
 from ..databridge.agent import *
-from config import CartridgeAgentConfiguration
+from config import Config
 from ..util import cartridgeagentutils
 from exception import DataPublisherException
 import constants
@@ -29,9 +29,7 @@ class LogPublisher(Thread):
 
     def __init__(self, file_path, stream_definition, tenant_id, alias, date_time, member_id):
         Thread.__init__(self)
-
         self.log = LogFactory().get_log(__name__)
-
         self.file_path = file_path
         self.thrift_publisher = ThriftPublisher(
             DataPublisherConfiguration.get_instance().monitoring_server_ip,
@@ -109,8 +107,7 @@ class LogPublisherManager(Thread):
         """
         # stream definition
         stream_definition = StreamDefinition()
-        stream_name = "logs." + tenant_id + "." \
-                      + alias + "." + date_time
+        stream_name = "logs." + tenant_id + "." + alias + "." + date_time
         stream_version = "1.0.0"
         stream_nickname = "log entries from instance"
         stream_description = "Apache Stratos Instance Log Publisher"
@@ -144,7 +141,7 @@ class LogPublisherManager(Thread):
         self.ports.append(DataPublisherConfiguration.get_instance().monitoring_server_port)
         self.ports.append(DataPublisherConfiguration.get_instance().monitoring_server_secure_port)
 
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
+        self.cartridge_agent_config = Config
 
         self.log.debug("Checking if Monitoring server is active.")
         ports_active = cartridgeagentutils.wait_until_ports_active(
@@ -158,8 +155,8 @@ class LogPublisherManager(Thread):
 
         self.log.debug("Monitoring server is up and running. Log Publisher Manager started.")
 
-        self.tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration().tenant_id)
-        self.alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration().cluster_id)
+        self.tenant_id = LogPublisherManager.get_valid_tenant_id(Config.tenant_id)
+        self.alias = LogPublisherManager.get_alias(Config.cluster_id)
         self.date_time = LogPublisherManager.get_current_date()
 
         self.stream_definition = self.define_stream(self.tenant_id, self.alias, self.date_time)
@@ -233,7 +230,7 @@ class LogPublisherManager(Thread):
 class DataPublisherConfiguration:
     """
     A singleton implementation to access configuration information for data publishing to BAM/CEP
-    TODO: perfect singleton impl ex: Borg
+    TODO: get rid of this
     """
 
     __instance = None
@@ -258,52 +255,35 @@ class DataPublisherConfiguration:
         self.monitoring_server_secure_port = None
         self.admin_username = None
         self.admin_password = None
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
 
         self.read_config()
 
     def read_config(self):
-        self.enabled = True if \
-            self.cartridge_agent_config.read_property(constants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() \
-            == "true" \
-            else False
-
+        self.enabled = Config.read_property(constants.MONITORING_PUBLISHER_ENABLED, False)
         if not self.enabled:
             DataPublisherConfiguration.log.info("Data Publisher disabled")
             return
 
         DataPublisherConfiguration.log.info("Data Publisher enabled")
 
-        self.monitoring_server_ip = self.cartridge_agent_config.read_property(constants.MONITORING_RECEIVER_IP, False)
-        if self.monitoring_server_ip is None or self.monitoring_server_ip.strip() == "":
+        self.monitoring_server_ip = Config.read_property(constants.MONITORING_RECEIVER_IP, False)
+        if self.monitoring_server_ip is None:
             raise RuntimeError("System property not found: " + constants.MONITORING_RECEIVER_IP)
 
-        self.monitoring_server_port = self.cartridge_agent_config.read_property(
-            constants.MONITORING_RECEIVER_PORT,
-            False)
-
-        if self.monitoring_server_port is None or self.monitoring_server_port.strip() == "":
+        self.monitoring_server_port = Config.read_property(constants.MONITORING_RECEIVER_PORT, False)
+        if self.monitoring_server_port is None:
             raise RuntimeError("System property not found: " + constants.MONITORING_RECEIVER_PORT)
 
-        self.monitoring_server_secure_port = self.cartridge_agent_config.read_property(
-            "monitoring.server.secure.port",
-            False)
-
-        if self.monitoring_server_secure_port is None or self.monitoring_server_secure_port.strip() == "":
+        self.monitoring_server_secure_port = Config.read_property("monitoring.server.secure.port", False)
+        if self.monitoring_server_secure_port is None:
             raise RuntimeError("System property not found: monitoring.server.secure.port")
 
-        self.admin_username = self.cartridge_agent_config.read_property(
-            constants.MONITORING_SERVER_ADMIN_USERNAME,
-            False)
-
-        if self.admin_username is None or self.admin_username.strip() == "":
+        self.admin_username = Config.read_property(constants.MONITORING_SERVER_ADMIN_USERNAME, False)
+        if self.admin_username is None:
             raise RuntimeError("System property not found: " + constants.MONITORING_SERVER_ADMIN_USERNAME)
 
-        self.admin_password = self.cartridge_agent_config.read_property(
-            constants.MONITORING_SERVER_ADMIN_PASSWORD,
-            False)
-
-        if self.admin_password is None or self.admin_password.strip() == "":
+        self.admin_password = Config.read_property(constants.MONITORING_SERVER_ADMIN_PASSWORD, False)
+        if self.admin_password is None:
             raise RuntimeError("System property not found: " + constants.MONITORING_SERVER_ADMIN_PASSWORD)
 
         DataPublisherConfiguration.log.info("Data Publisher configuration initialized")

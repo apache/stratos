@@ -21,7 +21,7 @@ import multiprocessing
 import psutil
 
 from modules.databridge.agent import *
-from config import CartridgeAgentConfiguration
+from config import Config
 from modules.util import cartridgeagentutils
 from exception import ThriftReceiverOfflineException, CEPPublisherException
 import constants
@@ -82,17 +82,15 @@ class HealthStatisticsPublisher:
     """
     log = LogFactory().get_log(__name__)
 
-    def read_config(self, conf_key):
+    @staticmethod
+    def read_config(conf_key):
         """
         Read a given key from the cartridge agent configuration
         :param conf_key: The key to look for in the CA config
         :return: The value for the key from the CA config
         :raise: RuntimeError if the given key is not found in the CA config
         """
-        if self.cartridge_agent_config is None:
-            self.cartridge_agent_config = CartridgeAgentConfiguration()
-
-        conf_value = self.cartridge_agent_config.read_property(conf_key, False)
+        conf_value = Config.read_property(conf_key, False)
 
         if conf_value is None or conf_value.strip() == "":
             raise RuntimeError("System property not found: " + conf_key)
@@ -100,18 +98,16 @@ class HealthStatisticsPublisher:
         return conf_value
 
     def __init__(self):
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
-
         self.ports = []
-        cep_port = self.read_config(constants.CEP_RECEIVER_PORT)
+        cep_port = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_PORT)
         self.ports.append(cep_port)
 
-        cep_ip = self.read_config(constants.CEP_RECEIVER_IP)
+        cep_ip = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_IP)
 
         cartridgeagentutils.wait_until_ports_active(
             cep_ip,
             self.ports,
-            int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
+            int(Config.read_property("port.check.timeout", critical=False)))
 
         cep_active = cartridgeagentutils.check_ports_active(
             cep_ip,
@@ -120,8 +116,8 @@ class HealthStatisticsPublisher:
         if not cep_active:
             raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
 
-        cep_admin_username = self.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
-        cep_admin_password = self.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+        cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
+        cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
 
         self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
         HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
@@ -164,11 +160,11 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
-        event.payloadData.append(self.cartridge_agent_config.cluster_id)
-        event.payloadData.append(self.cartridge_agent_config.cluster_instance_id)
-        event.payloadData.append(self.cartridge_agent_config.network_partition_id)
-        event.payloadData.append(self.cartridge_agent_config.member_id)
-        event.payloadData.append(self.cartridge_agent_config.partition_id)
+        event.payloadData.append(Config.cluster_id)
+        event.payloadData.append(Config.cluster_instance_id)
+        event.payloadData.append(Config.network_partition_id)
+        event.payloadData.append(Config.member_id)
+        event.payloadData.append(Config.partition_id)
         event.payloadData.append(constants.MEMORY_CONSUMPTION)
         event.payloadData.append(float(memory_usage))
         # event.payloadData.append(str(memory_usage))
@@ -188,11 +184,11 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
-        event.payloadData.append(self.cartridge_agent_config.cluster_id)
-        event.payloadData.append(self.cartridge_agent_config.cluster_instance_id)
-        event.payloadData.append(self.cartridge_agent_config.network_partition_id)
-        event.payloadData.append(self.cartridge_agent_config.member_id)
-        event.payloadData.append(self.cartridge_agent_config.partition_id)
+        event.payloadData.append(Config.cluster_id)
+        event.payloadData.append(Config.cluster_instance_id)
+        event.payloadData.append(Config.network_partition_id)
+        event.payloadData.append(Config.member_id)
+        event.payloadData.append(Config.partition_id)
         event.payloadData.append(constants.LOAD_AVERAGE)
         event.payloadData.append(float(load_avg))
         # event.payloadData.append(str(load_avg))

@@ -17,7 +17,6 @@
 
 from Crypto.Cipher import AES
 import base64
-import os
 import time
 import socket
 import string
@@ -115,13 +114,3 @@ def check_ports_active(ip_address, ports):
             return False
 
     return True
-
-
-def get_working_dir():
-    """
-    Returns the base directory of the cartridge agent.
-    :return: Base working dir path
-    :rtype : str
-    """
-    #"/path/to/cartridgeagent/modules/util/".split("modules") returns ["/path/to/cartridgeagent/", "/util"]
-    return os.path.abspath(os.path.dirname(__file__)).split("modules")[0]

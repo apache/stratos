@@ -23,7 +23,7 @@ from yapsy.PluginManager import PluginManager
 from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin, IHealthStatReaderPlugin
 from ..artifactmgt.git.agentgithandler import *
 from ..artifactmgt.repository import Repository
-from config import CartridgeAgentConfiguration
+from config import Config
 from ..publisher import cartridgeagentpublisher
 from ..topology.topologycontext import *
 from ..tenant.tenantcontext import *
@@ -48,7 +48,6 @@ class EventHandler:
 
     def __init__(self):
         self.__log = LogFactory().get_log(__name__)
-        self.__config = CartridgeAgentConfiguration()
         self.__plugins = {}
         """ :type dict{str: [PluginInfo]} : """
         self.__artifact_mgt_plugins = []
@@ -79,20 +78,20 @@ class EventHandler:
                          artifacts_updated_event.status))
 
         cluster_id_event = str(artifacts_updated_event.cluster_id).strip()
-        cluster_id_payload = self.__config.cluster_id
+        cluster_id_payload = Config.cluster_id
         repo_url = str(artifacts_updated_event.repo_url).strip()
 
         if (repo_url != "") and (cluster_id_payload is not None) and (cluster_id_payload == cluster_id_event):
-            local_repo_path = self.__config.app_path
+            local_repo_path = Config.app_path
 
             repo_password = None
             if artifacts_updated_event.repo_password is not None:
-                secret = self.__config.cartridge_key
+                secret = Config.cartridge_key
                 repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
             repo_username = artifacts_updated_event.repo_username
             tenant_id = artifacts_updated_event.tenant_id
-            is_multitenant = self.__config.is_multitenant
+            is_multitenant = Config.is_multiTenant
             commit_enabled = artifacts_updated_event.commit_enabled
 
             self.__log.info("Executing git checkout")
@@ -123,14 +122,13 @@ class EventHandler:
                 # updated on pull
                 self.on_artifact_update_scheduler_event(tenant_id)
 
-            update_artifacts = self.__config.read_property(constants.ENABLE_ARTIFACT_UPDATE, False)
-            update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
+            update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, False)
             if update_artifacts:
-                auto_commit = self.__config.is_commits_enabled
-                auto_checkout = self.__config.is_checkout_enabled
+                auto_commit = Config.is_commits_enabled
+                auto_checkout = Config.is_checkout_enabled
 
                 try:
-                    update_interval = int(self.__config.artifact_update_interval)
+                    update_interval = int(Config.artifact_update_interval)
                 except ValueError:
                     self.__log.exception("Invalid artifact sync interval specified.")
                     update_interval = 10
@@ -181,9 +179,9 @@ class EventHandler:
     def on_complete_topology_event(self, complete_topology_event):
         self.__log.debug("Processing Complete topology event...")
 
-        service_name_in_payload = self.__config.service_name
-        cluster_id_in_payload = self.__config.cluster_id
-        member_id_in_payload = self.__config.member_id
+        service_name_in_payload = Config.service_name
+        cluster_id_in_payload = Config.cluster_id
+        member_id_in_payload = Config.member_id
 
         member_initialized = self.check_member_state_in_topology(
             service_name_in_payload,
@@ -193,7 +191,7 @@ class EventHandler:
         self.__log.debug("Member initialized %s", member_initialized)
         if member_initialized:
             # Set cartridge agent as initialized since member is available and it is in initialized state
-            self.__config.initialized = True
+            Config.initialized = True
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
@@ -212,9 +210,9 @@ class EventHandler:
         """
         self.__log.debug("Processing Member initialized event...")
 
-        service_name_in_payload = self.__config.service_name
-        cluster_id_in_payload = self.__config.cluster_id
-        member_id_in_payload = self.__config.member_id
+        service_name_in_payload = Config.service_name
+        cluster_id_in_payload = Config.cluster_id
+        member_id_in_payload = Config.member_id
 
         member_exists = self.member_exists_in_topology(service_name_in_payload, cluster_id_in_payload,
                                                        member_id_in_payload)
@@ -222,7 +220,7 @@ class EventHandler:
         self.__log.debug("Member exists: %s" % member_exists)
 
         if member_exists:
-            self.__config.initialized = True
+            Config.initialized = True
 
         self.execute_event_extendables(constants.MEMBER_INITIALIZED_EVENT, {})
 
@@ -289,9 +287,9 @@ class EventHandler:
 
     def start_server_extension(self):
         self.__log.info("Processing start server extension...")
-        service_name_in_payload = self.__config.service_name
-        cluster_id_in_payload = self.__config.cluster_id
-        member_id_in_payload = self.__config.member_id
+        service_name_in_payload = Config.service_name
+        cluster_id_in_payload = Config.cluster_id
+        member_id_in_payload = Config.member_id
 
         member_initialized = self.check_member_state_in_topology(service_name_in_payload, cluster_id_in_payload,
                                                                  member_id_in_payload)
@@ -384,7 +382,7 @@ class EventHandler:
 
         try:
             # TODO: change plugin descriptor ext, plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
-            plugins_dir = self.__config.read_property(constants.PLUGINS_DIR)
+            plugins_dir = Config.read_property(constants.PLUGINS_DIR)
             category_filter = {CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin,
                                ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin,
                                HEALTH_STAT_PLUGIN: IHealthStatReaderPlugin}
@@ -443,7 +441,7 @@ class EventHandler:
         self.__log.info("Collecting and loading extensions")
 
         try:
-            extensions_dir = self.__config.read_property(constants.EXTENSIONS_DIR)
+            extensions_dir = Config.read_property(constants.EXTENSIONS_DIR)
             category_filter = {CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin}
 
             extension_manager = EventHandler.create_plugin_manager(category_filter, extensions_dir)
@@ -492,7 +490,7 @@ class EventHandler:
         :return:
         """
         try:
-            input_values = self.add_common_input_values(input_values)
+            input_values = EventHandler.add_common_input_values(input_values)
             input_values["EVENT"] = event
         except Exception as e:
             self.__log.error("Error while adding common input values for event extendables: %s" % e)
@@ -556,7 +554,7 @@ class EventHandler:
         if is_multitenant:
             if tenant_id == SUPER_TENANT_ID:
                 # super tenant, /repository/deploy/server/
-                super_tenant_repo_path = self.__config.super_tenant_repository_path
+                super_tenant_repo_path = Config.super_tenant_repository_path
                 # "app_path"
                 repo_path += git_local_repo_path
 
@@ -573,7 +571,7 @@ class EventHandler:
 
             else:
                 # normal tenant, /repository/tenants/tenant_id
-                tenant_repo_path = self.__config.tenant_repository_path
+                tenant_repo_path = Config.tenant_repository_path
                 # "app_path"
                 repo_path += git_local_repo_path
 
@@ -596,6 +594,7 @@ class EventHandler:
         return repo_path
 
     def check_member_state_in_topology(self, service_name, cluster_id, member_id):
+        # TODO: refactor
         topology = TopologyContext.get_topology()
         service = topology.get_service(service_name)
         if service is None:
@@ -636,7 +635,8 @@ class EventHandler:
 
         return True
 
-    def add_common_input_values(self, plugin_values):
+    @staticmethod
+    def add_common_input_values(plugin_values):
         """
         Adds the common parameters to be used by the extension scripts
         :param dict[str, str] plugin_values: Dictionary to be added
@@ -648,28 +648,28 @@ class EventHandler:
         elif type(plugin_values) != dict:
             plugin_values = {"VALUE1": str(plugin_values)}
 
-        plugin_values["APPLICATION_PATH"] = self.__config.app_path
-        plugin_values["PARAM_FILE_PATH"] = self.__config.read_property(constants.PARAM_FILE_PATH, False)
-        plugin_values["PERSISTENCE_MAPPINGS"] = self.__config.persistence_mappings
+        plugin_values["APPLICATION_PATH"] = Config.app_path
+        plugin_values["PARAM_FILE_PATH"] = Config.read_property(constants.PARAM_FILE_PATH, False)
+        plugin_values["PERSISTENCE_MAPPINGS"] = Config.persistence_mappings
 
-        lb_cluster_id_in_payload = self.__config.lb_cluster_id
+        lb_cluster_id_in_payload = Config.lb_cluster_id
         lb_private_ip, lb_public_ip = EventHandler.get_lb_member_ip(lb_cluster_id_in_payload)
-        plugin_values["LB_IP"] = lb_private_ip if lb_private_ip is not None else self.__config.lb_private_ip
-        plugin_values["LB_PUBLIC_IP"] = lb_public_ip if lb_public_ip is not None else self.__config.lb_public_ip
+        plugin_values["LB_IP"] = lb_private_ip if lb_private_ip is not None else Config.lb_private_ip
+        plugin_values["LB_PUBLIC_IP"] = lb_public_ip if lb_public_ip is not None else Config.lb_public_ip
 
 
 
         topology = TopologyContext.get_topology()
         if topology.initialized:
-            service = topology.get_service(self.__config.service_name)
-            cluster = service.get_cluster(self.__config.cluster_id)
-            member_id_in_payload = self.__config.member_id
+            service = topology.get_service(Config.service_name)
+            cluster = service.get_cluster(Config.cluster_id)
+            member_id_in_payload = Config.member_id
             member = cluster.get_member(member_id_in_payload)
             EventHandler.add_properties(service.properties, plugin_values, "SERVICE_PROPERTY")
             EventHandler.add_properties(cluster.properties, plugin_values, "CLUSTER_PROPERTY")
             EventHandler.add_properties(member.properties, plugin_values, "MEMBER_PROPERTY")
 
-        plugin_values.update(self.__config.get_payload_params())
+        plugin_values.update(Config.get_payload_params())
 
         return EventHandler.clean_process_parameters(plugin_values)
 
