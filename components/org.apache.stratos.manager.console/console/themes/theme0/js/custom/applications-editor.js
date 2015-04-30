@@ -363,7 +363,7 @@ function generateJsplumbTree(collector, connections, appeditor){
     collector['components']={};
     collector['components']['groups']=[];
     collector['components']['cartridges']=[];
-    collector['components']['dependencies']=appeditor['dependencies'];
+    ccollector['components']['dependencies']=appeditor.getValue()['dependencies'];
     delete collector['dependencies'];
 
     console.log(collector)
