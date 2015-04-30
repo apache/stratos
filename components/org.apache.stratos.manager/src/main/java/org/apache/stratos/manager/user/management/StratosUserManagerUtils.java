@@ -37,9 +37,9 @@ import java.util.Map;
  * This Class provides the operations related to adding/updating/deleting and listing users using
  * the carbon UserStoreManager in the particular tenant space
  */
-public class StratosUserManager {
+public class StratosUserManagerUtils {
 
-    private transient static final Log log = LogFactory.getLog(StratosUserManager.class);
+    private transient static final Log log = LogFactory.getLog(StratosUserManagerUtils.class);
     private static final String INTERNAL_EVERYONE_ROLE = "Internal/everyone";
     private static final String GET_ALL_USERS_WILD_CARD = "*";
 
@@ -50,7 +50,7 @@ public class StratosUserManager {
      * @param userInfoBean     UserInfoBean
      * @throws UserManagerException
      */
-    public void addUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
+    public static void addUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
             throws UserManagerException {
 
         if (log.isDebugEnabled()) {
@@ -83,7 +83,7 @@ public class StratosUserManager {
      * @param userName         UserName
      * @throws UserManagerException
      */
-    public void removeUser(UserStoreManager userStoreManager, String userName)
+    public static void removeUser(UserStoreManager userStoreManager, String userName)
             throws UserManagerException {
 
         try {
@@ -108,7 +108,7 @@ public class StratosUserManager {
      * @param userInfoBean     UserInfoBean
      * @throws UserManagerException
      */
-    public void updateUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
+    public static void updateUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
             throws UserManagerException {
 
         try {
@@ -143,7 +143,7 @@ public class StratosUserManager {
      * @return List<UserInfoBean>
      * @throws UserManagerException
      */
-    public List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager)
+    public static List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager)
             throws UserManagerException {
 
         String[] users;
@@ -176,7 +176,7 @@ public class StratosUserManager {
      * @return String[]
      * @throws UserManagerException
      */
-    private String[] getRefinedListOfRolesOfUser(UserStoreManager userStoreManager, String username)
+    private static String[] getRefinedListOfRolesOfUser(UserStoreManager userStoreManager, String username)
             throws UserManagerException {
 
         ArrayList<String> rolesWithoutEveryoneRole = new ArrayList<String>();

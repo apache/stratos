@@ -19,7 +19,7 @@ package org.apache.stratos.rest.endpoint.handlers;/*
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.ErrorResponseBean;
+import org.apache.stratos.common.beans.StatusResponseBean;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.MediaType;
@@ -40,6 +40,6 @@ public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestExce
         String errorMsg = badRequestException.getMessage() != null ? badRequestException.getMessage() : "please check" +
                 "your input format";
         return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).
-                entity(new ErrorResponseBean(Response.Status.BAD_REQUEST.getStatusCode(), errorMsg)).build();
+                entity(new StatusResponseBean(Response.Status.BAD_REQUEST.getStatusCode(), errorMsg)).build();
     }
 }

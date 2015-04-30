@@ -25,4 +25,10 @@ public class Constants {
 
     public static final String SUPER_TENANT_SERVICE = "super.tenant.service";
 
+    // Values used to Filter Cartridges
+    public static final String FILTER_TENANT_TYPE_SINGLE_TENANT="singleTenant";
+    public static final String FILTER_TENANT_TYPE_MULTI_TENANT="multiTenant";
+    public static final String FILTER_LOAD_BALANCER="loadBalancer";
+    public static final String FILTER_PROVIDER="provider";
+
 }

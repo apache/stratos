@@ -26,7 +26,7 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
-import org.apache.stratos.common.beans.ErrorResponseBean;
+import org.apache.stratos.common.beans.StatusResponseBean;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 import org.apache.stratos.rest.endpoint.security.StratosSecurityContext;
@@ -80,13 +80,13 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
             log.error("username is seen as null/empty values");
             return Response.status(Response.Status.UNAUTHORIZED)
                     .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                    .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                    .entity(new StatusResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
                             "Username cannot be null")).build();
         } else if (certObject == null && (StringUtils.isEmpty(password))) {
             log.error("password is seen as null/empty values");
             return Response.status(Response.Status.UNAUTHORIZED)
                     .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                    .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                    .entity(new StatusResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
                             "password cannot be null")).build();
         }
 
@@ -103,7 +103,7 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
                     log.error("Invalid domain or unactivated tenant login");
                     // is this the correct HTTP code for this scenario ? (401)
                     return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                            type(MediaType.APPLICATION_JSON).entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), "Tenant not found")).build();
+                            type(MediaType.APPLICATION_JSON).entity(new StatusResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), "Tenant not found")).build();
                 }
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
@@ -129,14 +129,14 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
                 log.warn(String.format("Unable to authenticate the request: [message-id] %s", message.getId()));
                 // authentication failed, request the authetication, add the realm name if needed to the value of WWW-Authenticate
                 return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                        type(MediaType.APPLICATION_JSON).entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                        type(MediaType.APPLICATION_JSON).entity(new StatusResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
                         "Authentication failed. Please check your username/password")).build();
             }
         } catch (Exception exception) {
             log.error(String.format("Authentication failed: [message-id] %s", message.getId()), exception);
             // server error in the eyes of the client. Hence 5xx HTTP code.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
-                    entity(new ErrorResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    entity(new StatusResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                             "Unexpected error. Please contact the system admin")).build();
         }
     }
