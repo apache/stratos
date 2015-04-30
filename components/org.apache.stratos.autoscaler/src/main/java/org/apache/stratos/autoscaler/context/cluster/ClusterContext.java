@@ -162,7 +162,7 @@ public class ClusterContext extends AbstractClusterContext {
                     networkPartitionContext);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster instance context has been added to network partition," +
-                                " [application] %s [cluster] %s  [cluster instance] %s " +
+                                " [application] %s [cluster] %s  [cluster-instance] %s " +
                                 "[network partition] %s", cluster.getAppId(), cluster.getClusterId(),
                         clusterInstance.getInstanceId(),
                         clusterInstance.getNetworkPartitionId()));

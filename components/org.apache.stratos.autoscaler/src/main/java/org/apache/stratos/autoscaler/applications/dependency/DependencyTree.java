@@ -92,42 +92,25 @@ public class DependencyTree {
     }
 
     public ApplicationChildContext findParentContextWithId(String id) {
-        return findParentContextWithId(null, id, this.primaryApplicationContextList);
+        ApplicationChildContext context = getApplicationChildContextByIdInPrimaryTree(id);
+        return context.getParent();
     }
 
     public List<ApplicationChildContext> findAllParentContextWithId(String id) {
+        ApplicationChildContext context = getApplicationChildContextByIdInPrimaryTree(id);
         List<ApplicationChildContext> applicationContexts = new ArrayList<ApplicationChildContext>();
-        return findAllParent(applicationContexts, id);
+        return findAllParent(applicationContexts, context);
     }
 
-    private List<ApplicationChildContext> findAllParent(List<ApplicationChildContext> parentContexts, String id) {
-        ApplicationChildContext context = findParentContextWithId(null, id, this.primaryApplicationContextList);
-        if (context != null) {
-            parentContexts.add(context);
-            findAllParent(parentContexts, context.getId());
+    private List<ApplicationChildContext> findAllParent(List<ApplicationChildContext> parentContexts,
+                                                        ApplicationChildContext context) {
+        if (context.getParent() != null) {
+            parentContexts.add(context.getParent());
+            return findAllParent(parentContexts, context.getParent());
         }
         return parentContexts;
     }
-
-
-    private ApplicationChildContext findParentContextWithId(ApplicationChildContext parent, String id,
-                                                            List<ApplicationChildContext> contexts) {
-        for (ApplicationChildContext context : contexts) {
-            //TODO check for the status
-            if (context.getParent() != null && context.getParent().equals(id)) {
-                return context;
-            }
-        }
-        //if not found in the top level search recursively
-        for (ApplicationChildContext context : this.primaryApplicationContextList) {
-            if (context.getApplicationChildContextList() != null &&
-                    !context.getApplicationChildContextList().isEmpty()) {
-                return findParentContextWithId(context, id, context.getApplicationChildContextList());
-            }
-        }
-        return null;
-    }
-
+    
     /**
      * Getting the next start able dependencies upon the activate event
      * received for a group/cluster which is part of this tree.
