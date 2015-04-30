@@ -88,6 +88,8 @@ if(isEdit == false && elements.action != 'new') {
             list_data = util.RESTCalls.getPolicyAutoScales();
             if (list_data && list_data.length === 0) {
                 list_data = null;
+            }else if(list_data.errorCode == '404'){ //TODO: need to fix this right way
+                list_data = null;
             }
             break;
 
