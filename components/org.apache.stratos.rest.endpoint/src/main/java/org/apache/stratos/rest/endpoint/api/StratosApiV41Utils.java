@@ -575,7 +575,6 @@ public class StratosApiV41Utils {
     }
 
     public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
-            AutoscalerServiceInvalidPolicyExceptionException,
             AutoscalerServiceInvalidApplicationPolicyExceptionException {
 
         if (applicationPolicyBean == null) {

@@ -763,10 +763,9 @@ public class StratosApiV41 extends AbstractApi {
                             applicationPolicy.getId()))).build();
         } catch (RestAPIException e) {
             throw e;
-        } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponseBean(
+                    Response.Status.BAD_REQUEST.getStatusCode(), "Invalid application policy")).build();
         }
     }
 
