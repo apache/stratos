@@ -31,7 +31,7 @@ public class ParserUtils {
 
     public static Set<StartupOrder> convertStartupOrder(String[] startupOrderArr) throws ApplicationDefinitionException {
 
-        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
+        Set<StartupOrder> startupOrders = new LinkedHashSet<StartupOrder>();
 
         if (startupOrderArr == null) {
             return startupOrders;
@@ -61,7 +61,7 @@ public class ParserUtils {
     public static Set<StartupOrder> convertStartupOrder(String[] startupOrderArr, GroupContext groupContext)
             throws ApplicationDefinitionException {
 
-        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
+        Set<StartupOrder> startupOrders = new LinkedHashSet<StartupOrder>();
 
         if (startupOrderArr == null) {
             return startupOrders;
