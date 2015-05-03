@@ -363,10 +363,8 @@ function generateJsplumbTree(collector, connections, appeditor){
     collector['components']={};
     collector['components']['groups']=[];
     collector['components']['cartridges']=[];
-    ccollector['components']['dependencies']=appeditor.getValue()['dependencies'];
+    collector['components']['dependencies']= collector['dependencies'];
     delete collector['dependencies'];
-
-    console.log(collector)
 
     //generate raw data tree from connections
     var rawtree = [];
