@@ -325,6 +325,11 @@ var applicationPolicyDefault = {
 // Document ready events
 $(document).ready(function(){
 
+    //handled Ajax base session expire issue
+    $(document).ajaxError(function (e, xhr, settings) {
+        window.location.href = '../';
+    });
+
     //*******************Adding JSON editor *************//
     JSONEditor.defaults.theme = 'bootstrap3';
     JSONEditor.defaults.iconlib = 'fontawesome4';

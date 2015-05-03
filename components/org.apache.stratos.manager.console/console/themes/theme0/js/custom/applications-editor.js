@@ -760,6 +760,10 @@ function dagrePosition(){
 
 // Document ready events
 $(document).ready(function(){
+    //handled Ajax base session expire issue
+    $(document).ajaxError(function (e, xhr, settings) {
+        window.location.href = '../';
+    });
 
     $('#deploy').attr('disabled','disabled');
 

@@ -350,6 +350,10 @@ var groupBlockDefault = {
 
 // Document ready events
 $(document).ready(function(){
+    //handled Ajax base session expire issue
+    $(document).ajaxError(function (e, xhr, settings) {
+        window.location.href = '../';
+    });
 
     $('#deploy').on('click', function(){
         var  payload = genGroupJSON({}, jsPlumb.getConnections());

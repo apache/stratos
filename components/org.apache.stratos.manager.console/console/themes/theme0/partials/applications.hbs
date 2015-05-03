@@ -72,6 +72,11 @@
 
 <script>
     $(document).ready(function () {
+        //handled Ajax base session expire issue
+        $(document).ajaxError(function (e, xhr, settings) {
+            window.location.href = '../';
+        });
+
         $('.general-table div.data-url').click(function () {
             window.location = $(this).attr("data-url");
         });
