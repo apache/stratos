@@ -646,7 +646,8 @@ var applicationBlockTemplate = {
                         "id": "root/dependencies/startupOrders/0",
                         "type": "string",
                         "title": "Order",
-                        "name": "Order"
+                        "name": "Order",
+                        "default":"group.my-group1,cartridge.my-c4"
                     }
                 },
                 "scalingDependents": {
@@ -659,7 +660,8 @@ var applicationBlockTemplate = {
                         "id": "root/dependencies/scalingDependents/0",
                         "type": "string",
                         "title": "Dependent",
-                        "name": "Dependent"
+                        "name": "Dependent",
+                        "default":"group.my-group1,cartridge.my-c4"
                     }
                 },
                 "terminationBehaviour": {
@@ -680,10 +682,10 @@ var applicationBlockDefault = {
     "multiTenant": false,
     "dependencies": {
         "startupOrders": [
-            "group.my-group1,cartridge.my-c4"
+
         ],
         "scalingDependents": [
-            "group.my-group1,cartridge.my-c4"
+
         ],
         "terminationBehaviour": "terminate-dependents"
     }
