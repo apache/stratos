@@ -827,7 +827,7 @@ public class StratosApiV41Utils {
                     try {
                         if (ccServiceClient.getCartridge(cartridgeType) == null) {
                             // cartridge is not deployed, can't continue
-                            log.error("invalid cartridge found in cartridge group " + cartridgeType);
+                            log.error("Invalid cartridge found in cartridge group " + cartridgeType);
                             throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);
                         } else {
                             cartridgeNames[i] = cartridgeType;

@@ -439,7 +439,8 @@ public class StratosApiV41 extends AbstractApi {
                             serviceGroupDefinition.getName()))).build();
         } catch (RestAPIException e) {
             if (e.getCause().getMessage().contains("already exists")) {
-                return Response.status(Response.Status.CONFLICT).build();
+                return Response.status(Response.Status.CONFLICT).entity(new ErrorResponseBean(
+                        Response.Status.CONFLICT.getStatusCode(), "Cartridge group not found")).build();
             } else {
                 throw e;
             }
@@ -461,14 +462,13 @@ public class StratosApiV41 extends AbstractApi {
     public Response getServiceGroupDefinition(
             @PathParam("groupDefinitionName") String groupDefinitionName) throws RestAPIException {
         GroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
-        Response.ResponseBuilder rb;
-        if (serviceGroupDefinition != null) {
-            rb = Response.ok().entity(serviceGroupDefinition);
-        } else {
-            rb = Response.status(Response.Status.NOT_FOUND);
-        }
 
-        return rb.build();
+        if (serviceGroupDefinition != null) {
+            return Response.ok().entity(serviceGroupDefinition).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Cartridge group not found")).build();
+        }
     }
 
     /**
@@ -485,14 +485,13 @@ public class StratosApiV41 extends AbstractApi {
     public Response getServiceGroups()
             throws RestAPIException {
         GroupBean[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
-        Response.ResponseBuilder rb;
-        if (serviceGroups != null) {
-            rb = Response.ok().entity(serviceGroups);
-        } else {
-            rb = Response.status(Response.Status.NOT_FOUND);
-        }
 
-        return rb.build();
+        if (serviceGroups != null) {
+            return Response.ok().entity(serviceGroups).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Cartridge group not found")).build();
+        }
     }
 
     /**
@@ -538,8 +537,8 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
         } catch (CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponseBean(Response.Status.CONFLICT.getStatusCode(), e.getLocalizedMessage()))
-                    .build();
+                    .entity(new ErrorResponseBean(Response.Status.CONFLICT.getStatusCode(), "Network partition already" +
+                            "exists")).build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
@@ -562,7 +561,8 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
         if (networkPartitions == null || networkPartitions.length == 0) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "No network partitions found")).build();
         }
 
         return Response.ok(networkPartitions).build();
@@ -583,7 +583,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
         NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
         if (networkPartition == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Network partition is not found")).build();
         }
 
         return Response.ok(networkPartition).build();
@@ -605,7 +606,8 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.removeNetworkPartition(networkPartitionId);
         } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Network partition is not found")).build();
         }
         return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                 String.format("Network Partition deleted successfully: [network-partition] %s",
@@ -636,7 +638,8 @@ public class StratosApiV41 extends AbstractApi {
                             applicationDefinition.getApplicationId()))).build();
         } catch (ApplicationAlreadyExistException e) {
 
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorResponseBean(
+                    Response.Status.CONFLICT.getStatusCode(), "Application already exists")).build();
         } catch (RestAPIException e) {
 
             throw e;
