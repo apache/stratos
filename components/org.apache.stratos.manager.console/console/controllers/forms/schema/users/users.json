@@ -30,8 +30,9 @@
             "id": "root/userName",
             "title": "User Name",
             "name": "User Name",
-            "minLength":2,
+            "minLength":3,
             "required":true,
+            "pattern":"^[^~!#$;%^*+={}\\|\\\\&lt;&gt;,\'\"]{3,30}$",
             "default": ""
         },
         "credential": {
