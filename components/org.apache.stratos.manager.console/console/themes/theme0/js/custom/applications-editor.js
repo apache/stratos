@@ -821,6 +821,8 @@ $(document).ready(function(){
     Repaint();
 
     $('#whiteboard').on('click', '.stepnode', function(){
+        $('.stepnode').removeClass("highlightme");
+        $(this).addClass('highlightme');
         tabData($(this));
     });
 
