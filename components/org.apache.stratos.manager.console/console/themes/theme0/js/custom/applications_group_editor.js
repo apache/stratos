@@ -489,9 +489,89 @@ $(document).ready(function(){
         dagrePosition();
     });
 
+    //genrate context menu for nodes
+    $.contextMenu({
+        selector: '.stepnode',
+        callback: function(key, options) {
+            var m = "clicked: " + key + $(this);
+            if(key == 'delete'){
+                deleteNode($(this));
+            }else if(key == 'edit'){
+                document.getElementById('group-data-scroll').scrollIntoView();
+                tabData($(this));
+            }
+        },
+        items: {
+            "edit": {name: "Edit", icon: "edit"},
+            "delete": {name: "Delete", icon: "delete"}
+        }
+    });
+
 });
 
 //bootstrap tooltip added
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
 })
+
+
+// ************* Add context menu for nodes ******************
+//remove nodes from workarea
+function deleteNode(endPoint){
+    if(endPoint.attr('id') != 'group-base'){
+        var allnodes = $(".stepnode");
+        var superParent = endPoint.attr('id').split("-")[0]+endPoint.attr('id').split("-")[1];
+        var nodeName = endPoint.attr('data-ctype');
+        var nodeType = endPoint.attr('data-type');
+        var notyText = '';
+
+        if(nodeType == 'group'){
+            notyText = 'This will remove related nodes from the Editor. Are you sure you want to delete '
+                +nodeType + ': '+nodeName+'?';
+        }else{
+            notyText = 'Are you sure you want to delete '+nodeType + ': '+nodeName+'?';
+        }
+        noty({
+            layout: 'bottomRight',
+            type: 'warning',
+            text:  notyText,
+            buttons: [
+                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                    $noty.close();
+
+                    allnodes.each(function(){
+                        var currentId = $(this).attr('id').split("-")[0]+$(this).attr('id').split("-")[1];
+                        if(currentId == superParent){
+                            var that=$(this);      //get all of your DIV tags having endpoints
+                            for (var i=0;i<that.length;i++) {
+                                var endpoints = jsPlumb.getEndpoints($(that[i])); //get all endpoints of that DIV
+                                if(endpoints){
+                                    for (var m=0;m<endpoints.length;m++) {
+                                        // if(endpoints[m].anchor.type=="TopCenter") //Endpoint on right side
+                                        jsPlumb.deleteEndpoint(endpoints[m]);  //remove endpoint
+                                    }
+                                }
+
+                            }
+                            jsPlumb.detachAllConnections($(this));
+                            $(this).remove();
+                        }
+
+                    });
+
+                }
+                },
+                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                    $noty.close();
+                }
+                }
+            ]
+        });
+
+
+
+    }else{
+        var n = noty({text: 'Sorry you can\'t remove root group node' , layout: 'bottomRight', type: 'warning'});
+    }
+
+}
