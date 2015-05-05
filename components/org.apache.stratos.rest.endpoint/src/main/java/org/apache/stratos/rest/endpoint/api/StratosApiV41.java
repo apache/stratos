@@ -21,10 +21,7 @@ package org.apache.stratos.rest.endpoint.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesClusterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNetworkPartitionNotExistsExceptionException;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
@@ -1919,7 +1916,7 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
             StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId);
-        } catch (RestAPIException e) {
+        } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(new SuccessResponseBean(Response.Status.NOT_FOUND.getStatusCode(),
                             String.format("Could not find specified Kubernetes cluster: [kub-cluster] %s",

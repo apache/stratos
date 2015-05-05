@@ -1724,7 +1724,8 @@ public class StratosApiV41Utils {
         return null;
     }
 
-    public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException {
+    public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException,
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -1734,10 +1735,6 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
             }
         }
         return false;
