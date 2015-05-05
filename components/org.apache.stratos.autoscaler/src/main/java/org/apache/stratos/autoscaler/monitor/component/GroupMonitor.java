@@ -212,7 +212,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                             boolean forceScaleDown) {
         //Traverse through all the children to see whether all have sent the scale down
         boolean allChildrenScaleDown = false;
-        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
+        for (Monitor monitor : this.aliasToActiveChildMonitorsMap.values()) {
             if (instanceContext.getScalingDownBeyondMinEvent(monitor.getId()) == null) {
                 allChildrenScaleDown = false;
                 break;

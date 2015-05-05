@@ -172,7 +172,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                             NetworkPartitionContext nwPartitionContext) {
         //Traverse through all the children to see whether all have sent the scale down
         boolean allChildrenScaleDown = false;
-        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
+        for (Monitor monitor : this.aliasToActiveChildMonitorsMap.values()) {
             if (instanceContext.getScalingDownBeyondMinEvent(monitor.getId()) == null) {
                 allChildrenScaleDown = false;
                 break;
@@ -203,7 +203,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     public Monitor findGroupMonitorWithId(String groupId) {
         //searching within active monitors
-        return findGroupMonitor(groupId, aliasToActiveMonitorsMap);
+        return findGroupMonitor(groupId, aliasToActiveChildMonitorsMap);
     }
 
 
@@ -222,7 +222,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         for (Monitor monitor : monitors.values()) {
             if (monitor instanceof ParentComponentMonitor) {
                 Monitor groupMonitor = findGroupMonitor(id, ((ParentComponentMonitor) monitor).
-                        getAliasToActiveMonitorsMap());
+                        getAliasToActiveChildMonitorsMap());
                 if (groupMonitor != null) {
                     return groupMonitor;
                 }

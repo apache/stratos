@@ -88,7 +88,7 @@ public class MonitorStatusEventBuilder {
 
     public static void notifyChildren(ParentComponentMonitor componentMonitor, MonitorStatusEvent statusEvent)
             throws MonitorNotFoundException {
-        for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
+        for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveChildMonitorsMap().values()) {
             activeChildMonitor.onParentStatusEvent(statusEvent);
         }
     }
@@ -129,7 +129,7 @@ public class MonitorStatusEventBuilder {
     }
 
     public static void notifyChildren(ParentComponentMonitor componentMonitor, ScalingEvent scalingEvent) {
-        for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
+        for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveChildMonitorsMap().values()) {
             activeChildMonitor.onParentScalingEvent(scalingEvent);
         }
     }

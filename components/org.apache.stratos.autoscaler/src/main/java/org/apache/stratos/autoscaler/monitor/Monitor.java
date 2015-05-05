@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Abstract class for the monitoring functionality in Autoscaler.
  */
-public abstract class Monitor implements EventHandler {
+public abstract class Monitor implements EventHandler, Runnable {
     //Monitor types
     public enum MonitorType {
         Application, Group, Cluster
@@ -56,6 +56,11 @@ public abstract class Monitor implements EventHandler {
     public abstract void destroy();
 
     /**
+     * This will monitor the network partition context with child notifications
+     */
+    public abstract void monitor();
+
+    /**
      * This will create Instance on demand as requested by monitors
      *
      * @param instanceId instance Id of the instance to be created
@@ -67,7 +72,7 @@ public abstract class Monitor implements EventHandler {
     /**
      * Return the id of the monitor
      *
-     * @return id
+     * @return id identifier of the monitor
      */
     public String getId() {
         return id;
@@ -92,7 +97,7 @@ public abstract class Monitor implements EventHandler {
     /**
      * To get the appId of the monitor
      *
-     * @return app id
+     * @return application id of the monitor
      */
     public String getAppId() {
         return appId;
@@ -129,7 +134,7 @@ public abstract class Monitor implements EventHandler {
     /**
      * Return whether this monitor has startup dependencies
      *
-     * @return hasStartupDependents
+     * @return whether the monitor has startup dependents
      */
     public boolean hasStartupDependents() {
         return hasStartupDependents;

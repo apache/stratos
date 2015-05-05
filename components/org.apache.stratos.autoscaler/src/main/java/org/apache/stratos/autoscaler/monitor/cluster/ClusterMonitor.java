@@ -82,7 +82,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-public class ClusterMonitor extends Monitor implements Runnable {
+public class ClusterMonitor extends Monitor {
 
     private final ScheduledExecutorService scheduler;
     private final ExecutorService executorService;
@@ -123,9 +123,10 @@ public class ClusterMonitor extends Monitor implements Runnable {
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 50);
         executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
+        this.clusterId = cluster.getClusterId();
 
         readConfigurations();
-        autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
+        autoscalerRuleEvaluator = new AutoscalerRuleEvaluator(cluster.getClusterId());
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.SCALE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MIN_CHECK_DROOL_FILE);
@@ -146,7 +147,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
         this.serviceType = cluster.getServiceName();
-        this.clusterId = cluster.getClusterId();
         this.monitoringStarted = new AtomicBoolean(false);
         this.hasScalingDependents = hasScalingDependents;
         this.deploymentPolicyId = deploymentPolicyId;
@@ -619,7 +619,9 @@ public class ClusterMonitor extends Monitor implements Runnable {
         int monitorInterval = conf.getInt(AutoscalerConstants.Cluster_MONITOR_INTERVAL, 90000);
         setMonitorIntervalMilliseconds(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("ClusterMonitor task interval set to : " + getMonitorIntervalMilliseconds());
+            log.debug("ClusterMonitor task interval set to : [application-id] " + appId +
+                    " [cluster] " + clusterId + " [monitor-interval] " +
+                    getMonitorIntervalMilliseconds());
         }
     }
 
