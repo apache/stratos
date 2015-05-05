@@ -449,7 +449,7 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
             URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
             return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                    String.format("Service Group added successfully: [service-group] %s",
+                    String.format("Cartridge Group added successfully: [cartridge-group] %s",
                             serviceGroupDefinition.getName()))).build();
         } catch (RestAPIException e) {
             if (e.getCause().getMessage().contains("already exists")) {
@@ -526,7 +526,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.removeServiceGroup(groupDefinitionName);
         return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-                String.format("Service Group deleted successfully: [service-group] %s", groupDefinitionName)))
+                String.format("Cartridge Group deleted successfully: [cartridge-group] %s", groupDefinitionName)))
                 .build();
     }
 
