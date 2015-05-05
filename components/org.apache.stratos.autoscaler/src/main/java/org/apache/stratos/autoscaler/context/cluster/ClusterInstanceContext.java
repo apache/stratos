@@ -25,7 +25,11 @@ import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionCont
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Member;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +72,17 @@ public class ClusterInstanceContext extends InstanceContext {
 
     private boolean hasScalingDependants;
     private boolean groupScalingEnabledSubtree;
+    private StatefulKnowledgeSession minCheckKnowledgeSession;
+    private StatefulKnowledgeSession maxCheckKnowledgeSession;
+    private StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
+    private StatefulKnowledgeSession scaleCheckKnowledgeSession;
+    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
+    private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    private FactHandle minCheckFactHandle;
+    private FactHandle maxCheckFactHandle;
+    private FactHandle obsoleteCheckFactHandle;
+    private FactHandle scaleCheckFactHandle;
+    private FactHandle dependentScaleCheckFactHandle;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
                                   int min, int max, String networkPartitionId, String clusterId,
@@ -88,6 +103,19 @@ public class ClusterInstanceContext extends InstanceContext {
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
         this.hasScalingDependants = hasScalingDependants;
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
+
+        autoscalerRuleEvaluator = AutoscalerRuleEvaluator.getInstance();
+
+        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
+        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.SCALE_CHECK_DROOL_FILE);
+        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.MIN_CHECK_DROOL_FILE);
+        this.maxCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.MAX_CHECK_DROOL_FILE);
+        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
     }
 
     public List<ClusterLevelPartitionContext> getPartitionCtxts() {
@@ -480,5 +508,84 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public boolean isInGroupScalingEnabledSubtree() {
         return groupScalingEnabledSubtree;
+    }
+
+    public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
+        return minCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getMaxCheckKnowledgeSession() {
+        return maxCheckKnowledgeSession;
+    }
+
+    public void setMinCheckKnowledgeSession(
+            StatefulKnowledgeSession minCheckKnowledgeSession) {
+        this.minCheckKnowledgeSession = minCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getObsoleteCheckKnowledgeSession() {
+        return obsoleteCheckKnowledgeSession;
+    }
+
+    public void setObsoleteCheckKnowledgeSession(
+            StatefulKnowledgeSession obsoleteCheckKnowledgeSession) {
+        this.obsoleteCheckKnowledgeSession = obsoleteCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getScaleCheckKnowledgeSession() {
+        return scaleCheckKnowledgeSession;
+    }
+
+    public void setScaleCheckKnowledgeSession(
+            StatefulKnowledgeSession scaleCheckKnowledgeSession) {
+        this.scaleCheckKnowledgeSession = scaleCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getDependentScaleCheckKnowledgeSession() {
+        return dependentScaleCheckKnowledgeSession;
+    }
+
+    public void setDependentScaleCheckKnowledgeSession(StatefulKnowledgeSession dependentScaleCheckKnowledgeSession) {
+        this.dependentScaleCheckKnowledgeSession = dependentScaleCheckKnowledgeSession;
+    }
+
+    public FactHandle getMinCheckFactHandle() {
+        return minCheckFactHandle;
+    }
+
+    public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
+        this.minCheckFactHandle = minCheckFactHandle;
+    }
+
+    public FactHandle getObsoleteCheckFactHandle() {
+        return obsoleteCheckFactHandle;
+    }
+
+    public void setObsoleteCheckFactHandle(FactHandle obsoleteCheckFactHandle) {
+        this.obsoleteCheckFactHandle = obsoleteCheckFactHandle;
+    }
+
+    public FactHandle getScaleCheckFactHandle() {
+        return scaleCheckFactHandle;
+    }
+
+    public void setScaleCheckFactHandle(FactHandle scaleCheckFactHandle) {
+        this.scaleCheckFactHandle = scaleCheckFactHandle;
+    }
+
+    public FactHandle getMaxCheckFactHandle() {
+        return maxCheckFactHandle;
+    }
+
+    public void setMaxCheckFactHandle(FactHandle maxCheckFactHandle) {
+        this.maxCheckFactHandle = maxCheckFactHandle;
+    }
+
+    public FactHandle getDependentScaleCheckFactHandle() {
+        return dependentScaleCheckFactHandle;
+    }
+
+    public void setDependentScaleCheckFactHandle(FactHandle dependentScaleCheckFactHandle) {
+        this.dependentScaleCheckFactHandle = dependentScaleCheckFactHandle;
     }
 }

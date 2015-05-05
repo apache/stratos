@@ -43,40 +43,42 @@ public class AutoscalerRuleEvaluator {
 
     private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
 
-    private static Map<String, KnowledgeBase> knowledgeBases;
-    private String clusterId;
+    private Map<String, KnowledgeBase> knowledgeBases;
+    private static volatile AutoscalerRuleEvaluator instance;
 
-    public AutoscalerRuleEvaluator(String clusterId) {
+    private AutoscalerRuleEvaluator() {
         knowledgeBases = new HashMap<String, KnowledgeBase>();
-        this.clusterId = clusterId;
+        parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
+        parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.SCALE_CHECK_DROOL_FILE);
+        parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MIN_CHECK_DROOL_FILE);
+        parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MAX_CHECK_DROOL_FILE);
+        parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+
+
+    }
+    public static AutoscalerRuleEvaluator getInstance() {
+        if (instance == null) {
+            synchronized (AutoscalerRuleEvaluator.class) {
+                if (instance == null) {
+                    instance = new AutoscalerRuleEvaluator();
+                }
+            }
+        }
+        return instance;
     }
 
     public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName) {
         KnowledgeBase knowledgeBase = readKnowledgeBase(drlFileName);
         if(knowledgeBase == null) {
-            log.error("Knowledge base couldn't be read for [cluster] " + clusterId +
+            log.error("Knowledge base couldn't be read for" +
                     " [drool-file] " + drlFileName);
         } else {
             knowledgeBases.put(drlFileName, knowledgeBase);
             if (log.isDebugEnabled()) {
-                log.debug("Drools file is parsed successfully: [cluster] " + clusterId +
+                log.debug("Drools file is parsed successfully:" +
                         " [ file-name] " + drlFileName);
             }
         }
-    }
-
-    public static FactHandle evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-        if (handle == null) {
-            ksession.setGlobal("delegator", new RuleTasksDelegator());
-            handle = ksession.insert(obj);
-        } else {
-            ksession.update(handle, obj);
-        }
-        ksession.fireAllRules();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Rule executed for: %s ", obj));
-        }
-        return handle;
     }
 
     public StatefulKnowledgeSession getStatefulSession(String drlFileName) {

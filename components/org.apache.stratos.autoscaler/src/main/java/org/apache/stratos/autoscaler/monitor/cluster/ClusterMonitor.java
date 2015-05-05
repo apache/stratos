@@ -41,6 +41,7 @@ import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.rule.RuleTasksDelegator;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
@@ -87,20 +88,10 @@ public class ClusterMonitor extends Monitor {
     private final ScheduledExecutorService scheduler;
     private final ExecutorService executorService;
 
-    protected FactHandle minCheckFactHandle;
-    protected FactHandle maxCheckFactHandle;
-    protected FactHandle obsoleteCheckFactHandle;
-    protected FactHandle scaleCheckFactHandle;
-    protected FactHandle dependentScaleCheckFactHandle;
+
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
     protected ClusterContext clusterContext;
-    protected StatefulKnowledgeSession minCheckKnowledgeSession;
-    protected StatefulKnowledgeSession maxCheckKnowledgeSession;
-    protected StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
-    protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
-    protected StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
-    protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
     protected String serviceType;
     private AtomicBoolean monitoringStarted;
     protected String clusterId;
@@ -124,26 +115,7 @@ public class ClusterMonitor extends Monitor {
         executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
         this.clusterId = cluster.getClusterId();
-
         readConfigurations();
-        autoscalerRuleEvaluator = new AutoscalerRuleEvaluator(cluster.getClusterId());
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.SCALE_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MIN_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MAX_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
-
-        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
-        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.SCALE_CHECK_DROOL_FILE);
-        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.MIN_CHECK_DROOL_FILE);
-        this.maxCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.MAX_CHECK_DROOL_FILE);
-        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
-
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
         this.serviceType = cluster.getServiceName();
@@ -231,76 +203,12 @@ public class ClusterMonitor extends Monitor {
         this.monitoringIntervalMilliseconds = monitorIntervalMilliseconds;
     }
 
-    public FactHandle getMinCheckFactHandle() {
-        return minCheckFactHandle;
-    }
-
-    public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
-        this.minCheckFactHandle = minCheckFactHandle;
-    }
-
-    public FactHandle getObsoleteCheckFactHandle() {
-        return obsoleteCheckFactHandle;
-    }
-
-    public void setObsoleteCheckFactHandle(FactHandle obsoleteCheckFactHandle) {
-        this.obsoleteCheckFactHandle = obsoleteCheckFactHandle;
-    }
-
-    public FactHandle getScaleCheckFactHandle() {
-        return scaleCheckFactHandle;
-    }
-
-    public void setScaleCheckFactHandle(FactHandle scaleCheckFactHandle) {
-        this.scaleCheckFactHandle = scaleCheckFactHandle;
-    }
-
-    public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
-        return minCheckKnowledgeSession;
-    }
-
-    public StatefulKnowledgeSession getMaxCheckKnowledgeSession() {
-        return maxCheckKnowledgeSession;
-    }
-
-    public void setMinCheckKnowledgeSession(
-            StatefulKnowledgeSession minCheckKnowledgeSession) {
-        this.minCheckKnowledgeSession = minCheckKnowledgeSession;
-    }
-
-    public StatefulKnowledgeSession getObsoleteCheckKnowledgeSession() {
-        return obsoleteCheckKnowledgeSession;
-    }
-
-    public void setObsoleteCheckKnowledgeSession(
-            StatefulKnowledgeSession obsoleteCheckKnowledgeSession) {
-        this.obsoleteCheckKnowledgeSession = obsoleteCheckKnowledgeSession;
-    }
-
-    public StatefulKnowledgeSession getScaleCheckKnowledgeSession() {
-        return scaleCheckKnowledgeSession;
-    }
-
-    public void setScaleCheckKnowledgeSession(
-            StatefulKnowledgeSession scaleCheckKnowledgeSession) {
-        this.scaleCheckKnowledgeSession = scaleCheckKnowledgeSession;
-    }
-
     public boolean isDestroyed() {
         return isDestroyed;
     }
 
     public void setDestroyed(boolean isDestroyed) {
         this.isDestroyed = isDestroyed;
-    }
-
-    public AutoscalerRuleEvaluator getAutoscalerRuleEvaluator() {
-        return autoscalerRuleEvaluator;
-    }
-
-    public void setAutoscalerRuleEvaluator(
-            AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
-        this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
     }
 
     public boolean isHasFaultyMember() {
@@ -335,14 +243,6 @@ public class ClusterMonitor extends Monitor {
 
     public void setMonitoringStarted(boolean monitoringStarted) {
         this.monitoringStarted.set(monitoringStarted);
-    }
-
-    public StatefulKnowledgeSession getDependentScaleCheckKnowledgeSession() {
-        return dependentScaleCheckKnowledgeSession;
-    }
-
-    public void setDependentScaleCheckKnowledgeSession(StatefulKnowledgeSession dependentScaleCheckKnowledgeSession) {
-        this.dependentScaleCheckKnowledgeSession = dependentScaleCheckKnowledgeSession;
     }
 
     public ClusterContext getClusterContext() {
@@ -465,7 +365,7 @@ public class ClusterMonitor extends Monitor {
 
                 for (final InstanceContext pInstanceContext : clusterInstanceContexts) {
                     final ClusterInstanceContext instanceContext = (ClusterInstanceContext) pInstanceContext;
-                    ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.
+                    final ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.
                             get(instanceContext.getId());
 
                     if ((instance.getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
@@ -501,14 +401,14 @@ public class ClusterMonitor extends Monitor {
                                     }
                                 }
 
-                                getMinCheckKnowledgeSession().setGlobal("primaryMemberCount",
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("primaryMemberCount",
                                         primaryMemberListInClusterInstance.size());
-                                getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 //FIXME when parent chosen the partition
                                 String paritionAlgo = instanceContext.getPartitionAlgorithm();
 
-                                getMinCheckKnowledgeSession().setGlobal("algorithmName",
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("algorithmName",
                                         paritionAlgo);
 
                                 if (log.isDebugEnabled()) {
@@ -516,23 +416,25 @@ public class ClusterMonitor extends Monitor {
                                             instanceContext.getId() + " for the cluster: " + clusterId));
                                 }
 
-                                minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
-                                        minCheckFactHandle, instanceContext);
+                                instanceContext.setMinCheckFactHandle(evaluate(instanceContext.
+                                                getMinCheckKnowledgeSession(),
+                                        instanceContext.getMinCheckFactHandle(), instanceContext));
 
 
-                                getMaxCheckKnowledgeSession().setGlobal("primaryMemberCount",
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("primaryMemberCount",
                                         primaryMemberListInClusterInstance.size());
-                                getMaxCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                getMaxCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                                getMaxCheckKnowledgeSession().setGlobal("primaryMembers",
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("primaryMembers",
                                         primaryMemberListInClusterInstance);
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running max check for cluster instance %s ",
                                             instanceContext.getId() + " for the cluster: " + clusterId));
                                 }
 
-                                maxCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMaxCheckKnowledgeSession(),
-                                        maxCheckFactHandle, instanceContext);
+                                instanceContext.setMaxCheckFactHandle(evaluate(instanceContext.
+                                                getMaxCheckKnowledgeSession(),
+                                        instanceContext.getMaxCheckFactHandle(), instanceContext));
 
 
                                 //checking the status of the cluster
@@ -553,17 +455,17 @@ public class ClusterMonitor extends Monitor {
                                     log.info("Executing scaling rule as statistics have been reset");
                                     ClusterContext clusterContext = (ClusterContext) ClusterMonitor.this.clusterContext;
 
-                                    getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                    getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                                    getScaleCheckKnowledgeSession().setGlobal("algorithmName", paritionAlgo);
-                                    getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("algorithmName", paritionAlgo);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
                                             clusterContext.getAutoscalePolicy());
-                                    getScaleCheckKnowledgeSession().setGlobal("arspiReset",
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("arspiReset",
                                             averageRequestServedPerInstanceReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("primaryMembers",
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("primaryMembers",
                                             primaryMemberListInClusterInstance);
 
                                     if (log.isDebugEnabled()) {
@@ -572,8 +474,9 @@ public class ClusterMonitor extends Monitor {
                                         log.debug(" Primary members : " + primaryMemberListInClusterInstance);
                                     }
 
-                                    scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
-                                            , scaleCheckFactHandle, instanceContext);
+                                    instanceContext.setScaleCheckFactHandle(evaluate(
+                                            instanceContext.getScaleCheckKnowledgeSession()
+                                            , instanceContext.getScaleCheckFactHandle(), instanceContext));
 
                                     instanceContext.setRifReset(false);
                                     instanceContext.setMemoryConsumptionReset(false);
@@ -593,9 +496,10 @@ public class ClusterMonitor extends Monitor {
                         Runnable monitoringRunnable = new Runnable() {
                             @Override
                             public void run() {
-                                getObsoleteCheckKnowledgeSession().setGlobal("clusterId", clusterId);
-                                obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
-                                        getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
+                                instanceContext.getObsoleteCheckKnowledgeSession().setGlobal("clusterId", clusterId);
+                                instanceContext.setObsoleteCheckFactHandle(evaluate(
+                                        instanceContext.getObsoleteCheckKnowledgeSession(),
+                                        instanceContext.getObsoleteCheckFactHandle(), partitionContext));
 
                                 if (partitionContext.isObsoletePartition()
                                         && partitionContext.getTerminationPendingMembers().size() == 0
@@ -614,6 +518,20 @@ public class ClusterMonitor extends Monitor {
         }
     }
 
+    private FactHandle evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+        if (handle == null) {
+            ksession.setGlobal("delegator", new RuleTasksDelegator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        ksession.fireAllRules();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Rule executed for: %s ", obj));
+        }
+        return handle;
+    }
+
     private void readConfigurations() {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         int monitorInterval = conf.getInt(AutoscalerConstants.Cluster_MONITOR_INTERVAL, 90000);
@@ -627,9 +545,19 @@ public class ClusterMonitor extends Monitor {
 
     @Override
     public void destroy() {
-        getMinCheckKnowledgeSession().dispose();
-        getObsoleteCheckKnowledgeSession().dispose();
-        getScaleCheckKnowledgeSession().dispose();
+        for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
+
+            Collection<InstanceContext> clusterInstanceContexts = networkPartitionContext.
+                    getInstanceIdToInstanceContextMap().values();
+
+            for (final InstanceContext pInstanceContext : clusterInstanceContexts) {
+                ClusterInstanceContext instanceContext = (ClusterInstanceContext) pInstanceContext;
+                instanceContext.getMinCheckKnowledgeSession().dispose();
+                instanceContext.getObsoleteCheckKnowledgeSession().dispose();
+                instanceContext.getScaleCheckKnowledgeSession().dispose();
+            }
+        }
+
         setDestroyed(true);
         if (log.isDebugEnabled()) {
             log.debug("ClusterMonitor Drools session has been disposed. " + this.toString());
@@ -723,13 +651,14 @@ public class ClusterMonitor extends Monitor {
                 vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
         clusterInstanceContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
 
-        getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-        getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
-        getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
-        getDependentScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-        getDependentScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
-        dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getDependentScaleCheckKnowledgeSession()
-                , dependentScaleCheckFactHandle, clusterInstanceContext);
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
+        clusterInstanceContext.setDependentScaleCheckFactHandle(evaluate(
+                clusterInstanceContext.getDependentScaleCheckKnowledgeSession()
+                , clusterInstanceContext.getDependentScaleCheckFactHandle(), clusterInstanceContext));
 
     }
 
