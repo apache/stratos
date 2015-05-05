@@ -678,17 +678,14 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/addApplication")
     public Response updateApplication(ApplicationBean applicationDefinition) throws RestAPIException {
-        try {
-            StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
 
-            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
-            return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
-                    String.format("Application added successfully: [application] %s",
-                            applicationDefinition.getApplicationId()))).build();
-        } catch (RestAPIException e) {
+        StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
 
-            throw e;
-        }
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format("Application updated successfully: [application] %s",
+                        applicationDefinition.getApplicationId()))).build();
+
     }
 
     /**
