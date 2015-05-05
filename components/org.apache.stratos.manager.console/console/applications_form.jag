@@ -100,6 +100,8 @@ switch (formtype) {
         list_data = util.RESTCalls.getApplications();
         if (list_data && list_data.length === 0) {
             list_data = null;
+        }else if(list_data.errorCode == '404'){ //TODO : need to fix this with REST API class
+            list_data = null;
         }
         break;
 

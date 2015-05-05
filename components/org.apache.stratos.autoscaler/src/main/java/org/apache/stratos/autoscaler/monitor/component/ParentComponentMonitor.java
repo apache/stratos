@@ -550,7 +550,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     public boolean verifyGroupStatus(String childId, String instanceId, GroupStatus requiredStatus) {
         Monitor monitor = this.getMonitor(childId);
-        if(!(monitor instanceof GroupMonitor)) {
+        if (!(monitor instanceof GroupMonitor)) {
             return false;
         }
         List<String> groupInstances;
@@ -576,8 +576,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         }
 
         if (!groupInstances.isEmpty()) {
-                GroupLevelNetworkPartitionContext networkPartitionContext =
-                    (GroupLevelNetworkPartitionContext) ((GroupMonitor)monitor).
+            GroupLevelNetworkPartitionContext networkPartitionContext =
+                    (GroupLevelNetworkPartitionContext) ((GroupMonitor) monitor).
                             getNetworkPartitionCtxts().get(networkPartitionId);
             int minInstances = networkPartitionContext.getMinInstanceCount();
             //if terminated all the instances in this instances map should be in terminated state
@@ -826,62 +826,67 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         }
 
         public void run() {
-            long startTime = System.currentTimeMillis();
-            long endTime = startTime;
-            int retries = 5;
-            Monitor monitor = null;
-            boolean success = false;
-            while (!success && retries != 0) {
+            try {
+                long startTime = System.currentTimeMillis();
+                long endTime = startTime;
+                int retries = 5;
+                Monitor monitor = null;
+                boolean success = false;
+                while (!success && retries != 0) {
 
-                startTime = System.currentTimeMillis();
+                    startTime = System.currentTimeMillis();
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Starting monitor: [type] %s [component] %s",
+                                monitorTypeStr, context.getId()));
+                    }
+
+                    try {
+                        monitor = MonitorFactory.getMonitor(parent, context, appId, parentInstanceIds);
+                    } catch (DependencyBuilderException e) {
+                        String msg = String.format("Monitor creation failed: [type] %s [component] %s",
+                                monitorTypeStr, context.getId());
+                        log.warn(msg, e);
+                        retries--;
+                    } catch (TopologyInConsistentException e) {
+                        String msg = String.format("Monitor creation failed: [type] %s [component] %s",
+                                monitorTypeStr, context.getId());
+                        log.warn(msg, e);
+                        retries--;
+                    } catch (PolicyValidationException e) {
+                        String msg = String.format("Monitor creation failed: [type] %s [component] %s",
+                                monitorTypeStr, context.getId());
+                        log.warn(msg, e);
+                        retries--;
+                    } catch (PartitionValidationException e) {
+                        String msg = String.format("Monitor creation failed: [type] %s [component] %s",
+                                monitorTypeStr, context.getId());
+                        log.warn(msg, e);
+                        retries--;
+                    }
+                    success = true;
+                    endTime = System.currentTimeMillis();
+                }
+
+                if (monitor == null) {
+                    String msg = String.format("Monitor creation failed even after retrying for 5 times: "
+                            + "[type] %s [component] ", monitorTypeStr, context.getId());
+                    log.error(msg);
+                    //TODO parent.notify();
+                    throw new RuntimeException(msg);
+                }
+
+                aliasToActiveMonitorsMap.put(context.getId(), monitor);
+                pendingMonitorsList.remove(context.getId());
+
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Starting monitor: [type] %s [component] %s",
-                            monitorTypeStr, context.getId()));
+                    long startupTime = (endTime - startTime) / 1000;
+                    log.info(String.format("Monitor started successfully: [type] %s [component] %s [dependents] %s " +
+                                    "[startup-time] %d seconds", monitorTypeStr, context.getId(),
+                            getIdList(context.getApplicationChildContextList()), startupTime));
                 }
-
-                try {
-                    monitor = MonitorFactory.getMonitor(parent, context, appId, parentInstanceIds);
-                } catch (DependencyBuilderException e) {
-                    String msg = String.format("Monitor creation failed: [type] %s [component] %s",
-                            monitorTypeStr, context.getId());
-                    log.warn(msg, e);
-                    retries--;
-                } catch (TopologyInConsistentException e) {
-                    String msg = String.format("Monitor creation failed: [type] %s [component] %s",
-                            monitorTypeStr, context.getId());
-                    log.warn(msg, e);
-                    retries--;
-                } catch (PolicyValidationException e) {
-                    String msg = String.format("Monitor creation failed: [type] %s [component] %s",
-                            monitorTypeStr, context.getId());
-                    log.warn(msg, e);
-                    retries--;
-                } catch (PartitionValidationException e) {
-                    String msg = String.format("Monitor creation failed: [type] %s [component] %s",
-                            monitorTypeStr, context.getId());
-                    log.warn(msg, e);
-                    retries--;
-                }
-                success = true;
-                endTime = System.currentTimeMillis();
-            }
-
-            if (monitor == null) {
-                String msg = String.format("Monitor creation failed even after retrying for 5 times: "
-                        + "[type] %s [component] ", monitorTypeStr, context.getId());
-                log.error(msg);
-                //TODO parent.notify();
-                throw new RuntimeException(msg);
-            }
-
-            aliasToActiveMonitorsMap.put(context.getId(), monitor);
-            pendingMonitorsList.remove(context.getId());
-
-            if (log.isInfoEnabled()) {
-                long startupTime = (endTime - startTime) / 1000;
-                log.info(String.format("Monitor started successfully: [type] %s [component] %s [dependents] %s " +
-                                "[startup-time] %d seconds", monitorTypeStr, context.getId(),
-                        getIdList(context.getApplicationChildContextList()), startupTime));
+            } catch (Exception e) {
+                log.error(String.format("An error occurred while starting monitor: [type] %s [component] %s",
+                        monitorTypeStr, context.getId()), e);
             }
         }
 

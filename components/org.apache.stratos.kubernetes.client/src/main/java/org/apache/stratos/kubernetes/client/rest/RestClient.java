@@ -42,7 +42,7 @@ public class RestClient {
     /**
      * Handle http post request. Return String
      *
-     * @param resourcePath This should be REST endpoint
+     * @param resourcePath    This should be REST endpoint
      * @param jsonParamString The json string which should be executed from the post request
      * @return The HttpResponse
      * @throws Exception if any errors occur when executing the request
@@ -68,7 +68,7 @@ public class RestClient {
      * @param resourcePath This should be REST endpoint
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
-     *             if any errors occur when executing the request
+     *                                                        if any errors occur when executing the request
      */
     public HttpResponse doGet(URI resourcePath) throws Exception {
         HttpGet getRequest = null;

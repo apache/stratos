@@ -33,15 +33,6 @@
             "maxItems": 1,
             "enum": ["application","framework","data","lb"]
         },
-        "isPublic": {
-            "type": "boolean",
-            "id": "root/isPublic",
-            "title": "Is Public",
-            "name": "Is Public",
-            "default": false,
-            "propertyOrder": 2,
-            "maxItems": 1
-        },
         "provider": {
             "type": "string",
             "id": "root/provider",

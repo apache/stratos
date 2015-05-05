@@ -20,9 +20,9 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.stratos.messaging.adapters.MapAdapter;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.util.MessagingUtil;
-import org.apache.stratos.messaging.adapters.MapAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

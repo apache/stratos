@@ -24,8 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.Message;
 
-import javax.jms.JMSException;
-
 /**
  * Implements functionality for receiving text based event messages from the
  * instance notifier

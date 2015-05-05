@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.domain.application;
 
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * Represents a Group/nested Group in an Application/Group

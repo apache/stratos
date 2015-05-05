@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.stratos.messaging.domain.Message;
 
-import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**

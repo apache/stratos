@@ -118,7 +118,7 @@ public class AutoscalerServiceClient {
     }
 
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy)
-            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException,
+            throws RemoteException,
             AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException {
         stub.addApplicationPolicy(applicationPolicy);
     }

@@ -19,8 +19,6 @@
 
 package org.apache.stratos.messaging.event.instance.status;
 
-import org.apache.stratos.messaging.event.topology.TopologyEvent;
-
 import java.io.Serializable;
 
 /**

@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.messaging.event.instance.notifier;
 
-import org.apache.stratos.messaging.event.tenant.TenantEvent;
-
 import java.io.Serializable;
 
 /**

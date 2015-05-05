@@ -137,6 +137,12 @@
 <script>
 
     $(document).ready(function () {
+
+        //handled Ajax base session expire issue
+        $(document).ajaxError(function (e, xhr, settings) {
+            window.location.href = '../';
+        });
+
         {{#if isForm}}
             // Set the default CSS theme and icon library globally
             JSONEditor.defaults.theme = 'bootstrap3';

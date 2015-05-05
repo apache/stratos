@@ -26,8 +26,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.health.stat.HealthStatMessageProcessorChain;
 
-import javax.jms.TextMessage;
-
 
 /**
  * Implements logic for processing health stat event messages based on a given

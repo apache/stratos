@@ -33,7 +33,6 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.policy.UnremovablePolicyException;
 import org.apache.stratos.common.Properties;
 
 import java.rmi.RemoteException;

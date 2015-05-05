@@ -1,20 +1,20 @@
 /**
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
-
- *  http://www.apache.org/licenses/LICENSE-2.0
-
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.stratos.cli;
 
@@ -40,27 +40,27 @@ import java.util.HashMap;
 
 public class CommandLineService {
 
-	private static final Logger log = LoggerFactory.getLogger(CommandLineService.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandLineService.class);
 
-	private ApplicationManagementServiceStub stub;
+    private ApplicationManagementServiceStub stub;
 
-	private CommandLineService() {
-	}
+    private CommandLineService() {
+    }
 
-	private static class SingletonHolder {
-		private final static CommandLineService INSTANCE = new CommandLineService();
-	}
+    private static class SingletonHolder {
+        private final static CommandLineService INSTANCE = new CommandLineService();
+    }
 
-	public static CommandLineService getInstance() {
-		return SingletonHolder.INSTANCE;
-	}
-	
-	private void initializeApplicationManagementStub(String serverURL, String username, String password) throws AxisFault {
-		HttpTransportProperties.Authenticator authenticator = new HttpTransportProperties.Authenticator();
+    public static CommandLineService getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private void initializeApplicationManagementStub(String serverURL, String username, String password) throws AxisFault {
+        HttpTransportProperties.Authenticator authenticator = new HttpTransportProperties.Authenticator();
         authenticator.setUsername(username);
         authenticator.setPassword(password);
         authenticator.setPreemptiveAuthentication(true);
-		
+
         ApplicationManagementServiceStub stub;
         ConfigurationContext configurationContext = null;
         try {
@@ -83,62 +83,62 @@ public class CommandLineService {
         this.stub = stub;
     }
 
-	public boolean login(String serverURL, String username, String password, boolean validateLogin) throws CommandException {
-		try {
-			// Following code will avoid validating certificate
-			SSLContext sc;
-			// Get SSL context
-			sc = SSLContext.getInstance("SSL");
-			// Create empty HostnameVerifier
-			HostnameVerifier hv = new HostnameVerifier() {
-				public boolean verify(String urlHostName, SSLSession session) {
-					return true;
-				}
-			};
-			// Create a trust manager that does not validate certificate
-			// chains
-			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
+    public boolean login(String serverURL, String username, String password, boolean validateLogin) throws CommandException {
+        try {
+            // Following code will avoid validating certificate
+            SSLContext sc;
+            // Get SSL context
+            sc = SSLContext.getInstance("SSL");
+            // Create empty HostnameVerifier
+            HostnameVerifier hv = new HostnameVerifier() {
+                public boolean verify(String urlHostName, SSLSession session) {
+                    return true;
+                }
+            };
+            // Create a trust manager that does not validate certificate
+            // chains
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
 
-				public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-				}
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
 
-				public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-				}
-			} };
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			SSLContext.setDefault(sc);
-			HttpsURLConnection.setDefaultHostnameVerifier(hv);
-		} catch (Exception e) {
-			throw new RuntimeException("Error while authentication process!", e);
-		}
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            }};
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            SSLContext.setDefault(sc);
+            HttpsURLConnection.setDefaultHostnameVerifier(hv);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while authentication process!", e);
+        }
 
-		// Initialize Service Stub
-		try {
-			initializeApplicationManagementStub(serverURL, username, password);
-		} catch (AxisFault e) {
-			System.out.println("Error connecting to the back-end");
-			throw new CommandException(e);
-		}
-		
-		try {
-			if (validateLogin) {
-				String tenantDomain = stub.getTenantDomain();
-				if (log.isDebugEnabled()) {
-					log.debug("Tenant Domain {}", tenantDomain);
-				}
-				return (tenantDomain != null);
-			} else {
-				// Just return true as we don't need to validate
-				return true;
-			}
-		} catch (RemoteException e) {
-			System.out.println("Authentication failed!");
-			throw new CommandException(e);
-		}
-	}
+        // Initialize Service Stub
+        try {
+            initializeApplicationManagementStub(serverURL, username, password);
+        } catch (AxisFault e) {
+            System.out.println("Error connecting to the back-end");
+            throw new CommandException(e);
+        }
+
+        try {
+            if (validateLogin) {
+                String tenantDomain = stub.getTenantDomain();
+                if (log.isDebugEnabled()) {
+                    log.debug("Tenant Domain {}", tenantDomain);
+                }
+                return (tenantDomain != null);
+            } else {
+                // Just return true as we don't need to validate
+                return true;
+            }
+        } catch (RemoteException e) {
+            System.out.println("Authentication failed!");
+            throw new CommandException(e);
+        }
+    }
 
 //	public void listSubscribedCartridges(final boolean full) throws CommandException {
 //		try {
@@ -240,7 +240,7 @@ public class CommandLineService {
 //			handleException(e);
 //		}
 //	}
-	
+
 //	public void listAvailablePolicies() throws CommandException {
 //		try {
 //			PolicyDefinition[] policies = stub.getPolicyDefinitions();
@@ -320,64 +320,64 @@ public class CommandLineService {
 //        }
 //	}
 
-	public void unsubscribe(String alias) throws CommandException {
-		try {
-			stub.unsubscribe(alias);
-			System.out.println("You have successfully unsubscribed " + alias);
+    public void unsubscribe(String alias) throws CommandException {
+        try {
+            stub.unsubscribe(alias);
+            System.out.println("You have successfully unsubscribed " + alias);
         } catch (ApplicationManagementServiceADCExceptionException e) {
-        	handleException("cannot.unsubscribe", e);
+            handleException("cannot.unsubscribe", e);
         } catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
-			handleException("notsubscribed.error", e, alias);
+            handleException("notsubscribed.error", e, alias);
         } catch (RemoteException e) {
-        	handleException(e);
+            handleException(e);
         }
-	}
+    }
 
-	public void sync(String alias) throws CommandException {
-		try {
-			System.out.format("Synchronizing repository for alias: %s%n", alias);
-			stub.synchronizeRepository(alias);
-		} catch (ApplicationManagementServiceADCExceptionException e) {
-			handleException("cannot.syncrepo", e);
-		} catch (RemoteException e) {
-			handleException(e);
-		} catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
-			handleException("notsubscribed.error", e, alias);
-		}
-	}
+    public void sync(String alias) throws CommandException {
+        try {
+            System.out.format("Synchronizing repository for alias: %s%n", alias);
+            stub.synchronizeRepository(alias);
+        } catch (ApplicationManagementServiceADCExceptionException e) {
+            handleException("cannot.syncrepo", e);
+        } catch (RemoteException e) {
+            handleException(e);
+        } catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
+            handleException("notsubscribed.error", e, alias);
+        }
+    }
 
-	public String addDomainMapping(String domain, String alias) throws CommandException {
-		try {
-			return stub.addDomainMapping(domain, alias);
-		} catch (ApplicationManagementServiceADCExceptionException e) {
-			handleException("cannot.mapdomain", e);
-		} catch (RemoteException e) {
-			handleException(e);
-		} catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
-			handleException("notsubscribed.error", e, alias);
-		} catch (ApplicationManagementServiceDomainMappingExistsExceptionException e) {
-			handleException("domainmapping.exists.error", e, domain, alias);
-		}
-		return null;
-	}
+    public String addDomainMapping(String domain, String alias) throws CommandException {
+        try {
+            return stub.addDomainMapping(domain, alias);
+        } catch (ApplicationManagementServiceADCExceptionException e) {
+            handleException("cannot.mapdomain", e);
+        } catch (RemoteException e) {
+            handleException(e);
+        } catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
+            handleException("notsubscribed.error", e, alias);
+        } catch (ApplicationManagementServiceDomainMappingExistsExceptionException e) {
+            handleException("domainmapping.exists.error", e, domain, alias);
+        }
+        return null;
+    }
 
-	public void removeDomainMapping(String alias) throws CommandException {
-		try {
-			stub.removeDomainMapping(alias);
-			System.out.format("Domain mapping removed for alias: %s.%n", alias);
-		} catch (ApplicationManagementServiceADCExceptionException e) {
-			handleException("cannot.removedomain", e);
-		} catch (RemoteException e) {
-			handleException(e);
-		} catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
-			handleException("notsubscribed.error", e, alias);
-		}
-	}
+    public void removeDomainMapping(String alias) throws CommandException {
+        try {
+            stub.removeDomainMapping(alias);
+            System.out.format("Domain mapping removed for alias: %s.%n", alias);
+        } catch (ApplicationManagementServiceADCExceptionException e) {
+            handleException("cannot.removedomain", e);
+        } catch (RemoteException e) {
+            handleException(e);
+        } catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
+            handleException("notsubscribed.error", e, alias);
+        }
+    }
 
-	public void subscribe(String cartridgeType, String alias, String policy, String externalRepoURL,
-			boolean privateRepo, String username, String password, String dataCartridgeType, String dataCartridgeAlias)
-			throws CommandException {
-		
+    public void subscribe(String cartridgeType, String alias, String policy, String externalRepoURL,
+                          boolean privateRepo, String username, String password, String dataCartridgeType, String dataCartridgeAlias)
+            throws CommandException {
+
 //		SubscriptionInfo subcriptionConnectInfo = null;
 //		if (StringUtils.isNotBlank(dataCartridgeType) && StringUtils.isNotBlank(dataCartridgeAlias)) {
 //			System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
@@ -476,7 +476,7 @@ public class CommandLineService {
 //		} catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
 //			handleException("notsubscribed.error", e, alias);
 //		}
-	}
+    }
 
 //	private String getAccessURLs(Cartridge cartridge) {
 //		String[] accessURLs = cartridge.getAccessURLs();
@@ -495,28 +495,28 @@ public class CommandLineService {
 //		return urlBuilder.toString();
 //	}
 
-	private void handleException(Exception e) throws CommandException {
-		if (log.isDebugEnabled()) {
-			log.debug("Displaying message from Exception {}\n{}", e.getClass(), e.getMessage());
-		}
-		// TODO: Fix handling error message.
-		// Sometimes the Axis2 stub throws only the RemoteException (an
-		// AxisFault)
-		// So, other exceptions won't come here.
-		String message = e.getMessage();
-		if (message == null || (message != null && message.contains("Exception"))) {
-			message = "Error executing command!";
-		}
-		log.error(message);
-		System.out.println(message);
-		throw new CommandException(message, e);
-	}
-    
+    private void handleException(Exception e) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Displaying message from Exception {}\n{}", e.getClass(), e.getMessage());
+        }
+        // TODO: Fix handling error message.
+        // Sometimes the Axis2 stub throws only the RemoteException (an
+        // AxisFault)
+        // So, other exceptions won't come here.
+        String message = e.getMessage();
+        if (message == null || (message != null && message.contains("Exception"))) {
+            message = "Error executing command!";
+        }
+        log.error(message);
+        System.out.println(message);
+        throw new CommandException(message, e);
+    }
+
     private void handleException(String key, Exception e, Object... args) throws CommandException {
-    	if (log.isDebugEnabled()) {
-    		log.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
-    	}
-    	String message = CliUtils.getMessage(key, args);
+        if (log.isDebugEnabled()) {
+            log.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
+        }
+        String message = CliUtils.getMessage(key, args);
         log.error(message);
         System.out.println(message);
         throw new CommandException(message, e);

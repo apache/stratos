@@ -20,8 +20,8 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.stratos.common.domain.LoadBalancingIPType;
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.adapters.MapAdapter;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateTransitionBehavior;
 
 import javax.xml.bind.annotation.XmlRootElement;

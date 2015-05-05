@@ -96,6 +96,14 @@ public class DependencyBuilder {
                             ApplicationChildContext applicationChildContext = ApplicationChildContextFactory.
                                     createApplicationChildContext(identifier, startupOrderComponent,
                                             component, dependencyTree);
+                            String parentContextId = null;
+                            ApplicationChildContext tmpParentContext = null;
+                            if(parentContext != null) {
+                                parentContextId = parentContext.getId();
+                                tmpParentContext = dependencyTree.
+                                        getApplicationChildContextByIdInPrimaryTree(parentContextId);
+                            }
+                            applicationChildContext.setParent(tmpParentContext);
                             String applicationChildContextId = applicationChildContext.getId();
 
                             ApplicationChildContext existingApplicationChildContext =
@@ -111,7 +119,6 @@ public class DependencyBuilder {
                                                 applicationChildContext.getId(), parentContext.getId(), dependencyTree));
                                     }
                                     parentContext = applicationChildContext;
-                                    applicationChildContext.setParent(parentContext);
                                 } else {
                                     // This is the first element, add it as the root
                                     dependencyTree.addPrimaryApplicationContext(applicationChildContext);

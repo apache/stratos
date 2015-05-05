@@ -137,7 +137,8 @@ public class GroupMonitor extends ParentComponentMonitor {
 
                             } else if (!instanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()) {
                                 //scale down only when extra instances found
-                                handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
+                                handleScalingDownBeyondMin(instanceContext,
+                                        networkPartitionContext, false);
                             }
                         }
                     }
@@ -146,6 +147,10 @@ public class GroupMonitor extends ParentComponentMonitor {
                             getNonTerminatedInstancesCount();
                     int minInstances = ((GroupLevelNetworkPartitionContext) networkPartitionContext).
                             getMinInstanceCount();
+                    int maxInstances = ((GroupLevelNetworkPartitionContext) networkPartitionContext).
+                            getMaxInstanceCount();
+                    int activeInstances = ((GroupLevelNetworkPartitionContext) networkPartitionContext).
+                            getActiveInstancesCount();
                     if (nonTerminatedInstancesCount < minInstances) {
                         int instancesToBeCreated = minInstances - nonTerminatedInstancesCount;
                         for (int i = 0; i < instancesToBeCreated; i++) {
@@ -163,6 +168,21 @@ public class GroupMonitor extends ParentComponentMonitor {
                                     createInstanceOnDemand(parentInstanceContext.getId());
                                 }
                             }
+
+                        }
+                    }
+                    //If the active instances are higher than the max instances,
+                    // the group instance has to get terminated
+                    if (activeInstances > maxInstances) {
+                        int instancesToBeTerminated = activeInstances - maxInstances;
+                        Collection<InstanceContext> contexts = networkPartitionContext.
+                                getInstanceIdToInstanceContextMap().values();
+                        List<InstanceContext> contextList = new ArrayList<InstanceContext>();
+                        for (int i = 0; i < instancesToBeTerminated; i++) {
+                            InstanceContext instanceContext = contextList.get(i);
+                            //scale down only when extra instances found
+                            handleScalingDownBeyondMin(instanceContext,
+                                    networkPartitionContext, true);
 
                         }
                     }
@@ -188,7 +208,8 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
     private void handleScalingDownBeyondMin(InstanceContext instanceContext,
-                                            NetworkPartitionContext nwPartitionContext) {
+                                            NetworkPartitionContext nwPartitionContext,
+                                            boolean forceScaleDown) {
         //Traverse through all the children to see whether all have sent the scale down
         boolean allChildrenScaleDown = false;
         for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
@@ -200,7 +221,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             }
         }
         //all the children sent the scale down only, it will try to scale down
-        if (allChildrenScaleDown) {
+        if (allChildrenScaleDown || forceScaleDown) {
             if (hasScalingDependents) {
                 if (nwPartitionContext.getNonTerminatedInstancesCount() >
                         ((GroupLevelNetworkPartitionContext)
@@ -915,8 +936,6 @@ public class GroupMonitor extends ParentComponentMonitor {
     public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
         this.getNetworkPartitionCtxts().put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
     }
-
-
 
 
     @Override

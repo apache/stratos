@@ -111,7 +111,7 @@
             "icon": "fa-cubes",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
             "description": "Manage applications",
-            "sub-menu": [
+           /* "sub-menu": [
                 {
                     "link": "applications/applications/",
                     "linkexternal": false,
@@ -121,7 +121,7 @@
                     "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
                     "description": "Manage applications"
                 }
-            ]
+            ]*/
         },
         {
             "link": "https://issues.apache.org/jira/",

@@ -363,10 +363,8 @@ function generateJsplumbTree(collector, connections, appeditor){
     collector['components']={};
     collector['components']['groups']=[];
     collector['components']['cartridges']=[];
-    collector['components']['dependencies']=appeditor['dependencies'];
+    collector['components']['dependencies']= collector['dependencies'];
     delete collector['dependencies'];
-
-    console.log(collector)
 
     //generate raw data tree from connections
     var rawtree = [];
@@ -588,12 +586,6 @@ var groupBlockTemplate = {
             "id": "root/groupMinInstances",
             "default":1,
             "required":false
-        },
-        "groupScalingEnabled": {
-            "type":"boolean",
-            "id": "root/groupScalingEnabled",
-            "default": "false",
-            "required":false
         }
     }
 };
@@ -602,8 +594,7 @@ var groupBlockDefault = {
     "name":"group2",
     "alias":"group2alias",
     "groupMinInstances":1,
-    "groupMaxInstances":2,
-    "groupScalingEnabled":"false"
+    "groupMaxInstances":2
 };
 
 var applicationBlockTemplate = {
@@ -655,7 +646,8 @@ var applicationBlockTemplate = {
                         "id": "root/dependencies/startupOrders/0",
                         "type": "string",
                         "title": "Order",
-                        "name": "Order"
+                        "name": "Order",
+                        "default":"group.my-group1,cartridge.my-c4"
                     }
                 },
                 "scalingDependents": {
@@ -668,7 +660,8 @@ var applicationBlockTemplate = {
                         "id": "root/dependencies/scalingDependents/0",
                         "type": "string",
                         "title": "Dependent",
-                        "name": "Dependent"
+                        "name": "Dependent",
+                        "default":"group.my-group1,cartridge.my-c4"
                     }
                 },
                 "terminationBehaviour": {
@@ -689,10 +682,10 @@ var applicationBlockDefault = {
     "multiTenant": false,
     "dependencies": {
         "startupOrders": [
-            "group.my-group1,cartridge.my-c4"
+
         ],
         "scalingDependents": [
-            "group.my-group1,cartridge.my-c4"
+
         ],
         "terminationBehaviour": "terminate-dependents"
     }
@@ -701,7 +694,7 @@ var applicationBlockDefault = {
 //create cartridge list
 var cartridgeListHtml='';
 function generateCartridges(data){
-    if(data.length == 0){
+    if(data == null || data.length == 0){
         cartridgeListHtml = 'No Cartridges found..';
     }else{
         for(var cartridge in data){
@@ -722,7 +715,7 @@ function generateCartridges(data){
 //create group list
 var groupListHtml='';
 function generateGroups(data){
-    if(data.length == 0){
+    if(data == null || data.length == 0){
         groupListHtml = 'No Groups found..';
     }else {
         for (var group in data) {
@@ -769,6 +762,10 @@ function dagrePosition(){
 
 // Document ready events
 $(document).ready(function(){
+    //handled Ajax base session expire issue
+    $(document).ajaxError(function (e, xhr, settings) {
+        window.location.href = '../';
+    });
 
     $('#deploy').attr('disabled','disabled');
 
@@ -824,6 +821,8 @@ $(document).ready(function(){
     Repaint();
 
     $('#whiteboard').on('click', '.stepnode', function(){
+        $('.stepnode').removeClass("highlightme");
+        $(this).addClass('highlightme');
         tabData($(this));
     });
 

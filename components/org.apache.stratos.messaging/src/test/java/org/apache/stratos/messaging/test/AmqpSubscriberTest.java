@@ -49,7 +49,7 @@ public class AmqpSubscriberTest {
     private BrokerService broker;
 
     @BeforeClass
-    public static void setUp(){
+    public static void setUp() {
         // Set jndi.properties.dir system property for initializing event receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
     }
@@ -75,7 +75,7 @@ public class AmqpSubscriberTest {
             long time1 = System.currentTimeMillis();
             broker.start();
             long time2 = System.currentTimeMillis();
-            log.info(String.format("ActiveMQ started in %d sec", (time2 - time1)/1000));
+            log.info(String.format("ActiveMQ started in %d sec", (time2 - time1) / 1000));
         } catch (Exception e) {
             throw new RuntimeException("Could not start ActiveMQ", e);
         }

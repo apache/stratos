@@ -64,6 +64,11 @@
     var applicationJSON = {{{applicationJSON}}};
 $(window).load(function() {
 
+    //handled Ajax base session expire issue
+    $(document).ajaxError(function (e, xhr, settings) {
+        window.location.href = '../';
+    });
+
     //initial generation with deafult call
     update(genTree(topologydata));
 

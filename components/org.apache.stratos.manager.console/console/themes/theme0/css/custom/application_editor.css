@@ -189,3 +189,6 @@
 div#general>div>h3 {
     display: none;
 }
+.highlightme{
+    background-color: #6BCFFE;
+}

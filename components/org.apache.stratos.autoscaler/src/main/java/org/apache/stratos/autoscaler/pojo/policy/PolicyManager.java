@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.AutoScalingPolicyAlreadyExistException;
+import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidDeploymentPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyDoesNotExistException;
@@ -80,7 +81,7 @@ public class PolicyManager {
     }
 
     // Add the policy to information model and persist.
-    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException{
+    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException {
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding autoscaling policy: [id] %s", policy.getId()));
         }
@@ -185,7 +186,7 @@ public class PolicyManager {
         }
     }
 
-    public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws AutoScalingPolicyAlreadyExistException{
+    public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws AutoScalingPolicyAlreadyExistException {
         if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding autoscaling policy: " + asPolicy.getId());
@@ -347,7 +348,7 @@ public class PolicyManager {
     }
 
 
-    public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
+    public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidApplicationPolicyException {
         String applicationPolicyId = applicationPolicy.getId();
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding application policy : [application-policy-id] %s", applicationPolicyId));
@@ -375,7 +376,8 @@ public class PolicyManager {
         return true;
     }
 
-    public void addApplicationPolicyToInformationModel(ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
+    public void addApplicationPolicyToInformationModel(ApplicationPolicy applicationPolicy)
+            throws InvalidApplicationPolicyException {
         String applicationPolicyId = applicationPolicy.getId();
         if (!applicationPolicyListMap.containsKey(applicationPolicyId)) {
             if (log.isDebugEnabled()) {
@@ -385,7 +387,7 @@ public class PolicyManager {
         } else {
             String errMsg = "Application policy already exists : " + applicationPolicyId;
             log.error(errMsg);
-            throw new InvalidPolicyException(errMsg);
+            throw new InvalidApplicationPolicyException(errMsg);
         }
 
     }

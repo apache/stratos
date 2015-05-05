@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.util.MessagingConstants;
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
  * Mqtt topic connector
