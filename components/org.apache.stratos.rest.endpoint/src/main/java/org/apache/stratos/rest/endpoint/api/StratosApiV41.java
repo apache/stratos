@@ -524,7 +524,12 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeServiceGroup(
             @PathParam("groupDefinitionName") String groupDefinitionName) throws RestAPIException {
 
-        StratosApiV41Utils.removeServiceGroup(groupDefinitionName);
+        try {
+            StratosApiV41Utils.removeServiceGroup(groupDefinitionName);
+        } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Cartridge group not found")).build();
+        }
         return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
                 String.format("Cartridge Group deleted successfully: [cartridge-group] %s", groupDefinitionName)))
                 .build();

@@ -954,9 +954,8 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void removeServiceGroup(String name) throws RestAPIException {
+    public static void removeServiceGroup(String name) throws RestAPIException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
-        try {
             if (log.isDebugEnabled()) {
                 log.debug("Removing cartridge group: [name] " + name);
             }
@@ -965,13 +964,13 @@ public class StratosApiV41Utils {
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
             // Check whether cartridge group exists
+        try {
             if (asServiceClient.getServiceGroup(name) == null) {
                 String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
                 log.error(message);
                 throw new RestAPIException(message);
             }
-
-            // Validate whether cartridge group can be removed
+        // Validate whether cartridge group can be removed
             if (!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
                 String message = "Cannot remove cartridge group: [group-name] " + name +
                         " since it is used in another cartridge group or an application";
@@ -991,10 +990,10 @@ public class StratosApiV41Utils {
                 String[] cartridgeNames = cartridgeList.toArray(new String[cartridgeList.size()]);
                 smServiceClient.removeUsedCartridgesInCartridgeGroups(name, cartridgeNames);
             }
-
-        } catch (Exception e) {
-            throw new RestAPIException(e);
+        } catch (RemoteException e) {
+            throw new RestAPIException("Could not remove cartridge groups", e);
         }
+
 
         log.info("Successfully removed the cartridge group: [group-name] " + name);
     }
