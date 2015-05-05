@@ -98,7 +98,7 @@ public class DependencyBuilder {
                                             component, dependencyTree);
                             String parentContextId = null;
                             ApplicationChildContext tmpParentContext = null;
-                            if(parentContext != null) {
+                            if (parentContext != null) {
                                 parentContextId = parentContext.getId();
                                 tmpParentContext = dependencyTree.
                                         getApplicationChildContextByIdInPrimaryTree(parentContextId);

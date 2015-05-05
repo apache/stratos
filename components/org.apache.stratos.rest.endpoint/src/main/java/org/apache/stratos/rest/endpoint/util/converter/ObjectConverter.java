@@ -1720,7 +1720,7 @@ public class ObjectConverter {
         applicationPolicy.setAlgorithm(applicationPolicyBean.getAlgorithm());
         applicationPolicy.setNetworkPartitions(applicationPolicyBean.getNetworkPartitions());
         if (applicationPolicyBean.getProperties() != null) {
-            if (!applicationPolicyBean.getProperties().isEmpty()){
+            if (!applicationPolicyBean.getProperties().isEmpty()) {
                 applicationPolicy.setProperties(getASPropertiesFromCommonProperties(applicationPolicyBean.getProperties()));
             }
         }
