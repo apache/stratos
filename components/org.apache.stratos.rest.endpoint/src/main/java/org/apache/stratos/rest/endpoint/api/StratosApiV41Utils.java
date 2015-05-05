@@ -2255,7 +2255,7 @@ public class StratosApiV41Utils {
             if (deploymentPolicy == null) {
                 return null;
             }
-            deploymentPolicyBean = ObjectConverter.convetCCStubDeploymentPolicytoDeploymentPolicy(deploymentPolicy);
+            deploymentPolicyBean = ObjectConverter.convertCCStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
         } catch (RemoteException e) {
             String msg = "Could not find deployment policy: [deployment-policy-id] " + deploymentPolicyID;
             log.error(msg, e);
