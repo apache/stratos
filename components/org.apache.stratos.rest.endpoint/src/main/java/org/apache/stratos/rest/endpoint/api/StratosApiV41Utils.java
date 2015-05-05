@@ -229,9 +229,7 @@ public class StratosApiV41Utils {
                 return cartridge;
             }
         }
-        String msg = "Unavailable cartridge type: " + cartridgeType;
-        log.error(msg);
-        throw new RestAPIException(msg);
+        return null;
     }
 
     private static List<CartridgeBean> getAvailableLbCartridges(
@@ -1260,12 +1258,12 @@ public class StratosApiV41Utils {
      * This method validates group aliases recursively
      *
      * @param groupsSet - the group collection in which the groups are added to
-     * @param groups - the group collection in which it traverses through
+     * @param groups    - the group collection in which it traverses through
      * @throws RestAPIException
      */
 
     private static void validateGroupsRecursively(ConcurrentHashMap<String, GroupReferenceBean> groupsSet,
-                                                  Collection<GroupReferenceBean> groups) throws RestAPIException{
+                                                  Collection<GroupReferenceBean> groups) throws RestAPIException {
         for (GroupReferenceBean group : groups) {
             if (groupsSet.get(group.getAlias()) != null) {
                 String message = "Cartridge group alias exists more than once: [group-alias] " +

@@ -237,13 +237,21 @@ public class StratosApiV41 extends AbstractApi {
         // TODO :: Deployment policy validation
 
         try {
+
             StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
+
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponseBean(
+                    Response.Status.BAD_REQUEST.getStatusCode(), "Deployment policy is invalid")).build();
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponseBean(
+                    Response.Status.BAD_REQUEST.getStatusCode(), "Deployment policy is invalid")).build();
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Deployment policy not found")).build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
         return Response.ok(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
@@ -269,7 +277,8 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Autoscaling policy not found")).build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
         return Response.ok(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
@@ -314,7 +323,8 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
         if (cartridges == null || cartridges.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.CONFLICT.getStatusCode(), "No cartridges found")).build();
         }
         CartridgeBean[] cartridgeArray = cartridges.toArray(new CartridgeBean[cartridges.size()]);
         return Response.ok().entity(cartridgeArray).build();
@@ -339,7 +349,8 @@ public class StratosApiV41 extends AbstractApi {
             cartridge = StratosApiV41Utils.getCartridge(cartridgeType);
             return Response.ok().entity(cartridge).build();
         } catch (RestAPIException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Cartridge not found")).build();
         }
     }
 
@@ -362,7 +373,8 @@ public class StratosApiV41 extends AbstractApi {
         List<CartridgeBean> cartridges = StratosApiV41Utils.
                 getCartridgesByFilter(filter, criteria, getConfigContext());
         if (cartridges == null || cartridges.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "No cartridges found")).build();
         }
 
         CartridgeBean[] cartridgeArray = cartridges.toArray(new CartridgeBean[cartridges.size()]);
@@ -386,12 +398,14 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("cartridgeType") String cartridgeType, @DefaultValue("") @PathParam("filter") String filter)
             throws RestAPIException {
         CartridgeBean cartridge;
-        try {
-            cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
-            return Response.ok().entity(cartridge).build();
-        } catch (RestAPIException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+
+        cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
+        if (cartridge == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "No cartridges found for this filter")).build();
         }
+        return Response.ok().entity(cartridge).build();
+
     }
 
     /**
