@@ -32,10 +32,7 @@ import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.exception.AutoScalingPolicyAlreadyExistException;
-import org.apache.stratos.autoscaler.exception.CloudControllerConnectionException;
-import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
+import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
@@ -645,7 +642,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void removeServiceGroup(String groupName) {
+    public void removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Starting to remove cartridge group: [group-name] %s", groupName));
@@ -656,9 +653,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     log.info(String.format("Cartridge group removed: [group-name] %s", groupName));
                 }
             } else {
+                String msg = String.format("Cartridge group not found: [group-name] %s", groupName);
                 if (log.isWarnEnabled()) {
-                    log.warn(String.format("Cartridge group not found: [group-name] %s", groupName));
+                    log.warn(msg);
                 }
+                throw new CartridgeGroupNotFoundException(msg);
             }
         } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
             String message = "Could not remove cartridge group: " + groupName;

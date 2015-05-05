@@ -22,9 +22,7 @@
 package org.apache.stratos.autoscaler.services;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.exception.CloudControllerConnectionException;
-import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
+import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
@@ -45,7 +43,8 @@ public interface AutoscalerService {
      * @return
      * @throws InvalidPolicyException
      */
-    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException;
+    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException,
+            AutoScalingPolicyAlreadyExistException;
 
     /**
      * Get an autoscaling policy
@@ -207,7 +206,7 @@ public interface AutoscalerService {
      *
      * @param groupName
      */
-    public void removeServiceGroup(String groupName);
+    public void removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException;
 
     /**
      * Get cartridge group
