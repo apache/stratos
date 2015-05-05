@@ -991,7 +991,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeApplicationSignUp(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         StratosApiV41Utils.removeApplicationSignUp(applicationId);
-        return Response.ok().build();
+        return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format("Application sign up removed successfully: [application] %s", applicationId))).build();
     }
 
     /**
