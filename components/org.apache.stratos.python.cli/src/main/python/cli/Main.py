@@ -1,5 +1,5 @@
 import sys
-import CLI
+from CLI import CLI
 
 
 def main():

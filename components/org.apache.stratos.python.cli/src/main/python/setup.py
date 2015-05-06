@@ -11,11 +11,10 @@ setup(
     version="0.0.5",
     author="Agentmilindu",
     author_email="Agentmilindu@gmail.com",
-    py_modules=['stratos'],
     description="CLI for Apache Stratos",
     keywords="stratos",
     url="http://stratos.apache.org/",
-    packages=['stratos'],
+    packages=['cli'],
     install_requires=['cmd2', 'requests', 'texttable'],
     long_description=read('README.md'),
     classifiers=[
@@ -25,7 +24,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        stratos=src.Main:main
+        stratos=cli.Main:main
     ''',
 )
 
