@@ -134,9 +134,13 @@ public class AutoscalerTopologyEventReceiver {
                             //acquire read lock
                             ApplicationHolder.acquireReadLock();
                             //start the application monitor
-                            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
-                            if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-                                if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
+                            ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                                    getApplicationContext(appId);
+                            if (applicationContext != null &&
+                                    applicationContext.getStatus().
+                                            equals(ApplicationContext.STATUS_DEPLOYED)) {
+                                if (!AutoscalerContext.getInstance().
+                                        containsApplicationPendingMonitor(appId)) {
                                     appMonitorCreationTriggered = true;
                                     AutoscalerUtil.getInstance().startApplicationMonitor(appId);
                                     break;

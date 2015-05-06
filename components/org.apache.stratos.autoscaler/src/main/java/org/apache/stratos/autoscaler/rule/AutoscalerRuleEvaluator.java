@@ -44,16 +44,24 @@ public class AutoscalerRuleEvaluator {
     private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
 
     private static Map<String, KnowledgeBase> knowledgeBases;
+    private String clusterId;
 
-    public AutoscalerRuleEvaluator() {
+    public AutoscalerRuleEvaluator(String clusterId) {
         knowledgeBases = new HashMap<String, KnowledgeBase>();
+        this.clusterId = clusterId;
     }
 
     public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName) {
-        knowledgeBases.put(drlFileName, readKnowledgeBase(drlFileName));
-
-        if (log.isDebugEnabled()) {
-            log.debug("Drools file is parsed successfully: " + drlFileName);
+        KnowledgeBase knowledgeBase = readKnowledgeBase(drlFileName);
+        if(knowledgeBase == null) {
+            log.error("Knowledge base couldn't be read for [cluster] " + clusterId +
+                    " [drool-file] " + drlFileName);
+        } else {
+            knowledgeBases.put(drlFileName, knowledgeBase);
+            if (log.isDebugEnabled()) {
+                log.debug("Drools file is parsed successfully: [cluster] " + clusterId +
+                        " [ file-name] " + drlFileName);
+            }
         }
     }
 

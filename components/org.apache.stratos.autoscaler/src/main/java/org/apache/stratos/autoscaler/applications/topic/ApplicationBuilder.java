@@ -289,7 +289,7 @@ public class ApplicationBuilder {
                         applicationMonitor.isTerminating()) {
                     //Stopping the child threads
                     if (applicationMonitor.hasMonitors() && applicationMonitor.isTerminating()) {
-                        for (Monitor monitor1 : applicationMonitor.getAliasToActiveMonitorsMap().values()) {
+                        for (Monitor monitor1 : applicationMonitor.getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
                             monitor1.destroy();
                         }
@@ -405,7 +405,7 @@ public class ApplicationBuilder {
 
                 if (monitor != null) {
                     if (monitor.hasMonitors() && applicationMonitor.isTerminating()) {
-                        for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+                        for (Monitor monitor1 : monitor.getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
                             monitor1.destroy();
                         }
