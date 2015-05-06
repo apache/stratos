@@ -291,6 +291,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     Monitor monitor = this.getMonitor(childId);
                     boolean active = false;
                     if (monitor instanceof GroupMonitor) {
+                        //Checking whether the Group is still active in case the faulty member
+                        // identified after scaling up
                         active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
                     }
                     if (!active) {
