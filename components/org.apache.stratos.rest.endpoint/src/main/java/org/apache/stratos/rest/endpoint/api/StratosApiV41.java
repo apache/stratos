@@ -455,15 +455,18 @@ public class StratosApiV41 extends AbstractApi {
             if (e.getCause().getMessage().contains("already exists")) {
                 return Response.status(Response.Status.CONFLICT).entity(new StatusResponseBean(
                         Response.Status.CONFLICT.getStatusCode(), "Cartridge group not found")).build();
-            } else if(e.getCause().getMessage().contains("duplicate cartridges")) {
+            } else if (e.getCause().getMessage().contains("duplicate cartridges")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
-                        Response.Status.BAD_REQUEST.getStatusCode(), "Cartridges duplicated in the group definition")).build();
-            } else if(e.getCause().getMessage().contains("duplicate groups")) {
+                        Response.Status.BAD_REQUEST.getStatusCode(), "Cartridges duplicated in the group " +
+                        "definition")).build();
+            } else if (e.getCause().getMessage().contains("duplicate groups")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
-                        Response.Status.BAD_REQUEST.getStatusCode(), "Groups duplicated in the group definition")).build();
-            } else if(e.getCause().getMessage().contains("cyclic group")) {
+                        Response.Status.BAD_REQUEST.getStatusCode(), "Groups duplicated in the group " +
+                        "definition")).build();
+            } else if (e.getCause().getMessage().contains("cyclic group")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
-                        Response.Status.BAD_REQUEST.getStatusCode(), "Cyclic group behaviour identified in the group definition")).build();
+                        Response.Status.BAD_REQUEST.getStatusCode(), "Cyclic group behaviour identified in the group " +
+                        "definition")).build();
             } else {
                 throw e;
             }

@@ -966,6 +966,7 @@ public class StratosApiV41Utils {
 
     /**
      * Add a Service Group
+     *
      * @param serviceGroupDefinition serviceGroupDefinition
      * @throws RestAPIException
      */
@@ -980,11 +981,11 @@ public class StratosApiV41Utils {
             List<String> groupNames;
             String[] cartridgeGroupNames;
 
-                if (log.isDebugEnabled()) {
-                    log.debug("checking cartridges in cartridge group " + serviceGroupDefinition.getName());
-                }
+            if (log.isDebugEnabled()) {
+                log.debug("checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+            }
 
-                findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
+            findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
 
             //validate the group definition to check if cartridges duplicate in any groups defined
             validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
@@ -993,7 +994,7 @@ public class StratosApiV41Utils {
             //validate the group definition to check for cyclic group behaviour
             validateGroupDuplicationInGroupDefinition(serviceGroupDefinition, new ArrayList<String>());
 
-                CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
+            CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
 
             cartridgeNames = new String[cartridgeTypes.size()];
             int j = 0;
@@ -3230,7 +3231,7 @@ public class StratosApiV41Utils {
      * @param groupBean - cartridge group definition
      * @throws RestAPIException - throws the rest api exception when the group definition is invalid
      */
-    private static void validateCartridgeDuplicationInGroupDefinition(GroupBean groupBean) throws  RestAPIException{
+    private static void validateCartridgeDuplicationInGroupDefinition(GroupBean groupBean) throws RestAPIException {
         if (groupBean == null) {
             return;
         }
@@ -3248,19 +3249,19 @@ public class StratosApiV41Utils {
             }
         }
     }
+
     /**
      * This method is to validate the duplication of cartridges from the given list
      *
      * @param cartridges - list of strings which holds the cartridgeTypes values
      * @throws RestAPIException - throws the rest api exception when the cartridges are duplicated
      */
-    private static void validateCartridgeDuplicationInGroup(List<String> cartridges) throws RestAPIException{
+    private static void validateCartridgeDuplicationInGroup(List<String> cartridges) throws RestAPIException {
         List<String> checkList = new ArrayList<String>();
         for (String cartridge : cartridges) {
             if (!checkList.contains(cartridge)) {
                 checkList.add(cartridge);
-            }
-            else {
+            } else {
                 if (log.isDebugEnabled()) {
                     log.debug("duplicate cartridges defined: " + cartridge);
                 }
@@ -3269,15 +3270,16 @@ public class StratosApiV41Utils {
             }
         }
     }
+
     /**
      * This method is to validate the group duplication in the group definition recursively for group within groups
      *
-     * @param groupBean - cartridge group definition
+     * @param groupBean    - cartridge group definition
      * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
      * @throws RestAPIException - throws the rest api exception when the group definition is invalid
      */
     private static void validateGroupDuplicationInGroupDefinition(GroupBean groupBean, List<String> parentGroups)
-            throws  RestAPIException{
+            throws RestAPIException {
         if (groupBean == null) {
             return;
         }
@@ -3299,21 +3301,21 @@ public class StratosApiV41Utils {
             }
         }
     }
+
     /**
      * This method is to validate the duplication of groups in the same level and to validate cyclic behaviour of groups
      *
-     * @param groups - cartridge group definition
+     * @param groups       - cartridge group definition
      * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
      * @throws RestAPIException - throws the rest api exception when group duplicate or when cyclic behaviour occurs
      */
     private static void validateGroupDuplicationInGroup(List<String> groups, List<String> parentGroups)
-            throws RestAPIException{
+            throws RestAPIException {
         List<String> checkList = new ArrayList<String>();
         for (String group : groups) {
             if (!checkList.contains(group)) {
                 checkList.add(group);
-            }
-            else {
+            } else {
                 if (log.isDebugEnabled()) {
                     log.debug("duplicate group defined: " + group);
                 }
@@ -3329,5 +3331,4 @@ public class StratosApiV41Utils {
             }
         }
     }
-
 }
