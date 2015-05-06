@@ -292,9 +292,7 @@ public class StratosApiV41Utils {
                 return cartridge;
             }
         }
-        String msg = "Unavailable cartridge type: " + cartridgeType;
-        log.error(msg);
-        throw new RestAPIException(msg);
+        return null;
     }
 
     /**
@@ -1153,15 +1151,15 @@ public class StratosApiV41Utils {
         }
     }
 
+
     /**
      * Remove Service Group
      *
      * @param name Group Name
      * @throws RestAPIException
      */
-    public static void removeServiceGroup(String name) throws RestAPIException {
+    public static void removeServiceGroup(String name) throws RestAPIException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
-        try {
             if (log.isDebugEnabled()) {
                 log.debug("Removing cartridge group: [name] " + name);
             }
@@ -1170,13 +1168,13 @@ public class StratosApiV41Utils {
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
             // Check whether cartridge group exists
+        try {
             if (asServiceClient.getServiceGroup(name) == null) {
                 String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
                 log.error(message);
                 throw new RestAPIException(message);
             }
-
-            // Validate whether cartridge group can be removed
+        // Validate whether cartridge group can be removed
             if (!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
                 String message = "Cannot remove cartridge group: [group-name] " + name +
                         " since it is used in another cartridge group or an application";
@@ -1196,10 +1194,10 @@ public class StratosApiV41Utils {
                 String[] cartridgeNames = cartridgeList.toArray(new String[cartridgeList.size()]);
                 smServiceClient.removeUsedCartridgesInCartridgeGroups(name, cartridgeNames);
             }
-
-        } catch (Exception e) {
-            throw new RestAPIException(e);
+        } catch (RemoteException e) {
+            throw new RestAPIException("Could not remove cartridge groups", e);
         }
+
 
         log.info("Successfully removed the cartridge group: [group-name] " + name);
     }
@@ -1496,12 +1494,12 @@ public class StratosApiV41Utils {
      * This method validates group aliases recursively
      *
      * @param groupsSet - the group collection in which the groups are added to
-     * @param groups - the group collection in which it traverses through
+     * @param groups    - the group collection in which it traverses through
      * @throws RestAPIException
      */
 
     private static void validateGroupsRecursively(ConcurrentHashMap<String, GroupReferenceBean> groupsSet,
-                                                  Collection<GroupReferenceBean> groups) throws RestAPIException{
+                                                  Collection<GroupReferenceBean> groups) throws RestAPIException {
         for (GroupReferenceBean group : groups) {
             if (groupsSet.get(group.getAlias()) != null) {
                 String message = "Cartridge group alias exists more than once: [group-alias] " +
@@ -2019,6 +2017,7 @@ public class StratosApiV41Utils {
         return null;
     }
 
+
     /**
      * Remove Kubernetes Cluster
      *
@@ -2026,7 +2025,9 @@ public class StratosApiV41Utils {
      * @return remove status
      * @throws RestAPIException
      */
-    public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException {
+    public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException,
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -2036,10 +2037,6 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
             }
         }
         return false;
@@ -2624,7 +2621,7 @@ public class StratosApiV41Utils {
             if (deploymentPolicy == null) {
                 return null;
             }
-            deploymentPolicyBean = ObjectConverter.convetCCStubDeploymentPolicytoDeploymentPolicy(deploymentPolicy);
+            deploymentPolicyBean = ObjectConverter.convertCCStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
         } catch (RemoteException e) {
             String msg = "Could not find deployment policy: [deployment-policy-id] " + deploymentPolicyID;
             log.error(msg, e);

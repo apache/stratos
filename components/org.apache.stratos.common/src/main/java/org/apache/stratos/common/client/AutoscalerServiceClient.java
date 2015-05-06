@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.cloud.controller.stub.exception.CartridgeNotFoundException;
 import org.apache.stratos.common.constants.StratosConstants;
 
 import java.rmi.RemoteException;
@@ -76,7 +77,7 @@ public class AutoscalerServiceClient {
     }
 
     public void undeployServiceGroupDefinition(String serviceGroupName)
-            throws RemoteException, AutoscalerServiceAutoScalerExceptionException {
+            throws RemoteException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
         stub.removeServiceGroup(serviceGroupName);
     }
 
@@ -184,7 +185,8 @@ public class AutoscalerServiceClient {
         stub.addServiceGroup(serviceGroup);
     }
 
-    public void removeServiceGroup(String groupName) throws RemoteException {
+    public void removeServiceGroup(String groupName) throws RemoteException,
+            AutoscalerServiceCartridgeGroupNotFoundExceptionException {
         stub.removeServiceGroup(groupName);
     }
 

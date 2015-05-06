@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
 import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.AutoScalingPolicyAlreadyExistException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidDeploymentPolicyException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
@@ -153,7 +154,7 @@ public class AutoscalerServiceComponent {
     }
 
     private void executeCoordinatorTasks() throws InvalidPolicyException,
-            InvalidDeploymentPolicyException, InvalidApplicationPolicyException {
+            InvalidDeploymentPolicyException, InvalidApplicationPolicyException, AutoScalingPolicyAlreadyExistException {
 
         // Start topology receiver
         asTopologyReceiver = new AutoscalerTopologyEventReceiver();
