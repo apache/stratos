@@ -2885,7 +2885,7 @@ public class StratosApiV41Utils {
         }
 
         // filling the email value
-        if (tenantInfoBean.getEmail() != null && !tenantInfoBean.getEmail().equals("")) {
+        if (StringUtils.isBlank(tenantInfoBean.getEmail())) {
             // validate the email
             try {
                 CommonUtil.validateEmail(tenantInfoBean.getEmail());
@@ -2929,7 +2929,9 @@ public class StratosApiV41Utils {
                 tenantInfoBean.setAdminPassword("");
             }
         } catch (UserStoreException e) {
-
+            String msg = "Error in getting the user store manager is read only " +e.getLocalizedMessage();
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
         }
 
         try {
