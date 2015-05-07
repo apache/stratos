@@ -502,8 +502,13 @@ public class CloudControllerContext implements Serializable {
     /**
      * Remove a registered Kubernetes cluster from registry
      */
-    public synchronized void removeKubernetesCluster(String kubernetesClusterId) {
+    public synchronized void removeKubernetesCluster(String kubernetesClusterId)
+            throws NonExistingKubernetesClusterException {
         // Remove entry from information model
+
+        if (kubernetesClustersMap.get(kubernetesClusterId) == null) {
+            throw new NonExistingKubernetesClusterException("Kubernetes cluster does not exist");
+        }
         kubernetesClustersMap.remove(kubernetesClusterId);
     }
 

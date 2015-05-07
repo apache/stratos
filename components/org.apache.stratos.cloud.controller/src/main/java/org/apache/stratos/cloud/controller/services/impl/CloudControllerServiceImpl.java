@@ -1280,11 +1280,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id can not be empty");
         }
-        if(null == CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId)){
 
-            throw new NonExistingKubernetesClusterException("Kubernetes cluster not found, [kubernetes-cluster] "
-                    + kubernetesClusterId);
-        }
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
