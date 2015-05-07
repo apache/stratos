@@ -161,12 +161,12 @@ public class StratosApiV41 extends AbstractApi {
         try {
             // TODO :: Deployment policy validation
             StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
-        } catch (RestAPIException e) {
-            throw e;
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
+                    Response.Status.BAD_REQUEST.getStatusCode(), "Deployment policy is not valid")).build();
         } catch (AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException e) {
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.CONFLICT).entity(new StatusResponseBean(
+                    Response.Status.CONFLICT.getStatusCode(), "Deployment policy already exists")).build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
         return Response.created(url).entity(new StatusResponseBean(Response.Status.CREATED.getStatusCode(),
@@ -189,7 +189,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
         DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
         if (deploymentPolicyBean == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new StatusResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "Deployment policy not found")).build();
         }
         return Response.ok(deploymentPolicyBean).build();
     }
@@ -209,7 +210,8 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
         if (deploymentPolicies == null || deploymentPolicies.length == 0) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new StatusResponseBean(
+                    Response.Status.NOT_FOUND.getStatusCode(), "No deployment policies found")).build();
         }
 
         return Response.ok(deploymentPolicies).build();
