@@ -2032,7 +2032,7 @@ public class StratosApiV41Utils {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                return cloudControllerServiceClient.undeployKubernetesCluster(kubernetesClusterId);
+                cloudControllerServiceClient.undeployKubernetesCluster(kubernetesClusterId);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);

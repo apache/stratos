@@ -187,9 +187,9 @@ public class CloudControllerServiceClient {
         return stub.getKubernetesCluster(kubernetesClusterId);
     }
 
-    public boolean undeployKubernetesCluster(String kubernetesClusterId) throws RemoteException,
+    public void undeployKubernetesCluster(String kubernetesClusterId) throws RemoteException,
             CloudControllerServiceNonExistingKubernetesClusterExceptionException {
-        return stub.removeKubernetesCluster(kubernetesClusterId);
+        stub.removeKubernetesCluster(kubernetesClusterId);
     }
 
     public boolean undeployKubernetesHost(String kubernetesHostId) throws RemoteException,
