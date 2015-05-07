@@ -201,7 +201,7 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.cloud.controller.stub.Properties convertPropertyBeansToCCStubProperties(
-            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans) {
+            List<org.apache.stratos.common.beans.PropertyBean> propertyBeans) {
 
         if (propertyBeans == null) {
             return null;
@@ -210,7 +210,7 @@ public class ObjectConverter {
         List<org.apache.stratos.cloud.controller.stub.Property> stubPropertiesList =
                 new ArrayList<org.apache.stratos.cloud.controller.stub.Property>();
 
-        for (org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean : propertyBeans) {
+        for (org.apache.stratos.common.beans.PropertyBean propertyBean : propertyBeans) {
             org.apache.stratos.cloud.controller.stub.Property stubProperty
                     = new org.apache.stratos.cloud.controller.stub.Property();
             stubProperty.setName(propertyBean.getName());
@@ -361,8 +361,8 @@ public class ObjectConverter {
         }
 
         if (stubNetworkPartition.getProperties() != null) {
-            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList
-                    = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
+            List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
+                    = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
             if (stubNetworkPartition.getProperties() != null) {
                 if (stubNetworkPartition.getProperties().getProperties() != null) {
                     for (org.apache.stratos.cloud.controller.stub.Property stubProperty :
@@ -461,8 +461,8 @@ public class ObjectConverter {
         partition.setDescription(stubPartition.getDescription());
         partition.setKubernetesClusterId(stubPartition.getKubernetesClusterId());
         if (stubPartition.getProperties() != null) {
-            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList
-                    = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
+            List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
+                    = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
             if (stubPartition.getProperties().getProperties() != null) {
                 for (org.apache.stratos.cloud.controller.stub.Property stubProperty :
                         stubPartition.getProperties().getProperties()) {
@@ -703,7 +703,7 @@ public class ObjectConverter {
         partitionBeans.setPartitionMax(partition.getPartitionMax());
         //properties
         if (partition.getProperties() != null) {
-            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans
+            List<org.apache.stratos.common.beans.PropertyBean> propertyBeans
                     = convertCCStubPropertiesToPropertyBeans(partition.getProperties());
             partitionBeans.setProperty(propertyBeans);
         }
@@ -711,19 +711,19 @@ public class ObjectConverter {
         return partitionBeans;
     }
 
-    private static List<org.apache.stratos.common.beans.cartridge.PropertyBean> convertJavaUtilPropertiesToPropertyBeans(
+    private static List<org.apache.stratos.common.beans.PropertyBean> convertJavaUtilPropertiesToPropertyBeans(
             java.util.Properties properties) {
 
-        List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans = null;
+        List<org.apache.stratos.common.beans.PropertyBean> propertyBeans = null;
         if (properties != null && !properties.isEmpty()) {
             Enumeration<?> e = properties.propertyNames();
-            propertyBeans = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
+            propertyBeans = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
 
             while (e.hasMoreElements()) {
                 String key = (String) e.nextElement();
                 String value = properties.getProperty(key);
-                org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean
-                        = new org.apache.stratos.common.beans.cartridge.PropertyBean();
+                org.apache.stratos.common.beans.PropertyBean propertyBean
+                        = new org.apache.stratos.common.beans.PropertyBean();
                 propertyBean.setName(key);
                 propertyBean.setValue(value);
                 propertyBeans.add(propertyBean);
@@ -962,26 +962,26 @@ public class ObjectConverter {
         return kubernetesHostBean;
     }
 
-    private static List<org.apache.stratos.common.beans.cartridge.PropertyBean> convertCCStubPropertiesToPropertyBeans(
+    private static List<org.apache.stratos.common.beans.PropertyBean> convertCCStubPropertiesToPropertyBeans(
             org.apache.stratos.cloud.controller.stub.Properties properties) {
         if (properties == null || properties.getProperties() == null) {
             return null;
         }
-        List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList
-                = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
+        List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
+                = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
         for (int i = 0; i < properties.getProperties().length; i++) {
             propertyBeanList.add(convertStubPropertyToPropertyBean(properties.getProperties()[i]));
         }
         return propertyBeanList;
     }
 
-    private static org.apache.stratos.common.beans.cartridge.PropertyBean convertStubPropertyToPropertyBean(
+    private static org.apache.stratos.common.beans.PropertyBean convertStubPropertyToPropertyBean(
             org.apache.stratos.cloud.controller.stub.Property propertyE) {
         if (propertyE == null) {
             return null;
         }
-        org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean
-                = new org.apache.stratos.common.beans.cartridge.PropertyBean();
+        org.apache.stratos.common.beans.PropertyBean propertyBean
+                = new org.apache.stratos.common.beans.PropertyBean();
         propertyBean.setName(propertyE.getName());
         propertyBean.setValue(propertyE.getValue());
         return propertyBean;
