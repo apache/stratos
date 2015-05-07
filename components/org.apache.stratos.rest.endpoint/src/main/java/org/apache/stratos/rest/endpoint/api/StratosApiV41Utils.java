@@ -103,7 +103,7 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
 
-    private static Log log = LogFactory.getLog(StratosApiV41Utils.class);
+    private static final Log  log = LogFactory.getLog(StratosApiV41Utils.class);
 
     /**
      * Add New Cartridge
@@ -2757,7 +2757,7 @@ public class StratosApiV41Utils {
             String msg="Security alert! User registry is null. A user is trying create a tenant "
                     + " without an authenticated session.";
             log.error(msg);
-            throw new RestAPIException(msg);
+            throw new RestAPIException("Could not add tenant: Session is not authenticated");
         }
 
         if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
@@ -2970,7 +2970,7 @@ public class StratosApiV41Utils {
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant id for the tenant domain: " +
                     tenantDomain + ".";
-            log.error(msg);
+            log.error(msg,e);
             throw new Exception(msg, e);
         }
         Tenant tenant;
@@ -2978,7 +2978,7 @@ public class StratosApiV41Utils {
             tenant = (Tenant) tenantManager.getTenant(tenantId);
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant from the tenant manager.";
-            log.error(msg);
+            log.error(msg,e);
             throw new Exception(msg, e);
         }
 
@@ -2987,7 +2987,7 @@ public class StratosApiV41Utils {
             bean = ObjectConverter
                     .convertCarbonTenantInfoBeanToTenantInfoBean(TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant));
         } catch (Exception e) {
-            log.error(String.format("Couldn't find tenant for provided tenant domain. [Tenant Domain] %s", tenantDomain));
+            log.error(String.format("Couldn't find tenant for provided tenant domain. [Tenant Domain] %s", tenantDomain),e);
             return null;
         }
 
@@ -3017,10 +3017,10 @@ public class StratosApiV41Utils {
 
         List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
         for (Tenant tenant : tenants) {
-            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter
+            org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean = ObjectConverter
                     .convertCarbonTenantInfoBeanToTenantInfoBean(
                             TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
-            tenantList.add(bean);
+            tenantList.add(tenantInfoBean);
         }
         return tenantList;
     }
@@ -3078,7 +3078,9 @@ public class StratosApiV41Utils {
             TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
 
         } catch (Exception e) {
-            throw new RestAPIException(e);
+            String msg="Error in activating Tenant :"+tenantDomain;
+            log.error(msg,e);
+            throw new RestAPIException(msg,e);
         }
 
         //Notify tenant activation all listeners
@@ -3114,7 +3116,9 @@ public class StratosApiV41Utils {
         try {
             TenantMgtUtil.deactivateTenant(tenantDomain, tenantManager, tenantId);
         } catch (Exception e) {
-            throw new RestAPIException(e);
+            String msg="Error in deactivating Tenant :"+tenantDomain;
+            log.error(msg,e);
+            throw new RestAPIException(msg,e);
         }
 
         //Notify tenant deactivation all listeners
@@ -3140,7 +3144,9 @@ public class StratosApiV41Utils {
        try {
             StratosUserManagerUtils.addUser(getTenantUserStoreManager(), userInfoBean);
         } catch (UserManagerException e) {
-            throw new RestAPIException(e.getMessage());
+           String msg = "Error in adding User";
+           log.error(msg, e);
+           throw new RestAPIException(msg, e);
         }
 
     }
@@ -3174,21 +3180,23 @@ public class StratosApiV41Utils {
     /**
      * Delete an user
      *
-     * @param userName
+     * @param userName userName
      * @throws RestAPIException
      */
     public static void removeUser(String userName) throws RestAPIException {
         try {
             StratosUserManagerUtils.removeUser(getTenantUserStoreManager(), userName);
         } catch (UserManagerException e) {
-            throw new RestAPIException(e.getMessage());
+            String msg = "Error in removing user :"+userName;
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
         }
     }
 
     /**
      * Update User
      *
-     * @param userInfoBean
+     * @param userInfoBean UserInfoBean
      * @throws RestAPIException
      */
     public static void updateUser(UserInfoBean userInfoBean) throws RestAPIException {
@@ -3196,7 +3204,9 @@ public class StratosApiV41Utils {
             StratosUserManagerUtils.updateUser(getTenantUserStoreManager(), userInfoBean);
 
         } catch (UserManagerException e) {
-            throw new RestAPIException(e.getMessage());
+            String msg = "Error in updating user";
+            log.error(msg, e);
+            throw new RestAPIException(msg,e);
         }
 
     }
@@ -3212,7 +3222,9 @@ public class StratosApiV41Utils {
         try {
             userList = StratosUserManagerUtils.getAllUsers(getTenantUserStoreManager());
         } catch (UserManagerException e) {
-            throw new RestAPIException(e.getMessage());
+            String msg = "Error in retrieving users";
+            log.error(msg, e);
+            throw new RestAPIException(msg,e);
         }
         return userList;
     }
