@@ -16,7 +16,7 @@ setup(
     url="http://stratos.apache.org/",
     packages=['cli'],
     install_requires=['cmd2', 'requests', 'texttable'],
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 1 - Planning",
         "Topic :: Utilities",
