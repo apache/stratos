@@ -64,12 +64,11 @@ public class ApplicationBuilder {
 
     /**
      * Create application clusters in cloud controller and send application created event.
-     *
-     * @param application
+     *  @param application
      * @param appClusterContexts
      */
-    public static synchronized void handleApplicationCreatedEvent(Application application,
-                                                                  ApplicationClusterContext[] appClusterContexts) {
+    public static synchronized void handleApplicationDeployment(Application application,
+                                                                ApplicationClusterContext[] appClusterContexts) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());

@@ -236,7 +236,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             // Create application clusters in cloud controller and send application created event
-            ApplicationBuilder.handleApplicationCreatedEvent(application, applicationContext.getComponents().getApplicationClusterContexts());
+            ApplicationBuilder.handleApplicationDeployment(application, applicationContext.getComponents().getApplicationClusterContexts());
 
             // validating application policy against the application
             AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
