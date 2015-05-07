@@ -50,7 +50,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
         if (type == null || (ClusterStatusTerminatedProcessor.class.getName().equals(type))) {
             statusChanged = doProcess(clusterId, instanceId);
             if (statusChanged) {
-                return statusChanged;
+                return true;
             }
 
         } else {
@@ -118,7 +118,6 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
      * @return whether has members or not
      */
     private boolean clusterInstanceHasMembers(ClusterMonitor monitor, String instanceId) {
-        boolean hasMember = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
                 monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
@@ -130,16 +129,13 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                     for (ClusterLevelPartitionContext partitionContext :
                             clusterInstanceContext.getPartitionCtxts()) {
                         if (partitionContext.getNonTerminatedMemberCount() > 0) {
-                            hasMember = true;
-                            return hasMember;
-                        } else {
-                            hasMember = false;
+                            return true;
                         }
                     }
                 }
             }
 
         }
-        return hasMember;
+        return false;
     }
 }

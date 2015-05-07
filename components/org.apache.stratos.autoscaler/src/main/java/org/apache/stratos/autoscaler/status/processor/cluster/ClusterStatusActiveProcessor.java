@@ -45,7 +45,7 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
         if (type == null || (ClusterStatusActiveProcessor.class.getName().equals(type))) {
             statusChanged = doProcess(clusterId, instanceId);
             if (statusChanged) {
-                return statusChanged;
+                return true;
             }
 
         } else {

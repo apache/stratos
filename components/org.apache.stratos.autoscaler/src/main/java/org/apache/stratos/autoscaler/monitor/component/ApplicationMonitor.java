@@ -471,7 +471,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
 
         boolean burstNPFound = false;
-        String instanceId = null;
+        List<String> instanceIdList = new ArrayList<String>();
 
         ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
                 getApplicationPolicy(application.getApplicationPolicyId());
@@ -517,7 +517,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         for (String networkPartitionId : nextNetworkPartitions) {
             if (!this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
-
+                String instanceId = null;
                 ApplicationLevelNetworkPartitionContext context = new
                         ApplicationLevelNetworkPartitionContext(networkPartitionId);
 
@@ -534,6 +534,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             "in the ApplicationsTopology. Hence not creating new AppInstance.");
                     instanceId = handleApplicationInstanceCreation(application, context, appInstance);
                 }
+                if(instanceId != null) {
+                    instanceIdList.add(instanceId);
+                }
                 burstNPFound = true;
             }
         }
@@ -541,7 +544,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         if (!burstNPFound) {
             log.warn("[Application] " + appId + " cannot be burst as no available resources found");
         } else {
-            startDependency(application, instanceId);
+            startDependency(application, instanceIdList);
         }
     }
 

@@ -33,14 +33,15 @@ public class ApplicationsEventPublisher {
         publishEvent(new ApplicationDeletedEvent(appId, clusterData));
     }
 
-    public static void sendApplicationInstanceCreatedEvent(String appId, ApplicationInstance applicationInstance) {
+    public static void sendApplicationInstanceCreatedEvent(String appId,
+                                                           ApplicationInstance applicationInstance) {
         publishEvent(new ApplicationInstanceCreatedEvent(appId, applicationInstance));
     }
 
     public static void sendGroupInstanceCreatedEvent(String appId, String groupId,
                                                      GroupInstance groupInstance) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing group created event: [application] " + appId +
+            log.info("Publishing group instance created event: [application] " + appId +
                     " [group] " + groupId + " [instance] " + groupInstance.getInstanceId());
         }
         GroupInstanceCreatedEvent groupCreatedEvent =
@@ -48,9 +49,10 @@ public class ApplicationsEventPublisher {
         publishEvent(groupCreatedEvent);
     }
 
-    public static void sendGroupInstanceActivatedEvent(String appId, String groupId, String instanceId) {
+    public static void sendGroupInstanceActivatedEvent(String appId, String groupId,
+                                                       String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing group activated event: [application] " + appId +
+            log.info("Publishing group instance activated event: [application] " + appId +
                     " [group] " + groupId + " [instance] " + instanceId);
         }
         GroupInstanceActivatedEvent groupActivatedEvent =
@@ -58,9 +60,10 @@ public class ApplicationsEventPublisher {
         publishEvent(groupActivatedEvent);
     }
 
-    public static void sendGroupInstanceInactivateEvent(String appId, String groupId, String instanceId) {
+    public static void sendGroupInstanceInactivateEvent(String appId, String groupId,
+                                                        String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing group inactivate event: [application] " + appId +
+            log.info("Publishing group instance inactivate event: [application] " + appId +
                     " [group] " + groupId + " [instance] " + instanceId);
         }
         GroupInstanceInactivatedEvent groupInactivateEvent =
@@ -68,9 +71,10 @@ public class ApplicationsEventPublisher {
         publishEvent(groupInactivateEvent);
     }
 
-    public static void sendGroupInstanceTerminatingEvent(String appId, String groupId, String instanceId) {
+    public static void sendGroupInstanceTerminatingEvent(String appId, String groupId,
+                                                         String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing group terminating event: [application] " + appId +
+            log.info("Publishing group instance terminating event: [application] " + appId +
                     " [group] " + groupId + " [instance] " + instanceId);
         }
         GroupInstanceTerminatingEvent groupInTerminatingEvent =
@@ -78,10 +82,11 @@ public class ApplicationsEventPublisher {
         publishEvent(groupInTerminatingEvent);
     }
 
-    public static void sendGroupInstanceTerminatedEvent(String appId, String groupId, String instanceId) {
+    public static void sendGroupInstanceTerminatedEvent(String appId, String groupId,
+                                                        String instanceId) {
 
         if (log.isInfoEnabled()) {
-            log.info("Publishing group terminated event: [application] " + appId +
+            log.info("Publishing group instance terminated event: [application] " + appId +
                     " [group] " + groupId + " [instance] " + instanceId);
         }
         GroupInstanceTerminatedEvent groupInTerminatedEvent =
@@ -91,7 +96,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationInstanceActivatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing application active event: [application] " + appId
+            log.info("Publishing application instance active event: [application] " + appId
                     + " [instance] " + instanceId);
         }
         ApplicationInstanceActivatedEvent applicationActivatedEvent =
@@ -102,7 +107,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationInstanceInactivatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing application inactivated event: [application] " + appId +
+            log.info("Publishing application instance in-activated event: [application] " + appId +
                     " [instance] " + instanceId);
         }
         ApplicationInstanceInactivatedEvent applicationInactivatedEvent =
@@ -113,7 +118,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationInstanceTerminatingEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing application terminating event: [application] " + appId +
+            log.info("Publishing application instance terminating event: [application] " + appId +
                     " [instance] " + instanceId);
         }
         ApplicationInstanceTerminatingEvent applicationTerminatingEvent =
@@ -123,7 +128,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationInstanceTerminatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing application terminated event: [application] " + appId +
+            log.info("Publishing application instance terminated event: [application] " + appId +
                     " [instance] " + instanceId);
         }
         ApplicationInstanceTerminatedEvent applicationTerminatedEvent =

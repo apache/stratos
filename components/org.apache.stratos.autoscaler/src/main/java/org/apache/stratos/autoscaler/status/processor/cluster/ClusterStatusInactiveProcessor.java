@@ -45,7 +45,7 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
         if (type == null || (ClusterStatusInactiveProcessor.class.getName().equals(type))) {
             statusChanged = doProcess(clusterId, instanceId);
             if (statusChanged) {
-                return statusChanged;
+                return true;
             }
 
         } else {
@@ -54,15 +54,15 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
                 return nextProcessor.process(type, clusterId, instanceId);
             } else {
 
-                log.warn(String.format("No possible state change found for [type] %s [cluster] %s [instance]",
-                        type, clusterId, instanceId));
+                log.warn(String.format("No possible state change found for [type] %s [cluster] %s " +
+                                "[instance] %s", type, clusterId, instanceId));
             }
         }
         return false;
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
-        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().
+        ClusterMonitor monitor = AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
 
         boolean clusterInactive;

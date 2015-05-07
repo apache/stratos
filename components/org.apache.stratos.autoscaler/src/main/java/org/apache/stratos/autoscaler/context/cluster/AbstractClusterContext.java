@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * It holds the runtime data of a service cluster
@@ -43,7 +44,7 @@ public class AbstractClusterContext implements Serializable {
     public AbstractClusterContext(String clusterId, String serviceId) {
         this.clusterId = clusterId;
         this.serviceId = serviceId;
-        clusterInstanceMap = new HashMap<String, ClusterInstance>();
+        clusterInstanceMap = new ConcurrentHashMap<String, ClusterInstance>();
     }
 
     public String getServiceId() {

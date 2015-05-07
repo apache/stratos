@@ -255,14 +255,16 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationDeletedEvent(appId, appClusterDataToSend);
     }
 
-    public static void handleApplicationInstanceTerminatedEvent(String applicationId, String instanceId) {
+    public static void handleApplicationInstanceTerminatedEvent(String applicationId,
+                                                                String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application terminated event: [application-id] " + applicationId +
                     " [instance] " + instanceId);
         }
 
         Application application = ApplicationHolder.getApplications().getApplication(applicationId);
-        ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+        ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                getApplicationContext(applicationId);
 
         if ((application == null) || (applicationContext == null)) {
             log.warn("Application does not exist: [application-id] " + applicationId);
@@ -272,7 +274,8 @@ public class ApplicationBuilder {
             if (applicationInstance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 applicationInstance.setStatus(status);
-                updateApplicationMonitor(applicationId, status, applicationInstance.getNetworkPartitionId(),
+                updateApplicationMonitor(applicationId, status,
+                        applicationInstance.getNetworkPartitionId(),
                         instanceId);
                 ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
                         getAppMonitor(applicationId);
@@ -282,14 +285,16 @@ public class ApplicationBuilder {
                 networkPartitionContext.removeInstanceContext(instanceId);
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
-                ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(applicationId, instanceId);
+                ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(applicationId,
+                        instanceId);
 
                 //removing the monitor
                 if (application.getInstanceContextCount() == 0 &&
                         applicationMonitor.isTerminating()) {
                     //Stopping the child threads
                     if (applicationMonitor.hasMonitors() && applicationMonitor.isTerminating()) {
-                        for (Monitor monitor1 : applicationMonitor.getAliasToActiveChildMonitorsMap().values()) {
+                        for (Monitor monitor1 : applicationMonitor.
+                                getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
                             monitor1.destroy();
                         }
@@ -302,7 +307,7 @@ public class ApplicationBuilder {
                     applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                     AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
-                    log.info("Application undeployed successfully: [application-id] " + applicationId);
+                    log.info("Application un-deployed successfully: [application-id] " + applicationId);
                 }
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
@@ -338,19 +343,23 @@ public class ApplicationBuilder {
             ApplicationHolder.releaseWriteLock();
         }
 
-        // if monitors is not found for any cluster, assume cluster is not there and send cluster terminating event.
-        // this assumes the cluster monitor will not fail after creating members, but will only fail before
+        // if monitors is not found for any cluster, assume cluster is not there and
+        // send cluster terminating event. This assumes the cluster monitor will
+        // not fail after creating members, but will only fail before
         for (ClusterDataHolder aClusterData : clusterData) {
             if (AutoscalerContext.getInstance().getClusterMonitor(aClusterData.getClusterId()) == null) {
                 TopologyManager.acquireReadLockForCluster(aClusterData.getServiceType(),
                         aClusterData.getClusterId());
                 try {
-                    Service service = TopologyManager.getTopology().getService(aClusterData.getServiceType());
+                    Service service = TopologyManager.getTopology().
+                            getService(aClusterData.getServiceType());
                     if (service != null) {
                         Cluster cluster = service.getCluster(aClusterData.getClusterId());
                         if (cluster != null) {
-                            for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
-                                ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(applicationId,
+                            for (ClusterInstance instance :
+                                    cluster.getInstanceIdToInstanceContextMap().values()) {
+                                ClusterStatusEventPublisher.
+                                        sendClusterStatusClusterTerminatingEvent(applicationId,
                                         aClusterData.getServiceType(),
                                         aClusterData.getClusterId(),
                                         instance.getInstanceId());
@@ -368,7 +377,8 @@ public class ApplicationBuilder {
     }
 
 
-    public static void handleGroupInstanceTerminatedEvent(String appId, String groupId, String instanceId) {
+    public static void handleGroupInstanceTerminatedEvent(String appId, String groupId,
+                                                          String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group terminated event: [group-id] " + groupId +
                     " [application-id] " + appId + " [instance] " + instanceId);
@@ -405,7 +415,8 @@ public class ApplicationBuilder {
 
                 if (monitor != null) {
                     if (monitor.hasMonitors() && applicationMonitor.isTerminating()) {
-                        for (Monitor monitor1 : monitor.getAliasToActiveChildMonitorsMap().values()) {
+                        for (Monitor monitor1 : monitor.
+                                getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
                             monitor1.destroy();
                         }
@@ -643,17 +654,33 @@ public class ApplicationBuilder {
         NetworkPartitionContext context = applicationMonitor.
                 getNetworkPartitionContext(networkPartitionId);
         if (applicationMonitor != null) {
-            if (status == ApplicationStatus.Active) {
+            if(status == ApplicationStatus.Active) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Moving pending [application-instance] " + instanceId +
+                            " to active list in [application] " + appId);
+                }
                 context.movePendingInstanceToActiveInstances(instanceId);
-            } else if (status == ApplicationStatus.Terminating) {
+            } else if(status == ApplicationStatus.Terminating) {
                 applicationMonitor.setTerminating(true);
 
-                if (context.getActiveInstance(instanceId) != null) {
+                if(context.getActiveInstance(instanceId) != null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Moving active [application-instance] " + instanceId +
+                                " to termination pending list " + "in [application] " + appId);
+                    }
                     context.moveActiveInstanceToTerminationPendingInstances(instanceId);
-                } else if (context.getPendingInstance(instanceId) != null) {
+                } else if(context.getPendingInstance(instanceId) != null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Moving pending  [application-instance]" + instanceId +
+                                " to termination pending list in [application] " + appId);
+                    }
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-            } else if (status == ApplicationStatus.Terminated) {
+            } else if(status == ApplicationStatus.Terminated) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Removing termination pending [application-instance] " + instanceId
+                            + " [application] " + appId);
+                }
                 context.removeTerminationPendingInstance(instanceId);
             }
             applicationMonitor.setStatus(status, instanceId);
@@ -669,15 +696,31 @@ public class ApplicationBuilder {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
             NetworkPartitionContext context = monitor.getNetworkPartitionContext(networkPartitionId);
-            if (status == GroupStatus.Active) {
+            if(status == GroupStatus.Active) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Moving pending group instance to active list in [group] " + groupId
+                            + " [group-instance] " + instanceId);
+                }
                 context.movePendingInstanceToActiveInstances(instanceId);
-            } else if (status == GroupStatus.Terminating) {
-                if (context.getActiveInstance(instanceId) != null) {
+            } else if(status == GroupStatus.Terminating) {
+                if(context.getActiveInstance(instanceId) != null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Moving active group instance to termination pending list in " +
+                                "[group] " + groupId + " [group-instance] " + instanceId);
+                    }
                     context.moveActiveInstanceToTerminationPendingInstances(instanceId);
-                } else if (context.getPendingInstance(instanceId) != null) {
+                } else if(context.getPendingInstance(instanceId) != null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Moving pending group instance to termination pending list in " +
+                                "[group] " + groupId + " [group-instance] " + instanceId);
+                    }
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-            } else if (status == GroupStatus.Terminated) {
+            } else if(status == GroupStatus.Terminated) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Removing termination pending group instance in " +
+                            "[group] " + groupId + " [group-instance] " + instanceId);
+                }
                 context.removeTerminationPendingInstance(instanceId);
             }
             monitor.setStatus(status, instanceId, parentInstanceId);

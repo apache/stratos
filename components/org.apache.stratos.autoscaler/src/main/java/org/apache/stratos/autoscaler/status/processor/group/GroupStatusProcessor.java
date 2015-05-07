@@ -65,15 +65,14 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 if (context.getStatus() == status) {
                     groupStat = true;
                 } else {
-                    groupStat = false;
-                    return groupStat;
+                    return false;
                 }
             } else {
                 //Checking the minimum of the group instances to be satisfied
                 List<Instance> contexts = group.getInstanceContextsWithParentId(instanceId);
                 //if no instances found and requested status is terminated,
                 // then considering this group as terminated
-                if (context == null && contexts.isEmpty() && status == GroupStatus.Terminated) {
+                if (contexts == null || contexts.isEmpty() && status == GroupStatus.Terminated) {
                     groupStat = true;
                 } else {
                     int minGroupInstances = group.getGroupMinInstances();
@@ -86,12 +85,9 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                     if (sameStateInstances >= minGroupInstances) {
                         groupStat = true;
                     } else {
-                        groupStat = false;
-                        return groupStat;
+                        return false;
                     }
                 }
-
-
             }
         }
         return groupStat;
@@ -123,16 +119,14 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                     if (context.getStatus() == status) {
                         clusterStat = true;
                     } else {
-                        clusterStat = false;
-                        return clusterStat;
+                        return false;
                     }
                 } else {
                     //Checking whether non-existent context is for a terminated state change
                     if (status == ClusterStatus.Terminated) {
                         clusterStat = true;
                     } else {
-                        clusterStat = false;
-                        return clusterStat;
+                        return false;
                     }
                 }
             } finally {

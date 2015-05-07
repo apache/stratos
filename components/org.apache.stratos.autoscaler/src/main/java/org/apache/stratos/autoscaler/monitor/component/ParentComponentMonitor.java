@@ -113,7 +113,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         // Create the executor service with identifier and thread pool size
         executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
                 AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
-        networkPartitionCtxts = new HashMap<String, NetworkPartitionContext>();
+        networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
 
     /**

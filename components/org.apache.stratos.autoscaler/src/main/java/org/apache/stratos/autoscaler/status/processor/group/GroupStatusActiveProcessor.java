@@ -85,28 +85,25 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
-            if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) ||
-                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active, instanceId) ||
+            if (groups.isEmpty() &&
+                    getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) ||
+                    clusterData.isEmpty() &&
+                            getAllGroupInSameState(groups, GroupStatus.Active, instanceId) ||
                     getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) &&
                             getAllGroupInSameState(groups, GroupStatus.Active, instanceId)) {
-                //send activation event
+
                 if (component instanceof Application) {
                     //send application activated event
-
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Sending application active for [application] %s [instance] %s ", appId
-                                , instanceId));
-                    }
+                    log.info("Sending application instance active for [application] " + appId +
+                            " [instance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceActivatedEvent(appId, instanceId);
                     return true;
                 } else if (component instanceof Group) {
                     //send activation to the parent
-
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Sending group instance active for [group] %s [instance] %s ", component.getUniqueIdentifier()
-                                , instanceId));
-                    }
-                    ApplicationBuilder.handleGroupInstanceActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                    log.info("Sending group instance active for [group] " +
+                            component.getUniqueIdentifier() + " [instance] " + instanceId);
+                    ApplicationBuilder.handleGroupInstanceActivatedEvent(appId,
+                            component.getUniqueIdentifier(), instanceId);
                     return true;
                 }
 

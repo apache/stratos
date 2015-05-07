@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import java.util.Map;
 
 /**
- * Cluster active status processor
+ * Cluster Terminated status processor
  */
 public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
     private static final Log log = LogFactory.getLog(GroupStatusTerminatedProcessor.class);
@@ -86,18 +86,20 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
-            if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) ||
-                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId) ||
+            if (groups.isEmpty() &&
+                    getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) ||
+                    clusterData.isEmpty() &&
+                            getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId) ||
                     getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) &&
                             getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId)) {
                 //send the terminated event
                 if (component instanceof Application) {
-                    log.info("sending application terminated for [application] " + appId + " [instance] "
-                            + instanceId);
+                    log.info("Sending application instance terminated for [application] " + appId
+                            + " [instance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
                     return true;
                 } else if (component instanceof Group) {
-                    log.info("sending group instance terminated for [group] " +
+                    log.info("Sending group instance terminated for [group] " +
                             component.getUniqueIdentifier() + " [instance] " + instanceId);
                     ApplicationBuilder.handleGroupInstanceTerminatedEvent(appId,
                             component.getUniqueIdentifier(), instanceId);

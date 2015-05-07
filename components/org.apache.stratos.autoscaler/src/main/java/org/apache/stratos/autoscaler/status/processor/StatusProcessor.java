@@ -19,7 +19,7 @@
 package org.apache.stratos.autoscaler.status.processor;
 
 /**
- * Created by reka on 11/25/14.
+ * Abstract class to calculate the status of application/group/cluster
  */
 public abstract class StatusProcessor {
     /**

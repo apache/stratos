@@ -26,15 +26,17 @@ import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Cluster active status processor
+ * Cluster in-active status processor
  */
 public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
     private static final Log log = LogFactory.getLog(GroupStatusInactiveProcessor.class);
@@ -50,7 +52,7 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
         boolean statusChanged;
         statusChanged = doProcess(idOfComponent, appId, instanceId);
         if (statusChanged) {
-            return statusChanged;
+            return true;
         }
 
         if (nextProcessor != null) {
@@ -91,34 +93,31 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
 
             if (groups.isEmpty() && getAllClusterInactive(clusterData, instanceId) ||
                     clusterData.isEmpty() && getAllGroupInactive(groups, instanceId) ||
-                    getAllClusterInactive(clusterData, instanceId) || getAllGroupInactive(groups, instanceId)) {
-                //send the in activation event
+                    getAllClusterInactive(clusterData, instanceId) ||
+                    getAllGroupInactive(groups, instanceId)) {
+                //send the in-activation event
                 if (component instanceof Application) {
-                    //send application activated event
+                    //send application in-activated event
                     log.warn("Sending application instance inactive for [Application] " + appId +
                             " [ApplicationInstance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceInactivateEvent(appId, instanceId);
 
                     return true;
-                    //ApplicationBuilder.handleApp(appId);
-                } else if (component instanceof Group) {
-                    //send activation to the parent
+                } else {
+                    //send group in-activated event
                     if (((Group) component).getStatus(instanceId) != GroupStatus.Inactive) {
-                        log.info("sending group instance Inactive for [group] " +
+                        log.info("Sending group instance Inactive for [group] " +
                                 component.getUniqueIdentifier() + " [instance] " + instanceId);
-                        ApplicationBuilder.handleGroupInactivateEvent(appId, component.getUniqueIdentifier(), instanceId);
+                        ApplicationBuilder.handleGroupInactivateEvent(appId,
+                                component.getUniqueIdentifier(), instanceId);
                         return true;
                     }
                 }
             }
-
-
         } finally {
             ApplicationHolder.releaseWriteLock();
 
         }
-
-
         return false;
     }
 
@@ -130,26 +129,20 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
      * @return whether inactive or not
      */
 
-    private boolean getAllClusterInactive(Map<String, ClusterDataHolder> clusterData, String instanceId) {
-        boolean clusterStat = false;
+    private boolean getAllClusterInactive(Map<String, ClusterDataHolder> clusterData,
+                                          String instanceId) {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
-            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+            Service service = TopologyManager.getTopology().
+                    getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
             ClusterInstance context = cluster.getInstanceContexts(instanceId);
             if (context != null) {
                 if (context.getStatus() == ClusterStatus.Inactive) {
-                    clusterStat = true;
-                    return clusterStat;
-                } else {
-                    clusterStat = false;
-
+                    return true;
                 }
-            } else {
-                clusterStat = false;
             }
-
         }
-        return clusterStat;
+        return false;
     }
 
 
@@ -160,21 +153,29 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
      * @return whether inactive or not
      */
     private boolean getAllGroupInactive(Map<String, Group> groups, String instanceId) {
-        boolean groupStat = false;
         for (Group group : groups.values()) {
             GroupInstance context = group.getInstanceContexts(instanceId);
             if (context != null) {
                 if (context.getStatus() == GroupStatus.Inactive) {
-                    groupStat = true;
-                    return groupStat;
-                } else {
-                    groupStat = false;
+                    return true;
                 }
-                //TODO get by parent
             } else {
-                groupStat = false;
+                List<Instance> instanceList = group.getInstanceContextsWithParentId(instanceId);
+                //if no instances found and requested status is terminated,
+                // then considering this group as terminated
+                if (instanceList != null && !instanceList.isEmpty()) {
+                    int sameStateInstances = 0;
+                    for (Instance context1 : instanceList) {
+                        if (((GroupInstance) context1).getStatus().equals(GroupStatus.Inactive)) {
+                            sameStateInstances++;
+                        }
+                    }
+                    if (sameStateInstances >= 1) {
+                        return true;
+                    }
+                }
             }
         }
-        return groupStat;
+        return false;
     }
 }
