@@ -116,6 +116,9 @@ public abstract class ParentComponentMonitor extends Monitor {
         networkPartitionCtxts = new HashMap<String, NetworkPartitionContext>();
     }
 
+    /**
+     * Starting the scheduler for the monitor
+     */
     public void startScheduler() {
         schedulerFuture = scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
     }
@@ -134,10 +137,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                 getStartAbleDependencies();
         startDependency(applicationContexts, parentInstanceIds);
     }
-
-    /**
-     *
-     */
 
     /**
      * This will start the parallel dependencies at once from the top level.
@@ -163,8 +162,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @return whether the instance has created or not
      * @throws MonitorNotFoundException if the monitor is not there
      */
-    public boolean startDependency(String componentId, String instanceId)
-            throws MonitorNotFoundException {
+    public boolean startDependency(String componentId, String instanceId) {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies(componentId);
         List<String> instanceIds = new ArrayList<String>();
@@ -190,8 +188,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                 log.debug("Dependency check for the Group " + context.getId() + " started");
             }
             if (!this.aliasToActiveChildMonitorsMap.containsKey(context.getId())) {
-                log.info(String.format("Starting dependent monitor on termination: [application] %s [component] %s",
-                        getAppId(), context.getId()));
+                log.info(String.format("Starting dependent monitor on termination: [application] %s " +
+                        "[component] %s", getAppId(), context.getId()));
                 List<String> parentInstanceIds = new ArrayList<String>();
                 parentInstanceIds.add(instanceId);
                 startMonitor(this, context, parentInstanceIds);
@@ -326,27 +324,25 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @param childId parent id of the event which received
      */
     protected void onChildActivatedEvent(String childId, String instanceId) {
-        try {
-            removeInstanceFromFromInactiveMap(childId, instanceId);
-            removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-            boolean startDep = false;
-            if (!aliasToActiveChildMonitorsMap.containsKey(childId) ||
-                    !pendingChildMonitorsList.contains(childId)) {
-                startDep = startDependency(childId, instanceId);
-            }
+        removeInstanceFromFromInactiveMap(childId, instanceId);
+        removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-            //Checking whether all the monitors got created
-            if (!startDep) {
-                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
-                        process(this.id, this.appId, instanceId);
-            } else {
-                log.info("started a child: " + startDep + " by the group/cluster: " + this.id);
-            }
-        } catch (MonitorNotFoundException e) {
-            //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
-            log.error(e);
+        boolean startDep = false;
+        if (!aliasToActiveChildMonitorsMap.containsKey(childId) ||
+                !pendingChildMonitorsList.contains(childId)) {
+            startDep = startDependency(childId, instanceId);
         }
+
+        //Checking whether all the monitors got created
+        if (!startDep) {
+            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
+                    process(this.id, this.appId, instanceId);
+        } else {
+            log.info("started a child: " + startDep + " upon activation of " + childId +
+                    " for [application] " + appId + " [" + getMonitorType() + "] " + id);
+        }
+
     }
 
     /**
@@ -421,7 +417,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                     }
                 } else {
                     if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster Terminating event for [application]: " + appId +
+                        log.info("Publishing Cluster Terminating event for [application] " + appId +
                                 " [group] " + this.id + " [cluster]: " + terminationContext.getId());
                     }
                     ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(this.appId,
@@ -430,7 +426,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 }
             } else {
                 log.warn("The relevant [monitor] " + terminationContext.getId() +
-                        "is not in the active map....");
+                        " in [application] " + appId + "is not in the active map....");
             }
 
         }
@@ -636,7 +632,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                             getNetworkPartitionCtxts().get(networkPartitionId);
             int minInstances = networkPartitionContext.getMinInstanceCount();
             //if terminated all the instances in this instances map should be in terminated state
-            //if terminated all the instances in this instances map should be in terminated state
             if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
                     requiredStatus == GroupStatus.Terminated) {
                 return true;
@@ -653,7 +648,12 @@ public abstract class ParentComponentMonitor extends Monitor {
         return false;
     }
 
-
+    /**
+     * handling the dependent scaling
+     *
+     * @param instanceContext
+     * @param networkPartitionContext
+     */
     protected void handleDependentScaling(InstanceContext instanceContext,
                                           NetworkPartitionContext networkPartitionContext) {
         /**

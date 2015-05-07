@@ -441,7 +441,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
         if (instance != null) {
             // If this parent instance is terminating, then based on child notification,
-            // it has to decide its state
+            // it has to decide its state rather than starting a the children recovery
             if (instance.getStatus() == GroupStatus.Terminating ||
                     instance.getStatus() == GroupStatus.Terminated) {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,

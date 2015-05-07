@@ -136,11 +136,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                             hasMember = false;
                         }
                     }
-                } else {
-                    hasMember = false;
-                    return hasMember;
                 }
-
             }
 
         }

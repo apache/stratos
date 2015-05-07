@@ -93,17 +93,9 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
             if (instanceContext != null) {
                 if (instanceContext.getActiveMembers() < instanceContext.getMinInstanceCount()) {
                     clusterInactive = true;
-                    break;
-                } else {
-                    clusterInactive = false;
-                    break;
                 }
-            } else {
-                clusterInactive = false;
                 break;
             }
-
-
         }
         return clusterInactive;
     }

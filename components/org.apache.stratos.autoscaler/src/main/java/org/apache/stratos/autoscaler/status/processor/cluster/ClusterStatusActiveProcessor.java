@@ -61,10 +61,11 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
-        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().
+        ClusterMonitor monitor = AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
         boolean clusterActive = false;
-        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getNetworkPartitionCtxts()) {
+        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
+                monitor.getNetworkPartitionCtxts()) {
             //minimum check per partition
             ClusterInstanceContext instanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
@@ -72,16 +73,9 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
             if (instanceContext != null) {
                 if (instanceContext.getActiveMembers() >= instanceContext.getMinInstanceCount()) {
                     clusterActive = true;
-                    break;
-                } else {
-                    clusterActive = false;
-                    break;
                 }
-            } else {
-                clusterActive = false;
                 break;
             }
-
         }
         if (clusterActive) {
             if (log.isInfoEnabled()) {
