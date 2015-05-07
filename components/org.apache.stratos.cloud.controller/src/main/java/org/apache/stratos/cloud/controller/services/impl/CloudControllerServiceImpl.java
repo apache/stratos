@@ -1276,11 +1276,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public void removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id can not be empty");
         }
+        if(null == CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId)){
 
+            throw new NonExistingKubernetesClusterException("Kubernetes cluster not found, [kubernetes-cluster] "
+                    + kubernetesClusterId);
+        }
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
@@ -1288,20 +1292,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (log.isInfoEnabled()) {
                 log.info("Removing Kubernetes cluster: " + kubernetesClusterId);
             }
-            try {
-                // Remove entry from information model
-                CloudControllerContext.getInstance().removeKubernetesCluster(kubernetesClusterId);
+            // Remove entry from information model
+            CloudControllerContext.getInstance().removeKubernetesCluster(kubernetesClusterId);
 
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Kubernetes cluster removed successfully: [id] %s", kubernetesClusterId));
-                }
-
-                CloudControllerContext.getInstance().persist();
-
-                return true;
-            } catch (Exception e) {
-                throw new NonExistingKubernetesClusterException(e.getMessage(), e);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Kubernetes cluster removed successfully: [id] %s", kubernetesClusterId));
             }
+
+            CloudControllerContext.getInstance().persist();
+
         } finally {
             if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
