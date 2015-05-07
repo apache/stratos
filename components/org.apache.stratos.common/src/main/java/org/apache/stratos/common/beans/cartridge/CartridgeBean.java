@@ -19,6 +19,8 @@
 
 package org.apache.stratos.common.beans.cartridge;
 
+import org.apache.stratos.common.beans.PropertyBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 

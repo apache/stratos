@@ -19,7 +19,7 @@
 
 package org.apache.stratos.common.beans.partition;
 
-import org.apache.stratos.common.beans.cartridge.PropertyBean;
+import org.apache.stratos.common.beans.PropertyBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;

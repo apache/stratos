@@ -16,50 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.common.beans.kubernetes;
+package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Holds a property
+ * Had to wrap {@link PropertyBean} array using a class, since there's a bug in current
+ * stub generation.
  */
 @XmlRootElement
-public class PropertyBean implements Serializable {
+public class PropertiesBean implements Serializable {
 
-    private static final long serialVersionUID = -2191782657999410197L;
+    private static final long serialVersionUID = 1986895299288322592L;
+    private List<PropertyBean> properties;
 
-    private String name;
-    private String value;
-
-    public PropertyBean() {
-
+    public List<PropertyBean> getProperties() {
+        return properties;
     }
 
-    public PropertyBean(String name, String value) {
-        this.setName(name);
-        this.setValue(value);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public void setProperties(List<PropertyBean> properties) {
+        this.properties = properties;
     }
 
     @Override
     public String toString() {
-        return "Property [name=" + name + ", value=" + value + "]";
+        return "Properties [properties=" + properties + "]";
     }
 
 }
