@@ -64,7 +64,8 @@ public class ApplicationBuilder {
 
     /**
      * Create application clusters in cloud controller and send application created event.
-     *  @param application
+     *
+     * @param application
      * @param appClusterContexts
      */
     public static synchronized void handleApplicationDeployment(Application application,

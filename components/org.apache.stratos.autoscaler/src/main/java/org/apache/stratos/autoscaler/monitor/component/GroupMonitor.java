@@ -631,7 +631,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      *
      * @param parentInstanceContext   the parent instance context
      * @param networkPartitionContext the GroupLevelNetworkPartitionContext
-     * @param groupAlias alias of the group
+     * @param groupAlias              alias of the group
      */
     private void addPartitionContext(Instance parentInstanceContext,
                                      GroupLevelNetworkPartitionContext networkPartitionContext, String groupAlias) {

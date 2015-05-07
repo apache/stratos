@@ -28,7 +28,6 @@ import org.drools.builder.*;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
@@ -56,6 +55,7 @@ public class AutoscalerRuleEvaluator {
 
 
     }
+
     public static AutoscalerRuleEvaluator getInstance() {
         if (instance == null) {
             synchronized (AutoscalerRuleEvaluator.class) {
@@ -69,7 +69,7 @@ public class AutoscalerRuleEvaluator {
 
     public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName) {
         KnowledgeBase knowledgeBase = readKnowledgeBase(drlFileName);
-        if(knowledgeBase == null) {
+        if (knowledgeBase == null) {
             log.error("Knowledge base couldn't be read for" +
                     " [drool-file] " + drlFileName);
         } else {
