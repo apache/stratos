@@ -443,7 +443,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/addServiceGroup")
     @SuperTenantService(true)
     public Response addServiceGroup(
-            GroupBean serviceGroupDefinition) throws RestAPIException {
+            GroupBean serviceGroupDefinition) throws RestAPIException, InvalidCartridgeGroupDefinitionException {
         try {
             StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
             URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
@@ -451,22 +451,13 @@ public class StratosApiV41 extends AbstractApi {
             return Response.created(url).entity(new StatusResponseBean(Response.Status.CREATED.getStatusCode(),
                     String.format("Cartridge Group added successfully: [cartridge-group] %s",
                             serviceGroupDefinition.getName()))).build();
+        } catch (InvalidCartridgeGroupDefinitionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
+                    Response.Status.BAD_REQUEST.getStatusCode(), e.getMessage())).build();
         } catch (RestAPIException e) {
             if (e.getCause().getMessage().contains("already exists")) {
                 return Response.status(Response.Status.CONFLICT).entity(new StatusResponseBean(
                         Response.Status.CONFLICT.getStatusCode(), "Cartridge group not found")).build();
-            } else if (e.getCause().getMessage().contains("duplicate cartridges")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
-                        Response.Status.BAD_REQUEST.getStatusCode(), "Cartridges duplicated in the group " +
-                        "definition")).build();
-            } else if (e.getCause().getMessage().contains("duplicate groups")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
-                        Response.Status.BAD_REQUEST.getStatusCode(), "Groups duplicated in the group " +
-                        "definition")).build();
-            } else if (e.getCause().getMessage().contains("cyclic group")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
-                        Response.Status.BAD_REQUEST.getStatusCode(), "Cyclic group behaviour identified in the group " +
-                        "definition")).build();
             } else {
                 throw e;
             }

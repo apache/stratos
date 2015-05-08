@@ -970,10 +970,11 @@ public class StratosApiV41Utils {
      * @param serviceGroupDefinition serviceGroupDefinition
      * @throws RestAPIException
      */
-    public static void addServiceGroup(GroupBean serviceGroupDefinition) throws RestAPIException {
+    public static void addServiceGroup(GroupBean serviceGroupDefinition)
+            throws InvalidCartridgeGroupDefinitionException, RestAPIException {
         try {
             if (serviceGroupDefinition == null) {
-                throw new RuntimeException("Service Group definition is null");
+                throw new RuntimeException("Cartridge group definition is null");
             }
 
             List<String> cartridgeTypes = new ArrayList<String>();
@@ -982,7 +983,7 @@ public class StratosApiV41Utils {
             String[] cartridgeGroupNames;
 
             if (log.isDebugEnabled()) {
-                log.debug("checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+                log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
             }
 
             findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
@@ -1009,7 +1010,9 @@ public class StratosApiV41Utils {
                         j++;
                     }
                 } catch (RemoteException e) {
-                    throw new RestAPIException(e);
+                    String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
+                    log.error(message, e);
+                    throw new RestAPIException(message, e);
                 } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
                     throw new RestAPIException(e);
                 }
@@ -1040,9 +1043,9 @@ public class StratosApiV41Utils {
                         duplicatesOutput.append(dup).append(" ");
                     }
                     if (log.isDebugEnabled()) {
-                        log.debug("duplicate subGroups defined: " + duplicatesOutput.toString());
+                        log.debug("duplicate sub-groups defined: " + duplicatesOutput.toString());
                     }
-                    throw new RestAPIException("Invalid Service Group definition, duplicate subGroups defined:" +
+                    throw new RestAPIException("Invalid cartridge group definition, duplicate sub-groups defined:" +
                             duplicatesOutput.toString());
                 }
             }
@@ -1056,6 +1059,8 @@ public class StratosApiV41Utils {
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
+        } catch (InvalidCartridgeGroupDefinitionException e) {
+            throw e;
         } catch (Exception e) {
             // TODO: InvalidServiceGroupException is not received, only AxisFault. Need to fix get the custom exception
             String message = "Could not add cartridge group";
@@ -3231,7 +3236,8 @@ public class StratosApiV41Utils {
      * @param groupBean - cartridge group definition
      * @throws RestAPIException - throws the rest api exception when the group definition is invalid
      */
-    private static void validateCartridgeDuplicationInGroupDefinition(GroupBean groupBean) throws RestAPIException {
+    private static void validateCartridgeDuplicationInGroupDefinition(GroupBean groupBean)
+            throws InvalidCartridgeGroupDefinitionException {
         if (groupBean == null) {
             return;
         }
@@ -3256,7 +3262,8 @@ public class StratosApiV41Utils {
      * @param cartridges - list of strings which holds the cartridgeTypes values
      * @throws RestAPIException - throws the rest api exception when the cartridges are duplicated
      */
-    private static void validateCartridgeDuplicationInGroup(List<String> cartridges) throws RestAPIException {
+    private static void validateCartridgeDuplicationInGroup(List<String> cartridges)
+            throws InvalidCartridgeGroupDefinitionException {
         List<String> checkList = new ArrayList<String>();
         for (String cartridge : cartridges) {
             if (!checkList.contains(cartridge)) {
@@ -3265,8 +3272,8 @@ public class StratosApiV41Utils {
                 if (log.isDebugEnabled()) {
                     log.debug("duplicate cartridges defined: " + cartridge);
                 }
-                throw new RestAPIException("Invalid Service Group definition, duplicate cartridges defined: " +
-                        cartridge);
+                throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
+                        "duplicate cartridges defined: " + cartridge);
             }
         }
     }
@@ -3279,7 +3286,7 @@ public class StratosApiV41Utils {
      * @throws RestAPIException - throws the rest api exception when the group definition is invalid
      */
     private static void validateGroupDuplicationInGroupDefinition(GroupBean groupBean, List<String> parentGroups)
-            throws RestAPIException {
+            throws InvalidCartridgeGroupDefinitionException {
         if (groupBean == null) {
             return;
         }
@@ -3310,7 +3317,7 @@ public class StratosApiV41Utils {
      * @throws RestAPIException - throws the rest api exception when group duplicate or when cyclic behaviour occurs
      */
     private static void validateGroupDuplicationInGroup(List<String> groups, List<String> parentGroups)
-            throws RestAPIException {
+            throws InvalidCartridgeGroupDefinitionException {
         List<String> checkList = new ArrayList<String>();
         for (String group : groups) {
             if (!checkList.contains(group)) {
@@ -3319,15 +3326,15 @@ public class StratosApiV41Utils {
                 if (log.isDebugEnabled()) {
                     log.debug("duplicate group defined: " + group);
                 }
-                throw new RestAPIException("Invalid Service Group definition, duplicate groups defined: " +
-                        group);
+                throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
+                        "duplicate groups defined: " + group);
             }
             if (parentGroups.contains(group)) {
                 if (log.isDebugEnabled()) {
                     log.debug("cyclic group behaviour identified [group-name]: " + group);
                 }
-                throw new RestAPIException("Invalid Service Group definition, cyclic group behaviour identified: " +
-                        group);
+                throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
+                        "cyclic group behaviour identified: " + group);
             }
         }
     }
