@@ -1624,7 +1624,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.notifyArtifactUpdatedEvent(payload);
         return Response.ok().entity(new StatusResponseBean(Response.Status.OK.getStatusCode(),
-                String.format("Repository notificaton sent successfully"))).build();
+                String.format("Repository notification sent successfully"))).build();
     }
 
     // API methods for users
@@ -1832,7 +1832,7 @@ public class StratosApiV41 extends AbstractApi {
         KubernetesClusterBean[] availableKubernetesClusters = StratosApiV41Utils.getAvailableKubernetesClusters();
         if (availableKubernetesClusters == null || availableKubernetesClusters.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity(new StatusResponseBean(
-                    Response.Status.NOT_FOUND.getStatusCode(), "Kubernetes cluster not found")).build();
+                    Response.Status.NOT_FOUND.getStatusCode(), "Kubernetes clusters not found")).build();
         }
 
         return Response.ok().entity(availableKubernetesClusters).build();
