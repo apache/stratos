@@ -1976,7 +1976,10 @@ public class StratosApiV41Utils {
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[]
                         kubernetesClusters = cloudControllerServiceClient.getAvailableKubernetesClusters();
                 if (kubernetesClusters == null) {
-                    log.error("Could not find any Kubernetes Clusters.");
+                    if (log.isDebugEnabled()) {
+                        log.debug("There are no available Kubernetes clusters");
+                    }
+
                     return null;
                 }
 
