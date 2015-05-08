@@ -25,6 +25,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
@@ -363,6 +367,11 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private org.apache.stratos.load.balancer.common.domain.Service transformService(Service messagingService) {
         org.apache.stratos.load.balancer.common.domain.Service service =
                 new org.apache.stratos.load.balancer.common.domain.Service(messagingService.getServiceName());
+        if(messagingService.getPorts().size() > 0) {
+            for(Port messagingPort : messagingService.getPorts()) {
+                service.addPort(transformPort(messagingPort));
+            }
+        }
         return service;
     }
 
