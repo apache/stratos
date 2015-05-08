@@ -1,10 +1,11 @@
-# Apache Stratos Nginx Load Balancer Extension
+# Apache Stratos Nginx Extension
 
-Stratos Nginx load balancer extension can be used for integrating Nginx with Stratos. It provides means of
-configuring the nginx according to the topology, composite application model, tenant information, application
-signups and domain mappings.
+Apache Stratos Nginx extension is a load balancer extension for Nginx. It is an executable program
+which can manage the life-cycle of a Nginx instance according to the topology, composite application model,
+tenant signups and domain mapping information received from Stratos via the message broker.
 
-## How it works
-* The load balancer extension subscribe to the message broker and receives above information from Stratos.
-* Afterwards it generates Nginx configuration and start an instance of Nginx with the generated configuration file.
-* Once a change in the above data set is detected a new configuration will be generated and the load balancer will be reloaded.
+## How it works:
+1. Wait for the complete topology event message to initialize the topology.
+2. Configure and start an instance of Nginx.
+3. Listen to topology update messages.
+4. Reload Nginx instance with the new topology configuration.

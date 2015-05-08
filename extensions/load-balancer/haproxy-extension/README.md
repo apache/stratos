@@ -1,7 +1,7 @@
 # Apache Stratos HAProxy Extension
 
 Apache Stratos HAProxy extension is a load balancer extension for HAProxy. It is an executable program
-which can manage the life-cycle of a HAProxy instance according to the topology, application composite model,
+which can manage the life-cycle of a HAProxy instance according to the topology, composite application model,
 tenant signups and domain mapping information received from Stratos via the message broker.
 
 ## How it works:
