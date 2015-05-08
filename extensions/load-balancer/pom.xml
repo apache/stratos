@@ -35,6 +35,7 @@
 
     <modules>
         <module>haproxy-extension</module>
+        <module>nginx-extension</module>
     </modules>
 </project>
 
