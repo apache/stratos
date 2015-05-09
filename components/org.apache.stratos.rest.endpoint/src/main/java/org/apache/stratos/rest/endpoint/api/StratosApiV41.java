@@ -323,7 +323,7 @@ public class StratosApiV41 extends AbstractApi {
         List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, false, getConfigContext());
         if (cartridges == null || cartridges.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).entity(new StatusResponseBean(
-                    Response.Status.CONFLICT.getStatusCode(), "No cartridges found")).build();
+                    Response.Status.NOT_FOUND.getStatusCode(), "No cartridges found")).build();
         }
         CartridgeBean[] cartridgeArray = cartridges.toArray(new CartridgeBean[cartridges.size()]);
         return Response.ok().entity(cartridgeArray).build();
