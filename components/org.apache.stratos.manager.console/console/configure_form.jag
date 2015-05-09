@@ -77,7 +77,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Network Partition",
                     buttonText = "Network Partition";
             list_data = util.RESTCalls.getPartitions();
-            if (list_data && list_data.length === 0) {
+            if (list_data.statusCode == '404') {
                 list_data = null;
             }
             break;
@@ -86,9 +86,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Auto-scaling Policie",
                     buttonText = "Auto-scaling Policy";
             list_data = util.RESTCalls.getPolicyAutoScales();
-            if (list_data && list_data.length === 0) {
-                list_data = null;
-            }else if(list_data.errorCode == '404'){ //TODO: need to fix this right way
+            if(list_data.statusCode == '404'){
                 list_data = null;
             }
             break;
@@ -97,7 +95,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Deployment Policie",
                     buttonText = "Deployment Policy";
             list_data = util.RESTCalls.getPolicyDeployments();
-            if (list_data && list_data.length === 0) {
+            if (list_data.statusCode == '404') {
                 list_data = null;
             }
             break;
@@ -106,7 +104,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Cartridge",
                     buttonText = "Cartridge Definition";
             list_data = util.RESTCalls.getCartridges();
-            if (list_data && list_data.length === 0) {
+            if (list_data.statusCode == '404') {
                 list_data = null;
             }
             break;
@@ -115,7 +113,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Cartridge Group Definition",
                     buttonText = "Cartridge Group Definition";
             list_data = util.RESTCalls.getGroups();
-            if (list_data && list_data.length === 0) {
+            if (list_data.statusCode == '404') {
                 list_data = null;
             }
             break;
@@ -124,7 +122,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Kubernetes Cluster",
                     buttonText = "Kubernetes Cluster";
             list_data = util.RESTCalls.getKubernetesClusters();
-            if (list_data == null) {
+            if (list_data.statusCode == '404') {
                 list_data = null; //TODO endpoint doesn't return correct info
             }
             break;
