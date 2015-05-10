@@ -283,36 +283,82 @@ var groupBlockTemplate = {
         "name": {
             "id": "root/name",
             "type": "string",
-            "title": "Group Name: "
+            "title": "Group Name",
+            "name" : "name"
         },
         "dependencies": {
             "id": "root/dependencies",
             "type": "object",
-            "title": "Dependencies: ",
+            "title": "Dependencies",
+            "name" : "Dependencies",
             "options": {
-                "disable_properties": true
+                "hidden": false,
+                "disable_properties":true,
+                "collapsed": true
             },
             "properties": {
                 "startupOrders": {
                     "id": "root/dependencies/startupOrders",
                     "type": "array",
-                    "title": "Startup Orders: ",
+                    "title": "Startup Orders",
+                    "name" : "StartupOrders",
                     "format":"tabs",
                     "items": {
                         "id": "root/dependencies/startupOrders/0",
-                        "type": "string",
-                        "title": "Order"
+                        "type": "object",
+                        "title": "Startup Order",
+                        "name": "StartupOrder",
+                        "options": {
+                            "disable_properties":true
+                        },
+                        "properties" : {
+                            "aliases" : {
+                                "id" : "root/dependencies/startupOrders/aliases",
+                                "type" : "array",
+                                "title" : "Aliases",
+                                "name" : "aliases",
+                                "format" : "tabs",
+                                "items" : {
+                                    "id" : "root/dependencies/startupOrders/aliases/0",
+                                    "type" : "string",
+                                    "title" : "alias",
+                                    "name" : "alias",
+                                    "default" : "cartridge.c4"
+                                }
+                            }
+                        }
                     }
                 },
-                "scalingDependants": {
-                    "id": "root/dependencies/scalingDependants",
+                "scalingDependents": {
+                    "id": "root/dependencies/scalingDependents",
                     "type": "array",
-                    "title": "Scaling Dependants: ",
+                    "title": "Scaling Dependents",
+                    "name" : "ScalingDependents",
                     "format":"tabs",
                     "items": {
-                        "id": "root/dependencies/scalingDependants/0",
-                        "type": "string",
-                        "title": "Dependant"
+                        "id": "root/dependencies/scalingDependents/0",
+                        "type": "object",
+                        "title": "Scaling Dependent",
+                        "name": "ScalingDependent",
+                        "options": {
+                            "disable_properties":true
+                        },
+                        "properties" : {
+                            "aliases" : {
+                                "id" : "root/dependencies/scalingDependents/aliases",
+                                "type" : "array",
+                                "title" : "Aliases",
+                                "name" : "aliases",
+                                "format" : "tabs",
+                                "items" : {
+                                    "id" : "root/dependencies/scalingDependents/aliases/0",
+                                    "type" : "string",
+                                    "title" : "alias",
+                                    "name" : "alias",
+                                    "default" : "cartridge.c1"
+                                }
+                            }
+                        }
                     }
                 },
                 "terminationBehaviour": {
@@ -323,7 +369,7 @@ var groupBlockTemplate = {
                 },
                 "required": [
                     "startupOrders",
-                    "scalingDependants",
+                    "scalingDependents",
                     "terminationBehaviour"
                 ]
             }
@@ -339,12 +385,10 @@ var groupBlockDefault = {
     "name": "",
     "dependencies": {
         "startupOrders": [
-            "cartridge.type, group.name"
         ],
-        "scalingDependants": [
-            "cartridge.type, group.name"
+        "scalingDependents": [
         ],
-        "terminationBehaviour": "terminate-all"
+        "terminationBehaviour": "terminate-none"
     }
 };
 

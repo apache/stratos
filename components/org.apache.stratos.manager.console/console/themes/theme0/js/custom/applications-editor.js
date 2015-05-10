@@ -640,28 +640,64 @@ var applicationBlockTemplate = {
                     "id": "root/dependencies/startupOrders",
                     "type": "array",
                     "title": "Startup Orders",
-                    "name": "Startup Orders",
+                    "name": "StartupOrders",
                     "format":"tabs",
                     "items": {
                         "id": "root/dependencies/startupOrders/0",
-                        "type": "string",
-                        "title": "Order",
-                        "name": "Order",
-                        "default":"group.my-group1,cartridge.my-c4"
+                        "type": "object",
+                        "title": "Startup Order",
+                        "name": "StartupOrder",
+                        "options": {
+                            "disable_properties":true
+                        },
+                        "properties" : {
+                            "aliases" : {
+                                "id" : "root/dependencies/startupOrders/aliases",
+                                "type" : "array",
+                                "title" : "Aliases",
+                                "name" : "aliases",
+                                "format" : "tabs",
+                                "items" : {
+                                    "id" : "root/dependencies/startupOrders/aliases/0",
+                                    "type" : "string",
+                                    "title" : "alias",
+                                    "name" : "alias",
+                                    "default" : "cartridge.c4"
+                                }
+                            }
+                        }
                     }
                 },
                 "scalingDependents": {
                     "id": "root/dependencies/scalingDependents",
                     "type": "array",
                     "title": "Scaling Dependents",
-                    "name": "Scaling Dependents",
+                    "name": "ScalingDependents",
                     "format":"tabs",
                     "items": {
                         "id": "root/dependencies/scalingDependents/0",
-                        "type": "string",
-                        "title": "Dependent",
-                        "name": "Dependent",
-                        "default":"group.my-group1,cartridge.my-c4"
+                        "type": "object",
+                        "title": "Scaling Dependent",
+                        "name": "ScalingDependent",
+                        "options": {
+                            "disable_properties":true
+                        },
+                        "properties" : {
+                            "aliases" : {
+                                "id" : "root/dependencies/scalingDependents/aliases",
+                                "type" : "array",
+                                "title" : "Aliases",
+                                "name" : "aliases",
+                                "format" : "tabs",
+                                "items" : {
+                                    "id" : "root/dependencies/scalingDependents/aliases/0",
+                                    "type" : "string",
+                                    "title" : "alias",
+                                    "name" : "alias",
+                                    "default" : "cartridge.c1"
+                                }
+                            }
+                        }
                     }
                 },
                 "terminationBehaviour": {
@@ -669,7 +705,7 @@ var applicationBlockTemplate = {
                     "type": "string",
                     "title": "Termination Behaviour",
                     "name": "Termination Behaviour",
-                    "enum": ["terminate-none","terminate-dependents","terminate-all"],
+                    "enum": ["terminate-none","terminate-dependents","terminate-all"]
                 }
             }
         }
@@ -682,12 +718,10 @@ var applicationBlockDefault = {
     "multiTenant": false,
     "dependencies": {
         "startupOrders": [
-
         ],
         "scalingDependents": [
-
         ],
-        "terminationBehaviour": "terminate-dependents"
+        "terminationBehaviour": "terminate-none"
     }
 };
 
