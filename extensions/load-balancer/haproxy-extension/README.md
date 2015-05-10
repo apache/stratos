@@ -11,7 +11,8 @@ tenant application signups and domain mapping information received from Stratos 
 4. Reload HAProxy instance with the new topology configuration.
 5. Periodically publish statistics to Complex Event Processor (CEP).
 
-Please refer INSTALL.txt for information on the installation process.
+## Installation
+Please refer INSTALL.md for information on the installation process.
 
 Thanks to Vaadin for HAProxyController implementation:
 https://vaadin.com/license

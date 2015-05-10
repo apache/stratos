@@ -22,3 +22,6 @@ If HttpStubStatusModule is installed the following output will be given:
 ```
 with-http_stub_status_module
 ```
+
+## Installation
+Please refer INSTALL.md for information on the installation process.
