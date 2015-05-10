@@ -26,6 +26,8 @@ import java.util.List;
 @XmlRootElement(name = "groups")
 public class GroupBean implements Serializable {
 
+    private static final long serialVersionUID = 4696832597498594267L;
+
     private String name;
     private List<GroupBean> groups;
     private List<String> cartridges;

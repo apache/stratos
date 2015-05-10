@@ -65,7 +65,12 @@
         ],
         "dependencies": {
             "scalingDependents": [
-                "group.my-esb-php-group, cartridge.my-tomcat"
+                {
+                    "aliases" : [
+                        "group.my-esb-php-group",
+                        "cartridge.my-tomcat"
+                    ]
+                }
             ],
             "terminationBehaviour": "terminate-none"
         }

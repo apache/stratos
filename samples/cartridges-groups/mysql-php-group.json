@@ -6,11 +6,21 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.my-mysql,cartridge.my-php"
+            {
+                "aliases": [
+                    "cartridge.my-mysql",
+                    "cartridge.my-php"
+                ]
+            }
         ],
         "scalingDependents": [
-            "cartridge.my-mysql,cartridge.my-php"
-	],
+            {
+                "aliases": [
+                    "cartridge.my-mysql",
+                    "cartridge.my-php"
+                ]
+            }
+        ],
         "terminationBehaviour": "terminate-none"
     }
 }

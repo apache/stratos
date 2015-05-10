@@ -26,10 +26,10 @@ import java.util.List;
 @XmlRootElement(name = "dependencies")
 public class DependencyBean implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -2175965139379577971L;
 
-    private List<String> startupOrders;
-    private List<String> scalingDependents;
+    private List<StartupOrderBean> startupOrders;
+    private List<ScalingDependentsBean> scalingDependents;
     private String terminationBehaviour;
 
     public String getTerminationBehaviour() {
@@ -40,20 +40,19 @@ public class DependencyBean implements Serializable {
         this.terminationBehaviour = terminationBehaviour;
     }
 
-    public List<String> getStartupOrders() {
+    public List<StartupOrderBean> getStartupOrders() {
         return startupOrders;
     }
 
-    public void setStartupOrders(List<String> startupOrders) {
+    public void setStartupOrders(List<StartupOrderBean> startupOrders) {
         this.startupOrders = startupOrders;
     }
 
-    public List<String> getScalingDependents() {
+    public List<ScalingDependentsBean> getScalingDependents() {
         return scalingDependents;
     }
 
-    public void setScalingDependents(List<String> scalingDependants) {
+    public void setScalingDependents(List<ScalingDependentsBean> scalingDependants) {
         this.scalingDependents = scalingDependants;
     }
-
 }

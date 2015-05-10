@@ -6,7 +6,12 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.my-esb,cartridge.my-php"
+            {
+                "aliases" : [
+                    "cartridge.my-esb",
+                    "cartridge.my-php"
+                ]
+            }
         ],
         "terminationBehaviour": "terminate-none"
     }

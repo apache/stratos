@@ -6,7 +6,12 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.tomcat2,cartridge.tomcat1"
+            {
+                "aliases" : [
+                    "cartridge.tomcat2",
+                    "cartridge.tomcat1"
+                ]
+            }
         ],
         "terminationBehaviour": "terminate-all"
     }

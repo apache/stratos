@@ -1092,20 +1092,58 @@ public class ObjectConverter {
     }
 
     private static DependencyBean convertStubDependencyContextsToDependencyDefinitions(DependencyContext dependencyContext) {
-        DependencyBean dependencyDefinitions = new DependencyBean();
-        dependencyDefinitions.setTerminationBehaviour(dependencyContext.getTerminationBehaviour());
+        DependencyBean dependencyBean = new DependencyBean();
+        dependencyBean.setTerminationBehaviour(dependencyContext.getTerminationBehaviour());
 
         if (dependencyContext.getStartupOrdersContexts() != null) {
-            List<String> startupOrders = new ArrayList<String>();
-            startupOrders.addAll(Arrays.asList(dependencyContext.getStartupOrdersContexts()));
-            dependencyDefinitions.setStartupOrders(startupOrders);
+            List<StartupOrderBean> startupOrderBeans = convertStringArrayToStartupOrderBeans(
+                    dependencyContext.getStartupOrdersContexts());
+            dependencyBean.setStartupOrders(startupOrderBeans);
         }
         if (dependencyContext.getScalingDependents() != null) {
-            List<String> scalingDependents = new ArrayList<String>();
-            scalingDependents.addAll(Arrays.asList(dependencyContext.getScalingDependents()));
-            dependencyDefinitions.setScalingDependents(scalingDependents);
+            List<ScalingDependentsBean> scalingDependentBeans = convertStringArrayToDependentScalingBeans(
+                    dependencyContext.getScalingDependents());
+            dependencyBean.setScalingDependents(scalingDependentBeans);
         }
-        return dependencyDefinitions;
+        return dependencyBean;
+    }
+
+    private static List<StartupOrderBean> convertStringArrayToStartupOrderBeans(String[] startupOrders) {
+        List<StartupOrderBean> startupOrderBeans = new ArrayList<StartupOrderBean>();
+        if(startupOrders != null) {
+            for (String aliasArrayList : startupOrders) {
+                if (StringUtils.isNotBlank(aliasArrayList)) {
+                    String[] aliasArray = aliasArrayList.split(",");
+                    StartupOrderBean startupOrderBean = new StartupOrderBean();
+                    for (String alias : aliasArray) {
+                        if (StringUtils.isNotBlank(alias)) {
+                            startupOrderBean.addAlias(alias);
+                        }
+                    }
+                    startupOrderBeans.add(startupOrderBean);
+                }
+            }
+        }
+        return startupOrderBeans;
+    }
+
+    private static List<ScalingDependentsBean> convertStringArrayToDependentScalingBeans(String[] scalingDependents) {
+        List<ScalingDependentsBean> scalingDependentBeans = new ArrayList<ScalingDependentsBean>();
+        if(scalingDependents != null) {
+            for (String aliasArrayList : scalingDependents) {
+                if (StringUtils.isNotBlank(aliasArrayList)) {
+                    String[] aliasArray = aliasArrayList.split(",");
+                    ScalingDependentsBean scalingDependentsBean = new ScalingDependentsBean();
+                    for (String alias : aliasArray) {
+                        if (StringUtils.isNotBlank(alias)) {
+                            scalingDependentsBean.addAlias(alias);
+                        }
+                    }
+                    scalingDependentBeans.add(scalingDependentsBean);
+                }
+            }
+        }
+        return scalingDependentBeans;
     }
 
     private static List<CartridgeReferenceBean> convertStubCartridgeContextsToCartridgeReferenceBeans(
@@ -1305,27 +1343,40 @@ public class ObjectConverter {
     }
 
 
-    private static DependencyContext convertDependencyDefinitionsToDependencyContexts(DependencyBean dependencyDefinitions) {
-
-        if (dependencyDefinitions == null) {
+    private static DependencyContext convertDependencyDefinitionsToDependencyContexts(DependencyBean dependencyBean) {
+        if (dependencyBean == null) {
             return null;
         }
 
         DependencyContext dependencyContext = new DependencyContext();
-        dependencyContext.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
+        dependencyContext.setTerminationBehaviour(dependencyBean.getTerminationBehaviour());
 
-        if (dependencyDefinitions.getStartupOrders() != null) {
-            String[] startupOrders = new String[dependencyDefinitions.getStartupOrders().size()];
-            startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
-            dependencyContext.setStartupOrdersContexts(startupOrders);
+        if (dependencyBean.getStartupOrders() != null) {
+            List<String> startupOrders = convertStartupOrdersBeansToStringList(dependencyBean.getStartupOrders());
+            dependencyContext.setStartupOrdersContexts(startupOrders.toArray(new String[startupOrders.size()]));
         }
-        if (dependencyDefinitions.getScalingDependents() != null) {
-            String[] scalingDependents = new String[dependencyDefinitions.getScalingDependents().size()];
-            scalingDependents = dependencyDefinitions.getScalingDependents().toArray(scalingDependents);
-            dependencyContext.setScalingDependents(scalingDependents);
+        if (dependencyBean.getScalingDependents() != null) {
+            List<String> scalingDependents = convertScalingDependentsBeansToStringList(dependencyBean.getScalingDependents());
+            dependencyContext.setScalingDependents(scalingDependents.toArray(new String[scalingDependents.size()]));
         }
-
         return dependencyContext;
+    }
+
+    private static List<String> convertScalingDependentsBeansToStringList(List<ScalingDependentsBean> scalingDependentsBeans) {
+        List<String> scalingDependents = new ArrayList<String>();
+        if(scalingDependentsBeans != null) {
+            for (ScalingDependentsBean scalingDependentsBean : scalingDependentsBeans) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String alias : scalingDependentsBean.getAliases()) {
+                    if (stringBuilder.length() > 0) {
+                        stringBuilder.append(",");
+                    }
+                    stringBuilder.append(alias);
+                }
+                scalingDependents.add(stringBuilder.toString());
+            }
+        }
+        return scalingDependents;
     }
 
     private static org.apache.stratos.autoscaler.stub.pojo.GroupContext[]
@@ -1527,27 +1578,42 @@ public class ObjectConverter {
         cartridges = cartridgesDefinitions.toArray(cartridges);
         servicegroup.setCartridges(cartridges);
 
-        DependencyBean dependencyDefinitions = groupBean.getDependencies();
+        DependencyBean dependencyBean = groupBean.getDependencies();
 
-        if (dependencyDefinitions != null) {
+        if (dependencyBean != null) {
             Dependencies dependencies = new Dependencies();
-            List<String> startupOrdersDef = dependencyDefinitions.getStartupOrders();
-            if (startupOrdersDef != null) {
-                String[] startupOrders = new String[startupOrdersDef.size()];
-                startupOrders = startupOrdersDef.toArray(startupOrders);
-                dependencies.setStartupOrders(startupOrders);
+            List<StartupOrderBean> startupOrderBeans = dependencyBean.getStartupOrders();
+            if (startupOrderBeans != null) {
+                List<String> startupOrders = convertStartupOrdersBeansToStringList(dependencyBean.getStartupOrders());
+                dependencies.setStartupOrders(startupOrders.toArray(new String[startupOrders.size()]));
             }
             // validate termination behavior
-            validateTerminationBehavior(dependencyDefinitions.getTerminationBehaviour());
-            dependencies.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
-            if (dependencyDefinitions.getScalingDependents() != null) {
-                dependencies.setScalingDependants(dependencyDefinitions.getScalingDependents()
-                        .toArray(new String[dependencyDefinitions.getScalingDependents().size()]));
+            validateTerminationBehavior(dependencyBean.getTerminationBehaviour());
+            dependencies.setTerminationBehaviour(dependencyBean.getTerminationBehaviour());
+            if (dependencyBean.getScalingDependents() != null) {
+                List<String> scalingDependents = convertScalingDependentsBeansToStringList(dependencyBean.getScalingDependents());
+                dependencies.setScalingDependants(scalingDependents.toArray(new String[scalingDependents.size()]));
             }
             servicegroup.setDependencies(dependencies);
         }
-
         return servicegroup;
+    }
+
+    private static List<String> convertStartupOrdersBeansToStringList(List<StartupOrderBean> startupOrderBeans) {
+        List<String> startupOrders = new ArrayList<String>();
+        if(startupOrderBeans != null) {
+            for (StartupOrderBean startupOrderBean : startupOrderBeans) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String alias : startupOrderBean.getAliases()) {
+                    if (stringBuilder.length() > 0) {
+                        stringBuilder.append(",");
+                    }
+                    stringBuilder.append(alias);
+                }
+                startupOrders.add(stringBuilder.toString());
+            }
+        }
+        return startupOrders;
     }
 
     public static GroupBean convertStubServiceGroupToServiceGroupDefinition(ServiceGroup serviceGroup) {
@@ -1569,21 +1635,21 @@ public class ObjectConverter {
         }
 
         if (dependencies != null) {
-            DependencyBean dependencyDefinition = new DependencyBean();
+            DependencyBean dependencyBean = new DependencyBean();
             String[] startupOrders = dependencies.getStartupOrders();
             if (startupOrders != null && startupOrders[0] != null) {
                 List<String> startupOrdersDef = Arrays.asList(startupOrders);
-                dependencyDefinition.setStartupOrders(startupOrdersDef);
+                //dependencyBean.setStartupOrders(startupOrdersDef);
             }
 
             String[] scalingDependants = dependencies.getScalingDependants();
             if (scalingDependants != null && scalingDependants[0] != null) {
                 List<String> scalingDependenciesDef = Arrays.asList(scalingDependants);
-                dependencyDefinition.setScalingDependents(scalingDependenciesDef);
+                //dependencyBean.setScalingDependents(scalingDependenciesDef);
             }
 
-            dependencyDefinition.setTerminationBehaviour(dependencies.getTerminationBehaviour());
-            serviceGroupDefinition.setDependencies(dependencyDefinition);
+            dependencyBean.setTerminationBehaviour(dependencies.getTerminationBehaviour());
+            serviceGroupDefinition.setDependencies(dependencyBean);
         }
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
@@ -1592,8 +1658,6 @@ public class ObjectConverter {
         }
 
         serviceGroupDefinition.setGroups(groupDefinitions);
-
-
         return serviceGroupDefinition;
     }
 

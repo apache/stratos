@@ -73,7 +73,12 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.my-group6,cartridge.my-tomcat"
+                {
+                    "aliases" : [
+                        "group.my-group6",
+                        "cartridge.my-tomcat"
+                    ]
+                }
             ],
             "terminationBehaviour": "terminate-all"
         }

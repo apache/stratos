@@ -132,7 +132,14 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "cartridge.my-tomcat,cartridge.my-stratos-lb,group.my-group6,group.my-group8"
+                {
+                    "aliases" : [
+                        "cartridge.my-tomcat",
+                        "cartridge.my-stratos-lb",
+                        "group.my-group6",
+                        "group.my-group8"
+                    ]
+                }
             ],
             "terminationBehaviour": "terminate-all"
         }

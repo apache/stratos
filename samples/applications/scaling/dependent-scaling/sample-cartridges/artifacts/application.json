@@ -38,7 +38,12 @@
         ],
         "dependencies": {
             "scalingDependents": [
-                "cartridge.my-tomcat, cartridge.my-php"
+                {
+                    "aliases" : [
+                        "cartridge.my-tomcat",
+                        "cartridge.my-php"
+                    ]
+                }
             ],
             "terminationBehaviour": "terminate-none"
         }

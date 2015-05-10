@@ -26,6 +26,8 @@ import java.util.List;
 @XmlRootElement(name = "applicationNetworkPartitions")
 public class ApplicationNetworkPartitionIdListBean implements Serializable {
 
+    private static final long serialVersionUID = -808839208993265896L;
+
     private List<String> networkPartitionIds;
 
     public List<String> getNetworkPartitionIds() {

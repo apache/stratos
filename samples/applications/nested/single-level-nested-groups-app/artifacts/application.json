@@ -122,7 +122,13 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.my-group8,cartridge.my-tomcat,group.my-group6"
+                {
+                    "aliases" : [
+                        "group.my-group8",
+                        "cartridge.my-tomcat",
+                        "group.my-group6"
+                    ]
+                }
             ],
             "terminationBehaviour": "terminate-all"
         }

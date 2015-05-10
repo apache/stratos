@@ -6,7 +6,12 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.my-c3,cartridge.my-c2"
+            {
+                "aliases" : [
+                    "cartridge.my-c3",
+                    "cartridge.my-c2"
+                ]
+            }
         ],
         "terminationBehaviour": "terminate-all"
     }
