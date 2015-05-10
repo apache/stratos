@@ -115,9 +115,14 @@ public class NginxConfigWriter {
      *     server {
      *         listen <proxy-port>;
      *         server_name <cluster-hostname>;
-     *
      *         location / {
      *             proxy_pass    http://<cluster-hostname>
+     *         }
+     *         location /nginx_status {
+     *            stub_status on;
+     *            access_log off;
+     *            allow 127.0.0.1;
+     *            deny all;
      *         }
      *     }
      * }
@@ -148,10 +153,19 @@ public class NginxConfigWriter {
                 text.append(TAB).append("server {").append(NEW_LINE);
                 text.append(TAB).append(TAB).append("listen ").append(port.getProxy()).append(";").append(NEW_LINE);
                 text.append(TAB).append(TAB).append("server_name ").append(hostname).append(";").append(NEW_LINE);
-                text.append(NEW_LINE);
+
                 text.append(TAB).append(TAB).append("location / {").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("proxy_pass").append(TAB).append("http://").append(hostname).append(";").append(NEW_LINE);
+                text.append(TAB).append(TAB).append(TAB).append("proxy_pass").append(TAB)
+                        .append("http://").append(hostname).append(";").append(NEW_LINE);
                 text.append(TAB).append(TAB).append("}").append(NEW_LINE);
+
+                text.append(TAB).append(TAB).append("location /nginx_status {").append(NEW_LINE);
+                text.append(TAB).append(TAB).append(TAB).append("stub_status on;").append(NEW_LINE);
+                text.append(TAB).append(TAB).append(TAB).append("access_log off;").append(NEW_LINE);
+                text.append(TAB).append(TAB).append(TAB).append("allow 127.0.0.1;").append(NEW_LINE);
+                text.append(TAB).append(TAB).append(TAB).append("deny all;").append(NEW_LINE);
+                text.append(TAB).append(TAB).append("}").append(NEW_LINE);
+
                 text.append(TAB).append("}").append(NEW_LINE);
                 // End server block
 
