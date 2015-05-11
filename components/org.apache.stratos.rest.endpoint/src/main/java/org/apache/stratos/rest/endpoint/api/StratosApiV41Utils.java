@@ -387,7 +387,7 @@ public class StratosApiV41Utils {
     }
 
     public static List<CartridgeBean> getAvailableCartridges(
-            String cartridgeSearchString, boolean multiTenant, ConfigurationContext configurationContext)
+            String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext)
             throws RestAPIException {
 
         List<CartridgeBean> cartridges = new ArrayList<CartridgeBean>();
@@ -420,10 +420,10 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-                    if (!multiTenant && cartridgeInfo.getMultiTenant()) {
+                    if (multiTenant != null && !multiTenant && cartridgeInfo.getMultiTenant()) {
                         // Need only Single-Tenant cartridges
                         continue;
-                    } else if (multiTenant && !cartridgeInfo.getMultiTenant()) {
+                    } else if ( multiTenant != null && multiTenant && !cartridgeInfo.getMultiTenant()) {
                         // Need only Multi-Tenant cartridges
                         continue;
                     }
