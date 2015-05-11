@@ -65,8 +65,8 @@ public class ApplicationBuilder {
     /**
      * Create application clusters in cloud controller and send application created event.
      *
-     * @param application
-     * @param appClusterContexts
+     * @param application        the application
+     * @param appClusterContexts the clusters in the application
      */
     public static synchronized void handleApplicationDeployment(Application application,
                                                                 ApplicationClusterContext[] appClusterContexts) {
@@ -360,9 +360,9 @@ public class ApplicationBuilder {
                                     cluster.getInstanceIdToInstanceContextMap().values()) {
                                 ClusterStatusEventPublisher.
                                         sendClusterStatusClusterTerminatingEvent(applicationId,
-                                        aClusterData.getServiceType(),
-                                        aClusterData.getClusterId(),
-                                        instance.getInstanceId());
+                                                aClusterData.getServiceType(),
+                                                aClusterData.getClusterId(),
+                                                instance.getInstanceId());
                             }
                         }
                     }
@@ -520,8 +520,6 @@ public class ApplicationBuilder {
 
             GroupStatus status = GroupStatus.Created;
             String instanceId = parentId;
-            int minGroupInstances = group.getGroupMinInstances();
-            int maxGroupInstances = group.getGroupMaxInstances();
             /*
             * When min != 1 or max != 1, we need to generate
             * instance ids as it is having more than one group instances
@@ -532,7 +530,7 @@ public class ApplicationBuilder {
 
             if (!group.containsInstanceContext(instanceId)) {
                 //setting the status, persist and publish
-                GroupInstance groupInstance = null;
+                GroupInstance groupInstance;
                 groupInstance = new GroupInstance(groupId, instanceId);
                 groupInstance.setParentId(parentId);
                 groupInstance.setPartitionId(partitionId);
@@ -631,11 +629,12 @@ public class ApplicationBuilder {
                     updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
                             instanceId, groupInstance.getParentId());
                     ApplicationHolder.persistApplication(application);
-                    ApplicationsEventPublisher.sendGroupInstanceTerminatingEvent(appId, groupId, instanceId);
+                    ApplicationsEventPublisher.sendGroupInstanceTerminatingEvent(appId,
+                            groupId, instanceId);
                 } else {
                     log.warn("Group state transition is not valid: [group-id] " + groupId +
-                            " [instance-id] " + instanceId + " [current-state] " + groupInstance.getStatus()
-                            + "[requested-state] " + status);
+                            " [instance-id] " + instanceId + " [current-state] " +
+                            groupInstance.getStatus() + "[requested-state] " + status);
                 }
 
             } else {
@@ -651,33 +650,34 @@ public class ApplicationBuilder {
                                                  String networkPartitionId, String instanceId) {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
-        NetworkPartitionContext context = applicationMonitor.
-                getNetworkPartitionContext(networkPartitionId);
+
         if (applicationMonitor != null) {
-            if(status == ApplicationStatus.Active) {
-                if(log.isDebugEnabled()) {
+            NetworkPartitionContext context = applicationMonitor.
+                    getNetworkPartitionContext(networkPartitionId);
+            if (status == ApplicationStatus.Active) {
+                if (log.isDebugEnabled()) {
                     log.debug("Moving pending [application-instance] " + instanceId +
                             " to active list in [application] " + appId);
                 }
                 context.movePendingInstanceToActiveInstances(instanceId);
-            } else if(status == ApplicationStatus.Terminating) {
+            } else if (status == ApplicationStatus.Terminating) {
                 applicationMonitor.setTerminating(true);
 
-                if(context.getActiveInstance(instanceId) != null) {
-                    if(log.isDebugEnabled()) {
+                if (context.getActiveInstance(instanceId) != null) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Moving active [application-instance] " + instanceId +
                                 " to termination pending list " + "in [application] " + appId);
                     }
                     context.moveActiveInstanceToTerminationPendingInstances(instanceId);
-                } else if(context.getPendingInstance(instanceId) != null) {
-                    if(log.isDebugEnabled()) {
+                } else if (context.getPendingInstance(instanceId) != null) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Moving pending  [application-instance]" + instanceId +
                                 " to termination pending list in [application] " + appId);
                     }
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-            } else if(status == ApplicationStatus.Terminated) {
-                if(log.isDebugEnabled()) {
+            } else if (status == ApplicationStatus.Terminated) {
+                if (log.isDebugEnabled()) {
                     log.debug("Removing termination pending [application-instance] " + instanceId
                             + " [application] " + appId);
                 }
@@ -696,28 +696,28 @@ public class ApplicationBuilder {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
             NetworkPartitionContext context = monitor.getNetworkPartitionContext(networkPartitionId);
-            if(status == GroupStatus.Active) {
-                if(log.isDebugEnabled()) {
+            if (status == GroupStatus.Active) {
+                if (log.isDebugEnabled()) {
                     log.debug("Moving pending group instance to active list in [group] " + groupId
                             + " [group-instance] " + instanceId);
                 }
                 context.movePendingInstanceToActiveInstances(instanceId);
-            } else if(status == GroupStatus.Terminating) {
-                if(context.getActiveInstance(instanceId) != null) {
-                    if(log.isDebugEnabled()) {
+            } else if (status == GroupStatus.Terminating) {
+                if (context.getActiveInstance(instanceId) != null) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Moving active group instance to termination pending list in " +
                                 "[group] " + groupId + " [group-instance] " + instanceId);
                     }
                     context.moveActiveInstanceToTerminationPendingInstances(instanceId);
-                } else if(context.getPendingInstance(instanceId) != null) {
-                    if(log.isDebugEnabled()) {
+                } else if (context.getPendingInstance(instanceId) != null) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Moving pending group instance to termination pending list in " +
                                 "[group] " + groupId + " [group-instance] " + instanceId);
                     }
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-            } else if(status == GroupStatus.Terminated) {
-                if(log.isDebugEnabled()) {
+            } else if (status == GroupStatus.Terminated) {
+                if (log.isDebugEnabled()) {
                     log.debug("Removing termination pending group instance in " +
                             "[group] " + groupId + " [group-instance] " + instanceId);
                 }
@@ -734,8 +734,7 @@ public class ApplicationBuilder {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
-            GroupMonitor monitor = (GroupMonitor) applicationMonitor.findGroupMonitorWithId(groupId);
-            return monitor;
+            return (GroupMonitor) applicationMonitor.findGroupMonitorWithId(groupId);
         }
         return null;
     }
