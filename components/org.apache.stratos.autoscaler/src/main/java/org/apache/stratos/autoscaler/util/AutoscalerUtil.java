@@ -780,7 +780,7 @@ public class AutoscalerUtil {
                         findGroupMonitorWithId(existingGroup.getUniqueIdentifier());
                 //Updating the GroupMonitor
                 for (NetworkPartitionContext networkPartitionContext : groupMonitor.
-                        getNetworkPartitionCtxts().values()) {
+                        getNetworkPartitionContextsMap().values()) {
                     ((GroupLevelNetworkPartitionContext) networkPartitionContext).
                             setMinInstanceCount(newGroup.getGroupMinInstances());
                     ((GroupLevelNetworkPartitionContext) networkPartitionContext).

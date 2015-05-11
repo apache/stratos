@@ -114,7 +114,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      */
     public synchronized void monitor() {
         final Collection<NetworkPartitionContext> networkPartitionContexts =
-                this.getNetworkPartitionCtxts().values();
+                this.getNetworkPartitionContextsMap().values();
 
         Runnable monitoringRunnable = new Runnable() {
             @Override
@@ -555,7 +555,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         //Parent notification always brings up new group instances in order to keep the ratio.
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
         final String parentInstanceId = scalingEvent.getInstanceId();
-        final NetworkPartitionContext networkPartitionContext = this.getNetworkPartitionCtxts().
+        final NetworkPartitionContext networkPartitionContext = this.getNetworkPartitionContextsMap().
                 get(networkPartitionId);
 
         float factor = scalingEvent.getFactor();
@@ -637,8 +637,8 @@ public class GroupMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
 
         String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
-        if (this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
-            groupLevelNetworkPartitionContext = (GroupLevelNetworkPartitionContext) this.getNetworkPartitionCtxts().
+        if (this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
+            groupLevelNetworkPartitionContext = (GroupLevelNetworkPartitionContext) this.getNetworkPartitionContextsMap().
                     get(networkPartitionId);
         } else {
             if (deploymentPolicy != null) {
@@ -984,7 +984,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      */
     public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext
                                                    groupLevelNetworkPartitionContext) {
-        this.getNetworkPartitionCtxts().put(groupLevelNetworkPartitionContext.getId(),
+        this.getNetworkPartitionContextsMap().put(groupLevelNetworkPartitionContext.getId(),
                 groupLevelNetworkPartitionContext);
     }
 
