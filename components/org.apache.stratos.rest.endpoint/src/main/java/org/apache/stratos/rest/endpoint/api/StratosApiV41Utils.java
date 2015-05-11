@@ -3271,7 +3271,7 @@ public class StratosApiV41Utils {
                 checkList.add(cartridge);
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("duplicate cartridges defined: " + cartridge);
+                    log.debug("Duplicate cartridges defined: " + cartridge);
                 }
                 throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
                         "duplicate cartridges defined: " + cartridge);
@@ -3337,14 +3337,14 @@ public class StratosApiV41Utils {
                 checkList.add(group);
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("duplicate group defined: " + group);
+                    log.debug("Duplicate group defined: " + group);
                 }
                 throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
                         "duplicate groups defined: " + group);
             }
             if (parentGroups.contains(group)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("cyclic group behaviour identified [group-name]: " + group);
+                    log.debug("Cyclic group behaviour identified [group-name]: " + group);
                 }
                 throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
                         "cyclic group behaviour identified: " + group);
