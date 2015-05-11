@@ -443,7 +443,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/addServiceGroup")
     @SuperTenantService(true)
     public Response addServiceGroup(
-            GroupBean serviceGroupDefinition) throws RestAPIException, InvalidCartridgeGroupDefinitionException {
+            GroupBean serviceGroupDefinition) throws RestAPIException {
         try {
             StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
             URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
