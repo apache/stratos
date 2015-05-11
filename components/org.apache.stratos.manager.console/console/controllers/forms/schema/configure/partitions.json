@@ -57,6 +57,12 @@
                                 }
                             }
                         }
+                    },
+                    "partitionMax":{
+                        "id": "root/partitions/0/partitionMax",
+                        "type": "number",
+                        "format":"number",
+                        "title":"Partition Max"
                     }
                 }
             }
