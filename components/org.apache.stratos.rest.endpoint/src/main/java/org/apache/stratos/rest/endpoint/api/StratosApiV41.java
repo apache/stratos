@@ -321,6 +321,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridges()
             throws RestAPIException {
 
+        //We pass null to searching string and multi-tenant parameter since we do not need to do any filtering
         List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
         if (cartridges == null || cartridges.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
