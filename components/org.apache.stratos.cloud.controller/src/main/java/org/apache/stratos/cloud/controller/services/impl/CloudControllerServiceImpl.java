@@ -68,7 +68,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-    public void addCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
+    public boolean addCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
             InvalidIaasProviderException, CartridgeAlreadyExistsException {
 
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
@@ -108,10 +108,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (log.isInfoEnabled()) {
             log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
         }
+        return true;
     }
 
     @Override
-    public void updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
+    public boolean updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
             InvalidIaasProviderException,
             CartridgeDefinitionNotExistsException {
 
@@ -153,6 +154,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (log.isInfoEnabled()) {
             log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeType);
         }
+        return true;
     }
 
     private void copyIaasProviders(Cartridge destCartridge,
@@ -182,7 +184,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-    public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException {
+    public boolean removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException {
         //Removing the cartridge from CC
         Cartridge cartridge = removeCartridgeFromCC(cartridgeType);
         //removing the cartridge from Topology
@@ -191,6 +193,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (log.isInfoEnabled()) {
             log.info("Successfully removed cartridge: [cartridge-type] " + cartridgeType);
         }
+        return true;
     }
 
     private Cartridge removeCartridgeFromCC(String cartridgeType) throws InvalidCartridgeTypeException {
@@ -224,7 +227,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleServiceRemoved(cartridgeList);
     }
 
-    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
+    public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null) {
             String msg = "Invalid ServiceGroup Definition: Definition is null.";
@@ -272,9 +275,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         CloudControllerContext.getInstance().addServiceGroup(servicegroup);
         CloudControllerContext.getInstance().persist();
+        return true;
     }
 
-    public void removeServiceGroup(String name) throws InvalidServiceGroupException {
+    public boolean removeServiceGroup(String name) throws InvalidServiceGroupException {
         if (log.isDebugEnabled()) {
             log.debug("CloudControllerServiceImpl:removeServiceGroup: " + name);
         }
@@ -289,7 +293,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (log.isInfoEnabled()) {
                     log.info("Successfully removed the cartridge group: [group-name] " + serviceGroup);
                 }
-                return;
+                return true;
             }
         }
 
@@ -584,7 +588,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return clusterId + memberId.toString();
     }
 
-    public void terminateInstanceForcefully(String memberId) {
+    public boolean terminateInstanceForcefully(String memberId) {
 
         log.info(String.format("Starting to forcefully terminate the member " + memberId));
         boolean memberTerminated = true;
@@ -605,10 +609,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
         }
+        return true;
     }
 
     @Override
-    public void terminateInstance(String memberId) throws InvalidMemberException,
+    public boolean terminateInstance(String memberId) throws InvalidMemberException,
             InvalidCartridgeTypeException, CloudControllerException {
 
         try {
@@ -652,7 +657,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             }
 
                             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
-                            return;
+                            return false;
                         }
                     }
                 }
@@ -670,6 +675,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         } finally {
             TopologyManager.releaseWriteLock();
         }
+        return true;
     }
 
     /**
@@ -697,7 +703,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void terminateInstances(String clusterId) throws InvalidClusterException {
+    public boolean terminateInstances(String clusterId) throws InvalidClusterException {
 
         log.info("Starting to terminate all instances of cluster : "
                 + clusterId);
@@ -708,12 +714,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (memberContexts == null) {
             String msg = "Instance termination failed. No members found for cluster id: " + clusterId;
             log.warn(msg);
-            return;
+            return false;
         }
 
         for (MemberContext memberContext : memberContexts) {
             executorService.execute(new InstanceTerminator(memberContext));
         }
+        return true;
     }
 
     @Override
@@ -789,7 +796,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void unregisterService(String clusterId) throws UnregisteredClusterException {
+    public boolean unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
 
         ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
@@ -917,7 +924,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         };
         new Thread(terminateInTimeout).start();
         new Thread(unregister).start();
-        //     }
+        return true;
     }
 
     /**
@@ -1043,8 +1050,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status) {
+    public boolean updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status) {
         //TODO
+        return true;
     }
 
     private void handleNullObject(Object obj, String errorMsg) {
@@ -1055,7 +1063,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
+    public boolean createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
             ApplicationClusterRegistrationException {
         if (appClustersContexts == null || appClustersContexts.length == 0) {
             String errorMsg = "No application cluster information found, unable to create clusters";
@@ -1137,9 +1145,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
+        return true;
     }
 
-    public void createClusterInstance(String serviceType, String clusterId,
+    public boolean createClusterInstance(String serviceType, String clusterId,
                                       String alias, String instanceId, String partitionId,
                                       String networkPartitionId) throws ClusterInstanceCreationException {
         Lock lock = null;
@@ -1154,6 +1163,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
+        return true;
     }
 
     @Override
@@ -1276,7 +1286,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public boolean removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id can not be empty");
         }
@@ -1302,6 +1312,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
+        return true;
     }
 
     @Override
@@ -1432,7 +1443,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException {
+    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException {
 
         try {
             handleNullObject(networkPartition, "Network Partition is null");
@@ -1480,10 +1491,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(message);
             throw new CloudControllerException(message, e);
         }
+        return true;
     }
 
     @Override
-    public void removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException {
+    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException {
 
         try {
             if (log.isInfoEnabled()) {
@@ -1509,10 +1521,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(message);
             throw new CloudControllerException(message, e);
         }
+        return true;
     }
 
     @Override
-    public void updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException {
+    public boolean updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException {
         try {
             handleNullObject(networkPartition, "Network Partition is null");
             handleNullObject(networkPartition.getId(), "Network Partition ID is null");
@@ -1560,6 +1573,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(message);
             throw new CloudControllerException(message, e);
         }
+        return true;
     }
 
     @Override

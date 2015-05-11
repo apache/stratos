@@ -39,7 +39,7 @@ public interface CloudControllerService {
      * @throws InvalidIaasProviderException        if the iaas providers configured are not valid.
      * @throws IllegalArgumentException            if the provided argument is not valid.
      */
-    void addCartridge(Cartridge cartridgeConfig)
+    public boolean addCartridge(Cartridge cartridgeConfig)
             throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, CartridgeAlreadyExistsException;
 
     /**
@@ -50,7 +50,7 @@ public interface CloudControllerService {
      * @throws InvalidIaasProviderException
      * @throws org.apache.stratos.cloud.controller.exception.CartridgeDefinitionNotExistsException
      */
-    public void updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
+    public boolean updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
             InvalidIaasProviderException,
             CartridgeDefinitionNotExistsException;
 
@@ -60,7 +60,7 @@ public interface CloudControllerService {
      * @param cartridgeType type of the cartridge to be undeployed.
      * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
      */
-    public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException;
+    public boolean removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException;
 
     /**
      * Add a cartridge group
@@ -68,7 +68,7 @@ public interface CloudControllerService {
      * @param servicegroup
      * @throws InvalidServiceGroupException
      */
-    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+    public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
 
     /**
      * Remove a cartridge group
@@ -76,7 +76,7 @@ public interface CloudControllerService {
      * @param name
      * @throws InvalidServiceGroupException
      */
-    public void removeServiceGroup(String name) throws InvalidServiceGroupException;
+    public boolean removeServiceGroup(String name) throws InvalidServiceGroupException;
 
     /**
      * Get cartridge group
@@ -171,10 +171,10 @@ public interface CloudControllerService {
      * @param memberId member ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException,
+    public boolean terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException,
             CloudControllerException;
 
-    void terminateInstanceForcefully(String memberId) throws InvalidCartridgeTypeException;
+    public boolean terminateInstanceForcefully(String memberId) throws InvalidCartridgeTypeException;
 
     /**
      * Calling this method will result in termination of all instances belong
@@ -183,7 +183,7 @@ public interface CloudControllerService {
      * @param clusterId cluster ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    void terminateInstances(String clusterId) throws InvalidClusterException;
+    public boolean terminateInstances(String clusterId) throws InvalidClusterException;
 
     /**
      * Update the topology with current cluster status.
@@ -193,7 +193,7 @@ public interface CloudControllerService {
      * @param instanceId  id of the cluster instance.
      * @param status      total number of replicas to be set to the controller.
      */
-    void updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status);
+    public boolean updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status);
 
     /**
      * Unregister the service cluster identified by the given cluster id.
@@ -201,7 +201,7 @@ public interface CloudControllerService {
      * @param clusterId service cluster id.
      * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
      */
-    void unregisterService(String clusterId) throws UnregisteredClusterException;
+    public boolean unregisterService(String clusterId) throws UnregisteredClusterException;
 
     /**
      * This method will return the information regarding the given cartridge, if present.
@@ -239,7 +239,7 @@ public interface CloudControllerService {
      * @param appClustersContexts cluster information holder object
      * @throws ApplicationClusterRegistrationException if the cluster information are null/empty
      */
-    public void createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
+    public boolean createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
             ApplicationClusterRegistrationException;
 
     /**
@@ -251,7 +251,7 @@ public interface CloudControllerService {
      * @param instanceId  instance id
      * @throws ClusterInstanceCreationException if an y error occurs in cluster instance creation
      */
-    public void createClusterInstance(String serviceType, String clusterId, String alias,
+    public boolean createClusterInstance(String serviceType, String clusterId, String alias,
                                       String instanceId, String partitionId,
                                       String networkPartitionId) throws
             ClusterInstanceCreationException;
@@ -291,7 +291,8 @@ public interface CloudControllerService {
      * @param kubernetesCluster
      * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterException
      */
-    public boolean addKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException, KubernetesClusterAlreadyExistsException;
+    public boolean addKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException,
+            KubernetesClusterAlreadyExistsException;
 
     /**
      * Add a Kubernetes host to a Kubernetes cluster.
@@ -320,7 +321,7 @@ public interface CloudControllerService {
      * @param groupId
      * @throws NonExistingKubernetesClusterException
      */
-    public void removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException;
+    public boolean removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException;
 
     /**
      * Update a Kubernetes host.
@@ -345,7 +346,7 @@ public interface CloudControllerService {
      * @param networkPartition
      * @throws NetworkPartitionAlreadyExistsException
      */
-    public void addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException;
+    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException;
 
     /**
      * Remove network partition
@@ -353,7 +354,7 @@ public interface CloudControllerService {
      * @param networkPartitionId
      * @throws NetworkPartitionNotExistsException
      */
-    public void removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException;
+    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException;
 
     /**
      * Update network partition
@@ -361,7 +362,7 @@ public interface CloudControllerService {
      * @param networkPartition
      * @throws NetworkPartitionNotExistsException
      */
-    public void updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException;
+    public boolean updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException;
 
     /**
      * Get network partitions
