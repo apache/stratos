@@ -31,6 +31,7 @@ import java.util.Map;
 /**
  * Cluster Terminated status processor
  */
+@SuppressWarnings("ALL")
 public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
     private static final Log log = LogFactory.getLog(GroupStatusTerminatedProcessor.class);
     private GroupStatusProcessor nextProcessor;
@@ -46,7 +47,7 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
         boolean statusChanged;
         statusChanged = doProcess(idOfComponent, appId, instanceId);
         if (statusChanged) {
-            return statusChanged;
+            return true;
         }
 
         if (nextProcessor != null) {
@@ -54,13 +55,13 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
             return nextProcessor.process(idOfComponent, appId, instanceId);
         } else {
 
-            log.warn(String.format("No possible state change found for [component] %s [instance]",
+            log.warn(String.format("No possible state change found for [component] %s [instance] %s",
                     idOfComponent, instanceId));
         }
         return false;
     }
 
-
+    @SuppressWarnings("unchecked")
     private boolean doProcess(String idOfComponent, String appId, String instanceId) {
         ParentComponent component;
         Map<String, Group> groups;
@@ -73,16 +74,17 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            if (idOfComponent.equals(appId)) {
+
+            Application application = ApplicationHolder.getApplications().
+                    getApplication(appId);
+            component = application;
+            if (!idOfComponent.equals(appId)) {
                 //it is an application
-                component = ApplicationHolder.getApplications().
-                        getApplication(appId);
-            } else {
-                //it is a group
-                component = ApplicationHolder.getApplications().
-                        getApplication(appId).getGroupRecursively(idOfComponent);
+                component = application.getGroupRecursively(idOfComponent);
             }
+
             //finding all the children of the application/group
+            //noinspection unchecked
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
@@ -98,7 +100,7 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
                             + " [instance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
                     return true;
-                } else if (component instanceof Group) {
+                } else {
                     log.info("Sending group instance terminated for [group] " +
                             component.getUniqueIdentifier() + " [instance] " + instanceId);
                     ApplicationBuilder.handleGroupInstanceTerminatedEvent(appId,
@@ -106,14 +108,10 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
                     return true;
                 }
             }
-
-
         } finally {
             ApplicationHolder.releaseWriteLock();
 
         }
-
-
         return false;
     }
 

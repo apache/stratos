@@ -46,7 +46,7 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
         boolean statusChanged;
         statusChanged = doProcess(idOfComponent, appId, instanceId);
         if (statusChanged) {
-            return statusChanged;
+            return true;
         }
 
         if (nextProcessor != null) {
@@ -54,13 +54,13 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
             return nextProcessor.process(idOfComponent, appId, instanceId);
         } else {
 
-            log.warn(String.format("No possible state change found for [component] %s [instance]",
+            log.warn(String.format("No possible state change found for [component] %s [instance] %s",
                     idOfComponent, instanceId));
         }
         return false;
     }
 
-
+    @SuppressWarnings("unchecked")
     private boolean doProcess(String idOfComponent, String appId, String instanceId) {
         ParentComponent component;
         Map<String, Group> groups;
@@ -73,15 +73,15 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            if (idOfComponent.equals(appId)) {
+
+            Application application = ApplicationHolder.getApplications().
+                    getApplication(appId);
+            component = application;
+            if (!idOfComponent.equals(appId)) {
                 //it is an application
-                component = ApplicationHolder.getApplications().
-                        getApplication(appId);
-            } else {
-                //it is a group
-                component = ApplicationHolder.getApplications().
-                        getApplication(appId).getGroupRecursively(idOfComponent);
+                component = application.getGroupRecursively(idOfComponent);
             }
+
             //finding all the children of the application/group
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
@@ -98,7 +98,7 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
                             + appId + " and for " + " [instance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
                     return true;
-                } else if (component instanceof Group) {
+                } else {
                     //send activation to the parent
                     log.info("Sending group terminating for [group] " +
                             component.getUniqueIdentifier() + " and for [instance] "
