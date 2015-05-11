@@ -38,10 +38,7 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
-import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.application.*;
 import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -855,6 +852,26 @@ public class AutoscalerUtil {
                         "application has same structure as existing application";
                 log.error(msg);
                 throw new ApplicationDefinitionException(msg);
+            }
+        }
+    }
+
+    public static void validateStartupOrders (String groupName, String[] startupOrders) throws InvalidServiceGroupException {
+        for (String startupOrder : startupOrders) {
+            if (!startupOrder.startsWith("cartridge.") && !startupOrder.startsWith("group.")) {
+                // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
+                throw new InvalidServiceGroupException("Invalid Service Group: startup order [" + startupOrder +  "] for group " + groupName +
+                        ", should prefixed by either 'cartridge.' or 'group.'");
+            }
+        }
+    }
+
+    public static void validateScalingDependencies (String groupName, String[] scalingDependents) throws InvalidServiceGroupException {
+        for (String scalingDependent : scalingDependents) {
+            if (!scalingDependent.startsWith("cartridge.") && !scalingDependent.startsWith("group.")) {
+                // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
+                throw new InvalidServiceGroupException("Invalid Service Group: Scaling Dependency [" + scalingDependent + "] for group " + groupName +
+                        ", should prefixed by either 'cartridge.' or 'group.'");
             }
         }
     }

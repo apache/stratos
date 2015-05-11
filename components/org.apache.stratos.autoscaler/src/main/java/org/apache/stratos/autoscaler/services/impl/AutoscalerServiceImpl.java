@@ -621,6 +621,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 if (startupOrders != null) {
                     log.debug("StartupOrder:size  " + startupOrders.length);
+                    AutoscalerUtil.validateStartupOrders(groupName, startupOrders);
                 } else {
                     log.debug("StartupOrder: is null");
                 }
@@ -633,6 +634,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 if (scalingDependents != null) {
                     log.debug("ScalingDependents:size " + scalingDependents.length);
+                    AutoscalerUtil.validateScalingDependencies(groupName, scalingDependents);
                 } else {
                     log.debug("ScalingDependent: is null");
                 }

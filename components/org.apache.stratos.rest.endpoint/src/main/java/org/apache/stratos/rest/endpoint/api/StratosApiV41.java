@@ -458,6 +458,9 @@ public class StratosApiV41 extends AbstractApi {
             if (e.getCause().getMessage().contains("already exists")) {
                 return Response.status(Response.Status.CONFLICT).entity(new StatusResponseBean(
                         Response.Status.CONFLICT.getStatusCode(), "Cartridge group not found")).build();
+            } else if (e.getCause().getMessage().contains("Invalid Service Group")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(new StatusResponseBean(
+                        Response.Status.BAD_REQUEST.getStatusCode(), e.getCause().getMessage())).build();
             } else {
                 throw e;
             }
