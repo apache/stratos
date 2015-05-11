@@ -858,20 +858,28 @@ public class AutoscalerUtil {
 
     public static void validateStartupOrders (String groupName, String[] startupOrders) throws InvalidServiceGroupException {
         for (String startupOrder : startupOrders) {
-            if (!startupOrder.startsWith("cartridge.") && !startupOrder.startsWith("group.")) {
-                // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
-                throw new InvalidServiceGroupException("Invalid Service Group: startup order [" + startupOrder +  "] for group " + groupName +
-                        ", should prefixed by either 'cartridge.' or 'group.'");
+            // split comma separated startup orders
+            String[] splittedStartupOrders = startupOrder.split(",");
+            for (String splittedStartupOrder : splittedStartupOrders) {
+                if (!splittedStartupOrder.trim().startsWith("cartridge.") && !splittedStartupOrder.trim().startsWith("group.")) {
+                    // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
+                    throw new InvalidServiceGroupException("Invalid Service Group: startup order [" + startupOrder +  "] for group " + groupName +
+                            ", should prefixed by either 'cartridge.' or 'group.'");
+                }
             }
         }
     }
 
     public static void validateScalingDependencies (String groupName, String[] scalingDependents) throws InvalidServiceGroupException {
         for (String scalingDependent : scalingDependents) {
-            if (!scalingDependent.startsWith("cartridge.") && !scalingDependent.startsWith("group.")) {
-                // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
-                throw new InvalidServiceGroupException("Invalid Service Group: Scaling Dependency [" + scalingDependent + "] for group " + groupName +
-                        ", should prefixed by either 'cartridge.' or 'group.'");
+            // split comma separated scaling dependents
+            String[] splittedDependents = scalingDependent.split(",");
+            for (String splittedDependent : splittedDependents) {
+                if (!splittedDependent.trim().startsWith("cartridge.") && !splittedDependent.trim().startsWith("group.")) {
+                    // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
+                    throw new InvalidServiceGroupException("Invalid Service Group: Scaling Dependency [" + scalingDependent + "] for group " + groupName +
+                            ", should prefixed by either 'cartridge.' or 'group.'");
+                }
             }
         }
     }
