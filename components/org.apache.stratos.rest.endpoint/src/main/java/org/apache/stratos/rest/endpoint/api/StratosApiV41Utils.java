@@ -994,7 +994,7 @@ public class StratosApiV41Utils {
 
             //validate the group definition to check if groups duplicate in any groups and
             //validate the group definition to check for cyclic group behaviour
-            validateGroupDuplicationInGroupDefinition(serviceGroupDefinition, new ArrayList<String>());
+            validateGroupDuplicationInGroupDefinition(serviceGroupDefinition);
 
             CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
 
@@ -3279,13 +3279,25 @@ public class StratosApiV41Utils {
         }
     }
 
+
     /**
-     * This method is to validate the group duplication in the group definition recursively for group within groups
+     * This is a wrapper method to invoke validateGroupDuplicationInGroupDefinition with a new arraylist of string
      *
-     * @param groupBean    - cartridge group definition
-     * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
-     * @throws InvalidCartridgeGroupDefinitionException - throws when the group definition is invalid
+     * @param groupBean     - cartridge group definition
+     * @throws InvalidCartridgeGroupDefinitionException
      */
+    private static void validateGroupDuplicationInGroupDefinition(GroupBean groupBean)
+            throws InvalidCartridgeGroupDefinitionException {
+        validateGroupDuplicationInGroupDefinition(groupBean, new ArrayList<String>());
+    }
+
+        /**
+         * This is to validate the group duplication in the group definition recursively for group within groups
+         *
+         * @param groupBean    - cartridge group definition
+         * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
+         * @throws InvalidCartridgeGroupDefinitionException - throws when the group definition is invalid
+         */
     private static void validateGroupDuplicationInGroupDefinition(GroupBean groupBean, List<String> parentGroups)
             throws InvalidCartridgeGroupDefinitionException {
         if (groupBean == null) {
