@@ -124,7 +124,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
             }
             CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberId);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while terminating instance", e);
         }
     }
 
