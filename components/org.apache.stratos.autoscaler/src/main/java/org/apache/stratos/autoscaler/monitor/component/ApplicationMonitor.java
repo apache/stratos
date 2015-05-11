@@ -70,7 +70,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
-    // Flag to set if forceful undeployment is invoked for the application.
+    // Flag to set if forceful un-deployment is invoked for the application.
     private boolean force;
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
@@ -99,6 +99,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
     }
 
+    /**
+     * This thread will monitor the children across all the network partitions and take
+     * decision for scale-up or scale-down
+     */
     public synchronized void monitor() {
         final Collection<NetworkPartitionContext> networkPartitionContexts =
                 this.getNetworkPartitionCtxts().values();
@@ -168,6 +172,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     }
 
+    /**
+     * Handling the scale-down decision making
+     * @param instanceContext instance-context which can be scaled-down
+     * @param nwPartitionContext the network-partition-context of the instance
+     */
     private void handleScalingDownBeyondMin(InstanceContext instanceContext,
                                             NetworkPartitionContext nwPartitionContext) {
         //Traverse through all the children to see whether all have sent the scale down
@@ -183,7 +192,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         //all the children sent the scale down only, it will try to scale down
         if (allChildrenScaleDown) {
-            //Check whether this app monitor has bursted application
+            //Check whether this app monitor has burst application
             ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
                     instanceContext.getId());
         }
@@ -376,7 +385,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
                 networkPartitionAlgorithmName);
         if (algorithm == null) {
-            String msg = String.format("Coudln't create network partition algorithm " +
+            String msg = String.format("Couldn't create network partition algorithm " +
                     "[application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
@@ -501,7 +510,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
                 networkPartitionAlgorithmName);
         if (algorithm == null) {
-            String msg = String.format("Coudln't create network partition algorithm " +
+            String msg = String.format("Couldn't create network partition algorithm " +
                     "[application-id] %s", appId);
             log.error(msg);
             throw new RuntimeException(msg);
@@ -517,7 +526,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         for (String networkPartitionId : nextNetworkPartitions) {
             if (!this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
-                String instanceId = null;
+                String instanceId;
                 ApplicationLevelNetworkPartitionContext context = new
                         ApplicationLevelNetworkPartitionContext(networkPartitionId);
 
@@ -595,7 +604,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID)) {
             if (log.isDebugEnabled()) {
                 String msg = String.format("Network partition algorithm is set to %s in " +
-                                "applicatioin policy",
+                                "application policy",
                         StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID);
                 log.debug(msg);
             }
@@ -603,7 +612,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         } else if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
             if (log.isDebugEnabled()) {
                 String msg = String.format("Network partition algorithm is set to %s " +
-                                "in applicatioin policy",
+                                "in application policy",
                         StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID);
                 log.debug(msg);
             }
@@ -612,7 +621,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         if (log.isDebugEnabled()) {
             String msg = String.format("Invalid network partition algorithm %s found " +
-                            "in applicatioin policy",
+                            "in application policy",
                     StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID);
             log.debug(msg);
         }

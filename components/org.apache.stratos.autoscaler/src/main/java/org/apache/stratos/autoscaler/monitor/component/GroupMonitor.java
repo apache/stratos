@@ -108,6 +108,10 @@ public class GroupMonitor extends ParentComponentMonitor {
         }
     }
 
+    /**
+     * This thread will monitor the children across all the network partitions and take
+     * decision for scale-up or scale-down
+     */
     public synchronized void monitor() {
         final Collection<NetworkPartitionContext> networkPartitionContexts =
                 this.getNetworkPartitionCtxts().values();
@@ -156,7 +160,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             for (InstanceContext parentInstanceContext : parent.
                                     getNetworkPartitionContext(networkPartitionContext.getId()).
                                     getInstanceIdToInstanceContextMap().values()) {
-                                //keep on scaleup/scaledown only if the application is active
+                                //keep on scale-up/scale-down only if the application is active
                                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
                                         getAppMonitor(appId);
                                 int activeAppInstances = appMonitor.
@@ -191,6 +195,12 @@ public class GroupMonitor extends ParentComponentMonitor {
         executorService.execute(monitoringRunnable);
     }
 
+    /**
+     * Handling the max out case of the group instances
+     *
+     * @param instanceContext         the instance which reaches its max
+     * @param networkPartitionContext the network-partition used for the instances
+     */
     private void handleScalingUpBeyondMax(InstanceContext instanceContext,
                                           NetworkPartitionContext networkPartitionContext) {
         if (!hasScalingDependents) {
@@ -206,6 +216,13 @@ public class GroupMonitor extends ParentComponentMonitor {
                 new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
     }
 
+    /**
+     * Handling the group scale-down
+     *
+     * @param instanceContext    the instance which has all the children notification with scale-down
+     * @param nwPartitionContext the network-partition used for the instance
+     * @param forceScaleDown     whether it is force scale-down or not
+     */
     private void handleScalingDownBeyondMin(InstanceContext instanceContext,
                                             NetworkPartitionContext nwPartitionContext,
                                             boolean forceScaleDown) {
@@ -228,14 +245,16 @@ public class GroupMonitor extends ParentComponentMonitor {
                     //Will scale down based on dependent manner
                     float minInstances = ((GroupLevelNetworkPartitionContext)
                             nwPartitionContext).getMinInstanceCount();
-                    float factor = (nwPartitionContext.getNonTerminatedInstancesCount() - 1) / minInstances;
+                    float factor =
+                            (nwPartitionContext.getNonTerminatedInstancesCount() - 1) / minInstances;
                     ScalingEvent scalingEvent = new ScalingEvent(this.id, nwPartitionContext.getId(),
                             instanceContext.getId(), factor);
                     this.parent.onChildScalingEvent(scalingEvent);
                 } else {
                     //Parent has to handle this scale down as by dependent scale down
-                    ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(this.id,
-                            nwPartitionContext.getId(), instanceContext.getParentInstanceId());
+                    ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent =
+                            new ScalingDownBeyondMinEvent(this.id,
+                                    nwPartitionContext.getId(), instanceContext.getParentInstanceId());
                     this.parent.onChildScalingDownBeyondMinEvent(newScalingDownBeyondMinEvent);
                 }
 
@@ -249,9 +268,11 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 instanceContext.getId());
                     }
                 } else {
-                    //Parent has to handle this scale down as by parent group scale down or application scale down
-                    ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(this.id,
-                            nwPartitionContext.getId(), instanceContext.getParentInstanceId());
+                    //Parent has to handle this scale down as by parent group
+                    // scale down or application scale down
+                    ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent =
+                            new ScalingDownBeyondMinEvent(this.id,
+                                    nwPartitionContext.getId(), instanceContext.getParentInstanceId());
                     this.parent.onChildScalingDownBeyondMinEvent(newScalingDownBeyondMinEvent);
                 }
             }
@@ -262,6 +283,12 @@ public class GroupMonitor extends ParentComponentMonitor {
                 new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
     }
 
+    /**
+     * Create a new group instance upon scale-up
+     *
+     * @param networkPartitionContext the network-partition used for the instances
+     * @param parentInstanceId        the parent instance id
+     */
     private void createGroupInstanceOnScaling(final NetworkPartitionContext networkPartitionContext,
                                               final String parentInstanceId) {
         if (groupScalingEnabled) {
@@ -309,6 +336,12 @@ public class GroupMonitor extends ParentComponentMonitor {
         }
     }
 
+    /**
+     * Notify the parent when there is not space to scale-up
+     *
+     * @param networkPartitionContext the network-partition used for the instances
+     * @param instanceContext         the instance which reaches its max
+     */
     private void notifyParentOnScalingUpBeyondMax(NetworkPartitionContext networkPartitionContext,
                                                   InstanceContext instanceContext) {
         //has scaling dependents. Should notify the parent
@@ -372,8 +405,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                     if (application != null) {
                         //Notifying the parent using parent's instance Id,
                         // as it has group scaling enabled. Notify parent
-                        log.info("[Group] " + this.id + " is notifying the [parent] " + this.parent.getId() +
-                                " [instance] " + parentInstanceId);
+                        log.info("[Group] " + this.id + " is notifying the [parent] " +
+                                this.parent.getId() + " [instance] " + parentInstanceId);
                         MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                 status, this.id, parentInstanceId);
 
@@ -383,8 +416,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 }
             } else {
                 // notifying the parent
-                log.info("[Group] " + this.id + " is notifying the [parent] " + this.parent.getId() +
-                        " [instance] " + instanceId);
+                log.info("[Group] " + this.id + " is notifying the [parent] "
+                        + this.parent.getId() + " [instance] " + instanceId);
                 MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                         status, this.id, instanceId);
             }
@@ -392,7 +425,8 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         //notify the children about the state change
         try {
-            MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, this.id, instanceId));
+            MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status,
+                    this.id, instanceId));
         } catch (MonitorNotFoundException e) {
             log.error("Error while notifying the children from the [group] " + this.id, e);
             //TODO revert siblings
@@ -419,7 +453,6 @@ public class GroupMonitor extends ParentComponentMonitor {
             onChildActivatedEvent(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            //TODO handling restart of stratos when group is inactive
             markInstanceAsInactive(childId, instanceId);
             onChildInactiveEvent(childId, instanceId);
 
@@ -433,6 +466,13 @@ public class GroupMonitor extends ParentComponentMonitor {
         }
     }
 
+    /**
+     * Get executed to see whether to start a new instance or not,
+     * when one of the child instance is terminated
+     *
+     * @param childId    child-id of the terminated instance
+     * @param instanceId instance-id of the terminated instance
+     */
     private void onTerminationOfInstance(String childId, String instanceId) {
         //Check whether all dependent goes Terminated and then start them in parallel.
         removeInstanceFromFromInactiveMap(childId, instanceId);
@@ -477,8 +517,8 @@ public class GroupMonitor extends ParentComponentMonitor {
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Publishing Group terminating event for [application] %s [group] %s " +
-                            "[instance] %s", appId, id, instanceId));
+                    log.info(String.format("Publishing Group terminating event for [application] " +
+                            "%s [group] %s [instance] %s", appId, id, instanceId));
                 }
                 ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
             } else {
@@ -488,8 +528,9 @@ public class GroupMonitor extends ParentComponentMonitor {
                 if (!instanceIds.isEmpty()) {
                     for (String instanceId1 : instanceIds) {
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Publishing Group terminating event for [application] %s [group] %s " +
-                                    "[instance] %s", appId, id, instanceId1));
+                            log.info(String.format("Publishing Group terminating event for" +
+                                            " [application] %s [group] %s [instance] %s",
+                                    appId, id, instanceId1));
                         }
                         ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
                     }
@@ -508,8 +549,8 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         log.info("Parent scaling event received to [group]: " + this.getId()
                 + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
-                + ", [factor] " + scalingEvent.getFactor());
+                + ", [event] " + scalingEvent.getId() + ", [group instance] " +
+                scalingEvent.getInstanceId() + ", [factor] " + scalingEvent.getFactor());
 
         //Parent notification always brings up new group instances in order to keep the ratio.
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
@@ -540,7 +581,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                             networkPartitionContext.getPendingInstances().get(0).getId());
 
                 } else {
-                    List<InstanceContext> activeInstances = networkPartitionContext.getActiveInstances();
+                    List<InstanceContext> activeInstances =
+                            networkPartitionContext.getActiveInstances();
                     ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
                             activeInstances.get(activeInstances.size() - 1).toString());
                 }
@@ -550,6 +592,11 @@ public class GroupMonitor extends ParentComponentMonitor {
 
     }
 
+    /**
+     * Whether group-scaling-enabled for this group or not
+     *
+     * @return whether group-scaling-enabled or not
+     */
     public boolean isGroupScalingEnabled() {
         return groupScalingEnabled;
     }
@@ -690,9 +737,9 @@ public class GroupMonitor extends ParentComponentMonitor {
     /**
      * Creates the group instance and adds the required context objects
      *
-     * @param group                             the group
-     * @param parentInstanceContext             the parent instance context
-     * @param partitionContext
+     * @param group the group
+     * @param parentInstanceContext the parent instance context
+     * @param partitionContext partition-context used to create the group instance
      * @param groupLevelNetworkPartitionContext the group level network partition context
      */
     private String createGroupInstanceAndAddToMonitor(Group group, Instance parentInstanceContext,
@@ -764,7 +811,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             // Create GroupInstance for partition instance and add to required contexts for minimum instance count
             int groupMin = group.getGroupMinInstances();
             int groupMax = group.getGroupMaxInstances();
-            //Setting the networkpartition minimum instances as group min instances
+            //Setting the network-partition minimum instances as group min instances
             groupLevelNetworkPartitionContext.setMinInstanceCount(groupMin);
             groupLevelNetworkPartitionContext.setMaxInstanceCount(groupMax);
 
@@ -806,6 +853,15 @@ public class GroupMonitor extends ParentComponentMonitor {
         return initialStartup;
     }
 
+    /**
+     * This will give the partition-context from the group-network-partition-context
+     * based on the selected algorithm where if parent has a partition-id,
+     * then that will be returned instead of parsing the algorithm
+     *
+     * @param groupLevelNetworkPartitionContext the group-network-partition-context
+     * @param parentPartitionId                 parent-partition-id
+     * @return the partition-context
+     */
     private PartitionContext getPartitionContext(
             GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext,
             String parentPartitionId) {
@@ -834,16 +890,13 @@ public class GroupMonitor extends ParentComponentMonitor {
      * This will start the group instance based on the given parent instanceId
      * A new monitor is not created in this case
      *
-     * @param parentInstanceId
-     * @throws org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException
+     * @param parentInstanceId the parent instance id
      */
     public boolean createInstanceOnDemand(String parentInstanceId) {
         // Get parent instance context
         Instance parentInstanceContext = getParentInstanceContext(parentInstanceId);
         List<String> instanceIdsToStart = new ArrayList<String>();
 
-
-        //TODO to get lock
         Group group = ApplicationHolder.getApplications().
                 getApplication(this.appId).getGroupRecursively(this.id);
 
@@ -852,7 +905,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 getGroupLevelNetworkPartitionContext(group.getUniqueIdentifier(),
                         this.appId, parentInstanceContext);
         //adding the partitionContext to the network partition context
-        addPartitionContext(parentInstanceContext, groupLevelNetworkPartitionContext, group.getAlias());
+        addPartitionContext(parentInstanceContext, groupLevelNetworkPartitionContext,
+                group.getAlias());
 
         String groupInstanceId;
         PartitionContext partitionContext;
@@ -885,22 +939,24 @@ public class GroupMonitor extends ParentComponentMonitor {
                             null);
                     instanceIdsToStart.add(groupInstanceId);
                 } else {
-                    log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
-                            "[max] " + groupMax + ". Hence trying to notify the parent.");
+                    log.warn("[Group] " + group.getUniqueIdentifier() + " has reached " +
+                            "the maximum limit as [max] " + groupMax +
+                            ". Hence trying to notify the parent.");
                 }
             } else {
-                log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
-                        "[max] " + groupMax + ". Hence trying to notify the parent.");
+                log.warn("[Group] " + group.getUniqueIdentifier() + " has reached " +
+                        "the maximum limit as [max] " + groupMax +
+                        ". Hence trying to notify the parent.");
             }
         }
         boolean startedOnDemand = false;
         if (!instanceIdsToStart.isEmpty()) {
             startedOnDemand = true;
+
+            //Starting the child instances
+            startDependency(group, instanceIdsToStart);
         }
-        //TODO Starting all the instances, can do in parallel
-        for (String instanceId : instanceIdsToStart) {
-            startDependency(group, instanceId);
-        }
+
         return startedOnDemand;
     }
 
@@ -908,11 +964,11 @@ public class GroupMonitor extends ParentComponentMonitor {
     /**
      * This will create the group instance in the applications Topology
      *
-     * @param group
-     * @param parentInstanceId
-     * @param partitionId
-     * @param networkPartitionId
-     * @return
+     * @param group              the group in which the instance is getting created
+     * @param parentInstanceId   the parent instance id
+     * @param partitionId        partition-id where the group instance is to be created
+     * @param networkPartitionId network-partition-id where the group instance is to be created
+     * @return the created group-instance
      */
     private GroupInstance createGroupInstance(Group group, String networkPartitionId,
                                               String parentInstanceId, String partitionId) {
@@ -921,8 +977,15 @@ public class GroupMonitor extends ParentComponentMonitor {
                 parentInstanceId, networkPartitionId, partitionId);
     }
 
-    public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
-        this.getNetworkPartitionCtxts().put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
+    /**
+     * Add network-partition-context to the map
+     *
+     * @param groupLevelNetworkPartitionContext the group level network partition context
+     */
+    public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext
+                                                   groupLevelNetworkPartitionContext) {
+        this.getNetworkPartitionCtxts().put(groupLevelNetworkPartitionContext.getId(),
+                groupLevelNetworkPartitionContext);
     }
 
 
