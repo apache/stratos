@@ -82,10 +82,10 @@ public interface AutoscalerService {
     /**
      * Add an application
      *
-     * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext}
+     * @param applicationContext {@link ApplicationContext}
      * @throws ApplicationDefinitionException if an error occurs
      */
-    public void addApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+    public boolean addApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
 
     /**
      * update an application
@@ -93,7 +93,7 @@ public interface AutoscalerService {
      * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext}
      * @throws ApplicationDefinitionException if an error occurs
      */
-    public void updateApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+    public boolean updateApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
 
 
     /**
@@ -132,14 +132,14 @@ public interface AutoscalerService {
      * @return
      */
 
-    public void undeployApplication(String applicationId, boolean force);
+    public boolean undeployApplication(String applicationId, boolean force);
 
     /**
      * Delete an application
      *
      * @param applicationId
      */
-    public void deleteApplication(String applicationId);
+    public boolean deleteApplication(String applicationId);
 
     /**
      * Add application policy
@@ -149,7 +149,7 @@ public interface AutoscalerService {
      * @throws RemoteException
      * @throws InvalidPolicyException
      */
-    public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException;
+    public boolean addApplicationPolicy(ApplicationPolicy applicationPolicy) throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException;
 
     /**
      * Get application policy by application id
@@ -165,7 +165,7 @@ public interface AutoscalerService {
      * @param applicationPolicyId the application policy id
      * @throws InvalidPolicyException
      */
-    public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException;
+    public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException;
 
     /**
      * Update the given application policy if exists
@@ -175,7 +175,7 @@ public interface AutoscalerService {
      * @throws RemoteException
      * @throws ApplicatioinPolicyNotExistsException
      */
-    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy)
+    public boolean updateApplicationPolicy(ApplicationPolicy applicationPolicy)
             throws InvalidApplicationPolicyException, RemoteException, ApplicatioinPolicyNotExistsException;
 
     /**
@@ -187,11 +187,10 @@ public interface AutoscalerService {
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor
-     *
-     * @param clusterId  id of the cluster.
+     *  @param clusterId  id of the cluster.
      * @param properties updated properties.
      */
-    void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
+    boolean updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
 
     /**
      * Add a cartridge group
@@ -199,14 +198,14 @@ public interface AutoscalerService {
      * @param servicegroup
      * @throws InvalidServiceGroupException
      */
-    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+    public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
 
     /**
      * Remove a cartridge group
      *
      * @param groupName
      */
-    public void removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException;
+    public boolean removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException;
 
     /**
      * Get cartridge group
@@ -234,7 +233,7 @@ public interface AutoscalerService {
      * @throws InvalidDeploymentPolicyException if the deployment policy is not valid
      * @throws IllegalArgumentException         if the provided argument is not valid.
      */
-    public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyAlreadyExistsException,
+    public boolean addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyAlreadyExistsException,
             InvalidDeploymentPolicyException, RemoteException, DeploymentPolicyNotExistsException;
 
     /**
@@ -243,7 +242,7 @@ public interface AutoscalerService {
      * @param deploymentPolicy DeployementPolicy
      * @throws IllegalArgumentException if the provided argument is not valid.
      */
-    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException,
+    public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException,
             InvalidDeploymentPolicyException, RemoteException, InvalidPolicyException, CloudControllerConnectionException;
 
     /**
@@ -252,7 +251,7 @@ public interface AutoscalerService {
      * @param deploymentPolicyID deploymentPolicyID
      * @throws IllegalArgumentException if the provided argument is not valid.
      */
-    public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException,
+    public boolean removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException,
             DeploymentPolicyNotExistsException;
 
     /**

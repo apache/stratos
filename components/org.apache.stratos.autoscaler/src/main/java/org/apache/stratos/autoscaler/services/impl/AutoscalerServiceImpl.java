@@ -131,7 +131,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void addApplication(ApplicationContext applicationContext)
+    public boolean addApplication(ApplicationContext applicationContext)
             throws ApplicationDefinitionException {
 
         if (log.isInfoEnabled()) {
@@ -155,10 +155,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.info(String.format("Application added successfully: [application-id] %s",
                     applicationContext.getApplicationId()));
         }
+        return true;
     }
 
     @Override
-    public void updateApplication(ApplicationContext applicationContext)
+    public boolean updateApplication(ApplicationContext applicationContext)
             throws ApplicationDefinitionException {
 
         String applicationId = applicationContext.getApplicationId();
@@ -204,6 +205,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.info(String.format("Application added successfully: [application-id] %s",
                     applicationId));
         }
+        return true;
     }
 
     @Override
@@ -448,20 +450,20 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    public void undeployApplication(String applicationId, boolean force) {
+    public boolean undeployApplication(String applicationId, boolean force) {
 
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
         ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
 
         if (appMonitor == null) {
             log.info(String.format("Could not find application monitor for the application %s, hence returning", applicationId));
-            return;
+            return false;
         }
         if (!force) {
             // Gracefull undeployment flow
             if (appMonitor.isTerminating()) {
                 log.info("Application monitor is already in terminating, graceful undeployment is has already been attempted thus not invoking again");
-                return;
+                return false;
             } else {
                 log.info(String.format("Gracefully undeploying the application " + applicationId));
                 undeployApplicationGracefully(applicationId);
@@ -472,7 +474,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 if (appMonitor.isForce()) {
                     log.warn("Force undeployment is already in progress, hence not invoking again");
-                    return;
+                    return false;
                 } else {
                     log.info(String.format("Previous gracefull undeployment is in progress for [application-id] %s , thus  terminating instances directly", applicationId));
                     appMonitor.setForce(true);
@@ -484,7 +486,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 undeployApplicationGracefully(applicationId);
             }
         }
-
+        return true;
     }
 
     private void undeployApplicationGracefully(String applicationId) {
@@ -525,7 +527,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void deleteApplication(String applicationId) {
+    public boolean deleteApplication(String applicationId) {
         try {
             ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
             Application application = ApplicationHolder.getApplications().getApplication(applicationId);
@@ -556,9 +558,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
+        return true;
     }
 
-    public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
+    public boolean updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Updating Cluster monitor [Cluster id] %s ", clusterId));
         }
@@ -571,9 +574,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.debug(String.format("Updating Cluster monitor failed: Cluster monitor [Cluster id] %s not found.",
                     clusterId));
         }
+        return true;
     }
 
-    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
+    public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
             String msg = "Cartridge group can not be null service name can not be empty.";
@@ -639,10 +643,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (log.isInfoEnabled()) {
             log.info(String.format("Cartridge group successfully added: [group-name] %s", servicegroup.getName()));
         }
+        return true;
     }
 
     @Override
-    public void removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException {
+    public boolean removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Starting to remove cartridge group: [group-name] %s", groupName));
@@ -664,6 +669,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
+        return true;
     }
 
     public ServiceGroup getServiceGroup(String name) {
@@ -704,13 +710,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return false;
     }
 
-    public void undeployServiceGroup(String name) throws AutoScalerException {
+    public boolean undeployServiceGroup(String name) throws AutoScalerException {
         try {
             RegistryManager.getInstance().removeServiceGroup(name);
         } catch (RegistryException e) {
             throw new AutoScalerException("Error occurred while removing the cartridge groups", e);
         }
-
+        return true;
     }
 
     @Override
@@ -724,13 +730,14 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void addApplicationPolicy(ApplicationPolicy applicationPolicy)
+    public boolean addApplicationPolicy(ApplicationPolicy applicationPolicy)
             throws RemoteException, InvalidApplicationPolicyException {
 
         // validating application policy
         AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
         // Add application policy to the registry
         PolicyManager.getInstance().addApplicationPolicy(applicationPolicy);
+        return true;
     }
 
     @Override
@@ -739,12 +746,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException {
+    public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException {
         PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
+        return true;
     }
 
     @Override
-    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy)
+    public boolean updateApplicationPolicy(ApplicationPolicy applicationPolicy)
             throws InvalidApplicationPolicyException, RemoteException, ApplicatioinPolicyNotExistsException {
 
         if (applicationPolicy == null) {
@@ -766,6 +774,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         // updating application policy
         PolicyManager.getInstance().updateApplicationPolicy(applicationPolicy);
+        return true;
     }
 
     @Override
@@ -818,13 +827,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     log.error(String.format("Forcefull termination of member %s is failed, but continuing forcefull deletion of other members", memberIdToTerminate));
                 }
             }
-
         }
     }
 
 
     @Override
-    public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+    public boolean addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             InvalidDeploymentPolicyException, DeploymentPolicyAlreadyExistsException {
 
         validateDeploymentPolicy(deploymentPolicy);
@@ -850,6 +858,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (log.isInfoEnabled()) {
             log.info("Successfully added deployment policy: [deployment-policy-id] " + deploymentPolicyID);
         }
+        return true;
     }
 
     private void validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws
@@ -936,7 +945,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+    public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException, CloudControllerConnectionException {
 
         validateDeploymentPolicy(deploymentPolicy);
@@ -965,6 +974,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (log.isInfoEnabled()) {
             log.info("Successfully updated deployment policy: [deployment-policy-id] " + deploymentPolicyID);
         }
+        return true;
     }
 
     private void updateClusterMonitors(DeploymentPolicy deploymentPolicy) throws InvalidDeploymentPolicyException,
@@ -1073,7 +1083,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException {
+    public boolean removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException {
         if (log.isInfoEnabled()) {
             log.info("Removing deployment policy: [deployment-policy_id] " + deploymentPolicyID);
         }
@@ -1086,7 +1096,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (log.isInfoEnabled()) {
             log.info("Successfully removed deployment policy: [deployment_policy_id] " + deploymentPolicyID);
         }
-
+        return true;
     }
 
     @Override
