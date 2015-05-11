@@ -19,7 +19,7 @@ package org.apache.stratos.rest.endpoint.handlers;/*
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.StatusResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,12 +28,11 @@ import javax.ws.rs.ext.ExceptionMapper;
 public class CustomThrowableExceptionMapper implements ExceptionMapper<Throwable> {
     private static Log log = LogFactory.getLog(CustomThrowableExceptionMapper.class);
 
-    public Response toResponse(Throwable throwable) {
+    public Response toResponse(Throwable t) {
         if (log.isErrorEnabled()) {
-            log.error("Internal server error", throwable);
+            log.error("Internal server error", t);
         }
-
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
-                entity(new StatusResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Internal server error")).build();
+                entity(new ResponseMessageBean(ResponseMessageBean.ERROR, "Internal server error")).build();
     }
 }

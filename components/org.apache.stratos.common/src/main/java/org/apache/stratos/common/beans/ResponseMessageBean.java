@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,15 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
-public class ApiResponseBean {
+@XmlType(propOrder = {"status", "message"})
+public class ResponseMessageBean {
 
+    public static final String SUCCESS = "success";
+    public static final String ERROR = "error";
+
+    private String status;
     private String message;
+
+    public ResponseMessageBean() {
+    }
+
+    public ResponseMessageBean(String status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getMessage() {
         return message;

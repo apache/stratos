@@ -28,7 +28,7 @@ import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.service.Service;
 import org.apache.cxf.service.model.BindingOperationInfo;
-import org.apache.stratos.common.beans.StatusResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -84,15 +84,16 @@ public class StratosAuthorizingHandler implements RequestHandler {
                 log.warn("User :" + userName + "trying to perform unauthrorized action" +
                         " against the resource :" + targetMethod);
                 return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).
-                        entity(new StatusResponseBean(Response.Status.FORBIDDEN.getStatusCode(), "The user does not have required permissions to " +
+                        entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
+                                "The user does not have required permissions to " +
                                 "perform this operation")).build();
             }
             return null;
 
-        } catch (Exception exception) {
-            log.error("Unexpected error occured while REST api, authorization process", exception);
+        } catch (Exception e) {
+            log.error("Unexpected error occured while REST api, authorization process", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
-                    entity(new StatusResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
                             "Unexpected error. Please contact the system admin")).build();
         }
     }

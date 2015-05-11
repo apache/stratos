@@ -20,7 +20,7 @@ package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
@@ -71,10 +71,10 @@ public class StratosApiV40 extends AbstractApi {
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean initialize()
+    public ResponseMessageBean initialize()
             throws RestAPIException {
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully logged in");
         return stratosApiResponse;
     }
@@ -108,7 +108,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployCartridgeBeanDefinition(CartridgeBean cartridgeDefinitionBean)
+    public ResponseMessageBean deployCartridgeBeanDefinition(CartridgeBean cartridgeDefinitionBean)
             throws RestAPIException {
 
         return StratosApiV40Utils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
@@ -122,7 +122,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean unDeployCartridgeBeanDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+    public ResponseMessageBean unDeployCartridgeBeanDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         return StratosApiV40Utils.undeployCartridge(cartridgeType);
     }
@@ -145,7 +145,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
+    public ResponseMessageBean deployAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
 
         return StratosApiV40Utils.deployAutoscalingPolicy(autoscalePolicy);
@@ -426,7 +426,7 @@ public class StratosApiV40 extends AbstractApi {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean unsubscribe(String alias) throws RestAPIException {
+    public ResponseMessageBean unsubscribe(String alias) throws RestAPIException {
 
         return StratosApiV40Utils.unsubscribe(alias, getTenantDomain());
 
@@ -438,7 +438,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ResponseMessageBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
@@ -513,7 +513,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully added new tenant with domain " + tenantInfoBean.getTenantDomain());
         return stratosApiResponse;
     }
@@ -523,7 +523,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ResponseMessageBean updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
 
         try {
             return updateExistingTenant(tenantInfoBean);
@@ -534,7 +534,7 @@ public class StratosApiV40 extends AbstractApi {
         }
     }
 
-    private ApiResponseBean updateExistingTenant(TenantInfoBean tenantInfoBean) throws Exception {
+    private ResponseMessageBean updateExistingTenant(TenantInfoBean tenantInfoBean) throws Exception {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         UserStoreManager userStoreManager;
@@ -654,7 +654,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new Exception(msg, e);
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully updated the tenant " + tenantDomain);
         return stratosApiResponse;
     }
@@ -725,7 +725,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         int tenantId = 0;
         try {
@@ -749,7 +749,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deleted tenant " + tenantDomain);
         return stratosApiResponse;
     }
@@ -794,7 +794,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         int tenantId;
         try {
@@ -810,7 +810,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(e);
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
 
         try {
             TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
@@ -853,7 +853,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         int tenantId;
@@ -871,7 +871,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(e);
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
 
         try {
             TenantMgtUtil.deactivateTenant(tenantDomain, tenantManager, tenantId);

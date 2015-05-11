@@ -20,7 +20,7 @@ package org.apache.stratos.rest.endpoint.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.StatusResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -33,14 +33,13 @@ import javax.ws.rs.ext.ExceptionMapper;
 public class GenericExceptionMapper implements ExceptionMapper<WebApplicationException> {
     private static Log log = LogFactory.getLog(GenericExceptionMapper.class);
 
-    public Response toResponse(WebApplicationException webApplicationException) {
+    public Response toResponse(WebApplicationException e) {
         if (log.isDebugEnabled()) {
-            log.debug("Internal server error", webApplicationException);
+            log.debug("Internal server error", e);
         }
         // if no specific error message specified, spitting out a generaic error message
-        String errorMessage = (webApplicationException.getMessage() != null) ?
-                webApplicationException.getMessage() : "Internal server error";
+        String errorMessage = (e.getMessage() != null) ? e.getMessage() : "Internal server error";
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
-                entity(new StatusResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), errorMessage)).build();
+                entity(new ResponseMessageBean(ResponseMessageBean.ERROR, errorMessage)).build();
     }
 }

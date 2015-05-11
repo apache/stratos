@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.rest.endpoint.mock;
 
-import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -59,7 +59,7 @@ public class MockContext {
         return mockContext;
     }
 
-    public ApiResponseBean addCartirdgeDefinition(CartridgeBean cartridgeDefinitionBean) {
+    public ResponseMessageBean addCartirdgeDefinition(CartridgeBean cartridgeDefinitionBean) {
         int tenantId = getTenantId();
         List<CartridgeBean> tenantCartridges;
 
@@ -131,7 +131,7 @@ public class MockContext {
             System.out.println(cartridges.size());
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed cartridge definition with type ");
         return stratosApiResponse;
     }
@@ -244,7 +244,7 @@ public class MockContext {
         return cartridges.toArray(new CartridgeBean[cartridges.size()]);
     }
 
-    public ApiResponseBean unsubscribe(String alias) throws RestAPIException {
+    public ResponseMessageBean unsubscribe(String alias) throws RestAPIException {
         int tenantId = getTenantId();
         if (subscribedCartridges.containsKey(tenantId)) {
             if ((subscribedCartridges.get(tenantId)).containsKey(alias)) {
@@ -253,7 +253,7 @@ public class MockContext {
         } else {
             throw new RestAPIException(Status.NO_CONTENT, "Unable to un-subscribe");
         }
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully un-subscribed");
         return stratosApiResponse;
     }
@@ -303,11 +303,11 @@ public class MockContext {
         return (availableMultiTenantCartridges.get(tenantId)).get(cartridgeType);
     }
 
-    public ApiResponseBean deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
+    public ResponseMessageBean deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
         if (!deleteFromAvailableSingleTenantCartridgeDefinitions(cartridgeType) && !deleteFromAvailableMultiTenantCartridgeDefinitions(cartridgeType)) {
             throw new RestAPIException(Status.NO_CONTENT, "No cartridges defined for tenant");
         }
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully delete cartridge definition");
         return stratosApiResponse;
     }
@@ -350,7 +350,7 @@ public class MockContext {
         return true;
     }
 
-    public ApiResponseBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ResponseMessageBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         try {
             tenantMap.put(tenantInfoBean.getTenantDomain(), tenantInfoBean);
             tenantInfoBean.setTenantId(tenantIdCount);
@@ -358,7 +358,7 @@ public class MockContext {
         } catch (Exception e) {
             throw new RestAPIException(Status.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully added new Tenant");
         return stratosApiResponse;
     }
@@ -370,14 +370,14 @@ public class MockContext {
         return tenantMap.get(tenantDomain);
     }
 
-    public ApiResponseBean deleteTenant(String tenantDomain) {
+    public ResponseMessageBean deleteTenant(String tenantDomain) {
         if (tenantMap.containsKey(tenantDomain)) {
             TenantInfoBean tenant = tenantMap.get(tenantDomain);
             tenantMap.remove(tenantDomain);
             tenantIdMap.remove(tenant.getTenantId());
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deleted tenant");
         return stratosApiResponse;
     }
@@ -397,29 +397,29 @@ public class MockContext {
         return searchResult.toArray(new TenantInfoBean[searchResult.size()]);
     }
 
-    public ApiResponseBean activateTenant(String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean activateTenant(String tenantDomain) throws RestAPIException {
         if (tenantMap.containsKey(tenantDomain)) {
             tenantMap.get(tenantDomain).setActive(true);
         } else {
             throw new RestAPIException(Status.BAD_REQUEST, "Invalid tenant domain");
         }
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully activated Tenant");
         return stratosApiResponse;
     }
 
-    public ApiResponseBean deactivateTenant(String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean deactivateTenant(String tenantDomain) throws RestAPIException {
         if (tenantMap.containsKey(tenantDomain)) {
             tenantMap.get(tenantDomain).setActive(false);
         } else {
             throw new RestAPIException(Status.BAD_REQUEST, "Invalid tenant domain");
         }
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deactivated Tenant");
         return stratosApiResponse;
     }
 
-    public ApiResponseBean addPartition(PartitionBean partition) {
+    public ResponseMessageBean addPartition(PartitionBean partition) {
         int tenantId = getTenantId();
         Map<String, PartitionBean> partitions;
 
@@ -440,12 +440,12 @@ public class MockContext {
         }
 
         partitions.put(partition.getId(), partition);
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed partition");
         return stratosApiResponse;
     }
 
-    public ApiResponseBean addAutoScalingPolicyDefinition(AutoscalePolicyBean autoscalePolicy) {
+    public ResponseMessageBean addAutoScalingPolicyDefinition(AutoscalePolicyBean autoscalePolicy) {
         int tenantId = getTenantId();
         Map<String, AutoscalePolicyBean> policies;
 
@@ -466,12 +466,12 @@ public class MockContext {
         }
 
         policies.put(autoscalePolicy.getId(), autoscalePolicy);
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed auto scaling policy definition");
         return stratosApiResponse;
     }
 
-    public ApiResponseBean addDeploymentPolicyDefinition(String applicationId, DeploymentPolicyBean deploymentPolicy) {
+    public ResponseMessageBean addDeploymentPolicyDefinition(String applicationId, DeploymentPolicyBean deploymentPolicy) {
         int tenantId = getTenantId();
         Map<String, DeploymentPolicyBean> policies;
 
@@ -485,7 +485,7 @@ public class MockContext {
 
 
         policies.put(applicationId + UUID.randomUUID().getLeastSignificantBits(), deploymentPolicy);
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed deployment policy definition");
         return stratosApiResponse;
     }
@@ -643,7 +643,7 @@ public class MockContext {
         }
     }
 
-    public ApiResponseBean deployService(Object serviceDefinitionBean) {
+    public ResponseMessageBean deployService(Object serviceDefinitionBean) {
 //    	int tenantId = getTenantId();
 //    	Map<String,ServiceDefinitionBean> serviceDefinitions;
 //
@@ -667,7 +667,7 @@ public class MockContext {
 //    	}
 //
 //    	serviceDefinitions.put(serviceDefinitionBean.getCartridgeType(),serviceDefinitionBean);
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed service");
         return stratosApiResponse;
 

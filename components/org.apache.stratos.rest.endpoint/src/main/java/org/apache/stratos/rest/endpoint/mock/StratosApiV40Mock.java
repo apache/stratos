@@ -20,7 +20,7 @@ package org.apache.stratos.rest.endpoint.mock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -56,10 +56,10 @@ public class StratosApiV40Mock {
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean initialize()
+    public ResponseMessageBean initialize()
             throws RestAPIException {
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully logged in");
         return stratosApiResponse;
     }
@@ -137,7 +137,7 @@ public class StratosApiV40Mock {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean unsubscribe(String alias) throws RestAPIException {
+    public ResponseMessageBean unsubscribe(String alias) throws RestAPIException {
         return MockContext.getInstance().unsubscribe(alias);
     }
 
@@ -147,7 +147,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ResponseMessageBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
@@ -157,7 +157,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ResponseMessageBean updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
@@ -177,7 +177,7 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         return MockContext.getInstance().deleteTenant(tenantDomain);
     }
 
@@ -216,7 +216,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ResponseMessageBean deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         return MockContext.getInstance().deactivateTenant(tenantDomain);
     }
 
@@ -226,7 +226,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployService(Object serviceDefinitionBean)
+    public ResponseMessageBean deployService(Object serviceDefinitionBean)
             throws RestAPIException {
         throw new RestAPIException("Not implemented");
     }
@@ -237,7 +237,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployCartridgeDefinition(CartridgeBean cartridgeDefinitionBean)
+    public ResponseMessageBean deployCartridgeDefinition(CartridgeBean cartridgeDefinitionBean)
             throws RestAPIException {
         return MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
     }
@@ -278,7 +278,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployPartition(PartitionBean partition)
+    public ResponseMessageBean deployPartition(PartitionBean partition)
             throws RestAPIException {
         return MockContext.getInstance().addPartition(partition);
     }
@@ -289,7 +289,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
+    public ResponseMessageBean deployAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
         return MockContext.getInstance().addAutoScalingPolicyDefinition(autoscalePolicy);
 
@@ -301,7 +301,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployDeploymentPolicyDefinition(DeploymentPolicyBean deploymentPolicy)
+    public ResponseMessageBean deployDeploymentPolicyDefinition(DeploymentPolicyBean deploymentPolicy)
             throws RestAPIException {
         throw new RestAPIException("Not supported");
     }

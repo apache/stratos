@@ -29,7 +29,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
-import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
@@ -61,7 +61,7 @@ public class StratosApiV40Utils {
 
     private static Log log = LogFactory.getLog(StratosApiV40Utils.class);
 
-    static ApiResponseBean deployCartridge(CartridgeBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+    static ResponseMessageBean deployCartridge(CartridgeBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                            String userName, String tenantDomain) throws RestAPIException {
 
         log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.getType());
@@ -98,7 +98,7 @@ public class StratosApiV40Utils {
             }
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         String message = "Successfully added cartridge definition: [cartridge-type] " + cartridgeDefinitionBean.getType();
         stratosApiResponse.setMessage(message);
         if (log.isInfoEnabled()) {
@@ -127,7 +127,7 @@ public class StratosApiV40Utils {
 //        return commonPolicies.toArray(new DeploymentPolicy[0]);
 //    }
 
-    static ApiResponseBean undeployCartridge(String cartridgeType) throws RestAPIException {
+    static ResponseMessageBean undeployCartridge(String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -144,12 +144,12 @@ public class StratosApiV40Utils {
 
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully undeployed cartridge definition with type " + cartridgeType);
         return stratosApiResponse;
     }
 
-    public static ApiResponseBean deployAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
+    public static ResponseMessageBean deployAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
@@ -172,7 +172,7 @@ public class StratosApiV40Utils {
 
         }
 
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
+        ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed autoscaling policy definition with id " + autoscalePolicyBean.getId());
         return stratosApiResponse;
     }
@@ -887,7 +887,7 @@ public class StratosApiV40Utils {
         return cartridgeSubscription.getClusterDomain();
     } */
 
-    static ApiResponseBean unsubscribe(String alias, String tenantDomain) throws RestAPIException {
+    static ResponseMessageBean unsubscribe(String alias, String tenantDomain) throws RestAPIException {
         throw new RestAPIException("Not implemented");
     }
 
@@ -902,7 +902,7 @@ public class StratosApiV40Utils {
         }
     }
 
-    public static ApiResponseBean removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
+    public static ResponseMessageBean removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
                                                            String subscriptionAlias, String domain) throws RestAPIException {
         throw new RestAPIException("Not implemented");
     }
