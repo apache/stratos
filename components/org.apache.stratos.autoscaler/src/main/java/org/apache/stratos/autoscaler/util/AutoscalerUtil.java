@@ -857,6 +857,14 @@ public class AutoscalerUtil {
     }
 
     public static void validateStartupOrders (String groupName, String[] startupOrders) throws InvalidServiceGroupException {
+
+        if (startupOrders == null || startupOrders.length == 0) {
+            if(log.isDebugEnabled()) {
+                log.debug("No Startup Order defined for group "  + groupName);
+            }
+            return;
+        }
+
         for (String startupOrder : startupOrders) {
             // split comma separated startup orders
             String[] splittedStartupOrders = startupOrder.split(",");
@@ -871,6 +879,14 @@ public class AutoscalerUtil {
     }
 
     public static void validateScalingDependencies (String groupName, String[] scalingDependents) throws InvalidServiceGroupException {
+
+        if (scalingDependents == null || scalingDependents.length == 0) {
+            if(log.isDebugEnabled()) {
+                log.debug("No Scaling Dependents defined for group "  + groupName);
+            }
+            return;
+        }
+
         for (String scalingDependent : scalingDependents) {
             // split comma separated scaling dependents
             String[] splittedDependents = scalingDependent.split(",");

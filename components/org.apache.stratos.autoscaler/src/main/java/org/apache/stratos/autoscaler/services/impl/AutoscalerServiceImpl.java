@@ -615,26 +615,26 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         if (dependencies != null) {
             String[] startupOrders = dependencies.getStartupOrders();
+            AutoscalerUtil.validateStartupOrders(groupName, startupOrders);
 
             if (log.isDebugEnabled()) {
                 log.debug("StartupOrders " + Arrays.toString(startupOrders));
 
                 if (startupOrders != null) {
                     log.debug("StartupOrder:size  " + startupOrders.length);
-                    AutoscalerUtil.validateStartupOrders(groupName, startupOrders);
                 } else {
                     log.debug("StartupOrder: is null");
                 }
             }
 
             String[] scalingDependents = dependencies.getScalingDependants();
+            AutoscalerUtil.validateScalingDependencies(groupName, scalingDependents);
 
             if (log.isDebugEnabled()) {
                 log.debug("ScalingDependent " + Arrays.toString(scalingDependents));
 
                 if (scalingDependents != null) {
                     log.debug("ScalingDependents:size " + scalingDependents.length);
-                    AutoscalerUtil.validateScalingDependencies(groupName, scalingDependents);
                 } else {
                     log.debug("ScalingDependent: is null");
                 }
