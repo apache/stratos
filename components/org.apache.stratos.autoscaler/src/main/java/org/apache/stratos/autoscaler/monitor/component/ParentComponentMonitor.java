@@ -33,7 +33,6 @@ import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetwork
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
@@ -88,8 +87,6 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
     //Executor service to maintain the thread pool
     private ExecutorService executorService;
-    //Monitoring interval of the monitor
-    private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveChildMonitorsMap = new ConcurrentHashMap<String, Monitor>();
@@ -120,9 +117,14 @@ public abstract class ParentComponentMonitor extends Monitor {
      * Starting the scheduler for the monitor
      */
     public void startScheduler() {
-        schedulerFuture = scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
+        int monitoringIntervalMilliseconds = 60000;
+        schedulerFuture = scheduler.scheduleAtFixedRate(this, 0,
+                monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * This will stop the scheduler which is running for the monitor
+     */
     protected void stopScheduler() {
         schedulerFuture.cancel(true);
     }
@@ -160,7 +162,6 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @param componentId alias/clusterId of which receive the activated event
      * @param instanceId  instance id of the instance
      * @return whether the instance has created or not
-     * @throws MonitorNotFoundException if the monitor is not there
      */
     public boolean startDependency(String componentId, String instanceId) {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
@@ -339,7 +340,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
                     process(this.id, this.appId, instanceId);
         } else {
-            log.info("started a child: " + startDep + " upon activation of " + childId +
+            log.info("started a child upon activation of " + childId +
                     " for [application] " + appId + " [" + getMonitorType() + "] " + id);
         }
 
@@ -559,11 +560,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                     try {
                         ApplicationHolder.acquireReadLock();
                         //verify whether the GroupInstance is active or not
-                        if (verifyGroupStatus(context1.getId(), instanceId, GroupStatus.Active)) {
-                            parentsActive = true;
-                        } else {
-                            parentsActive = false;
-                        }
+                        parentsActive = verifyGroupStatus(context1.getId(), instanceId,
+                                GroupStatus.Active);
                     } finally {
                         ApplicationHolder.releaseReadLock();
                     }
@@ -574,12 +572,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                                 monitor1.getClusterId());
                         ClusterInstance clusterInstance = (ClusterInstance) monitor1.
                                 getInstance(instanceId);
-                        if (clusterInstance != null && clusterInstance.getStatus()
-                                == ClusterStatus.Active) {
-                            parentsActive = true;
-                        } else {
-                            parentsActive = false;
-                        }
+                        parentsActive = clusterInstance != null &&
+                                clusterInstance.getStatus() == ClusterStatus.Active;
                     } finally {
                         TopologyManager.releaseReadLockForCluster(monitor1.getServiceId(),
                                 monitor1.getClusterId());
@@ -609,11 +603,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (groupInstance == null) {
             groupInstances = monitor.getInstancesByParentInstanceId(instanceId);
         } else {
-            if (groupInstance.getStatus() == requiredStatus) {
-                return true;
-            } else {
-                return false;
-            }
+            return groupInstance.getStatus() == requiredStatus;
         }
 
         String networkPartitionId = null;
@@ -651,8 +641,9 @@ public abstract class ParentComponentMonitor extends Monitor {
     /**
      * handling the dependent scaling
      *
-     * @param instanceContext
-     * @param networkPartitionContext
+     * @param instanceContext         instance-context of the Instance which receives
+     *                                the scale notification from the child
+     * @param networkPartitionContext network-partition-context which belongs to the instance
      */
     protected void handleDependentScaling(InstanceContext instanceContext,
                                           NetworkPartitionContext networkPartitionContext) {
@@ -712,14 +703,20 @@ public abstract class ParentComponentMonitor extends Monitor {
                                 monitor.onParentScalingEvent(scalingEvent);
                             }
                         }
+                        break;
                     }
-                    break;
+
                 }
             }
         }
     }
 
-    // move to inactive monitors list to use in the Terminated event
+    /**
+     * move to inactive monitors list to use in the Terminated event
+     *
+     * @param childId    id of the child where the instance resides
+     * @param instanceId instance id of the instance which has state change
+     */
     protected synchronized void markInstanceAsInactive(String childId, String instanceId) {
         if (this.inactiveInstancesMap.containsKey(childId)) {
             this.inactiveInstancesMap.get(childId).add(instanceId);
@@ -730,8 +727,14 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-    // move to inactive monitors list to use in the Terminated event
-    protected synchronized void removeInstanceFromFromInactiveMap(String childId, String instanceId) {
+    /**
+     * move to inactive monitors list to use in the Terminated event
+     *
+     * @param childId    id of the child where the instance resides
+     * @param instanceId instance id of the instance which has state change
+     */
+    protected synchronized void removeInstanceFromFromInactiveMap(String childId,
+                                                                  String instanceId) {
         if (this.inactiveInstancesMap.containsKey(childId) &&
                 this.inactiveInstancesMap.get(childId).contains(instanceId)) {
             this.inactiveInstancesMap.get(childId).remove(instanceId);
@@ -741,7 +744,12 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-    // move to inactive monitors list to use in the Terminated event
+    /**
+     * move to inactive monitors list to use in the Terminated event
+     *
+     * @param childId    id of the child where the instance resides
+     * @param instanceId instance id of the instance which has state change
+     */
     protected synchronized void removeInstanceFromFromTerminatingMap(String childId, String instanceId) {
         if (this.terminatingInstancesMap.containsKey(childId) &&
                 this.terminatingInstancesMap.get(childId).contains(instanceId)) {
@@ -752,7 +760,12 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-    // move to inactive monitors list to use in the Terminated event
+    /**
+     * move to inactive monitors list to use in the Terminated event
+     *
+     * @param childId    id of the child where the instance resides
+     * @param instanceId instance id of the instance which has state change
+     */
     protected synchronized void markInstanceAsTerminating(String childId, String instanceId) {
         if (this.inactiveInstancesMap.containsKey(childId) &&
                 this.inactiveInstancesMap.get(childId).contains(instanceId)) {
@@ -768,6 +781,13 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
 
+    /**
+     * Utility method to start the monitor thread for the children
+     *
+     * @param parent            The parent monitor which starting its own children
+     * @param context           the child context which used to start the specific child
+     * @param parentInstanceIds the instance-ids of the parent instance
+     */
     protected synchronized void startMonitor(ParentComponentMonitor parent,
                                              ApplicationChildContext context, List<String> parentInstanceIds) {
         if (!this.aliasToActiveChildMonitorsMap.containsKey(context.getId())) {
@@ -780,58 +800,41 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
+    /**
+     * This will return the child monitors map
+     *
+     * @return child monitors map
+     */
     public Map<String, Monitor> getAliasToActiveChildMonitorsMap() {
         return aliasToActiveChildMonitorsMap;
     }
 
-    public void setAliasToActiveChildMonitorsMap(Map<String, Monitor> aliasToActiveChildMonitorsMap) {
-        this.aliasToActiveChildMonitorsMap = aliasToActiveChildMonitorsMap;
-    }
-
-    public boolean hasActiveMonitors() {
-        boolean hasMonitor = false;
-        if ((this.aliasToActiveChildMonitorsMap != null && !this.aliasToActiveChildMonitorsMap.isEmpty())) {
-            hasMonitor = true;
-        }
-        return hasMonitor;
-    }
-
+    /**
+     * This will return the specific child monitor
+     *
+     * @param childId id of the child
+     * @return child monitor
+     */
     public Monitor getMonitor(String childId) {
         return this.aliasToActiveChildMonitorsMap.get(childId);
     }
 
+    /**
+     * Whether the monitor has child monitors or not
+     *
+     * @return true if the monitor has child monitors
+     */
     public boolean hasMonitors() {
 
         return this.aliasToActiveChildMonitorsMap != null;
     }
 
-    public boolean hasIndependentChild() {
-        boolean hasInDepChild = false;
-        for (Monitor monitor : this.aliasToActiveChildMonitorsMap.values()) {
-            if (!monitor.hasStartupDependents()) {
-                hasInDepChild = true;
-                break;
-            }
-        }
-        return hasInDepChild;
-    }
-
-    public Map<String, List<String>> getAliasToInactiveMonitorsMap() {
-        return this.inactiveInstancesMap;
-    }
-
-    public void setAliasToInactiveMonitorsMap(Map<String, List<String>> inactiveMonitorsList) {
-        this.inactiveInstancesMap = inactiveMonitorsList;
-    }
-
-    public Map<String, List<String>> getTerminatingInstancesMap() {
-        return terminatingInstancesMap;
-    }
-
-    public void setTerminatingInstancesMap(Map<String, List<String>> terminatingInstancesMap) {
-        this.terminatingInstancesMap = terminatingInstancesMap;
-    }
-
+    /**
+     * This will give the algorithm for the partitions for this monitor
+     *
+     * @param partitionAlgorithm algorithm name to be used for the partitions
+     * @return partition-algorithm instance of relevant partition algorithm
+     */
     public PartitionAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
         PartitionAlgorithm autoscaleAlgorithm = null;
         if (log.isDebugEnabled()) {
@@ -851,18 +854,33 @@ public abstract class ParentComponentMonitor extends Monitor {
         return autoscaleAlgorithm;
     }
 
+    /**
+     * Scale dependencies from the children
+     * @return scale dependencies
+     */
     public Set<ScalingDependentList> getScalingDependencies() {
         return scalingDependencies;
     }
 
+    /**
+     * Startup-order tree built among the children according to the specified startup-order
+     * @return startup-dependency-tree
+     */
     public DependencyTree getStartupDependencyTree() {
         return startupDependencyTree;
     }
 
+    /**
+     * This will give the network partitions used by this monitor
+     * @return network-partition-contexts
+     */
     public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
         return networkPartitionCtxts;
     }
 
+    /**
+     * Inner class used a Thread to start the relevant child monitor in a asynchronous manner
+     */
     private class MonitorAdder implements Runnable {
 
         private final ApplicationChildContext context;
@@ -926,7 +944,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                     String msg = String.format("Monitor creation failed even after retrying for " +
                             "5 times: [type] %s [component] %s ", monitorTypeStr, context.getId());
                     log.error(msg);
-                    //TODO parent.notify();
                     throw new RuntimeException(msg);
                 }
 
