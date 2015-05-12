@@ -2139,7 +2139,8 @@ public class StratosApiV41Utils {
      * @return update status
      * @throws RestAPIException
      */
-    public static boolean updateKubernetesHost(KubernetesHostBean kubernetesHostBean) throws RestAPIException {
+    public static boolean updateKubernetesHost(KubernetesHostBean kubernetesHostBean) throws
+            RestAPIException {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost =
@@ -2356,19 +2357,19 @@ public class StratosApiV41Utils {
      * Add Application Domain Mappings
      *
      * @param applicationId  application Id
-     * @param domainMapppingsBean ApplicationDomainMappingsBean
+     * @param domainMappingsBean ApplicationDomainMappingsBean
      * @throws RestAPIException
      */
     public static void addApplicationDomainMappings(
-            String applicationId, ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException,
+            String applicationId, ApplicationDomainMappingsBean domainMappingsBean) throws RestAPIException,
             StratosManagerServiceDomainMappingExceptionException {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            if (domainMapppingsBean.getDomainMappings() != null) {
+            if (domainMappingsBean.getDomainMappings() != null) {
                 StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
 
-                for (DomainMappingBean domainMappingBean : domainMapppingsBean.getDomainMappings()) {
+                for (DomainMappingBean domainMappingBean : domainMappingsBean.getDomainMappings()) {
                     ClusterDataHolder clusterDataHolder = findClusterDataHolder(
                             applicationId,
                             domainMappingBean.getCartridgeAlias());
@@ -2396,7 +2397,7 @@ public class StratosApiV41Utils {
     }
 
     /**
-     * Finnd Cluster Data Holder
+     * Find Cluster Data Holder
      *
      * @param applicationId applicationId
      * @param cartridgeAlias cartridge Alias

@@ -126,7 +126,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_GET_APPLICATION_RUNTIME = API_CONTEXT + "/applications/{applicationId}/runtime";
 
     private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
-    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/minion/{minionId}";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/host";
 
     private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = API_CONTEXT + "/repo/synchronize/{subscriptionAlias}";
     private static final String ENDPOINT_ACTIVATE_TENANT = API_CONTEXT + "/tenants/activate/{tenantDomain}";
@@ -1416,12 +1416,10 @@ public class RestCommandLineService {
      * Update Kubernetes Host
      *
      * @param entityBody Kubernetes host definition
-     * @param clusterId  cluster id
-     * @param hostId     host id
      * @throws CommandException
      */
-    public void updateKubernetesHost(String entityBody, String clusterId, String hostId) throws CommandException {
-        restClient.updateEntity((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId), entityBody, "kubernetes host");
+    public void updateKubernetesHost(String entityBody) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_HOST, entityBody, "kubernetes host");
     }
 
     /**

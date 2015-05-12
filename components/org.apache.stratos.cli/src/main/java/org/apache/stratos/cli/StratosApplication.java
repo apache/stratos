@@ -225,9 +225,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeTenantCommand();
         commands.put(command.getName(), command);
 
-        command = new ListPartialSearchTenantsCommand();
-        commands.put(command.getName(), command);
-
         command = new DescribeApplicationSignupCommand();
         commands.put(command.getName(), command);
 
