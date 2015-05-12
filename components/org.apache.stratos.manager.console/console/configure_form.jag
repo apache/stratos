@@ -33,10 +33,10 @@ var log = new Log("apachestratos.configure_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/configure/{formtype}/'),
         breadcrumbPathLevelOne = 'configure',
-        formDataEdit = editorCartridges = applicationHbs = '',
+        formDataEdit = formDataUpdate = editorCartridges = applicationHbs = '',
         isEdit = false,
         dependancy = '',
-        isForm = false;
+        isForm = isUpdate = false;
 
 //create left menu
 var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
@@ -44,11 +44,22 @@ var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
 if (!elements) {
     elements = uriMatcher.match('/{context}/configure/{formtype}/{action}/');
-    isForm = true;
 
-    if (elements.action != 'new') {
-        isEdit = true;
+    if(elements) {
+        isForm = true;
+
+        if (elements.action != 'new') {
+            isEdit = true;
+        }
+
+    }else{
+        elements = uriMatcher.match('/{context}/configure/{formtype}/{action}/{edit}');
+        if(elements.edit== 'edit'){
+            isUpdate = true;
+            isForm = true;
+        }
     }
+
     //load schema files to JSON editor
     try {
         var formData = require('controllers/forms/schema/configure/' + elements.formtype + '.json'),
@@ -56,11 +67,11 @@ if (!elements) {
                 formTitle = formData.title,
                 buttonText = formData.name;
     } catch (e) {
-            log.error(e.message);
-            error.push({"errorMessage": e.message});
+        log.error(e.message);
+        error.push({"errorMessage": e.message});
     }
 
-    if(elements.formtype == 'groups' && elements.action == 'new'){
+    if (elements.formtype == 'groups' && elements.action == 'new') {
         applicationHbs = 'applicationsGroupEditor';
         editorCartridges = util.RESTCalls.getCartridges();
     }
@@ -77,7 +88,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Network Partition",
                     buttonText = "Network Partition";
             list_data = util.RESTCalls.getPartitions();
-            if (list_data.statusCode == '404') {
+            if (list_data.status == 'error') {
                 list_data = null;
             }
             break;
@@ -86,7 +97,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Auto-scaling Policie",
                     buttonText = "Auto-scaling Policy";
             list_data = util.RESTCalls.getPolicyAutoScales();
-            if(list_data.statusCode == '404'){
+            if(list_data.status == 'error'){
                 list_data = null;
             }
             break;
@@ -95,7 +106,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Deployment Policie",
                     buttonText = "Deployment Policy";
             list_data = util.RESTCalls.getPolicyDeployments();
-            if (list_data.statusCode == '404') {
+            if (list_data.status == 'error') {
                 list_data = null;
             }
             break;
@@ -104,7 +115,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Cartridge",
                     buttonText = "Cartridge Definition";
             list_data = util.RESTCalls.getCartridges();
-            if (list_data.statusCode == '404') {
+            if (list_data.status == 'error') {
                 list_data = null;
             }
             break;
@@ -113,7 +124,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Cartridge Group Definition",
                     buttonText = "Cartridge Group Definition";
             list_data = util.RESTCalls.getGroups();
-            if (list_data.statusCode == '404') {
+            if (list_data.status == 'error') {
                 list_data = null;
             }
             break;
@@ -122,7 +133,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Kubernetes Cluster",
                     buttonText = "Kubernetes Cluster";
             list_data = util.RESTCalls.getKubernetesClusters();
-            if (list_data.statusCode == '404') {
+            if (list_data.status == 'error') {
                 list_data = null; //TODO endpoint doesn't return correct info
             }
             break;
@@ -150,7 +161,7 @@ if(isEdit == false && elements.action != 'new') {
 
 //get the detail view for each listing
 if (elements.action != 'new' && isEdit) {
-    formTitle = formData.title + ' Details - ' + elements.action;
+    formTitle = formData.title + ' Details: ' + elements.action;
 
     var formtype = elements.formtype,
             id = escape(elements.action);
@@ -185,6 +196,33 @@ if (elements.action != 'new' && isEdit) {
     }
 }
 
+//get the details for update view
+if(elements.action != 'new' && isUpdate){
+
+    formTitle = formData.title + ': ' + elements.action;
+
+    var formtype = elements.formtype,
+            id = escape(elements.action);
+
+    switch (formtype) {
+        case "partitions":
+            formDataUpdate = util.RESTCalls.getPartition(id);
+            break;
+        case "autoscalingpolicies":
+            formDataUpdate = util.RESTCalls.getPolicyAutoScale(id);
+            break;
+        case "deploymentpolicies":
+            formDataUpdate = util.RESTCalls.getPolicyDeployment(id);
+            break;
+        case "applicationpolicies":
+            formDataUpdate = util.RESTCalls.getPolicyApplication(id);
+            break;
+        case "cartridges":
+            formDataUpdate = util.RESTCalls.getCartridge(id);
+            break;
+    }
+}
+
 
 var caramelData = {
     breadcrumbPathLevelOne: breadcrumbPathLevelOne,
@@ -192,10 +230,12 @@ var caramelData = {
     left_menu: leftMenu,
     isForm: isForm,
     isEdit: isEdit,
+    isUpdate: isUpdate,
     dependancy:dependancy,
     editorCartridges: JSON.stringify(editorCartridges),
     applicationHbs: applicationHbs,
     formDataEdit: JSON.stringify(formDataEdit),
+    formDataUpdate: JSON.stringify(formDataUpdate),
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     formData: JSON.stringify(formData),

@@ -72,6 +72,21 @@ try {
         case "delete-kubernetes-cluster":
             formSubmit = util.RESTCalls.deleteKubernetesClusterDefinition(formPayload);
             break;
+        case "update-partitions":
+            formSubmit = util.RESTCalls.updatePartitionDefinition(formPayload);
+            break;
+        case "update-autoscalingpolicies":
+            formSubmit = util.RESTCalls.updateAutoscalePolicyDefinition(formPayload);
+            break;
+        case "update-deploymentpolicies":
+            formSubmit = util.RESTCalls.updateDeploymentPolicyDefinition(formPayload);
+            break;
+        case "update-applicationpolicies":
+            formSubmit = util.RESTCalls.updateApplicationPolicyDefinition(formPayload);
+            break;
+        case "update-cartridges":
+            formSubmit = util.RESTCalls.updateCartridgeDefinition(formPayload);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 

@@ -79,6 +79,7 @@ var render = function (theme, data, meta, require) {
                                 formDataEdit: data.formDataEdit,
                                 isForm: data.isForm,
                                 isEdit: data.isEdit,
+                                isUpdate: data.isUpdate,
                                 formTitle: data.formTitle
 
                             }
@@ -89,7 +90,7 @@ var render = function (theme, data, meta, require) {
                 break;
 
             default:
-            theme
+                theme
                 ('index', {
                     page_meta: [
                         {
@@ -146,6 +147,8 @@ var render = function (theme, data, meta, require) {
                                 dependancy: data.dependancy,
                                 isForm: data.isForm,
                                 isEdit: data.isEdit,
+                                isUpdate: data.isUpdate,
+                                formDataUpdate: data.formDataUpdate,
                                 formDataEdit: data.formDataEdit,
                                 content_body: {sections: data.list_data
                                 }

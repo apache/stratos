@@ -39,6 +39,10 @@ RESTCalls = new function(){
         return this.send("POST","/cartridges", cartridgeDefinition);
     };
 
+    this.updateCartridgeDefinition = function(cartridgeDefinition){
+        return this.send("PUT","/cartridges", cartridgeDefinition);
+    };
+
     this.deletePartiions = function(networkPartitionId){
         return this.send("DELETE","/networkPartitions/" + networkPartitionId,{});
     };
@@ -72,8 +76,16 @@ RESTCalls = new function(){
         return this.send("POST","/deploymentPolicies", policyDefinition);
     };
 
+    this.updateDeploymentPolicyDefinition = function(policyDefinition){
+        return this.send("PUT","/deploymentPolicies", policyDefinition);
+    };
+
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
         return this.send("POST","/autoscalingPolicies",policyDefinition);
+    };
+
+    this.updateAutoscalePolicyDefinition = function(policyDefinition){
+        return this.send("PUT","/autoscalingPolicies",policyDefinition);
     };
 
     this.deleteDeploymentPolicyDefinition = function(deploymentPolicyId){
@@ -102,6 +114,10 @@ RESTCalls = new function(){
 
     this.deployApplicationPolicyDefinition = function(applicationPolicyDefinition){
         return this.send("POST","/applicationPolicies", applicationPolicyDefinition);
+    };
+
+    this.updateApplicationPolicyDefinition = function(applicationPolicyDefinition){
+        return this.send("PUT","/applicationPolicies", applicationPolicyDefinition);
     };
 
     this.deleteApplication = function(applicationId){
