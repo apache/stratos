@@ -113,6 +113,8 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_TENANTS_BY_PARTIAL_DOMAIN = API_CONTEXT + "/tenants/search/{tenantDomain}";
 
     private static final String ENDPOINT_DOMAIN_MAPPINGS = API_CONTEXT + "/applications/{applicationId}/domainMappings";
+    private static final String ENDPOINT_REMOVE_DOMAIN_MAPPINGS = API_CONTEXT +
+            "/applications/{applicationId}/domainMappings/{domainName}";
 
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
@@ -385,7 +387,7 @@ public class RestCommandLineService {
             cartridgeGroups = cartridgeGroupList.toArray(cartridgeGroups);
 
             System.out.println("Cartridge Groups found:");
-            CliUtils.printTable(cartridgeGroups, cartridgeGroupMapper, "Name", "No. of cartridges", "No of groups", "Dependency scaling");
+            CliUtils.printTable(cartridgeGroups, cartridgeGroupMapper, "Name", "No. of cartridges", "No of groups");
         } catch (Exception e) {
             String message = "Error in listing cartridge groups";
             printError(message, e);
@@ -485,8 +487,8 @@ public class RestCommandLineService {
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
             tenantInfo.setAdmin(admin);
-            tenantInfo.setFirstname(firstName);
-            tenantInfo.setLastname(lastName);
+            tenantInfo.setFirstName(firstName);
+            tenantInfo.setLastName(lastName);
             tenantInfo.setAdminPassword(password);
             tenantInfo.setTenantDomain(domain);
             tenantInfo.setEmail(email);
@@ -612,8 +614,8 @@ public class RestCommandLineService {
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
             tenantInfo.setAdmin(admin);
-            tenantInfo.setFirstname(firstName);
-            tenantInfo.setLastname(lastName);
+            tenantInfo.setFirstName(firstName);
+            tenantInfo.setLastName(lastName);
             tenantInfo.setAdminPassword(password);
             tenantInfo.setTenantDomain(domain);
             tenantInfo.setEmail(email);
@@ -1045,7 +1047,7 @@ public class RestCommandLineService {
             List<AutoscalePolicyBean> list = (List<AutoscalePolicyBean>) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
                     listType, "autoscaling policies");
 
-            if ((list == null) || (list == null) || (list.size() == 0)) {
+            if ((list == null) || (list.size() == 0)) {
                 System.out.println("No autoscaling policies found");
                 return;
             }
@@ -1207,7 +1209,7 @@ public class RestCommandLineService {
     public void addKubernetesHost(String entityBody, String clusterId) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
                     + ENDPOINT_DEPLOY_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId), entityBody);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -1382,8 +1384,9 @@ public class RestCommandLineService {
      * @param applicationId application id
      * @throws CommandException
      */
-    public void removeDomainMappings(String applicationId) throws CommandException {
-        String endpoint = ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId);
+    public void removeDomainMappings(String applicationId, String domainName) throws CommandException {
+        String endpoint = (ENDPOINT_REMOVE_DOMAIN_MAPPINGS.replace("{applicationId}",
+                applicationId)).replace("{domainName}", domainName);
         restClient.undeployEntity(endpoint, "domain mappings", applicationId);
     }
 
@@ -1406,7 +1409,6 @@ public class RestCommandLineService {
      * @throws CommandException
      */
     public void updateKubernetesMaster(String entityBody, String clusterId) throws CommandException {
-        System.out.println(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId));
         restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId), entityBody, "kubernetes master");
     }
 
@@ -1419,7 +1421,6 @@ public class RestCommandLineService {
      * @throws CommandException
      */
     public void updateKubernetesHost(String entityBody, String clusterId, String hostId) throws CommandException {
-        System.out.println((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId));
         restClient.updateEntity((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId), entityBody, "kubernetes host");
     }
 
@@ -1767,7 +1768,6 @@ public class RestCommandLineService {
                     String[] data = new String[2];
                     data[0] = partition.getId();
                     data[1] = String.valueOf(partition.getPartitions().size());
-                    ;
                     return data;
                 }
             };

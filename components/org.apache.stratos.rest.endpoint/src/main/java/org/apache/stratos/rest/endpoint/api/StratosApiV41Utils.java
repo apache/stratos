@@ -2420,26 +2420,21 @@ public class StratosApiV41Utils {
      * Remove Application Domain Mappings
      *
      * @param applicationId applicationId
-     * @param domainMapppingsBean ApplicationDomainMappingsBean
+     * @param domainName the domain name
      * @throws RestAPIException
      */
-    public static void removeApplicationDomainMappings(String applicationId,
-                                                       ApplicationDomainMappingsBean domainMapppingsBean)
+    public static void removeApplicationDomainMapping(String applicationId, String domainName)
             throws RestAPIException, StratosManagerServiceDomainMappingExceptionException {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
-            if (domainMapppingsBean.getDomainMappings() != null) {
+            if (domainName != null) {
+                serviceClient.removeDomainMapping(applicationId, tenantId, domainName);
 
-                for (DomainMappingBean domainMappingBean : domainMapppingsBean.getDomainMappings()) {
-                    serviceClient.removeDomainMapping(applicationId, tenantId, domainMappingBean.getDomainName());
-
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Domain mapping removed: [application-id] %s [tenant-id] %d " +
-                                        "[domain-name] %s", applicationId, tenantId,
-                                domainMappingBean.getDomainName()));
-                    }
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Domain mapping removed: [application-id] %s [tenant-id] %d " +
+                            "[domain-name] %s", applicationId, tenantId, domainName));
                 }
             }
         } catch (RemoteException e) {
@@ -2857,18 +2852,18 @@ public class StratosApiV41Utils {
         }
 
         // filling the first and last name values
-        if (StringUtils.isBlank(tenantInfoBean.getFirstname())) {
+        if (StringUtils.isBlank(tenantInfoBean.getFirstName())) {
             try {
-                CommonUtil.validateName(tenantInfoBean.getFirstname(), "First Name");
+                CommonUtil.validateName(tenantInfoBean.getFirstName(), "First Name");
             } catch (Exception e) {
                 String msg = "Invalid first name is provided.";
                 log.error(msg, e);
                 throw new RestAPIException(msg, e);
             }
         }
-        if (StringUtils.isBlank(tenantInfoBean.getLastname())) {
+        if (StringUtils.isBlank(tenantInfoBean.getLastName())) {
             try {
-                CommonUtil.validateName(tenantInfoBean.getLastname(), "Last Name");
+                CommonUtil.validateName(tenantInfoBean.getLastName(), "Last Name");
             } catch (Exception e) {
                 String msg = "Invalid last name is provided.";
                 log.error(msg, e);
@@ -2876,8 +2871,8 @@ public class StratosApiV41Utils {
             }
         }
 
-        tenant.setAdminFirstName(tenantInfoBean.getFirstname());
-        tenant.setAdminLastName(tenantInfoBean.getLastname());
+        tenant.setAdminFirstName(tenantInfoBean.getFirstName());
+        tenant.setAdminLastName(tenantInfoBean.getLastName());
         try {
             TenantMgtUtil.addClaimsToUserStoreManager(tenant);
         } catch (Exception e) {
@@ -2994,8 +2989,8 @@ public class StratosApiV41Utils {
         }
 
         // retrieve first and last names from the UserStoreManager
-        bean.setFirstname(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
-        bean.setLastname(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+        bean.setFirstName(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+        bean.setLastName(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
 
         return bean;
     }

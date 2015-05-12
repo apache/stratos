@@ -54,12 +54,12 @@ public class RemoveDomainMappingCommand implements Command<StratosCommandContext
 
     @Override
     public String getName() {
-        return "remove-domain-mappings";
+        return "remove-domain-mapping";
     }
 
     @Override
     public String getDescription() {
-        return "Remove domain mappings";
+        return "Remove domain mapping";
     }
 
     @Override

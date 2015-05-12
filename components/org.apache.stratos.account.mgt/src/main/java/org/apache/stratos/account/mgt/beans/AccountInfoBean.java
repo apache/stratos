@@ -22,19 +22,19 @@ public class AccountInfoBean {
     private String firstName;
     private String lastName;
 
-    public String getFirstname() {
-        return firstName;
-    }
-
-    public void setFirstname(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastname() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastname(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }

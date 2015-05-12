@@ -1030,35 +1030,30 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Removes the domain mappings for an application.
+     * Removes a domain mapping for an application.
      *
      * @param applicationId       the application id
-     * @param domainMapppingsBean the domain mapppings bean
+     * @param domainName the domain name
      * @return 200
      * @throws RestAPIException the rest api exception
      */
     @DELETE
-    @Path("/applications/{applicationId}/domainMappings")
+    @Path("/applications/{applicationId}/domainMappings/{domainName}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/removeDomainMappings")
     public Response removeDomainMappings(
-            @PathParam("applicationId") String applicationId, ApplicationDomainMappingsBean domainMapppingsBean)
+            @PathParam("applicationId") String applicationId, @PathParam("domainName") String domainName)
             throws RestAPIException {
         try {
-            StratosApiV41Utils.removeApplicationDomainMappings(applicationId, domainMapppingsBean);
+            StratosApiV41Utils.removeApplicationDomainMapping(applicationId, domainName);
         } catch (StratosManagerServiceDomainMappingExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Incorrect request to delete domain mapping of " +
                     "application")).build();
         }
-        List<DomainMappingBean> mappings = domainMapppingsBean.getDomainMappings();
-        List<String> domainMappingList = new ArrayList<String>();
-        for (DomainMappingBean domainMappingBean : mappings) {
-            domainMappingList.add(domainMappingBean.getDomainName());
-        }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Domain mappings deleted successfully: [domain-mappings] %s", domainMappingList))).build();
+                String.format("Domain mapping deleted successfully: [domain-mappings] %s", domainName))).build();
     }
 
     /**

@@ -1514,8 +1514,8 @@ public class ObjectConverter {
         tenantInfoBean.setAdmin(carbonTenantInfoBean.getAdmin());
         tenantInfoBean.setEmail(carbonTenantInfoBean.getEmail());
         tenantInfoBean.setAdminPassword(carbonTenantInfoBean.getAdminPassword());
-        tenantInfoBean.setFirstname(carbonTenantInfoBean.getFirstname());
-        tenantInfoBean.setLastname(carbonTenantInfoBean.getLastname());
+        tenantInfoBean.setFirstName(carbonTenantInfoBean.getFirstname());
+        tenantInfoBean.setLastName(carbonTenantInfoBean.getLastname());
         tenantInfoBean.setCreatedDate(carbonTenantInfoBean.getCreatedDate().getTimeInMillis());
         return tenantInfoBean;
     }
@@ -1534,8 +1534,8 @@ public class ObjectConverter {
         carbonTenantInfoBean.setAdmin(tenantInfoBean.getAdmin());
         carbonTenantInfoBean.setEmail(tenantInfoBean.getEmail());
         carbonTenantInfoBean.setAdminPassword(tenantInfoBean.getAdminPassword());
-        carbonTenantInfoBean.setFirstname(tenantInfoBean.getFirstname());
-        carbonTenantInfoBean.setLastname(tenantInfoBean.getLastname());
+        carbonTenantInfoBean.setFirstname(tenantInfoBean.getFirstName());
+        carbonTenantInfoBean.setLastname(tenantInfoBean.getLastName());
         if (tenantInfoBean.getCreatedDate() > 0) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(tenantInfoBean.getCreatedDate());
