@@ -26,15 +26,15 @@ import java.util.Arrays;
 import java.util.List;
 
 @XmlRootElement(name = "properties")
-public class NewProperty implements Serializable {
+public class Property implements Serializable {
 
     private String key;
     private List<String> values = new ArrayList<String>();
 
-    public NewProperty() {
+    public Property() {
     }
 
-    public NewProperty(String key, String value) {
+    public Property(String key, String value) {
         this.key = key;
         this.values.add(value);
     }
