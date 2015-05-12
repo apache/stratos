@@ -413,6 +413,7 @@ function sm_setup() {
     echo "In repository/conf/cartridge-config.properties"
     ${SED} -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@SM_HOSTNAME:SM_HTTPS_PORT@$sm_hostname:$sm_https_port@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@PUPPET_IP@$puppet_ip@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@PUPPET_HOSTNAME@$puppet_hostname@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@PUPPET_ENV@$puppet_environment@g" repository/conf/cartridge-config.properties
