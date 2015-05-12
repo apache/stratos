@@ -4,6 +4,5 @@
     "lastname":"LastName",
     "adminPassword":"admin123",
     "tenantDomain":"apache.org",
-    "email":"user@apache.org",
-    "active":"true"
+    "email":"user@apache.org"
 }
