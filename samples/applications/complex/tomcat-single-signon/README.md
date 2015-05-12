@@ -1,5 +1,5 @@
-#Tomcat Single Sign On Sample Application
-
+Tomcat Single Sign-on Application
+========================================
 This sample application demonstrate how Single Sign On (SAML2) configuration can be automated with Composite
 Application Model using Tomcat and WSO2 Identity Server. It includes a cartridge for Tomcat 7 and WSO2 Identity
 Server 5.0.0 and a set of cartridge agent plugins for handling the SSO configuration.
@@ -16,15 +16,25 @@ https://github.com/apache/stratos/tree/master/tools/docker-images/cartridge-dock
 ###WSO2 Identity Server Cartridge Agent Plugins
 https://github.com/apache/stratos/tree/master/tools/docker-images/cartridge-docker-images/service-images/wso2is-saml-sso/packs/plugins
 
-###Application folder structure
-```
-artifacts/<iaas>/ IaaS specific artifacts
-scripts/common/ Common scripts for all iaases
-scripts/<iaas> IaaS specific scripts
-```
+Application view
+----------------
+tomcat-single-signon
+-- tomcat-single-signon-1
+-- -- mytomcat3
+-- -- mywso2is
 
-###How to run
-```
+Application folder structure
+----------------------------
+-- artifacts/<iaas>/ IaaS specific artifacts
+-- scripts/common/ Common scripts for all iaases
+-- scripts/<iaas> IaaS specific scripts
+
+How to run
+----------
 cd scripts/<iaas>/
 ./deploy.sh
-```
+
+How to undeploy
+---------------
+cd scripts/<iaas>/
+./undeploy.sh

@@ -1,5 +1,12 @@
-sample-cartridges
-=================
+Dependent Scaling With Cartridges Application
+=============================================
+
+Application View
+----------------
+dependency-scaling-cartridges-app (sample-cartridges)
+-- dependency-scaling-cartridges-app1
+-- -- my-tomcat
+-- -- my-php
 
 Application folder structure
 ----------------------------
@@ -11,3 +18,8 @@ How to run
 ----------
 cd scripts/<iaas>/
 ./deploy.sh
+
+How to undeploy
+---------------
+cd scripts/<iaas>/
+./undeploy.sh
