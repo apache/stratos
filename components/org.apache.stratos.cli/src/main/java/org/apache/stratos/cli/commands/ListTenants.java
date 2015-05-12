@@ -47,15 +47,22 @@ public class ListTenants implements Command<StratosCommandContext> {
     }
 
     public String getArgumentSyntax() {
-        return null;
+        return "[partial-domain]";
     }
 
     public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
         if (log.isDebugEnabled()) {
             log.debug("Executing {} command...", getName());
         }
-        if (args == null || args.length == 0) {
+
+        if(args == null || args.length == 0) {
             RestCommandLineService.getInstance().listTenants();
+            return CliConstants.COMMAND_SUCCESSFULL;
+
+        } else if(args[0] != null) {
+
+            String partialDomainName = args[0];
+            RestCommandLineService.getInstance().listTenantsByPartialDomain(partialDomainName);
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());

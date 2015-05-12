@@ -43,15 +43,6 @@ public class UpdateKubernetesHostCommand implements Command<StratosCommandContex
 
     public UpdateKubernetesHostCommand() {
         options = new Options();
-        Option clusterIdOption = new Option(CliConstants.CLUSTER_ID_OPTION, CliConstants.CLUSTER_ID_LONG_OPTION, true,
-                "Kubernetes cluster id");
-        clusterIdOption.setArgName("cluster id");
-        options.addOption(clusterIdOption);
-
-        Option hostIdOption = new Option(CliConstants.HOST_ID_OPTION, CliConstants.HOST_ID_LONG_OPTION, true,
-                "Kubernetes host id");
-        hostIdOption.setArgName("host id");
-        options.addOption(hostIdOption);
 
         Option resourcePathOption = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
                 "Kubernetes host resource path");
@@ -96,23 +87,7 @@ public class UpdateKubernetesHostCommand implements Command<StratosCommandContex
             //merge newly discovered options with previously discovered ones.
             Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
-            if ((opts.hasOption(CliConstants.RESOURCE_PATH)) && (opts.hasOption(CliConstants.HOST_ID_OPTION))
-                    && (opts.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
-
-                // get cluster id arg value
-                String clusterId = opts.getOption(CliConstants.CLUSTER_ID_OPTION).getValue();
-                if (clusterId == null) {
-                    context.getStratosApplication().printUsage(getName());
-                    return CliConstants.COMMAND_FAILED;
-                }
-
-                // get host id arg value
-                String hostId = opts.getOption(CliConstants.HOST_ID_OPTION).getValue();
-                if (hostId == null) {
-                    context.getStratosApplication().printUsage(getName());
-                    return CliConstants.COMMAND_FAILED;
-                }
-
+            if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
                 // get resource path arg value
                 String resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                 if (resourcePath == null) {
@@ -121,7 +96,7 @@ public class UpdateKubernetesHostCommand implements Command<StratosCommandContex
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
 
-                RestCommandLineService.getInstance().updateKubernetesHost(resourceFileContent, clusterId, hostId);
+                RestCommandLineService.getInstance().updateKubernetesHost(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 context.getStratosApplication().printUsage(getName());

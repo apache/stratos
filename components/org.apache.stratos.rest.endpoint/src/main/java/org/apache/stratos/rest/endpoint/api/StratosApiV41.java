@@ -1786,7 +1786,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @PUT
-    @Path("/kubernetes/update/host")
+    @Path("/kubernetesClusters/host")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/updateKubernetesHost")
