@@ -195,6 +195,7 @@
 	</MultifactorAuthentication>
 
 	<SSOService>
+		<EntityId>localhost</EntityId>
 		<IdentityProviderURL>https://localhost:9443/samlsso</IdentityProviderURL>
 		<SingleLogoutRetryCount>5</SingleLogoutRetryCount>
 		<SingleLogoutRetryInterval>60000</SingleLogoutRetryInterval> <!-- in milli seconds -->
@@ -205,8 +206,14 @@
                 <AttributesClaimDialect>http://wso2.org/claims</AttributesClaimDialect>
 		<AcceptOpenIDLogin>false</AcceptOpenIDLogin>
 		<ClaimsRetrieverImplClass>org.wso2.carbon.identity.sso.saml.builders.claims.DefaultClaimsRetriever</ClaimsRetrieverImplClass>
+		<SAMLSSOEncrypter>org.wso2.carbon.identity.sso.saml.builders.encryption.DefaultSSOEncrypter</SAMLSSOEncrypter>
+                <SAMLSSOSigner>org.wso2.carbon.identity.sso.saml.builders.signature.DefaultSSOSigner</SAMLSSOSigner>
+                <SAML2HTTPRedirectSignatureValidator>org.wso2.carbon.identity.sso.saml.validators.SAML2HTTPRedirectDeflateSignatureValidator</SAML2HTTPRedirectSignatureValidator>
+                <!--SAMLSSOResponseBuilder>org.wso2.carbon.identity.sso.saml.builders.DefaultResponseBuilder</SAMLSSOResponseBuilder-->
+
 		<!-- SAML Token validity period in minutes -->
                 <SAMLResponseValidityPeriod>5</SAMLResponseValidityPeriod>
+		<UseAuthenticatedUserDomain>false</UseAuthenticatedUserDomain>
 	</SSOService>
 
 	<EntitlementSettings>

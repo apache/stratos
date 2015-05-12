@@ -21,9 +21,9 @@
 	<autoscaler>
 	    <cloudController>
 	        <hostname>CC_HOSTNAME</hostname>
-		    <port>CC_LISTEN_PORT</port>
-		    <!-->CC client timout in ms<-->
-            <clientTimeout>300000</clientTimeout>
+		<port>CC_LISTEN_PORT</port>
+		<!-->CC client timout in ms<-->
+            	<clientTimeout>300000</clientTimeout>
 	    </cloudController>
             <stratosManager>
 	        <hostname>SM_HOSTNAME</hostname>
@@ -32,8 +32,8 @@
                 <clientTimeout>300000</clientTimeout>
 	    </stratosManager>
 	    <identity>
-                <hostname>localhost</hostname>
-                <port>9443</port>                    
+                <hostname>SM_HOSTNAME</hostname>
+                <port>SM_LISTEN_PORT</port>                    
                 <clientTimeout>300000</clientTimeout>
 	    </identity>
             <member>
@@ -46,7 +46,7 @@
             </member>
             <cluster>
                 <!-- cluster monitoring interval (ms) -->
-                <monitorInterval>1800000</monitorInterval>
+                <monitorInterval>90000</monitorInterval>
             </cluster>
             <threadpool>
                 <identifier>Autoscaler</identifier>
