@@ -98,9 +98,7 @@ switch (formtype) {
         formTitle = "Application Definition",
                 buttonText = "Application Definition";
         list_data = util.RESTCalls.getApplications();
-        if (list_data && list_data.length === 0) {
-            list_data = null;
-        }else if(list_data.errorCode == '404'){ //TODO : need to fix this with REST API class
+        if (list_data.status == 'error') {
             list_data = null;
         }
         break;
