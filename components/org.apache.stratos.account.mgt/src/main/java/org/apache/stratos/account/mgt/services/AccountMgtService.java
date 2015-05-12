@@ -170,19 +170,15 @@ public class AccountMgtService extends AbstractAdmin {
         RealmService realmService = Util.getRealmService();
         try {
             Map<String, String> claimsMap = new HashMap<String, String>();
-            claimsMap.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME,
-                    accountInfoBean.getFirstName());
+            claimsMap.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, accountInfoBean.getFirstName());
             claimsMap.put(UserCoreConstants.ClaimTypeURIs.SURNAME, accountInfoBean.getLastName());
-            UserStoreManager userStoreManager =
-                    (UserStoreManager) realmService.getTenantUserRealm(tenantId)
-                            .getUserStoreManager();
-            userStoreManager.setUserClaimValues(
-                    ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId),
+            UserStoreManager userStoreManager = (UserStoreManager) realmService.getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            userStoreManager.setUserClaimValues(ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId),
                     claimsMap, UserCoreConstants.DEFAULT_PROFILE);
-            log.info("FirstName: " + accountInfoBean.getFirstName() +
-                    " has been updated to the tenant admin " +
-                    ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId) + " of " +
-                    tenant.getDomain());
+            log.info("FirstName: " + accountInfoBean.getFirstName() + " of the tenant " + tenant.getDomain() + " has " +
+                    "been updated to the tenant admin " + ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService,
+                    tenantId) + " of " + tenant.getDomain());
 
             //Notify tenant update to all listeners
             TenantInfoBean tenantInfoBean = new TenantInfoBean();
@@ -196,7 +192,7 @@ public class AccountMgtService extends AbstractAdmin {
             // this is expected, as many users haven't given their fullnames
             // during their registration.
             String msg =
-                    "Error in updating the firstname: " + accountInfoBean.getFirstName() +
+                    "Error in updating first name: " + accountInfoBean.getFirstName() +
                             " for the tenant admin: " +
                             ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId);
             log.info(msg);
