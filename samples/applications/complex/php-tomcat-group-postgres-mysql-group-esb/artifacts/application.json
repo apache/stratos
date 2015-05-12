@@ -119,7 +119,11 @@
                 {
                     "aliases": [
                         "group.my-dbgroup",
-                        "group.my-appgroup",
+                        "group.my-appgroup"
+                    ]
+                },
+                {
+                    "aliases": [
                         "group.my-dbgroup",
                         "cartridge.my-esb"
                     ]
