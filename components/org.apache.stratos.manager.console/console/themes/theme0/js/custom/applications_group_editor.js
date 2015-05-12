@@ -127,7 +127,7 @@ function addJsplumbGroup(cartridgeCounter) {
 //create cartridge list
 var cartridgeListHtml='';
 function generateCartridges(data){
-    if(data == null || data.length == 0){
+    if(data.status == 'error'){
         cartridgeListHtml = 'No Cartridges found..';
     }else{
         for(var cartridge in data){
