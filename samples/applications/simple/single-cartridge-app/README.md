@@ -1,8 +1,25 @@
-single_cartridge
-================
-i) In this artifact sample you can find we have listed them as mock and openstack.
+Single Cartridge Application
+============================
+A simple application with a php cartridge.
 
-ii) In this sample artifact, it deployes simple application with a php cartridge and start it.
+Application view
+----------------
+single-cartridge-app
+-- single-cartridge-app-1
+-- -- my-php
 
-iii) You can choose the IaaS and navigate to it and simply run the single_cartridge.sh file. It'll deploy the relevant artifacts and start the application.
+Application folder structure
+----------------------------
+-- artifacts/<iaas>/ IaaS specific artifacts
+-- scripts/common/ Common scripts for all iaases
+-- scripts/<iaas> IaaS specific scripts
 
+How to run
+----------
+cd scripts/<iaas>/
+./deploy.sh
+
+How to undeploy
+---------------
+cd scripts/<iaas>/
+./undeploy.sh
