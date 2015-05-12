@@ -198,7 +198,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ListDomainMappingsCommand();
         commands.put(command.getName(), command);
 
-        command = new RemoveDomainMappingsCommand();
+        command = new RemoveDomainMappingCommand();
         commands.put(command.getName(), command);
 
         command = new DeleteAutoScalingPolicyCommand();

@@ -46,7 +46,7 @@ public class DeleteAutoScalingPolicyCommand implements Command<StratosCommandCon
 
     @Override
     public String getArgumentSyntax() {
-        return "[application-id]";
+        return "[autoscaling-policy-id]";
     }
 
     @Override
@@ -62,7 +62,7 @@ public class DeleteAutoScalingPolicyCommand implements Command<StratosCommandCon
         if (args != null && args.length == 1) {
             String autoScalingPolicyId = args[0];
             if (log.isDebugEnabled()) {
-                log.debug("Getting delete application id {}", autoScalingPolicyId);
+                log.debug("Getting delete autoscaling policy id {}", autoScalingPolicyId);
             }
             RestCommandLineService.getInstance().deleteAutoSclaingPolicy(autoScalingPolicyId);
             return CliConstants.COMMAND_SUCCESSFULL;

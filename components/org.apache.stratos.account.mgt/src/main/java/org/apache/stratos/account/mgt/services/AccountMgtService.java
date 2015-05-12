@@ -171,32 +171,32 @@ public class AccountMgtService extends AbstractAdmin {
         try {
             Map<String, String> claimsMap = new HashMap<String, String>();
             claimsMap.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME,
-                    accountInfoBean.getFirstname());
-            claimsMap.put(UserCoreConstants.ClaimTypeURIs.SURNAME, accountInfoBean.getLastname());
+                    accountInfoBean.getFirstName());
+            claimsMap.put(UserCoreConstants.ClaimTypeURIs.SURNAME, accountInfoBean.getLastName());
             UserStoreManager userStoreManager =
                     (UserStoreManager) realmService.getTenantUserRealm(tenantId)
                             .getUserStoreManager();
             userStoreManager.setUserClaimValues(
                     ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId),
                     claimsMap, UserCoreConstants.DEFAULT_PROFILE);
-            log.info("FirstName: " + accountInfoBean.getFirstname() +
+            log.info("FirstName: " + accountInfoBean.getFirstName() +
                     " has been updated to the tenant admin " +
                     ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId) + " of " +
                     tenant.getDomain());
-            
+
             //Notify tenant update to all listeners
             TenantInfoBean tenantInfoBean = new TenantInfoBean();
             tenantInfoBean.setTenantId(tenantId);
-            tenantInfoBean.setFirstname(accountInfoBean.getFirstname());
-            tenantInfoBean.setLastname(accountInfoBean.getLastname());
+            tenantInfoBean.setFirstName(accountInfoBean.getFirstName());
+            tenantInfoBean.setLastName(accountInfoBean.getLastName());
             Util.alertTenantUpdate(tenantInfoBean);
-            
+
             return true;
         } catch (Exception e) {
             // this is expected, as many users haven't given their fullnames
             // during their registration.
             String msg =
-                    "Error in updating the firstname: " + accountInfoBean.getFirstname() +
+                    "Error in updating the firstname: " + accountInfoBean.getFirstName() +
                             " for the tenant admin: " +
                             ClaimsMgtUtil.getAdminUserNameFromTenantId(realmService, tenantId);
             log.info(msg);
@@ -254,8 +254,8 @@ public class AccountMgtService extends AbstractAdmin {
         }
 
         AccountInfoBean accountInfoBean = new AccountInfoBean();
-        accountInfoBean.setFirstname(firstname);
-        accountInfoBean.setLastname(lastname);
+        accountInfoBean.setFirstName(firstname);
+        accountInfoBean.setLastName(lastname);
         return accountInfoBean;
     }
 
