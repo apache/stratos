@@ -221,24 +221,28 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public ApplicationContext[] getApplications() {
         return AutoscalerContext.getInstance().getApplicationContexts().
-                toArray(new ApplicationContext[AutoscalerContext.getInstance().getApplicationContexts().size()]);
+                toArray(new ApplicationContext[AutoscalerContext.getInstance().
+                        getApplicationContexts().size()]);
     }
 
     @Override
-    public boolean deployApplication(String applicationId, String applicationPolicyId) throws ApplicationDefinitionException {
+    public boolean deployApplication(String applicationId, String applicationPolicyId)
+            throws ApplicationDefinitionException {
         try {
             Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application == null) {
                 throw new RuntimeException("Application not found: " + applicationId);
             }
 
-            ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
+            ApplicationContext applicationContext = RegistryManager.getInstance().
+                    getApplicationContext(applicationId);
             if (applicationContext == null) {
                 throw new RuntimeException("Application context not found: " + applicationId);
             }
 
             // Create application clusters in cloud controller and send application created event
-            ApplicationBuilder.handleApplicationDeployment(application, applicationContext.getComponents().getApplicationClusterContexts());
+            ApplicationBuilder.handleApplicationDeployment(application,
+                    applicationContext.getComponents().getApplicationClusterContexts());
 
             // validating application policy against the application
             AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
@@ -254,13 +258,14 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             // adding network partition algorithm context to registry
-            ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
-            NetworkPartitionAlgorithmContext algorithmContext = new NetworkPartitionAlgorithmContext(applicationId, applicationPolicy, 0);
+            NetworkPartitionAlgorithmContext algorithmContext =
+                    new NetworkPartitionAlgorithmContext(applicationId, applicationPolicyId, 0);
             AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
 
             if (!applicationContext.isMultiTenant()) {
                 // Add application signup for single tenant applications
-                addApplicationSignUp(applicationContext, application.getKey(), findApplicationClusterIds(application));
+                addApplicationSignUp(applicationContext, application.getKey(),
+                        findApplicationClusterIds(application));
             }
             applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
             AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
@@ -268,7 +273,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.info("Waiting for application clusters to be created: [application] " + applicationId);
             return true;
         } catch (Exception e) {
-            ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
+            ApplicationContext applicationContext = RegistryManager.getInstance().
+                    getApplicationContext(applicationId);
             if (applicationContext != null) {
                 // Revert application status
                 applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
@@ -367,7 +373,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
             }
             if (groupContext.getGroupContexts() != null) {
-                for (CartridgeContext cartridgeContext : getCartridgeContextsOfGroupsRecursively(groupContext.getGroupContexts())) {
+                for (CartridgeContext cartridgeContext :
+                        getCartridgeContextsOfGroupsRecursively(groupContext.getGroupContexts())) {
 
                     cartridgeContextsList.add(cartridgeContext);
                 }

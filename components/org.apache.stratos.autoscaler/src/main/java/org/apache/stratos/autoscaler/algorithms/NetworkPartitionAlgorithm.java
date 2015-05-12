@@ -27,8 +27,13 @@ public interface NetworkPartitionAlgorithm {
     /**
      * Get a list network partitions in which application instances to be spawned
      *
-     * @param networkPartitionAlgorithmContext the {@link NetworkPartitionAlgorithmContext}
+     * @param networkPartitionAlgorithmContext the {@link org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext}
      * @return list of network partition ids
      */
-    public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext);
+    public List getNextNetworkPartitions(NetworkPartitionAlgorithmContext
+                                                 networkPartitionAlgorithmContext);
+
+
+    public List<String> getDefaultNetworkPartitions(NetworkPartitionAlgorithmContext
+                                                            networkPartitionAlgorithmContext);
 }

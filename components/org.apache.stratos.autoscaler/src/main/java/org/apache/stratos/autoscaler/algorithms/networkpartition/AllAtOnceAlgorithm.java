@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.algorithms.networkpartition;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.stratos.autoscaler.algorithms.NetworkPartitionAlgorithm;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 
 import java.util.List;
@@ -33,7 +34,29 @@ public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        ApplicationPolicy applicationPolicy = networkPartitionAlgorithmContext.getApplicationPolicy();
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(
+                networkPartitionAlgorithmContext.getApplicationPolicyId());
+        if (applicationPolicy == null) {
+            return null;
+        }
+
+        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+        if (networkPartitions == null || networkPartitions.length == 0) {
+            return null;
+        }
+
+        return Arrays.asList(networkPartitions);
+    }
+
+    @Override
+    public List<String> getDefaultNetworkPartitions(NetworkPartitionAlgorithmContext
+                                                                networkPartitionAlgorithmContext) {
+        if (networkPartitionAlgorithmContext == null) {
+            return null;
+        }
+
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(
+                networkPartitionAlgorithmContext.getApplicationPolicyId());
         if (applicationPolicy == null) {
             return null;
         }
