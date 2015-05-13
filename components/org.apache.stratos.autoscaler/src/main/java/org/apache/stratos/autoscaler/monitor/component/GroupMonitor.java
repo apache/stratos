@@ -41,8 +41,8 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
@@ -646,9 +646,9 @@ public class GroupMonitor extends ParentComponentMonitor {
                     get(networkPartitionId);
         } else {
             if (deploymentPolicy != null) {
-                NetworkPartition[] networkPartitions = deploymentPolicy.getNetworkPartitions();
-                NetworkPartition networkPartition = null;
-                for (NetworkPartition networkPartition1 : networkPartitions) {
+                NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
+                NetworkPartitionRef networkPartition = null;
+                for (NetworkPartitionRef networkPartition1 : networkPartitions) {
                     if (networkPartition1.getId().equals(networkPartitionId)) {
                         networkPartition = networkPartition1;
                     }
@@ -705,10 +705,10 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         } else {
 
-            NetworkPartition[] networkPartitions = deploymentPolicy.getNetworkPartitions();
-            NetworkPartition networkPartition = null;
+            NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
+            NetworkPartitionRef networkPartition = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
-                for (NetworkPartition i : networkPartitions) {
+                for (NetworkPartitionRef i : networkPartitions) {
                     if (i.getId().equals(networkPartitionId)) {
                         networkPartition = i;
                     }
@@ -717,9 +717,9 @@ public class GroupMonitor extends ParentComponentMonitor {
 
             if (networkPartition != null) {
                 if (networkPartitionContext.getPartitionCtxts().isEmpty()) {
-                    Partition[] partitions = networkPartition.getPartitions();
+                    PartitionRef[] partitions = networkPartition.getPartitions();
                     if (partitions != null && partitions.length != 0) {
-                        for (Partition partition : partitions) {
+                        for (PartitionRef partition : partitions) {
 
                             if (networkPartitionContext.getPartitionCtxt(partition.getId()) == null) {
 

@@ -55,8 +55,8 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
@@ -897,7 +897,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // deployment policy should contain at least one network partition reference
-        if (null == deploymentPolicy.getNetworkPartitions() || deploymentPolicy.getNetworkPartitions().length == 0) {
+        if (null == deploymentPolicy.getNetworkPartitionRefs() || deploymentPolicy.getNetworkPartitionRefs().length == 0) {
             String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                             + "Cause -> Deployment policy doesn't have at least one network partition reference",
                     deploymentPolicy.getDeploymentPolicyID());
@@ -906,7 +906,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // validate each network partition references
-        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
 
             // network partition id can't be null or empty
             if (null == networkPartition.getId() || networkPartition.getId().isEmpty()) {
@@ -998,7 +998,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             //Following if statement checks the relevant clusters for the updated deployment policy
             if (deploymentPolicy.getDeploymentPolicyID().equals(clusterMonitor.getDeploymentPolicyId())) {
 
-                for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+                for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
 
                     ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
@@ -1034,7 +1034,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void removeOldPartitionsFromClusterMonitor(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-                                                       NetworkPartition networkPartition) {
+                                                       NetworkPartitionRef networkPartition) {
 
         for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
 
@@ -1065,13 +1065,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void addNewPartitionsToClusterMonitor(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-                                                  NetworkPartition networkPartition, String deploymentPolicyID,
+                                                  NetworkPartitionRef networkPartition, String deploymentPolicyID,
                                                   String cartridgeType) throws RemoteException,
             CloudControllerServiceInvalidPartitionExceptionException,
             CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
         boolean validationOfNetworkPartitionRequired = false;
-        for (Partition partition : networkPartition.getPartitions()) {
+        for (PartitionRef partition : networkPartition.getPartitions()) {
 
             //Iterating through instances
             for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
