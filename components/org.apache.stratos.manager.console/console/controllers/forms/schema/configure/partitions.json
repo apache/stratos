@@ -18,7 +18,7 @@
             "id": "root/provider",
             "type": "string",
             "title":"Network Partition provider",
-            "enum": ["mock", "ec2", "openstack", "kubernetes"]
+            "enum": ["mock", "ec2", "openstack", "kubernetes", "gce"]
         },
         "partitions": {
             "id": "root/partitions",

@@ -142,7 +142,7 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Application Policy Definition",
                     buttonText = "Application Policy Definition";
             list_data = util.RESTCalls.getApplicationPolicies();
-            if (list_data && list_data.length === 0) {
+            if (list_data.status == 'error') {
                 list_data = null;
             }
             break;

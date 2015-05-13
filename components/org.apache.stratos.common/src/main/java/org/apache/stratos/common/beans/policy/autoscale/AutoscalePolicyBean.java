@@ -29,7 +29,6 @@ public class AutoscalePolicyBean {
     private String description;
     private LoadThresholdsBean loadThresholds;
     private boolean isPublic;
-    private float instanceRoundingFactor;
 
     public String getId() {
         return id;
@@ -55,15 +54,6 @@ public class AutoscalePolicyBean {
         this.description = description;
     }
 
-    public boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-
     public LoadThresholdsBean getLoadThresholds() {
         return loadThresholds;
     }
@@ -72,11 +62,11 @@ public class AutoscalePolicyBean {
         this.loadThresholds = loadThresholds;
     }
 
-    public float getInstanceRoundingFactor() {
-        return instanceRoundingFactor;
+    public boolean getIsPublic() {
+        return isPublic;
     }
 
-    public void setInstanceRoundingFactor(float instanceRoundingFactor) {
-        this.instanceRoundingFactor = instanceRoundingFactor;
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }

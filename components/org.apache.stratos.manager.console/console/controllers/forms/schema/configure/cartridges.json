@@ -200,7 +200,7 @@
                         "id": "root/iaasProvider/0/type",
                         "title": "Type",
                         "name": "Type",
-                        "enum": ["ec2","kubernetes","mock","openstack"],
+                        "enum": ["ec2","kubernetes","mock","openstack", "gce"],
                         "default": "ec2"
                     },
                     "imageId": {
@@ -283,7 +283,7 @@
                                         "title": "Network UUID",
                                         "name": "Network UUID",
                                         "default": "fb9c21f4-0672-48b2-8279-77334bb63a53",
-                                        "pattern":"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                                        /*"pattern":"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"*/
                                     }
                                 }
                             },
@@ -300,8 +300,8 @@
                                         "title": "Network UUID",
                                         "name": "Network UUID",
                                         "default": "1e43f86f-4165-4f2e-8017-dd4cfb5548b0",
-                                        "pattern":"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
-                                    }
+                                        /*"pattern":"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+   */                                 }
                                 }
                             }
                         ]

@@ -307,9 +307,7 @@ public class ObjectConverter {
 
         autoscalePolicy.setId(autoscalePolicyBean.getId());
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
-        autoscalePolicy.setIsPublic(autoscalePolicyBean.getIsPublic());
         autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
-        autoscalePolicy.setInstanceRoundingFactor(autoscalePolicyBean.getInstanceRoundingFactor());
 
         if (autoscalePolicyBean.getLoadThresholds() != null) {
 
@@ -757,10 +755,8 @@ public class ObjectConverter {
         AutoscalePolicyBean autoscalePolicyBean = new AutoscalePolicyBean();
         autoscalePolicyBean.setId(autoscalePolicy.getId());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
-        autoscalePolicyBean.setIsPublic(autoscalePolicy.getIsPublic());
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
-        autoscalePolicyBean.setInstanceRoundingFactor(autoscalePolicy.getInstanceRoundingFactor());
         if (autoscalePolicy.getLoadThresholds() != null) {
             autoscalePolicyBean.setLoadThresholds(convertStubLoadThresholdsToLoadThresholds(autoscalePolicy.getLoadThresholds()));
         }
