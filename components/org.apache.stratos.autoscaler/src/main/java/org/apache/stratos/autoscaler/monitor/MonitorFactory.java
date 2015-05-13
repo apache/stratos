@@ -242,19 +242,19 @@ public class MonitorFactory {
             }
 
             List<PartitionRef> partitionList = new ArrayList<PartitionRef>();
-            for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
+            for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionRefs()) {
 
-                if (networkPartition != null) {
-                    Collections.addAll(partitionList, networkPartition.getPartitions());
+                if (networkPartitionRef != null) {
+                    Collections.addAll(partitionList, networkPartitionRef.getPartitionRefs());
                     try {
 
                         CloudControllerServiceClient.getInstance().
                                 validateNetworkPartitionOfDeploymentPolicy(serviceName,
-                                        networkPartition.getId());
+                                        networkPartitionRef.getId());
                     } catch (Exception e) {
                         String msg = String.format("Error while validating deployment policy " +
-                                "from cloud controller [network-partition-id] %s",
-                                networkPartition.getId());
+                                        "from cloud controller [network-partition-id] %s",
+                                networkPartitionRef.getId());
                         log.error(msg, e);
                         throw new RuntimeException(msg, e);
                     }

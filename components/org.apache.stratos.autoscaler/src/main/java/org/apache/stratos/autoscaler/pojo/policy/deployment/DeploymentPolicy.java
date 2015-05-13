@@ -76,9 +76,9 @@ public class DeploymentPolicy implements Serializable {
      */
     public PartitionRef[] getPartitionsByNetworkPartitionId(String networkPartitionId) {
         if (networkPartitionRefs != null) {
-            for (NetworkPartitionRef networkPartition : networkPartitionRefs) {
-                if (networkPartition.getId().equals(networkPartitionId)) {
-                    return networkPartition.getPartitions();
+            for (NetworkPartitionRef networkPartitionRef : networkPartitionRefs) {
+                if (networkPartitionRef.getId().equals(networkPartitionId)) {
+                    return networkPartitionRef.getPartitionRefs();
                 }
             }
         }

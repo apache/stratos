@@ -706,18 +706,18 @@ public class GroupMonitor extends ParentComponentMonitor {
         } else {
 
             NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
-            NetworkPartitionRef networkPartition = null;
+            NetworkPartitionRef networkPartitionRef = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
                 for (NetworkPartitionRef i : networkPartitions) {
                     if (i.getId().equals(networkPartitionId)) {
-                        networkPartition = i;
+                        networkPartitionRef = i;
                     }
                 }
             }
 
-            if (networkPartition != null) {
+            if (networkPartitionRef != null) {
                 if (networkPartitionContext.getPartitionCtxts().isEmpty()) {
-                    PartitionRef[] partitions = networkPartition.getPartitions();
+                    PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
                     if (partitions != null && partitions.length != 0) {
                         for (PartitionRef partition : partitions) {
 

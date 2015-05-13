@@ -188,10 +188,10 @@ public class ClusterContext extends AbstractClusterContext {
                 .getNetworkPartitionRefs();
         PartitionRef[] partitions = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
-            for (NetworkPartitionRef networkPartition : networkPartitions) {
-                if (networkPartition.getId().equals(
+            for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
+                if (networkPartitionRef.getId().equals(
                         clusterLevelNetworkPartitionContext.getId())) {
-                    partitions = networkPartition.getPartitions();
+                    partitions = networkPartitionRef.getPartitionRefs();
                 }
             }
         }
@@ -205,22 +205,22 @@ public class ClusterContext extends AbstractClusterContext {
         }
 
         // Retrieving the ChildLevelNetworkPartition and create NP Context
-        NetworkPartitionRef networkPartition = null;
+        NetworkPartitionRef networkPartitionRef = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
             for (NetworkPartitionRef networkPartition2 : networkPartitions) {
                 if (networkPartition2.getId().equals(
                         clusterInstance.getNetworkPartitionId())) {
-                    networkPartition = networkPartition2;
+                    networkPartitionRef = networkPartition2;
                 }
             }
         }
 
         // Fill cluster instance context with child level partitions
-        if (networkPartition != null) {
-            for (PartitionRef partition : networkPartition
-                    .getPartitions()) {
+        if (networkPartitionRef != null) {
+            for (PartitionRef partitionRef : networkPartitionRef
+                    .getPartitionRefs()) {
                 addPartition(clusterInstance, cluster,
-                        clusterLevelNetworkPartitionContext, partition,
+                        clusterLevelNetworkPartitionContext, partitionRef,
                         hasGroupScalingDependent, groupScalingEnabledSubtree);
             }
         }
