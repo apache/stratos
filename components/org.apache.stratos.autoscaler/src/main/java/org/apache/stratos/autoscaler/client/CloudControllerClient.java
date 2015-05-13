@@ -37,7 +37,7 @@ import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.PartitionRef;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class CloudControllerClient {
         }
     }
 
-    public synchronized MemberContext startInstance(Partition partition,
+    public synchronized MemberContext startInstance(PartitionRef partition,
                                                     String clusterId, String clusterInstanceId,
                                                     String networkPartitionId, boolean isPrimary,
                                                     int minMemberCount) throws SpawningException {
