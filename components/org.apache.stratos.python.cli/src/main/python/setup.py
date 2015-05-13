@@ -9,9 +9,9 @@ def read(file_name):
 setup(
     name="stratos",
     version="0.0.5",
-    author="Agentmilindu",
-    author_email="Agentmilindu@gmail.com",
-    description="CLI for Apache Stratos",
+    author="Apache Stratos",
+    author_email="dev@stratos.apache.org",
+    description="CLI tool to interact with Apache Stratos",
     keywords="stratos",
     url="http://stratos.apache.org/",
     packages=['cli'],
