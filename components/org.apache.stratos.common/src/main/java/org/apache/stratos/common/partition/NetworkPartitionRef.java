@@ -30,26 +30,25 @@ public class NetworkPartitionRef implements Serializable {
     private static final long serialVersionUID = -8043298009352097370L;
 
     private String id;
-    private String provider;
-    private PartitionRef[] partitions;
+    private PartitionRef[] partitionRefs;
     private String partitionAlgo;
 
-    public void setPartitions(PartitionRef[] partitions) {
-        if (partitions == null) {
-            this.partitions = partitions;
+    public void setPartitions(PartitionRef[] partitionRefs) {
+        if (partitionRefs == null) {
+            this.partitionRefs = partitionRefs;
         } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
+            this.partitionRefs = Arrays.copyOf(partitionRefs, partitionRefs.length);
         }
     }
 
     /**
-     * Gets the value of the partitions.
+     * Gets the value of the partitionRefs.
      */
-    public PartitionRef[] getPartitions() {
-        if (partitions == null) {
-            partitions = new PartitionRef[0];
+    public PartitionRef[] getPartitionRefs() {
+        if (partitionRefs == null) {
+            partitionRefs = new PartitionRef[0];
         }
-        return this.partitions;
+        return this.partitionRefs;
     }
 
     /**
@@ -67,20 +66,12 @@ public class NetworkPartitionRef implements Serializable {
     }
 
     public PartitionRef getPartition(String partitionId) {
-        for (PartitionRef partition : partitions) {
-            if (partition.getId().equals(partitionId)) {
-                return partition;
+        for (PartitionRef partitionRef : partitionRefs) {
+            if (partitionRef.getId().equals(partitionId)) {
+                return partitionRef;
             }
         }
         return null;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
     }
 
     public String getPartitionAlgo() {
