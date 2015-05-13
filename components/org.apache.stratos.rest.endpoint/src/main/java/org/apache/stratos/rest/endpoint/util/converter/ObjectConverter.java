@@ -22,6 +22,8 @@ package org.apache.stratos.rest.endpoint.util.converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.partition.NetworkPartitionRef;
+import org.apache.stratos.autoscaler.stub.partition.PartitionRef;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
@@ -492,10 +494,10 @@ public class ObjectConverter {
     }
 
     private static List<NetworkPartitionBean> convertASStubNetworkPartitionsToNetworkPartitions(
-            org.apache.stratos.autoscaler.stub.partition.NetworkPartition[] networkPartitions) {
+            NetworkPartitionRef[] networkPartitions) {
 
         List<NetworkPartitionBean> networkPartitionBeans = new ArrayList<NetworkPartitionBean>();
-        for (org.apache.stratos.autoscaler.stub.partition.NetworkPartition networkPartition : networkPartitions) {
+        for (NetworkPartitionRef networkPartition : networkPartitions) {
             NetworkPartitionBean networkPartitionBean = new NetworkPartitionBean();
             networkPartitionBean.setId(networkPartition.getId());
             networkPartitionBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
@@ -659,10 +661,10 @@ public class ObjectConverter {
 
 
     private static List<PartitionBean> convertASStubPartitionsToPartitions(
-            org.apache.stratos.autoscaler.stub.partition.Partition[] partitions) {
+            PartitionRef[] partitions) {
 
         List<PartitionBean> partitionBeans = new ArrayList<PartitionBean>();
-        for (org.apache.stratos.autoscaler.stub.partition.Partition partition : partitions) {
+        for (PartitionRef partition : partitions) {
             PartitionBean partitionBean = new PartitionBean();
             partitionBean.setId(partition.getId());
             partitionBean.setPartitionMax(partition.getPartitionMax());
@@ -1764,7 +1766,7 @@ public class ObjectConverter {
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
         deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
         deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionsToNetworkPartitions(
-                deploymentPolicy.getNetworkPartitions()));
+                deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
     }
 
@@ -1801,7 +1803,7 @@ public class ObjectConverter {
         deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
 
         if (deploymentPolicyBean.getNetworkPartitions() != null) {
-            deploymentPolicy.setNetworkPartitions(convertNetworkPartitionToASStubNetworkPartition(
+            deploymentPolicy.setNetworkPartitionRefs(convertNetworkPartitionToASStubNetworkPartition(
                     deploymentPolicyBean.getNetworkPartitions()));
         }
 
@@ -1834,15 +1836,15 @@ public class ObjectConverter {
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
         deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
         deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionRefsToNetworkPartitions(
-                deploymentPolicy.getNetworkPartitions()));
+                deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
     }
 
     private static List<NetworkPartitionBean> convertASStubNetworkPartitionRefsToNetworkPartitions(
-            org.apache.stratos.autoscaler.stub.partition.NetworkPartition[] networkPartitions) {
+            NetworkPartitionRef[] networkPartitions) {
 
         List<NetworkPartitionBean> networkPartitionBeans = new ArrayList<NetworkPartitionBean>();
-        for (org.apache.stratos.autoscaler.stub.partition.NetworkPartition networkPartition : networkPartitions) {
+        for (NetworkPartitionRef networkPartition : networkPartitions) {
             NetworkPartitionBean networkPartitionBean = new NetworkPartitionBean();
             networkPartitionBean.setId(networkPartition.getId());
             networkPartitionBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
@@ -1855,10 +1857,10 @@ public class ObjectConverter {
 
 
     private static List<PartitionBean> convertASStubPartitionRefsToPartitionRefs(
-            org.apache.stratos.autoscaler.stub.partition.Partition[] partitions) {
+            PartitionRef[] partitions) {
 
         List<PartitionBean> partitionRefBeans = new ArrayList<PartitionBean>();
-        for (org.apache.stratos.autoscaler.stub.partition.Partition partition : partitions) {
+        for (PartitionRef partition : partitions) {
             PartitionBean partitionRefBean = new PartitionBean();
             partitionRefBean.setId(partition.getId());
             partitionRefBean.setPartitionMax(partition.getPartitionMax());
@@ -1868,15 +1870,15 @@ public class ObjectConverter {
         return partitionRefBeans;
     }
 
-    private static org.apache.stratos.autoscaler.stub.partition.Partition convertPartitionToASStubPartition(
+    private static PartitionRef convertPartitionToASStubPartition(
             PartitionBean partition) {
 
         if (partition == null) {
             return null;
         }
 
-        org.apache.stratos.autoscaler.stub.partition.Partition stubPartition = new
-                org.apache.stratos.autoscaler.stub.partition.Partition();
+        PartitionRef stubPartition = new
+                PartitionRef();
 
         stubPartition.setId(partition.getId());
         stubPartition.setPartitionMax(partition.getPartitionMax());
@@ -1885,11 +1887,11 @@ public class ObjectConverter {
     }
 
 
-    private static org.apache.stratos.autoscaler.stub.partition.Partition[] convertToASStubPartitions
+    private static PartitionRef[] convertToASStubPartitions
             (List<PartitionBean> partitionList) {
 
-        org.apache.stratos.autoscaler.stub.partition.Partition[] partitions
-                = new org.apache.stratos.autoscaler.stub.partition.Partition[partitionList.size()];
+        PartitionRef[] partitions
+                = new PartitionRef[partitionList.size()];
         for (int i = 0; i < partitionList.size(); i++) {
             partitions[i] = convertPartitionToASStubPartition(partitionList.get(i));
         }
@@ -1898,13 +1900,13 @@ public class ObjectConverter {
     }
 
 
-    private static org.apache.stratos.autoscaler.stub.partition.NetworkPartition[] convertNetworkPartitionToASStubNetworkPartition(
+    private static NetworkPartitionRef[] convertNetworkPartitionToASStubNetworkPartition(
             List<NetworkPartitionBean> networkPartitionBean) {
 
-        org.apache.stratos.autoscaler.stub.partition.NetworkPartition[] networkPartition =
-                new org.apache.stratos.autoscaler.stub.partition.NetworkPartition[networkPartitionBean.size()];
+        NetworkPartitionRef[] networkPartition =
+                new NetworkPartitionRef[networkPartitionBean.size()];
         for (int i = 0; i < networkPartitionBean.size(); i++) {
-            networkPartition[i] = new org.apache.stratos.autoscaler.stub.partition.NetworkPartition();
+            networkPartition[i] = new NetworkPartitionRef();
             networkPartition[i].setId(networkPartitionBean.get(i).getId());
             networkPartition[i].setPartitionAlgo(networkPartitionBean.get(i).getPartitionAlgo());
             networkPartition[i].setPartitions(convertToASStubPartitions(networkPartitionBean.get(i).getPartitions()));
