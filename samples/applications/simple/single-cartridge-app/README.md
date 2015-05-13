@@ -4,22 +4,22 @@ A simple application with a php cartridge.
 
 Application view
 ----------------
-single-cartridge-app
--- single-cartridge-app-1
--- -- my-php
+single-cartridge-app            <br />
+-- single-cartridge-app-1       <br />
+-- -- my-php                    <br />
 
 Application folder structure
 ----------------------------
--- artifacts/<iaas>/ IaaS specific artifacts
--- scripts/common/ Common scripts for all iaases
--- scripts/<iaas> IaaS specific scripts
+-- artifacts/<iaas>/ IaaS specific artifacts                <br />
+-- scripts/common/ Common scripts for all iaases            <br />
+-- scripts/<iaas> IaaS specific scripts                     <br />
 
 How to run
 ----------
-cd scripts/<iaas>/
-./deploy.sh
+cd scripts/<iaas>/          <br />
+./deploy.sh                 <br />
 
 How to undeploy
 ---------------
-cd scripts/<iaas>/
-./undeploy.sh
+cd scripts/<iaas>/          <br />
+./undeploy.sh               <br />

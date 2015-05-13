@@ -6,24 +6,24 @@ is active. Group scaling has been disabled in MySQL, PHP group.
 
 Application View
 ----------------
-wordpress
--- wordpress-1
--- -- mysql-php-group
--- -- -- my-php
--- -- -- my-mysql
+wordpress                   <br />
+-- wordpress-1              <br />
+-- -- mysql-php-group       <br />
+-- -- -- my-php             <br />
+-- -- -- my-mysql           <br />
 
 Application folder structure
 ----------------------------
--- artifacts/<iaas>/ IaaS specific artifacts
--- scripts/common/ Common scripts for all iaases
--- scripts/<iaas> IaaS specific scripts
+-- artifacts/<iaas>/ IaaS specific artifacts        <br />
+-- scripts/common/ Common scripts for all iaases    <br />
+-- scripts/<iaas> IaaS specific scripts             <br />
 
 How to run
 ----------
-cd scripts/<iaas>/
-./deploy.sh
+cd scripts/<iaas>/          <br />
+./deploy.sh                 <br />
 
 How to undeploy
 ---------------
-cd scripts/<iaas>/
-./undeploy.sh
+cd scripts/<iaas>/          <br />
+./undeploy.sh               <br />

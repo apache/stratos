@@ -9,28 +9,28 @@ By running this sample, this particular scenario can be simulated.
 
 Application View
 ----------------
-my-compositeapp (php-tomcat-group-postgres-mysql-group-esb)
--- my-compositeapp-1
--- -- my-esb
--- -- my-dbgroup
--- -- -- my-postgres
--- -- -- my-mysql
--- -- my-appgroup
--- -- -- my-tomcat
--- -- -- my-php
+my-compositeapp (php-tomcat-group-postgres-mysql-group-esb) <br />
+-- my-compositeapp-1                                        <br />
+-- -- my-esb                                                <br />
+-- -- my-dbgroup                                            <br />
+-- -- -- my-postgres                                        <br />
+-- -- -- my-mysql                                           <br />
+-- -- my-appgroup                                           <br />
+-- -- -- my-tomcat                                          <br />
+-- -- -- my-php                                             <br />
 
 Application folder structure
 ----------------------------
--- artifacts/<iaas>/ IaaS specific artifacts
--- scripts/common/ Common scripts for all iaases
--- scripts/<iaas> IaaS specific scripts
+-- artifacts/<iaas>/ IaaS specific artifacts                <br />
+-- scripts/common/ Common scripts for all iaases            <br />
+-- scripts/<iaas> IaaS specific scripts                     <br />
 
 How to run
 ----------
-cd scripts/<iaas>/
-./deploy.sh
+cd scripts/<iaas>/                                          <br />
+./deploy.sh                                                 <br />
 
 How to undeploy
 ---------------
-cd scripts/<iaas>/
-./undeploy.sh
+cd scripts/<iaas>/                                          <br />
+./undeploy.sh                                               <br />

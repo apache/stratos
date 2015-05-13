@@ -18,23 +18,23 @@ https://github.com/apache/stratos/tree/master/tools/docker-images/cartridge-dock
 
 Application view
 ----------------
-tomcat-single-signon
--- tomcat-single-signon-1
--- -- mytomcat3
--- -- mywso2is
+tomcat-single-signon            <br />
+-- tomcat-single-signon-1       <br />
+-- -- mytomcat3                 <br />
+-- -- mywso2is                  <br />
 
 Application folder structure
 ----------------------------
--- artifacts/<iaas>/ IaaS specific artifacts
--- scripts/common/ Common scripts for all iaases
--- scripts/<iaas> IaaS specific scripts
+-- artifacts/<iaas>/ IaaS specific artifacts        <br />
+-- scripts/common/ Common scripts for all iaases    <br />
+-- scripts/<iaas> IaaS specific scripts             <br />
 
 How to run
 ----------
-cd scripts/<iaas>/
-./deploy.sh
+cd scripts/<iaas>/              <br />
+./deploy.sh                     <br />
 
 How to undeploy
 ---------------
-cd scripts/<iaas>/
-./undeploy.sh
+cd scripts/<iaas>/              <br />
+./undeploy.sh                   <br />
