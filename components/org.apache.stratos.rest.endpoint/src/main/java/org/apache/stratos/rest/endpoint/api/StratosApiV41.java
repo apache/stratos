@@ -21,6 +21,7 @@ package org.apache.stratos.rest.endpoint.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
+import org.apache.stratos.autoscaler.stub.exception.InvalidServiceGroupException;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -465,6 +466,39 @@ public class StratosApiV41 extends AbstractApi {
             }
         }
     }
+
+    /**
+     * Updates a cartridge group
+     *
+     * @param cartridgeGroup cartridge group definition
+     * @return 200 if network partition is successfully updated
+     * @throws RestAPIException
+     */
+    @PUT
+    @Path("/cartridgeGroups")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/updateServiceGroup")
+    public Response updateServiceGroup(
+            GroupBean cartridgeGroup) throws RestAPIException {
+
+        try {
+            StratosApiV41Utils.updateServiceGroup(cartridgeGroup);
+            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroup.getName()).build();
+
+            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Cartridge group updated successfully: [cartridge-group] %s",
+                            cartridgeGroup.getName()))).build();
+
+        } catch (InvalidCartridgeGroupDefinitionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Invalid cartridge group definition")).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Cartridge group not found")).build();
+        }
+    }
+
 
     /**
      * Gets the cartridge group definition.

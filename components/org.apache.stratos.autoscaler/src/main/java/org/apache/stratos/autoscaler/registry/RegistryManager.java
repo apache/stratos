@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
@@ -345,6 +346,28 @@ public class RegistryManager {
             }
         } finally {
             endTenantFlow();
+        }
+    }
+
+
+    public void updateServiceGroup(ServiceGroup serviceGroup) throws InvalidServiceGroupException {
+        try {
+            if (serviceGroup == null || StringUtils.isEmpty(serviceGroup.getName())) {
+                throw new IllegalArgumentException("Cartridge group or group name cannot be null");
+            }
+            if (getServiceGroup(serviceGroup.getName()) == null) {
+                throw new InvalidServiceGroupException(String.format("Cartridge group does not exist: " +
+                        "[cartridge-group] %s", serviceGroup.getName()));
+            }
+
+            persistServiceGroup(serviceGroup);
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Updated cartridge group: [group-name] %s", serviceGroup.getName()));
+            }
+        } catch (Exception e) {
+            log.error((String.format("Unable to update cartridge group [group-name] %s",
+                    serviceGroup.getName())), e);
         }
     }
 

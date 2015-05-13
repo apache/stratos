@@ -655,6 +655,60 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return true;
     }
 
+    public boolean updateServiceGroup(ServiceGroup cartridgeGroup) throws InvalidServiceGroupException {
+
+        if (cartridgeGroup == null || StringUtils.isEmpty(cartridgeGroup.getName())) {
+            String msg = "Cartridge group cannot be null or service name cannot be empty.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Updating cartridge group: [group-name] %s", cartridgeGroup.getName()));
+        }
+
+        String groupName = cartridgeGroup.getName();
+        if (!RegistryManager.getInstance().serviceGroupExist(groupName)) {
+            throw new InvalidServiceGroupException(String.format("Cartridge group does not exist: [cartridge-group] %s",
+                    cartridgeGroup.getName()));
+        }
+
+        Dependencies dependencies = cartridgeGroup.getDependencies();
+        if (dependencies != null) {
+            String[] startupOrders = dependencies.getStartupOrders();
+            AutoscalerUtil.validateStartupOrders(groupName, startupOrders);
+
+            if (log.isDebugEnabled()) {
+                log.debug("StartupOrders " + Arrays.toString(startupOrders));
+
+                if (startupOrders != null) {
+                    log.debug("StartupOrder:size  " + startupOrders.length);
+                } else {
+                    log.debug("StartupOrder: is null");
+                }
+            }
+
+            String[] scalingDependents = dependencies.getScalingDependants();
+            AutoscalerUtil.validateScalingDependencies(groupName, scalingDependents);
+
+            if (log.isDebugEnabled()) {
+                log.debug("ScalingDependent " + Arrays.toString(scalingDependents));
+
+                if (scalingDependents != null) {
+                    log.debug("ScalingDependents:size " + scalingDependents.length);
+                } else {
+                    log.debug("ScalingDependent: is null");
+                }
+            }
+        }
+
+        RegistryManager.getInstance().updateServiceGroup(cartridgeGroup);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Cartridge group successfully updated: [group-name] %s", cartridgeGroup.getName()));
+        }
+        return true;
+    }
+
     @Override
     public boolean removeServiceGroup(String groupName) throws CartridgeGroupNotFoundException {
         try {

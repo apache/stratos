@@ -201,6 +201,15 @@ public interface AutoscalerService {
     public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
 
     /**
+     * Update a cartridge group
+     *
+     * @param serviceGroup
+     * @return
+     * @throws InvalidServiceGroupException
+     */
+    public boolean updateServiceGroup(ServiceGroup serviceGroup) throws InvalidServiceGroupException;
+
+    /**
      * Remove a cartridge group
      *
      * @param groupName

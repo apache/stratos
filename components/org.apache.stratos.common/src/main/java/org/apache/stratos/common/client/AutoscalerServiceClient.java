@@ -185,6 +185,11 @@ public class AutoscalerServiceClient {
         stub.addServiceGroup(serviceGroup);
     }
 
+    public void updateServiceGroup(ServiceGroup serviceGroup) throws AutoscalerServiceInvalidServiceGroupExceptionException,
+            RemoteException {
+        stub.updateServiceGroup(serviceGroup);
+    }
+
     public void removeServiceGroup(String groupName) throws RemoteException,
             AutoscalerServiceCartridgeGroupNotFoundExceptionException {
         stub.removeServiceGroup(groupName);

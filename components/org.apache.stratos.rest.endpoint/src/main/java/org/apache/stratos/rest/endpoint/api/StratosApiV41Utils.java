@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
+import org.apache.stratos.autoscaler.stub.exception.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -1067,6 +1068,93 @@ public class StratosApiV41Utils {
             String message = "Could not add cartridge group";
             log.error(message, e);
             throw new RestAPIException(message, e);
+        }
+    }
+
+    /**
+     * Update a cartridge group
+     *
+     * @param cartridgeGroup
+     * @throws RestAPIException
+     */
+    public static void updateServiceGroup(GroupBean cartridgeGroup) throws RestAPIException,
+            InvalidCartridgeGroupDefinitionException {
+        try {
+            ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
+                    cartridgeGroup);
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+
+            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+
+            // Validate whether cartridge group can be updated
+            if (!smServiceClient.canCartirdgeGroupBeRemoved(cartridgeGroup.getName())) {
+                String message = "Cannot update cartridge group: [group-name] " + cartridgeGroup.getName() +
+                        " since it is used in another cartridge group or an application";
+                log.error(message);
+                throw new RestAPIException(message);
+            }
+
+            //validate the group definition to check if cartridges duplicate in any groups defined
+            validateCartridgeDuplicationInGroupDefinition(cartridgeGroup);
+
+            //validate the group definition to check if groups duplicate in any groups and
+            //validate the group definition to check for cyclic group behaviour
+            validateGroupDuplicationInGroupDefinition(cartridgeGroup);
+
+            List<String> cartridgesBeforeUpdating = new ArrayList<String>();
+            List<String> cartridgesAfterUpdating = new ArrayList<String>();
+
+            ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(cartridgeGroup.getName());
+            findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
+            findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
+
+            List<String> cartridgesToRemove = cartridgesBeforeUpdating;
+            List<String> cartridgesToAdd = cartridgesAfterUpdating;
+
+            if ((cartridgesBeforeUpdating != null) || (!cartridgesBeforeUpdating.isEmpty()) ||
+                    (cartridgesAfterUpdating != null) || (!cartridgesAfterUpdating.isEmpty())) {
+
+                for (String before : cartridgesBeforeUpdating) {
+                    for (String after : cartridgesAfterUpdating) {
+                        if (before.equals(after)) {
+                            cartridgesToRemove.remove(after);
+                            cartridgesToAdd.remove(after);
+                        }
+                    }
+                }
+            }
+
+            // Add cartridge group elements to SM cache - done after cartridge group has been updated
+            if (cartridgesToAdd != null || !cartridgesToAdd.isEmpty()) {
+                smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                        cartridgesToAdd.toArray(new String[cartridgesToRemove.size()]));
+            }
+
+            // Remove cartridge group elements from SM cache - done after cartridge group has been updated
+            if (cartridgesToRemove != null || !cartridgesToRemove.isEmpty()) {
+                smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                        cartridgesToRemove.toArray(new String[cartridgesToRemove.size()]));
+            }
+
+            if (serviceGroup != null) {
+                autoscalerServiceClient.updateServiceGroup(
+                        ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(cartridgeGroup));
+            }
+
+        } catch (RemoteException e) {
+            String message = String.format("Could not update cartridge group: [group-name] %s,",
+                    cartridgeGroup.getName());
+            log.error(message);
+            throw new RestAPIException(message, e);
+        } catch (AutoscalerServiceInvalidServiceGroupExceptionException e) {
+            String message = String.format("Autoscaler invalid cartridge group definition: [group-name] %s",
+                    cartridgeGroup.getName());
+            log.error(message);
+            throw new InvalidCartridgeGroupDefinitionException(message, e);
+        } catch (ServiceGroupDefinitionException e) {
+            String message = String.format("Invalid cartridge group definition: [group-name] %s", cartridgeGroup.getName());
+            log.error(message);
+            throw new InvalidCartridgeGroupDefinitionException(message, e);
         }
     }
 
