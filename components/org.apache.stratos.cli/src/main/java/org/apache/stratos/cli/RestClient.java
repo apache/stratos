@@ -169,6 +169,8 @@ public class RestClient implements GenericRestClient {
                 System.out.println(String.format("Successfully added %s", entityName));
             } else if (responseCode == 500) {
                 System.out.println("Internal server error occurred");
+            } else if (responseCode == 409) {
+                System.out.println(String.format("Specified %s already exists",entityName));
             }
         } catch (Exception e) {
             String message = String.format("Error in adding %s", entityName);
