@@ -23,19 +23,18 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * The model class for NetworkPartition definition.
+ * The model class for NetworkPartition information passed in deployment policy.
  */
-public class NetworkPartition implements Serializable {
+public class NetworkPartitionRef implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
 
     private String id;
     private String provider;
-    private boolean activeByDefault;
-    private Partition[] partitions;
+    private PartitionRef[] partitions;
     private String partitionAlgo;
 
-    public void setPartitions(Partition[] partitions) {
+    public void setPartitions(PartitionRef[] partitions) {
         if (partitions == null) {
             this.partitions = partitions;
         } else {
@@ -46,9 +45,9 @@ public class NetworkPartition implements Serializable {
     /**
      * Gets the value of the partitions.
      */
-    public Partition[] getPartitions() {
+    public PartitionRef[] getPartitions() {
         if (partitions == null) {
-            partitions = new Partition[0];
+            partitions = new PartitionRef[0];
         }
         return this.partitions;
     }
@@ -67,16 +66,8 @@ public class NetworkPartition implements Serializable {
         this.id = id;
     }
 
-    public boolean isActiveByDefault() {
-        return activeByDefault;
-    }
-
-    public void setActiveByDefault(boolean activeByDefault) {
-        this.activeByDefault = activeByDefault;
-    }
-
-    public Partition getPartition(String partitionId) {
-        for (Partition partition : partitions) {
+    public PartitionRef getPartition(String partitionId) {
+        for (PartitionRef partition : partitions) {
             if (partition.getId().equals(partitionId)) {
                 return partition;
             }

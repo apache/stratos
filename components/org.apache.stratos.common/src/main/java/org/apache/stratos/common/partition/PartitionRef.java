@@ -24,9 +24,9 @@ import org.apache.stratos.common.Property;
 import java.io.Serializable;
 
 /**
- * This is keep the partition information
+ * This is keep the partition information passed in deployment policy
  */
-public class Partition implements Serializable {
+public class PartitionRef implements Serializable {
 
     private static final long serialVersionUID = 3725971287992010720L;
 
@@ -35,10 +35,8 @@ public class Partition implements Serializable {
     /**
      * provider should match with an IaasProvider type.
      */
-    private String provider;
     private String id;
     private String description;
-    private boolean isPublic;
     private int partitionMax;
     private Properties properties = new Properties();
 
@@ -82,36 +80,12 @@ public class Partition implements Serializable {
         this.description = description;
     }
 
-    /**
-     * Sets the value of the isPublic property.
-     *
-     * @param isPublic allowed object is boolean
-     */
-    public void setIsPublic(boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    /**
-     * Gets the value of the isPublic property.
-     */
-    public boolean getIsPublic() {
-        return isPublic;
-    }
-
     public Properties getProperties() {
         return properties;
     }
 
     public void setProperties(Properties properties) {
         this.properties = properties;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
     }
 
     public String getKubernetesClusterId() {
@@ -124,13 +98,12 @@ public class Partition implements Serializable {
 
     @Override
     public String toString() {
-        return "Partition [id=" + id + ", description=" + description + ", isPublic=" + isPublic
-                + ", provider=" + provider + ", properties=" + properties + "]";
+        return "Partition [id=" + id + ", description=" + description + ", properties=" + properties + "]";
     }
 
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof Partition) {
-            return this.id.equals(((Partition) obj).getId());
+        if (obj != null && obj instanceof PartitionRef) {
+            return this.id.equals(((PartitionRef) obj).getId());
         }
         return false;
 
