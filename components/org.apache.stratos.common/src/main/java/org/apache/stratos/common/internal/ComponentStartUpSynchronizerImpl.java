@@ -60,6 +60,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
         eventListeners = new ArrayList<ComponentStartUpEventListener>();
 
         componentStartUpSynchronizerEnabled = Boolean.getBoolean(COMPONENT_STARTUP_SYNCHRONIZER_ENABLED);
+        log.info("Component startup synchronizer enabled: " + componentStartUpSynchronizerEnabled);
 
         componentActivationCheckInterval = Long.getLong(COMPONENT_ACTIVATION_CHECK_INTERVAL,
                 DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL);
