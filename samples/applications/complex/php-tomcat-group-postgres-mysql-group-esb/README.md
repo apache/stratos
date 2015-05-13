@@ -21,16 +21,16 @@ my-compositeapp (php-tomcat-group-postgres-mysql-group-esb) <br />
 
 Application folder structure
 ----------------------------
--- artifacts/<iaas>/ IaaS specific artifacts                <br />
+-- artifacts/[iaas]/ IaaS specific artifacts                <br />
 -- scripts/common/ Common scripts for all iaases            <br />
--- scripts/<iaas> IaaS specific scripts                     <br />
+-- scripts/[iaas] IaaS specific scripts                     <br />
 
 How to run
 ----------
-cd scripts/<iaas>/                                          <br />
-./deploy.sh                                                 <br />
+cd scripts/[iaas]/          <br />
+./deploy.sh                 <br />
 
 How to undeploy
 ---------------
-cd scripts/<iaas>/                                          <br />
-./undeploy.sh                                               <br />
+cd scripts/[iaas]/          <br />
+./undeploy.sh               <br />
