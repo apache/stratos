@@ -144,6 +144,14 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 handleScalingDownBeyondMin(instanceContext,
                                         networkPartitionContext, false);
                             }
+
+                            //Resetting the events events
+                            instanceContext.setIdToScalingOverMaxEvent(
+                                    new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
+                            instanceContext.setIdToScalingEvent(
+                                    new ConcurrentHashMap<String, ScalingEvent>());
+                            instanceContext.setIdToScalingOverMaxEvent(
+                                    new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                         }
                     }
 
@@ -211,9 +219,6 @@ public class GroupMonitor extends ParentComponentMonitor {
         } else {
             notifyParentOnScalingUpBeyondMax(networkPartitionContext, instanceContext);
         }
-        //Resetting the max events
-        instanceContext.setIdToScalingOverMaxEvent(
-                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
     }
 
     /**
@@ -236,7 +241,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 allChildrenScaleDown = true;
             }
         }
-        //all the children sent the scale down only, it will try to scale down
+        //all the children sent the scale down, then the group-instance will try to scale down or
+        // if it is a force scale-down
         if (allChildrenScaleDown || forceScaleDown) {
             if (hasScalingDependents) {
                 if (nwPartitionContext.getNonTerminatedInstancesCount() >
@@ -278,9 +284,6 @@ public class GroupMonitor extends ParentComponentMonitor {
             }
 
         }
-        //Resetting the events
-        instanceContext.setIdToScalingDownBeyondMinEvent(
-                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
     }
 
     /**
@@ -354,7 +357,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 networkPartitionContext).getMaxInstanceCount();
         if (groupScalingEnabled && maxInstances > networkPartitionContext.
                 getNonTerminatedInstancesCount()) {
-            //increase group by one more instance
+            //increase group by one more instance and calculate the factor for the group scaling
+            // and notify parent to scale all the dependent in parallel with this factor
             float minInstances = ((GroupLevelNetworkPartitionContext)
                     networkPartitionContext).getMinInstanceCount();
 
