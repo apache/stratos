@@ -586,7 +586,7 @@ public class StratosApiV41 extends AbstractApi {
         NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
         if (networkPartitions == null || networkPartitions.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
-                    ResponseMessageBean.SUCCESS, "No network partitions found")).build();
+                    ResponseMessageBean.ERROR, "No network partitions found")).build();
         }
         return Response.ok(networkPartitions).build();
     }

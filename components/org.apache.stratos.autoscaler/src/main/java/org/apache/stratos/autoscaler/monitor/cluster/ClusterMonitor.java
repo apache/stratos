@@ -88,7 +88,6 @@ public class ClusterMonitor extends Monitor {
 
 
     protected boolean hasFaultyMember = false;
-    protected boolean stop = false;
     protected ClusterContext clusterContext;
     protected String serviceType;
     private AtomicBoolean monitoringStarted;
@@ -155,10 +154,12 @@ public class ClusterMonitor extends Monitor {
             if (other.clusterId != null) {
                 return false;
             }
+        } else {
+            if (!this.clusterId.equals(other.clusterId)) {
+                return false;
+            }
         }
-        if (!this.clusterId.equals(other.clusterId)) {
-            return false;
-        }
+
         return true;
     }
 
@@ -209,20 +210,8 @@ public class ClusterMonitor extends Monitor {
         this.isDestroyed = isDestroyed;
     }
 
-    public boolean isHasFaultyMember() {
-        return hasFaultyMember;
-    }
-
     public void setHasFaultyMember(boolean hasFaultyMember) {
         this.hasFaultyMember = hasFaultyMember;
-    }
-
-    public boolean isStop() {
-        return stop;
-    }
-
-    public void setStop(boolean stop) {
-        this.stop = stop;
     }
 
     public String getServiceId() {
@@ -237,10 +226,6 @@ public class ClusterMonitor extends Monitor {
 
     public AtomicBoolean hasMonitoringStarted() {
         return monitoringStarted;
-    }
-
-    public void setMonitoringStarted(boolean monitoringStarted) {
-        this.monitoringStarted.set(monitoringStarted);
     }
 
     public ClusterContext getClusterContext() {
@@ -451,7 +436,7 @@ public class ClusterMonitor extends Monitor {
                                 if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
                                     log.info("Executing scaling rule as statistics have been reset");
-                                    ClusterContext clusterContext = (ClusterContext) ClusterMonitor.this.clusterContext;
+                                    ClusterContext clusterContext = ClusterMonitor.this.clusterContext;
 
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
@@ -568,10 +553,6 @@ public class ClusterMonitor extends Monitor {
                 ", hasPrimary=" + hasPrimary + " ]";
     }
 
-    public boolean isHasPrimary() {
-        return hasPrimary;
-    }
-
     public void setHasPrimary(boolean hasPrimary) {
         this.hasPrimary = hasPrimary;
     }
@@ -614,8 +595,8 @@ public class ClusterMonitor extends Monitor {
                 + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
                 + ", [factor] " + scalingEvent.getFactor());
 
-        float scalingFactorBasedOnDependencies = scalingFactorBasedOnDependencies = scalingEvent.getFactor();
-        ClusterContext vmClusterContext = (ClusterContext) clusterContext;
+        float scalingFactorBasedOnDependencies = scalingEvent.getFactor();
+        ClusterContext vmClusterContext = clusterContext;
         String instanceId = scalingEvent.getInstanceId();
 
         ClusterInstanceContext clusterInstanceContext =
@@ -826,12 +807,12 @@ public class ClusterMonitor extends Monitor {
         String networkPartitionId = averageRequestsInFlightEvent.getNetworkPartitionId();
         String clusterId = averageRequestsInFlightEvent.getClusterId();
         String clusterInstanceId = averageRequestsInFlightEvent.getClusterInstanceId();
-        Float servedCount = averageRequestsInFlightEvent.getServedCount();
+        /*Float servedCount = averageRequestsInFlightEvent.getServedCount();
         Float activeInstances = averageRequestsInFlightEvent.getActiveInstances();
         Float requestsServedPerInstance = servedCount / activeInstances;
         if (requestsServedPerInstance.isInfinite()) {
             requestsServedPerInstance = 0f;
-        }
+        }*/
         float value = averageRequestsInFlightEvent.getValue();
         if (log.isDebugEnabled()) {
             log.debug(String.format("Average Rif event: [cluster] %s [network-partition] %s [value] %s",
@@ -937,11 +918,6 @@ public class ClusterMonitor extends Monitor {
         }
         float value = memberGradientOfMemoryConsumptionEvent.getValue();
         memberStatsContext.setGradientOfMemoryConsumption(value);
-    }
-
-    public void handleMemberSecondDerivativeOfMemoryConsumptionEvent(
-            MemberSecondDerivativeOfMemoryConsumptionEvent memberSecondDerivativeOfMemoryConsumptionEvent) {
-
     }
 
     public void handleMemberAverageLoadAverageEvent(
@@ -1055,11 +1031,6 @@ public class ClusterMonitor extends Monitor {
 
         ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().process(
                 ClusterStatusInactiveProcessor.class.getName(), clusterId, clusterInstanceId);
-    }
-
-    public void handleMemberStartedEvent(
-            MemberStartedEvent memberStartedEvent) {
-
     }
 
     public void handleMemberActivatedEvent(
@@ -1188,10 +1159,6 @@ public class ClusterMonitor extends Monitor {
                 ClusterStatusTerminatedProcessor.class.getName(), clusterId, clusterInstanceId);
     }
 
-    public void handleClusterRemovedEvent(
-            ClusterRemovedEvent clusterRemovedEvent) {
-
-    }
 
     public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
 
@@ -1251,7 +1218,6 @@ public class ClusterMonitor extends Monitor {
                                 partitionContext.getPartitionId() + "]");
                     }
                     // need to terminate active, pending and obsolete members
-                    //FIXME to traverse concurrent
                     // active members
 
                     if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
@@ -1260,10 +1226,7 @@ public class ClusterMonitor extends Monitor {
                     }
 
                     List<String> activeMemberIdList = new ArrayList<String>();
-                    Iterator<MemberContext> iterator = partitionContext.getActiveMembers().listIterator();
-                    while (iterator.hasNext()) {
-                        MemberContext activeMemberCtxt = iterator.next();
-
+                    for (MemberContext activeMemberCtxt : partitionContext.getActiveMembers()) {
                         activeMemberIdList.add(activeMemberCtxt.getMemberId());
 
                     }
@@ -1308,13 +1271,13 @@ public class ClusterMonitor extends Monitor {
     }
 
     public Map<String, ClusterLevelNetworkPartitionContext> getAllNetworkPartitionCtxts() {
-        return ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts();
+        return (this.clusterContext).getNetworkPartitionCtxts();
     }
 
     public ClusterInstanceContext getClusterInstanceContext(String networkPartitionId, String instanceId) {
         Map<String,
                 ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
-                ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts();
+                (this.clusterContext).getNetworkPartitionCtxts();
         if (StringUtils.isBlank(networkPartitionId)) {
             throw new RuntimeException("Network partition id is null");
         }
@@ -1329,7 +1292,7 @@ public class ClusterMonitor extends Monitor {
     }
 
     public Collection<ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
-        return ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts().values();
+        return (this.clusterContext).getNetworkPartitionCtxts().values();
     }
 
     public void createClusterInstances(List<String> parentInstanceIds, Cluster cluster)
@@ -1344,7 +1307,6 @@ public class ClusterMonitor extends Monitor {
                 getCluster(this.clusterId);
         try {
             return createInstance(instanceId, cluster);
-            //TODO exception
         } catch (PolicyValidationException e) {
             log.error("Error while creating the cluster instance", e);
         } catch (PartitionValidationException e) {
@@ -1368,7 +1330,7 @@ public class ClusterMonitor extends Monitor {
             if (clusterInstance != null) {
 
                 // Cluster instance is already there. No need to create one.
-                ClusterContext clusterContext = (ClusterContext) this.getClusterContext();
+                ClusterContext clusterContext = this.getClusterContext();
                 if (clusterContext == null) {
                     clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
                             hasScalingDependents(), this.deploymentPolicyId);
@@ -1419,7 +1381,7 @@ public class ClusterMonitor extends Monitor {
         //TODO take read lock for network partition context
         //FIXME to iterate properly
         for (ClusterLevelNetworkPartitionContext networkPartitionContext :
-                ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts().values()) {
+                (this.clusterContext).getNetworkPartitionCtxts().values()) {
             ClusterInstanceContext clusterInstanceContext =
                     (ClusterInstanceContext) networkPartitionContext.getInstanceContext(instanceId);
             if (clusterInstanceContext != null) {

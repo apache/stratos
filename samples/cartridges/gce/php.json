@@ -1,0 +1,42 @@
+{
+    "type": "php",
+    "provider": "apache",
+    "category": "data",
+    "host": "php.stratos.org",
+    "displayName": "php",
+    "description": "php Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "protocol": "http",
+            "port": "80",
+            "proxyPort": "8280"
+        },
+        {
+            "protocol": "tcp",
+            "port": "22",
+            "proxyPort": "8222"
+        }
+    ],
+    "deployment": {
+    },
+    "iaasProvider": [
+        {
+            "type": "gce",
+            "imageId": "stratos-base-v1",
+            "networkInterfaces": [
+                {
+                    "name": "network-non-routable",
+                    "networkUuid": "stratos-network"
+                }
+            ],
+            "property": [
+                {
+                    "name": "availabilityZone",
+                    "value": "europe-west1-b"
+                }
+            ]
+        }
+    ]
+}

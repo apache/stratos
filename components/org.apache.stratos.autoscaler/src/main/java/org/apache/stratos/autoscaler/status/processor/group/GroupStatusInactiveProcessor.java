@@ -65,7 +65,7 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
         return false;
     }
 
-
+    @SuppressWarnings("unchecked")
     private boolean doProcess(String idOfComponent, String appId, String instanceId) {
         ParentComponent component;
         Map<String, Group> groups;
@@ -78,15 +78,14 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            if (idOfComponent.equals(appId)) {
+            Application application = ApplicationHolder.getApplications().
+                    getApplication(appId);
+            component = application;
+            if (!idOfComponent.equals(appId)) {
                 //it is an application
-                component = ApplicationHolder.getApplications().
-                        getApplication(appId);
-            } else {
-                //it is a group
-                component = ApplicationHolder.getApplications().
-                        getApplication(appId).getGroupRecursively(idOfComponent);
+                component = application.getGroupRecursively(idOfComponent);
             }
+
             //finding all the children of the application/group
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();

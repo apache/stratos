@@ -733,8 +733,9 @@ function generateCartridges(data){
     }else{
         for(var cartridge in data){
             var cartridgeData = data[cartridge];
+            var cartridgeInfo = encodeURIComponent(JSON.stringify(cartridgeData));
             cartridgeListHtml += '<div class="block-cartridge" ' +
-                'data-info="'+cartridgeData.description+ '"'+
+                'data-info="'+cartridgeInfo+ '"'+
                 'data-toggle="tooltip" data-placement="bottom" title="Single Click to view details. Double click to add"'+
                 'id="'+cartridgeData.type+'">'
                 + cartridgeData.displayName+
@@ -960,7 +961,16 @@ $(document).ready(function(){
 
     //handle single click for cartridge
     $('#cartridge-list').on('click', ".block-cartridge", function(){
-        $('.description-section').html($(this).attr('data-info'));
+        var info = JSON.parse(decodeURIComponent($(this).attr('data-info')));
+        var cartridgeInfoBlock = '<table class="table table-condensed table-hover">' +
+            '<tr><td>Name:</td><td>'+ info.displayName +'</td></tr>' +
+            '<tr><td>Type:</td><td>'+ info.type + '</td></tr>' +
+            '<tr><td>Description:</td><td>' +info.description+ '</td></tr>' +
+            '<tr><td>Category:</td><td>'+info.category+'</td></tr>' +
+            '<tr><td>Provider:</td><td>'+info.provider+'</td></tr>' +
+            '<tr><td>Version:</td><td>'+info.version+'</td></tr>' +
+            '</table>';
+        $('.description-section').html(cartridgeInfoBlock);
     });
     //handle double click for cartridge
     $('#cartridge-list').on('dblclick', ".block-cartridge", function(){

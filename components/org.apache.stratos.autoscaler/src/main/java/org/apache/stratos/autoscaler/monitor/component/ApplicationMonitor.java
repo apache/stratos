@@ -105,7 +105,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     public synchronized void monitor() {
         final Collection<NetworkPartitionContext> networkPartitionContexts =
-                this.getNetworkPartitionCtxts().values();
+                this.getNetworkPartitionContextsMap().values();
 
         Runnable monitoringRunnable = new Runnable() {
             @Override
@@ -120,7 +120,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.
                                 get(instanceContext.getId());
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
-                        if (instance.getStatus().getCode() <= GroupStatus.Active.getCode()) {
+                        if (instance.getStatus().getCode() <= ApplicationStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
                             if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
                                 //handling the scaling max out of the children
@@ -192,9 +192,54 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         //all the children sent the scale down only, it will try to scale down
         if (allChildrenScaleDown) {
-            //Check whether this app monitor has burst application
-            ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
-                    instanceContext.getId());
+            //Need to get the network partition
+            NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
+                    getNetworkPartitionAlgorithmContext(appId);
+            if (algorithmContext == null) {
+                String msg = String.format("Network partition algorithm context not found " +
+                        "in registry or in-memory [application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
+                    getApplicationPolicy(algorithmContext.getApplicationPolicyId());
+            if (applicationPolicy == null) {
+                String msg = String.format("Application policy not found in registry or " +
+                        "in-memory [application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Network partition algorithm is %s [application-id] %s",
+                        networkPartitionAlgorithmName, appId);
+                log.debug(msg);
+            }
+
+            NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
+                    networkPartitionAlgorithmName);
+            if (algorithm == null) {
+                String msg = String.format("Couldn't create network partition algorithm " +
+                        "[application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+
+            // Check whether the network-partition of the application
+            // instance belongs to default set of network-partitions.
+            // If it is default set, then application instance cannot be terminated.
+            List<String> defaultNetworkPartitions = algorithm.
+                    getDefaultNetworkPartitions(algorithmContext);
+            if(!defaultNetworkPartitions.contains(nwPartitionContext.getId())) {
+                //Since it is not default network-partition, it can be terminated
+                // upon scale-down of the children as it has been created by bursting
+                ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
+                        instanceContext.getId());
+            }
+
         }
 
         //Resetting the events
@@ -457,7 +502,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //adding to instance map
         this.instanceIdToInstanceMap.put(instanceId, instance);
         //adding ApplicationLevelNetworkPartitionContext to networkPartitionContexts map
-        this.getNetworkPartitionCtxts().put(context.getId(), context);
+        this.getNetworkPartitionContextsMap().put(context.getId(), context);
 
         return instanceId;
     }
@@ -525,7 +570,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
 
         for (String networkPartitionId : nextNetworkPartitions) {
-            if (!this.getNetworkPartitionCtxts().containsKey(networkPartitionId)) {
+            if (!this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
                 String instanceId;
                 ApplicationLevelNetworkPartitionContext context = new
                         ApplicationLevelNetworkPartitionContext(networkPartitionId);

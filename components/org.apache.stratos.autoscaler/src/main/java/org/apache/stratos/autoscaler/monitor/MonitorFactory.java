@@ -48,6 +48,7 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -80,7 +81,8 @@ public class MonitorFactory {
         if (context instanceof GroupChildContext) {
             monitor = getGroupMonitor(parentMonitor, context, appId, parentInstanceIds);
         } else if (context instanceof ClusterChildContext) {
-            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context, parentInstanceIds);
+            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context,
+                    parentInstanceIds);
         } else {
             monitor = getApplicationMonitor(appId);
         }
@@ -119,8 +121,10 @@ public class MonitorFactory {
 
             boolean hasScalingDependents = false;
             if (parentMonitor.getScalingDependencies() != null) {
-                for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
-                    if (scalingDependentList.getScalingDependentListComponents().contains(context.getId())) {
+                for (ScalingDependentList scalingDependentList :
+                        parentMonitor.getScalingDependencies()) {
+                    if (scalingDependentList.getScalingDependentListComponents().
+                            contains(context.getId())) {
                         hasScalingDependents = true;
                     }
                 }
@@ -128,17 +132,15 @@ public class MonitorFactory {
 
             groupMonitor = new GroupMonitor(group, appId, instanceIds, hasScalingDependents);
             groupMonitor.setAppId(appId);
-            if (parentMonitor != null) {
-                groupMonitor.setParent(parentMonitor);
-                //Setting the dependent behaviour of the monitor
-                if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
-                        context.hasChild())) {
-                    groupMonitor.setHasStartupDependents(true);
-                } else {
-                    groupMonitor.setHasStartupDependents(false);
-                }
-                groupMonitor.startScheduler();
+            groupMonitor.setParent(parentMonitor);
+            //Setting the dependent behaviour of the monitor
+            if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
+                    context.hasChild())) {
+                groupMonitor.setHasStartupDependents(true);
+            } else {
+                groupMonitor.setHasStartupDependents(false);
             }
+            groupMonitor.startScheduler();
         } finally {
             ApplicationHolder.releaseReadLock();
         }
@@ -147,20 +149,6 @@ public class MonitorFactory {
 
         // Starting the minimum dependencies
         groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
-
-        /**
-         * If not first app deployment, acquiring read lock to check current the status of the group,
-         * when the stratos got to restarted
-         */
-        /*if (!initialStartup) {
-            //Starting statusChecking to make it sync with the Topology in the restart of stratos.
-            for (GroupInstance instance : group.getInstanceIdToInstanceContextMap().values()) {
-                ServiceReferenceHolder.getInstance().
-                        getGroupStatusProcessorChain().
-                        process(group.getUniqueIdentifier(), appId, instance.getInstanceId());
-            }
-
-        }*/
 
         return groupMonitor;
 
@@ -185,7 +173,8 @@ public class MonitorFactory {
             ApplicationHolder.acquireReadLock();
             application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application == null) {
-                throw new RuntimeException("Application not found in the topology: [application-id] " + applicationId);
+                throw new RuntimeException("Application not found in the topology: " +
+                        "[application-id] " + applicationId);
             }
 
             applicationMonitor = new ApplicationMonitor(application);
@@ -198,18 +187,6 @@ public class MonitorFactory {
 
         applicationMonitor.startMinimumDependencies(application);
 
-        /*//If not first app deployment, then calculate the current status of the app instance.
-        if (!initialStartup) {
-            for (ApplicationInstance instance :
-                    application.getInstanceIdToInstanceContextMap().values()) {
-                //Starting statusChecking to make it sync with the Topology in the restart of stratos.
-                ServiceReferenceHolder.getInstance().
-                        getGroupStatusProcessorChain().
-                        process(appId, appId, instance.getInstanceId());
-
-            }
-        }*/
-
         return applicationMonitor;
     }
 
@@ -217,10 +194,10 @@ public class MonitorFactory {
      * Updates ClusterContext for given cluster
      *
      * @param parentMonitor parent of the monitor
-     * @param context
+     * @param context the child-context from the startup-dependency tree
      * @return ClusterMonitor - Updated ClusterContext
-     * @throws org.apache.stratos.autoscaler.exception.policy.PolicyValidationException
-     * @throws org.apache.stratos.autoscaler.exception.partition.PartitionValidationException
+     * @throws PolicyValidationException policy validation error
+     * @throws PartitionValidationException partition validation error
      */
     public static ClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
                                                    ClusterChildContext context,
@@ -254,11 +231,12 @@ public class MonitorFactory {
             // deployment policy validation
             String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(parentMonitor.appId,
                     AutoscalerUtil.getAliasFromClusterId(clusterId));
-            DeploymentPolicy deploymentPolicy = null;
+            DeploymentPolicy deploymentPolicy;
             try {
                 deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
             } catch (Exception e) {
-                String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicyId);
+                String msg = String.format("Error while getting deployment policy from " +
+                        "cloud controller [deployment-policy-id] %s", deploymentPolicyId);
                 log.error(msg, e);
                 throw new RuntimeException(msg, e);
             }
@@ -267,16 +245,16 @@ public class MonitorFactory {
             for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
 
                 if (networkPartition != null) {
-
-                    for (Partition partition : networkPartition.getPartitions()) {
-                        partitionList.add(partition);
-                    }
-
+                    Collections.addAll(partitionList, networkPartition.getPartitions());
                     try {
 
-                        CloudControllerServiceClient.getInstance().validateNetworkPartitionOfDeploymentPolicy(serviceName, networkPartition.getId());
+                        CloudControllerServiceClient.getInstance().
+                                validateNetworkPartitionOfDeploymentPolicy(serviceName,
+                                        networkPartition.getId());
                     } catch (Exception e) {
-                        String msg = String.format("Error while validating deployment policy from cloud controller [network-partition-id] %s", networkPartition.getId());
+                        String msg = String.format("Error while validating deployment policy " +
+                                "from cloud controller [network-partition-id] %s",
+                                networkPartition.getId());
                         log.error(msg, e);
                         throw new RuntimeException(msg, e);
                     }
@@ -286,7 +264,8 @@ public class MonitorFactory {
 
             boolean hasScalingDependents = false;
             if (parentMonitor.getScalingDependencies() != null) {
-                for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
+                for (ScalingDependentList scalingDependentList :
+                        parentMonitor.getScalingDependencies()) {
                     if (scalingDependentList.getScalingDependentListComponents().contains(clusterId)) {
                         hasScalingDependents = true;
                     }
@@ -299,14 +278,16 @@ public class MonitorFactory {
                 groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
             }
 
-            ClusterMonitor clusterMonitor = new ClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree,
+            ClusterMonitor clusterMonitor = new ClusterMonitor(cluster, hasScalingDependents,
+                    groupScalingEnabledSubtree,
                     deploymentPolicyId);
 
             Properties props = cluster.getProperties();
             if (props != null) {
                 // Set hasPrimary property
                 // hasPrimary is true if there are primary members available in that cluster
-                clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(IS_PRIMARY)));
+                clusterMonitor.setHasPrimary(Boolean.parseBoolean(
+                        cluster.getProperties().getProperty(IS_PRIMARY)));
             }
 
             // Setting the parent of the cluster monitor
@@ -332,41 +313,7 @@ public class MonitorFactory {
         }
     }
 
-    private static org.apache.stratos.cloud.controller.stub.domain.Partition[] convertPartitionsToCCPartitions(
-            Partition[] partitions) {
-
-        org.apache.stratos.cloud.controller.stub.domain.Partition[] ccPartitions
-                = new org.apache.stratos.cloud.controller.stub.domain.Partition[partitions.length];
-        for (int i = 0; i < partitions.length; i++) {
-            org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition
-                    = new org.apache.stratos.cloud.controller.stub.domain.Partition();
-            ccPartition.setId(partitions[i].getId());
-            ccPartition.setDescription(partitions[i].getDescription());
-            ccPartition.setIsPublic(partitions[i].getIsPublic());
-            ccPartition.setKubernetesClusterId(partitions[i].getKubernetesClusterId());
-            ccPartition.setProperties(AutoscalerUtil.toStubProperties(partitions[i].getProperties()));
-            ccPartition.setProvider(partitions[i].getProvider());
-            ccPartitions[i] = ccPartition;
-        }
-        return ccPartitions;
-    }
-
-//    private static org.apache.stratos.cloud.controller.stub.Properties convertPropertiesToCCProperties(
-//            Properties properties) {
-//
-//        org.apache.stratos.cloud.controller.stub.Properties ccProperties
-//                = new org.apache.stratos.cloud.controller.stub.Properties();
-//        Property[] propertyArray = properties.getProperties();
-//        for(int i = 0; i < propertyArray.length; i++){
-//
-//            ccProperties.getProperties()[i].setName(properties.getProperties()[i].getName());
-//            ccProperties.getProperties()[i].setValue(properties.getProperties()[i].getValue());
-//        }
-//        return ccProperties;
-//    }
-
     private static boolean findIfChildIsInGroupScalingEnabledSubTree(GroupMonitor groupMonitor) {
-        boolean groupScalingEnabledSubtree = false;
         ParentComponentMonitor parentComponentMonitor = groupMonitor.getParent();
 
         if (parentComponentMonitor != null && parentComponentMonitor instanceof GroupMonitor) {
@@ -374,6 +321,6 @@ public class MonitorFactory {
         } else {
             return groupMonitor.isGroupScalingEnabled();
         }
-        return groupScalingEnabledSubtree;
+        return false;
     }
 }

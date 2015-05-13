@@ -28,23 +28,22 @@ import org.apache.stratos.autoscaler.status.processor.StatusProcessorChain;
 public class GroupStatusProcessorChain extends StatusProcessorChain {
     private static final Log log = LogFactory.getLog(GroupStatusActiveProcessor.class);
 
-    private GroupStatusActiveProcessor groupStatusActiveProcessor;
-    private GroupStatusTerminatedProcessor groupStatusTerminatedProcessor;
-    private GroupStatusTerminatingProcessor groupStatusTerminatingProcessor;
-    private GroupStatusInactiveProcessor groupStatusInactiveProcessor;
-
     @Override
     public void initialize() {
-        groupStatusActiveProcessor = new GroupStatusActiveProcessor();
+        GroupStatusActiveProcessor groupStatusActiveProcessor =
+                new GroupStatusActiveProcessor();
         add(groupStatusActiveProcessor);
 
-        groupStatusTerminatedProcessor = new GroupStatusTerminatedProcessor();
+        GroupStatusTerminatedProcessor groupStatusTerminatedProcessor =
+                new GroupStatusTerminatedProcessor();
         add(groupStatusTerminatedProcessor);
 
-        groupStatusTerminatingProcessor = new GroupStatusTerminatingProcessor();
+        GroupStatusTerminatingProcessor groupStatusTerminatingProcessor =
+                new GroupStatusTerminatingProcessor();
         add(groupStatusTerminatingProcessor);
 
-        groupStatusInactiveProcessor = new GroupStatusInactiveProcessor();
+        GroupStatusInactiveProcessor groupStatusInactiveProcessor =
+                new GroupStatusInactiveProcessor();
         add(groupStatusInactiveProcessor);
 
     }

@@ -107,8 +107,8 @@ switch (formtype) {
         error.push({"errorMessage":"Incorrect resource path found"});
 }
 var caramelData = {
-    breadcrumbPathLevelOne: breadcrumbPathLevelOne,
-    breadcrumbPathLevelTwo: elements.formtype,
+    breadcrumbPathLevelOne: breadcrumbPathLevelOne+'/'+elements.formtype,
+    breadcrumbPathLevelTwo: '',
     left_menu: leftMenu,
     isForm: isForm,
     isEdit: isEdit,

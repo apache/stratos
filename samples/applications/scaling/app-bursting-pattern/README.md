@@ -1,8 +1,27 @@
-app-bursting-pattern
-================
-i) In this artifact sample you can find we have listed them as mock and openstack.
+App Bursting Pattern Application
+================================
 
-ii) In this sample artifact, it deployed simple tomcat cartridge and start it.
 
-iii) You can choose the IaaS and navigate to it and simply run the single_cartridge.sh file. It'll deploy the relevant artifacts and start the application.
+Application view
+----------------
+app-bursting-pattern-app                <br />
+-- app-bursting-pattern-app-1           <br />
+-- -- my-php                            <br />
+-- app-bursting-pattern-app-2           <br />
+-- -- my-php                            <br />
 
+Application folder structure
+----------------------------
+-- artifacts/[iaas]/ IaaS specific artifacts                <br />
+-- scripts/common/ Common scripts for all iaases            <br />
+-- scripts/[iaas] IaaS specific scripts                     <br />
+
+How to run
+----------
+cd scripts/[iaas]/          <br />
+./deploy.sh                 <br />
+
+How to undeploy
+---------------
+cd scripts/[iaas]/          <br />
+./undeploy.sh               <br />

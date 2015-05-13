@@ -84,7 +84,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     //terminating map, key=alias, value instanceIds
     protected Map<String, List<String>> terminatingInstancesMap;
     //network partition contexts
-    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
+    protected Map<String, NetworkPartitionContext> networkPartitionContextsMap;
     //Executor service to maintain the thread pool
     private ExecutorService executorService;
 
@@ -110,7 +110,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         // Create the executor service with identifier and thread pool size
         executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
                 AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
-        networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
+        networkPartitionContextsMap = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
 
     /**
@@ -251,7 +251,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         String instanceId = scalingEvent.getInstanceId();
         String id = scalingEvent.getId();
         NetworkPartitionContext networkPartitionContext =
-                this.getNetworkPartitionCtxts().get(networkPartitionId);
+                this.getNetworkPartitionContextsMap().get(networkPartitionId);
         if (networkPartitionContext != null) {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
@@ -296,7 +296,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         String instanceId = scalingUpBeyondMaxEvent.getInstanceId();
         String id = scalingUpBeyondMaxEvent.getId();
         NetworkPartitionContext networkPartitionContext =
-                this.getNetworkPartitionCtxts().get(networkPartitionId);
+                this.getNetworkPartitionContextsMap().get(networkPartitionId);
         if (networkPartitionContext != null) {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
@@ -315,7 +315,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     public NetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
-        return this.getNetworkPartitionCtxts().get(networkPartitionId);
+        return this.getNetworkPartitionContextsMap().get(networkPartitionId);
     }
 
 
@@ -619,7 +619,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (!groupInstances.isEmpty()) {
             GroupLevelNetworkPartitionContext networkPartitionContext =
                     (GroupLevelNetworkPartitionContext) ((GroupMonitor) monitor).
-                            getNetworkPartitionCtxts().get(networkPartitionId);
+                            getNetworkPartitionContextsMap().get(networkPartitionId);
             int minInstances = networkPartitionContext.getMinInstanceCount();
             //if terminated all the instances in this instances map should be in terminated state
             if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
@@ -874,8 +874,8 @@ public abstract class ParentComponentMonitor extends Monitor {
      * This will give the network partitions used by this monitor
      * @return network-partition-contexts
      */
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
-        return networkPartitionCtxts;
+    public Map<String, NetworkPartitionContext> getNetworkPartitionContextsMap() {
+        return networkPartitionContextsMap;
     }
 
     /**

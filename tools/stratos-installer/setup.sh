@@ -233,7 +233,7 @@ function cc_setup() {
     echo "Setup CC" >> $LOG
     echo "Configuring the Cloud Controller"
 
-    cp -f ./config/all/repository/conf/cloud-controller.xml $stratos_extract_path/repository/conf/ 
+    cp -f ./templates/cloud-controller.xml $stratos_extract_path/repository/conf/ 
 
     export cc_path=$stratos_extract_path
     echo "In repository/conf/cloud-controller.xml"
@@ -315,7 +315,7 @@ function as_setup() {
     echo "Setup AS" >> $LOG
     echo "Configuring the Autoscaler"
 
-    cp -f ./config/all/repository/conf/autoscaler.xml $stratos_extract_path/repository/conf/
+    cp -f ./templates/autoscaler.xml $stratos_extract_path/repository/conf/
 
     pushd $stratos_extract_path
 
@@ -404,8 +404,8 @@ function sm_setup() {
     echo "Setup SM" >> $LOG
     echo "Configuring Stratos Manager"
 
-    cp -f ./config/all/repository/conf/cartridge-config.properties $stratos_extract_path/repository/conf/
-    cp -f ./config/all/repository/conf/datasources/master-datasources.xml $stratos_extract_path/repository/conf/datasources/
+    cp -f ./templates/cartridge-config.properties $stratos_extract_path/repository/conf/
+    cp -f ./templates/datasources/master-datasources.xml $stratos_extract_path/repository/conf/datasources/
     cp -f $mysql_connector_jar $stratos_extract_path/repository/components/lib/
 
     pushd $stratos_extract_path
@@ -413,6 +413,7 @@ function sm_setup() {
     echo "In repository/conf/cartridge-config.properties"
     ${SED} -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@SM_HOSTNAME:SM_HTTPS_PORT@$sm_hostname:$sm_https_port@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@PUPPET_IP@$puppet_ip@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@PUPPET_HOSTNAME@$puppet_hostname@g" repository/conf/cartridge-config.properties
     ${SED} -i "s@PUPPET_ENV@$puppet_environment@g" repository/conf/cartridge-config.properties
@@ -617,8 +618,8 @@ mv -f ./hosts.tmp /etc/hosts
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
 chown -R $host_user:$host_user $stratos_path
 
-cp -f ./config/all/repository/conf/identity.xml $stratos_extract_path/repository/conf/
-cp -f ./config/all/repository/conf/security/application-authentication.xml $stratos_extract_path/repository/conf/security/
+cp -f ./templates/identity.xml $stratos_extract_path/repository/conf/
+cp -f ./templates/security/application-authentication.xml $stratos_extract_path/repository/conf/security/
 
 echo "Apache Stratos configuration completed successfully"
 

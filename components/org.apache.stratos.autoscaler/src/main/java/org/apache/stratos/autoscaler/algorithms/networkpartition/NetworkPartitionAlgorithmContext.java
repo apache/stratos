@@ -27,13 +27,13 @@ public class NetworkPartitionAlgorithmContext implements Serializable {
 
     private static final long serialVersionUID = -1539453541207312793L;
     private String applicationId;
-    private ApplicationPolicy applicationPolicy;
+    private String applicationPolicyId;
     private AtomicInteger currentNetworkPartitionIndex;
 
-    public NetworkPartitionAlgorithmContext(String applicationId, ApplicationPolicy applicationPolicy,
+    public NetworkPartitionAlgorithmContext(String applicationId, String applicationPolicyId,
                                             int currentNetworkPartitionIndex) {
         this.applicationId = applicationId;
-        this.applicationPolicy = applicationPolicy;
+        this.applicationPolicyId = applicationPolicyId;
         this.currentNetworkPartitionIndex = new AtomicInteger(currentNetworkPartitionIndex);
     }
 
@@ -41,11 +41,11 @@ public class NetworkPartitionAlgorithmContext implements Serializable {
         return currentNetworkPartitionIndex;
     }
 
-    public ApplicationPolicy getApplicationPolicy() {
-        return applicationPolicy;
-    }
-
     public String getApplicationId() {
         return applicationId;
+    }
+
+    public String getApplicationPolicyId() {
+        return applicationPolicyId;
     }
 }
