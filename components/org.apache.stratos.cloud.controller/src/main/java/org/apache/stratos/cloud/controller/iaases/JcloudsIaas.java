@@ -158,11 +158,15 @@ public abstract class JcloudsIaas extends Iaas {
         instanceMetadata.setHostname(nodeMetadata.getHostname());
         instanceMetadata.setImageId(nodeMetadata.getImageId());
         instanceMetadata.setLoginPort(nodeMetadata.getLoginPort());
-        instanceMetadata.setHypervisor(nodeMetadata.getHardware().getHypervisor());
-        instanceMetadata.setRam(nodeMetadata.getHardware().getRam());
-        instanceMetadata.setOperatingSystemName(nodeMetadata.getOperatingSystem().getName());
-        instanceMetadata.setOperatingSystemVersion(nodeMetadata.getOperatingSystem().getVersion());
-        instanceMetadata.setOperatingSystem64bit(nodeMetadata.getOperatingSystem().is64Bit());
+        if (nodeMetadata.getHardware() != null) {
+            instanceMetadata.setHypervisor(nodeMetadata.getHardware().getHypervisor());
+            instanceMetadata.setRam(nodeMetadata.getHardware().getRam());
+        }
+        if (nodeMetadata.getOperatingSystem() != null) {
+            instanceMetadata.setOperatingSystemName(nodeMetadata.getOperatingSystem().getName());
+            instanceMetadata.setOperatingSystemVersion(nodeMetadata.getOperatingSystem().getVersion());
+            instanceMetadata.setOperatingSystem64bit(nodeMetadata.getOperatingSystem().is64Bit());
+        }
         return instanceMetadata;
     }
 
