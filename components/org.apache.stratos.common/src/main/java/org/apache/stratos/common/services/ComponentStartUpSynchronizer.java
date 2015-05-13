@@ -27,6 +27,8 @@ import org.apache.stratos.common.Component;
  */
 public interface ComponentStartUpSynchronizer {
 
+    boolean isEnabled();
+
     void setComponentStatus(Component component, boolean active);
 
     boolean isComponentActive(Component component);

@@ -170,15 +170,23 @@ public class CloudControllerServiceComponent {
 
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-        componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
-            @Override
-            public void activated(Component component) {
-                if (component == Component.StratosManager) {
-                    Runnable topologySynchronizer = new TopologyEventSynchronizer();
-                    scheduler.scheduleAtFixedRate(topologySynchronizer, 0, 1, TimeUnit.MINUTES);
+        if(componentStartUpSynchronizer.isEnabled()) {
+            componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
+                @Override
+                public void activated(Component component) {
+                    if (component == Component.StratosManager) {
+                        scheduleEventSynchronizers();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            scheduleEventSynchronizers();
+        }
+    }
+
+    private void scheduleEventSynchronizers() {
+        Runnable topologySynchronizer = new TopologyEventSynchronizer();
+        scheduler.scheduleAtFixedRate(topologySynchronizer, 0, 1, TimeUnit.MINUTES);
     }
 
     protected void setTaskService(TaskService taskService) {
