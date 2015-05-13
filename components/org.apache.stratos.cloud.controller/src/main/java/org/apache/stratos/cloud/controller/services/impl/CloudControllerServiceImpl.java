@@ -584,8 +584,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private String generateMemberId(String clusterId) {
-        UUID memberId = UUID.randomUUID();
-        return clusterId + memberId.toString();
+        UUID uuid = UUID.randomUUID();
+        //We add character 'a' here since GCE does not accept names starting with integer
+        String memberId = "a" + clusterId + uuid.toString();
+        return memberId;
     }
 
     public boolean terminateInstanceForcefully(String memberId) {
@@ -1149,8 +1151,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     public boolean createClusterInstance(String serviceType, String clusterId,
-                                      String alias, String instanceId, String partitionId,
-                                      String networkPartitionId) throws ClusterInstanceCreationException {
+                                         String alias, String instanceId, String partitionId,
+                                         String networkPartitionId) throws ClusterInstanceCreationException {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
