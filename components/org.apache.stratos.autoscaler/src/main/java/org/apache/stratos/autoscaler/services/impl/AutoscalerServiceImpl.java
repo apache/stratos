@@ -467,28 +467,32 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             return false;
         }
         if (!force) {
-            // Gracefull undeployment flow
+            // Graceful un-deployment flow
             if (appMonitor.isTerminating()) {
-                log.info("Application monitor is already in terminating, graceful undeployment is has already been attempted thus not invoking again");
+                log.info("Application monitor is already in terminating, graceful " +
+                        "un-deployment is has already been attempted thus not invoking again");
                 return false;
             } else {
-                log.info(String.format("Gracefully undeploying the application " + applicationId));
+                log.info(String.format("Gracefully un-deploying the application " + applicationId));
+                appMonitor.setTerminating(true);
                 undeployApplicationGracefully(applicationId);
             }
         } else {
-            // force undeployment flow
+            // force un-deployment flow
             if (appMonitor.isTerminating()) {
 
                 if (appMonitor.isForce()) {
-                    log.warn("Force undeployment is already in progress, hence not invoking again");
+                    log.warn("Force un-deployment is already in progress, hence not invoking again");
                     return false;
                 } else {
-                    log.info(String.format("Previous gracefull undeployment is in progress for [application-id] %s , thus  terminating instances directly", applicationId));
+                    log.info(String.format("Previous graceful un-deployment is in progress for " +
+                            "[application-id] %s , thus  terminating instances directly", applicationId));
                     appMonitor.setForce(true);
                     terminateAllApplicationMembersForcefully(applicationId);
                 }
             } else {
-                log.info(String.format("Forcefully undeploying the application " + applicationId));
+                log.info(String.format("Forcefully un-deploying the application " + applicationId));
+                appMonitor.setTerminating(true);
                 appMonitor.setForce(true);
                 undeployApplicationGracefully(applicationId);
             }
