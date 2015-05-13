@@ -91,9 +91,9 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
         if (active) {
             notifyComponentActivationEventListeners(component);
-            log.info(String.format("%s component became active", component));
+            log.info(String.format("%s activated", component));
         } else {
-            log.info(String.format("%s component became inactive", component));
+            log.info(String.format("%s inactivated", component));
         }
     }
 
@@ -160,7 +160,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
             long currentTime = System.currentTimeMillis();
             if ((currentTime - startTime) > componentActivationTimeout) {
-                throw new RuntimeException(String.format("%s component did not activated within %d seconds ",
+                throw new RuntimeException(String.format("%s did not activated within %d seconds ",
                         component, (componentActivationTimeout / 1000)));
             }
         }
