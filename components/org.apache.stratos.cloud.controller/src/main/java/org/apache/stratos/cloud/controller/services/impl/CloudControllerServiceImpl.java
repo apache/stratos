@@ -584,10 +584,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private String generateMemberId(String clusterId) {
-        UUID uuid = UUID.randomUUID();
-        //We add character 'a' here since GCE does not accept names starting with integer
-        String memberId = "a" + clusterId + uuid.toString();
-        return memberId;
+        UUID memberId = UUID.randomUUID();
+        return clusterId + memberId.toString();
     }
 
     public boolean terminateInstanceForcefully(String memberId) {
