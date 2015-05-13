@@ -350,7 +350,7 @@ public class RegistryManager {
     }
 
 
-    public void updateServiceGroup(ServiceGroup serviceGroup) throws InvalidServiceGroupException {
+    public void updateServiceGroup(ServiceGroup serviceGroup) throws InvalidServiceGroupException, RegistryException {
         try {
             if (serviceGroup == null || StringUtils.isEmpty(serviceGroup.getName())) {
                 throw new IllegalArgumentException("Cartridge group or group name cannot be null");
@@ -366,8 +366,10 @@ public class RegistryManager {
                 log.debug(String.format("Updated cartridge group: [group-name] %s", serviceGroup.getName()));
             }
         } catch (Exception e) {
-            log.error((String.format("Unable to update cartridge group [group-name] %s",
-                    serviceGroup.getName())), e);
+            String message = (String.format("Unable to update cartridge group [group-name] %s",
+                    serviceGroup.getName()));
+            log.error(message, e);
+            throw new RegistryException(message, e);
         }
     }
 

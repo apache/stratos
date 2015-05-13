@@ -702,7 +702,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
         }
 
-        RegistryManager.getInstance().updateServiceGroup(cartridgeGroup);
+        try {
+            RegistryManager.getInstance().updateServiceGroup(cartridgeGroup);
+        } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
+            String message = (String.format("Cannot update cartridge group: [group-name] %s",
+                    cartridgeGroup.getName()));
+            throw new RuntimeException(message, e);
+        }
+
+
         if (log.isInfoEnabled()) {
             log.info(String.format("Cartridge group successfully updated: [group-name] %s", cartridgeGroup.getName()));
         }
