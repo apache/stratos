@@ -33,7 +33,7 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
             # log.debug("%s => %s" % ("STRATOS_" + key, extension_values["STRATOS_" + key]))
 
         try:
-            output, errors = ExtensionExecutor.execute_script(event_name + ".sh")
+            output, errors = ExtensionExecutor.execute_script(event_name + ".sh", extension_values)
         except OSError:
             raise RuntimeError("Could not find an extension file for event %s" % event_name)
 
@@ -43,14 +43,15 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
         log.info("%s Extension executed. [output]: %s" % (event_name, output))
 
     @staticmethod
-    def execute_script(bash_file):
+    def execute_script(bash_file, extension_values):
         """ Execute the given bash files in the <PCA_HOME>/extensions/bash folder
         :param bash_file: name of the bash file to execute
         :return: tuple of (output, errors)
         """
         working_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
         command = working_dir[:-2] + "bash/" + bash_file
-        extension_values = os.environ.copy()
+        current_env_vars = os.environ.copy()
+        extension_values.update(current_env_vars)
 
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=extension_values)
         output, errors = p.communicate()
