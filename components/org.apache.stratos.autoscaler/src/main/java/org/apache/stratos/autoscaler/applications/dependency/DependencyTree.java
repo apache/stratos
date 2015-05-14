@@ -160,7 +160,12 @@ public class DependencyTree {
         }
 
         for (ApplicationChildContext context : contexts) {
-            return traverseGraphByLevel(context.getApplicationChildContextList(), parentMonitor, instanceId);
+            List<ApplicationChildContext> contexts1 =
+                    traverseGraphByLevel(context.getApplicationChildContextList(),
+                            parentMonitor, instanceId);
+            if(contexts1 != null && !contexts1.isEmpty()) {
+                return contexts1;
+            }
         }
         return null;
     }
