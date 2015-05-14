@@ -1112,36 +1112,56 @@ public class StratosApiV41Utils {
                 findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
                 findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
 
+                List<String> cartridgesToRemove = new ArrayList<String>();
+                List<String> cartridgesToAdd = new ArrayList<String>();
 
-                List<String> cartridgesToRemove = cartridgesBeforeUpdating;
-                List<String> cartridgesToAdd = cartridgesAfterUpdating;
+                if (cartridgesBeforeUpdating != null) {
+                    if (!cartridgesBeforeUpdating.isEmpty()) {
+                        cartridgesToRemove.addAll(cartridgesBeforeUpdating);
+                    }
+                }
 
-                if ((cartridgesBeforeUpdating != null) || (!cartridgesBeforeUpdating.isEmpty()) ||
-                        (cartridgesAfterUpdating != null) || (!cartridgesAfterUpdating.isEmpty())) {
+                if (cartridgesAfterUpdating != null) {
+                    if (!cartridgesAfterUpdating.isEmpty()) {
+                        cartridgesToAdd.addAll(cartridgesAfterUpdating);
+                    }
+                }
 
-                    for (String before : cartridgesBeforeUpdating) {
-                        for (String after : cartridgesAfterUpdating) {
-                            if (before.equals(after)) {
-                                cartridgesToRemove.remove(after);
-                                cartridgesToAdd.remove(after);
+                if ((cartridgesBeforeUpdating != null) && (cartridgesAfterUpdating != null)) {
+                    if ((!cartridgesBeforeUpdating.isEmpty()) && (!cartridgesAfterUpdating.isEmpty())) {
+                        for (String before : cartridgesBeforeUpdating) {
+                            for (String after : cartridgesAfterUpdating) {
+                                if (before.toLowerCase().equals(after.toLowerCase())) {
+                                    if (cartridgesToRemove.contains(after)) {
+                                        cartridgesToRemove.remove(after);
+                                    }
+                                    if (cartridgesToAdd.contains(after)) {
+                                        cartridgesToAdd.remove(after);
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
                 // Add cartridge group elements to SM cache - done after cartridge group has been updated
-                if (cartridgesToAdd != null || !cartridgesToAdd.isEmpty()) {
-                    smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
-                            cartridgesToAdd.toArray(new String[cartridgesToRemove.size()]));
+                if (cartridgesToAdd != null) {
+                    if (!cartridgesToAdd.isEmpty()) {
+                        {
+                            smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                                    cartridgesToAdd.toArray(new String[cartridgesToRemove.size()]));
+                        }
+                    }
                 }
 
                 // Remove cartridge group elements from SM cache - done after cartridge group has been updated
-                if (cartridgesToRemove != null || !cartridgesToRemove.isEmpty()) {
-                    smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
-                            cartridgesToRemove.toArray(new String[cartridgesToRemove.size()]));
+                if (cartridgesToRemove != null) {
+                    if (!cartridgesToRemove.isEmpty()) {
+                        smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                                cartridgesToRemove.toArray(new String[cartridgesToRemove.size()]));
+                    }
                 }
             }
-
         } catch (RemoteException e) {
             String message = String.format("Could not update cartridge group: [group-name] %s,",
                     cartridgeGroup.getName());
