@@ -3065,27 +3065,30 @@ public class StratosApiV41Utils {
         int tenantId;
         try {
             tenantId = tenantManager.getTenantId(tenantDomain);
+            if(tenantId != -1) {
+                try {
+                    TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
 
+                } catch (Exception e) {
+                    String msg = "Error in activating Tenant :" + tenantDomain;
+                    log.error(msg, e);
+                    throw new RestAPIException(msg, e);
+                }
+
+                //Notify tenant activation all listeners
+                try {
+                    TenantMgtUtil.triggerTenantActivation(tenantId);
+                } catch (StratosException e) {
+                    String msg = "Error in notifying tenant activate.";
+                    log.error(msg, e);
+                    throw new RestAPIException(msg, e);
+                }
+            } else {
+                String msg = "The tenant with domain name: " + tenantDomain + " does not exist.";
+                throw new RestAPIException(msg);
+            }
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant id for the tenant domain: " + tenantDomain + ".";
-            log.error(msg, e);
-            throw new RestAPIException(msg, e);
-        }
-
-        try {
-            TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
-
-        } catch (Exception e) {
-            String msg="Error in activating Tenant :"+tenantDomain;
-            log.error(msg,e);
-            throw new RestAPIException(msg,e);
-        }
-
-        //Notify tenant activation all listeners
-        try {
-            TenantMgtUtil.triggerTenantActivation(tenantId);
-        } catch (StratosException e) {
-            String msg = "Error in notifying tenant activate.";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }

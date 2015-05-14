@@ -517,7 +517,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         memberContext.setClusterInstanceId(instanceContext.getClusterInstanceId());
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
-        memberContext.setPartition(instanceContext.getPartition());
+        memberContext.setPartition(cloudControllerContext.getNetworkPartition(instanceContext.getNetworkPartitionId()).
+                getPartition(instanceContext.getPartition().getId()));
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
         memberContext.setLoadBalancingIPType(loadBalancingIPType);
@@ -584,10 +585,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private String generateMemberId(String clusterId) {
-        UUID uuid = UUID.randomUUID();
-        //We add character 'a' here since GCE does not accept names starting with integer
-        String memberId = "a" + clusterId + uuid.toString();
-        return memberId;
+        UUID memberId = UUID.randomUUID();
+        return clusterId + memberId.toString();
     }
 
     public boolean terminateInstanceForcefully(String memberId) {

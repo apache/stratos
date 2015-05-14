@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.context.partition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.PartitionRef;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -36,7 +36,7 @@ public abstract class PartitionContext implements Serializable {
     private static final long serialVersionUID = -2920388667345980487L;
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     protected String partitionId;
-    private Partition partition;
+    private PartitionRef partition;
     private String deploymentPolicyId;
     private String networkPartitionId;
     private boolean isObsoletePartition = false;
@@ -48,7 +48,7 @@ public abstract class PartitionContext implements Serializable {
 
     }
 
-    public PartitionContext(Partition partition, String networkPartitionId, String deploymentPolicyId) {
+    public PartitionContext(PartitionRef partition, String networkPartitionId, String deploymentPolicyId) {
         this.partition = partition;
         this.deploymentPolicyId = deploymentPolicyId;
         this.partitionId = partition.getId();
@@ -66,11 +66,11 @@ public abstract class PartitionContext implements Serializable {
         this.networkPartitionId = networkPartitionId;
     }
 
-    public Partition getPartition() {
+    public PartitionRef getPartition() {
         return partition;
     }
 
-    public void setPartition(Partition partition) {
+    public void setPartition(PartitionRef partition) {
         this.partition = partition;
     }
 

@@ -661,8 +661,6 @@ public class ApplicationBuilder {
                 }
                 context.movePendingInstanceToActiveInstances(instanceId);
             } else if (status == ApplicationStatus.Terminating) {
-                applicationMonitor.setTerminating(true);
-
                 if (context.getActiveInstance(instanceId) != null) {
                     if (log.isDebugEnabled()) {
                         log.debug("Moving active [application-instance] " + instanceId +

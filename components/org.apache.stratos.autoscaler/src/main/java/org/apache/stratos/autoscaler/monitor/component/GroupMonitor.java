@@ -41,8 +41,8 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
@@ -144,6 +144,14 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 handleScalingDownBeyondMin(instanceContext,
                                         networkPartitionContext, false);
                             }
+
+                            //Resetting the events events
+                            instanceContext.setIdToScalingOverMaxEvent(
+                                    new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
+                            instanceContext.setIdToScalingEvent(
+                                    new ConcurrentHashMap<String, ScalingEvent>());
+                            instanceContext.setIdToScalingOverMaxEvent(
+                                    new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                         }
                     }
 
@@ -211,9 +219,6 @@ public class GroupMonitor extends ParentComponentMonitor {
         } else {
             notifyParentOnScalingUpBeyondMax(networkPartitionContext, instanceContext);
         }
-        //Resetting the max events
-        instanceContext.setIdToScalingOverMaxEvent(
-                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
     }
 
     /**
@@ -236,7 +241,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 allChildrenScaleDown = true;
             }
         }
-        //all the children sent the scale down only, it will try to scale down
+        //all the children sent the scale down, then the group-instance will try to scale down or
+        // if it is a force scale-down
         if (allChildrenScaleDown || forceScaleDown) {
             if (hasScalingDependents) {
                 if (nwPartitionContext.getNonTerminatedInstancesCount() >
@@ -278,9 +284,6 @@ public class GroupMonitor extends ParentComponentMonitor {
             }
 
         }
-        //Resetting the events
-        instanceContext.setIdToScalingDownBeyondMinEvent(
-                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
     }
 
     /**
@@ -354,7 +357,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 networkPartitionContext).getMaxInstanceCount();
         if (groupScalingEnabled && maxInstances > networkPartitionContext.
                 getNonTerminatedInstancesCount()) {
-            //increase group by one more instance
+            //increase group by one more instance and calculate the factor for the group scaling
+            // and notify parent to scale all the dependent in parallel with this factor
             float minInstances = ((GroupLevelNetworkPartitionContext)
                     networkPartitionContext).getMinInstanceCount();
 
@@ -642,9 +646,9 @@ public class GroupMonitor extends ParentComponentMonitor {
                     get(networkPartitionId);
         } else {
             if (deploymentPolicy != null) {
-                NetworkPartition[] networkPartitions = deploymentPolicy.getNetworkPartitions();
-                NetworkPartition networkPartition = null;
-                for (NetworkPartition networkPartition1 : networkPartitions) {
+                NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
+                NetworkPartitionRef networkPartition = null;
+                for (NetworkPartitionRef networkPartition1 : networkPartitions) {
                     if (networkPartition1.getId().equals(networkPartitionId)) {
                         networkPartition = networkPartition1;
                     }
@@ -701,21 +705,21 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         } else {
 
-            NetworkPartition[] networkPartitions = deploymentPolicy.getNetworkPartitions();
-            NetworkPartition networkPartition = null;
+            NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
+            NetworkPartitionRef networkPartitionRef = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
-                for (NetworkPartition i : networkPartitions) {
+                for (NetworkPartitionRef i : networkPartitions) {
                     if (i.getId().equals(networkPartitionId)) {
-                        networkPartition = i;
+                        networkPartitionRef = i;
                     }
                 }
             }
 
-            if (networkPartition != null) {
+            if (networkPartitionRef != null) {
                 if (networkPartitionContext.getPartitionCtxts().isEmpty()) {
-                    Partition[] partitions = networkPartition.getPartitions();
+                    PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
                     if (partitions != null && partitions.length != 0) {
-                        for (Partition partition : partitions) {
+                        for (PartitionRef partition : partitions) {
 
                             if (networkPartitionContext.getPartitionCtxt(partition.getId()) == null) {
 

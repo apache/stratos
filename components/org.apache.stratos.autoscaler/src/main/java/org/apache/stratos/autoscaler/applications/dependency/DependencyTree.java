@@ -86,7 +86,11 @@ public class DependencyTree {
         }
         //if not found in the top level search recursively
         for (ApplicationChildContext context : contexts) {
-            return getApplicationChildContextById(id, context.getApplicationChildContextList());
+            ApplicationChildContext childContext = getApplicationChildContextById(id,
+                    context.getApplicationChildContextList());
+            if(childContext != null) {
+                return childContext;
+            }
         }
         return null;
     }
@@ -156,7 +160,12 @@ public class DependencyTree {
         }
 
         for (ApplicationChildContext context : contexts) {
-            return traverseGraphByLevel(context.getApplicationChildContextList(), parentMonitor, instanceId);
+            List<ApplicationChildContext> contexts1 =
+                    traverseGraphByLevel(context.getApplicationChildContextList(),
+                            parentMonitor, instanceId);
+            if(contexts1 != null && !contexts1.isEmpty()) {
+                return contexts1;
+            }
         }
         return null;
     }

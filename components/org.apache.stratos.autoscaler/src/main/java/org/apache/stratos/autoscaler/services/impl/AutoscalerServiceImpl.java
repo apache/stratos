@@ -55,8 +55,8 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
@@ -467,28 +467,32 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             return false;
         }
         if (!force) {
-            // Gracefull undeployment flow
+            // Graceful un-deployment flow
             if (appMonitor.isTerminating()) {
-                log.info("Application monitor is already in terminating, graceful undeployment is has already been attempted thus not invoking again");
+                log.info("Application monitor is already in terminating, graceful " +
+                        "un-deployment is has already been attempted thus not invoking again");
                 return false;
             } else {
-                log.info(String.format("Gracefully undeploying the application " + applicationId));
+                log.info(String.format("Gracefully un-deploying the application " + applicationId));
+                appMonitor.setTerminating(true);
                 undeployApplicationGracefully(applicationId);
             }
         } else {
-            // force undeployment flow
+            // force un-deployment flow
             if (appMonitor.isTerminating()) {
 
                 if (appMonitor.isForce()) {
-                    log.warn("Force undeployment is already in progress, hence not invoking again");
+                    log.warn("Force un-deployment is already in progress, hence not invoking again");
                     return false;
                 } else {
-                    log.info(String.format("Previous gracefull undeployment is in progress for [application-id] %s , thus  terminating instances directly", applicationId));
+                    log.info(String.format("Previous graceful un-deployment is in progress for " +
+                            "[application-id] %s , thus  terminating instances directly", applicationId));
                     appMonitor.setForce(true);
                     terminateAllApplicationMembersForcefully(applicationId);
                 }
             } else {
-                log.info(String.format("Forcefully undeploying the application " + applicationId));
+                log.info(String.format("Forcefully un-deploying the application " + applicationId));
+                appMonitor.setTerminating(true);
                 appMonitor.setForce(true);
                 undeployApplicationGracefully(applicationId);
             }
@@ -893,7 +897,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // deployment policy should contain at least one network partition reference
-        if (null == deploymentPolicy.getNetworkPartitions() || deploymentPolicy.getNetworkPartitions().length == 0) {
+        if (null == deploymentPolicy.getNetworkPartitionRefs() || deploymentPolicy.getNetworkPartitionRefs().length == 0) {
             String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                             + "Cause -> Deployment policy doesn't have at least one network partition reference",
                     deploymentPolicy.getDeploymentPolicyID());
@@ -902,10 +906,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // validate each network partition references
-        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionRefs()) {
 
             // network partition id can't be null or empty
-            if (null == networkPartition.getId() || networkPartition.getId().isEmpty()) {
+            if (null == networkPartitionRef.getId() || networkPartitionRef.getId().isEmpty()) {
                 String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                                 + "Cause -> Invalid network partition id in network partition references section",
                         deploymentPolicy.getDeploymentPolicyID());
@@ -914,38 +918,38 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             // network partitions should be already added
-            if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartition.getId())) {
+            if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionRef.getId())) {
                 String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                                 + "Cause -> Network partition is not added - [network-partition-id] %s",
-                        deploymentPolicy.getDeploymentPolicyID(), networkPartition.getId());
+                        deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
 
             // partition algorithm can't be null or empty
-            if (null == networkPartition.getPartitionAlgo() || networkPartition.getPartitionAlgo().isEmpty()) {
+            if (null == networkPartitionRef.getPartitionAlgo() || networkPartitionRef.getPartitionAlgo().isEmpty()) {
                 String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                                 + "Cause -> Invalid partition algorithm - [network-partition-id] %s [partition-algo] %s",
-                        deploymentPolicy.getDeploymentPolicyID(), networkPartition.getId(), networkPartition.getPartitionAlgo());
+                        deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId(), networkPartitionRef.getPartitionAlgo());
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
 
             // partition algorithm should be either one-after-another or round-robin
-            if (!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(networkPartition.getPartitionAlgo())
-                    && !StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(networkPartition.getPartitionAlgo())) {
+            if (!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(networkPartitionRef.getPartitionAlgo())
+                    && !StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(networkPartitionRef.getPartitionAlgo())) {
                 String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                                 + "Cause -> Invalid partition algorithm - [network-partition-id] %s [partition-algo] %s",
-                        deploymentPolicy.getDeploymentPolicyID(), networkPartition.getId(), networkPartition.getPartitionAlgo());
+                        deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId(), networkPartitionRef.getPartitionAlgo());
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
 
             // a network partition reference should contain at least one partition reference
-            if (null == networkPartition.getPartitions() || networkPartition.getPartitions().length == 0) {
+            if (null == networkPartitionRef.getPartitionRefs() || networkPartitionRef.getPartitionRefs().length == 0) {
                 String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
                         + "Cause -> Network partition reference doesn't have at lease one partition reference - "
-                        + "[network-partition-id] %s", deploymentPolicy.getDeploymentPolicyID(), networkPartition.getId());
+                        + "[network-partition-id] %s", deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
@@ -994,7 +998,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             //Following if statement checks the relevant clusters for the updated deployment policy
             if (deploymentPolicy.getDeploymentPolicyID().equals(clusterMonitor.getDeploymentPolicyId())) {
 
-                for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+                for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
 
                     ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
@@ -1030,7 +1034,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void removeOldPartitionsFromClusterMonitor(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-                                                       NetworkPartition networkPartition) {
+                                                       NetworkPartitionRef networkPartition) {
 
         for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
 
@@ -1061,13 +1065,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void addNewPartitionsToClusterMonitor(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-                                                  NetworkPartition networkPartition, String deploymentPolicyID,
+                                                  NetworkPartitionRef networkPartitionRef, String deploymentPolicyID,
                                                   String cartridgeType) throws RemoteException,
             CloudControllerServiceInvalidPartitionExceptionException,
             CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
         boolean validationOfNetworkPartitionRequired = false;
-        for (Partition partition : networkPartition.getPartitions()) {
+        for (PartitionRef partition : networkPartitionRef.getPartitionRefs()) {
 
             //Iterating through instances
             for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
@@ -1077,7 +1081,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                     //It has found that this partition which is in deployment policy/network partition is new
                     ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
-                            partition, networkPartition.getId(), deploymentPolicyID);
+                            partition, networkPartitionRef.getId(), deploymentPolicyID);
                     validationOfNetworkPartitionRequired = true;
                     clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
                 }

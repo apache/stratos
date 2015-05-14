@@ -54,7 +54,7 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.partition.NetworkPartition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
@@ -399,7 +399,7 @@ public class AutoscalerUtil {
             try {
                 DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
                 if (deploymentPolicy != null) {
-                    for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+                    for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                         if (networkPartition != null) {
                             if (!networkPartitionIds.contains(networkPartition.getId())) {
                                 networkPartitionIds.add(networkPartition.getId());

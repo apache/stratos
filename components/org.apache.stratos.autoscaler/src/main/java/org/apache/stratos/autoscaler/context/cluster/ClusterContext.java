@@ -34,8 +34,8 @@ import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -129,10 +129,10 @@ public class ClusterContext extends AbstractClusterContext {
                     clusterInstance.getNetworkPartitionId());
         } else {
 
-            NetworkPartition[] networkPartitions = deploymentPolicy.getNetworkPartitions();
-            NetworkPartition networkPartition = null;
+            NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
+            NetworkPartitionRef networkPartition = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
-                for (NetworkPartition i : networkPartitions) {
+                for (NetworkPartitionRef i : networkPartitions) {
                     if (i.getId().equals(clusterInstance.getNetworkPartitionId())) {
                         networkPartition = i;
                     }
@@ -184,14 +184,14 @@ public class ClusterContext extends AbstractClusterContext {
                 getDeploymentPolicy(deploymentPolicyName);
 
 
-        NetworkPartition[] networkPartitions = deploymentPolicy
-                .getNetworkPartitions();
-        Partition[] partitions = null;
+        NetworkPartitionRef[] networkPartitions = deploymentPolicy
+                .getNetworkPartitionRefs();
+        PartitionRef[] partitions = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
-            for (NetworkPartition networkPartition : networkPartitions) {
-                if (networkPartition.getId().equals(
+            for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
+                if (networkPartitionRef.getId().equals(
                         clusterLevelNetworkPartitionContext.getId())) {
-                    partitions = networkPartition.getPartitions();
+                    partitions = networkPartitionRef.getPartitionRefs();
                 }
             }
         }
@@ -205,22 +205,22 @@ public class ClusterContext extends AbstractClusterContext {
         }
 
         // Retrieving the ChildLevelNetworkPartition and create NP Context
-        NetworkPartition networkPartition = null;
+        NetworkPartitionRef networkPartitionRef = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
-            for (NetworkPartition networkPartition2 : networkPartitions) {
+            for (NetworkPartitionRef networkPartition2 : networkPartitions) {
                 if (networkPartition2.getId().equals(
                         clusterInstance.getNetworkPartitionId())) {
-                    networkPartition = networkPartition2;
+                    networkPartitionRef = networkPartition2;
                 }
             }
         }
 
         // Fill cluster instance context with child level partitions
-        if (networkPartition != null) {
-            for (Partition partition : networkPartition
-                    .getPartitions()) {
+        if (networkPartitionRef != null) {
+            for (PartitionRef partitionRef : networkPartitionRef
+                    .getPartitionRefs()) {
                 addPartition(clusterInstance, cluster,
-                        clusterLevelNetworkPartitionContext, partition,
+                        clusterLevelNetworkPartitionContext, partitionRef,
                         hasGroupScalingDependent, groupScalingEnabledSubtree);
             }
         }
@@ -232,7 +232,7 @@ public class ClusterContext extends AbstractClusterContext {
             ClusterInstance clusterInstance,
             Cluster cluster,
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
-            Partition partition,
+            PartitionRef partition,
             boolean hasScalingDependents, boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
@@ -290,7 +290,7 @@ public class ClusterContext extends AbstractClusterContext {
         }
 
         //Retrieving the actual partition from application
-        Partition[] partitions;
+        PartitionRef[] partitions;
         try {
 
             partitions = AutoscalerObjectConverter.convertCCPartitionsToPartitions(
@@ -303,9 +303,9 @@ public class ClusterContext extends AbstractClusterContext {
             throw new AutoScalerException(msg, e);
         }
 
-        Partition partition3 = null;
+        PartitionRef partition3 = null;
         if (partitions != null && partitions.length != 0) {
-            for (Partition partition2 : partitions) {
+            for (PartitionRef partition2 : partitions) {
                 if (partition2.getId().equals(partitionId)) {
                     partition3 = partition2;
                 }
@@ -345,7 +345,7 @@ public class ClusterContext extends AbstractClusterContext {
 
 
     private void addMembersFromTopology(Cluster cluster,
-                                        Partition partition,
+                                        PartitionRef partition,
                                         ClusterLevelPartitionContext clusterLevelPartitionContext,
                                         String ClusterInstanceId) {
         for (Member member : cluster.getMembers()) {

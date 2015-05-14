@@ -26,7 +26,7 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.PartitionRef;
 
 import java.io.Serializable;
 import java.util.*;
@@ -128,7 +128,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         }
     }
 
-    public ClusterLevelPartitionContext(Partition partition, String networkPartitionId, String deploymentPolicyId) {
+    public ClusterLevelPartitionContext(PartitionRef partition, String networkPartitionId, String deploymentPolicyId) {
 
         super(partition, networkPartitionId, deploymentPolicyId);
         this.pendingMembers = new ArrayList<MemberContext>();

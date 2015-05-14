@@ -251,18 +251,26 @@ public class StratosManagerServiceComponent {
     private void registerComponentStartUpEventListeners() {
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-        componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
-            @Override
-            public void activated(Component component) {
-                if (component == Component.StratosManager) {
-                    Runnable tenantSynchronizer = new TenantEventSynchronizer();
-                    scheduler.scheduleAtFixedRate(tenantSynchronizer, 0, 1, TimeUnit.MINUTES);
-
-                    Runnable applicationSignUpSynchronizer = new ApplicationSignUpEventSynchronizer();
-                    scheduler.scheduleAtFixedRate(applicationSignUpSynchronizer, 0, 1, TimeUnit.MINUTES);
+        if(componentStartUpSynchronizer.isEnabled()) {
+            componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
+                @Override
+                public void activated(Component component) {
+                    if (component == Component.StratosManager) {
+                        scheduleEventSynchronizers();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            scheduleEventSynchronizers();
+        }
+    }
+
+    private void scheduleEventSynchronizers() {
+        Runnable tenantSynchronizer = new TenantEventSynchronizer();
+        scheduler.scheduleAtFixedRate(tenantSynchronizer, 0, 1, TimeUnit.MINUTES);
+
+        Runnable applicationSignUpSynchronizer = new ApplicationSignUpEventSynchronizer();
+        scheduler.scheduleAtFixedRate(applicationSignUpSynchronizer, 0, 1, TimeUnit.MINUTES);
     }
 
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
