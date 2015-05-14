@@ -438,6 +438,7 @@ public class ClusterMonitor extends Monitor {
                                     log.info("Executing scaling rule as statistics have been reset");
                                     ClusterContext clusterContext = ClusterMonitor.this.clusterContext;
 
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("applicationId", getAppId());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
