@@ -18,15 +18,13 @@
  */
 package org.apache.stratos.metadata.service.services;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadata.service.annotation.AuthorizationAction;
 import org.apache.stratos.metadata.service.definition.Property;
 import org.apache.stratos.metadata.service.exception.RestAPIException;
-import org.apache.stratos.metadata.service.registry.DataRegistryFactory;
+import org.apache.stratos.metadata.service.registry.CarbonRegistry;
 import org.apache.stratos.metadata.service.registry.DataStore;
-import org.apache.stratos.metadata.service.util.ConfUtil;
 import org.wso2.carbon.registry.api.RegistryException;
 
 import javax.ws.rs.*;
@@ -47,10 +45,7 @@ public class MetaDataAdmin {
      * Meta data admin configuration loading
      */
     public MetaDataAdmin() {
-        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        String DEFAULT_REG_TYPE = "carbon";
-        String registryType = conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
-        registry = DataRegistryFactory.getDataStore(registryType);
+        registry = new CarbonRegistry();
     }
 
     @GET
