@@ -30,7 +30,6 @@ public class PartitionBean {
     private String id;
     private String description;
     private List<PropertyBean> property;
-    private int partitionMax;
 
     public String getId() {
         return id;
@@ -54,13 +53,5 @@ public class PartitionBean {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
-    }
-
-    public int getPartitionMax() {
-        return partitionMax;
-    }
-
-    public void setPartitionMax(int partitionMax) {
-        this.partitionMax = partitionMax;
     }
 }

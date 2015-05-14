@@ -17,19 +17,20 @@
  * under the License.
  */
 
-package org.apache.stratos.common.beans.policy.deployment;
+package org.apache.stratos.common.beans.partition;
 
-import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
+import org.apache.stratos.common.beans.PropertyBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
-public class DeploymentPolicyBean {
+public class PartitionReferenceBean {
 
     private String id;
-
-    private List<NetworkPartitionReferenceBean> networkPartitions;
+    private String description;
+    private List<PropertyBean> property;
+    private int partitionMax;
 
     public String getId() {
         return id;
@@ -39,11 +40,27 @@ public class DeploymentPolicyBean {
         this.id = id;
     }
 
-    public List<NetworkPartitionReferenceBean> getNetworkPartitions() {
-        return networkPartitions;
+    public String getDescription() {
+        return description;
     }
 
-    public void setNetworkPartitions(List<NetworkPartitionReferenceBean> networkPartitions) {
-        this.networkPartitions = networkPartitions;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
+
+    public int getPartitionMax() {
+        return partitionMax;
+    }
+
+    public void setPartitionMax(int partitionMax) {
+        this.partitionMax = partitionMax;
     }
 }

@@ -23,7 +23,9 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
@@ -443,7 +445,7 @@ public class MockContext {
                 if (!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)) {
                     throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
                 }
-                List<PartitionBean> partitions = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions().get(0).getPartitions();
+                List<PartitionReferenceBean> partitions = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions().get(0).getPartitions();
                 return partitions.toArray(new PartitionBean[partitions.size()]);
             }
         }
@@ -452,7 +454,7 @@ public class MockContext {
             throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
         }
         //FIXME to parse thr all the NW partitions
-        List<PartitionBean> partitions = (deploymentPolicyMap.get(tenantId)).
+        List<PartitionReferenceBean> partitions = (deploymentPolicyMap.get(tenantId)).
                 get(deploymentPolicyId).getNetworkPartitions().get(0).getPartitions();
         return partitions.toArray(new PartitionBean[partitions.size()]);
     }
@@ -466,7 +468,7 @@ public class MockContext {
                 if (!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)) {
                     throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
                 }
-                List<NetworkPartitionBean> networkPartitionsList = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions();
+                List<NetworkPartitionReferenceBean> networkPartitionsList = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions();
                 return networkPartitionsList.toArray(new NetworkPartitionBean[networkPartitionsList.size()]);
             }
         }
@@ -474,7 +476,7 @@ public class MockContext {
         if (!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)) {
             throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
         }
-        List<NetworkPartitionBean> networkPartitionsList = (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getNetworkPartitions();
+        List<NetworkPartitionReferenceBean> networkPartitionsList = (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getNetworkPartitions();
         return networkPartitionsList.toArray(new NetworkPartitionBean[networkPartitionsList.size()]);
     }
 
@@ -604,9 +606,9 @@ public class MockContext {
         }
 
         PartitionBean[] partitionsArray = null;
-        for (NetworkPartitionBean networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (NetworkPartitionReferenceBean networkPartition : deploymentPolicy.getNetworkPartitions()) {
             if (networkPartition.getId().equals(partitionGroupId)) {
-                List<PartitionBean> partitions = networkPartition.getPartitions();
+                List<PartitionReferenceBean> partitions = networkPartition.getPartitions();
                 partitionsArray = partitions.toArray(new PartitionBean[partitions.size()]);
             }
         }

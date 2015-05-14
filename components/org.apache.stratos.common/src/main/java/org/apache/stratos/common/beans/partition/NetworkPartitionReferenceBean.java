@@ -29,7 +29,7 @@ public class NetworkPartitionReferenceBean {
 
     private String id;
     private String provider;
-    private List<PartitionBean> partitions;
+    private List<PartitionReferenceBean> partitions;
     private String partitionAlgo;
     private List<PropertyBean> properties;
 
@@ -41,11 +41,11 @@ public class NetworkPartitionReferenceBean {
         this.id = id;
     }
 
-    public List<PartitionBean> getPartitions() {
+    public List<PartitionReferenceBean> getPartitions() {
         return partitions;
     }
 
-    public void setPartitions(List<PartitionBean> partitions) {
+    public void setPartitions(List<PartitionReferenceBean> partitions) {
         this.partitions = partitions;
     }
 

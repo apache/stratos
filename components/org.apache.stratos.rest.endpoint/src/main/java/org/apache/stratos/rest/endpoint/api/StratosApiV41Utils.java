@@ -2588,7 +2588,7 @@ public class StratosApiV41Utils {
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
 
-                    ObjectConverter.convertToASDeploymentPolicy(deployementPolicyDefinitionBean);
+                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deployementPolicyDefinitionBean);
             AutoscalerServiceClient.getInstance().addDeploymentPolicy(deploymentPolicy);
 
             if (log.isDebugEnabled()) {
@@ -2666,7 +2666,7 @@ public class StratosApiV41Utils {
             }
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    ObjectConverter.convertToASDeploymentPolicy(deploymentPolicyDefinitionBean);
+                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
 
             AutoscalerServiceClient.getInstance().updateDeploymentPolicy(deploymentPolicy);
 
