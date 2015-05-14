@@ -86,7 +86,11 @@ public class DependencyTree {
         }
         //if not found in the top level search recursively
         for (ApplicationChildContext context : contexts) {
-            return getApplicationChildContextById(id, context.getApplicationChildContextList());
+            ApplicationChildContext childContext = getApplicationChildContextById(id,
+                    context.getApplicationChildContextList());
+            if(childContext != null) {
+                return childContext;
+            }
         }
         return null;
     }
