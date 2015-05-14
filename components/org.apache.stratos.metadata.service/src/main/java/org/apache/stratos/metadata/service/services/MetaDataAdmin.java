@@ -226,7 +226,7 @@ public class MetaDataAdmin {
     }
 
     @DELETE
-    @Path("application/{application_id}")
+    @Path("application/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")

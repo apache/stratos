@@ -139,10 +139,6 @@ public class CarbonRegistry implements DataStore {
                     log.debug("Registry resource is create at path for application: " + nodeResource.getPath());
                 }
             }
-            
-            for(String value : property.getValues()){
-                nodeResource.addProperty(property.getKey(), value);
-            }
 
             boolean updated = false;
             for(String value : property.getValues()){

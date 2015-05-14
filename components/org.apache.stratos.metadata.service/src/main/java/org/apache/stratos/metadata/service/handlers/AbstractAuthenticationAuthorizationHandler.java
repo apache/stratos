@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.metadata.service.handlers;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
@@ -36,17 +37,13 @@ public abstract class AbstractAuthenticationAuthorizationHandler implements Requ
     @Override
     public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
         HttpHeaders headers = new HttpHeadersImpl(message);
-        List<String> authHeader = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
-        if (log.isDebugEnabled()) {
-            log.debug("Executing " + this.getClass());
-        }
-        if (!AuthenticationContext.isAthenticated() && authHeader != null &&
-                authHeader.size() > 0 && canHandle(authHeader.get(0).trim().split(" ")[0])) {
-            return handle(message, classResourceInfo);
-        }
-        // give the control to the next handler
-        return null;
 
+        if (!StringUtils.isEmpty(headers.getRequestHeaders().getFirst(HttpHeaders.AUTHORIZATION))) {
+            return handle(message, classResourceInfo);
+        }else{
+            // Currently there is only one handler
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 
     protected abstract boolean canHandle(String authHeaderPrefix);

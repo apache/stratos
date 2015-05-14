@@ -76,15 +76,18 @@ public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
             if (header.startsWith(BEARER)) {
                 String accessToken = header.substring(7).trim();
                 boolean valid;
-                String appId = extractAppIdFromIdToken(accessToken);
+                String appId_in_token = extractAppIdFromIdToken(accessToken);
                 String requestUrl = (String) message.get(Message.REQUEST_URI);
                 String basePath = (String) message.get(Message.BASE_PATH);
                 String requestedAppId = extractApplicationIdFromUrl(requestUrl, basePath);
 
-                if (org.apache.commons.lang3.StringUtils.isEmpty(appId) || org.apache.commons.lang3.StringUtils.isEmpty(requestedAppId)) {
+                if (org.apache.commons.lang3.StringUtils.isEmpty(appId_in_token) || org.apache.commons.lang3.StringUtils.isEmpty(requestedAppId)) {
                     valid = false;
                 } else {
-                    valid = appId.equals(requestedAppId);
+                    valid = appId_in_token.equals(requestedAppId);
+                    if(!valid){
+                        log.error("The token presented is only valid for " + appId_in_token + " , but it tries to access metadata for " + requestedAppId);
+                    }
                 }
 
                 if (!valid) {
