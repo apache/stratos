@@ -37,8 +37,8 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
@@ -241,20 +241,20 @@ public class MonitorFactory {
                 throw new RuntimeException(msg, e);
             }
 
-            List<Partition> partitionList = new ArrayList<Partition>();
-            for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+            List<PartitionRef> partitionList = new ArrayList<PartitionRef>();
+            for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionRefs()) {
 
-                if (networkPartition != null) {
-                    Collections.addAll(partitionList, networkPartition.getPartitions());
+                if (networkPartitionRef != null) {
+                    Collections.addAll(partitionList, networkPartitionRef.getPartitionRefs());
                     try {
 
                         CloudControllerServiceClient.getInstance().
                                 validateNetworkPartitionOfDeploymentPolicy(serviceName,
-                                        networkPartition.getId());
+                                        networkPartitionRef.getId());
                     } catch (Exception e) {
                         String msg = String.format("Error while validating deployment policy " +
-                                "from cloud controller [network-partition-id] %s",
-                                networkPartition.getId());
+                                        "from cloud controller [network-partition-id] %s",
+                                networkPartitionRef.getId());
                         log.error(msg, e);
                         throw new RuntimeException(msg, e);
                     }

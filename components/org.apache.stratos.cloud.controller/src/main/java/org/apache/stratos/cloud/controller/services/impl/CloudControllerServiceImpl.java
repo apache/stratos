@@ -517,7 +517,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         memberContext.setClusterInstanceId(instanceContext.getClusterInstanceId());
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
-        memberContext.setPartition(instanceContext.getPartition());
+        memberContext.setPartition(cloudControllerContext.getNetworkPartition(instanceContext.getNetworkPartitionId()).
+                getPartition(instanceContext.getPartition().getId()));
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
         memberContext.setLoadBalancingIPType(loadBalancingIPType);
@@ -1149,8 +1150,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     public boolean createClusterInstance(String serviceType, String clusterId,
-                                      String alias, String instanceId, String partitionId,
-                                      String networkPartitionId) throws ClusterInstanceCreationException {
+                                         String alias, String instanceId, String partitionId,
+                                         String networkPartitionId) throws ClusterInstanceCreationException {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();

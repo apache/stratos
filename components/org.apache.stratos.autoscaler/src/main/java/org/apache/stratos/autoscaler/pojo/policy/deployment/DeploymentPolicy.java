@@ -20,8 +20,8 @@
 package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
 
-import org.apache.stratos.common.partition.NetworkPartition;
-import org.apache.stratos.common.partition.Partition;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
+import org.apache.stratos.common.partition.PartitionRef;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ public class DeploymentPolicy implements Serializable {
 
     private static final long serialVersionUID = 5675507196284400099L;
     private String deploymentPolicyID;
-    private NetworkPartition[] networkPartitions;
+    private NetworkPartitionRef[] networkPartitionRefs;
 
     public String getDeploymentPolicyID() {
         return deploymentPolicyID;
@@ -43,23 +43,23 @@ public class DeploymentPolicy implements Serializable {
         this.deploymentPolicyID = deploymentPolicyID;
     }
 
-    public NetworkPartition[] getNetworkPartitions() {
-        return networkPartitions;
+    public NetworkPartitionRef[] getNetworkPartitionRefs() {
+        return networkPartitionRefs;
     }
 
-    public void setNetworkPartitions(NetworkPartition[] networkPartitions) {
-        this.networkPartitions = networkPartitions;
+    public void setNetworkPartitionRefs(NetworkPartitionRef[] networkPartitionRefs) {
+        this.networkPartitionRefs = networkPartitionRefs;
     }
 
     /**
      * Get network partition reference object by network partition id.
      *
      * @param networkPartitionId
-     * @return the {@link NetworkPartition}
+     * @return the {@link NetworkPartitionRef}
      */
-    public NetworkPartition getNetworkPartitionByNetworkPartitionId(String networkPartitionId) {
-        if (networkPartitions != null) {
-            for (NetworkPartition networkPartition : networkPartitions) {
+    public NetworkPartitionRef getNetworkPartitionByNetworkPartitionId(String networkPartitionId) {
+        if (networkPartitionRefs != null) {
+            for (NetworkPartitionRef networkPartition : networkPartitionRefs) {
                 if (networkPartition.getId().equals(networkPartitionId)) {
                     return networkPartition;
                 }
@@ -72,13 +72,13 @@ public class DeploymentPolicy implements Serializable {
      * Get partition references by network partition id.
      *
      * @param networkPartitionId
-     * @return an array of {@link Partition}
+     * @return an array of {@link PartitionRef}
      */
-    public Partition[] getPartitionsByNetworkPartitionId(String networkPartitionId) {
-        if (networkPartitions != null) {
-            for (NetworkPartition networkPartition : networkPartitions) {
-                if (networkPartition.getId().equals(networkPartitionId)) {
-                    return networkPartition.getPartitions();
+    public PartitionRef[] getPartitionsByNetworkPartitionId(String networkPartitionId) {
+        if (networkPartitionRefs != null) {
+            for (NetworkPartitionRef networkPartitionRef : networkPartitionRefs) {
+                if (networkPartitionRef.getId().equals(networkPartitionId)) {
+                    return networkPartitionRef.getPartitionRefs();
                 }
             }
         }
@@ -87,7 +87,7 @@ public class DeploymentPolicy implements Serializable {
 
     public String toString() {
         return String.format("{ deployment-policy-id : %s, network-partitions : %s", deploymentPolicyID,
-                Arrays.toString(networkPartitions));
+                Arrays.toString(networkPartitionRefs));
     }
 
 }

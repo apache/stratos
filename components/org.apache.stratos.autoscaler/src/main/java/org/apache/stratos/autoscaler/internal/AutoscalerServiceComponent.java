@@ -222,15 +222,23 @@ public class AutoscalerServiceComponent {
 
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-        componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
-            @Override
-            public void activated(Component component) {
-                if (component == Component.StratosManager) {
-                    Runnable applicationSynchronizer = new ApplicationEventSynchronizer();
-                    scheduler.scheduleAtFixedRate(applicationSynchronizer, 0, 1, TimeUnit.MINUTES);
+        if(componentStartUpSynchronizer.isEnabled()) {
+            componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
+                @Override
+                public void activated(Component component) {
+                    if (component == Component.StratosManager) {
+                        scheduleEventSynchronizers();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            scheduleEventSynchronizers();
+        }
+    }
+
+    private void scheduleEventSynchronizers() {
+        Runnable applicationSynchronizer = new ApplicationEventSynchronizer();
+        scheduler.scheduleAtFixedRate(applicationSynchronizer, 0, 1, TimeUnit.MINUTES);
     }
 
     protected void deactivate(ComponentContext context) {

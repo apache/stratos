@@ -95,6 +95,11 @@ public class RuleTasksDelegator {
                 float gradient = scalingRange / instanceRange;
                 numberOfAdditionalInstancesRequired = (predictedValue - threshold) / gradient;
             }
+
+            if(predictedValue < threshold) {
+                //Since predicted-value is less, it can be scale-down
+                return min - 1;
+            }
         }
 
         return (int) Math.ceil(min + numberOfAdditionalInstancesRequired);
@@ -109,6 +114,7 @@ public class RuleTasksDelegator {
             numberOfInstances = (min * predictedValue) / threshold;
             return (int) Math.ceil(numberOfInstances);
         }
+
         return min;
     }
 
