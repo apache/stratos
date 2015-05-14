@@ -438,7 +438,7 @@ public class KubernetesIaas extends Iaas {
         }
 
         // Prepare minion public IP addresses
-        List<String> minionPublicIPs = new ArrayList<String>();
+        List<String> minionPrivateIPList = new ArrayList<String>();
         KubernetesHost[] kubernetesHosts = kubernetesCluster.getKubernetesHosts();
         if ((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
             throw new RuntimeException("Hosts not found in kubernetes cluster: [cluster] "
@@ -446,11 +446,11 @@ public class KubernetesIaas extends Iaas {
         }
         for (KubernetesHost host : kubernetesHosts) {
             if (host != null) {
-                minionPublicIPs.add(host.getPublicIPAddress());
+                minionPrivateIPList.add(host.getPrivateIPAddress());
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Minion public IPs: %s", minionPublicIPs));
+            log.debug(String.format("Minion private IPs: %s", minionPrivateIPList));
         }
 
         if (cartridge.getPortMappings() != null) {
@@ -481,7 +481,7 @@ public class KubernetesIaas extends Iaas {
 
                 try {
                     kubernetesApi.createService(serviceId, serviceLabel, servicePort, containerPortName,
-                            minionPublicIPs.toArray(new String[minionPublicIPs.size()]));
+                            minionPrivateIPList.toArray(new String[minionPrivateIPList.size()]));
                 } finally {
                     // Persist kubernetes service sequence no
                     CloudControllerContext.getInstance().persist();
