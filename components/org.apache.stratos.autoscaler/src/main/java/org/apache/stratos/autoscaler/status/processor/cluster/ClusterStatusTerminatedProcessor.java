@@ -59,15 +59,15 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                 return nextProcessor.process(type, clusterId, instanceId);
             } else {
 
-                log.warn(String.format("No possible state change found for [type] %s [cluster] %s [instance]",
-                        type, clusterId, instanceId));
+                log.warn(String.format("No possible state change found for [type] %s " +
+                                "[cluster] %s [instance] %s", type, clusterId, instanceId));
             }
         }
         return false;
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
-        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().
+        ClusterMonitor monitor = AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
         boolean clusterMonitorHasMembers = clusterInstanceHasMembers(monitor, instanceId);
         boolean clusterTerminated = false;

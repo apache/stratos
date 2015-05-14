@@ -53,8 +53,8 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, clusterId, instanceId);
             } else {
-                log.warn(String.format("No possible state change found for [type] %s [cluster] %s [instance]",
-                        type, clusterId, instanceId));
+                log.warn(String.format("No possible state change found for [type] %s [cluster] %s " +
+                                "[instance] %s", type, clusterId, instanceId));
             }
         }
         return false;
