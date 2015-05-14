@@ -23,7 +23,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.common.util.AxiomXpathParserUtil;
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
+import org.apache.stratos.mock.iaas.services.impl.MockScalingFactor;
 import org.apache.stratos.mock.iaas.statistics.StatisticsPatternMode;
 import org.apache.stratos.mock.iaas.statistics.generator.MockHealthStatisticsPattern;
 
@@ -48,7 +48,6 @@ public class MockIaasConfigParser {
 
     /**
      * Parse mock iaas configuration and return configuration object.
-     *
      * @param filePath
      * @return
      */
@@ -91,7 +90,7 @@ public class MockIaasConfigParser {
                                         "[cartridge-type] " + cartridgeType);
                             }
                             String factorStr = factorAttribute.getAttributeValue();
-                            MockAutoscalingFactor autoscalingFactor = convertAutoscalingFactor(factorStr);
+                            MockScalingFactor scalingFactor = convertScalingFactor(factorStr);
 
                             OMAttribute modeAttribute = patternElement.getAttribute(MODE_ATTRIBUTE);
                             if (modeAttribute == null) {
@@ -126,7 +125,7 @@ public class MockIaasConfigParser {
                             int sampleDuration = Integer.parseInt(sampleDurationStr);
 
                             MockHealthStatisticsPattern mockHealthStatisticsPattern = new MockHealthStatisticsPattern
-                                    (cartridgeType, autoscalingFactor, mode, sampleValues, sampleDuration);
+                                    (cartridgeType, scalingFactor, mode, sampleValues, sampleDuration);
                             mockHealthStatisticsConfig.addStatisticsPattern(mockHealthStatisticsPattern);
                         }
                     }
@@ -138,6 +137,11 @@ public class MockIaasConfigParser {
         }
     }
 
+    /**
+     * Convert mode string to its enumeration
+     * @param modeStr mode string
+     * @return statistics pattern enumeration
+     */
     private static StatisticsPatternMode convertMode(String modeStr) {
         if ("loop".equals(modeStr)) {
             return StatisticsPatternMode.Loop;
@@ -149,17 +153,27 @@ public class MockIaasConfigParser {
         throw new RuntimeException("An unknown statistics pattern mode found: " + modeStr);
     }
 
-    private static MockAutoscalingFactor convertAutoscalingFactor(String factorStr) {
-        if ("memory-consumption".equals(factorStr)) {
-            return MockAutoscalingFactor.MemoryConsumption;
-        } else if ("load-average".equals(factorStr)) {
-            return MockAutoscalingFactor.LoadAverage;
-        } else if ("request-in-flight".equals(factorStr)) {
-            return MockAutoscalingFactor.RequestInFlight;
+    /**
+     * Convert scaling factor string to its enumeration
+     * @param scalingFactorStr scaling factor string
+     * @return scaling factor enumeration
+     */
+    private static MockScalingFactor convertScalingFactor(String scalingFactorStr) {
+        if ("memory-consumption".equals(scalingFactorStr)) {
+            return MockScalingFactor.MemoryConsumption;
+        } else if ("load-average".equals(scalingFactorStr)) {
+            return MockScalingFactor.LoadAverage;
+        } else if ("request-in-flight".equals(scalingFactorStr)) {
+            return MockScalingFactor.RequestInFlight;
         }
-        throw new RuntimeException("An unknown autoscaling factor found: " + factorStr);
+        throw new RuntimeException("An unknown autoscaling factor found: " + scalingFactorStr);
     }
 
+    /**
+     * Convert string array to integer list
+     * @param stringArray string array
+     * @return integer list
+     */
     private static List<Integer> convertStringArrayToIntegerList(String[] stringArray) {
         List<Integer> integerList = new ArrayList<Integer>();
         for (String value : stringArray) {

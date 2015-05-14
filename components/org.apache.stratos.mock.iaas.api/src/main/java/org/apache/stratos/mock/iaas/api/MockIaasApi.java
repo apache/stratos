@@ -161,7 +161,6 @@ public class MockIaasApi {
 
     /**
      * Get mock iaas service instance
-     *
      * @return
      */
     private MockIaasService getMockIaasService() {

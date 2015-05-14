@@ -17,7 +17,7 @@
   ~ under the License.
   -->
 
-<mock-iaas enabled="false">
+<mock-iaas enabled="true">
     <health-statistics>
         <cartridge type="tomcat">
             <!-- factor:memory-consumption|load-average|request-in-flight-->

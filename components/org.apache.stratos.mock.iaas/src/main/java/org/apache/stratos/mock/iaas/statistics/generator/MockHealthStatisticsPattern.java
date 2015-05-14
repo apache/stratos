@@ -22,7 +22,7 @@ package org.apache.stratos.mock.iaas.statistics.generator;
 import org.apache.stratos.mock.iaas.exceptions.ContinueLastSampleValueException;
 import org.apache.stratos.mock.iaas.exceptions.NoSampleValuesFoundException;
 import org.apache.stratos.mock.iaas.exceptions.StopStatisticsPublishingException;
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
+import org.apache.stratos.mock.iaas.services.impl.MockScalingFactor;
 import org.apache.stratos.mock.iaas.statistics.StatisticsPatternMode;
 
 import java.util.Iterator;
@@ -34,13 +34,13 @@ import java.util.List;
 public class MockHealthStatisticsPattern {
 
     private String cartridgeType;
-    private MockAutoscalingFactor factor;
+    private MockScalingFactor factor;
     private StatisticsPatternMode mode;
     private List<Integer> sampleValues;
     private int sampleDuration;
     private Iterator sampleValuesIterator;
 
-    public MockHealthStatisticsPattern(String cartridgeType, MockAutoscalingFactor factor, StatisticsPatternMode mode, List<Integer> sampleValues,
+    public MockHealthStatisticsPattern(String cartridgeType, MockScalingFactor factor, StatisticsPatternMode mode, List<Integer> sampleValues,
                                        int sampleDuration) {
         this.cartridgeType = cartridgeType;
         this.factor = factor;
@@ -55,11 +55,10 @@ public class MockHealthStatisticsPattern {
     }
 
     /**
-     * Returns autoscaling factor
-     *
+     * Returns scaling factor
      * @return
      */
-    public MockAutoscalingFactor getFactor() {
+    public MockScalingFactor getFactor() {
         return factor;
     }
 

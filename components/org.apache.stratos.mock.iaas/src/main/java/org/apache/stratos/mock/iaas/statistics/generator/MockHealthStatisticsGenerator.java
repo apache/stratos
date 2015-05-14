@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,8 +42,7 @@ public class MockHealthStatisticsGenerator {
     private static final ScheduledExecutorService scheduledExecutorService =
             StratosThreadPool.getScheduledExecutorService("mock.iaas.health.statistics.generator.thread.pool", 10);
 
-    private boolean scheduled;
-    // Map<ServiceName, List<ScheduledFuture>>
+    // Map<ServiceName, Map<ScalingFactor, ScheduledFuture>>
     private Map<String, Map<String, ScheduledFuture>> serviceNameToTaskListMap;
 
     public static MockHealthStatisticsGenerator getInstance() {
@@ -58,14 +56,16 @@ public class MockHealthStatisticsGenerator {
         return instance;
     }
 
+    /**
+     * Private default constructor.
+     */
     private MockHealthStatisticsGenerator() {
         serviceNameToTaskListMap = new ConcurrentHashMap<String, Map<String, ScheduledFuture>>();
     }
 
     /**
      * Schedule statistics updater tasks for the given service/cartridge type.
-     *
-     * @param serviceName
+     * @param serviceName service name/cartridge type
      */
     public void scheduleStatisticsUpdaterTasks(String serviceName) {
         synchronized (MockHealthStatisticsGenerator.class) {
@@ -98,17 +98,14 @@ public class MockHealthStatisticsGenerator {
 
     /**
      * Stop statistics updater tasks of the given service/cartridge type.
-     *
-     * @param serviceName
+     * @param serviceName service name/cartridge type
      */
     public void stopStatisticsUpdaterTasks(String serviceName) {
         synchronized (MockHealthStatisticsGenerator.class) {
             Map<String, ScheduledFuture> taskMap = serviceNameToTaskListMap.get(serviceName);
             if ((taskMap != null) && (taskMap.size() > 0)) {
-                Iterator<String> factorIterator = taskMap.keySet().iterator();
-                while (factorIterator.hasNext()) {
-                    String factor = factorIterator.next();
-                    stopStatisticsUpdaterTask(serviceName, factor);
+                for (String scalingFactor : taskMap.keySet()) {
+                    stopStatisticsUpdaterTask(serviceName, scalingFactor);
                 }
             }
         }
@@ -116,21 +113,20 @@ public class MockHealthStatisticsGenerator {
 
     /**
      * Stop statistics updater task of a service/cartridge type, factor.
-     *
-     * @param serviceName
-     * @param factor
+     * @param serviceName service name/cartridge type
+     * @param scalingFactor scaling factor
      */
-    public void stopStatisticsUpdaterTask(String serviceName, String factor) {
-        Map<String, ScheduledFuture> factorToTaskMap = serviceNameToTaskListMap.get(serviceName);
-        if (factorToTaskMap != null) {
-            ScheduledFuture task = factorToTaskMap.get(factor);
+    public void stopStatisticsUpdaterTask(String serviceName, String scalingFactor) {
+        Map<String, ScheduledFuture> autoscalingFactorToTaskMap = serviceNameToTaskListMap.get(serviceName);
+        if (autoscalingFactorToTaskMap != null) {
+            ScheduledFuture task = autoscalingFactorToTaskMap.get(scalingFactor);
             if (task != null) {
                 task.cancel(true);
-                factorToTaskMap.remove(factor);
+                autoscalingFactorToTaskMap.remove(scalingFactor);
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Mock statistics updater task stopped: [service-name] %s" +
-                            " [factor] %s", serviceName, factor));
+                            " [scaling-factor] %s", serviceName, scalingFactor));
                 }
             }
         }
@@ -139,9 +135,8 @@ public class MockHealthStatisticsGenerator {
     /**
      * Returns true if there are statistics updater tasks scheduled for the given service/cartridge type
      * else returns false.
-     *
-     * @param serviceName
-     * @return
+     * @param serviceName service name/cartridge type
+     * @return true if statistics updater tasks are scheduled
      */
     public boolean statisticsUpdaterTasksScheduled(String serviceName) {
         Map<String, ScheduledFuture> tasks = serviceNameToTaskListMap.get(serviceName);

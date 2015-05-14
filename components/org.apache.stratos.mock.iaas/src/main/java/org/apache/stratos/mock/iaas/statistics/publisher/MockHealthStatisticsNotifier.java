@@ -26,7 +26,7 @@ import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisherF
 import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.exceptions.NoStatisticsFoundException;
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
+import org.apache.stratos.mock.iaas.services.impl.MockScalingFactor;
 import org.apache.stratos.mock.iaas.statistics.MockHealthStatistics;
 
 /**
@@ -59,7 +59,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
 
         try {
             double memoryConsumption = MockHealthStatistics.getInstance().getStatistics(
-                    mockMemberContext.getServiceName(), MockAutoscalingFactor.MemoryConsumption);
+                    mockMemberContext.getServiceName(), MockScalingFactor.MemoryConsumption);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
@@ -84,7 +84,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
 
         try {
             double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
-                    mockMemberContext.getServiceName(), MockAutoscalingFactor.LoadAverage);
+                    mockMemberContext.getServiceName(), MockScalingFactor.LoadAverage);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
                         mockMemberContext.getMemberId(), loadAvereage));

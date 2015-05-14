@@ -23,9 +23,7 @@ package org.apache.stratos.mock.iaas.services.impl;
  * Mock constant definitions.
  */
 public class MockConstants {
-    public static final String MOCK_MEMBER_THREAD_POOL = "mock.member.thread.pool";
     public static final int MOCK_MEMBER_THREAD_POOL_SIZE = 100;
+    public static final String MOCK_MEMBER_THREAD_POOL = "mock.member.thread.pool";
     public static final String PERSISTENCE_MANAGER_TYPE = "persistence.manager.type";
-    public static final String PERSISTENCE_MANAGER_REGISTRY = "registry";
-    public static final String PERSISTENCE_MANAGER_MOCK = "mock";
 }

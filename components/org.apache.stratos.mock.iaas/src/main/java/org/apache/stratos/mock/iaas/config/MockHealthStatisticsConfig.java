@@ -28,16 +28,28 @@ import java.util.List;
  * Mock health statistics configuration.
  */
 public class MockHealthStatisticsConfig {
-    List<MockHealthStatisticsPattern> statisticsPatternList;
 
+    private List<MockHealthStatisticsPattern> statisticsPatternList;
+
+    /**
+     * Default constructor
+     */
     public MockHealthStatisticsConfig() {
         statisticsPatternList = new ArrayList<MockHealthStatisticsPattern>();
     }
 
+    /**
+     * Add statistics pattern
+     * @param statisticsPattern statistics pattern
+     */
     public void addStatisticsPattern(MockHealthStatisticsPattern statisticsPattern) {
         statisticsPatternList.add(statisticsPattern);
     }
 
+    /**
+     * Get statistics patterns
+     * @return a list of statistics pattern objects
+     */
     public List<MockHealthStatisticsPattern> getStatisticsPatterns() {
         return statisticsPatternList;
     }

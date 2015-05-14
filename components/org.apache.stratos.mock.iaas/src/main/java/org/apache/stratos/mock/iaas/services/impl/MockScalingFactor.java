@@ -20,8 +20,8 @@
 package org.apache.stratos.mock.iaas.services.impl;
 
 /**
- * Mock autoscaling factor enumeration
+ * Mock scaling factor enumeration
  */
-public enum MockAutoscalingFactor {
+public enum MockScalingFactor {
     MemoryConsumption, LoadAverage, RequestInFlight
 }

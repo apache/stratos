@@ -20,7 +20,7 @@
 package org.apache.stratos.mock.iaas.statistics;
 
 import org.apache.stratos.mock.iaas.exceptions.NoStatisticsFoundException;
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
+import org.apache.stratos.mock.iaas.services.impl.MockScalingFactor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,10 +56,10 @@ public class MockHealthStatistics {
      * Add statistics value for a cartridge type, autoscaling factor
      *
      * @param cartridgeType
-     * @param autoscalingFactor
+     * @param scalingFactor
      * @param value
      */
-    public void addStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor, Integer value) {
+    public void addStatistics(String cartridgeType, MockScalingFactor scalingFactor, Integer value) {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
         if (factorValueMap == null) {
             synchronized (MockHealthStatistics.class) {
@@ -69,40 +69,40 @@ public class MockHealthStatistics {
                 }
             }
         }
-        factorValueMap.put(autoscalingFactor.toString(), value);
+        factorValueMap.put(scalingFactor.toString(), value);
     }
 
     /**
      * Returns current statistics of the given cartridge type, autoscaling factor
      *
      * @param cartridgeType
-     * @param autoscalingFactor
+     * @param scalingFactor
      * @return
      */
-    public int getStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor) throws NoStatisticsFoundException {
+    public int getStatistics(String cartridgeType, MockScalingFactor scalingFactor) throws NoStatisticsFoundException {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
         if (factorValueMap != null) {
-            if (factorValueMap.containsKey(autoscalingFactor.toString())) {
-                return factorValueMap.get(autoscalingFactor.toString());
+            if (factorValueMap.containsKey(scalingFactor.toString())) {
+                return factorValueMap.get(scalingFactor.toString());
             } else {
                 throw new NoStatisticsFoundException();
             }
         }
         // No statistics patterns found, return default
-        return findDefault(autoscalingFactor);
+        return findDefault(scalingFactor);
     }
 
     /**
      * Remove statistics found for the cartridge type, autoscaling factor
      *
      * @param cartridgeType
-     * @param autoscalingFactor
+     * @param scalingFactor
      */
-    public void removeStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor) {
+    public void removeStatistics(String cartridgeType, MockScalingFactor scalingFactor) {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
         if (factorValueMap != null) {
-            if (factorValueMap.containsKey(autoscalingFactor.toString())) {
-                factorValueMap.remove(autoscalingFactor.toString());
+            if (factorValueMap.containsKey(scalingFactor.toString())) {
+                factorValueMap.remove(scalingFactor.toString());
             }
         }
     }
@@ -110,17 +110,17 @@ public class MockHealthStatistics {
     /**
      * Find default statistics value of the given autoscaling factor
      *
-     * @param autoscalingFactor
+     * @param scalingFactor
      * @return
      */
-    private int findDefault(MockAutoscalingFactor autoscalingFactor) {
-        if (autoscalingFactor == MockAutoscalingFactor.MemoryConsumption) {
+    private int findDefault(MockScalingFactor scalingFactor) {
+        if (scalingFactor == MockScalingFactor.MemoryConsumption) {
             return DEFAULT_MEMORY_CONSUMPTION;
-        } else if (autoscalingFactor == MockAutoscalingFactor.LoadAverage) {
+        } else if (scalingFactor == MockScalingFactor.LoadAverage) {
             return DEFAULT_LOAD_AVERAGE;
-        } else if (autoscalingFactor == MockAutoscalingFactor.RequestInFlight) {
+        } else if (scalingFactor == MockScalingFactor.RequestInFlight) {
             return DEFAULT_REQUESTS_IN_FLIGHT;
         }
-        throw new RuntimeException("An unknown autoscaling factor found: " + autoscalingFactor);
+        throw new RuntimeException("An unknown autoscaling factor found: " + scalingFactor);
     }
 }

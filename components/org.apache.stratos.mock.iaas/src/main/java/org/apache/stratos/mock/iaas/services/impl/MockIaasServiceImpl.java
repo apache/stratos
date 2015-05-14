@@ -63,6 +63,9 @@ public class MockIaasServiceImpl implements MockIaasService {
     private MockIaasServiceUtil mockIaasServiceUtil;
     private Map<String, MockInstance> instanceIdToMockInstanceMap; // Map<InstanceId,MockInstance>
 
+    /**
+     * Default public constructor
+     */
     public MockIaasServiceImpl() {
         try {
             String persistenceManagerTypeStr = System.getProperty(MockConstants.PERSISTENCE_MANAGER_TYPE,
@@ -85,10 +88,9 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Start mock instance.
-     *
-     * @param mockInstanceContext
-     * @return
-     * @throws MockIaasException
+     * @param mockInstanceContext mock instance context containing instance properties
+     * @return mock instance metadata
+     * @throws MockIaasException is thrown if mock instance context is null
      */
     @Override
     public MockInstanceMetadata startInstance(MockInstanceContext mockInstanceContext) throws MockIaasException {
@@ -119,6 +121,10 @@ public class MockIaasServiceImpl implements MockIaasService {
         }
     }
 
+    /**
+     * Sleep the current thread for a given period of time
+     * @param time time in milliseconds
+     */
     private void sleep(int time) {
         try {
             Thread.sleep(time);
@@ -127,9 +133,8 @@ public class MockIaasServiceImpl implements MockIaasService {
     }
 
     /**
-     * Get mock instance contexts.
-     *
-     * @return
+     * Get mock instances.
+     * @return a list of mock instance metadata objects
      */
     @Override
     public List<MockInstanceMetadata> getInstances() {
@@ -143,9 +148,8 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Get mock instance context by instance id.
-     *
-     * @param instanceId
-     * @return
+     * @param instanceId mock instance id
+     * @return mock instance metadata of the mock instance
      */
     @Override
     public MockInstanceMetadata getInstance(String instanceId) {
@@ -158,10 +162,9 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Allocate ip address to mock instance.
-     *
-     * @param instanceId
-     * @return
-     * @throws MockIaasException
+     * @param instanceId mock instance id
+     * @return mock instance metadata including ip addresses
+     * @throws MockIaasException is thrown if instance is not found
      */
     @Override
     public MockInstanceMetadata allocateIpAddress(String instanceId) throws MockIaasException {
@@ -180,8 +183,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Terminate mock instance by instance id.
-     *
-     * @param instanceId
+     * @param instanceId mock instance id
      */
     @Override
     public void terminateInstance(String instanceId) {
@@ -209,9 +211,8 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Find number of instances available for service type.
-     *
-     * @param serviceName
-     * @return
+     * @param serviceName service name/cartridge type
+     * @return the member count
      */
     private int getMemberCount(String serviceName) {
         int count = 0;
