@@ -1101,44 +1101,45 @@ public class StratosApiV41Utils {
             //validate the group definition to check for cyclic group behaviour
             validateGroupDuplicationInGroupDefinition(cartridgeGroup);
 
-            List<String> cartridgesBeforeUpdating = new ArrayList<String>();
-            List<String> cartridgesAfterUpdating = new ArrayList<String>();
-
-            ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(cartridgeGroup.getName());
-            findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
-            findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
-
-            List<String> cartridgesToRemove = cartridgesBeforeUpdating;
-            List<String> cartridgesToAdd = cartridgesAfterUpdating;
-
-            if ((cartridgesBeforeUpdating != null) || (!cartridgesBeforeUpdating.isEmpty()) ||
-                    (cartridgesAfterUpdating != null) || (!cartridgesAfterUpdating.isEmpty())) {
-
-                for (String before : cartridgesBeforeUpdating) {
-                    for (String after : cartridgesAfterUpdating) {
-                        if (before.equals(after)) {
-                            cartridgesToRemove.remove(after);
-                            cartridgesToAdd.remove(after);
-                        }
-                    }
-                }
-            }
-
-            // Add cartridge group elements to SM cache - done after cartridge group has been updated
-            if (cartridgesToAdd != null || !cartridgesToAdd.isEmpty()) {
-                smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
-                        cartridgesToAdd.toArray(new String[cartridgesToRemove.size()]));
-            }
-
-            // Remove cartridge group elements from SM cache - done after cartridge group has been updated
-            if (cartridgesToRemove != null || !cartridgesToRemove.isEmpty()) {
-                smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
-                        cartridgesToRemove.toArray(new String[cartridgesToRemove.size()]));
-            }
-
             if (serviceGroup != null) {
                 autoscalerServiceClient.updateServiceGroup(
                         ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(cartridgeGroup));
+
+                List<String> cartridgesBeforeUpdating = new ArrayList<String>();
+                List<String> cartridgesAfterUpdating = new ArrayList<String>();
+
+                ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(cartridgeGroup.getName());
+                findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
+                findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
+
+
+                List<String> cartridgesToRemove = cartridgesBeforeUpdating;
+                List<String> cartridgesToAdd = cartridgesAfterUpdating;
+
+                if ((cartridgesBeforeUpdating != null) || (!cartridgesBeforeUpdating.isEmpty()) ||
+                        (cartridgesAfterUpdating != null) || (!cartridgesAfterUpdating.isEmpty())) {
+
+                    for (String before : cartridgesBeforeUpdating) {
+                        for (String after : cartridgesAfterUpdating) {
+                            if (before.equals(after)) {
+                                cartridgesToRemove.remove(after);
+                                cartridgesToAdd.remove(after);
+                            }
+                        }
+                    }
+                }
+
+                // Add cartridge group elements to SM cache - done after cartridge group has been updated
+                if (cartridgesToAdd != null || !cartridgesToAdd.isEmpty()) {
+                    smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                            cartridgesToAdd.toArray(new String[cartridgesToRemove.size()]));
+                }
+
+                // Remove cartridge group elements from SM cache - done after cartridge group has been updated
+                if (cartridgesToRemove != null || !cartridgesToRemove.isEmpty()) {
+                    smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                            cartridgesToRemove.toArray(new String[cartridgesToRemove.size()]));
+                }
             }
 
         } catch (RemoteException e) {
