@@ -74,7 +74,6 @@ public class ObjectConverter {
         cartridge.setCategory(cartridgeBean.getCategory());
         cartridge.setVersion(cartridgeBean.getVersion());
         cartridge.setMultiTenant(cartridgeBean.isMultiTenant());
-        cartridge.setIsPublic(cartridgeBean.isPublic());
         cartridge.setDisplayName(cartridgeBean.getDisplayName());
         cartridge.setDescription(cartridgeBean.getDescription());
         cartridge.setTenantPartitions(cartridgeBean.getTenantPartitions());

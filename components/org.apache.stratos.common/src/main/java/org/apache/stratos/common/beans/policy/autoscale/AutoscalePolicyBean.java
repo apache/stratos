@@ -28,7 +28,6 @@ public class AutoscalePolicyBean {
     private String displayName;
     private String description;
     private LoadThresholdsBean loadThresholds;
-    private boolean isPublic;
 
     public String getId() {
         return id;
@@ -60,13 +59,5 @@ public class AutoscalePolicyBean {
 
     public void setLoadThresholds(LoadThresholdsBean loadThresholds) {
         this.loadThresholds = loadThresholds;
-    }
-
-    public boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(boolean isPublic) {
-        this.isPublic = isPublic;
     }
 }
