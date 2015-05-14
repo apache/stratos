@@ -16,15 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.common.beans.partition;
 
+import org.apache.stratos.common.beans.PropertyBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
-public class ChildLevelPartitionBean {
+public class PartitionReferenceBean {
 
     private String id;
-    private int max;
+    private String description;
+    private List<PropertyBean> property;
+    private int partitionMax;
 
     public String getId() {
         return id;
@@ -34,11 +40,27 @@ public class ChildLevelPartitionBean {
         this.id = id;
     }
 
-    public int getMax() {
-        return max;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMax(int max) {
-        this.max = max;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
+
+    public int getPartitionMax() {
+        return partitionMax;
+    }
+
+    public void setPartitionMax(int partitionMax) {
+        this.partitionMax = partitionMax;
     }
 }

@@ -63,13 +63,13 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
         String region = ComputeServiceBuilderUtil.extractRegion(iaasProvider);
 
         NovaApi novaApi = context.unwrapApi(NovaApi.class);
-        FloatingIPApi floatingIp = novaApi.getFloatingIPExtensionForZone(
+        FloatingIPApi floatingIPApi = novaApi.getFloatingIPExtensionForZone(
                 region).get();
 
         String ip = null;
         // first try to find an unassigned IP.
         ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
-                .filter(floatingIp.list(),
+                .filter(floatingIPApi.list(),
                         new Predicate<FloatingIP>() {
 
                             @Override
@@ -91,9 +91,9 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
             String defaultFloatingIpPool = iaasProvider.getProperty(CloudControllerConstants.DEFAULT_FLOATING_IP_POOL);
             FloatingIP allocatedFloatingIP;
             if ((defaultFloatingIpPool == null) || "".equals(defaultFloatingIpPool)) {
-                allocatedFloatingIP = floatingIp.create();
+                allocatedFloatingIP = floatingIPApi.create();
             } else {
-                allocatedFloatingIP = floatingIp.allocateFromPool(defaultFloatingIpPool);
+                allocatedFloatingIP = floatingIPApi.allocateFromPool(defaultFloatingIpPool);
             }
             if (allocatedFloatingIP == null) {
                 String msg = "Failed to allocate an IP address.";
@@ -121,7 +121,7 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
         int retries = 0;
         //TODO make 5 configurable
         while (retries < 5
-                && !associateIp(floatingIp, ip, node.getProviderId())) {
+                && !associateIp(floatingIPApi, ip, node.getProviderId())) {
 
             // wait for 5s
             CloudControllerUtil.sleep(5000);

@@ -23,7 +23,9 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
@@ -63,20 +65,11 @@ public class MockContext {
         int tenantId = getTenantId();
         List<CartridgeBean> tenantCartridges;
 
-        if (!cartridgeDefinitionBean.isPublic()) {
-            if (this.cartridgeDefinitionBeanList.containsKey(tenantId)) {
-                tenantCartridges = this.cartridgeDefinitionBeanList.get(tenantId);
-            } else {
-                tenantCartridges = new LinkedList<CartridgeBean>();
-                this.cartridgeDefinitionBeanList.put(tenantId, tenantCartridges);
-            }
+        if (this.cartridgeDefinitionBeanList.containsKey(PUBLIC_DEFINITION)) {
+            tenantCartridges = this.cartridgeDefinitionBeanList.get(PUBLIC_DEFINITION);
         } else {
-            if (this.cartridgeDefinitionBeanList.containsKey(PUBLIC_DEFINITION)) {
-                tenantCartridges = this.cartridgeDefinitionBeanList.get(PUBLIC_DEFINITION);
-            } else {
-                tenantCartridges = new LinkedList<CartridgeBean>();
-                this.cartridgeDefinitionBeanList.put(PUBLIC_DEFINITION, tenantCartridges);
-            }
+            tenantCartridges = new LinkedList<CartridgeBean>();
+            this.cartridgeDefinitionBeanList.put(PUBLIC_DEFINITION, tenantCartridges);
         }
 
         tenantCartridges.add(cartridgeDefinitionBean);
@@ -88,45 +81,25 @@ public class MockContext {
         cartridge.setMultiTenant(cartridgeDefinitionBean.isMultiTenant());
         cartridge.setProvider(cartridgeDefinitionBean.getProvider());
         cartridge.setVersion(cartridgeDefinitionBean.getVersion());
-        //cartridge.setIsPublic(cartridgeDefinitionBean.isPublic());
 
         Map<String, CartridgeBean> cartridges;
         if (cartridge.isMultiTenant()) {
-            if (!cartridge.isPublic()) {
-                if (this.availableMultiTenantCartridges.containsKey(tenantId)) {
-                    cartridges = availableMultiTenantCartridges.get(tenantId);
-                } else {
-                    cartridges = new HashMap<String, CartridgeBean>();
-                    this.availableMultiTenantCartridges.put(tenantId, cartridges);
-                }
+            if (this.availableMultiTenantCartridges.containsKey(tenantId)) {
+                cartridges = availableMultiTenantCartridges.get(tenantId);
             } else {
-                if (this.availableMultiTenantCartridges.containsKey(PUBLIC_DEFINITION)) {
-                    cartridges = availableMultiTenantCartridges.get(PUBLIC_DEFINITION);
-                } else {
-                    cartridges = new HashMap<String, CartridgeBean>();
-                    this.availableMultiTenantCartridges.put(PUBLIC_DEFINITION, cartridges);
-                }
+                cartridges = new HashMap<String, CartridgeBean>();
+                this.availableMultiTenantCartridges.put(tenantId, cartridges);
             }
 
             cartridges.put(cartridge.getType(), cartridge);
             System.out.println(cartridges.size());
         } else {
-            if (!cartridge.isPublic()) {
-                if (this.availableSingleTenantCartridges.containsKey(tenantId)) {
-                    cartridges = availableSingleTenantCartridges.get(tenantId);
-                } else {
-                    cartridges = new HashMap<String, CartridgeBean>();
-                    this.availableSingleTenantCartridges.put(tenantId, cartridges);
-                }
+            if (this.availableSingleTenantCartridges.containsKey(tenantId)) {
+                cartridges = availableSingleTenantCartridges.get(tenantId);
             } else {
-                if (this.availableSingleTenantCartridges.containsKey(PUBLIC_DEFINITION)) {
-                    cartridges = availableSingleTenantCartridges.get(PUBLIC_DEFINITION);
-                } else {
-                    cartridges = new HashMap<String, CartridgeBean>();
-                    this.availableSingleTenantCartridges.put(PUBLIC_DEFINITION, cartridges);
-                }
+                cartridges = new HashMap<String, CartridgeBean>();
+                this.availableSingleTenantCartridges.put(tenantId, cartridges);
             }
-
             cartridges.put(cartridge.getType(), cartridge);
             System.out.println(cartridges.size());
         }
@@ -174,55 +147,10 @@ public class MockContext {
     }
 
     public CartridgeBean[] getAvailableLbCartridges() throws RestAPIException {
-        /*Map<String,Cartridge> availableLbCartridges = new HashMap<String,Cartridge>();
-        Iterator it = availableSingleTenantCartridges.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry pairs = (Map.Entry)it.next();
-            Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(cartridge.getSubscriptionDomain().equals("lb")){
-                availableLbCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
-            }
-            it.remove();
-        }
-
-        it = availableMultiTenantCartridges.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry pairs = (Map.Entry)it.next();
-            Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(cartridge.getSubscriptionDomain().equals("lb")){
-                availableLbCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
-            }
-            it.remove();
-        }
-        return availableLbCartridges.values().toArray(new Cartridge[0]);*/
-        //return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
         return getAvailableSingleTenantCartridges();
     }
 
     public CartridgeBean[] getAvailableCartridges() throws RestAPIException {
-        /*Map<String, Cartridge> availableCartridges = new HashMap<String,Cartridge>();
-        Iterator it = availableSingleTenantCartridges.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry pairs = (Map.Entry)it.next();
-            Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(!cartridge.getSubscriptionDomain().equals("lb")){
-                availableCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
-            }
-            it.remove();
-        }
-
-        it = availableMultiTenantCartridges.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry pairs = (Map.Entry)it.next();
-            Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(!cartridge.getSubscriptionDomain().equals("lb")){
-                availableCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
-            }
-            it.remove();
-        }
-        System.out.println(availableCartridges.size());
-        return availableCartridges.values().toArray(new Cartridge[0]);*/
-        //return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
         return getAvailableSingleTenantCartridges();
     }
 
@@ -423,20 +351,11 @@ public class MockContext {
         int tenantId = getTenantId();
         Map<String, PartitionBean> partitions;
 
-        if (!partition.isPublic()) {
-            if (partitionMap.containsKey(tenantId)) {
-                partitions = partitionMap.get(tenantId);
-            } else {
-                partitions = new HashMap<String, PartitionBean>();
-                partitionMap.put(tenantId, partitions);
-            }
+        if (partitionMap.containsKey(tenantId)) {
+            partitions = partitionMap.get(tenantId);
         } else {
-            if (partitionMap.containsKey(PUBLIC_DEFINITION)) {
-                partitions = partitionMap.get(PUBLIC_DEFINITION);
-            } else {
-                partitions = new HashMap<String, PartitionBean>();
-                partitionMap.put(PUBLIC_DEFINITION, partitions);
-            }
+            partitions = new HashMap<String, PartitionBean>();
+            partitionMap.put(tenantId, partitions);
         }
 
         partitions.put(partition.getId(), partition);
@@ -449,20 +368,11 @@ public class MockContext {
         int tenantId = getTenantId();
         Map<String, AutoscalePolicyBean> policies;
 
-        if (!autoscalePolicy.getIsPublic()) {
-            if (autoscalePolicyMap.containsKey(tenantId)) {
-                policies = autoscalePolicyMap.get(tenantId);
-            } else {
-                policies = new HashMap<String, AutoscalePolicyBean>();
-                autoscalePolicyMap.put(tenantId, policies);
-            }
+        if (autoscalePolicyMap.containsKey(tenantId)) {
+            policies = autoscalePolicyMap.get(tenantId);
         } else {
-            if (autoscalePolicyMap.containsKey(PUBLIC_DEFINITION)) {
-                policies = autoscalePolicyMap.get(PUBLIC_DEFINITION);
-            } else {
-                policies = new HashMap<String, AutoscalePolicyBean>();
-                autoscalePolicyMap.put(PUBLIC_DEFINITION, policies);
-            }
+            policies = new HashMap<String, AutoscalePolicyBean>();
+            autoscalePolicyMap.put(tenantId, policies);
         }
 
         policies.put(autoscalePolicy.getId(), autoscalePolicy);
@@ -535,7 +445,7 @@ public class MockContext {
                 if (!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)) {
                     throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
                 }
-                List<PartitionBean> partitions = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions().get(0).getPartitions();
+                List<PartitionReferenceBean> partitions = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions().get(0).getPartitions();
                 return partitions.toArray(new PartitionBean[partitions.size()]);
             }
         }
@@ -544,7 +454,7 @@ public class MockContext {
             throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
         }
         //FIXME to parse thr all the NW partitions
-        List<PartitionBean> partitions = (deploymentPolicyMap.get(tenantId)).
+        List<PartitionReferenceBean> partitions = (deploymentPolicyMap.get(tenantId)).
                 get(deploymentPolicyId).getNetworkPartitions().get(0).getPartitions();
         return partitions.toArray(new PartitionBean[partitions.size()]);
     }
@@ -558,7 +468,7 @@ public class MockContext {
                 if (!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)) {
                     throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
                 }
-                List<NetworkPartitionBean> networkPartitionsList = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions();
+                List<NetworkPartitionReferenceBean> networkPartitionsList = (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitions();
                 return networkPartitionsList.toArray(new NetworkPartitionBean[networkPartitionsList.size()]);
             }
         }
@@ -566,7 +476,7 @@ public class MockContext {
         if (!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)) {
             throw new RestAPIException(Status.NO_CONTENT, "There is no deployment policy with id: " + deploymentPolicyId);
         }
-        List<NetworkPartitionBean> networkPartitionsList = (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getNetworkPartitions();
+        List<NetworkPartitionReferenceBean> networkPartitionsList = (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getNetworkPartitions();
         return networkPartitionsList.toArray(new NetworkPartitionBean[networkPartitionsList.size()]);
     }
 
@@ -696,9 +606,9 @@ public class MockContext {
         }
 
         PartitionBean[] partitionsArray = null;
-        for (NetworkPartitionBean networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (NetworkPartitionReferenceBean networkPartition : deploymentPolicy.getNetworkPartitions()) {
             if (networkPartition.getId().equals(partitionGroupId)) {
-                List<PartitionBean> partitions = networkPartition.getPartitions();
+                List<PartitionReferenceBean> partitions = networkPartition.getPartitions();
                 partitionsArray = partitions.toArray(new PartitionBean[partitions.size()]);
             }
         }

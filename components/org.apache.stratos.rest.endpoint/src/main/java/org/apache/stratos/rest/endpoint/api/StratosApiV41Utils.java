@@ -1322,7 +1322,7 @@ public class StratosApiV41Utils {
 
         if (serviceGroup.getCartridges() != null) {
             for (String cartridge : serviceGroup.getCartridges()) {
-                if (!cartridges.contains(cartridge)) {
+                if (cartridge !=null && cartridges.contains(cartridge)) {
                     cartridges.add(cartridge);
                 }
             }
@@ -2697,7 +2697,7 @@ public class StratosApiV41Utils {
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
 
-                    ObjectConverter.convertToASDeploymentPolicy(deployementPolicyDefinitionBean);
+                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deployementPolicyDefinitionBean);
             AutoscalerServiceClient.getInstance().addDeploymentPolicy(deploymentPolicy);
 
             if (log.isDebugEnabled()) {
@@ -2775,7 +2775,7 @@ public class StratosApiV41Utils {
             }
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    ObjectConverter.convertToASDeploymentPolicy(deploymentPolicyDefinitionBean);
+                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
 
             AutoscalerServiceClient.getInstance().updateDeploymentPolicy(deploymentPolicy);
 

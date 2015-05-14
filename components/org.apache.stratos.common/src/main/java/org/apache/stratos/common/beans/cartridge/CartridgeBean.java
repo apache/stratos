@@ -38,7 +38,6 @@ public class CartridgeBean {
     private String description;
     private String version;
     private boolean multiTenant;
-    private boolean isPublic;
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
     private String tenantPartitions;
@@ -154,14 +153,6 @@ public class CartridgeBean {
         this.multiTenant = multiTenant;
     }
 
-    public boolean isPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
     public DeploymentBean getDeployment() {
         return deployment;
     }
@@ -236,7 +227,6 @@ public class CartridgeBean {
                 ", Description: " + getDescription() +
                 ", Version: " + getVersion() +
                 ", Multi-Tenant " + isMultiTenant() +
-                ", Public " + isPublic() +
                 ", Deployment" + getDeploymentDetails() +
                 ", Port Mapping: " + getPortMappings() +
                 ", Tenant Partitions: " + getTenantPartitions() +

@@ -128,7 +128,8 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                 if (clusterInstanceContext != null) {
                     for (ClusterLevelPartitionContext partitionContext :
                             clusterInstanceContext.getPartitionCtxts()) {
-                        if (partitionContext.getNonTerminatedMemberCount() > 0) {
+                        if (partitionContext.getTotalMemberCount() > 0 ||
+                                partitionContext.getObsoletedMembers().values().size() > 0) {
                             return true;
                         }
                     }

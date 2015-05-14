@@ -143,7 +143,9 @@ public class DependencyBuilder {
                                     ApplicationChildContext existingParentContext =
                                             dependencyTree.findParentContextWithId(applicationChildContext.getId());
                                     if ((existingParentContext != null) &&
-                                            (existingParentContext.getId().equals(existingApplicationChildContext.getId()))) {
+                                            (existingApplicationChildContext.getParent()) != null &&
+                                            (existingParentContext.getId().
+                                                    equals(existingApplicationChildContext.getParent().getId()))) {
                                         // Application child context is already available in the dependency tree,
                                         // find its parent element, mark it as the parent element and continue
                                         if (log.isDebugEnabled()) {
@@ -152,7 +154,7 @@ public class DependencyBuilder {
                                                             "and continuing: [dependency-tree] %s",
                                                     existingParentContext.getId(), dependencyTree));
                                         }
-                                        parentContext = existingParentContext;
+                                        parentContext = existingApplicationChildContext;
                                     } else {
                                         String msg = "Startup order is not valid. It contains an element " +
                                                 "which has been defined more than once in another startup order: " +

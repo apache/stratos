@@ -23,6 +23,9 @@ import org.apache.stratos.common.beans.application.SubscribableInfo;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
+/**
+ * Cartridge reference definition being used in application and cartridge groups.
+ */
 @XmlRootElement
 public class CartridgeReferenceBean implements Serializable {
 

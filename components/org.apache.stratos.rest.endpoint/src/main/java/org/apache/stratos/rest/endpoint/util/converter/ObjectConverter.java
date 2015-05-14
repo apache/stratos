@@ -35,7 +35,9 @@ import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBea
 import org.apache.stratos.common.beans.cartridge.*;
 import org.apache.stratos.common.beans.kubernetes.*;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.*;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -74,7 +76,6 @@ public class ObjectConverter {
         cartridge.setCategory(cartridgeBean.getCategory());
         cartridge.setVersion(cartridgeBean.getVersion());
         cartridge.setMultiTenant(cartridgeBean.isMultiTenant());
-        cartridge.setIsPublic(cartridgeBean.isPublic());
         cartridge.setDisplayName(cartridgeBean.getDisplayName());
         cartridge.setDescription(cartridgeBean.getDescription());
         cartridge.setTenantPartitions(cartridgeBean.getTenantPartitions());
@@ -289,9 +290,7 @@ public class ObjectConverter {
 
         org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
-
         stubPartition.setId(partition.getId());
-        stubPartition.setPartitionMax(partition.getPartitionMax());
         stubPartition.setProperties(convertPropertyBeansToCCStubProperties(partition.getProperty()));
 
         return stubPartition;
@@ -457,9 +456,7 @@ public class ObjectConverter {
         }
         PartitionBean partition = new PartitionBean();
         partition.setId(stubPartition.getId());
-        partition.setPublic(stubPartition.getIsPublic());
         partition.setDescription(stubPartition.getDescription());
-        partition.setKubernetesClusterId(stubPartition.getKubernetesClusterId());
         if (stubPartition.getProperties() != null) {
             List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
                     = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
@@ -477,8 +474,8 @@ public class ObjectConverter {
     }
 
 
-    public static org.apache.stratos.cloud.controller.stub.domain.NetworkPartition convertNetworkPartitionToCCStubNetworkPartition(
-            NetworkPartitionBean networkPartitionBean) {
+    public static org.apache.stratos.cloud.controller.stub.domain.NetworkPartition
+        convertNetworkPartitionToCCStubNetworkPartition(NetworkPartitionBean networkPartitionBean) {
 
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition
                 = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
@@ -493,16 +490,16 @@ public class ObjectConverter {
         return networkPartition;
     }
 
-    private static List<NetworkPartitionBean> convertASStubNetworkPartitionsToNetworkPartitions(
+    private static List<NetworkPartitionReferenceBean> convertASStubNetworkPartitionsToNetworkPartitionReferences(
             NetworkPartitionRef[] networkPartitions) {
 
-        List<NetworkPartitionBean> networkPartitionBeans = new ArrayList<NetworkPartitionBean>();
-        for (NetworkPartitionRef networkPartition : networkPartitions) {
-            NetworkPartitionBean networkPartitionBean = new NetworkPartitionBean();
-            networkPartitionBean.setId(networkPartition.getId());
-            networkPartitionBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
-            networkPartitionBean.setPartitions(convertASStubPartitionsToPartitions(networkPartition.getPartitions()));
-            networkPartitionBeans.add(networkPartitionBean);
+        List<NetworkPartitionReferenceBean> networkPartitionBeans = new ArrayList<NetworkPartitionReferenceBean>();
+        for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
+            NetworkPartitionReferenceBean networkPartitionReferenceBean = new NetworkPartitionReferenceBean();
+            networkPartitionReferenceBean.setId(networkPartitionRef.getId());
+            networkPartitionReferenceBean.setPartitions(
+                    convertASStubPartitionsToPartitions(networkPartitionRef.getPartitions()));
+            networkPartitionBeans.add(networkPartitionReferenceBean);
         }
 
         return networkPartitionBeans;
@@ -655,22 +652,19 @@ public class ObjectConverter {
         for (int i = 0; i < partitionList.size(); i++) {
             partitions[i] = convertPartitionToStubPartition(partitionList.get(i));
         }
-
         return partitions;
     }
 
 
-    private static List<PartitionBean> convertASStubPartitionsToPartitions(
+    private static List<PartitionReferenceBean> convertASStubPartitionsToPartitions(
             PartitionRef[] partitions) {
 
-        List<PartitionBean> partitionBeans = new ArrayList<PartitionBean>();
+        List<PartitionReferenceBean> partitionBeans = new ArrayList<PartitionReferenceBean>();
         for (PartitionRef partition : partitions) {
-            PartitionBean partitionBean = new PartitionBean();
+            PartitionReferenceBean partitionBean = new PartitionReferenceBean();
             partitionBean.setId(partition.getId());
-            partitionBean.setPartitionMax(partition.getPartitionMax());
             partitionBeans.add(partitionBean);
         }
-
         return partitionBeans;
     }
 
@@ -699,15 +693,12 @@ public class ObjectConverter {
 
         partitionBeans.setId(partition.getId());
         partitionBeans.setDescription(partition.getDescription());
-        partitionBeans.setPublic(partition.getIsPublic());
-        partitionBeans.setPartitionMax(partition.getPartitionMax());
         //properties
         if (partition.getProperties() != null) {
             List<org.apache.stratos.common.beans.PropertyBean> propertyBeans
                     = convertCCStubPropertiesToPropertyBeans(partition.getProperties());
             partitionBeans.setProperty(propertyBeans);
         }
-
         return partitionBeans;
     }
 
@@ -1765,7 +1756,7 @@ public class ObjectConverter {
 
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
         deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
-        deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionsToNetworkPartitions(
+        deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionsToNetworkPartitionReferences(
                 deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
     }
@@ -1790,18 +1781,15 @@ public class ObjectConverter {
     }
 
 
-    public static DeploymentPolicy convertToASDeploymentPolicy(
+    public static DeploymentPolicy convertDeploymentPolicyBeanToASDeploymentPolicy(
             DeploymentPolicyBean deploymentPolicyBean) {
 
         if (deploymentPolicyBean == null) {
             return null;
         }
 
-        DeploymentPolicy deploymentPolicy =
-                new DeploymentPolicy();
-
+        DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
         deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
-
         if (deploymentPolicyBean.getNetworkPartitions() != null) {
             deploymentPolicy.setNetworkPartitionRefs(convertNetworkPartitionToASStubNetworkPartition(
                     deploymentPolicyBean.getNetworkPartitions()));
@@ -1840,78 +1828,74 @@ public class ObjectConverter {
         return deploymentPolicyBean;
     }
 
-    private static List<NetworkPartitionBean> convertASStubNetworkPartitionRefsToNetworkPartitions(
+    private static List<NetworkPartitionReferenceBean> convertASStubNetworkPartitionRefsToNetworkPartitions(
             NetworkPartitionRef[] networkPartitions) {
 
-        List<NetworkPartitionBean> networkPartitionBeans = new ArrayList<NetworkPartitionBean>();
+        List<NetworkPartitionReferenceBean> networkPartitionBeans = new ArrayList<NetworkPartitionReferenceBean>();
         for (NetworkPartitionRef networkPartition : networkPartitions) {
-            NetworkPartitionBean networkPartitionBean = new NetworkPartitionBean();
-            networkPartitionBean.setId(networkPartition.getId());
-            networkPartitionBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
-            networkPartitionBean.setPartitions(convertASStubPartitionRefsToPartitionRefs(networkPartition.getPartitions()));
-            networkPartitionBeans.add(networkPartitionBean);
+            NetworkPartitionReferenceBean networkPartitionReferenceBean = new NetworkPartitionReferenceBean();
+            networkPartitionReferenceBean.setId(networkPartition.getId());
+            networkPartitionReferenceBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
+            networkPartitionReferenceBean.setPartitions(convertASStubPartitionRefsToPartitionReferences(networkPartition.getPartitions()));
+            networkPartitionBeans.add(networkPartitionReferenceBean);
         }
 
         return networkPartitionBeans;
     }
 
 
-    private static List<PartitionBean> convertASStubPartitionRefsToPartitionRefs(
+    private static List<PartitionReferenceBean> convertASStubPartitionRefsToPartitionReferences(
             PartitionRef[] partitions) {
 
-        List<PartitionBean> partitionRefBeans = new ArrayList<PartitionBean>();
+        List<PartitionReferenceBean> partitionRefBeans = new ArrayList<PartitionReferenceBean>();
         for (PartitionRef partition : partitions) {
-            PartitionBean partitionRefBean = new PartitionBean();
+            PartitionReferenceBean partitionRefBean = new PartitionReferenceBean();
             partitionRefBean.setId(partition.getId());
             partitionRefBean.setPartitionMax(partition.getPartitionMax());
             partitionRefBeans.add(partitionRefBean);
         }
-
         return partitionRefBeans;
     }
 
     private static PartitionRef convertPartitionToASStubPartition(
-            PartitionBean partition) {
+            PartitionReferenceBean partitionReferenceBean) {
 
-        if (partition == null) {
+        if (partitionReferenceBean == null) {
             return null;
         }
 
-        PartitionRef stubPartition = new
-                PartitionRef();
-
-        stubPartition.setId(partition.getId());
-        stubPartition.setPartitionMax(partition.getPartitionMax());
-
+        PartitionRef stubPartition = new PartitionRef();
+        stubPartition.setId(partitionReferenceBean.getId());
+        stubPartition.setPartitionMax(partitionReferenceBean.getPartitionMax());
         return stubPartition;
     }
 
 
     private static PartitionRef[] convertToASStubPartitions
-            (List<PartitionBean> partitionList) {
+            (List<PartitionReferenceBean> partitionReferenceBeanList) {
 
         PartitionRef[] partitions
-                = new PartitionRef[partitionList.size()];
-        for (int i = 0; i < partitionList.size(); i++) {
-            partitions[i] = convertPartitionToASStubPartition(partitionList.get(i));
+                = new PartitionRef[partitionReferenceBeanList.size()];
+        for (int i = 0; i < partitionReferenceBeanList.size(); i++) {
+            partitions[i] = convertPartitionToASStubPartition(partitionReferenceBeanList.get(i));
         }
-
         return partitions;
     }
 
 
     private static NetworkPartitionRef[] convertNetworkPartitionToASStubNetworkPartition(
-            List<NetworkPartitionBean> networkPartitionBean) {
+            List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans) {
 
-        NetworkPartitionRef[] networkPartition =
-                new NetworkPartitionRef[networkPartitionBean.size()];
-        for (int i = 0; i < networkPartitionBean.size(); i++) {
-            networkPartition[i] = new NetworkPartitionRef();
-            networkPartition[i].setId(networkPartitionBean.get(i).getId());
-            networkPartition[i].setPartitionAlgo(networkPartitionBean.get(i).getPartitionAlgo());
-            networkPartition[i].setPartitions(convertToASStubPartitions(networkPartitionBean.get(i).getPartitions()));
+        List<NetworkPartitionRef> networkPartitionRefList =
+                new ArrayList<NetworkPartitionRef>();
+        for (NetworkPartitionReferenceBean networkPartitionReferenceBean : networkPartitionReferenceBeans) {
+            NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
+            networkPartitionRef.setId(networkPartitionReferenceBean.getId());
+            networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
+            networkPartitionRef.setPartitions(convertToASStubPartitions(
+                    networkPartitionReferenceBean.getPartitions()));
+            networkPartitionRefList.add(networkPartitionRef);
         }
-
-        return networkPartition;
+        return networkPartitionRefList.toArray(new NetworkPartitionRef[networkPartitionRefList.size()]);
     }
 }

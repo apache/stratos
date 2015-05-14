@@ -1055,9 +1055,8 @@ public class RestCommandLineService {
             RowMapper<AutoscalePolicyBean> rowMapper = new RowMapper<AutoscalePolicyBean>() {
 
                 public String[] getData(AutoscalePolicyBean policy) {
-                    String[] data = new String[2];
+                    String[] data = new String[1];
                     data[0] = policy.getId();
-                    data[1] = policy.getIsPublic() ? "Public" : "Private";
                     return data;
                 }
             };
