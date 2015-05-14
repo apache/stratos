@@ -93,6 +93,7 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
             if ((defaultFloatingIpPool == null) || "".equals(defaultFloatingIpPool)) {
                 allocatedFloatingIP = floatingIPApi.create();
             } else {
+                log.debug(String.format("trying to allocate floating IP from pool %s", defaultFloatingIpPool));
                 allocatedFloatingIP = floatingIPApi.allocateFromPool(defaultFloatingIpPool);
             }
             if (allocatedFloatingIP == null) {
