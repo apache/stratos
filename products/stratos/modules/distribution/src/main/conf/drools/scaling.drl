@@ -167,7 +167,15 @@ dialect "mvel"
                         ClusterLevelPartitionContext partitionContext = (ClusterLevelPartitionContext) partitionAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                         if(partitionContext != null){
 
-                            log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                            log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up! " +
+                                " [partition] " + partitionContext.getPartitionId() +  " [cluster] " + clusterId +
+                                " scaleup due to RIF: " + (rifReset && (rifPredictedValue > rifThreshold)) +
+                                " [rifPredictedValue] " + rifPredictedValue + " [rifThreshold] " + rifThreshold +
+                                " scaleup due to MC: " + (mcReset && (mcPredictedValue > mcThreshold)) +
+                                " [mcPredictedValue] " + mcPredictedValue + " [mcThreshold] " + mcThreshold +
+                                " scaleup due to MC: " + (laReset && (laPredictedValue > laThreshold)) +
+                                " [laPredictedValue] " + laPredictedValue + " [laThreshold] " + laThreshold);
+
                             log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
                             delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
                             count++;
@@ -208,10 +216,15 @@ dialect "mvel"
                         boolean foundAValue = false;
                         ClusterLevelPartitionContext partitionContext = (ClusterLevelPartitionContext) partitionAlgorithm.getNextScaleDownPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                         if(partitionContext != null){
-                            log.info("[scale-down] Partition available to scale down ");
-        //                    log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
-        //                    partitionContext = clusterInstanceContext.getPartitionCtxt(partition.getId());
-        //
+                            log.info("[scale-down] Partition available to scale down " +
+                                " [partition] " + partitionContext.getPartitionId() +  " [cluster] " + clusterId +
+                                " scaledown due to RIF: " + (rifReset && (rifPredictedValue < rifThreshold)) +
+                                " [rifPredictedValue] " + rifPredictedValue + " [rifThreshold] " + rifThreshold +
+                                " scaledown due to MC: " + (mcReset && (mcPredictedValue < mcThreshold)) +
+                                " [mcPredictedValue] " + mcPredictedValue + " [mcThreshold] " + mcThreshold +
+                                " scaledown due to MC: " + (laReset && (laPredictedValue < laThreshold)) +
+                                " [laPredictedValue] " + laPredictedValue + " [laThreshold] " + laThreshold
+                            );
 
                             // In partition context member stat context, all the primary members need to be
                             // avoided being selected as the member to terminated
