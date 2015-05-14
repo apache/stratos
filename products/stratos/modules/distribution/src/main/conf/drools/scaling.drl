@@ -46,6 +46,7 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy autoscalePolicy;
+global java.lang.String applicationId;
 global java.lang.String clusterId;
 global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;
@@ -168,7 +169,10 @@ dialect "mvel"
                         if(partitionContext != null){
 
                             log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up! " +
-                                " [partition] " + partitionContext.getPartitionId() +  " [cluster] " + clusterId +
+                                " [application id] " + applicationId +
+                                " [cluster] " + clusterId + " [instance id] " + clusterInstanceContext.getId() +
+                                " [network-partition] " + clusterInstanceContext.getNetworkPartitionId() +
+                                " [partition] " + partitionContext.getPartitionId() +
                                 " scaleup due to RIF: " + (rifReset && (rifPredictedValue > rifThreshold)) +
                                 " [rifPredictedValue] " + rifPredictedValue + " [rifThreshold] " + rifThreshold +
                                 " scaleup due to MC: " + (mcReset && (mcPredictedValue > mcThreshold)) +
@@ -217,7 +221,10 @@ dialect "mvel"
                         ClusterLevelPartitionContext partitionContext = (ClusterLevelPartitionContext) partitionAlgorithm.getNextScaleDownPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                         if(partitionContext != null){
                             log.info("[scale-down] Partition available to scale down " +
-                                " [partition] " + partitionContext.getPartitionId() +  " [cluster] " + clusterId +
+                                " [application id] " + applicationId +
+                                " [cluster] " + clusterId + " [instance id] " + clusterInstanceContext.getId() +
+                                " [network-partition] " + clusterInstanceContext.getNetworkPartitionId() +
+                                " [partition] " + partitionContext.getPartitionId() +
                                 " scaledown due to RIF: " + (rifReset && (rifPredictedValue < rifThreshold)) +
                                 " [rifPredictedValue] " + rifPredictedValue + " [rifThreshold] " + rifThreshold +
                                 " scaledown due to MC: " + (mcReset && (mcPredictedValue < mcThreshold)) +
