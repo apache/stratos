@@ -1213,7 +1213,7 @@ public class StratosApiV41Utils {
 
         if (serviceGroup.getCartridges() != null) {
             for (String cartridge : serviceGroup.getCartridges()) {
-                if (!cartridges.contains(cartridge) & cartridge !=null) {
+                if (!cartridges.contains(cartridge) && cartridge !=null) {
                     cartridges.add(cartridge);
                 }
             }
