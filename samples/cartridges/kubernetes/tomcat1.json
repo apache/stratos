@@ -23,7 +23,6 @@
             "imageId":"stratos/cartridge:4.1.0-alpha",
             "networkInterfaces":[
             {
-                "name":"network-non-routable",
                 "networkUuid":""
             }
             ],

@@ -22,7 +22,6 @@
             "imageId": "RegionOne/a63609be-61df-436f-80bc-d2b6068a4c3a",
             "networkInterfaces": [
                 {
-                    "name": "network-non-routable",
                     "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
                 }
             ],
