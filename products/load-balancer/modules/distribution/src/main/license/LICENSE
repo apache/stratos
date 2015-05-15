@@ -211,104 +211,171 @@ is subject to the terms and conditions of the following licenses.
 ===============================================================================
 The following components come under Apache Software License 2.0
 ===============================================================================
+                                                                                                                                                           
+For abdera_1.0.0.wso2v3.jar,                                                                 
+ajaxtags_1.3.0.beta-rc7-wso2v1.jar,                                                      
+annogen_0.1.0.wso2v1.jar,                                                                
+ant_1.7.0.wso2v1.jar,                                                                    
+authenticator_0.7.0.wso2v1.jar,                                                            
+axiom_1.2.11.wso2v4.jar,                                                                 
+axis2-json_1.6.1.wso2v10.jar,                                                           
+axis2-transport-jms_1.1.0.wso2v9.jar,
+axis2_1.6.1.wso2v10.jar,                                                                 
+bsf-all_3.0.0.wso2v2.jar,                                                                
+com.google.gson_2.1.0.jar,                                                               
+com.google.gson_2.2.0.jar,                                                     
+com.jayway.jsonpath_0.8.1.wso2v1.jar,                                                                                                          
+commons-codec_1.4.0.wso2v1.jar,
+commons-collections_3.2.0.wso2v1.jar,
+commons-dbcp_1.4.0.wso2v1.jar,                                                           
+commons-fileupload_1.2.2.wso2v1.jar,                                                     
+commons-httpclient_3.1.0.wso2v2.jar,
+commons-io_2.0.0.wso2v2.jar,                                                             
+commons-lang_2.6.0.wso2v1.jar,                                                           
+commons-pool_1.5.6.wso2v1.jar, 
+compass_2.0.1.wso2v2.jar,                                                                
+ehcache_1.5.0.wso2v3.jar,                                                  
+geronimo-saaj_1.3_spec_1.0.0.wso2v3.jar, 
+hazelcast_3.0.1.wso2v1.jar,                                                              
+httpclient_4.2.5.wso2v1.jar, 
+httpcore-nio_4.2.3.wso2v3.jar,
+httpcore_4.3.0.wso2v1.jar,                                                               
+jdbc-pool_7.0.34.wso2v1.jar,                                                             
+jettison_1.3.4.wso2v1.jar,
+jsr107cache_1.1.0.wso2v3.jar,                                                            
+libthrift_0.7.0.wso2v2.jar, 
+neethi_2.0.4.wso2v4.jar,   
+opencsv_1.8.0.wso2v1.jar,                                                                
+opensaml2_2.4.1.wso2v1.jar,                                                              
+org.apache.commons.lang3_3.1.0.jar,                                                      
+org.apache.felix.gogo.command_0.8.0.v201108120515.jar,                                   
+org.apache.felix.gogo.runtime_0.8.0.v201108120515.jar,                                    
+org.apache.felix.gogo.shell_0.8.0.v201110170705.jar,                                     
+org.apache.jasper.glassfish_2.2.2.v201205150955.jar,                                     
+org.apache.stratos.common_4.1.0.SNAPSHOT.jar,                                            
+org.apache.stratos.load.balancer.common_4.1.0.SNAPSHOT.jar,                            
+org.apache.stratos.load.balancer_4.1.0.SNAPSHOT.jar,                                     
+org.apache.stratos.messaging_4.1.0.SNAPSHOT.jar,         
+org.wso2.caching_4.0.3.jar,                                                              
+org.wso2.carbon.addressing_4.2.0.jar,                                                    
+org.wso2.carbon.apache.jasper.fragment_4.2.0.jar,                                        
+org.wso2.carbon.application.deployer_4.2.0.jar,                                          
+org.wso2.carbon.authenticator.proxy_4.2.0.jar,                                           
+org.wso2.carbon.authenticator.stub_4.2.0.jar,                                            
+org.wso2.carbon.base_4.2.0.jar,                                                          
+org.wso2.carbon.caching.core_4.2.0.jar,                                                  
+org.wso2.carbon.caching_4.2.0.jar,                                                       
+org.wso2.carbon.cluster.mgt.core_4.2.0.jar,                                              
+org.wso2.carbon.core.bootup.validator_4.2.0.jar,                                         
+org.wso2.carbon.core.common_4.2.0.jar,                                                   
+org.wso2.carbon.core.commons.stub_4.2.0.jar,                                             
+org.wso2.carbon.core.services_4.2.0.jar,                                                 
+org.wso2.carbon.core_4.2.0.jar,                                                          
+org.wso2.carbon.databridge.agent.thrift_4.2.0.jar,                                       
+org.wso2.carbon.databridge.commons.thrift_4.2.0.jar,                                     
+org.wso2.carbon.databridge.commons_4.2.0.jar,                                            
+org.wso2.carbon.datasource_4.2.0.jar,                                                    
+org.wso2.carbon.ec2-client_4.2.0.jar,                                                    
+org.wso2.carbon.endpoint_4.2.0.jar,  
+org.wso2.carbon.event.admin_4.2.0.jar,                                                   
+org.wso2.carbon.event.client.stub_4.2.0.jar,                                             
+org.wso2.carbon.event.client_4.2.0.jar,                                                  
+org.wso2.carbon.event.common_4.2.0.jar,                                                  
+org.wso2.carbon.event.core_4.2.0.jar,                                                    
+org.wso2.carbon.event.ws_4.2.0.jar,                                                      
+org.wso2.carbon.feature.mgt.core_4.2.0.jar,                                              
+org.wso2.carbon.feature.mgt.services_4.2.0.jar,                                          
+org.wso2.carbon.feature.mgt.stub_4.2.0.jar,                                              
+org.wso2.carbon.framework.exporter_4.2.0.jar,                                            
+org.wso2.carbon.i18n_4.2.0.jar,                                                          
+org.wso2.carbon.jasper.patch_4.2.0.jar, 
+org.wso2.carbon.logging_4.2.0.jar,                                                       
+org.wso2.carbon.mediation.dependency.mgt_4.2.0.jar,                                      
+org.wso2.carbon.mediation.initializer_4.2.0.jar,                                         
+org.wso2.carbon.mediation.registry_4.2.0.jar,                                            
+org.wso2.carbon.mediator.clazz.services_4.2.0.jar,                                       
+org.wso2.carbon.mediator.command.services_4.2.0.jar,                                     
+org.wso2.carbon.mediator.event_4.2.0.jar,                                                
+org.wso2.carbon.mediator.fastXSLT_4.2.0.jar,                                             
+org.wso2.carbon.mediator.router.impl_4.2.0.jar,                                          
+org.wso2.carbon.module.mgt_4.2.0.jar,                                                    
+org.wso2.carbon.ndatasource.common_4.2.0.jar,                                            
+org.wso2.carbon.ndatasource.core_4.2.0.jar,                                              
+org.wso2.carbon.ndatasource.rdbms_4.2.0.jar,                                             
+org.wso2.carbon.ntask.common_4.2.0.jar,                                                  
+org.wso2.carbon.ntask.core_4.2.0.jar,                                                    
+org.wso2.carbon.ntask.solutions_4.2.0.jar,                                               
+org.wso2.carbon.operation.mgt_4.2.0.jar,                                                 
+org.wso2.carbon.osgi.security_4.2.0.jar,                                                 
+org.wso2.carbon.p2.touchpoint_4.2.0.jar,                                                 
+org.wso2.carbon.qpid.stub_4.2.0.jar,                                                     
+org.wso2.carbon.queuing_4.2.0.jar,                                                       
+org.wso2.carbon.registry.admin.api_4.2.0.jar,                                            
+org.wso2.carbon.registry.api_4.2.0.jar,                                                  
+org.wso2.carbon.registry.common_4.2.0.jar,                                               
+org.wso2.carbon.registry.core_4.2.0.jar,                                                 
+org.wso2.carbon.registry.resource.stub_4.2.0.jar,                                        
+org.wso2.carbon.registry.resource_4.2.0.jar,                                             
+org.wso2.carbon.registry.search.stub_4.2.0.jar,                                          
+org.wso2.carbon.registry.search_4.2.0.jar,                                               
+org.wso2.carbon.registry.server_4.2.0.jar,                                               
+org.wso2.carbon.registry.servlet_4.2.0.jar,                                              
+org.wso2.carbon.relay.mediators.builder_4.2.0.jar,                                       
+org.wso2.carbon.relay.module_4.2.0.jar,                                                  
+org.wso2.carbon.relay_4.2.0.jar,                                                         
+org.wso2.carbon.remote-tasks.stub_4.2.0.jar,                                             
+org.wso2.carbon.rm_4.2.0.jar,                                                            
+org.wso2.carbon.roles.mgt.stub_4.2.0.jar,                                                
+org.wso2.carbon.roles.mgt_4.2.0.jar,                                                     
+org.wso2.carbon.securevault_4.2.0.jar,                                                   
+org.wso2.carbon.security.mgt_4.2.0.jar,                                                  
+org.wso2.carbon.sequences.common_4.2.0.jar,                                              
+org.wso2.carbon.sequences_4.2.0.jar,                                                     
+org.wso2.carbon.server.admin.common_4.2.0.jar,                                           
+org.wso2.carbon.server.admin.stub_4.2.0.jar,                                             
+org.wso2.carbon.server.admin_4.2.0.jar,                                                  
+org.wso2.carbon.service.mgt_4.2.0.jar,                                                   
+org.wso2.carbon.startup_4.2.0.jar,                                                       
+org.wso2.carbon.task.services_4.2.0.jar,                                                 
+org.wso2.carbon.task_4.2.0.jar,                                                          
+org.wso2.carbon.throttle.core_4.2.0.jar,                                                 
+org.wso2.carbon.throttle_4.2.0.jar,                                                      
+org.wso2.carbon.tomcat.ext_4.2.0.jar,                                                    
+org.wso2.carbon.tomcat.fragment.dummy_4.2.0.jar,                                         
+org.wso2.carbon.tomcat.patch_4.2.0.jar,                                                  
+org.wso2.carbon.tomcat_4.2.0.jar,                                                        
+org.wso2.carbon.transport.http_4.2.0.jar,                                                
+org.wso2.carbon.transport.https_4.2.0.jar,                                               
+org.wso2.carbon.transport.local_4.2.0.jar,                                               
+org.wso2.carbon.transport.mgt_4.2.0.jar,                                                 
+org.wso2.carbon.transport.nhttp_4.2.0.jar,                                               
+org.wso2.carbon.user.api_4.2.0.jar,                                                      
+org.wso2.carbon.user.core_4.2.0.jar,                                                     
+org.wso2.carbon.utils_4.2.0.jar,                                                         
+org.wso2.securevault_1.0.0.wso2v2.jar,                                                   
+org.wso2.throttle_3.3.0.jar,          
+poi-ooxml_3.9.0.wso2v1.jar,                                                       
+poi-scratchpad_3.9.0.wso2v1.jar,  
+poi_3.9.0.wso2v1.jar,                                                                    
+quartz_2.1.1.wso2v1.jar,  
+rampart-core_1.6.1.wso2v10.jar,                                                          
+rampart-policy_1.6.1.wso2v10.jar,                                                        
+rampart-trust_1.6.1.wso2v10.jar,   
+staxon-core_1.2.0.wso2v2.jar,                                                            
+synapse-commons_2.1.2.wso2v3.jar,                                                        
+synapse-core_2.1.2.wso2v3.jar,                                                           
+synapse-extensions_2.1.2.wso2v3.jar,                                                     
+synapse-nhttp-transport_2.1.2.wso2v3.jar,                                                
+synapse-tasks_2.1.2.wso2v3.jar, 
+tiles-jsp_2.0.5.wso2v1.jar,                                                             
+tomcat-ha_7.0.34.wso2v1.jar,      
+tomcat_7.0.34.wso2v1.jar,                                                               
+tribes_7.0.34.wso2v1.jar,                                                                
+woden_1.0.0.M8-wso2v1.jar,                                                                                                                 
+wso2-uri-templates_1.6.4.jar,                                                            
+xmlbeans_2.3.0.wso2v1.jar,                                                               
+XmlSchema_1.4.7.wso2v2.jar,                                                                                                              
 
-abdera_1.0.0.wso2v3.jar, ajaxtags_1.3.0.beta-rc7-wso2v1.jar	
-annogen_0.1.0.wso2v1.jar, ant_1.7.0.wso2v1.jar,		
-apache-zookeeper_3.3.6.wso2v1.jar, authenticator_0.7.0.wso2v1.jar,	
-axiom_1.2.11.wso2v4.jar, axis2_1.6.1.wso2v9.jar,		
-axis2-json_1.6.1.wso2v9.jar, axis2-transport-jms_1.1.0.wso2v7.jar,
-bcprov-jdk16_1.45.0.wso2v1.jar,	bsf-all_3.0.0.wso2v2.jar,	
-com.google.gson_2.1.0.jar, com.google.gson_2.2.0.jar,	
-com.google.guava_14.0.1.jar, com.jayway.jsonpath_0.8.1.wso2v1.jar,
-commons-codec_1.4.0.wso2v1.jar, commons-collections_3.2.0.wso2v1.jar,
-commons-dbcp_1.4.0.wso2v1.jar, commons-fileupload_1.2.2.wso2v1.jar,
-commons-httpclient_3.1.0.wso2v2.jar, commons-io_2.0.0.wso2v1.jar,
-commons-io_2.0.0.wso2v2.jar, commons-lang_2.6.0.wso2v1.jar,	
-commons-pool_1.5.6.wso2v1.jar, compass_2.0.1.wso2v2.jar,
-dnsjava_2.1.1.wso2v1.jar, ec2_1.6.1.incubating.jar,		
-ehcache_1.5.0.wso2v3.jar, geronimo-saaj_1.3_spec_1.0.0.wso2v3.jar	
-google-collect_1.0.0.wso2v2.jar, guice_3.0.0.wso2v1.jar,		
-guice-assistedinject_3.0.0.wso2v1.jar, handy-uri-templates_1.1.7.wso2v1.jar,
-httpclient_4.2.3.wso2v1.jar, httpcore_4.2.3.wso2v1.jar,	
-httpcore-nio_4.2.3.wso2v2.jar,	infinispan-core_6.0.0.Alpha2_wso2v1.jar,
-java-xmlbuilder_0.4.0.wso2v1.jar, jclouds-bouncycastle_1.6.1.incubating.jar,
-jclouds-compute_1.6.1.incubating.jar, jclouds-core_1.6.1.incubating.jar,
-jclouds-enterprise_1.6.1.incubating.jar, jclouds-joda_1.6.1.incubating.jar,
-jclouds-netty_1.6.1.incubating.jar, jclouds-scriptbuilder_1.6.1.incubating.jar
-jclouds-slf4j_1.6.1.incubating.jar, jclouds-sshj_1.6.1.incubating.jar,	
-jdbc-pool_7.0.34.wso2v1.jar, jettison_1.1.0.wso2v1.jar		
-jsr107cache_1.1.0.wso2v3.jar, jzlib_1.0.7.wso2v1.jar	
-libthrift_0.7.0.wso2v2.jar, neethi_2.0.4.wso2v4.jar, 		
-net.schmizz.sshj_0.8.0.jar, opencsv_1.8.0.wso2v1.jar		
-opensaml2_2.4.1.wso2v1.jar, openstack-common_1.6.1.incubating.jar	
-openstack-keystone_1.6.1.incubating.jar, openstack-nova_1.6.1.incubating.jar,
-org.apache.felix.gogo.command_0.8.0.v201108120515.jar,	org.apache.felix.gogo.runtime_0.8.0.v201108120515.jar
-org.apache.felix.gogo.shell_0.8.0.v201110170705.jar, org.apache.jasper.glassfish_2.2.2.v201205150955.jar,
-org.apache.stratos.lb.cartridge.autoscaler.service.stub_4.1.0.SNAPSHOT.jar, org.apache.stratos.lb.common_4.1.0.SNAPSHOT.jar
-org.apache.stratos.load.balancer_4.1.0.SNAPSHOT.jar
-org.jboss.netty_3.3.0.Final.jar, org.wso2.carbon.addressing_4.1.0.jar	
-org.wso2.carbon.apache.jasper.fragment_4.1.0.jar, org.wso2.carbon.application.deployer_4.1.0.jar
-org.wso2.carbon.authenticator.proxy_4.1.0.jar, org.wso2.carbon.authenticator.stub_4.1.0.jar
-org.wso2.carbon.base_4.1.0.jar, org.wso2.carbon.caching_4.1.0.jar	
-org.wso2.carbon.caching.core_4.2.0.jar, org.wso2.carbon.cluster.mgt.core_4.1.0.jar
-org.wso2.carbon.coordination.common_4.1.0.jar, org.wso2.carbon.coordination.core_4.1.0.jar
-org.wso2.carbon.coordination.server_4.1.0.jar, org.wso2.carbon.core_4.1.0.jar,	
-org.wso2.carbon.core.bootup.validator_4.1.0.jar, org.wso2.carbon.core.common_4.1.0.jar,	
-org.wso2.carbon.core.commons.stub_4.1.0.jar, org.wso2.carbon.core.services_4.1.0.jar,
-org.wso2.carbon.databridge.agent.thrift_4.1.0.jar, org.wso2.carbon.databridge.commons_4.1.0.jar,
-org.wso2.carbon.databridge.commons.thrift_4.1.0.jar, org.wso2.carbon.datasource_4.1.1.jar,
-org.wso2.carbon.ec2-client_4.1.0.jar, org.wso2.carbon.endpoint_4.1.1.jar,
-org.wso2.carbon.event.admin_4.1.0.jar, org.wso2.carbon.event.client_4.1.0.jar,
-org.wso2.carbon.event.client.stub_4.1.0.jar, org.wso2.carbon.event.common_4.1.0.jar	
-org.wso2.carbon.event.core_4.1.0.jar, org.wso2.carbon.event.ws_4.1.0.jar, 
-org.wso2.carbon.feature.mgt.core_4.1.0.jar, org.wso2.carbon.feature.mgt.services_4.1.0.jar
-org.wso2.carbon.feature.mgt.stub_4.1.0.jar, org.wso2.carbon.framework.exporter_4.1.0.jar
-org.wso2.carbon.i18n_4.1.0.jar,	org.wso2.carbon.jasper.patch_4.1.0.jar,	
-org.wso2.carbon.logging_4.1.0.jar, org.wso2.carbon.mediation.dependency.mgt_4.1.1.jar,
-org.wso2.carbon.mediation.initializer_4.1.1.jar, org.wso2.carbon.mediation.registry_4.1.0.jar
-org.wso2.carbon.mediator.clazz.services_4.1.0.jar, org.wso2.carbon.mediator.command.services_4.1.0.jar
-org.wso2.carbon.mediator.event_4.1.1.jar, org.wso2.carbon.mediator.fastXSLT_4.1.1.jar
-org.wso2.carbon.mediator.router.impl_4.1.1.jar, org.wso2.carbon.module.mgt_4.1.0.jar	
-org.wso2.carbon.ndatasource.common_4.1.0.jar, org.wso2.carbon.ndatasource.core_4.1.0.jar
-org.wso2.carbon.ndatasource.rdbms_4.1.0.jar, org.wso2.carbon.ntask.common_4.1.0.jar	
-org.wso2.carbon.ntask.core_4.1.0.jar, org.wso2.carbon.ntask.solutions_4.1.0.jar
-org.wso2.carbon.operation.mgt_4.1.0.jar, org.wso2.carbon.osgi.security_4.1.0.jar	
-org.wso2.carbon.qpid.stub_4.1.0.jar, org.wso2.carbon.queuing_4.1.0.jar	
-org.wso2.carbon.registry.admin.api_4.1.0.jar, org.wso2.carbon.registry.api_4.1.0.jar	
-org.wso2.carbon.registry.common_4.1.0.jar, org.wso2.carbon.registry.core_4.1.0.jar	
-org.wso2.carbon.registry.resource_4.1.0.jar, org.wso2.carbon.registry.resource.stub_4.1.0.jar
-org.wso2.carbon.registry.search_4.1.0.jar, org.wso2.carbon.registry.search.stub_4.1.0.jar
-org.wso2.carbon.registry.server_4.1.0.jar, org.wso2.carbon.registry.servlet_4.1.0.jar
-org.wso2.carbon.relay_4.1.1.jar, org.wso2.carbon.relay.mediators.builder_4.1.1.jar	
-org.wso2.carbon.relay.module_4.1.1.jar, org.wso2.carbon.remote-tasks.stub_4.1.0.jar
-org.wso2.carbon.rm_4.1.0.jar, org.wso2.carbon.roles.mgt_4.1.0.jar	
-org.wso2.carbon.roles.mgt.stub_4.1.0.jar, org.wso2.carbon.securevault_4.1.0.jar	
-org.wso2.carbon.security.mgt_4.1.0.jar, org.wso2.carbon.sequences_4.1.1.jar	
-org.wso2.carbon.sequences.common_4.1.0.jar, org.wso2.carbon.server.admin_4.1.0.jar	
-org.wso2.carbon.server.admin.common_4.1.0.jar, org.wso2.carbon.server.admin.stub_4.1.0.jar
-org.wso2.carbon.service.mgt_4.1.0.jar, org.wso2.carbon.startup_4.1.1.jar	
-org.wso2.carbon.task_4.1.1.jar, org.wso2.carbon.task.services_4.1.1.jar	
-org.wso2.carbon.throttle_4.1.0.jar, org.wso2.carbon.tomcat_4.1.0.jar	
-org.wso2.carbon.tomcat.ext_4.1.0.jar, org.wso2.carbon.tomcat.fragment.dummy_4.1.0.jar
-org.wso2.carbon.tomcat.patch_4.1.0.jar, org.wso2.carbon.transport.http_4.1.0.jar
-org.wso2.carbon.transport.https_4.1.0.jar, org.wso2.carbon.transport.local_4.1.0.jar
-org.wso2.carbon.transport.mgt_4.1.0.jar, org.wso2.carbon.transport.nhttp_4.1.1.jar
-org.wso2.carbon.transports.passthru_1.0.2.jar, org.wso2.carbon.user.api_4.1.0.jar	
-org.wso2.carbon.user.core_4.1.0.jar, org.wso2.carbon.user.mgt_4.1.0.jar,
-org.wso2.carbon.user.mgt.common_4.1.0.jar, org.wso2.carbon.user.mgt.stub_4.1.0.jar,
-org.wso2.carbon.utils_4.1.0.jar, org.wso2.securevault_1.0.0.wso2v2.jar,	
-poi_3.5.0.wso2v1.jar, poi-ooxml_3.5.0.wso2v1.jar, poi-scratchpad_3.5.0.wso2v1.jar,	
-quartz_2.1.1.wso2v1.jar, rampart-core_1.6.1.wso2v8.jar,	
-rampart-policy_1.6.1.wso2v8.jar, rampart-trust_1.6.1.wso2v8.jar,	
-rocoto_6.1.0.wso2v1.jar, shindig_1.1.0.wso2v6.jar, sts_1.6.1.incubating.jar,		
-synapse-commons_2.1.1.wso2v6.jar, synapse-core_2.1.1.wso2v6.jar,	
-synapse-extensions_2.1.1.wso2v6.jar, synapse-nhttp-transport_2.1.1.wso2v6.jar,
-synapse-tasks_2.1.1.wso2v6.jar, tiles-jsp_2.0.5.wso2v1.jar,	
-tomcat_7.0.34.wso2v1.jar, tomcat-ha_7.0.34.wso2v1.jar,		
-tribes_7.0.28.wso2v1.jar, vcloud_1.6.1.incubating.jar,		
-woden_1.0.0.M8-wso2v1.jar, wso2-uri-templates_1.6.2.jar,		
-wss4j_1.5.11.wso2v5.jar, xkms_2.4.0.wso2v1.jar,		
-xmlbeans_2.3.0.wso2v1.jar, XmlSchema_1.4.7.wso2v2.jar
 
 ===============================================================================
 For: antlr_3.2.0.wso2v1.jar
@@ -346,7 +413,9 @@ For :   el-impl_2.2.0.wso2v1.jar,
 	javax.ws.rs.jsr311-api_1.1.1.jar, 
 	jaxb_2.2.5.wso2v1.jar, 
 	jstl_1.2.1.wso2v1.jar, 
-	wsdl4j_1.6.2.wso2v4.jar
+	wsdl4j_1.6.2.wso2v4.jar,
+        wss4j_1.5.11.wso2v6.jar                                                                 
+
 
     COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
 
@@ -659,59 +728,61 @@ For :   el-impl_2.2.0.wso2v1.jar,
 
 ==============================================================================
 
-For :   h2-database-engine_1.2.140.wso2v3.jar
-	org.eclipse.core.contenttype_3.4.200.v20120523-2004.jar,
-	org.eclipse.core.expressions_3.4.401.v20120627-124442.jar,
-	org.eclipse.core.jobs_3.5.300.v20120622-204750.jar,
-	org.eclipse.core.runtime_3.8.0.v20120521-2346.jar,
-	org.eclipse.ecf_3.1.300.v20110531-2218.jar,
-	org.eclipse.ecf.filetransfer_5.0.0.v20110531-2218.jar,
-	org.eclipse.ecf.identity_3.1.100.v20110531-2218.jar,
-	org.eclipse.ecf.provider.filetransfer_3.2.0.v20110531-2218.jar,
-	org.eclipse.ecf.provider.filetransfer.httpclient_4.0.200.v20120319-0616.jar,
-	org.eclipse.equinox.app_1.3.100.v20120522-1841.jar,
-	org.eclipse.equinox.common_3.6.100.v20120522-1841.jar,
-	org.eclipse.equinox.concurrent_1.0.300.v20120522-2049.jar,
-	org.eclipse.equinox.console_1.0.0.v20120522-1841.jar,
-	org.eclipse.equinox.ds_1.4.0.v20120522-1841.jar,
-	org.eclipse.equinox.frameworkadmin_2.0.100.v20120606-175127.jar,
-	org.eclipse.equinox.frameworkadmin.equinox_1.0.400.v20120428-0117.jar,
-	org.eclipse.equinox.http.helper_1.1.0.wso2v1.jar,
-	org.eclipse.equinox.http.servlet_1.1.300.v20120522-1841.jar,
-	org.eclipse.equinox.jsp.jasper_1.0.400.v20120522-2049.jar,
-	org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar,
-	org.eclipse.equinox.launcher.gtk.linux.x86_1.1.200.v20120522-1813,
-	org.eclipse.equinox.p2.artifact.repository_1.1.100.v20110519.jar,
-	org.eclipse.equinox.p2.console_1.0.300.v20110502-1955.jar,
-	org.eclipse.equinox.p2.core_2.1.0.v20110502-1955.jar,
-	org.eclipse.equinox.p2.director_2.1.0.v20110504-1715.jar,
-	org.eclipse.equinox.p2.director.app_1.0.300.v20110505.jar,
-	org.eclipse.equinox.p2.directorywatcher_1.0.300.v20110502-1955.jar,
-	org.eclipse.equinox.p2.engine_2.1.0.v20110511.jar,
-	org.eclipse.equinox.p2.extensionlocation_1.2.100.v20110510.jar,
-	org.eclipse.equinox.p2.garbagecollector_1.0.200.v20110510.jar,
-	org.eclipse.equinox.p2.jarprocessor_1.0.200.v20110502-1955.jar,
-	org.eclipse.equinox.p2.metadata_2.1.0.v20110510.jar,
-	org.eclipse.equinox.p2.metadata.repository_1.2.0.v20110511-1359.jar,
-	org.eclipse.equinox.p2.publisher_1.2.0.v20110511.jar,
-	org.eclipse.equinox.p2.publisher.eclipse_1.0.0.v20110511,
-	org.eclipse.equinox.p2.repository_2.1.0.v20110601.jar,
-	org.eclipse.equinox.p2.repository.tools_2.0.100.v20110512-1320.jar,
-	org.eclipse.equinox.p2.touchpoint.eclipse_2.1.0.v20110511-wso2v1.jar,
-	org.eclipse.equinox.p2.touchpoint.natives_1.0.300.v20110502-1955.jar,
-	org.eclipse.equinox.p2.transport.ecf_1.0.100.v20110902-0807.jar,
-	org.eclipse.equinox.p2.updatechecker_1.1.200.v20110502-1955.jar,
-	org.eclipse.equinox.p2.updatesite_1.0.300.v20110510.jar,
-	org.eclipse.equinox.preferences_3.5.0.v20120522-1841.jar,
-	org.eclipse.equinox.registry_3.5.200.v20120522-1841.jar,
-	org.eclipse.equinox.security_1.1.100.v20120522-1841.jar,
-	org.eclipse.equinox.simpleconfigurator_1.0.301.v20120828-033635.jar,
-	org.eclipse.equinox.simpleconfigurator.manipulator_2.0.0.v20110808-1657.jar,
-	org.eclipse.equinox.util_1.0.400.v20120522-2049.jar,
-	org.eclipse.osgi_3.8.1.v20120830-144521.jar,
-	org.eclipse.osgi.services_3.3.100.v20120522-1822.jar,
-	org.sat4j.core_2.3.0.v20110329.jar,
-	org.sat4j.pb_2.3.0.v20110329.jar
+For :   h2-database-engine_1.2.140.wso2v3.jar,
+org.eclipse.core.contenttype_3.4.200.v20120523-2004.jar,                                 
+org.eclipse.core.expressions_3.4.401.v20120627-124442.jar,                               
+org.eclipse.core.jobs_3.5.300.v20120622-204750.jar,                                      
+org.eclipse.core.runtime_3.8.0.v20120521-2346.jar,                                       
+org.eclipse.ecf_3.1.300.v20110531-2218.jar,                                              
+org.eclipse.ecf.filetransfer_5.0.0.v20110531-2218.jar,                                   
+org.eclipse.ecf.identity_3.1.100.v20110531-2218.jar,                                     
+org.eclipse.ecf.provider.filetransfer_3.2.0.v20110531-2218.jar,                          
+org.eclipse.ecf.provider.filetransfer.httpclient_4.0.200.v20120319-0616.jar,             
+org.eclipse.equinox.app_1.3.100.v20120522-1841.jar,                                      
+org.eclipse.equinox.common_3.6.100.v20120522-1841.jar,                                   
+org.eclipse.equinox.concurrent_1.0.300.v20120522-2049.jar,                               
+org.eclipse.equinox.console_1.0.0.v20120522-1841.jar,                                    
+org.eclipse.equinox.ds_1.4.0.v20120522-1841.jar,                                         
+org.eclipse.equinox.frameworkadmin_2.0.100.v20120606-175127.jar,                         
+org.eclipse.equinox.frameworkadmin.equinox_1.0.400.v20120428-0117.jar,                   
+org.eclipse.equinox.http.helper_1.1.0.wso2v1.jar,                                        
+org.eclipse.equinox.http.servlet_1.1.300.v20120522-1841.jar,                             
+org.eclipse.equinox.jsp.jasper_1.0.400.v20120522-2049.jar,                               
+org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar,                                   
+org.eclipse.equinox.launcher.gtk.linux.x86_1.1.200.v20120522-1813/,                      
+org.eclipse.equinox.p2.artifact.repository_1.1.100.v20110519.jar,                        
+org.eclipse.equinox.p2.console_1.0.300.v20110502-1955.jar,                               
+org.eclipse.equinox.p2.core_2.1.0.v20110502-1955.jar,                                    
+org.eclipse.equinox.p2.director_2.1.0.v20110504-1715.jar,                                
+org.eclipse.equinox.p2.director.app_1.0.300.v20110505.jar,                               
+org.eclipse.equinox.p2.directorywatcher_1.0.300.v20110502-1955.jar,                      
+org.eclipse.equinox.p2.engine_2.1.0.v20110511.jar,                                       
+org.eclipse.equinox.p2.extensionlocation_1.2.100.v20110510.jar,                          
+org.eclipse.equinox.p2.garbagecollector_1.0.200.v20110510.jar,                           
+org.eclipse.equinox.p2.jarprocessor_1.0.200.v20110502-1955.jar,                          
+org.eclipse.equinox.p2.metadata_2.1.0.v20110510.jar,                                     
+org.eclipse.equinox.p2.metadata.repository_1.2.0.v20110511-1359.jar,                     
+org.eclipse.equinox.p2.publisher_1.2.0.v20110511.jar,                                    
+org.eclipse.equinox.p2.publisher.eclipse_1.0.0.v20110511/,                               
+org.eclipse.equinox.p2.repository_2.1.0.v20110601.jar,                                   
+org.eclipse.equinox.p2.repository.tools_2.0.100.v20110512-1320.jar,                      
+org.eclipse.equinox.p2.touchpoint.eclipse_2.1.0.v20110511-wso2v1.jar,                    
+org.eclipse.equinox.p2.touchpoint.natives_1.0.300.v20110502-1955.jar,                    
+org.eclipse.equinox.p2.transport.ecf_1.0.100.v20110902-0807.jar,                         
+org.eclipse.equinox.p2.updatechecker_1.1.200.v20110502-1955.jar,                         
+org.eclipse.equinox.p2.updatesite_1.0.300.v20110510.jar,                                 
+org.eclipse.equinox.preferences_3.5.0.v20120522-1841.jar,                                
+org.eclipse.equinox.registry_3.5.200.v20120522-1841.jar,                                 
+org.eclipse.equinox.security_1.1.100.v20120522-1841.jar,                                 
+org.eclipse.equinox.simpleconfigurator_1.0.301.v20120828-033635.jar,                     
+org.eclipse.equinox.simpleconfigurator.manipulator_2.0.0.v20110808-1657.jar,             
+org.eclipse.equinox.util_1.0.400.v20120522-2049.jar,                                     
+org.eclipse.osgi_3.8.1.v20120830-144521.jar,                                             
+org.eclipse.osgi.services_3.3.100.v20120522-1822.jar,                                    
+org.sat4j.core_2.3.0.v20110329.jar                                                      
+org.sat4j.pb_2.3.0.v20110329.jar,                                   
+h2-database-engine_1.2.140.wso2v3.jar,                                                   
+handy-uri-templates_1.1.7.wso2v1.jar
 
 Eclipse Public License - v 1.0
 
@@ -839,7 +910,7 @@ This software consists of voluntary contributions made by many individuals on be
 
 ==============================================================================
 
-For: json_1.0.0.wso2v1.jar,json_2.0.0.wso2v1.jar
+For: json_2.0.0.wso2v1.jar
 
 Copyright (c) 2002 JSON.org
 
@@ -1294,6 +1365,7 @@ For :   slf4j.api_1.6.1.jar,
 	slf4j.api_1.6.4.jar,
 	slf4j.log4j12_1.6.1.jar,
 	slf4j.log4j12_1.6.4.jar
+
 
  All rights reserved.
 
