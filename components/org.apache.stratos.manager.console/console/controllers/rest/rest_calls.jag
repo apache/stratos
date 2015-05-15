@@ -52,16 +52,16 @@ RESTCalls = new function(){
     };
 
     this.activateTenant = function(tenantDomain){
-        return this.send("PUT","/tenants/activate/" + tenantDomain,{});
+        return this.sendReceive("PUT","/tenants/activate/" + tenantDomain,{});
     };
 
     this.deactivateTenant = function(tenantDomain){
-        return this.send("PUT","/tenants/deactivate/" + tenantDomain,{});
+        return this.sendReceive("PUT","/tenants/deactivate/" + tenantDomain,{});
     };
 
 
     this.deleteUser = function(userName){
-        return this.send("DELETE","/users/" + userName,{});
+        return this.sendReceive("DELETE","/users/" + userName,{});
     };
 
     this.checkAvailability = function(tenantDomain){

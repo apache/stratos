@@ -45,6 +45,9 @@ try {
     log.info(e);
 }
 
+if(session.get("get-status")){
+    print(session.get("get-status"));
+}
 
-print(session.get("deploy-status"));
+
 %>
