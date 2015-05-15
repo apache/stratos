@@ -367,7 +367,7 @@
                                     org.wso2.carbon:org.wso2.carbon.idp.mgt.feature:${carbon.platform.patch.version.4.2.3}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.stratos.common.server.feature:2.2.2
+                                    org.wso2.carbon:org.wso2.carbon.stratos.common.feature:2.2.2
                                 </featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.as.runtimes.cxf.feature:4.2.2
                                 </featureArtifactDef>
@@ -699,7 +699,7 @@
                                     <version>4.2.3</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.stratos.common.server.feature.group</id>
+                                    <id>org.wso2.carbon.stratos.common.feature.group</id>
                                     <version>2.2.2</version>
                                 </feature>
                                 <feature>
@@ -1095,7 +1095,7 @@
                                     <version>4.2.3</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.stratos.common.server.feature.group</id>
+                                    <id>org.wso2.carbon.stratos.common.feature.group</id>
                                     <version>2.2.2</version>
                                 </feature>
                                 <feature>
