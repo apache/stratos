@@ -169,6 +169,7 @@
                                 <exclude>**/scriptaculous/**/*</exclude>
                                 <exclude>**/prototype-1.6.js</exclude>
                                 <exclude>**/prototype.js</exclude>
+				<exclude>**/.gitmodules</exclude>
 
                                 <!-- Added following based on jclouds -->
                                 <exclude>**/src/test/resources/**/*.xml</exclude>
@@ -177,6 +178,13 @@
                                 <exclude>**/services/*ApiMetadata</exclude>
                                 <exclude>**/services/*ProviderMetadata</exclude>
                                 <exclude>**/dhtmlHistory.js</exclude>
+				
+				<!-- for ActivMQ test broker -->
+                                <exclude>**/db.data</exclude>
+				
+				<!-- WSDLs -->
+				<exclude>**/*.wsdl</exclude>
+				
                             </excludes>
                             <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
