@@ -244,8 +244,8 @@ opensaml2_2.4.1.wso2v1.jar, openstack-common_1.6.1.incubating.jar
 openstack-keystone_1.6.1.incubating.jar, openstack-nova_1.6.1.incubating.jar,
 org.apache.felix.gogo.command_0.8.0.v201108120515.jar,	org.apache.felix.gogo.runtime_0.8.0.v201108120515.jar
 org.apache.felix.gogo.shell_0.8.0.v201110170705.jar, org.apache.jasper.glassfish_2.2.2.v201205150955.jar,
-org.apache.stratos.lb.cartridge.autoscaler.service.stub_4.0.0.SNAPSHOT.jar, org.apache.stratos.lb.common_4.0.0.SNAPSHOT.jar
-org.apache.stratos.load.balancer_4.0.0.SNAPSHOT.jar
+org.apache.stratos.lb.cartridge.autoscaler.service.stub_4.1.0.SNAPSHOT.jar, org.apache.stratos.lb.common_4.1.0.SNAPSHOT.jar
+org.apache.stratos.load.balancer_4.1.0.SNAPSHOT.jar
 org.jboss.netty_3.3.0.Final.jar, org.wso2.carbon.addressing_4.1.0.jar	
 org.wso2.carbon.apache.jasper.fragment_4.1.0.jar, org.wso2.carbon.application.deployer_4.1.0.jar
 org.wso2.carbon.authenticator.proxy_4.1.0.jar, org.wso2.carbon.authenticator.stub_4.1.0.jar

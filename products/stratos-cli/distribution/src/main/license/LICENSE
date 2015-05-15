@@ -223,7 +223,7 @@ org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:1.0.1
 org.apache.geronimo.specs.wso2:geronimo-stax-api_1.0_spec:1.0.1.wso2v1
 org.apache.httpcomponents.wso2:httpcore:4.1.0-wso2v1
 org.apache.neethi.wso2:neethi:2.0.4.wso2v4
-org.apache.stratos:org.apache.stratos.manager.stub:4.0.0
+org.apache.stratos:org.apache.stratos.manager.stub:4.1.0
 org.apache.woden.wso2:woden:1.0.0.M8-wso2v1
 org.apache.ws.commons.axiom:axiom-api:1.2.11
 org.apache.ws.commons.axiom:axiom-impl:1.2.11
