@@ -48,6 +48,7 @@ public class MockIaasConfigParser {
 
     /**
      * Parse mock iaas configuration and return configuration object.
+     *
      * @param filePath
      * @return
      */
@@ -139,6 +140,7 @@ public class MockIaasConfigParser {
 
     /**
      * Convert mode string to its enumeration
+     *
      * @param modeStr mode string
      * @return statistics pattern enumeration
      */
@@ -155,6 +157,7 @@ public class MockIaasConfigParser {
 
     /**
      * Convert scaling factor string to its enumeration
+     *
      * @param scalingFactorStr scaling factor string
      * @return scaling factor enumeration
      */
@@ -171,6 +174,7 @@ public class MockIaasConfigParser {
 
     /**
      * Convert string array to integer list
+     *
      * @param stringArray string array
      * @return integer list
      */

@@ -40,6 +40,7 @@ public class MockHealthStatisticsConfig {
 
     /**
      * Add statistics pattern
+     *
      * @param statisticsPattern statistics pattern
      */
     public void addStatisticsPattern(MockHealthStatisticsPattern statisticsPattern) {
@@ -48,6 +49,7 @@ public class MockHealthStatisticsConfig {
 
     /**
      * Get statistics patterns
+     *
      * @return a list of statistics pattern objects
      */
     public List<MockHealthStatisticsPattern> getStatisticsPatterns() {

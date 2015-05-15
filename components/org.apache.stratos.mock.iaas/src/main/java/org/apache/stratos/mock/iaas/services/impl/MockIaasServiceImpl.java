@@ -88,6 +88,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Start mock instance.
+     *
      * @param mockInstanceContext mock instance context containing instance properties
      * @return mock instance metadata
      * @throws MockIaasException is thrown if mock instance context is null
@@ -123,6 +124,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Sleep the current thread for a given period of time
+     *
      * @param time time in milliseconds
      */
     private void sleep(int time) {
@@ -134,6 +136,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Get mock instances.
+     *
      * @return a list of mock instance metadata objects
      */
     @Override
@@ -148,6 +151,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Get mock instance context by instance id.
+     *
      * @param instanceId mock instance id
      * @return mock instance metadata of the mock instance
      */
@@ -162,6 +166,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Allocate ip address to mock instance.
+     *
      * @param instanceId mock instance id
      * @return mock instance metadata including ip addresses
      * @throws MockIaasException is thrown if instance is not found
@@ -183,6 +188,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Terminate mock instance by instance id.
+     *
      * @param instanceId mock instance id
      */
     @Override
@@ -211,6 +217,7 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     /**
      * Find number of instances available for service type.
+     *
      * @param serviceName service name/cartridge type
      * @return the member count
      */

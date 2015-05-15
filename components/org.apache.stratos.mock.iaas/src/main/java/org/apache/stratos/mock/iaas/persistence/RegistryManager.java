@@ -44,6 +44,7 @@ public class RegistryManager implements PersistenceManager {
 
     /**
      * Persist a serializable object in the registry with the given resource path.
+     *
      * @param serializableObject object to be persisted.
      */
     @Override
@@ -81,6 +82,7 @@ public class RegistryManager implements PersistenceManager {
 
     /**
      * Returns an object stored in the given resource path.
+     *
      * @param resourcePath resource path
      * @return registry resource content
      * @throws org.wso2.carbon.registry.core.exceptions.RegistryException
@@ -139,6 +141,7 @@ public class RegistryManager implements PersistenceManager {
 
     /**
      * Serialize an object to a byte array.
+     *
      * @param serializableObject serializable object
      * @return byte array
      * @throws java.io.IOException
@@ -162,6 +165,7 @@ public class RegistryManager implements PersistenceManager {
 
     /**
      * Deserialize a byte array and retrieve the object.
+     *
      * @param bytes bytes to be deserialized
      * @return the deserialized {@link Object}
      * @throws Exception if the deserialization is failed.

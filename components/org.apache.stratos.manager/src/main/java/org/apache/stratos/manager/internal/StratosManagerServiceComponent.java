@@ -251,7 +251,7 @@ public class StratosManagerServiceComponent {
     private void registerComponentStartUpEventListeners() {
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-        if(componentStartUpSynchronizer.isEnabled()) {
+        if (componentStartUpSynchronizer.isEnabled()) {
             componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
                 @Override
                 public void activated(Component component) {

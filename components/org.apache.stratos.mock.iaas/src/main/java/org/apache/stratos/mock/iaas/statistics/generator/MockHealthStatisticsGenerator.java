@@ -65,6 +65,7 @@ public class MockHealthStatisticsGenerator {
 
     /**
      * Schedule statistics updater tasks for the given service/cartridge type.
+     *
      * @param serviceName service name/cartridge type
      */
     public void scheduleStatisticsUpdaterTasks(String serviceName) {
@@ -98,6 +99,7 @@ public class MockHealthStatisticsGenerator {
 
     /**
      * Stop statistics updater tasks of the given service/cartridge type.
+     *
      * @param serviceName service name/cartridge type
      */
     public void stopStatisticsUpdaterTasks(String serviceName) {
@@ -113,7 +115,8 @@ public class MockHealthStatisticsGenerator {
 
     /**
      * Stop statistics updater task of a service/cartridge type, factor.
-     * @param serviceName service name/cartridge type
+     *
+     * @param serviceName   service name/cartridge type
      * @param scalingFactor scaling factor
      */
     public void stopStatisticsUpdaterTask(String serviceName, String scalingFactor) {
@@ -135,6 +138,7 @@ public class MockHealthStatisticsGenerator {
     /**
      * Returns true if there are statistics updater tasks scheduled for the given service/cartridge type
      * else returns false.
+     *
      * @param serviceName service name/cartridge type
      * @return true if statistics updater tasks are scheduled
      */

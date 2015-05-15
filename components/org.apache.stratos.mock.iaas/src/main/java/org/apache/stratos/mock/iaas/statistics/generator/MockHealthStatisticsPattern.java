@@ -56,6 +56,7 @@ public class MockHealthStatisticsPattern {
 
     /**
      * Returns scaling factor
+     *
      * @return
      */
     public MockScalingFactor getFactor() {
