@@ -49,7 +49,7 @@ public class MetaDataAdmin {
     }
 
     @GET
-    @Path("/application/{application_id}/properties")
+    @Path("/applications/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -81,7 +81,7 @@ public class MetaDataAdmin {
     }
 
     @GET
-    @Path("/application/{application_id}/cluster/{cluster_id}/properties")
+    @Path("/applications/{application_id}/clusters/{cluster_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -112,7 +112,7 @@ public class MetaDataAdmin {
     }
 
     @GET
-    @Path("/application/{application_id}/properties/{property_name}")
+    @Path("/applications/{application_id}/properties/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -150,7 +150,7 @@ public class MetaDataAdmin {
     }
 
     @GET
-    @Path("/application/{application_id}/cluster/{cluster_id}/properties/{property_name}")
+    @Path("/applications/{application_id}/cluster/{cluster_id}/properties/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -185,7 +185,7 @@ public class MetaDataAdmin {
     }
 
     @POST
-    @Path("application/{application_id}/properties")
+    @Path("applications/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -205,7 +205,7 @@ public class MetaDataAdmin {
     }
 
     @POST
-    @Path("application/{application_id}/cluster/{cluster_id}/properties")
+    @Path("applications/{application_id}/clusters/{cluster_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -226,7 +226,7 @@ public class MetaDataAdmin {
     }
 
     @DELETE
-    @Path("application/{application_id}/properties")
+    @Path("applications/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -250,7 +250,7 @@ public class MetaDataAdmin {
     }
 
     @DELETE
-    @Path("application/{application_id}/properties/{property_name}/value/{value}")
+    @Path("applications/{application_id}/properties/{property_name}/value/{value}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")

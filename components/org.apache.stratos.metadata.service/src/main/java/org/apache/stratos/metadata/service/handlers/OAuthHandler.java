@@ -43,7 +43,7 @@ import java.security.interfaces.RSAPublicKey;
  */
 public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
     public static final String BEARER = "Bearer ";
-    public static final String APPLICATION = "application";
+    public static final String APPLICATION = "applications";
     private static Log log = LogFactory.getLog(OAuthHandler.class);
     private static String SUPPORTED_AUTHENTICATION_TYPE = "Bearer";
     private static String oauthValidationEndpoint;

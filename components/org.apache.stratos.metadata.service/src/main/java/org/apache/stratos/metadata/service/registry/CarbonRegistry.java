@@ -134,7 +134,7 @@ public class CarbonRegistry implements DataStore {
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
             } else {
-                nodeResource = registry.newResource();
+                nodeResource = registry.newCollection();
                 if (log.isDebugEnabled()) {
                     log.debug("Registry resource is create at path for application: " + nodeResource.getPath());
                 }
