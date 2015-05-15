@@ -134,6 +134,64 @@ public class ObjectConverter {
         return portMappingArray;
     }
 
+    private static List<PortMappingBean> convertPortMappingsToStubPortMappingBeans(
+            PortMapping[] portMappingps) {
+
+        if (portMappingps == null || portMappingps[0] == null ) {
+            return null;
+        }
+        List<PortMappingBean> portMappingBeans = new ArrayList<PortMappingBean>();
+
+        for (PortMapping portMapping : portMappingps) {
+            PortMappingBean portMappingBean = new PortMappingBean();
+            portMappingBean.setProtocol(portMapping.getProtocol());
+            portMappingBean.setPort(portMapping.getPort());
+            portMappingBean.setProxyPort(portMapping.getProxyPort());
+            portMappingBeans.add(portMappingBean);
+        }
+        return portMappingBeans;
+    }
+
+    /**
+     * Convert Persistence To PersistenceBean
+     *
+     * @param iaasConfigs iaasConfigs
+     * @return PersistenceBean
+     */
+    private static List<IaasProviderBean> convertIaaSProviderToIaaSProviderBean(IaasConfig[] iaasConfigs) {
+        if (iaasConfigs == null || iaasConfigs[0] == null) {
+            return null;
+        }
+
+        List<IaasProviderBean> iaasProviderBeans = new ArrayList<IaasProviderBean>();
+        for(IaasConfig iaasConfig : iaasConfigs) {
+            IaasProviderBean iaasProviderBean = new IaasProviderBean();
+            iaasProviderBean.setType(iaasConfig.getType());
+            iaasProviderBean.setImageId(iaasConfig.getImageId());
+            iaasProviderBean.setName(iaasConfig.getName());
+            iaasProviderBean.setClassName(iaasConfig.getClassName());
+            iaasProviderBean.setCredential(iaasConfig.getCredential());
+            iaasProviderBean.setIdentity(iaasConfig.getIdentity());
+            iaasProviderBean.setProvider(iaasConfig.getProvider());
+
+            if (iaasConfig.getProperties() != null) {
+                //set the Properties instance to IaasConfig instance
+                iaasProviderBean.setProperty(convertCCStubPropertiesToPropertyBeanList(
+                        iaasConfig.getProperties()));
+            }
+
+            if (iaasConfig.getNetworkInterfaces() != null) {
+                iaasProviderBean.setNetworkInterfaces(ObjectConverter.
+                        convertNetworkInterfacesToNetworkInterfaceBeans(
+                                iaasConfig.getNetworkInterfaces()));
+            }
+
+            iaasProviderBeans.add(iaasProviderBean);
+        }
+
+        return iaasProviderBeans;
+    }
+
     private static IaasConfig[] convertIaasProviderBeansToStubIaasConfig(List<IaasProviderBean> iaasProviderBeans) {
 
         if (iaasProviderBeans == null) {
@@ -258,6 +316,33 @@ public class ObjectConverter {
         return networkInterfaces;
     }
 
+    private static List<NetworkInterfaceBean> convertNetworkInterfacesToNetworkInterfaceBeans(
+            NetworkInterfaces networkInterfaces) {
+
+        if (networkInterfaces == null || networkInterfaces.getNetworkInterfaces() == null ||
+                networkInterfaces.getNetworkInterfaces()[0] == null) {
+            return null;
+        }
+
+        List<NetworkInterfaceBean> networkInterfaceBeans = new ArrayList<NetworkInterfaceBean>();
+
+        for(NetworkInterface networkInterface : networkInterfaces.getNetworkInterfaces()) {
+            NetworkInterfaceBean networkInterfaceBean = new NetworkInterfaceBean();
+            networkInterfaceBean.setNetworkUuid(networkInterface.getNetworkUuid());
+            networkInterfaceBean.setFixedIp(networkInterface.getFixedIp());
+            networkInterfaceBean.setPortUuid(networkInterface.getPortUuid());
+            if (networkInterface.getFloatingNetworks() != null &&
+                    networkInterface.getFloatingNetworks().getFloatingNetworks() != null &&
+                    networkInterface.getFloatingNetworks().getFloatingNetworks()[0] != null) {
+                networkInterfaceBean.setFloatingNetworks(
+                        ObjectConverter.convertFloatingNetworksToFloatingNetworkBeans(
+                                networkInterface.getFloatingNetworks()));
+            }
+            networkInterfaceBeans.add(networkInterfaceBean);
+        }
+        return networkInterfaceBeans;
+    }
+
     private static FloatingNetworks convertFloatingNetworkBeansToFloatingNetworks(
             List<FloatingNetworkBean> floatingNetworkBeans) {
 
@@ -279,6 +364,20 @@ public class ObjectConverter {
         FloatingNetworks floatingNetworks = new FloatingNetworks();
         floatingNetworks.setFloatingNetworks(floatingNetworksArray);
         return floatingNetworks;
+    }
+
+    private static List<FloatingNetworkBean>  convertFloatingNetworksToFloatingNetworkBeans(
+            FloatingNetworks floatingNetworks) {
+        List<FloatingNetworkBean> floatingNetworkBeans = new ArrayList<FloatingNetworkBean>();
+
+        for (FloatingNetwork floatingNetwork : floatingNetworks.getFloatingNetworks()) {
+            FloatingNetworkBean floatingNetworkBean = new FloatingNetworkBean();
+            floatingNetworkBean.setName(floatingNetwork.getName());
+            floatingNetworkBean.setNetworkUuid(floatingNetwork.getNetworkUuid());
+            floatingNetworkBean.setFloatingIP(floatingNetwork.getFloatingIP());
+            floatingNetworkBeans.add(floatingNetworkBean);
+        }
+        return floatingNetworkBeans;
     }
 
     private static org.apache.stratos.cloud.controller.stub.domain.Partition convertPartitionToStubPartition
@@ -1231,6 +1330,25 @@ public class ObjectConverter {
         return propertyBeanList;
     }
 
+    private static List<org.apache.stratos.common.beans.PropertyBean>
+    convertCCStubPropertiesToPropertyBeanList(org.apache.stratos.cloud.controller.stub.Properties properties) {
+
+        List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList =
+                new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
+        if ((properties != null) && (properties.getProperties() != null)) {
+            for (org.apache.stratos.cloud.controller.stub.Property property : properties.getProperties()) {
+                if ((property != null)) {
+                    org.apache.stratos.common.beans.PropertyBean propertyBean =
+                            new org.apache.stratos.common.beans.PropertyBean();
+                    propertyBean.setName(property.getName());
+                    propertyBean.setValue(String.valueOf(property.getValue()));
+                    propertyBeanList.add(propertyBean);
+                }
+            }
+        }
+        return propertyBeanList;
+    }
+
     private static CartridgeContext[] convertCartridgeReferenceBeansToStubCartridgeContexts(
             List<CartridgeReferenceBean> cartridges) {
 
@@ -1401,6 +1519,102 @@ public class ObjectConverter {
         return groupContexts;
     }
 
+    /**
+     * Convert Persistence To PersistenceBean
+     *
+     * @param baseDir base directory
+     * @param directories directories
+     * @return DeploymentBean
+     */
+    private static DeploymentBean convertDeploymentToDeploymentBean(String[] directories,
+                                                                    String baseDir) {
+        if (baseDir == null || directories == null || directories[0] == null) {
+            return null;
+        }
+
+        DeploymentBean deploymentBean = new DeploymentBean();
+        deploymentBean.setBaseDir(baseDir);
+        deploymentBean.setDir(Arrays.asList(baseDir));
+        return deploymentBean;
+    }
+
+    /**
+     * Convert Persistence To PersistenceBean
+     *
+     * @param persistence persistence
+     * @return PersistenceBean
+     */
+    private static PersistenceBean convertPersistenceToPersistenceBean(Persistence persistence) {
+        if (persistence == null) {
+            return null;
+        }
+
+        PersistenceBean persistenceBean = new PersistenceBean();
+        persistenceBean.setRequired(persistence.isPersistenceRequiredSpecified());
+        persistenceBean.setVolume(convertVolumesToVolumeBeans(persistence.getVolumes()));
+        return persistenceBean;
+    }
+
+    /**
+     * Convert Volumes To VolumeBeans
+     *
+     * @param volumes Volumes
+     * @return VolumeBeans
+     */
+    private static List<VolumeBean> convertVolumesToVolumeBeans(Volume[] volumes) {
+        List<VolumeBean> list = new ArrayList<VolumeBean>();
+        for (Volume volume : volumes) {
+            VolumeBean volumeBean = new VolumeBean();
+            volumeBean.setId(volume.getId());
+            volumeBean.setDevice(volume.getDevice());
+            volumeBean.setSize(String.valueOf(volume.getSize()));
+            volumeBean.setSnapshotId(volume.getSnapshotId());
+            list.add(volumeBean);
+        }
+        return list;
+    }
+
+    /**
+     * Converts Cartridge to CartridgeDefinitionBean
+     *
+     * @param cartridgeInfo cartridge Info
+     * @return CartridgeBean
+     */
+    public static CartridgeBean convertCartridgeToCartridgeDefinitionBean(Cartridge cartridgeInfo) {
+        CartridgeBean cartridge = new CartridgeBean();
+        cartridge.setType(cartridgeInfo.getType());
+        cartridge.setProvider(cartridgeInfo.getProvider());
+        cartridge.setCategory(cartridgeInfo.getCategory());
+        cartridge.setHost(cartridgeInfo.getHostName());
+        cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+        cartridge.setDescription(cartridgeInfo.getDescription());
+        cartridge.setVersion(cartridgeInfo.getVersion());
+        cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+        cartridge.setDescription(cartridgeInfo.getDescription());
+        cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
+        cartridge.setMetadataKeys(cartridgeInfo.getMetadataKeys());
+        cartridge.setTenantPartitions(cartridgeInfo.getTenantPartitions());
+
+        //convert persistence
+        cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
+
+        //convert deployment
+        cartridge.setDeployment(convertDeploymentToDeploymentBean(cartridgeInfo.getDeploymentDirs(),
+                cartridgeInfo.getBaseDir()));
+
+        //convert IaaSProvider
+        cartridge.setIaasProvider(convertIaaSProviderToIaaSProviderBean(
+                cartridgeInfo.getIaasConfigs()));
+
+        //Convert Port-mappings
+        cartridge.setPortMapping(convertPortMappingsToStubPortMappingBeans(
+                cartridgeInfo.getPortMappings()));
+
+        //convert properties
+        cartridge.setProperty(convertCCStubPropertiesToPropertyBeans(cartridgeInfo.getProperties()));
+
+        return cartridge;
+    }
 
     public static ApplicationInfoBean convertApplicationToApplicationBean(Application application) {
 

@@ -368,7 +368,8 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-                    CartridgeBean cartridge = convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+                    CartridgeBean cartridge = ObjectConverter.
+                            convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
                     cartridges.add(cartridge);
                 }
             } else {
@@ -443,7 +444,8 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-                    CartridgeBean cartridge = convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+                    CartridgeBean cartridge = ObjectConverter.
+                            convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
                     cartridges.add(cartridge);
 
 
@@ -481,7 +483,7 @@ public class StratosApiV41Utils {
             if (cartridgeInfo == null) {
                 return null;
             }
-            return convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+            return ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
@@ -506,7 +508,7 @@ public class StratosApiV41Utils {
             if (cartridgeInfo == null) {
                 return null;
             }
-            return convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+            return ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             return null;
         } catch (RemoteException e) {
@@ -516,65 +518,6 @@ public class StratosApiV41Utils {
         }
 
     }
-
-    /**
-     * Converts Cartridge to CartridgeDefinitionBean
-     *
-     * @param cartridgeInfo cartridge Info
-     * @return CartridgeBean
-     */
-    private static CartridgeBean convertCartridgeToCartridgeDefinitionBean(Cartridge cartridgeInfo) {
-        CartridgeBean cartridge = new CartridgeBean();
-        cartridge.setType(cartridgeInfo.getType());
-        cartridge.setProvider(cartridgeInfo.getProvider());
-        cartridge.setCategory(cartridgeInfo.getCategory());
-        cartridge.setHost(cartridgeInfo.getHostName());
-        cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-        cartridge.setDescription(cartridgeInfo.getDescription());
-        cartridge.setVersion(cartridgeInfo.getVersion());
-        cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-        cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
-        cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
-        cartridge.setMetadataKeys(cartridgeInfo.getMetadataKeys());
-        return cartridge;
-    }
-
-    /**
-     * Convert Persistence To PersistenceBean
-     *
-     * @param persistence persistence
-     * @return PersistenceBean
-     */
-    private static PersistenceBean convertPersistenceToPersistenceBean(Persistence persistence) {
-        if (persistence == null) {
-            return null;
-        }
-
-        PersistenceBean persistenceBean = new PersistenceBean();
-        persistenceBean.setRequired(persistence.isPersistenceRequiredSpecified());
-        persistenceBean.setVolume(convertVolumesToVolumeBeans(persistence.getVolumes()));
-        return persistenceBean;
-    }
-
-    /**
-     * Convert Volumes To VolumeBeans
-     *
-     * @param volumes Volumes
-     * @return VolumeBeans
-     */
-    private static List<VolumeBean> convertVolumesToVolumeBeans(Volume[] volumes) {
-        List<VolumeBean> list = new ArrayList<VolumeBean>();
-        for (Volume volume : volumes) {
-            VolumeBean volumeBean = new VolumeBean();
-            volumeBean.setId(volume.getId());
-            volumeBean.setDevice(volume.getDevice());
-            volumeBean.setSize(String.valueOf(volume.getSize()));
-            volumeBean.setSnapshotId(volume.getSnapshotId());
-            list.add(volumeBean);
-        }
-        return list;
-    }
-
 
     /**
      * Convert SearchString to Pattern

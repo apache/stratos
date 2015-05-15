@@ -32,7 +32,6 @@ public class CartridgeGroupReferenceBean implements Serializable {
     private String alias;
     private int groupMinInstances;
     private int groupMaxInstances;
-    private boolean isGroupScalingEnabled;
     private String deploymentPolicy;
     private List<CartridgeReferenceBean> cartridges;
     private List<CartridgeGroupReferenceBean> groups;
@@ -67,14 +66,6 @@ public class CartridgeGroupReferenceBean implements Serializable {
 
     public void setGroupMaxInstances(int groupMaxInstances) {
         this.groupMaxInstances = groupMaxInstances;
-    }
-
-    public boolean isGroupScalingEnabled() {
-        return isGroupScalingEnabled;
-    }
-
-    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
-        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 
     public List<CartridgeReferenceBean> getCartridges() {

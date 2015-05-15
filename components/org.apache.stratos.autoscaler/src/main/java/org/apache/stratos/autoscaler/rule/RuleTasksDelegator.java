@@ -185,7 +185,7 @@ public class RuleTasksDelegator {
             // Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition;
             ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            ClusterContext clusterContext = (ClusterContext) clusterMonitor.getClusterContext();
+            ClusterContext clusterContext = clusterMonitor.getClusterContext();
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext =
                     clusterContext.getNetworkPartitionCtxt(nwPartitionId);
             ClusterInstanceContext clusterInstanceContext =
@@ -229,13 +229,10 @@ public class RuleTasksDelegator {
             log.debug("Scaling dependent notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        ClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
         float fMinimumInstanceCount = minimumInstanceCount;
         float factor = requiredInstanceCount / fMinimumInstanceCount;
-        if (abstractClusterMonitor instanceof ClusterMonitor) {
-            ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
-            clusterMonitor.sendClusterScalingEvent(networkPartitionId, instanceId, factor);
-        }
+        clusterMonitor.sendClusterScalingEvent(networkPartitionId, instanceId, factor);
     }
 
     public void delegateScalingOverMaxNotification(String clusterId, String networkPartitionId, String instanceId) {
@@ -243,12 +240,8 @@ public class RuleTasksDelegator {
             log.debug("Scaling max out notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        ClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        if (abstractClusterMonitor instanceof ClusterMonitor) {
-
-            ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
-            clusterMonitor.sendScalingOverMaxEvent(networkPartitionId, instanceId);
-        }
+        ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        clusterMonitor.sendScalingOverMaxEvent(networkPartitionId, instanceId);
     }
 
     public void delegateScalingDownBeyondMinNotification(String clusterId, String networkPartitionId, String instanceId) {
@@ -256,12 +249,8 @@ public class RuleTasksDelegator {
             log.debug("Scaling down lower min notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        ClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        if (abstractClusterMonitor instanceof ClusterMonitor) {
-
-            ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
-            clusterMonitor.sendScalingDownBeyondMinEvent(networkPartitionId, instanceId);
-        }
+        ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        clusterMonitor.sendScalingDownBeyondMinEvent(networkPartitionId, instanceId);
     }
 
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
@@ -349,7 +338,9 @@ public class RuleTasksDelegator {
                         memberGredientLoadAverage, memberSecondDerivativeLoadAverage, 1);
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("[member-id] %s [predicted load average] %s ", memberStatsContext.getMemberId()
+                    log.debug(String.format("[cluster-instance-id] %s [member-id] %s " +
+                            "[predicted load average] %s "
+                            , clusterInstanceContext.getId(), memberStatsContext.getMemberId()
                             , memberPredictedLoadAverage));
                 }
                 loadAveragePredicted += memberPredictedLoadAverage;
@@ -379,7 +370,8 @@ public class RuleTasksDelegator {
                         memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("[member-id] %s [predicted memory consumption] %s ", memberStatsContext.getMemberId()
+                    log.debug(String.format("[member-id] %s [predicted memory consumption] %s ",
+                            memberStatsContext.getMemberId()
                             , memberPredictedMemoryConsumption));
                 }
                 memoryConsumptionPredicted += memberPredictedMemoryConsumption;

@@ -80,16 +80,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());
         }
 
-        Cartridge cartridge = null;
         try {
-            cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
+            CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
         } catch (Exception e) {
             String message = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
             log.error(message, e);
             throw new InvalidCartridgeDefinitionException(message, e);
         }
 
-        String cartridgeType = cartridge.getType();
+        String cartridgeType = cartridgeConfig.getType();
         if (cloudControllerContext.getCartridge(cartridgeType) != null) {
             String message = "Cartridge already exists: [cartridge-type] " + cartridgeType;
             log.error(message);
@@ -97,11 +96,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         // Add cartridge to the cloud controller context and persist
-        CloudControllerContext.getInstance().addCartridge(cartridge);
+        CloudControllerContext.getInstance().addCartridge(cartridgeConfig);
         CloudControllerContext.getInstance().persist();
 
         List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
-        cartridgeList.add(cartridge);
+        cartridgeList.add(cartridgeConfig);
 
         TopologyBuilder.handleServiceCreated(cartridgeList);
 
@@ -125,29 +124,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());
         }
 
-        Cartridge cartridge = null;
         try {
-            cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
+            CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
         } catch (Exception e) {
             String msg = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
             log.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
 
-        String cartridgeType = cartridge.getType();
+        String cartridgeType = cartridgeConfig.getType();
         if (cloudControllerContext.getCartridge(cartridgeType) != null) {
             Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
             try {
                 removeCartridgeFromCC(cartridgeToBeRemoved.getType());
             } catch (InvalidCartridgeTypeException ignore) {
             }
-            copyIaasProviders(cartridge, cartridgeToBeRemoved);
+            copyIaasProviders(cartridgeConfig, cartridgeToBeRemoved);
         } else {
             throw new CartridgeDefinitionNotExistsException("This cartridge definition not exists");
         }
 
         // Add cartridge to the cloud controller context and persist
-        CloudControllerContext.getInstance().addCartridge(cartridge);
+        CloudControllerContext.getInstance().addCartridge(cartridgeConfig);
         CloudControllerContext.getInstance().persist();
         // transaction ends
 

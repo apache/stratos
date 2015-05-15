@@ -7,6 +7,7 @@
     "description":"PHP Cartridge",
     "version":"7",
     "multiTenant":"false",
+    "tenantPartitions": "[1-100]",
     "loadBalancingIPType": "private",
     "portMapping":[
         {
@@ -55,5 +56,10 @@
             }
 
         ]
+    },
+    "property": [
+    ],
+    "deployment": {
     }
+
 } 

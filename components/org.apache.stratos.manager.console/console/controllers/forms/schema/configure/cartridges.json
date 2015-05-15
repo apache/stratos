@@ -14,13 +14,13 @@
             "type": "string",
             "id": "root/type",
             "title": "Type",
-            "description": "You need to enter chartridge type without space",
+            "description": "You need to enter cartridge type without space",
             "name": "Type",
             "minLength":2,
             "default": "php",
             "propertyOrder": 1,
             "maxItems": 1,
-            "pattern": "^[a-zA-Z0-9-_]+$",
+            "pattern": "^[a-zA-Z0-9-_]+$"
         },
         "category": {
             "type": "string",
@@ -99,6 +99,16 @@
             "propertyOrder": 7,
             "maxItems": 1,
             "enum": ["private","public"]
+        },
+        "tenantPartitions": {
+            "type": "string",
+            "id": "root/tenantPartitions",
+            "title": "Tenant Partitions",
+            "name": "Tenant Partitions",
+            "minLength":2,
+            "default": "[1-10][11-100]",
+            "propertyOrder": 1,
+            "maxItems": 1
         },
         "portMapping": {
             "type": "array",
@@ -418,8 +428,6 @@
                     },
                 }
             }
-
-
         },
         "persistence": {
             "type": "object",
@@ -485,5 +493,59 @@
                 }
             }
         },
+        "deployment": {
+            "type": "object",
+            "id": "root/deployment",
+            "title": "Deployment",
+            "name": "Deployment",
+            "required": ["baseDir", "dir"],
+            "options": {
+                "collapsed": true
+            },
+            "properties": {
+                "baseDir": {
+                    "type": "string",
+                    "id": "root/deployment/baseDir",
+                    "title": "Base Directory",
+                    "name": "Base Directory"
+                },
+                "dir": {
+                    "id": "root/deployment/dir",
+                    "type": "array",
+                    "title": "Directories ",
+                    "name": "Directories",
+                    "format": "tabs",
+                    "items": {
+                        "id": "root/deployment/dir",
+                        "type": "string",
+                        "title": "Directories ",
+                        "name": "Directories"
+                    }
+                }
+            }
+        },
+        "property": {
+            "id": "root/property",
+            "type": "array",
+            "title":"Property",
+            "format":"tabs",
+            "items": {
+                "id": "root/property/0",
+                "type": "object",
+                "title":"Property",
+                "properties": {
+                    "name": {
+                        "id": "root/property/0/name",
+                        "title":"Name",
+                        "type": "string"
+                    },
+                    "value": {
+                        "id": "root/property/0/value",
+                        "title":"Value",
+                        "type": "string"
+                    }
+                }
+            }
+        }
     }
 }

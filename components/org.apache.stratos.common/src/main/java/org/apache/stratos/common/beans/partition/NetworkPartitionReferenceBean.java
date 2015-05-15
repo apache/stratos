@@ -31,7 +31,6 @@ public class NetworkPartitionReferenceBean {
     private String provider;
     private List<PartitionReferenceBean> partitions;
     private String partitionAlgo;
-    private List<PropertyBean> properties;
 
     public String getId() {
         return id;
@@ -63,13 +62,5 @@ public class NetworkPartitionReferenceBean {
 
     public void setPartitionAlgo(String partitionAlgo) {
         this.partitionAlgo = partitionAlgo;
-    }
-
-    public List<PropertyBean> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(List<PropertyBean> properties) {
-        this.properties = properties;
     }
 }

@@ -70,51 +70,9 @@ public class CloudControllerUtil {
         }
     }
 
-    public static Cartridge toCartridge(Cartridge config) {
+    public static void extractIaaSProvidersFromCartridge(Cartridge config) {
         if (config == null) {
-            return null;
-        }
-        Cartridge cartridge = new Cartridge();
-
-        // populate cartridge
-        cartridge.setType(config.getType());
-        cartridge.setDisplayName(config.getDisplayName());
-        cartridge.setDescription(config.getDescription());
-        cartridge.setHostName(config.getHostName());
-        String[] deploymentDirs = config.getDeploymentDirs();
-        cartridge.setDeploymentDirs(deploymentDirs);
-        cartridge.setProvider(config.getProvider());
-        cartridge.setCategory(config.getCategory());
-        cartridge.setVersion(config.getVersion());
-        cartridge.setBaseDir(config.getBaseDir());
-
-        if (config.getPortMappings() != null) {
-            cartridge.setPortMappings(config.getPortMappings());
-        }
-
-        if (config.getPersistence() != null) {
-            cartridge.setPersistence(config.getPersistence());
-        }
-        cartridge.setMultiTenant(config.isMultiTenant());
-        cartridge.setTenantPartitions(config.getTenantPartitions());
-        cartridge.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Private));
-        if (StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
-            if (config.getLoadBalancingIPType().equals("public")) {
-                cartridge.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Public));
-            }
-        }
-
-        if (config.getMetadataKeys() == null) {
-            cartridge.setMetadataKeys(new String[0]);
-        } else {
-            cartridge.setMetadataKeys(config.getMetadataKeys());
-        }
-
-        org.apache.stratos.common.Properties props = config.getProperties();
-        if (props != null) {
-            for (Property prop : props.getProperties()) {
-                cartridge.addProperty(prop.getName(), String.valueOf(prop.getValue()));
-            }
+            return;
         }
 
         List<IaasProvider> iaases = CloudControllerConfig.getInstance().getIaasProviders();
@@ -186,16 +144,10 @@ public class CloudControllerUtil {
                         iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
                     }
 
-                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getType(), iaasProvider);
+                    CloudControllerContext.getInstance().addIaasProvider(config.getType(), iaasProvider);
                 }
             }
         }
-
-        if (config.getExportingProperties() != null) {
-            cartridge.setExportingProperties(config.getExportingProperties());
-        }
-
-        return cartridge;
     }
 
     public static void sleep(long time) {
