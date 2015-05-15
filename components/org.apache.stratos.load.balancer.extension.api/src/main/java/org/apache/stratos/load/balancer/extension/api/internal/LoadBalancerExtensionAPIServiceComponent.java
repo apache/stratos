@@ -36,6 +36,7 @@ public class LoadBalancerExtensionAPIServiceComponent {
 
     /**
      * Service component activate method.
+     *
      * @param context component context
      */
     protected void activate(ComponentContext context) {
@@ -50,6 +51,7 @@ public class LoadBalancerExtensionAPIServiceComponent {
 
     /**
      * Set configuration context service.
+     *
      * @param contextService
      */
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
@@ -57,6 +59,7 @@ public class LoadBalancerExtensionAPIServiceComponent {
 
     /**
      * Unset configuration context service.
+     *
      * @param contextService
      */
     protected void unsetConfigurationContextService(ConfigurationContextService contextService) {

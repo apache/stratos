@@ -107,7 +107,8 @@ public class LoadBalancerExtension {
 
     /**
      * Start topology event receiver thread.
-     * @param executorService executor service instance
+     *
+     * @param executorService  executor service instance
      * @param topologyProvider topology provider instance
      */
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
@@ -140,7 +141,8 @@ public class LoadBalancerExtension {
 
     /**
      * Start domain mapping event receiver thread.
-     * @param executorService executor service instance
+     *
+     * @param executorService  executor service instance
      * @param topologyProvider topology receiver instance
      */
     private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
@@ -154,7 +156,8 @@ public class LoadBalancerExtension {
 
     /**
      * Start application signup event receiver thread.
-     * @param executorService executor service instance
+     *
+     * @param executorService  executor service instance
      * @param topologyProvider topology provider instance
      */
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
@@ -168,6 +171,7 @@ public class LoadBalancerExtension {
 
     /**
      * Add topology event listeners to the topology event receiver.
+     *
      * @param topologyEventReceiver topology event receiver instance
      */
     private void addTopologyEventListeners(final LoadBalancerCommonTopologyEventReceiver topologyEventReceiver) {
@@ -227,6 +231,7 @@ public class LoadBalancerExtension {
 
     /**
      * Configure and start the load balancer
+     *
      * @throws LoadBalancerExtensionException if configuration or start process fails
      */
     private void configureAndStart() throws LoadBalancerExtensionException {
@@ -246,6 +251,7 @@ public class LoadBalancerExtension {
 
     /**
      * Configure and reload the load balancer
+     *
      * @throws LoadBalancerExtensionException if the configuration or reload process fails
      */
     private void configureAndReload() throws LoadBalancerExtensionException {
@@ -258,6 +264,7 @@ public class LoadBalancerExtension {
 
     /**
      * Returns true if topology has populated with at least one member.
+     *
      * @param topology topology to be validated
      * @return true if at least one member was found else false
      */
@@ -316,6 +323,7 @@ public class LoadBalancerExtension {
 
     /**
      * Get executor service of the load balancer extension.
+     *
      * @return executor service
      */
     public ExecutorService getExecutorService() {
@@ -324,6 +332,7 @@ public class LoadBalancerExtension {
 
     /**
      * Set executor service for the load balancer extension.
+     *
      * @param executorService executor service instance
      */
     public void setExecutorService(ExecutorService executorService) {

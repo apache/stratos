@@ -29,18 +29,21 @@ public interface LoadBalancer {
 
     /**
      * Start a new load balancer instance.
+     *
      * @throws LoadBalancerExtensionException if the start operation fails
      */
     void start() throws LoadBalancerExtensionException;
 
     /**
      * Stop running load balancer instance.
+     *
      * @throws LoadBalancerExtensionException if the stop operation fails.
      */
     void stop() throws LoadBalancerExtensionException;
 
     /**
      * Configure the load balancer using the given topology.
+     *
      * @param topology latest topology to be configured
      * @return Returns true if configured correctly
      * @throws LoadBalancerExtensionException if the configuration operation fails.
@@ -49,6 +52,7 @@ public interface LoadBalancer {
 
     /**
      * Reload load balancer configuration using the configuration written in configure() method.
+     *
      * @throws LoadBalancerExtensionException if the reload operation fails.
      */
     void reload() throws LoadBalancerExtensionException;
