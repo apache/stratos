@@ -211,37 +211,31 @@ public class ClusterStatusEventPublisher {
 
     public static void sendClusterTerminatedEvent(String appId, String serviceName,
                                                   String clusterId, String instanceId) {
-        try {
-            //TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
-            Service service = TopologyManager.getTopology().getService(serviceName);
-            if (service != null) {
-                Cluster cluster = service.getCluster(clusterId);
-                ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance == null) {
-                    log.warn(String.format("Cluster instance not found: [instance-id] %s", instanceId));
-                    return;
-                }
-
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminated)) {
-                    if (clusterInstance.getStatus() != ClusterStatus.Terminated) {
-                        ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
-                                new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId, instanceId);
-
-                        publishEvent(appStatusClusterTerminatedEvent);
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.warn("Cluster is already terminated, [cluster] " + clusterId);
-                        }
-                    }
-                } else {
-                    log.warn("Terminated is not in the possible state list for [ClusterInstance] " +
-                            clusterInstance.getInstanceId() + " of [cluster] " +
-                            clusterId + " as it is current state is " + clusterInstance.getStatus());
-                }
+        Service service = TopologyManager.getTopology().getService(serviceName);
+        if (service != null) {
+            Cluster cluster = service.getCluster(clusterId);
+            ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
+            if (clusterInstance == null) {
+                log.warn(String.format("Cluster instance not found: [instance-id] %s", instanceId));
+                return;
             }
-        } finally {
-            //TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
 
+            if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminated)) {
+                if (clusterInstance.getStatus() != ClusterStatus.Terminated) {
+                    ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
+                            new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId, instanceId);
+
+                    publishEvent(appStatusClusterTerminatedEvent);
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.warn("Cluster is already terminated, [cluster] " + clusterId);
+                    }
+                }
+            } else {
+                log.warn("Terminated is not in the possible state list for [ClusterInstance] " +
+                        clusterInstance.getInstanceId() + " of [cluster] " +
+                        clusterId + " as it is current state is " + clusterInstance.getStatus());
+            }
         }
     }
 
