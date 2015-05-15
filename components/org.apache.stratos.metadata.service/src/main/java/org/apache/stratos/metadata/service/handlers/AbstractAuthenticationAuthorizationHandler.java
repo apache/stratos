@@ -25,11 +25,9 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.impl.HttpHeadersImpl;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
-import org.apache.stratos.metadata.service.context.AuthenticationContext;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 public abstract class AbstractAuthenticationAuthorizationHandler implements RequestHandler {
     private final Log log = LogFactory.getLog(AbstractAuthenticationAuthorizationHandler.class);
