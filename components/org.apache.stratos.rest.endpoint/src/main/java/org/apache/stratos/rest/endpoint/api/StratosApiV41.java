@@ -485,7 +485,7 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.updateServiceGroup(cartridgeGroup);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroup.getName()).build();
 
-            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+            return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Cartridge group updated successfully: [cartridge-group] %s",
                             cartridgeGroup.getName()))).build();
 
