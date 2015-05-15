@@ -1,8 +1,8 @@
 {
     "type": "wso2is",
-    "provider": "data",
+    "provider": "wso2",
     "host": "wso2is.stratos.org",
-    "category": "data",
+    "category": "framework",
     "displayName": "WSO2 IS 5.0.0",
     "description": "WSO2 IS 5.0.0 Cartridge",
     "version": "7",

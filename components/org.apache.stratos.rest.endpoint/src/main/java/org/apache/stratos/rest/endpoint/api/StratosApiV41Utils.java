@@ -308,7 +308,7 @@ public class StratosApiV41Utils {
                 configurationContext);
         List<CartridgeBean> lbCartridges = new ArrayList<CartridgeBean>();
         for (CartridgeBean cartridge : cartridges) {
-            if ("loadbalancer".equalsIgnoreCase(cartridge.getCategory())) {
+            if (Constants.FILTER_LOAD_BALANCER.equalsIgnoreCase(cartridge.getCategory())) {
                 lbCartridges.add(cartridge);
             }
         }

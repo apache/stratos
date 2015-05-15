@@ -1,7 +1,7 @@
 {
     "type": "tomcat1",
     "provider": "apache",
-    "category": "data",
+    "category": "framework",
     "host": "tomcat1.stratos.org",
     "displayName": "tomcat1",
     "description": "tomcat1 Cartridge",

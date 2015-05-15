@@ -1,7 +1,7 @@
 {
     "type": "stratos-lb",
     "provider": "stratos",
-    "category": "lb",
+    "category": "load-balancer",
     "host": "complex-app-with-lb",
     "displayName": "Stratos Load Balancer",
     "description": "Stratos Load Balancer Cartridge",

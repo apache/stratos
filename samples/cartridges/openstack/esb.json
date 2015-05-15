@@ -1,7 +1,7 @@
 {
     "type": "esb",
     "provider": "wso2",
-    "category": "data",
+    "category": "framework",
     "host": "esb.stratos.org",
     "displayName": "esb",
     "description": "esb Cartridge",

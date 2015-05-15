@@ -28,7 +28,7 @@ public class Constants {
     // Values used to Filter Cartridges
     public static final String FILTER_TENANT_TYPE_SINGLE_TENANT = "singleTenant";
     public static final String FILTER_TENANT_TYPE_MULTI_TENANT = "multiTenant";
-    public static final String FILTER_LOAD_BALANCER = "loadBalancer";
+    public static final String FILTER_LOAD_BALANCER = "load-balancer";
     public static final String FILTER_PROVIDER = "provider";
 
 }

@@ -2,7 +2,7 @@
     "type": "esb",
     "provider": "apache",
     "host": "stratos.apache.org",
-    "category": "data",
+    "category": "framework",
     "displayName": "c4",
     "description": "mysql Cartridge",
     "version": "7",

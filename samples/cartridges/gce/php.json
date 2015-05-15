@@ -1,7 +1,7 @@
 {
     "type": "php",
     "provider": "apache",
-    "category": "data",
+    "category": "framework",
     "host": "php.stratos.org",
     "displayName": "php",
     "description": "php Cartridge",

@@ -2,7 +2,7 @@
     "type": "tomcat3",
     "provider": "apache",
     "host": "tomcat.stratos.org",
-    "category": "data",
+    "category": "framework",
     "displayName": "Tomcat 7",
     "description": "Tomcat 7 Cartridge",
     "version": "7",
