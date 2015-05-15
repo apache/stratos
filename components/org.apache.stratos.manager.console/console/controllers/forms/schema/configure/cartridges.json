@@ -31,7 +31,7 @@
             "default": "framework",
             "propertyOrder": 1,
             "maxItems": 1,
-            "enum": ["application","framework","data","lb"]
+            "enum": ["framework","data","lb"]
         },
         "provider": {
             "type": "string",
