@@ -39,7 +39,7 @@
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="stratosRestEndpointBean" class="org.apache.stratos.metadata.service.services.MetaDataAdmin"/>
+    <bean id="stratosRestEndpointBean" class="org.apache.stratos.metadata.service.api.MetadataApi"/>
     <bean id="exceptionHandler" class="org.apache.stratos.metadata.service.handlers.CustomExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.metadata.service.handlers.GenericExceptionMapper"/>
     <bean id="throwableExceptionHandler"

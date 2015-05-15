@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.metadata.service.services;
+package org.apache.stratos.metadata.service.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,8 +34,8 @@ import java.net.URI;
 import java.util.List;
 
 @Path("/")
-public class MetaDataAdmin {
-    private static Log log = LogFactory.getLog(MetaDataAdmin.class);
+public class MetadataApi {
+    private static Log log = LogFactory.getLog(MetadataApi.class);
     @Context
     UriInfo uriInfo;
     private DataStore registry;
@@ -43,7 +43,7 @@ public class MetaDataAdmin {
     /**
      * Meta data admin configuration loading
      */
-    public MetaDataAdmin() {
+    public MetadataApi() {
         registry = new CarbonRegistry();
     }
 
@@ -214,7 +214,6 @@ public class MetaDataAdmin {
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
-
         return Response.created(url).build();
     }
 
@@ -237,7 +236,6 @@ public class MetaDataAdmin {
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
-
         return Response.ok().build();
     }
 
@@ -256,8 +254,6 @@ public class MetaDataAdmin {
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
-
         return Response.ok().build();
     }
-
 }
