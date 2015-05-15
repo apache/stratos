@@ -10,6 +10,13 @@
     },
     "required":["admin","adminPassword","email", "firstName", "lastName", "tenantDomain"],
     "properties":{
+        "tenantDomain": {
+            "type":"string",
+            "id": "root/tenantDomain",
+            "default": "frank.com",
+            "title": "Tenant Domain",
+            "name": "Tenant Domain"
+        },
         "firstName": {
             "type":"string",
             "id": "root/firstName",
@@ -48,13 +55,6 @@
             "format": "email",
             "title": "Admin Email",
             "name": "Admin Email"
-        },
-        "tenantDomain": {
-            "type":"string",
-            "id": "root/tenantDomain",
-            "default": "frank.com",
-            "title": "Tenant Domain",
-            "name": "Tenant Domain"
         },
         "active": {
             "type":"boolean",
