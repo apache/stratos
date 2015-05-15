@@ -37,7 +37,7 @@ import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -364,9 +364,9 @@ public class RestCommandLineService {
      */
     public void listCartridgeGroups() throws CommandException {
         try {
-            Type listType = new TypeToken<ArrayList<GroupBean>>() {
+            Type listType = new TypeToken<ArrayList<CartridgeGroupBean>>() {
             }.getType();
-            List<GroupBean> cartridgeGroupList = (List<GroupBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_GROUPS,
+            List<CartridgeGroupBean> cartridgeGroupList = (List<CartridgeGroupBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_GROUPS,
                     listType, "Cartridge Groups");
 
             if ((cartridgeGroupList == null) || (cartridgeGroupList.size() == 0)) {
@@ -374,8 +374,8 @@ public class RestCommandLineService {
                 return;
             }
 
-            RowMapper<GroupBean> cartridgeGroupMapper = new RowMapper<GroupBean>() {
-                public String[] getData(GroupBean cartridgeGroup) {
+            RowMapper<CartridgeGroupBean> cartridgeGroupMapper = new RowMapper<CartridgeGroupBean>() {
+                public String[] getData(CartridgeGroupBean cartridgeGroup) {
                     String[] data = new String[3];
                     data[0] = cartridgeGroup.getName();
                     data[1] = cartridgeGroup.getCartridges() == null ? "" : String.valueOf(cartridgeGroup.getCartridges().size());
@@ -383,7 +383,7 @@ public class RestCommandLineService {
                     return data;
                 }
             };
-            GroupBean[] cartridgeGroups = new GroupBean[cartridgeGroupList.size()];
+            CartridgeGroupBean[] cartridgeGroups = new CartridgeGroupBean[cartridgeGroupList.size()];
             cartridgeGroups = cartridgeGroupList.toArray(cartridgeGroups);
 
             System.out.println("Cartridge Groups found:");
@@ -1479,8 +1479,8 @@ public class RestCommandLineService {
      */
     public void describeServiceGroup(String groupDefinitionName) throws CommandException {
         try {
-            GroupBean bean = (GroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
-                    GroupBean.class, "serviceGroup");
+            CartridgeGroupBean bean = (CartridgeGroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    CartridgeGroupBean.class, "serviceGroup");
 
             if (bean == null) {
                 System.out.println("Cartridge group not found: " + groupDefinitionName);

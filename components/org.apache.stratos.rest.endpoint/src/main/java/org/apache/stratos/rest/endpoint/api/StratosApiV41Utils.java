@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
-import org.apache.stratos.autoscaler.stub.exception.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -40,10 +39,7 @@ import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDom
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
-import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
-import org.apache.stratos.common.beans.cartridge.PersistenceBean;
-import org.apache.stratos.common.beans.cartridge.VolumeBean;
+import org.apache.stratos.common.beans.cartridge.*;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
@@ -972,7 +968,7 @@ public class StratosApiV41Utils {
      * @throws InvalidCartridgeGroupDefinitionException
      * @throws RestAPIException
      */
-    public static void addServiceGroup(GroupBean serviceGroupDefinition)
+    public static void addServiceGroup(CartridgeGroupBean serviceGroupDefinition)
             throws InvalidCartridgeGroupDefinitionException, RestAPIException {
         try {
             if (serviceGroupDefinition == null) {
@@ -1027,11 +1023,11 @@ public class StratosApiV41Utils {
                     log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
                 }
 
-                List<GroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
+                List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
                 groupNames = new ArrayList<String>();
                 cartridgeGroupNames = new String[groupDefinitions.size()];
                 int i = 0;
-                for (GroupBean groupList : groupDefinitions) {
+                for (CartridgeGroupBean groupList : groupDefinitions) {
                     groupNames.add(groupList.getName());
                     cartridgeGroupNames[i] = groupList.getName();
                     i++;
@@ -1077,7 +1073,7 @@ public class StratosApiV41Utils {
      * @param cartridgeGroup
      * @throws RestAPIException
      */
-    public static void updateServiceGroup(GroupBean cartridgeGroup) throws RestAPIException,
+    public static void updateServiceGroup(CartridgeGroupBean cartridgeGroup) throws RestAPIException,
             InvalidCartridgeGroupDefinitionException {
         try {
             ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
@@ -1205,7 +1201,7 @@ public class StratosApiV41Utils {
      * @return GroupBean
      * @throws RestAPIException
      */
-    public static GroupBean getServiceGroupDefinition(String name) throws RestAPIException {
+    public static CartridgeGroupBean getServiceGroupDefinition(String name) throws RestAPIException {
 
         if (log.isDebugEnabled()) {
             log.debug("Reading cartridge group: [group-name] " + name);
@@ -1232,7 +1228,7 @@ public class StratosApiV41Utils {
      * @return array of Group Beans
      * @throws RestAPIException
      */
-    public static GroupBean[] getServiceGroupDefinitions() throws RestAPIException {
+    public static CartridgeGroupBean[] getServiceGroupDefinitions() throws RestAPIException {
 
         if (log.isDebugEnabled()) {
             log.debug("Reading cartridge groups...");
@@ -1246,7 +1242,7 @@ public class StratosApiV41Utils {
                 return null;
             }
 
-            GroupBean[] serviceGroupDefinitions = new GroupBean[serviceGroups.length];
+            CartridgeGroupBean[] serviceGroupDefinitions = new CartridgeGroupBean[serviceGroups.length];
             for (int i = 0; i < serviceGroups.length; i++) {
                 serviceGroupDefinitions[i] = ObjectConverter.convertStubServiceGroupToServiceGroupDefinition(
                         serviceGroups[i]);
@@ -1341,7 +1337,7 @@ public class StratosApiV41Utils {
      * @param groupBean groupBean
      * @param cartridges List of cartridges
      */
-    private static void findCartridgesInGroupBean(GroupBean groupBean, List<String> cartridges) {
+    private static void findCartridgesInGroupBean(CartridgeGroupBean groupBean, List<String> cartridges) {
 
         if (groupBean == null || cartridges == null) {
             return;
@@ -1356,7 +1352,7 @@ public class StratosApiV41Utils {
         }
 
         if (groupBean.getGroups() != null) {
-            for (GroupBean seGroup : groupBean.getGroups()) {
+            for (CartridgeGroupBean seGroup : groupBean.getGroups()) {
                 findCartridgesInGroupBean(seGroup, cartridges);
             }
         }
@@ -1499,9 +1495,9 @@ public class StratosApiV41Utils {
 
         ComponentBean componentBean = applicationBean.getComponents();
 
-        List<GroupReferenceBean> groupReferenceBeans = componentBean.getGroups();
+        List<CartridgeGroupReferenceBean> groupReferenceBeans = componentBean.getGroups();
         if (groupReferenceBeans != null) {
-            for (GroupReferenceBean groupReferenceBean : groupReferenceBeans) {
+            for (CartridgeGroupReferenceBean groupReferenceBean : groupReferenceBeans) {
                 findCartridgesAndGroupsInCartridgeGroup(groupReferenceBean, cartridges, cartridgeGroups);
             }
         }
@@ -1517,7 +1513,7 @@ public class StratosApiV41Utils {
      * @param cartridgeGroups List <String>
      */
     private static void findCartridgesAndGroupsInCartridgeGroup(
-            GroupReferenceBean groupReferenceBean, List<String> cartridges, List<String> cartridgeGroups) {
+            CartridgeGroupReferenceBean groupReferenceBean, List<String> cartridges, List<String> cartridgeGroups) {
 
         if (groupReferenceBean == null || cartridgeGroups == null) {
             return;
@@ -1528,7 +1524,7 @@ public class StratosApiV41Utils {
         }
 
         if (groupReferenceBean.getGroups() != null) {
-            for (GroupReferenceBean grReferenceBean : groupReferenceBean.getGroups()) {
+            for (CartridgeGroupReferenceBean grReferenceBean : groupReferenceBean.getGroups()) {
                 findCartridgesAndGroupsInCartridgeGroup(grReferenceBean, cartridges, cartridgeGroups);
                 findCartridgeNamesInCartridges(groupReferenceBean.getCartridges(), cartridges);
             }
@@ -1579,13 +1575,13 @@ public class StratosApiV41Utils {
      */
     private static void validateGroupAliasesInApplicationDefinition(ApplicationBean applicationDefinition) throws RestAPIException {
 
-        ConcurrentHashMap<String, GroupReferenceBean> groupsInApplicationDefinition = new ConcurrentHashMap<String, GroupReferenceBean>();
+        ConcurrentHashMap<String, CartridgeGroupReferenceBean> groupsInApplicationDefinition = new ConcurrentHashMap<String, CartridgeGroupReferenceBean>();
 
         if ((applicationDefinition.getComponents().getGroups() != null) &&
                 (!applicationDefinition.getComponents().getGroups().isEmpty())) {
 
             //This is to validate the top level groups in the application definition
-            for (GroupReferenceBean group : applicationDefinition.getComponents().getGroups()) {
+            for (CartridgeGroupReferenceBean group : applicationDefinition.getComponents().getGroups()) {
                 if (groupsInApplicationDefinition.get(group.getAlias()) != null) {
                     String message = "Cartridge group alias exists more than once: [group-alias] " +
                             group.getAlias();
@@ -1609,9 +1605,9 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
 
-    private static void validateGroupsRecursively(ConcurrentHashMap<String, GroupReferenceBean> groupsSet,
-                                                  Collection<GroupReferenceBean> groups) throws RestAPIException {
-        for (GroupReferenceBean group : groups) {
+    private static void validateGroupsRecursively(ConcurrentHashMap<String, CartridgeGroupReferenceBean> groupsSet,
+                                                  Collection<CartridgeGroupReferenceBean> groups) throws RestAPIException {
+        for (CartridgeGroupReferenceBean group : groups) {
             if (groupsSet.get(group.getAlias()) != null) {
                 String message = "Cartridge group alias exists more than once: [group-alias] " +
                         group.getAlias();
@@ -3345,7 +3341,7 @@ public class StratosApiV41Utils {
      * @param groupBean - cartridge group definition
      * @throws InvalidCartridgeGroupDefinitionException - throws when the group definition is invalid
      */
-    private static void validateCartridgeDuplicationInGroupDefinition(GroupBean groupBean)
+    private static void validateCartridgeDuplicationInGroupDefinition(CartridgeGroupBean groupBean)
             throws InvalidCartridgeGroupDefinitionException {
         if (groupBean == null) {
             return;
@@ -3359,7 +3355,7 @@ public class StratosApiV41Utils {
         }
         if (groupBean.getGroups() != null) {
             //Recursive because to check groups inside groups
-            for (GroupBean group : groupBean.getGroups()) {
+            for (CartridgeGroupBean group : groupBean.getGroups()) {
                 validateCartridgeDuplicationInGroupDefinition(group);
             }
         }
@@ -3394,7 +3390,7 @@ public class StratosApiV41Utils {
      * @param groupBean     - cartridge group definition
      * @throws InvalidCartridgeGroupDefinitionException
      */
-    private static void validateGroupDuplicationInGroupDefinition(GroupBean groupBean)
+    private static void validateGroupDuplicationInGroupDefinition(CartridgeGroupBean groupBean)
             throws InvalidCartridgeGroupDefinitionException {
         validateGroupDuplicationInGroupDefinition(groupBean, new ArrayList<String>());
     }
@@ -3406,7 +3402,7 @@ public class StratosApiV41Utils {
          * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
          * @throws InvalidCartridgeGroupDefinitionException - throws when the group definition is invalid
          */
-    private static void validateGroupDuplicationInGroupDefinition(GroupBean groupBean, List<String> parentGroups)
+    private static void validateGroupDuplicationInGroupDefinition(CartridgeGroupBean groupBean, List<String> parentGroups)
             throws InvalidCartridgeGroupDefinitionException {
         if (groupBean == null) {
             return;
@@ -3415,7 +3411,7 @@ public class StratosApiV41Utils {
         parentGroups.add(groupBean.getName());
         if (groupBean.getGroups() != null) {
             if (!groupBean.getGroups().isEmpty()) {
-                for (GroupBean g : groupBean.getGroups()) {
+                for (CartridgeGroupBean g : groupBean.getGroups()) {
                     groups.add(g.getName());
                 }
                 validateGroupDuplicationInGroup(groups, parentGroups);
@@ -3423,7 +3419,7 @@ public class StratosApiV41Utils {
         }
         if (groupBean.getGroups() != null) {
             //Recursive because to check groups inside groups
-            for (GroupBean group : groupBean.getGroups()) {
+            for (CartridgeGroupBean group : groupBean.getGroups()) {
                 validateGroupDuplicationInGroupDefinition(group, parentGroups);
                 parentGroups.remove(group.getName());
             }

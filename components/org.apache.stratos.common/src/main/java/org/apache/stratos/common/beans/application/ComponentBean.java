@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.common.beans.application;
 
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupReferenceBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,15 +30,15 @@ public class ComponentBean implements Serializable {
 
     private static final long serialVersionUID = -5932265453191494386L;
 
-    private List<GroupReferenceBean> groups;
+    private List<CartridgeGroupReferenceBean> groups;
     private DependencyBean dependencies;
     private List<CartridgeReferenceBean> cartridges;
 
-    public List<GroupReferenceBean> getGroups() {
+    public List<CartridgeGroupReferenceBean> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<GroupReferenceBean> groups) {
+    public void setGroups(List<CartridgeGroupReferenceBean> groups) {
         this.groups = groups;
     }
 

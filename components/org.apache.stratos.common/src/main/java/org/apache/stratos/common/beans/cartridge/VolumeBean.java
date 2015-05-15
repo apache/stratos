@@ -32,9 +32,10 @@ public class VolumeBean {
     private String volumeId;
 
     public String toString() {
-        return " [ Persistence Required : " + ", Size: " + getSize() + ", device: " +
-                getDevice() + " remove on termination " + isRemoveOnTermination() +
-                ", mappingPath : " + getMappingPath() + "] ";
+        return " [id: " + getId() + ", size: " + getSize() + ", device: " +
+                getDevice() + ", removeOnTermination: " + isRemoveOnTermination() +
+                ", mappingPath: " + getMappingPath() + ", snapshotId" + getSnapshotId() +
+                "volumeId: " + getVolumeId() + "]";
     }
 
     public String getId() {

@@ -21,12 +21,11 @@ package org.apache.stratos.rest.endpoint.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.autoscaler.stub.exception.InvalidServiceGroupException;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
-import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
@@ -443,7 +442,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/addServiceGroup")
     @SuperTenantService(true)
     public Response addServiceGroup(
-            GroupBean serviceGroupDefinition) throws RestAPIException {
+            CartridgeGroupBean serviceGroupDefinition) throws RestAPIException {
         try {
             StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
             URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
@@ -480,7 +479,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/updateServiceGroup")
     public Response updateServiceGroup(
-            GroupBean cartridgeGroup) throws RestAPIException {
+            CartridgeGroupBean cartridgeGroup) throws RestAPIException {
 
         try {
             StratosApiV41Utils.updateServiceGroup(cartridgeGroup);
@@ -514,7 +513,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getServiceGroupDefinition")
     public Response getServiceGroupDefinition(
             @PathParam("groupDefinitionName") String groupDefinitionName) throws RestAPIException {
-        GroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
+        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
 
         if (serviceGroupDefinition != null) {
             return Response.ok().entity(serviceGroupDefinition).build();
@@ -537,7 +536,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getServiceGroupDefinition")
     public Response getServiceGroups()
             throws RestAPIException {
-        GroupBean[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
+        CartridgeGroupBean[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
 
         if (serviceGroups != null) {
             return Response.ok().entity(serviceGroups).build();
