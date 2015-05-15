@@ -26,12 +26,14 @@ public interface LoadBalancerStatisticsReader {
 
     /**
      * Returns the cluster instance id if the load balancer is configured to serve a specific cluster instance.
+     *
      * @return
      */
     String getClusterInstanceId();
 
     /**
      * Returns in-flight request count of sliding window configured.
+     *
      * @param clusterId
      */
     int getInFlightRequestCount(String clusterId);

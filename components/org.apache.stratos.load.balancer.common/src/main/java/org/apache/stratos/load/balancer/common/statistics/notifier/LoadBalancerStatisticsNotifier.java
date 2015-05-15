@@ -79,17 +79,17 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
                     String clusterInstanceId = statsReader.getClusterInstanceId();
                     for (Service service : topologyProvider.getTopology().getServices()) {
                         for (Cluster cluster : service.getClusters()) {
-                                // Publish in-flight request count of load balancer's network partition
-                                int requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
-                                inFlightRequestPublisher.publish(cluster.getClusterId(), clusterInstanceId,
-                                        networkPartitionId, requestCount);
+                            // Publish in-flight request count of load balancer's network partition
+                            int requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
+                            inFlightRequestPublisher.publish(cluster.getClusterId(), clusterInstanceId,
+                                    networkPartitionId, requestCount);
 
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("In-flight request count published to cep: [cluster-id] %s " +
-                                                    "[cluster-instance-id] %s [network-partition] %s [value] %d ",
-                                            cluster.getClusterId(), clusterInstanceId, networkPartitionId, requestCount));
-                                }
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format("In-flight request count published to cep: [cluster-id] %s " +
+                                                "[cluster-instance-id] %s [network-partition] %s [value] %d ",
+                                        cluster.getClusterId(), clusterInstanceId, networkPartitionId, requestCount));
                             }
+                        }
                     }
                 } else if (log.isWarnEnabled()) {
                     log.warn("In-flight request count publisher is disabled");
