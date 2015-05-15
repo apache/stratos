@@ -18,6 +18,7 @@ How to run Live Tests
    pip install pexpect
    pip install pycrypto
    pip install gitpython
+   pip install yapsy
    ```
 
 3. Start ActiveMQ:
