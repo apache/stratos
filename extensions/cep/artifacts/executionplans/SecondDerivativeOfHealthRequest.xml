@@ -33,7 +33,7 @@
   <queryExpressions><![CDATA[ 
 	 from health_second_der_request
 		select member_id, cluster_id, cluster_instance_id, network_partition_id, health_description, value,
-		stratos:concat(cluster_id, '-' ,network_partition_id) as health_second_der_cluster_network
+		stratos:concat(cluster_id, '-' ,cluster_instance_id) as health_second_der_cluster_network
 		insert into health_second_der_concat;
 	define partition health_second_der_cluster_partition  by health_second_der_concat.health_second_der_cluster_network;
 	from health_second_der_concat [health_description == 'memory_consumption'] 

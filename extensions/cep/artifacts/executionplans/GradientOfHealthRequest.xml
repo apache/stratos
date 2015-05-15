@@ -37,7 +37,7 @@
   		insert into fault_message;
   	from health_grad_processsor
   		select cluster_id, cluster_instance_id, network_partition_id, member_id, partition_id, health_description, value,
-		stratos:concat(cluster_id, '-' , network_partition_id) as health_grad_cluster_network 
+		stratos:concat(cluster_id, '-' , cluster_instance_id) as health_grad_cluster_network
   		insert into health_grad_concatinator;
   	define partition health_grad_cluster_partition by  health_grad_concatinator.health_grad_cluster_network;
  	define partition member_health_grad_cluster_partition by health_grad_processsor.member_id;
