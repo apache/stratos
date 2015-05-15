@@ -7,8 +7,11 @@ logic required for configuring the server.
 
 How to run Live Tests
 ---------------------
+1. Install following packages
 
-1. Install dependent python modules:
+   apt-get install -y git python python-pip python-dev gcc zip 
+
+2. Install dependent python modules:
    ```
    pip install paho-mqtt
    pip install psutil
@@ -17,12 +20,12 @@ How to run Live Tests
    pip install gitpython
    ```
 
-2. Start ActiveMQ:
+3. Start ActiveMQ:
    ```
    <activemq-home>/bin/activemq start
    ```
 
-3. Run python cartridge agent live tests:
+4. Run python cartridge agent live tests:
    ```
    mvn clean install -Plive
    ```
