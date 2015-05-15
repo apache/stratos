@@ -55,7 +55,7 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
             } else {
 
                 log.warn(String.format("No possible state change found for [type] %s [cluster] %s " +
-                                "[instance] %s", type, clusterId, instanceId));
+                        "[instance] %s", type, clusterId, instanceId));
             }
         }
         return false;

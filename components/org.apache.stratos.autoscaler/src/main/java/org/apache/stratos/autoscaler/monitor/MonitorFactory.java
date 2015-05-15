@@ -194,9 +194,9 @@ public class MonitorFactory {
      * Updates ClusterContext for given cluster
      *
      * @param parentMonitor parent of the monitor
-     * @param context the child-context from the startup-dependency tree
+     * @param context       the child-context from the startup-dependency tree
      * @return ClusterMonitor - Updated ClusterContext
-     * @throws PolicyValidationException policy validation error
+     * @throws PolicyValidationException    policy validation error
      * @throws PartitionValidationException partition validation error
      */
     public static ClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,

@@ -174,7 +174,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     /**
      * Handling the scale-down decision making
-     * @param instanceContext instance-context which can be scaled-down
+     *
+     * @param instanceContext    instance-context which can be scaled-down
      * @param nwPartitionContext the network-partition-context of the instance
      */
     private void handleScalingDownBeyondMin(InstanceContext instanceContext,
@@ -233,7 +234,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             // If it is default set, then application instance cannot be terminated.
             List<String> defaultNetworkPartitions = algorithm.
                     getDefaultNetworkPartitions(algorithmContext);
-            if(!defaultNetworkPartitions.contains(nwPartitionContext.getId())) {
+            if (!defaultNetworkPartitions.contains(nwPartitionContext.getId())) {
                 //Since it is not default network-partition, it can be terminated
                 // upon scale-down of the children as it has been created by bursting
                 ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
@@ -588,7 +589,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             "in the ApplicationsTopology. Hence not creating new AppInstance.");
                     instanceId = handleApplicationInstanceCreation(application, context, appInstance);
                 }
-                if(instanceId != null) {
+                if (instanceId != null) {
                     instanceIdList.add(instanceId);
                 }
                 burstNPFound = true;

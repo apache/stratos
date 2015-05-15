@@ -96,7 +96,7 @@ public class RuleTasksDelegator {
                 numberOfAdditionalInstancesRequired = (predictedValue - threshold) / gradient;
             }
 
-            if(predictedValue < threshold) {
+            if (predictedValue < threshold) {
                 //Since predicted-value is less, it can be scale-down
                 return min - 1;
             }

@@ -50,7 +50,7 @@ public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm {
 
     @Override
     public List<String> getDefaultNetworkPartitions(NetworkPartitionAlgorithmContext
-                                                                networkPartitionAlgorithmContext) {
+                                                            networkPartitionAlgorithmContext) {
         if (networkPartitionAlgorithmContext == null) {
             return null;
         }

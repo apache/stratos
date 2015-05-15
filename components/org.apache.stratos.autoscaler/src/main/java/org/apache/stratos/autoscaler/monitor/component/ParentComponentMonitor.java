@@ -856,6 +856,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     /**
      * Scale dependencies from the children
+     *
      * @return scale dependencies
      */
     public Set<ScalingDependentList> getScalingDependencies() {
@@ -864,6 +865,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     /**
      * Startup-order tree built among the children according to the specified startup-order
+     *
      * @return startup-dependency-tree
      */
     public DependencyTree getStartupDependencyTree() {
@@ -872,6 +874,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     /**
      * This will give the network partitions used by this monitor
+     *
      * @return network-partition-contexts
      */
     public Map<String, NetworkPartitionContext> getNetworkPartitionContextsMap() {

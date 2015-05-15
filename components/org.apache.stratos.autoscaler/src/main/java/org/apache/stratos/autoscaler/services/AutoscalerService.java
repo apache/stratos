@@ -187,7 +187,8 @@ public interface AutoscalerService {
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor
-     *  @param clusterId  id of the cluster.
+     *
+     * @param clusterId  id of the cluster.
      * @param properties updated properties.
      */
     boolean updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
