@@ -496,8 +496,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Start instance in a new thread
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Starting instance creator thread: [cluster] %s [cluster-instance] %s " +
-                                "[member] %s", instanceContext.getClusterId(), instanceContext.getClusterInstanceId(),
-                        memberId));
+                                "[member] %s [application-id] %s", instanceContext.getClusterId(),
+                        instanceContext.getClusterInstanceId(), memberId, applicationId));
             }
             executorService.execute(new InstanceCreator(memberContext, iaasProvider, payload.toString().getBytes()));
 
@@ -606,7 +606,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (memberTerminated) {
             log.info(String.format("Member terminated [member-id] %s ", memberId));
         } else {
-            log.warn(String.format("Stratos could not terminate the member [member-id] %s. This may due to a issue in the underlying IaaS, Please terminate the member manually", memberId));
+            log.warn(String.format("Stratos could not terminate the member [member-id] %s. This may due to a issue " +
+                    "in the underlying IaaS, Please terminate the member manually", memberId));
             MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
         }
@@ -653,8 +654,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         if (isMemberExpired(member, memberContext.getObsoleteInitTime(), memberContext.getObsoleteExpiryTime())) {
                             if (log.isInfoEnabled()) {
                                 log.info(String.format(
-                                        "Member pending termination in ReadyToShutdown state exceeded expiry time. This member has to be manually deleted: %s",
-                                        memberContext.getMemberId()));
+                                        "Member pending termination in ReadyToShutdown state exceeded expiry time. " +
+                                                "This member has to be manually deleted: %s", memberContext.getMemberId()));
                             }
 
                             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
@@ -748,9 +749,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new CartridgeNotFoundException(msg);
         }
 
-//        Properties properties = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-//        Property property = properties.getProperty(CloudControllerConstants.IS_LOAD_BALANCER);
-//        boolean isLb = property != null ? Boolean.parseBoolean(property.getValue()) : false;
         TopologyBuilder.handleClusterCreated(registrant);
         CloudControllerContext.getInstance().persist();
 
@@ -808,7 +806,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                    "Service unregistration failed. No matching cartridge found: [cartridge-type] " + cartridgeType;
+                    String.format("Service unregistration failed. No matching cartridge found: [cartridge-type] %s " +
+                            "[application-id] %s", cartridgeType, ctxt.getApplicationId());
             log.error(msg);
             throw new UnregisteredClusterException(msg);
         }
@@ -822,7 +821,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             public void run() {
                 ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
                 if (ctxt == null) {
-                    String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
+                    String msg = String.format("Service unregistration failed. Cluster not found: [cluster-id] %s " +
+                            "[application-id] %s", clusterId_, ctxt.getApplicationId());
                     log.error(msg);
                     return;
                 }
@@ -842,7 +842,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 }
 
-                // if there're still alive members
+                // if there are still alive members
                 if (members.size() > 0) {
                     //forcefully terminate them
                     for (Member member : members) {
@@ -851,7 +851,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             terminateInstance(member.getMemberId());
                         } catch (Exception e) {
                             // we are not gonna stop the execution due to errors.
-                            log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
+                            log.warn((String.format("Instance termination failed of member [member-id] %s " +
+                                    "[application-id] %s", member.getMemberId(), ctxt.getApplicationId())), e);
+
                         }
                     }
                 }
@@ -864,7 +866,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
                     ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
                     if (ctxt == null) {
-                        String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
+                        String msg = String.format("Service unregistration failed. Cluster not found: [cluster-id] %s " +
+                                "[application-id] %s " , clusterId_, ctxt.getApplicationId());
                         log.error(msg);
                         return;
                     }
@@ -876,7 +879,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         CloudControllerUtil.sleep(1000);
                     }
 
-                    log.info("Unregistration of service cluster: " + clusterId_);
+                    log.info(String.format("Unregistration of service cluster: [cluster-id] %s [application-id]",
+                            clusterId_, ctxt.getApplicationId()));
                     deleteVolumes(ctxt);
                     onClusterRemoval(clusterId_);
                 } finally {
@@ -907,7 +911,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                             }
                                         } catch (Exception ignore) {
                                             if (log.isErrorEnabled()) {
-                                                log.error("Error while deleting volume [id] " + volume.getId(), ignore);
+                                                log.error((String.format("Error while deleting volume [id] %s " +
+                                                        "[application-id]", volume.getId(), ctxt.getApplicationId())),
+                                                        ignore);
                                             }
                                         }
                                     }
@@ -1067,7 +1073,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
             ApplicationClusterRegistrationException {
         if (appClustersContexts == null || appClustersContexts.length == 0) {
-            String errorMsg = "No application cluster information found, unable to create clusters";
+            String errorMsg = "No application cluster information found, unable to create clusters: " +
+                    "[application-id] " + appId;
             log.error(errorMsg);
             throw new ApplicationClusterRegistrationException(errorMsg);
         }
@@ -1195,7 +1202,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean addKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException,
             KubernetesClusterAlreadyExistsException {
         if (kubernetesCluster == null) {
-            throw new InvalidKubernetesClusterException("Kubernetes cluster can not be null");
+            throw new InvalidKubernetesClusterException("Kubernetes cluster cannot be null");
         }
 
         try {
@@ -1236,10 +1243,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesClusterException {
         if (kubernetesHost == null) {
-            throw new InvalidKubernetesHostException("Kubernetes host can not be null");
+            throw new InvalidKubernetesHostException("Kubernetes host cannot be null");
         }
         if (StringUtils.isEmpty(kubernetesClusterId)) {
-            throw new NonExistingKubernetesClusterException("Kubernetes cluster id can not be null");
+            throw new NonExistingKubernetesClusterException("Kubernetes cluster id cannot be null");
         }
 
         Lock lock = null;
@@ -1259,7 +1266,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 kubernetesHostArrayList = new ArrayList<KubernetesHost>();
             } else {
                 if (CloudControllerContext.getInstance().kubernetesHostExists(kubernetesHost.getHostId())) {
-                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [hostnae] " +
+                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [hostname] " +
                             kubernetesHost.getHostId());
                 }
                 kubernetesHostArrayList = new
@@ -1289,7 +1296,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public boolean removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
-            throw new NonExistingKubernetesClusterException("Kubernetes cluster id can not be empty");
+            throw new NonExistingKubernetesClusterException("Kubernetes cluster id cannot be empty");
         }
 
         Lock lock = null;
@@ -1319,7 +1326,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public boolean removeKubernetesHost(String kubernetesHostId) throws NonExistingKubernetesHostException {
         if (kubernetesHostId == null) {
-            throw new NonExistingKubernetesHostException("Kubernetes host id can not be null");
+            throw new NonExistingKubernetesHostException("Kubernetes host id cannot be null");
         }
 
         Lock lock = null;
@@ -1332,7 +1339,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             try {
                 KubernetesCluster kubernetesClusterStored = CloudControllerContext.getInstance().getKubernetesClusterContainingHost(kubernetesHostId);
 
-                // Kubernetes master can not be removed
+                // Kubernetes master cannot be removed
                 if (kubernetesClusterStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
                     throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
                 }
