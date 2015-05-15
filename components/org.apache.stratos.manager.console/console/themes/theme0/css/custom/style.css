@@ -278,3 +278,7 @@ button.hover-delete-autoscale{
 button.hover-delete-app-policy{
     margin-top: .7em;
 }
+
+h2>span {
+    text-transform: lowercase;
+}
