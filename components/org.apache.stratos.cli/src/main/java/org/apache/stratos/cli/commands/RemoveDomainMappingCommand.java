@@ -19,12 +19,7 @@
 
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;

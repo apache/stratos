@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

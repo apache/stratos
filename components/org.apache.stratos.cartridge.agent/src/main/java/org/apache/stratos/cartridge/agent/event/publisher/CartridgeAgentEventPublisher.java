@@ -69,7 +69,7 @@ public class CartridgeAgentEventPublisher {
                     CartridgeAgentConfiguration.getInstance().getPartitionId());
 
 			/*
-			 * 
+             *
         
         public InstanceStartedEvent(String applicationId, String serviceName, String clusterId, String memberId,
                                 String clusterInstanceId, String networkPartitionId, String partitionId)

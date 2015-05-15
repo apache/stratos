@@ -18,8 +18,8 @@
  */
 package org.apache.stratos.common.beans.topology;
 
-import org.apache.stratos.common.beans.cartridge.PortMappingBean;
 import org.apache.stratos.common.beans.PropertyBean;
+import org.apache.stratos.common.beans.cartridge.PortMappingBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;

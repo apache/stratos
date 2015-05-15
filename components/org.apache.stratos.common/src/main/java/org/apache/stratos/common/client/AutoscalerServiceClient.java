@@ -29,7 +29,6 @@ import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.exception.CartridgeNotFoundException;
 import org.apache.stratos.common.constants.StratosConstants;
 
 import java.rmi.RemoteException;

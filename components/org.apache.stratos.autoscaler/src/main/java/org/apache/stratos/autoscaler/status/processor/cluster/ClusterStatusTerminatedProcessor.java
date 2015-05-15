@@ -60,7 +60,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
             } else {
 
                 log.warn(String.format("No possible state change found for [type] %s " +
-                                "[cluster] %s [instance] %s", type, clusterId, instanceId));
+                        "[cluster] %s [instance] %s", type, clusterId, instanceId));
             }
         }
         return false;
