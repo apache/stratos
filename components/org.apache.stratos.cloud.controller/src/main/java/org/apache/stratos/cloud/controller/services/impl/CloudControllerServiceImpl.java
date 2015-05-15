@@ -235,44 +235,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new IllegalArgumentException(msg);
 
         }
-
-        if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:addServiceGroup:" + servicegroup.getName());
-        }
-
-        String[] subGroups = servicegroup.getCartridges();
-
-
-        if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:addServiceGroup:subGroups" + subGroups);
-            if (subGroups != null) {
-                log.debug("CloudControllerServiceImpl:addServiceGroup:subGroups:size" + subGroups.length);
-            } else {
-                log.debug("CloudControllerServiceImpl:addServiceGroup:subGroups: is null");
-            }
-        }
-
-
-        Dependencies dependencies = servicegroup.getDependencies();
-
-        if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:addServiceGroup:dependencies" + dependencies);
-        }
-
-        if (dependencies != null) {
-            String[] startupOrders = dependencies.getStartupOrders();
-
-            if (log.isDebugEnabled()) {
-                log.debug("CloudControllerServiceImpl:addServiceGroup:startupOrders" + startupOrders);
-
-                if (startupOrders != null) {
-                    log.debug("CloudControllerServiceImpl:addServiceGroup:startupOrder:size" + startupOrders.length);
-                } else {
-                    log.debug("CloudControllerServiceImpl:addServiceGroup:startupOrder: is null");
-                }
-            }
-        }
-
         CloudControllerContext.getInstance().addServiceGroup(servicegroup);
         CloudControllerContext.getInstance().persist();
         return true;
@@ -467,9 +429,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
-
-//            iaasProvider.setPayload(payload.toString().getBytes());
-//            iaas.setDynamicPayload(iaasProvider.getPayload());
 
             if (clusterContext.isVolumeRequired()) {
 
