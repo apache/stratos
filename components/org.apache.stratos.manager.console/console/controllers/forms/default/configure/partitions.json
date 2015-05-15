@@ -9,8 +9,7 @@
                     "name": "region",
                     "value": "default"
                 }
-            ],
-            "partitionMax":0
+            ]
         }
     ]
 }
