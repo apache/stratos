@@ -21,6 +21,7 @@ package org.apache.stratos.haproxy.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.util.CommandUtils;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.domain.Member;
@@ -41,11 +42,18 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
     private String scriptsPath;
     private String statsSocketFilePath;
     private TopologyProvider topologyProvider;
+    private String clusterInstanceId;
 
     public HAProxyStatisticsReader(TopologyProvider topologyProvider) {
         this.scriptsPath = HAProxyContext.getInstance().getScriptsPath();
         this.statsSocketFilePath = HAProxyContext.getInstance().getStatsSocketFilePath();
         this.topologyProvider = topologyProvider;
+        this.clusterInstanceId = System.getProperty(StratosConstants.CLUSTER_INSTANCE_ID, StratosConstants.NOT_DEFINED);
+    }
+
+    @Override
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 
     @Override
@@ -95,16 +103,6 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
                 }
             }
         }
-        return 0;
-    }
-
-    @Override
-    public int getServedRequestCount(String clusterId) {
-        return 0;
-    }
-
-    @Override
-    public int getActiveInstancesCount(Cluster cluster) {
         return 0;
     }
 }

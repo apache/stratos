@@ -33,9 +33,7 @@
              <property name="cluster_id" type="String"/>
              <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
-             <property name="active_instances_count" type="double"/>
              <property name="in_flight_request_count" type="double"/>
-             <property name="served_request_count" type="double"/>
          </payloadData>
      </streamDefinition> 
 

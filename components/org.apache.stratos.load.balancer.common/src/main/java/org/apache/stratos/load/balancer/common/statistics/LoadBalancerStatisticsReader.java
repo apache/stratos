@@ -19,28 +19,20 @@
 
 package org.apache.stratos.load.balancer.common.statistics;
 
-import org.apache.stratos.load.balancer.common.domain.Cluster;
-
 /**
  * Load balancer statistics reader interface.
  */
 public interface LoadBalancerStatisticsReader {
 
     /**
+     * Returns the cluster instance id if the load balancer is configured to serve a specific cluster instance.
+     * @return
+     */
+    String getClusterInstanceId();
+
+    /**
      * Returns in-flight request count of sliding window configured.
-     *
      * @param clusterId
      */
     int getInFlightRequestCount(String clusterId);
-
-    int getActiveInstancesCount(Cluster cluster);
-
-
-    /**
-     * Returns the number of requests served since the last time this method was called.
-     *
-     * @param clusterId
-     * @return
-     */
-    int getServedRequestCount(String clusterId);
 }

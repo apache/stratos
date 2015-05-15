@@ -21,9 +21,7 @@ package org.apache.stratos.mock.iaas.statistics.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
-import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisherFactory;
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
+import org.apache.stratos.common.statistics.publisher.*;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.exceptions.NoStatisticsFoundException;
 import org.apache.stratos.mock.iaas.services.impl.MockScalingFactor;
@@ -37,21 +35,25 @@ public class MockHealthStatisticsNotifier implements Runnable {
 
     public static final String MEMORY_CONSUMPTION = "memory_consumption";
     public static final String LOAD_AVERAGE = "load_average";
-    public static final String REQUESTS_IN_FLIGHT = "in_flight_requests";
 
     private final MockInstanceContext mockMemberContext;
-    private final HealthStatisticsPublisher statsPublisher;
+    private final HealthStatisticsPublisher healthStatisticsPublisher;
+    private final InFlightRequestPublisher inFlightRequestPublisher;
 
     public MockHealthStatisticsNotifier(MockInstanceContext mockMemberContext) {
         this.mockMemberContext = mockMemberContext;
-        this.statsPublisher = HealthStatisticsPublisherFactory.createHealthStatisticsPublisher(
+        this.healthStatisticsPublisher = HealthStatisticsPublisherFactory.createHealthStatisticsPublisher(
                 StatisticsPublisherType.WSO2CEP);
-        this.statsPublisher.setEnabled(true);
+        this.healthStatisticsPublisher.setEnabled(true);
+
+        this.inFlightRequestPublisher = InFlightRequestPublisherFactory.createInFlightRequestPublisher(
+                StatisticsPublisherType.WSO2CEP);
+        this.inFlightRequestPublisher.setEnabled(true);
     }
 
     @Override
     public void run() {
-        if (!statsPublisher.isEnabled()) {
+        if (!healthStatisticsPublisher.isEnabled()) {
             if (log.isWarnEnabled()) {
                 log.warn("Statistics publisher is disabled");
             }
@@ -66,7 +68,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
                 log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
                         mockMemberContext.getMemberId(), memoryConsumption));
             }
-            statsPublisher.publish(
+            healthStatisticsPublisher.publish(
                     mockMemberContext.getClusterId(),
                     mockMemberContext.getClusterInstanceId(),
                     mockMemberContext.getNetworkPartitionId(),
@@ -90,7 +92,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
                 log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
                         mockMemberContext.getMemberId(), loadAvereage));
             }
-            statsPublisher.publish(
+            healthStatisticsPublisher.publish(
                     mockMemberContext.getClusterId(),
                     mockMemberContext.getClusterInstanceId(),
                     mockMemberContext.getNetworkPartitionId(),
@@ -107,21 +109,17 @@ public class MockHealthStatisticsNotifier implements Runnable {
         }
 
         try {
-            double requestsInFlight = MockHealthStatistics.getInstance().getStatistics(
+            int requestsInFlight = MockHealthStatistics.getInstance().getStatistics(
                     mockMemberContext.getServiceName(), MockScalingFactor.RequestsInFlight);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Publishing requests in flight: [member-id] %s [value] %f",
                         mockMemberContext.getMemberId(), requestsInFlight));
             }
-            statsPublisher.publish(
+            inFlightRequestPublisher.publish(
                     mockMemberContext.getClusterId(),
                     mockMemberContext.getClusterInstanceId(),
                     mockMemberContext.getNetworkPartitionId(),
-                    mockMemberContext.getMemberId(),
-                    mockMemberContext.getPartitionId(),
-                    REQUESTS_IN_FLIGHT,
-                    requestsInFlight
-            );
+                    requestsInFlight);
         } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {

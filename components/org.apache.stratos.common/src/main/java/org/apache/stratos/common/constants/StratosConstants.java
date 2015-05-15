@@ -205,5 +205,8 @@ public class StratosConstants {
     public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS = "networkPartitionGroups";
     public static final String APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER = "\\|";
     public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER = ",";
+
+    public static final String NOT_DEFINED = "not-defined";
+    public static final String CLUSTER_INSTANCE_ID = "cluster.instance.id";
 }
 

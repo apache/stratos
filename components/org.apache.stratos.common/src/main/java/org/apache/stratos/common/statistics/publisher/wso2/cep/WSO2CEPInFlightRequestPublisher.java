@@ -52,10 +52,9 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher 
 
             // Set payload definition
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
+            payloadData.add(new Attribute("cluster_instance_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
-            payloadData.add(new Attribute("active_instances_count", AttributeType.DOUBLE));
             payloadData.add(new Attribute("in_flight_request_count", AttributeType.DOUBLE));
-            payloadData.add(new Attribute("served_request_count", AttributeType.DOUBLE));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         } catch (Exception e) {
@@ -67,19 +66,18 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher 
      * Publish in-flight request count of a cluster.
      *
      * @param clusterId
+     * @param clusterInstanceId
      * @param networkPartitionId
      * @param inFlightRequestCount
-     * @param servedRequestCount
      */
     @Override
-    public void publish(String clusterId, String networkPartitionId, int activeInstancesCount, int inFlightRequestCount, int servedRequestCount) {
+    public void publish(String clusterId, String clusterInstanceId, String networkPartitionId, int inFlightRequestCount) {
         // Set payload values
         List<Object> payload = new ArrayList<Object>();
         payload.add(clusterId);
+        payload.add(clusterInstanceId);
         payload.add(networkPartitionId);
-        payload.add((double) activeInstancesCount);
         payload.add((double) inFlightRequestCount);
-        payload.add((double) servedRequestCount);
 
         super.publish(payload.toArray());
     }

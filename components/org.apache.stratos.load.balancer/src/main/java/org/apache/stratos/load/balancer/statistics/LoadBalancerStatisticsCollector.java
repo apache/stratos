@@ -21,6 +21,7 @@ package org.apache.stratos.load.balancer.statistics;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 
@@ -37,10 +38,12 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     // Map<ClusterId, Integer>
     private Map<String, Integer> clusterIdRequestCountMap;
     private Map<String, Integer> clusterIdServedRequestCountMap;
+    private String clusterInstanceId;
 
     private LoadBalancerStatisticsCollector() {
         clusterIdRequestCountMap = new ConcurrentHashMap<String, Integer>();
         clusterIdServedRequestCountMap = new ConcurrentHashMap<String, Integer>();
+        clusterInstanceId = System.getProperty(StratosConstants.CLUSTER_INSTANCE_ID, StratosConstants.NOT_DEFINED);
     }
 
     public static LoadBalancerStatisticsCollector getInstance() {
@@ -64,6 +67,11 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
         synchronized (LoadBalancerStatisticsCollector.class) {
             instance = null;
         }
+    }
+
+    @Override
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 
     public int getInFlightRequestCount(String clusterId) {

@@ -76,26 +76,20 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
                     log.debug("Publishing load balancer statistics");
                 }
                 if (inFlightRequestPublisher.isEnabled()) {
-                    int requestCount;
-                    int servedRequestCount;
-                    int activeInstancesCount;
+                    String clusterInstanceId = statsReader.getClusterInstanceId();
                     for (Service service : topologyProvider.getTopology().getServices()) {
                         for (Cluster cluster : service.getClusters()) {
-                            // Publish in-flight request count of load balancer's network partition
-                            requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
-                            servedRequestCount = statsReader.getServedRequestCount(cluster.getClusterId());
-                            if (requestCount == 0) {
-                                servedRequestCount = 0;
+                                // Publish in-flight request count of load balancer's network partition
+                                int requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
+                                inFlightRequestPublisher.publish(cluster.getClusterId(), clusterInstanceId,
+                                        networkPartitionId, requestCount);
+
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("In-flight request count published to cep: [cluster-id] %s " +
+                                                    "[cluster-instance-id] %s [network-partition] %s [value] %d ",
+                                            cluster.getClusterId(), clusterInstanceId, networkPartitionId, requestCount));
+                                }
                             }
-                            activeInstancesCount = statsReader.getActiveInstancesCount(cluster);
-                            inFlightRequestPublisher.publish(cluster.getClusterId(), networkPartitionId, activeInstancesCount, requestCount, servedRequestCount);
-                            log.info(String.format("In-flight request count published to cep: [cluster-id] %s [network-partition] %s [value] %d [active instances] %d [RIF] %d ",
-                                    cluster.getClusterId(), networkPartitionId, servedRequestCount, activeInstancesCount, requestCount));
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [network-partition] %s [value] %d",
-                                        cluster.getClusterId(), networkPartitionId, requestCount));
-                            }
-                        }
                     }
                 } else if (log.isWarnEnabled()) {
                     log.warn("In-flight request count publisher is disabled");

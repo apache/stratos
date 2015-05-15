@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.domain.Port;
 import org.apache.stratos.load.balancer.common.domain.Service;
@@ -46,9 +47,16 @@ public class NginxStatisticsReader implements LoadBalancerStatisticsReader {
     private static final Log log = LogFactory.getLog(NginxStatisticsReader.class);
 
     private TopologyProvider topologyProvider;
+    private String clusterInstanceId;
 
     public NginxStatisticsReader(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
+        this.clusterInstanceId = System.getProperty(StratosConstants.CLUSTER_INSTANCE_ID, StratosConstants.NOT_DEFINED);
+    }
+
+    @Override
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 
     @Override
@@ -111,16 +119,6 @@ public class NginxStatisticsReader implements LoadBalancerStatisticsReader {
         } catch (Exception e) {
             log.error("Could not find in-flight request count: http://127.0.0.1:" + proxyPort + "/nginx_status", e);
         }
-        return 0;
-    }
-
-    @Override
-    public int getServedRequestCount(String clusterId) {
-        return 0;
-    }
-
-    @Override
-    public int getActiveInstancesCount(Cluster cluster) {
         return 0;
     }
 }
