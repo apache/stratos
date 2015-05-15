@@ -62,7 +62,7 @@ public class StratosApiV40Utils {
     private static Log log = LogFactory.getLog(StratosApiV40Utils.class);
 
     static ResponseMessageBean deployCartridge(CartridgeBean cartridgeDefinitionBean, ConfigurationContext ctxt,
-                                           String userName, String tenantDomain) throws RestAPIException {
+                                               String userName, String tenantDomain) throws RestAPIException {
 
         log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.getType());
 
@@ -903,7 +903,7 @@ public class StratosApiV40Utils {
     }
 
     public static ResponseMessageBean removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
-                                                           String subscriptionAlias, String domain) throws RestAPIException {
+                                                               String subscriptionAlias, String domain) throws RestAPIException {
         throw new RestAPIException("Not implemented");
     }
 }

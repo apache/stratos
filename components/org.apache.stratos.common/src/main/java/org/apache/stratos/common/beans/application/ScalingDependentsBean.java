@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Scaling dependents bean.
  */
-@XmlRootElement(name="scalingDependents")
+@XmlRootElement(name = "scalingDependents")
 public class ScalingDependentsBean implements Serializable {
 
     private static final long serialVersionUID = -3495705783732405914L;
@@ -50,7 +50,7 @@ public class ScalingDependentsBean implements Serializable {
     }
 
     public void removeAlias(String alias) {
-        if(aliases.contains(alias)) {
+        if (aliases.contains(alias)) {
             aliases.remove(alias);
         }
     }

@@ -74,6 +74,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Returns true if component startup synchronizer is enabled.
+     *
      * @return
      */
     @Override
@@ -83,6 +84,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Set the status of a component.
+     *
      * @param component
      * @param active
      */
@@ -100,6 +102,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Notify component activation event listeners.
+     *
      * @param component
      */
     private void notifyComponentActivationEventListeners(Component component) {
@@ -118,6 +121,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Returns true if a given component is active.
+     *
      * @param component
      * @return
      */
@@ -131,13 +135,14 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Wait for a component to be activated
-     * @param owner owner component
+     *
+     * @param owner     owner component
      * @param component component to be activated
      */
     @Override
     public void waitForComponentActivation(Component owner, Component component) {
 
-        if(!componentStartUpSynchronizerEnabled) {
+        if (!componentStartUpSynchronizerEnabled) {
             log.debug(String.format("Component activation check is disabled, %s did not wait for %s to be activated",
                     owner, component));
             return;
@@ -169,13 +174,14 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Wait for a web service to be activated.
+     *
      * @param serviceName
      * @throws AxisFault
      */
     @Override
     public void waitForWebServiceActivation(String serviceName) throws AxisFault {
 
-        if(!componentStartUpSynchronizerEnabled) {
+        if (!componentStartUpSynchronizerEnabled) {
             log.debug(String.format("Component activation check is disabled, did not wait for %s to be activated",
                     serviceName));
             return;
@@ -199,6 +205,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
     /**
      * Add component startup event listener.
+     *
      * @param eventListener
      */
     @Override

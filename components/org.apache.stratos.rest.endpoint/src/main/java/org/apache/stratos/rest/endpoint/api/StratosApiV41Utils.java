@@ -100,7 +100,7 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
 
-    private static final Log  log = LogFactory.getLog(StratosApiV41Utils.class);
+    private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
     /**
      * Add New Cartridge
@@ -125,7 +125,7 @@ public class StratosApiV41Utils {
                         "Successfully added cartridge: [cartridge-type] %s ",
                         cartridgeDefinition.getType()));
             }
-        }catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
+        } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
             String msg = "Could not add cartridge";
             log.error(msg, e);
             throw new RestAPIException(msg);
@@ -247,8 +247,8 @@ public class StratosApiV41Utils {
     /**
      * Get List of Cartridges by filter
      *
-     * @param filter filter
-     * @param criteria criteria
+     * @param filter               filter
+     * @param criteria             criteria
      * @param configurationContext Configuration Contex
      * @return List of cartridges matches filter
      * @throws RestAPIException
@@ -274,8 +274,8 @@ public class StratosApiV41Utils {
     /**
      * Get a Cartridge by filter
      *
-     * @param filter filter
-     * @param cartridgeType cartride Type
+     * @param filter               filter
+     * @param cartridgeType        cartride Type
      * @param configurationContext Configuration Context
      * @return Cartridge matching filter
      * @throws RestAPIException
@@ -295,7 +295,7 @@ public class StratosApiV41Utils {
     /**
      * Get the available Load balancer cartridges
      *
-     * @param multiTenant Multi tenant true of false
+     * @param multiTenant          Multi tenant true of false
      * @param configurationContext Configuration Context
      * @return List of available Load balancer cartridges
      * @throws RestAPIException
@@ -420,7 +420,7 @@ public class StratosApiV41Utils {
                     if (multiTenant != null && !multiTenant && cartridgeInfo.getMultiTenant()) {
                         // Need only Single-Tenant cartridges
                         continue;
-                    } else if ( multiTenant != null && multiTenant && !cartridgeInfo.getMultiTenant()) {
+                    } else if (multiTenant != null && multiTenant && !cartridgeInfo.getMultiTenant()) {
                         // Need only Multi-Tenant cartridges
                         continue;
                     }
@@ -589,7 +589,7 @@ public class StratosApiV41Utils {
      * Search cartridge Display name/Description for pattern
      *
      * @param cartridgeInfo cartridgeInfo
-     * @param pattern Pattern
+     * @param pattern       Pattern
      * @return Pattern match status
      */
     private static boolean cartridgeMatches(Cartridge cartridgeInfo, Pattern pattern) {
@@ -846,6 +846,7 @@ public class StratosApiV41Utils {
 
     /**
      * Updates an Autoscaling Policy
+     *
      * @param autoscalePolicyBean autoscalePolicyBean
      * @throws RestAPIException
      */
@@ -894,6 +895,7 @@ public class StratosApiV41Utils {
 
     /**
      * Get list of Autoscaling Policies
+     *
      * @return Array of AutoscalingPolicies
      * @throws RestAPIException
      */
@@ -1225,6 +1227,7 @@ public class StratosApiV41Utils {
 
     /**
      * Get a list of GroupBeans
+     *
      * @return array of Group Beans
      * @throws RestAPIException
      */
@@ -1263,21 +1266,21 @@ public class StratosApiV41Utils {
      */
     public static void removeServiceGroup(String name) throws RestAPIException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
-            if (log.isDebugEnabled()) {
-                log.debug("Removing cartridge group: [name] " + name);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("Removing cartridge group: [name] " + name);
+        }
 
-            AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
-            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+        AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+        StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
-            // Check whether cartridge group exists
+        // Check whether cartridge group exists
         try {
             if (asServiceClient.getServiceGroup(name) == null) {
                 String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
                 log.error(message);
                 throw new RestAPIException(message);
             }
-        // Validate whether cartridge group can be removed
+            // Validate whether cartridge group can be removed
             if (!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
                 String message = "Cannot remove cartridge group: [group-name] " + name +
                         " since it is used in another cartridge group or an application";
@@ -1307,8 +1310,9 @@ public class StratosApiV41Utils {
 
     /**
      * Find Cartridges In ServiceGroup
+     *
      * @param serviceGroup serviceGroup
-     * @param cartridges List of cartridges
+     * @param cartridges   List of cartridges
      */
     private static void findCartridgesInServiceGroup(ServiceGroup serviceGroup, List<String> cartridges) {
 
@@ -1318,7 +1322,7 @@ public class StratosApiV41Utils {
 
         if (serviceGroup.getCartridges() != null) {
             for (String cartridge : serviceGroup.getCartridges()) {
-                if (cartridge !=null && cartridges.contains(cartridge)) {
+                if (cartridge != null && cartridges.contains(cartridge)) {
                     cartridges.add(cartridge);
                 }
             }
@@ -1334,7 +1338,7 @@ public class StratosApiV41Utils {
     /**
      * Find Cartrides in GroupBean
      *
-     * @param groupBean groupBean
+     * @param groupBean  groupBean
      * @param cartridges List of cartridges
      */
     private static void findCartridgesInGroupBean(CartridgeGroupBean groupBean, List<String> cartridges) {
@@ -1482,8 +1486,9 @@ public class StratosApiV41Utils {
 
     /**
      * Find Cartridges And Groups In Application
+     *
      * @param applicationBean ApplicationBean
-     * @param cartridges List<String> cartridges
+     * @param cartridges      List<String> cartridges
      * @param cartridgeGroups List <String> cartridgeGroups
      */
     private static void findCartridgesAndGroupsInApplication(
@@ -1508,9 +1513,10 @@ public class StratosApiV41Utils {
 
     /**
      * Find Cartridges And Groups In CartridgeGroup
+     *
      * @param groupReferenceBean GroupReferenceBean
-     * @param cartridges List <String>
-     * @param cartridgeGroups List <String>
+     * @param cartridges         List <String>
+     * @param cartridgeGroups    List <String>
      */
     private static void findCartridgesAndGroupsInCartridgeGroup(
             CartridgeGroupReferenceBean groupReferenceBean, List<String> cartridges, List<String> cartridgeGroups) {
@@ -1535,8 +1541,9 @@ public class StratosApiV41Utils {
 
     /**
      * Find Cartridge Names In Cartridges
+     *
      * @param cartridgeReferenceBeans List of CartridgeReferenceBean
-     * @param cartridges List <String>
+     * @param cartridges              List <String>
      */
     private static void findCartridgeNamesInCartridges(
             List<CartridgeReferenceBean> cartridgeReferenceBeans, List<String> cartridges) {
@@ -1818,7 +1825,7 @@ public class StratosApiV41Utils {
      * Undeploy an Application
      *
      * @param applicationId applicationId
-     * @param force parameter to set force undeployment
+     * @param force         parameter to set force undeployment
      * @throws RestAPIException
      */
     public static void undeployApplication(String applicationId, boolean force) throws RestAPIException {
@@ -1876,7 +1883,7 @@ public class StratosApiV41Utils {
      * Add GroupsInstances To ApplicationInstanceBean
      *
      * @param applicationInstanceBean ApplicationInstanceBean
-     * @param application Application
+     * @param application             Application
      */
     private static void addGroupsInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,
                                                                     Application application) {
@@ -1898,7 +1905,7 @@ public class StratosApiV41Utils {
      * Add ClustersInstances To ApplicationInstanceBean
      *
      * @param applicationInstanceBean ApplicationInstanceBean
-     * @param application Application
+     * @param application             Application
      */
     private static void addClustersInstancesToApplicationInstanceBean(
             ApplicationInstanceBean applicationInstanceBean, Application application) {
@@ -1925,8 +1932,9 @@ public class StratosApiV41Utils {
 
     /**
      * Add ClustersInstances To GroupInstanceBean
+     *
      * @param groupInstanceBean GroupInstanceBean
-     * @param group Group
+     * @param group             Group
      */
     private static void addClustersInstancesToGroupInstanceBean(
             GroupInstanceBean groupInstanceBean,
@@ -1954,7 +1962,7 @@ public class StratosApiV41Utils {
     /**
      * Set Sub Group Instances
      *
-     * @param group Group
+     * @param group             Group
      * @param groupInstanceBean GroupInstanceBean
      */
     private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
@@ -2102,6 +2110,7 @@ public class StratosApiV41Utils {
 
     /**
      * Get a Kubernetes Cluster
+     *
      * @param kubernetesClusterId Cluster ID
      * @return KubernetesClusterBean
      * @throws RestAPIException
@@ -2181,7 +2190,7 @@ public class StratosApiV41Utils {
     /**
      * Get Kubernetes Hosts
      *
-     * @param kubernetesClusterId  kubernetesClusterId
+     * @param kubernetesClusterId kubernetesClusterId
      * @return List of KubernetesHostBeans
      * @throws RestAPIException
      */
@@ -2271,7 +2280,7 @@ public class StratosApiV41Utils {
     /**
      * Add Application Signup
      *
-     * @param applicationId applicationId
+     * @param applicationId         applicationId
      * @param applicationSignUpBean ApplicationSignUpBean
      * @throws RestAPIException
      */
@@ -2461,7 +2470,7 @@ public class StratosApiV41Utils {
     /**
      * Add Application Domain Mappings
      *
-     * @param applicationId  application Id
+     * @param applicationId      application Id
      * @param domainMappingsBean ApplicationDomainMappingsBean
      * @throws RestAPIException
      */
@@ -2504,7 +2513,7 @@ public class StratosApiV41Utils {
     /**
      * Find Cluster Data Holder
      *
-     * @param applicationId applicationId
+     * @param applicationId  applicationId
      * @param cartridgeAlias cartridge Alias
      * @return ClusterDataHolder
      */
@@ -2526,7 +2535,7 @@ public class StratosApiV41Utils {
      * Remove Application Domain Mappings
      *
      * @param applicationId applicationId
-     * @param domainName the domain name
+     * @param domainName    the domain name
      * @throws RestAPIException
      */
     public static void removeApplicationDomainMapping(String applicationId, String domainName)
@@ -2857,14 +2866,14 @@ public class StratosApiV41Utils {
         UserRegistry userRegistry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext().
                 getRegistry(RegistryType.USER_GOVERNANCE);
         if (userRegistry == null) {
-            String msg="Security alert! User registry is null. A user is trying create a tenant "
+            String msg = "Security alert! User registry is null. A user is trying create a tenant "
                     + " without an authenticated session.";
             log.error(msg);
             throw new RestAPIException("Could not add tenant: Session is not authenticated");
         }
 
         if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
-            String msg="Security alert! None super tenant trying to create a tenant.";
+            String msg = "Security alert! None super tenant trying to create a tenant.";
             log.error(msg);
             throw new RestAPIException(msg);
         }
@@ -2921,14 +2930,13 @@ public class StratosApiV41Utils {
     }
 
     /**
-     *
      * @param tenantInfoBean TenantInfoBean
      * @throws RestAPIException
      * @throws InvalidEmailException
      * @throws RegistryException
      */
     public static void updateExistingTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws
-            RestAPIException, RegistryException,InvalidEmailException {
+            RestAPIException, RegistryException, InvalidEmailException {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         UserStoreManager userStoreManager;
@@ -3005,7 +3013,7 @@ public class StratosApiV41Utils {
             userStoreManager = userRealm.getUserStoreManager();
         } catch (UserStoreException e) {
             String msg = "Error in getting the user store manager for tenant, tenant domain: " +
-                    tenantDomain + "."+e.getLocalizedMessage();
+                    tenantDomain + "." + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
@@ -3032,7 +3040,7 @@ public class StratosApiV41Utils {
                 tenantInfoBean.setAdminPassword("");
             }
         } catch (UserStoreException e) {
-            String msg = "Error in getting the user store manager is read only " +e.getLocalizedMessage();
+            String msg = "Error in getting the user store manager is read only " + e.getLocalizedMessage();
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
@@ -3073,7 +3081,7 @@ public class StratosApiV41Utils {
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant id for the tenant domain: " +
                     tenantDomain + ".";
-            log.error(msg,e);
+            log.error(msg, e);
             throw new Exception(msg, e);
         }
         Tenant tenant;
@@ -3081,7 +3089,7 @@ public class StratosApiV41Utils {
             tenant = (Tenant) tenantManager.getTenant(tenantId);
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant from the tenant manager.";
-            log.error(msg,e);
+            log.error(msg, e);
             throw new Exception(msg, e);
         }
 
@@ -3090,7 +3098,7 @@ public class StratosApiV41Utils {
             bean = ObjectConverter
                     .convertCarbonTenantInfoBeanToTenantInfoBean(TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant));
         } catch (Exception e) {
-            log.error(String.format("Couldn't find tenant for provided tenant domain. [Tenant Domain] %s", tenantDomain),e);
+            log.error(String.format("Couldn't find tenant for provided tenant domain. [Tenant Domain] %s", tenantDomain), e);
             return null;
         }
 
@@ -3170,7 +3178,7 @@ public class StratosApiV41Utils {
         int tenantId;
         try {
             tenantId = tenantManager.getTenantId(tenantDomain);
-            if(tenantId != -1) {
+            if (tenantId != -1) {
                 try {
                     TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
 
@@ -3222,9 +3230,9 @@ public class StratosApiV41Utils {
         try {
             TenantMgtUtil.deactivateTenant(tenantDomain, tenantManager, tenantId);
         } catch (Exception e) {
-            String msg="Error in deactivating Tenant :"+tenantDomain;
-            log.error(msg,e);
-            throw new RestAPIException(msg,e);
+            String msg = "Error in deactivating Tenant :" + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
         }
 
         //Notify tenant deactivation all listeners
@@ -3247,12 +3255,12 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void addUser(UserInfoBean userInfoBean) throws RestAPIException {
-       try {
+        try {
             StratosUserManagerUtils.addUser(getTenantUserStoreManager(), userInfoBean);
         } catch (UserManagerException e) {
-           String msg = "Error in adding User";
-           log.error(msg, e);
-           throw new RestAPIException(msg, e);
+            String msg = "Error in adding User";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
         }
 
     }
@@ -3293,7 +3301,7 @@ public class StratosApiV41Utils {
         try {
             StratosUserManagerUtils.removeUser(getTenantUserStoreManager(), userName);
         } catch (UserManagerException e) {
-            String msg = "Error in removing user :"+userName;
+            String msg = "Error in removing user :" + userName;
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
@@ -3312,7 +3320,7 @@ public class StratosApiV41Utils {
         } catch (UserManagerException e) {
             String msg = "Error in updating user";
             log.error(msg, e);
-            throw new RestAPIException(msg,e);
+            throw new RestAPIException(msg, e);
         }
 
     }
@@ -3320,7 +3328,7 @@ public class StratosApiV41Utils {
     /**
      * Get List of Users
      *
-     * @return  List of Users
+     * @return List of Users
      * @throws RestAPIException
      */
     public static List<UserInfoBean> getUsers() throws RestAPIException {
@@ -3330,7 +3338,7 @@ public class StratosApiV41Utils {
         } catch (UserManagerException e) {
             String msg = "Error in retrieving users";
             log.error(msg, e);
-            throw new RestAPIException(msg,e);
+            throw new RestAPIException(msg, e);
         }
         return userList;
     }
@@ -3387,7 +3395,7 @@ public class StratosApiV41Utils {
     /**
      * This is a wrapper method to invoke validateGroupDuplicationInGroupDefinition with a new arraylist of string
      *
-     * @param groupBean     - cartridge group definition
+     * @param groupBean - cartridge group definition
      * @throws InvalidCartridgeGroupDefinitionException
      */
     private static void validateGroupDuplicationInGroupDefinition(CartridgeGroupBean groupBean)
@@ -3395,13 +3403,13 @@ public class StratosApiV41Utils {
         validateGroupDuplicationInGroupDefinition(groupBean, new ArrayList<String>());
     }
 
-        /**
-         * This is to validate the group duplication in the group definition recursively for group within groups
-         *
-         * @param groupBean    - cartridge group definition
-         * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
-         * @throws InvalidCartridgeGroupDefinitionException - throws when the group definition is invalid
-         */
+    /**
+     * This is to validate the group duplication in the group definition recursively for group within groups
+     *
+     * @param groupBean    - cartridge group definition
+     * @param parentGroups - list of string which holds the parent group names (all parents in the hierarchy)
+     * @throws InvalidCartridgeGroupDefinitionException - throws when the group definition is invalid
+     */
     private static void validateGroupDuplicationInGroupDefinition(CartridgeGroupBean groupBean, List<String> parentGroups)
             throws InvalidCartridgeGroupDefinitionException {
         if (groupBean == null) {

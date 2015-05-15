@@ -842,7 +842,7 @@ public class StratosApiV41 extends AbstractApi {
             if (applicationPolicyBean == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                         ResponseMessageBean.ERROR, "Application policy not found: [application-policy] " +
-                applicationPolicyId)).build();
+                        applicationPolicyId)).build();
             }
             return Response.ok(applicationPolicyBean).build();
         } catch (ApplicationPolicyIdIsEmptyException e) {
@@ -1000,7 +1000,7 @@ public class StratosApiV41 extends AbstractApi {
             if (applicationSignUpBean == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                         ResponseMessageBean.ERROR, "No application signups found for application: [application]" +
-                applicationId)).build();
+                        applicationId)).build();
             }
             return Response.ok(applicationSignUpBean).build();
         } catch (ApplicationSignUpRestAPIException e) {
@@ -1065,8 +1065,8 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Removes a domain mapping for an application.
      *
-     * @param applicationId       the application id
-     * @param domainName the domain name
+     * @param applicationId the application id
+     * @param domainName    the domain name
      * @return 200
      * @throws RestAPIException the rest api exception
      */
@@ -1109,7 +1109,7 @@ public class StratosApiV41 extends AbstractApi {
             if (domainMappingsBeanList == null || domainMappingsBeanList.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                         ResponseMessageBean.ERROR, "No domain mappings found for the application: [application-id] " +
-                applicationId)).build();
+                        applicationId)).build();
             }
         } catch (StratosManagerServiceDomainMappingExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
@@ -1208,7 +1208,7 @@ public class StratosApiV41 extends AbstractApi {
         if (!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
                     String.format("Could not delete since application is not in CREATED state :" +
-                    " [application] %s [current-status] %S", applicationId, applicationDefinition.getStatus()))).build();
+                            " [application] %s [current-status] %S", applicationId, applicationDefinition.getStatus()))).build();
         }
 
         StratosApiV41Utils.removeApplication(applicationId);

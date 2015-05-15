@@ -50,7 +50,7 @@ public class StartupOrderBean implements Serializable {
     }
 
     public void removeAlias(String alias) {
-        if(aliases.contains(alias)) {
+        if (aliases.contains(alias)) {
             aliases.remove(alias);
         }
     }

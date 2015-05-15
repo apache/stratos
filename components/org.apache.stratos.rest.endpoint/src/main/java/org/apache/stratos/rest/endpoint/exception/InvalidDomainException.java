@@ -19,7 +19,7 @@
 
 package org.apache.stratos.rest.endpoint.exception;
 
-public class InvalidDomainException extends RestAPIException{
+public class InvalidDomainException extends RestAPIException {
     public InvalidDomainException(String msg) {
         super(msg);
     }

@@ -86,7 +86,7 @@ public class StratosAuthorizingHandler implements RequestHandler {
                 return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).
                         entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
                                 "The user does not have required permissions to " +
-                                "perform this operation")).build();
+                                        "perform this operation")).build();
             }
             return null;
 

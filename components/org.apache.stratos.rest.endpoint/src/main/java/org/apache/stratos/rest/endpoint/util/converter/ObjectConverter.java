@@ -475,7 +475,7 @@ public class ObjectConverter {
 
 
     public static org.apache.stratos.cloud.controller.stub.domain.NetworkPartition
-        convertNetworkPartitionToCCStubNetworkPartition(NetworkPartitionBean networkPartitionBean) {
+    convertNetworkPartitionToCCStubNetworkPartition(NetworkPartitionBean networkPartitionBean) {
 
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition
                 = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
@@ -1099,7 +1099,7 @@ public class ObjectConverter {
 
     private static List<StartupOrderBean> convertStringArrayToStartupOrderBeans(String[] startupOrders) {
         List<StartupOrderBean> startupOrderBeans = new ArrayList<StartupOrderBean>();
-        if(startupOrders != null) {
+        if (startupOrders != null) {
             for (String aliasArrayList : startupOrders) {
                 if (StringUtils.isNotBlank(aliasArrayList)) {
                     String[] aliasArray = aliasArrayList.split(",");
@@ -1118,7 +1118,7 @@ public class ObjectConverter {
 
     private static List<ScalingDependentsBean> convertStringArrayToDependentScalingBeans(String[] scalingDependents) {
         List<ScalingDependentsBean> scalingDependentBeans = new ArrayList<ScalingDependentsBean>();
-        if(scalingDependents != null) {
+        if (scalingDependents != null) {
             for (String aliasArrayList : scalingDependents) {
                 if (StringUtils.isNotBlank(aliasArrayList)) {
                     String[] aliasArray = aliasArrayList.split(",");
@@ -1353,7 +1353,7 @@ public class ObjectConverter {
 
     private static List<String> convertScalingDependentsBeansToStringList(List<ScalingDependentsBean> scalingDependentsBeans) {
         List<String> scalingDependents = new ArrayList<String>();
-        if(scalingDependentsBeans != null) {
+        if (scalingDependentsBeans != null) {
             for (ScalingDependentsBean scalingDependentsBean : scalingDependentsBeans) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String alias : scalingDependentsBean.getAliases()) {
@@ -1590,7 +1590,7 @@ public class ObjectConverter {
 
     private static List<String> convertStartupOrdersBeansToStringList(List<StartupOrderBean> startupOrderBeans) {
         List<String> startupOrders = new ArrayList<String>();
-        if(startupOrderBeans != null) {
+        if (startupOrderBeans != null) {
             for (StartupOrderBean startupOrderBean : startupOrderBeans) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String alias : startupOrderBean.getAliases()) {
