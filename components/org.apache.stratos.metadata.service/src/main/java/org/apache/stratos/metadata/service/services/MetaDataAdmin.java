@@ -20,7 +20,6 @@ package org.apache.stratos.metadata.service.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.metadata.service.annotation.AuthorizationAction;
 import org.apache.stratos.metadata.service.definition.Property;
 import org.apache.stratos.metadata.service.exception.RestAPIException;
 import org.apache.stratos.metadata.service.registry.CarbonRegistry;
@@ -52,7 +51,6 @@ public class MetaDataAdmin {
     @Path("/applications/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationProperties(@PathParam("application_id") String applicationId)
             throws RestAPIException {
 
@@ -84,7 +82,6 @@ public class MetaDataAdmin {
     @Path("/applications/{application_id}/clusters/{cluster_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId) throws RestAPIException {
 
         List<Property> properties;
@@ -115,7 +112,6 @@ public class MetaDataAdmin {
     @Path("/applications/{application_id}/properties/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationProperty(@PathParam("application_id") String applicationId,
                                            @PathParam("property_name") String propertyName)
             throws RestAPIException {
@@ -153,7 +149,6 @@ public class MetaDataAdmin {
     @Path("/applications/{application_id}/cluster/{cluster_id}/properties/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName) throws RestAPIException {
         List<Property> properties;
 
@@ -188,7 +183,6 @@ public class MetaDataAdmin {
     @Path("applications/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addPropertyToApplication(@PathParam("application_id") String applicationId,
                                                Property property)
             throws RestAPIException {
@@ -208,7 +202,6 @@ public class MetaDataAdmin {
     @Path("applications/{application_id}/clusters/{cluster_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addPropertyToCluster(@PathParam("application_id") String applicationId,
                                          @PathParam("cluster_id") String clusterId, Property property)
             throws RestAPIException {
@@ -229,7 +222,6 @@ public class MetaDataAdmin {
     @Path("applications/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response deleteApplicationProperties(@PathParam("application_id") String applicationId)
             throws RestAPIException {
 
@@ -253,7 +245,6 @@ public class MetaDataAdmin {
     @Path("applications/{application_id}/properties/{property_name}/value/{value}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response deleteApplicationPropertValue(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName,
                                                   @PathParam("value") String propertyValue                      )
             throws RestAPIException {
