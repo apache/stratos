@@ -1,7 +1,7 @@
 {
     "admin":"AdminUserName",
-    "firstname":"FirstName",
-    "lastname":"LastName",
+    "firstName":"FirstName",
+    "lastName":"LastName",
     "adminPassword":"admin123",
     "tenantDomain":"apache.org",
     "email":"user@apache.org"

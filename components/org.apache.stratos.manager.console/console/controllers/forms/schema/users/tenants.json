@@ -8,18 +8,18 @@
         "disable_properties": true,
         "disable_collapse": true
     },
-    "required":["admin","adminPassword","email", "firstname", "lastname", "tenantDomain"],
+    "required":["admin","adminPassword","email", "firstName", "lastName", "tenantDomain"],
     "properties":{
-        "firstname": {
+        "firstName": {
             "type":"string",
-            "id": "root/firstname",
+            "id": "root/firstName",
             "default": "Frank",
             "title": "First Name",
             "name": "First Name"
         },
-        "lastname": {
+        "lastName": {
             "type":"string",
-            "id": "root/lastname",
+            "id": "root/lastName",
             "default": "Myers",
             "title": "Last Name",
             "name": "Last Name"
