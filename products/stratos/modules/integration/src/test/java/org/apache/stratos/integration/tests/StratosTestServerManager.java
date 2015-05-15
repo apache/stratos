@@ -40,7 +40,7 @@ import java.net.URL;
 import static org.testng.Assert.assertNotNull;
 
 /**
- * Prepare activemq, stratos server for tests, enables mock iaas, starts servers and stop them after the tests.
+ * Prepare activemq, Stratos server for tests, enables mock iaas, starts servers and stop them after the tests.
  */
 public class StratosTestServerManager extends TestServerManager {
 
@@ -85,7 +85,7 @@ public class StratosTestServerManager extends TestServerManager {
         }
 
         try {
-            log.info("Setting up stratos server...");
+            log.info("Setting up Stratos server...");
             long time3 = System.currentTimeMillis();
             String carbonZip = getCarbonZip();
             if (carbonZip == null) {
@@ -100,7 +100,7 @@ public class StratosTestServerManager extends TestServerManager {
                 this.copyArtifacts(carbonHome);
                 log.info("Stratos server setup completed");
 
-                log.info("Starting stratos server...");
+                log.info("Starting Stratos server...");
                 this.serverUtils.startServerUsingCarbonHome(carbonHome, carbonHome, "stratos", PORT_OFFSET, null);
                 FrameworkSettings.init();
 
@@ -114,7 +114,7 @@ public class StratosTestServerManager extends TestServerManager {
                 return carbonHome;
             }
         } catch (Exception e) {
-            throw new RuntimeException("Could not stratos server", e);
+            throw new RuntimeException("Could not start Stratos server", e);
         }
     }
 
