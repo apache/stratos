@@ -76,6 +76,10 @@
                 <exclude>**/.settings</exclude>
                 <exclude>**/synapse-samples*</exclude>
 		<exclude>**/plugins/*.ui*</exclude>
+		<exclude>**/plugins/infinispan-core_5.1.2.wso2v1.jar</exclude>
+		<exclude>**/plugins/jboss-logging_3.1.0.wso2v1.jar</exclude>
+ 		<exclude>**/plugins/jgroups_3.0.6.wso2v1.jar</exclude>
+		<exclude>**/plugins/marshalling_1.3.6.wso2v1.jar</exclude>
             </excludes>
         </fileSet>
         <!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
@@ -106,7 +110,6 @@
                 <include>*.xsd</include>
             </includes>
         </fileSet>
-
 
         <!-- Kernel Patches-->
         <fileSet>
