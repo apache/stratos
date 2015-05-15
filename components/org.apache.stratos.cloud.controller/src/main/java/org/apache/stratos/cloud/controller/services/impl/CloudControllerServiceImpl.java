@@ -771,10 +771,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredClusterException(msg);
         }
 
-        // TODO: Fix kubernetes config
-//        if (StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
-//            unregisterDockerService(clusterId_);
-//        } else {
         Runnable terminateInTimeout = new Runnable() {
             @Override
             public void run() {
