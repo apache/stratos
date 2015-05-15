@@ -326,52 +326,6 @@ public class TopologyBuilder {
     }
 
 
-    public static void handleClusterCreated(Registrant registrant) {
-        /*Topology topology = TopologyManager.getTopology();
-        Service service;
-        try {
-            TopologyManager.acquireWriteLock();
-            String cartridgeType = registrant.getCartridgeType();
-            service = topology.getService(cartridgeType);
-            Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-
-            Cluster cluster;
-            String clusterId = registrant.getClusterId();
-            if (service.clusterExists(clusterId)) {
-                // update the cluster
-                cluster = service.getCluster(clusterId);
-                cluster.addHostName(registrant.getHostName());
-                if (service.getServiceType() == ServiceType.MultiTenant) {
-                    cluster.setTenantRange(registrant.getTenantRange());
-                }
-                if (service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
-                    props.setProperty(Constants.IS_PRIMARY, service.getProperties().getProperty(Constants.IS_PRIMARY));
-                }
-                cluster.setProperties(props);
-                cluster.setLbCluster(isLb);
-            } else {
-                cluster = new Cluster(cartridgeType, clusterId,
-                        registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName(), null);
-                cluster.addHostName(registrant.getHostName());
-                if (service.getServiceType() == ServiceType.MultiTenant) {
-                    cluster.setTenantRange(registrant.getTenantRange());
-                }
-                if (service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
-                    props.setProperty(Constants.IS_PRIMARY, service.getProperties().getProperty(Constants.IS_PRIMARY));
-                }
-                cluster.setProperties(props);
-                cluster.setLbCluster(isLb);
-                //cluster.setStatus(Status.Created);
-                service.addCluster(cluster);
-            }
-            TopologyManager.updateTopology(topology);
-            TopologyEventPublisher.sendClusterCreatedEvent(cartridgeType, clusterId, cluster);
-
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }*/
-    }
-
     public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(ctxt.getCartridgeType());

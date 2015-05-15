@@ -231,11 +231,6 @@ public class IaasProvider implements Serializable {
         return iaas;
     }
 
-    public void reset() {
-//    	nodeIds = new ArrayList<String>();
-//    	nodes = new HashMap<String, NodeMetadata>();
-//    	toBeRemovedNodeIds = new ArrayList<String>();
-    }
 
     public byte[] getPayload() {
         return payload;

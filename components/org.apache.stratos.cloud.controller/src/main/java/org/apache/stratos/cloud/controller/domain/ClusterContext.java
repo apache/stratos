@@ -40,7 +40,8 @@ public class ClusterContext implements Serializable {
     private final boolean isLbCluster;
     private boolean isVolumeRequired;
     private Volume[] volumes;
-    // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
+    // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances
+    // on an unregistration.
     private long timeoutInMillis;
     private Properties properties;
     private List<KubernetesService> kubernetesServices;

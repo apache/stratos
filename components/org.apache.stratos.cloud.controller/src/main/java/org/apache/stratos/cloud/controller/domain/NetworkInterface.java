@@ -20,11 +20,11 @@ package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
 
+/**
+ * The model class for NetworkInterface definition.
+ */
 public class NetworkInterface implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 3979879787250775211L;
     private String networkUuid;
     private String fixedIp;
