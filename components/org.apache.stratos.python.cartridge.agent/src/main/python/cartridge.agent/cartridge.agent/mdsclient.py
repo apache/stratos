@@ -29,8 +29,8 @@ mds_url = config.read_property(constants.METADATA_SERVICE_URL)
 alias = config.read_property(constants.CARTRIDGE_ALIAS)
 app_id = config.read_property(constants.APPLICATION_ID)
 token = config.read_property(constants.TOKEN)
-alias_resource_url = mds_url + "/metadata/api/application/" + app_id + "/cluster/" + alias + "/properties"
-app_resource_url = mds_url + "/metadata/api/application/" + app_id + "/properties"
+alias_resource_url = mds_url + "/metadata/api/applications/" + app_id + "/clusters/" + alias + "/properties"
+app_resource_url = mds_url + "/metadata/api/applications/" + app_id + "/properties"
 
 
 def put(put_req, app=False):
@@ -100,15 +100,15 @@ def update(data):
 
 
 def delete_property_value(property_name, value):
-    log.info("*********** removing property %s value %s " % (property_name, value))
+    log.info("Removing property %s value %s " % (property_name, value))
     opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(mds_url + "/metadata/api/application/" + app_id + "/property/" + property_name + "/value/" + value)
+    request = urllib2.Request(mds_url + "/metadata/api/applications/" + app_id + "/properties/" + property_name + "/value/" + value)
     request.add_header("Authorization", "Bearer %s" % token)
     request.add_header('Content-Type', 'application/json')
     request.get_method = lambda: 'DELETE'
     url = opener.open(request)
 
-    log.info("*********** property value removed %s " % (url))
+    log.info("Property value removed %s " % (url))
 
 
 class MDSPutRequest:
