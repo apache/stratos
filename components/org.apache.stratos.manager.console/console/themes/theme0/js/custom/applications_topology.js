@@ -273,13 +273,13 @@ function update(source) {
         .attr("xlink:href",
         function (d) {
             if (d.type == 'clusters') {
-                return "../../../themes/theme0/images/topology/cluster.png";
+                return "../../themes/theme0/images/topology/cluster.png";
             } else if (d.type == 'groups') {
-                return "../../../themes/theme0/images/topology/group.png";
+                return "../../themes/theme0/images/topology/group.png";
             } else if (d.type == 'members') {
-                return "../../../themes/theme0/images/topology/member.png";
+                return "../../themes/theme0/images/topology/member.png";
             } else {
-                return "../../../themes/theme0/images/topology/application.png";
+                return "../../themes/theme0/images/topology/application.png";
             }
         })
         .attr("class", "created")
