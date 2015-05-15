@@ -497,8 +497,9 @@ public class ObjectConverter {
         for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
             NetworkPartitionReferenceBean networkPartitionReferenceBean = new NetworkPartitionReferenceBean();
             networkPartitionReferenceBean.setId(networkPartitionRef.getId());
+            networkPartitionReferenceBean.setPartitionAlgo(networkPartitionRef.getPartitionAlgo());
             networkPartitionReferenceBean.setPartitions(
-                    convertASStubPartitionsToPartitions(networkPartitionRef.getPartitions()));
+                    convertASStubPartitionsToPartitions(networkPartitionRef.getPartitionRefs()));
             networkPartitionBeans.add(networkPartitionReferenceBean);
         }
 
@@ -663,6 +664,7 @@ public class ObjectConverter {
         for (PartitionRef partition : partitions) {
             PartitionReferenceBean partitionBean = new PartitionReferenceBean();
             partitionBean.setId(partition.getId());
+            partitionBean.setPartitionMax(partition.getPartitionMax());
             partitionBeans.add(partitionBean);
         }
         return partitionBeans;
@@ -1836,7 +1838,8 @@ public class ObjectConverter {
             NetworkPartitionReferenceBean networkPartitionReferenceBean = new NetworkPartitionReferenceBean();
             networkPartitionReferenceBean.setId(networkPartition.getId());
             networkPartitionReferenceBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
-            networkPartitionReferenceBean.setPartitions(convertASStubPartitionRefsToPartitionReferences(networkPartition.getPartitions()));
+            networkPartitionReferenceBean.setPartitions(
+                    convertASStubPartitionRefsToPartitionReferences(networkPartition.getPartitionRefs()));
             networkPartitionBeans.add(networkPartitionReferenceBean);
         }
 
@@ -1892,7 +1895,7 @@ public class ObjectConverter {
             NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
             networkPartitionRef.setId(networkPartitionReferenceBean.getId());
             networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
-            networkPartitionRef.setPartitions(convertToASStubPartitions(
+            networkPartitionRef.setPartitionRefs(convertToASStubPartitions(
                     networkPartitionReferenceBean.getPartitions()));
             networkPartitionRefList.add(networkPartitionRef);
         }

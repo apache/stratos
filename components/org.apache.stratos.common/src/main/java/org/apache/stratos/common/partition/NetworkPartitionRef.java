@@ -33,7 +33,7 @@ public class NetworkPartitionRef implements Serializable {
     private PartitionRef[] partitionRefs;
     private String partitionAlgo;
 
-    public void setPartitions(PartitionRef[] partitionRefs) {
+    public void setPartitionRefs(PartitionRef[] partitionRefs) {
         if (partitionRefs == null) {
             this.partitionRefs = partitionRefs;
         } else {
@@ -65,7 +65,7 @@ public class NetworkPartitionRef implements Serializable {
         this.id = id;
     }
 
-    public PartitionRef getPartition(String partitionId) {
+    public PartitionRef getPartitionRef(String partitionId) {
         for (PartitionRef partitionRef : partitionRefs) {
             if (partitionRef.getId().equals(partitionId)) {
                 return partitionRef;

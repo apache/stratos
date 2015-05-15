@@ -1104,7 +1104,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             for (ClusterLevelPartitionContext clusterLevelPartitionContext : clusterInstanceContext.getPartitionCtxts()) {
 
-                if (null == networkPartition.getPartition(clusterLevelPartitionContext.getPartitionId())) {
+                if (null == networkPartition.getPartitionRef(clusterLevelPartitionContext.getPartitionId())) {
 
                     //It has found that this partition context which is in cluster monitor is removed in updated policy
                     clusterLevelPartitionContext.setIsObsoletePartition(true);

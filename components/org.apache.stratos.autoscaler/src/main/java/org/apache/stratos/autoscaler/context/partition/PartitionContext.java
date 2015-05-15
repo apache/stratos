@@ -97,7 +97,7 @@ public abstract class PartitionContext implements Serializable {
     public int getMax() {
         return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId)
                 .getNetworkPartitionByNetworkPartitionId(networkPartitionId)
-                .getPartition(partitionId).getPartitionMax();
+                .getPartitionRef(partitionId).getPartitionMax();
     }
 
     public void setIsObsoletePartition(boolean isObsoletePartition) {
