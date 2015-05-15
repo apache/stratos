@@ -37,6 +37,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
 
     public static final String MEMORY_CONSUMPTION = "memory_consumption";
     public static final String LOAD_AVERAGE = "load_average";
+    public static final String REQUESTS_IN_FLIGHT = "in_flight_requests";
 
     private final MockInstanceContext mockMemberContext;
     private final HealthStatisticsPublisher statsPublisher;
@@ -77,7 +78,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
         } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Could not publish health statistics", e);
+                log.error("Could not publish health statistic: memory consumption", e);
             }
         }
 
@@ -101,7 +102,30 @@ public class MockHealthStatisticsNotifier implements Runnable {
         } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Could not publish health statistics", e);
+                log.error("Could not publish health statistic: load average", e);
+            }
+        }
+
+        try {
+            double requestsInFlight = MockHealthStatistics.getInstance().getStatistics(
+                    mockMemberContext.getServiceName(), MockScalingFactor.RequestsInFlight);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Publishing requests in flight: [member-id] %s [value] %f",
+                        mockMemberContext.getMemberId(), requestsInFlight));
+            }
+            statsPublisher.publish(
+                    mockMemberContext.getClusterId(),
+                    mockMemberContext.getClusterInstanceId(),
+                    mockMemberContext.getNetworkPartitionId(),
+                    mockMemberContext.getMemberId(),
+                    mockMemberContext.getPartitionId(),
+                    REQUESTS_IN_FLIGHT,
+                    requestsInFlight
+            );
+        } catch (NoStatisticsFoundException ignore) {
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not publish health statistic: requests in flight", e);
             }
         }
     }

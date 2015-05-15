@@ -163,10 +163,10 @@ public class MockIaasConfigParser {
             return MockScalingFactor.MemoryConsumption;
         } else if ("load-average".equals(scalingFactorStr)) {
             return MockScalingFactor.LoadAverage;
-        } else if ("request-in-flight".equals(scalingFactorStr)) {
-            return MockScalingFactor.RequestInFlight;
+        } else if ("requests-in-flight".equals(scalingFactorStr)) {
+            return MockScalingFactor.RequestsInFlight;
         }
-        throw new RuntimeException("An unknown autoscaling factor found: " + scalingFactorStr);
+        throw new RuntimeException("An unknown scaling factor found: " + scalingFactorStr);
     }
 
     /**

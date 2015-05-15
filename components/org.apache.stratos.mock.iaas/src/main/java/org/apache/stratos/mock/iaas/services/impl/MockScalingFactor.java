@@ -23,5 +23,5 @@ package org.apache.stratos.mock.iaas.services.impl;
  * Mock scaling factor enumeration
  */
 public enum MockScalingFactor {
-    MemoryConsumption, LoadAverage, RequestInFlight
+    MemoryConsumption, LoadAverage, RequestsInFlight
 }

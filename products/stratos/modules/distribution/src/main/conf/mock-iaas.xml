@@ -20,7 +20,7 @@
 <mock-iaas enabled="true">
     <health-statistics>
         <cartridge type="tomcat">
-            <!-- factor:memory-consumption|load-average|request-in-flight-->
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
             <!-- mode:loop|continue|stop -->
             <!-- Mode defines the action needs to be taken after the last sample value:
                  loop: start from beginning
@@ -40,7 +40,7 @@
             </pattern>
         </cartridge>
         <cartridge type="php">
-            <!-- factor:memory-consumption|load-average|request-in-flight-->
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
             <!-- mode:loop|continue|stop -->
             <!-- Mode defines the action needs to be taken after the last sample value:
                  loop: start from beginning

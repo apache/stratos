@@ -17,19 +17,21 @@
  * under the License.
  */
 
-package org.apache.stratos.common.beans.application;
+package org.apache.stratos.common.beans.cartridge;
+
+import org.apache.stratos.common.beans.application.DependencyBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement(name = "groups")
-public class GroupBean implements Serializable {
+public class CartridgeGroupBean implements Serializable {
 
     private static final long serialVersionUID = 4696832597498594267L;
 
     private String name;
-    private List<GroupBean> groups;
+    private List<CartridgeGroupBean> groups;
     private List<String> cartridges;
     private DependencyBean dependencies;
 
@@ -57,11 +59,11 @@ public class GroupBean implements Serializable {
         this.dependencies = dependencies;
     }
 
-    public List<GroupBean> getGroups() {
+    public List<CartridgeGroupBean> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<GroupBean> groups) {
+    public void setGroups(List<CartridgeGroupBean> groups) {
         this.groups = groups;
     }
 }

@@ -17,16 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.common.beans.application;
-
-import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
+package org.apache.stratos.common.beans.cartridge;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement(name = "groups")
-public class GroupReferenceBean implements Serializable {
+public class CartridgeGroupReferenceBean implements Serializable {
 
     private static final long serialVersionUID = 7261380706841894892L;
 
@@ -37,7 +35,7 @@ public class GroupReferenceBean implements Serializable {
     private boolean isGroupScalingEnabled;
     private String deploymentPolicy;
     private List<CartridgeReferenceBean> cartridges;
-    private List<GroupReferenceBean> groups;
+    private List<CartridgeGroupReferenceBean> groups;
 
     public String getName() {
         return name;
@@ -87,11 +85,11 @@ public class GroupReferenceBean implements Serializable {
         this.cartridges = cartridges;
     }
 
-    public List<GroupReferenceBean> getGroups() {
+    public List<CartridgeGroupReferenceBean> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<GroupReferenceBean> groups) {
+    public void setGroups(List<CartridgeGroupReferenceBean> groups) {
         this.groups = groups;
     }
 

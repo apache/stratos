@@ -53,7 +53,7 @@ public class MockHealthStatistics {
     }
 
     /**
-     * Add statistics value for a cartridge type, autoscaling factor
+     * Add statistics value for a cartridge type, scaling factor
      *
      * @param cartridgeType
      * @param scalingFactor
@@ -73,7 +73,7 @@ public class MockHealthStatistics {
     }
 
     /**
-     * Returns current statistics of the given cartridge type, autoscaling factor
+     * Returns current statistics of the given cartridge type, scaling factor
      *
      * @param cartridgeType
      * @param scalingFactor
@@ -93,7 +93,7 @@ public class MockHealthStatistics {
     }
 
     /**
-     * Remove statistics found for the cartridge type, autoscaling factor
+     * Remove statistics found for the cartridge type, scaling factor
      *
      * @param cartridgeType
      * @param scalingFactor
@@ -108,7 +108,7 @@ public class MockHealthStatistics {
     }
 
     /**
-     * Find default statistics value of the given autoscaling factor
+     * Find default statistics value of the given scaling factor
      *
      * @param scalingFactor
      * @return
@@ -118,9 +118,9 @@ public class MockHealthStatistics {
             return DEFAULT_MEMORY_CONSUMPTION;
         } else if (scalingFactor == MockScalingFactor.LoadAverage) {
             return DEFAULT_LOAD_AVERAGE;
-        } else if (scalingFactor == MockScalingFactor.RequestInFlight) {
+        } else if (scalingFactor == MockScalingFactor.RequestsInFlight) {
             return DEFAULT_REQUESTS_IN_FLIGHT;
         }
-        throw new RuntimeException("An unknown autoscaling factor found: " + scalingFactor);
+        throw new RuntimeException("An unknown scaling factor found: " + scalingFactor);
     }
 }
