@@ -100,7 +100,6 @@ public class ComputeServiceBuilderUtil {
     }
 
     public static String extractZone(IaasProvider iaas) {
-
         return iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE);
     }
 
@@ -152,7 +151,6 @@ public class ComputeServiceBuilderUtil {
             // Close the input stream and return bytes
             is.close();
         }
-
         return bytes;
     }
 
@@ -177,6 +175,4 @@ public class ComputeServiceBuilderUtil {
         throw new CloudControllerException(msg, e);
 
     }
-
-
 }

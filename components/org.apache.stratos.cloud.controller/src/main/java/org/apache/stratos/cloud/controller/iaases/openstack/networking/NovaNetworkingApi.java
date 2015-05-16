@@ -19,9 +19,11 @@
 package org.apache.stratos.cloud.controller.iaases.openstack.networking;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
@@ -42,8 +44,6 @@ import java.util.List;
 
 /**
  * Leveraging openstack-nova networking apis.
- *
- * @author rajkumar
  */
 public class NovaNetworkingApi implements OpenstackNetworkingApi {
 
@@ -57,47 +57,46 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
     @Override
     public List<String> associateAddresses(NodeMetadata node) {
 
-        ComputeServiceContext context = iaasProvider.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasProvider.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasProvider);
 
+        if(StringUtils.isEmpty(region)) {
+            throw new RuntimeException("Could not find region in iaas provider: " + iaasProvider.getName());
+        }
+
         NovaApi novaApi = context.unwrapApi(NovaApi.class);
-        FloatingIPApi floatingIPApi = novaApi.getFloatingIPExtensionForZone(
-                region).get();
+        FloatingIPApi floatingIPApi = novaApi.getFloatingIPExtensionForZone(region).get();
 
         String ip = null;
         // first try to find an unassigned IP.
-        ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
-                .filter(floatingIPApi.list(),
-                        new Predicate<FloatingIP>() {
-
-                            @Override
-                            public boolean apply(FloatingIP arg0) {
-                                return arg0.getInstanceId() == null;
-                            }
-
-                        }));
+        FluentIterable<FloatingIP> floatingIPs = floatingIPApi.list();
+        ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables.filter(floatingIPs,
+                new Predicate<FloatingIP>() {
+                    @Override
+                    public boolean apply(FloatingIP floatingIP) {
+                        return floatingIP.getInstanceId() == null;
+                    }
+                }));
 
         if (!unassignedIps.isEmpty()) {
-            // try to prevent multiple parallel launches from choosing the same
-            // ip.
+            // try to prevent multiple parallel launches from choosing the same ip.
             Collections.shuffle(unassignedIps);
             ip = Iterables.getLast(unassignedIps).getIp();
         }
 
         // if no unassigned IP is available, we'll try to allocate an IP.
-        if (ip == null || ip.isEmpty()) {
-            String defaultFloatingIpPool = iaasProvider.getProperty(CloudControllerConstants.DEFAULT_FLOATING_IP_POOL);
+        if (StringUtils.isEmpty(ip)) {
+            String floatingIpPool = iaasProvider.getProperty(CloudControllerConstants.DEFAULT_FLOATING_IP_POOL);
             FloatingIP allocatedFloatingIP;
-            if ((defaultFloatingIpPool == null) || "".equals(defaultFloatingIpPool)) {
+            if (StringUtils.isEmpty(floatingIpPool)) {
                 allocatedFloatingIP = floatingIPApi.create();
             } else {
-                log.debug(String.format("trying to allocate floating IP from pool %s", defaultFloatingIpPool));
-                allocatedFloatingIP = floatingIPApi.allocateFromPool(defaultFloatingIpPool);
+                log.debug(String.format("Trying to allocate a floating IP address from IP pool %s", floatingIpPool));
+                allocatedFloatingIP = floatingIPApi.allocateFromPool(floatingIpPool);
             }
             if (allocatedFloatingIP == null) {
-                String msg = "Failed to allocate an IP address.";
+                String msg = String.format("Floating IP API did not return a floating IP address from IP pool %s",
+                        floatingIpPool);
                 log.error(msg);
                 throw new CloudControllerException(msg);
             }
@@ -106,77 +105,64 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
 
         // wait till the fixed IP address gets assigned - this is needed before
         // we associate a public IP
+        log.info(String.format("Waiting for private IP addresses get allocated: [node-id] %s", node.getId()));
         while (node.getPrivateAddresses() == null) {
             CloudControllerUtil.sleep(1000);
         }
+        log.info(String.format("Private IP addresses allocated: %s", node.getPrivateAddresses()));
 
-        if (node.getPublicAddresses() != null
-                && node.getPublicAddresses().iterator().hasNext()) {
-            log.info("A public IP ("
+        if ((node.getPublicAddresses() != null) && (node.getPublicAddresses().iterator().hasNext())) {
+            log.info("Public IP address "
                     + node.getPublicAddresses().iterator().next()
-                    + ") is already allocated to the instance [id] : "
+                    + " is already allocated to the instance: [node-id]  "
                     + node.getId());
             return null;
         }
 
         int retries = 0;
-        //TODO make 5 configurable
-        while (retries < 5
-                && !associateIp(floatingIPApi, ip, node.getProviderId())) {
-
+        int retryCount = Integer.getInteger("stratos.public.ip.association.retry.count", 5);
+        while ((retries < retryCount) && (!associateIp(floatingIPApi, ip, node.getProviderId()))) {
             // wait for 5s
             CloudControllerUtil.sleep(5000);
             retries++;
         }
 
-        log.info("Successfully associated an IP address " + ip
-                + " for node with id: " + node.getId());
+        log.info(String.format("Successfully associated an IP address: [node-id] %s [ip] %s", node.getId(), ip));
 
         List<String> allocatedIPAddresses = new ArrayList<String>();
         allocatedIPAddresses.add(ip);
-
         return allocatedIPAddresses;
     }
 
     @Override
     public String associatePredefinedAddress(NodeMetadata node, String ip) {
         if (log.isDebugEnabled()) {
-            log.debug("OpenstackNovaIaas:associatePredefinedAddress:ip:" + ip);
+            log.debug(String.format("Trying to associate predefined IP address: [node-id] %s [ip] %s",
+                    node.getId(), ip));
         }
 
-        ComputeServiceContext context = iaasProvider.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasProvider.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasProvider);
 
-        FloatingIPApi floatingIp = context.unwrapApi(NovaApi.class).getFloatingIPExtensionForZone(
-                region).get();
-
-        if (log.isDebugEnabled()) {
-            log.debug("OpenstackNovaIaas:associatePredefinedAddress:floatingip:" + floatingIp);
-        }
+        FloatingIPApi floatingIPApi = context.unwrapApi(NovaApi.class).getFloatingIPExtensionForZone(region).get();
 
         // get the list of all unassigned IP.
-        ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
-                .filter(floatingIp.list(),
-                        new Predicate<FloatingIP>() {
-
-                            @Override
-                            public boolean apply(FloatingIP arg0) {
-                                // FIXME is this the correct filter?
-                                return arg0.getFixedIp() == null;
-                            }
-
-                        }));
+        ArrayList<FloatingIP> unassignedFloatingIPs = Lists.newArrayList(Iterables.filter(floatingIPApi.list(),
+                new Predicate<FloatingIP>() {
+                    @Override
+                    public boolean apply(FloatingIP floatingIP) {
+                        return StringUtils.isEmpty(floatingIP.getFixedIp());
+                    }
+                }));
 
         boolean isAvailable = false;
-        for (FloatingIP fip : unassignedIps) {
+        for (FloatingIP floatingIP : unassignedFloatingIPs) {
             if (log.isDebugEnabled()) {
-                log.debug("OpenstackNovaIaas:associatePredefinedAddress:iterating over available floatingip:" + fip);
+                log.debug("OpenstackNovaIaas:associatePredefinedAddress:iterating over available floatingip:" + floatingIP);
             }
-            if (ip.equals(fip.getIp())) {
+            if (ip.equals(floatingIP.getIp())) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("OpenstackNovaIaas:associatePredefinedAddress:floating ip in use:%s /ip:%s", fip, ip));
+                    log.debug(String.format("OpenstackNovaIaas:associatePredefinedAddress:floating ip in use:%s /ip:%s", floatingIP, ip));
                 }
                 isAvailable = true;
                 break;
@@ -197,42 +183,28 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
             }
 
             int retries = 0;
-            while (retries < 5
-                    && !associateIp(floatingIp, ip, node.getProviderId())) {
-
+            int retryCount = Integer.getInteger("stratos.public.ip.association.retry.count", 5);
+            while (retries < retryCount && !associateIp(floatingIPApi, ip, node.getProviderId())) {
                 // wait for 5s
                 CloudControllerUtil.sleep(5000);
                 retries++;
             }
 
-            NodeMetadataBuilder.fromNodeMetadata(node)
-                    .publicAddresses(ImmutableSet.of(ip)).build();
-
-            log.info("OpenstackNovaIaas:associatePredefinedAddress:Successfully associated an IP address " + ip
-                    + " for node with id: " + node.getId());
+            NodeMetadataBuilder.fromNodeMetadata(node).publicAddresses(ImmutableSet.of(ip)).build();
+            log.info(String.format("Successfully associated predefined IP address: [node-id] %s [ip] %s ",
+                    node.getId(), ip));
+            return ip;
         } else {
-            // unable to allocate predefined ip,
-            log.info("OpenstackNovaIaas:associatePredefinedAddress:Unable to allocate predefined ip:"
-                    + " for node with id: " + node.getId());
+            log.warn(String.format("Could not associate predefined IP address: [node-id] %s [ip] %s ",
+                    node.getId(), ip));
             return null;
         }
-
-
-        NodeMetadataBuilder.fromNodeMetadata(node)
-                .publicAddresses(ImmutableSet.of(ip)).build();
-
-        log.info("OpenstackNovaIaas:associatePredefinedAddress::Successfully associated an IP address " + ip
-                + " for node with id: " + node.getId());
-
-        return ip;
     }
 
     @Override
     public void releaseAddress(String ip) {
 
-        ComputeServiceContext context = iaasProvider.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasProvider.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasProvider);
 
         NovaApi novaApi = context.unwrapApi(NovaApi.class);
@@ -246,11 +218,13 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
         }
     }
 
-    private boolean associateIp(FloatingIPApi api, String ip, String id) {
+    private boolean associateIp(FloatingIPApi floatingIPApi, String ip, String providerId) {
         try {
-            api.addToServer(ip, id);
+            floatingIPApi.addToServer(ip, providerId);
             return true;
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException e) {
+            log.warn(String.format("Could not associate IP address to instance: [ip] %s [provider-id] %s",
+                    ip, providerId), e);
             return false;
         }
     }
