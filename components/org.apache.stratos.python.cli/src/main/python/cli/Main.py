@@ -1,9 +1,11 @@
 import sys
 from CLI import CLI
+import Logging
 
 
 def main():
     cli = CLI()
+
     if len(sys.argv) > 1:
         cli.onecmd(' '.join(sys.argv[1:]))
     else:

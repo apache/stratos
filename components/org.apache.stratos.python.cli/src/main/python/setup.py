@@ -24,7 +24,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        stratos=cli.Main:main
+        stratos-cli=cli.Main:main
     ''',
 )
 
