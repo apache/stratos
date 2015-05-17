@@ -24,7 +24,7 @@
   statistics="disable" trace="enable" xmlns="http://wso2.org/carbon/eventformatter">
   <from streamName="average_in_flight_requests" version="1.0.0"/>
   <mapping customMapping="enable" type="json">
-    <inline>{"org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent":{"message":{"clusterId":"{{cluster_id}}","clusterInstanceId":"{{cluster_instance_id}}","networkPartitionId":"{{network_partition_id}}","activeInstances":"{{instances_count}}","value":"{{count}}" ,"servedCount":"{{served_count}}"}}}</inline>
+    <inline>{"org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent":{"message":{"clusterId":"{{cluster_id}}","clusterInstanceId":"{{cluster_instance_id}}","networkPartitionId":"{{network_partition_id}}","value":"{{count}}"}}}</inline>
   </mapping>
   <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
     <property name="transport.jms.Destination">summarized-health-stats</property>
