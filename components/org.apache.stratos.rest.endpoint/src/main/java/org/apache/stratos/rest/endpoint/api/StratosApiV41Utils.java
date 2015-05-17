@@ -2604,7 +2604,8 @@ public class StratosApiV41Utils {
             serviceClient.addNetworkPartition(
                     ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition(networkPartitionBean));
         } catch (RemoteException e) {
-            String message = "Could not add network partition";
+            // Use the actual error message when returning the error to the client
+            String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
         }

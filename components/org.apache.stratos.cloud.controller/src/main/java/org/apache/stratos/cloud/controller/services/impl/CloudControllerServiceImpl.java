@@ -1449,7 +1449,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         networkPartition.getId()));
             }
         } catch (Exception e) {
-            String message = "Could not add network partition";
+            // Use the actual error message when throwing the exception to the client
+            String message = e.getMessage();
             log.error(message);
             throw new CloudControllerException(message, e);
         }
