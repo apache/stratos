@@ -61,25 +61,17 @@ public class RuleTasksDelegator {
     }
 
 
-    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float requestsServedPerInstance, float
-            averageRequestsServedPerInstance, boolean arspiReset) {
+    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float rifThreshold) {
 
+        if (rifThreshold != 0) {
 
-        float requestsInstanceCanHandle = requestsServedPerInstance;
-
-        if (arspiReset && averageRequestsServedPerInstance != 0) {
-            requestsInstanceCanHandle = averageRequestsServedPerInstance;
-
-        }
-        float numberOfInstances = 0;
-        if (requestsInstanceCanHandle != 0) {
-            numberOfInstances = rifPredictedValue / requestsInstanceCanHandle;
-            arspiReset = true;
-
+            float requiredNumberOfInstances = rifPredictedValue / rifThreshold;
+            return (int) Math.ceil(requiredNumberOfInstances);
         } else {
-            arspiReset = false;
+            log.error("Request in flight threshold is Zero");
+            return 0;
         }
-        return (int) Math.ceil(numberOfInstances);
+
     }
 
     public int getNumberOfInstancesRequiredBasedOnMemoryConsumption(float threshold, double predictedValue,

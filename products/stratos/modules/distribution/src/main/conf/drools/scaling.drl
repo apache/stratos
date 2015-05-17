@@ -92,7 +92,7 @@ dialect "mvel"
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 
         numberOfInstancesReuquiredBasedOnRif : Integer() from delegator.getNumberOfInstancesRequiredBasedOnRif(
-            rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
+            rifPredictedValue, rifThreshold)
         numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from
             delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcThreshold, mcPredictedValue, minInstancesCount,
             maxInstancesCount)
