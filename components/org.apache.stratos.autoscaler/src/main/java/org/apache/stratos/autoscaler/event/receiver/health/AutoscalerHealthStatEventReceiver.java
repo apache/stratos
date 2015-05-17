@@ -61,8 +61,6 @@ public class AutoscalerHealthStatEventReceiver {
         if (log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread started");
         }
-
-
     }
 
     private void addEventListeners() {
@@ -73,8 +71,7 @@ public class AutoscalerHealthStatEventReceiver {
                 AverageLoadAverageEvent averageLoadAverageEvent = (AverageLoadAverageEvent) event;
                 String clusterId = averageLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                ClusterMonitor monitor;
-                monitor = asCtx.getClusterMonitor(clusterId);
+                ClusterMonitor monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
@@ -279,7 +276,7 @@ public class AutoscalerHealthStatEventReceiver {
                 String clusterId = memberFaultEvent.getClusterId();
                 String memberId = memberFaultEvent.getMemberId();
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Member fault event: [member] %s ", memberId));
+                    log.debug(String.format("Member fault event received: [member] %s ", memberId));
                 }
                 if (memberId == null || memberId.isEmpty()) {
                     log.error("Member id not found in received message");

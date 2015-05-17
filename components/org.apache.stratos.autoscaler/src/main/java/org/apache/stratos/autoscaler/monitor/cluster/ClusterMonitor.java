@@ -811,23 +811,14 @@ public class ClusterMonitor extends Monitor {
         String networkPartitionId = averageRequestsInFlightEvent.getNetworkPartitionId();
         String clusterId = averageRequestsInFlightEvent.getClusterId();
         String clusterInstanceId = averageRequestsInFlightEvent.getClusterInstanceId();
-        /*Float servedCount = averageRequestsInFlightEvent.getServedCount();
-        Float activeInstances = averageRequestsInFlightEvent.getActiveInstances();
-        Float requestsServedPerInstance = servedCount / activeInstances;
-        if (requestsServedPerInstance.isInfinite()) {
-            requestsServedPerInstance = 0f;
-        }*/
         float value = averageRequestsInFlightEvent.getValue();
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Average Rif event: [cluster] %s [network-partition] %s [value] %s",
+            log.debug(String.format("Average RIF event: [cluster] %s [network-partition] %s [value] %s",
                     clusterId, networkPartitionId, value));
         }
         if (clusterInstanceId.equals(NOT_DEFINED)) {
-
             ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
-
             if (null != networkPartitionContext) {
-
                 int totalActiveMemberCount = 0;
                 for (InstanceContext clusterInstanceContext : networkPartitionContext.getActiveInstances()) {
                     if (clusterInstanceContext instanceof ClusterInstanceContext) {
@@ -871,7 +862,7 @@ public class ClusterMonitor extends Monitor {
         float value = gradientOfRequestsInFlightEvent.getValue();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Gradient of Rif event: [cluster] %s [network-partition] %s [value] %s",
+            log.debug(String.format("Gradient of RIF event: [cluster] %s [network-partition] %s [value] %s",
                     clusterId, networkPartitionId, value));
         }
         if (clusterInstanceId.equals(NOT_DEFINED)) {
@@ -895,7 +886,7 @@ public class ClusterMonitor extends Monitor {
                 }
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Network partition context is not available for :" +
+                    log.debug(String.format("Network partition context is not available for:" +
                             " [network partition] %s", networkPartitionId));
                 }
             }
@@ -922,7 +913,7 @@ public class ClusterMonitor extends Monitor {
         String clusterInstanceId = secondDerivativeOfRequestsInFlightEvent.getClusterInstanceId();
         float value = secondDerivativeOfRequestsInFlightEvent.getValue();
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Second derivative of Rif event: [cluster] %s "
+            log.debug(String.format("Second derivative of RIF event: [cluster] %s "
                     + "[network-partition] %s [value] %s", clusterId, networkPartitionId, value));
         }
 
