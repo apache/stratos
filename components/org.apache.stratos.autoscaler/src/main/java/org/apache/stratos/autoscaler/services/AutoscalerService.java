@@ -148,8 +148,10 @@ public interface AutoscalerService {
      * @throws InvalidApplicationPolicyException
      * @throws RemoteException
      * @throws InvalidPolicyException
+     * @throws ApplicationPolicyAlreadyExistsException
      */
-    public boolean addApplicationPolicy(ApplicationPolicy applicationPolicy) throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException;
+    public boolean addApplicationPolicy(ApplicationPolicy applicationPolicy) throws RemoteException,
+            InvalidApplicationPolicyException, InvalidPolicyException,ApplicationPolicyAlreadyExistsException;
 
     /**
      * Get application policy by application id

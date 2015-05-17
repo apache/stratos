@@ -699,7 +699,7 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
-            AutoscalerServiceInvalidApplicationPolicyExceptionException {
+            AutoscalerServiceInvalidApplicationPolicyExceptionException,AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
 
         if (applicationPolicyBean == null) {
             String msg = "Application policy bean is null";

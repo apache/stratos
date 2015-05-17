@@ -21,6 +21,9 @@ package org.apache.stratos.rest.endpoint.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
+import org.apache.stratos.autoscaler.stub.impl.AutoscalerServiceApplicatioinPolicyNotExistsException;
+import org.apache.stratos.autoscaler.stub.impl.AutoscalerServiceApplicationPolicyAlreadyExistsException;
+import org.apache.stratos.autoscaler.stub.impl.AutoscalerServiceAutoScalingPolicyAlreadyExistException;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
@@ -817,12 +820,18 @@ public class StratosApiV41 extends AbstractApi {
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application policy added successfully: [application-policy] %s",
                             applicationPolicy.getId()))).build();
-        } catch (RestAPIException e) {
-            throw e;
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Invalid application policy")).build();
+        } catch(AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e){
+            return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Application policy already exists")).build();
+
+        }catch (RestAPIException e) {
+            throw e;
         }
+
+
     }
 
     /**

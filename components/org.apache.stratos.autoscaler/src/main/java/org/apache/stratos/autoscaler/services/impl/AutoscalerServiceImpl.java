@@ -807,10 +807,25 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public boolean addApplicationPolicy(ApplicationPolicy applicationPolicy)
-            throws RemoteException, InvalidApplicationPolicyException {
+            throws RemoteException, InvalidApplicationPolicyException,ApplicationPolicyAlreadyExistsException {
 
         // validating application policy
         AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
+
+        if (log.isInfoEnabled()) {
+            log.info("Adding application policy: [application-policy-id] " + applicationPolicy.getId());
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Application policy definition: " + applicationPolicy.toString());
+        }
+
+        String applicationPolicyID = applicationPolicy.getId();
+        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyID) != null) {
+            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyID;
+            log.error(message);
+            throw new ApplicationPolicyAlreadyExistsException(message);
+        }
+
         // Add application policy to the registry
         PolicyManager.getInstance().addApplicationPolicy(applicationPolicy);
         return true;
