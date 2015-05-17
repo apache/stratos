@@ -349,7 +349,7 @@ public class RuleTasksDelegator {
                         memberGredientLoadAverage, memberSecondDerivativeLoadAverage, 1);
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("[member-id] $s [predicted load average] $s ", memberStatsContext.getMemberId()
+                    log.debug(String.format("[member-id] %s [predicted load average] %s ", memberStatsContext.getMemberId()
                             , memberPredictedLoadAverage));
                 }
                 loadAveragePredicted += memberPredictedLoadAverage;
@@ -379,7 +379,7 @@ public class RuleTasksDelegator {
                         memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("[member-id] $s [predicted memory consumption] $s ", memberStatsContext.getMemberId()
+                    log.debug(String.format("[member-id] %s [predicted memory consumption] %s ", memberStatsContext.getMemberId()
                             , memberPredictedMemoryConsumption));
                 }
                 memoryConsumptionPredicted += memberPredictedMemoryConsumption;
