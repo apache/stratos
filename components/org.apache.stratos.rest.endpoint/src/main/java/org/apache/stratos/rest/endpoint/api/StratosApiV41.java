@@ -161,7 +161,6 @@ public class StratosApiV41 extends AbstractApi {
 
         String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
         try {
-            // TODO :: Deployment policy validation
             StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(

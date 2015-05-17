@@ -107,25 +107,31 @@ public class StratosApiV41Utils {
     /**
      * Add New Cartridge
      *
-     * @param cartridgeDefinition Cartridge definition
+     * @param cartridgeBean Cartridge definition
      * @throws RestAPIException
      */
     // Util methods for cartridges
-    public static void addCartridge(CartridgeBean cartridgeDefinition) throws RestAPIException {
+    public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
+                log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeBean.getType()));
             }
 
-            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
+            List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
+            if((iaasProviders == null) || iaasProviders.size() == 0) {
+                throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
+                        cartridgeBean.getType()));
+            }
+
+            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Successfully added cartridge: [cartridge-type] %s ",
-                        cartridgeDefinition.getType()));
+                        cartridgeBean.getType()));
             }
         } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
             String msg = "Could not add cartridge";
@@ -149,23 +155,29 @@ public class StratosApiV41Utils {
     /**
      * Update Cartridge
      *
-     * @param cartridgeDefinition Cartridge Definition
+     * @param cartridgeBean Cartridge Definition
      * @throws RestAPIException
      */
-    public static void updateCartridge(CartridgeBean cartridgeDefinition) throws RestAPIException {
+    public static void updateCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Updating cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
+                log.debug(String.format("Updating cartridge: [cartridge-type] %s ", cartridgeBean.getType()));
             }
 
-            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
+            List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
+            if((iaasProviders == null) || iaasProviders.size() == 0) {
+                throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
+                        cartridgeBean.getType()));
+            }
+
+            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Successfully updated cartridge: [cartridge-type] %s ",
-                        cartridgeDefinition.getType()));
+                        cartridgeBean.getType()));
             }
         } catch (CloudControllerServiceCartridgeDefinitionNotExistsExceptionException e) {
             String msg = "Could not add cartridge";
