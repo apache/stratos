@@ -2604,7 +2604,6 @@ public class StratosApiV41Utils {
             serviceClient.addNetworkPartition(
                     ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition(networkPartitionBean));
         } catch (RemoteException e) {
-            // Use the actual error message when returning the error to the client
             String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
@@ -2623,7 +2622,7 @@ public class StratosApiV41Utils {
                     serviceClient.getNetworkPartitions();
             return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitions);
         } catch (RemoteException e) {
-            String message = "Could not get network partitions";
+            String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
         }
@@ -2640,9 +2639,7 @@ public class StratosApiV41Utils {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId);
         } catch (RemoteException e) {
-            String message = String.format(
-                    "Could not remove network partition: [network-partition-id] %s",
-                    networkPartitionId);
+            String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
         }
@@ -2661,9 +2658,7 @@ public class StratosApiV41Utils {
                     serviceClient.getNetworkPartition(networkPartitionId);
             return ObjectConverter.convertCCStubNetworkPartitionToNetworkPartition(networkPartition);
         } catch (RemoteException e) {
-            String message = String.format(
-                    "Could not get network partition: [network-partition-id] %s",
-                    networkPartitionId);
+            String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
         }
@@ -2681,8 +2676,7 @@ public class StratosApiV41Utils {
             serviceClient.updateNetworkPartition(ObjectConverter.
                     convertNetworkPartitionToCCStubNetworkPartition(networkPartition));
         } catch (RemoteException e) {
-            String message = String.format("Could not update network partition: [network-partition-id] %s,",
-                    networkPartition.getId());
+            String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
         }
@@ -2713,11 +2707,11 @@ public class StratosApiV41Utils {
                         deployementPolicyDefinitionBean.getId()));
             }
         } catch (RemoteException e) {
-            String msg = "Could not add deployment policy.";
+            String msg = e.getMessage();
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         } catch (AutoscalerServiceRemoteExceptionException e) {
-            String msg = "Could not add deployment policy.";
+            String msg = e.getMessage();
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
