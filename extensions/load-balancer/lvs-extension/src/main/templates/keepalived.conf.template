@@ -1,0 +1,62 @@
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+       your_email@admin.com
+   }
+   notification_email_from loadbalancer1@admin.com
+   smtp_server localhost
+   smtp_connect_timeout 30
+! UNIQUE:
+   router_id LVS_PRI
+}
+
+! ***********************************************************************
+! *************************   WEB SERVICES VIP  *************************
+! ***********************************************************************
+vrrp_instance VirtIP_10 {
+    state MASTER
+    interface eth0
+    virtual_router_id 10
+! UNIQUE:
+    priority 150
+    advert_int 3
+    smtp_alert
+    authentication {
+        auth_type PASS
+        auth_pass MY_PASS
+    }
+    virtual_ipaddress {
+        10.10.10.10
+    }
+
+    lvs_sync_daemon_interface eth0
+}
+
+! ************************   WEB SERVERS  **************************
+
+virtual_server 10.10.10.10 80 {
+    delay_loop 10
+    lvs_sched wlc
+    lvs_method DR
+    persistence_timeout 5
+    protocol TCP
+
+    real_server 10.10.10.41 80 {
+        weight 50
+        TCP_CHECK {
+            connect_timeout 3
+        }
+    }
+
+    real_server 10.10.10.42 80 {
+        weight 50
+        TCP_CHECK {
+            connect_timeout 3
+        }
+    }
+
+}
+
+
+
