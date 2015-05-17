@@ -23,5 +23,5 @@
     <username>admin</username>
     <password>admin</password>
     <ip>localhost</ip>
-    <port>7611</port>
+    <port>7711</port>
 </thriftClientConfiguration>

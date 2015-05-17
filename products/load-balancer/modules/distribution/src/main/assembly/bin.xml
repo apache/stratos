@@ -75,11 +75,11 @@
                 <exclude>**/.data</exclude>
                 <exclude>**/.settings</exclude>
                 <exclude>**/synapse-samples*</exclude>
-		<exclude>**/plugins/*.ui*</exclude>
-		<exclude>**/plugins/infinispan-core_5.1.2.wso2v1.jar</exclude>
-		<exclude>**/plugins/jboss-logging_3.1.0.wso2v1.jar</exclude>
- 		<exclude>**/plugins/jgroups_3.0.6.wso2v1.jar</exclude>
-		<exclude>**/plugins/marshalling_1.3.6.wso2v1.jar</exclude>
+                <exclude>**/plugins/*.ui*</exclude>
+                <exclude>**/plugins/infinispan-core_5.1.2.wso2v1.jar</exclude>
+                <exclude>**/plugins/jboss-logging_3.1.0.wso2v1.jar</exclude>
+                <exclude>**/plugins/jgroups_3.0.6.wso2v1.jar</exclude>
+                <exclude>**/plugins/marshalling_1.3.6.wso2v1.jar</exclude>
             </excludes>
         </fileSet>
         <!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
@@ -97,11 +97,13 @@
         </fileSet>
         <fileSet>
             <directory>src/main/cartridges</directory>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/cartridges</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/cartridges
+            </outputDirectory>
         </fileSet>
         <fileSet>
             <directory>src/main/services</directory>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/services</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/services
+            </outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/</directory>
@@ -178,28 +180,6 @@
                 <include>org.wso2.carbon:org.wso2.carbon.mediator.bridge:jar</include>
             </includes>
         </dependencySet>
-        <!--dependencySet>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/samples/axis2Client/client_repo/modules
-            </outputDirectory>
-            <includes>
-                <include>org.apache.axis2:addressing:mar</include>
-                <include>org.apache.rampart:rampart:mar</include>
-                <include>org.apache.sandesha2:sandesha2:mar</include>
-            </includes>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-            </outputFileNameMapping>
-        </dependencySet>
-        <dependencySet>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/samples/axis2Server/repository/modules
-            </outputDirectory>
-            <includes>
-                <include>org.apache.axis2:addressing:mar</include>
-                <include>org.apache.rampart:rampart:mar</include>
-                <include>org.apache.sandesha2:sandesha2:mar</include>
-            </includes>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-            </outputFileNameMapping>
-        </dependencySet-->
         <dependencySet>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/axis2/client/lib</outputDirectory>
             <includes>
@@ -225,15 +205,15 @@
                 <include>org.wso2.carbon:org.wso2.carbon.event.client:jar</include-->
             </includes>
         </dependencySet>
-	<dependencySet>
-	    <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/lib</outputDirectory>
+        <dependencySet>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/lib</outputDirectory>
             <includes>
                 <include>org.apache.activemq:activemq-client:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar</include>
                 <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
-	 	<include>org.eclipse.paho:mqtt-client:jar</include>
-	    </includes>
-	</dependencySet>
+                <include>org.eclipse.paho:mqtt-client:jar</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
 
     <files>
@@ -257,19 +237,6 @@
             </source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
         </file>
-        <!--file>
-            <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/zoo.cfg</source>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
-        </file>
-        <file>
-            <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/coordination-client-config.xml</source>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
-        </file-->
-        <!--<file>
-            <source>src/main/conf/user-mgt.xml</source>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
-            <destName>user-mgt.xml</destName>
-        </file> -->
         <file>
             <source>src/main/conf/embedded-ldap.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
@@ -326,6 +293,12 @@
             <filtered>true</filtered>
         </file>
         <file>
+            <source>src/main/conf/thrift-client-config.xml</source>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
+            <destName>thrift-client-config.xml</destName>
+            <filtered>true</filtered>
+        </file>
+        <file>
             <source>src/main/license/LICENSE</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <filtered>true</filtered>
@@ -368,7 +341,7 @@
             <filtered>true</filtered>
         </file-->
 
-              <!--Copying config files from kernel patches -->
+        <!--Copying config files from kernel patches -->
 
         <file>
             <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts/mysql.sql</source>
@@ -392,12 +365,14 @@
             <filtered>true</filtered>
         </file>-->
         <file>
-            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties</source>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties
+            </source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/security/</outputDirectory>
             <filtered>true</filtered>
         </file>
         <file>
-            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-tool.properties</source>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-tool.properties
+            </source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/security/</outputDirectory>
             <filtered>true</filtered>
         </file>
