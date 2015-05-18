@@ -35,6 +35,7 @@ import org.apache.stratos.cli.exception.ExceptionMapper;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -507,10 +508,12 @@ public class RestCommandLineService {
                     + ENDPOINT_ADD_TENANT, jsonString);
 
             int responseCode = response.getStatusLine().getStatusCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                CliUtils.printError(response);
-            } else {
+            if (responseCode ==201) {
                 System.out.println("Tenant added successfully: " + domain);
+            } else {
+                String resultString = CliUtils.getHttpResponseString(response);
+                String errorMsg= gson.fromJson(resultString, ResponseMessageBean.class).getMessage();
+                System.out.println(errorMsg);
             }
         } catch (Exception e) {
             String message = "Could not add tenant: " + domain;

@@ -824,11 +824,11 @@ public class StratosApiV41 extends AbstractApi {
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Invalid application policy")).build();
-        } catch(AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e){
+        } catch (AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application policy already exists")).build();
 
-        }catch (RestAPIException e) {
+        } catch (RestAPIException e) {
             throw e;
         }
 
@@ -1435,18 +1435,19 @@ public class StratosApiV41 extends AbstractApi {
 
         try {
             StratosApiV41Utils.addTenant(tenantInfoBean);
+            URI url = uriInfo.getAbsolutePathBuilder().path(tenantInfoBean.getTenantDomain()).build();
+            return Response.created(url).entity(
+                    new ResponseMessageBean(ResponseMessageBean.SUCCESS, String.format(
+                            "Tenant added successfully: [tenant] %s", tenantInfoBean.getTenantDomain()))).build();
 
         } catch (InvalidEmailException e) {
-            Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Invalid email")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, String.format("Invalid email: [email] %s", tenantInfoBean.getEmail()))).build();
         } catch (InvalidDomainException e) {
-            Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Invalid domain")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, String.format("Invalid domain: [domain] %s", tenantInfoBean.getTenantDomain()))).build();
         }
-        URI url = uriInfo.getAbsolutePathBuilder().path(tenantInfoBean.getTenantDomain()).build();
-        return Response.created(url).entity(
-                new ResponseMessageBean(ResponseMessageBean.SUCCESS, String.format(
-                        "Tenant added successfully: [tenant] %s", tenantInfoBean.getTenantDomain()))).build();
+
     }
 
     /**
@@ -1466,20 +1467,20 @@ public class StratosApiV41 extends AbstractApi {
 
         try {
             StratosApiV41Utils.updateExistingTenant(tenantInfoBean);
+            return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Tenant updated successfully: [tenant] %s", tenantInfoBean.getTenantDomain()))).build();
         } catch (TenantNotFoundException ex) {
-            Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Tenant not found")).build();
         } catch (InvalidEmailException e) {
-            Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Invalid email")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, String.format("Invalid email [email] %s", tenantInfoBean.getEmail()))).build();
         } catch (Exception e) {
             String msg = "Error in updating tenant " + tenantInfoBean.getTenantDomain();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
 
-        return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Tenant updated successfully: [tenant] %s", tenantInfoBean.getTenantDomain()))).build();
     }
 
     /**
