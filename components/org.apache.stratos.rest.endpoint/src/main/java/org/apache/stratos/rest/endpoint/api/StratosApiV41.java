@@ -260,28 +260,28 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Updates the Deployment Policy Definition.
      *
-     * @param deploymentPolicyID the deployment policy id
+     * @param deploymentPolicyId the deployment policy id
      * @return 200 if deployment policy is successfully removed
      * @throws RestAPIException the rest api exception
      */
     @DELETE
-    @Path("/deploymentPolicies/{depolymentPolicyID}")
+    @Path("/deploymentPolicies/{deploymentPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/removeDeploymentPolicy")
     public Response removeDeploymentPolicy(
-            @PathParam("depolymentPolicyID") String deploymentPolicyID) throws RestAPIException {
+            @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
 
         try {
-            StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
+            StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyId);
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Autoscaling policy not found")).build();
+                    ResponseMessageBean.ERROR, "Deployment policy not found")).build();
         }
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Deployment policy removed successfully: " + "[deployment-policy-id] %s",
-                        deploymentPolicyID))).build();
+                        deploymentPolicyId))).build();
     }
 
     /**

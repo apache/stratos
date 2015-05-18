@@ -20,7 +20,6 @@ package org.apache.stratos.cli;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -178,14 +177,8 @@ public class RestClient implements GenericRestClient {
 
     public void undeployEntity(String serviceEndpoint, String entityName, String entityId) {
         try {
-            int responseCode = executeDelete(serviceEndpoint.replace("{id}", entityId));
-            if (responseCode == 404) {
-                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode == 500) {
-                System.out.println("Internal server error occurred");
-            } else if (responseCode >= 200 && responseCode < 300) {
-                System.out.println(String.format("Successfully un-deployed %s : %s", entityName, entityId));
-            }
+            String responseMessage = executeDelete(serviceEndpoint.replace("{id}", entityId));
+            System.out.println(responseMessage);
         } catch (Exception e) {
             String message = String.format("Error in un-deploying %s : %s", entityName, entityId);
             System.out.println(message);
@@ -206,14 +199,8 @@ public class RestClient implements GenericRestClient {
 
     public void deleteEntity(String serviceEndpoint, String identifier, String entityName) {
         try {
-            int responseCode = executeDelete(serviceEndpoint);
-            if (responseCode == 404) {
-                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode == 500) {
-                System.out.println("Internal server error occurred");
-            } else if (responseCode >= 200 && responseCode < 300) {
-                System.out.println(String.format("Successfully deleted %s : %s", entityName, identifier));
-            }
+            String responseMessage = executeDelete(serviceEndpoint);
+            System.out.println(responseMessage);
         } catch (Exception e) {
             String message = String.format("Error in deleting %s", entityName);
             System.out.println(message);
@@ -339,16 +326,15 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    private int executeDelete(String serviceEndpoint) throws IOException {
+    private String executeDelete(String serviceEndpoint) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = doDelete(httpClient, getBaseURL() + serviceEndpoint);
+            String result = getHttpResponseString(response);
 
-            int responseCode = response.getStatusLine().getStatusCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                CliUtils.printError(response);
-            }
-            return responseCode;
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(result, ResponseMessageBean.class).getMessage();
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
