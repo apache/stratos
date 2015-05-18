@@ -1432,8 +1432,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     try {
                         validatePartition(partition);
                     } catch (InvalidPartitionException e) {
-                        throw new InvalidNetworkPartitionException(String.format("Invalid network partition " +
-                                        "[network-partition-id] %s, due to invalid partition [partition-id] %s ",
+                        //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
+                        throw new InvalidNetworkPartitionException(String.format("Network partition " +
+                                        " %s, is invalid since the partition %s is invalid",
                                 networkPartition.getId(), partition.getId()), e);
                     }
                     if (log.isInfoEnabled()) {
