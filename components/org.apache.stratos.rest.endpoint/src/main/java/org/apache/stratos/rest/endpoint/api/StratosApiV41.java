@@ -593,10 +593,16 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
         } catch (CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException e) {
+
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, e.getMessage()))
                     .build();
 
+        } catch (CloudControllerServiceInvalidNetworkPartitionExceptionException e) {
+
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, e.getMessage()))
+                    .build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,

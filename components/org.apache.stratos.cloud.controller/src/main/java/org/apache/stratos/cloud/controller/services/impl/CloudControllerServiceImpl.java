@@ -819,7 +819,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
                     if (ctxt == null) {
                         String msg = String.format("Service unregistration failed. Cluster not found: [cluster-id] %s " +
-                                "[application-id] %s " , clusterId_, ctxt.getApplicationId());
+                                "[application-id] %s ", clusterId_, ctxt.getApplicationId());
                         log.error(msg);
                         return;
                     }
@@ -864,7 +864,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                         } catch (Exception ignore) {
                                             if (log.isErrorEnabled()) {
                                                 log.error((String.format("Error while deleting volume [id] %s " +
-                                                        "[application-id]", volume.getId(), ctxt.getApplicationId())),
+                                                                "[application-id]", volume.getId(), ctxt.getApplicationId())),
                                                         ignore);
                                             }
                                         }

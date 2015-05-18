@@ -2553,7 +2553,8 @@ public class StratosApiV41Utils {
      * @param networkPartitionBean NetworkPartitionBean
      */
     public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean) throws RestAPIException,
-            CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {
+            CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException,
+            CloudControllerServiceInvalidNetworkPartitionExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.addNetworkPartition(

@@ -20,7 +20,7 @@ package org.apache.stratos.cloud.controller.exception;
 
 
 /**
- * Throws when a {@link Partition} is evaluated to be invalid.
+ * Throws when a {@link org.apache.stratos.cloud.controller.domain.Partition} is evaluated to be invalid.
  */
 public class InvalidPartitionException extends Exception {
 

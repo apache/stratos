@@ -221,7 +221,8 @@ public class CloudControllerServiceClient {
     }
 
     public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException,
-            CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {
+            CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException,
+            CloudControllerServiceInvalidNetworkPartitionExceptionException {
         stub.addNetworkPartition(networkPartition);
     }
 
