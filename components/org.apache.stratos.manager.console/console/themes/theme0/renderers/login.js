@@ -21,7 +21,7 @@
 var render = function (theme, data, meta, require) {
 
     if(data.error.length == 0 ){
-        theme('index', {
+        theme('login', {
             page_meta: [
                 {
                     partial:'index_title',
@@ -43,7 +43,7 @@ var render = function (theme, data, meta, require) {
                 {
                     partial: 'login_body',
                     context:{
-                        content_title:'The most comprehensive enterprise grade PaaS Framework'
+                        content_title:''
 
                     }
                 }
@@ -52,7 +52,7 @@ var render = function (theme, data, meta, require) {
 
     }else{
 
-        theme('index', {
+        theme('login', {
             page_meta: [
                 {
                     partial:'index_title',
@@ -84,6 +84,5 @@ var render = function (theme, data, meta, require) {
                 }
             ]
         });
-
     }
 };

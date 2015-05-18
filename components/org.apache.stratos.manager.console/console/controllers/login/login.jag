@@ -33,7 +33,7 @@ if (hostName === null || hostName === '') {
 }
 
 var httpPort = 9763 + parseInt(offset, 10),
-        httpsPort = 9443 + parseInt(offset, 10);
+    httpsPort = 9443 + parseInt(offset, 10);
 
 process.setProperty('server.host', hostName);
 process.setProperty('http.port', httpPort.toString());
@@ -41,7 +41,7 @@ process.setProperty('https.port', httpsPort.toString());
 
 
 var username = request.getParameter('username').trim(),
-        password = request.getParameter('password');
+    password = request.getParameter('password');
 
 if (username || password) {
     session.put("error", "Enter your username and password.");
@@ -84,6 +84,4 @@ try {
     session.put("error", e.toString());
     print({status: e.toString()});
 }
-
-
 %>

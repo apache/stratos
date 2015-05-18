@@ -221,3 +221,8 @@ button.hover-undeploy{
 div#textform>div>h3 {
     display: none;
 }
+
+.login-logo img {
+    width: 210px;
+    padding-bottom: 25px;
+}
