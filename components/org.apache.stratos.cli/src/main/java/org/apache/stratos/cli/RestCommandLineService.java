@@ -834,8 +834,8 @@ public class RestCommandLineService {
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
+                String errorMsg = gson.fromJson(resultString, ResponseMessageBean.class).getMessage();
+                System.out.println(errorMsg);
             }
 
         } catch (Exception e) {
@@ -867,8 +867,8 @@ public class RestCommandLineService {
                 System.out.println("You have successfully activated the tenant: " + tenantDomain);
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
+                String errorMsg = gson.fromJson(resultString, ResponseMessageBean.class).getMessage();
+                System.out.println(errorMsg);
             }
 
         } catch (Exception e) {

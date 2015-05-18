@@ -1612,7 +1612,13 @@ public class StratosApiV41 extends AbstractApi {
     public Response activateTenant(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
-        StratosApiV41Utils.activateTenant(tenantDomain);
+        try {
+            StratosApiV41Utils.activateTenant(tenantDomain);
+        } catch (InvalidDomainException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Invalid domain")).build();
+        }
+
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Tenant activated successfully: [tenant] %s", tenantDomain))).build();
     }
@@ -1633,7 +1639,13 @@ public class StratosApiV41 extends AbstractApi {
     public Response deactivateTenant(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
-        StratosApiV41Utils.deactivateTenant(tenantDomain);
+        try {
+            StratosApiV41Utils.deactivateTenant(tenantDomain);
+        } catch (InvalidDomainException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Invalid domain")).build();
+        }
+
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Tenant deactivated successfully: [tenant] %s", tenantDomain))).build();
     }
