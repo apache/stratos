@@ -119,7 +119,7 @@ public class StratosApiV41Utils {
             }
 
             List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
-            if((iaasProviders == null) || iaasProviders.size() == 0) {
+            if ((iaasProviders == null) || iaasProviders.size() == 0) {
                 throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
                         cartridgeBean.getType()));
             }
@@ -166,7 +166,7 @@ public class StratosApiV41Utils {
             }
 
             List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
-            if((iaasProviders == null) || iaasProviders.size() == 0) {
+            if ((iaasProviders == null) || iaasProviders.size() == 0) {
                 throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
                         cartridgeBean.getType()));
             }
@@ -654,7 +654,7 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
-            AutoscalerServiceInvalidApplicationPolicyExceptionException,AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
+            AutoscalerServiceInvalidApplicationPolicyExceptionException, AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
 
         if (applicationPolicyBean == null) {
             String msg = "Application policy bean is null";
