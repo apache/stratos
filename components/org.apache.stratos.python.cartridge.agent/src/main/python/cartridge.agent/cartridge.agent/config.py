@@ -261,6 +261,7 @@ class CartridgeAgentConfiguration:
             self.log.debug("export_metadata_keys: %r" % self.export_metadata_keys)
             self.log.debug("import_metadata_keys: %r" % self.import_metadata_keys)
             self.log.debug("artifact.update.interval: %r" % self.artifact_update_interval)
+            self.log.debug("log_file_paths: %s" % self.log_file_paths)
 
         def __read_conf_file(self):
             """

@@ -111,7 +111,7 @@ class ThriftEvent:
         self.correlationData = []
         """:type : list[str]"""
         self.payloadData = []
-        """:type : list[str]"""
+        """:type : list[T]"""
 
 
 class ThriftPublisher:

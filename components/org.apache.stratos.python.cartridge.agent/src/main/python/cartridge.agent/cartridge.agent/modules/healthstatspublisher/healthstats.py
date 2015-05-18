@@ -123,7 +123,7 @@ class HealthStatisticsPublisher:
         stream_def.nickname = HealthStatisticsPublisherManager.STREAM_NICKNAME
         stream_def.description = HealthStatisticsPublisherManager.STREAM_DESCRIPTION
 
-
+        # stream_def.add_payloaddata_attribute()
         stream_def.add_payloaddata_attribute("cluster_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("cluster_instance_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("network_partition_id", StreamDefinition.STRING)
@@ -147,7 +147,7 @@ class HealthStatisticsPublisher:
         event.payloadData.append(self.cartridge_agent_config.member_id)
         event.payloadData.append(self.cartridge_agent_config.partition_id)
         event.payloadData.append(constants.MEMORY_CONSUMPTION)
-        event.payloadData.append(memory_usage)
+        event.payloadData.append(float(memory_usage))
 
         HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [payload_data} %r [version] %r" % (self.stream_definition.name,event.payloadData, self.stream_definition.version))
         self.publisher.publish(event)
@@ -165,7 +165,7 @@ class HealthStatisticsPublisher:
         event.payloadData.append(self.cartridge_agent_config.member_id)
         event.payloadData.append(self.cartridge_agent_config.partition_id)
         event.payloadData.append(constants.LOAD_AVERAGE)
-        event.payloadData.append(load_avg)
+        event.payloadData.append(float(load_avg))
 
         HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
         self.publisher.publish(event)

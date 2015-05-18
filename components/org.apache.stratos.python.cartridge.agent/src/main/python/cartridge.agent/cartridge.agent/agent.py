@@ -110,6 +110,7 @@ class CartridgeAgent(threading.Thread):
             if log_file_paths is None:
                 self.__log.exception("No valid log file paths found, no logs will be published")
             else:
+                self.__log.debug("Starting Log Publisher Manager: [Log file paths] %s" % ", ".join(log_file_paths))
                 self.__log_publish_manager = LogPublisherManager(log_file_paths)
                 self.__log_publish_manager.start()
 

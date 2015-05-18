@@ -48,7 +48,7 @@ CARTRIDGE_ALIAS = "CARTRIDGE_ALIAS"
 TOKEN = "TOKEN"
 
 # stratos.sh environment variables keys
-LOG_FILE_PATHS = "LOG_FILE_PATHS"
+LOG_FILE_PATHS = "log.file.paths"
 MEMORY_CONSUMPTION = "memory_consumption"
 LOAD_AVERAGE = "load_average"
 PORTS_NOT_OPEN = "ports_not_open"

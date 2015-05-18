@@ -35,21 +35,22 @@ class LogPublisher(Thread):
         self.file_path = file_path
         self.thrift_publisher = ThriftPublisher(
             DataPublisherConfiguration.get_instance().monitoring_server_ip,
-            DataPublisherConfiguration.get_instance().monitoring_server_port,
+            DataPublisherConfiguration.get_instance().monitoring_server_secure_port,
             DataPublisherConfiguration.get_instance().admin_username,
             DataPublisherConfiguration.get_instance().admin_password,
             stream_definition)
         self.tenant_id = tenant_id
         self.alias = alias
-        self.datetime = date_time
+        self.date_time = date_time
         self.member_id = member_id
 
         self.terminated = False
 
     def run(self):
         if os.path.isfile(self.file_path) and os.access(self.file_path, os.R_OK):
-            self.log.info("Starting log publisher for file: " + self.file_path + ", thread: " + current_thread())
+            self.log.info("Starting log publisher for file: " + self.file_path + ", thread: " + str(current_thread()))
             # open file and keep reading for new entries
+            # with open(self.file_path, "r") as read_file:
             read_file = open(self.file_path, "r")
             read_file.seek(os.stat(self.file_path)[6])  # go to the end of the file
 
@@ -58,16 +59,18 @@ class LogPublisher(Thread):
                 line = read_file.readline()   # read the current line
                 if not line:
                     # no new line entered
+                    self.log.debug("No new log entries detected to publish.")
                     time.sleep(1)
                     read_file.seek(where)  # set seeker
                 else:
                     # new line detected, create event object
+                    self.log.debug("Log entry/entries detected. Publishing to monitoring server.")
                     event = ThriftEvent()
                     event.metaData.append(self.member_id)
                     event.payloadData.append(self.tenant_id)
                     event.payloadData.append(self.alias)
                     event.payloadData.append("")
-                    event.payloadData.append(self.datetime)
+                    event.payloadData.append(self.date_time)
                     event.payloadData.append("")
                     event.payloadData.append(line)
                     event.payloadData.append("")
@@ -76,10 +79,12 @@ class LogPublisher(Thread):
                     event.payloadData.append("")
 
                     self.thrift_publisher.publish(event)
+                    self.log.debug("Log event published.")
 
-            self.thrift_publisher.disconnect()  # dicsonnect the publisher upon being terminated
+            self.thrift_publisher.disconnect()  # disconnect the publisher upon being terminated
+            self.log.debug("Log publisher for path \"%s\" terminated" % self.file_path)
         else:
-            raise DataPublisherException("Unable to read the file at path %r" % self.file_path)
+            raise DataPublisherException("Unable to read the file at path \"%s\"" % self.file_path)
 
     def terminate(self):
         """
@@ -96,7 +101,7 @@ class LogPublisherManager(Thread):
     """
 
     @staticmethod
-    def define_stream():
+    def define_stream(tenant_id, alias, date_time):
         """
         Creates a stream definition for Log Publishing
         :return: A StreamDefinition object with the required attributes added
@@ -104,15 +109,16 @@ class LogPublisherManager(Thread):
         """
         # stream definition
         stream_definition = StreamDefinition()
-        valid_tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration().tenant_id)
-        alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration().cluster_id)
-        stream_name = "logs." + valid_tenant_id + "." \
-                      + alias + "." + LogPublisherManager.get_current_date()
+        stream_name = "logs." + tenant_id + "." \
+                      + alias + "." + date_time
         stream_version = "1.0.0"
+        stream_nickname = "log entries from instance"
+        stream_description = "Apache Stratos Instance Log Publisher"
 
         stream_definition.name = stream_name
         stream_definition.version = stream_version
-        stream_definition.description = "Apache Stratos Instance Log Publisher"
+        stream_definition.description = stream_description
+        stream_definition.nickname = stream_nickname
         stream_definition.add_metadata_attribute("memberId", StreamDefinition.STRING)
         stream_definition.add_payloaddata_attribute("tenantID", StreamDefinition.STRING)
         stream_definition.add_payloaddata_attribute("serverName", StreamDefinition.STRING)
@@ -129,6 +135,9 @@ class LogPublisherManager(Thread):
 
     def __init__(self, logfile_paths):
         Thread.__init__(self)
+
+        self.log = LogFactory().get_log(__name__)
+
         self.logfile_paths = logfile_paths
         self.publishers = {}
         self.ports = []
@@ -137,19 +146,23 @@ class LogPublisherManager(Thread):
 
         self.cartridge_agent_config = CartridgeAgentConfiguration()
 
-        cartridgeagentutils.wait_until_ports_active(
+        self.log.debug("Checking if Monitoring server is active.")
+        ports_active = cartridgeagentutils.wait_until_ports_active(
             DataPublisherConfiguration.get_instance().monitoring_server_ip,
             self.ports,
             int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
 
-        ports_active = cartridgeagentutils.check_ports_active(
-            DataPublisherConfiguration.get_instance().monitoring_server_ip,
-            self.ports)
-
         if not ports_active:
+            self.log.debug("Monitoring server is not active")
             raise DataPublisherException("Monitoring server not active, data publishing is aborted")
 
-        self.stream_definition = self.define_stream()
+        self.log.debug("Monitoring server is up and running. Log Publisher Manager started.")
+
+        self.tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration().tenant_id)
+        self.alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration().cluster_id)
+        self.date_time = LogPublisherManager.get_current_date()
+
+        self.stream_definition = self.define_stream(self.tenant_id, self.alias, self.date_time)
 
     def run(self):
         if self.logfile_paths is not None and len(self.logfile_paths):
@@ -157,6 +170,7 @@ class LogPublisherManager(Thread):
                 # thread for each log file
                 publisher = self.get_publisher(log_path)
                 publisher.start()
+                self.log.debug("Log publisher for path \"%s\" started." % log_path)
 
     def get_publisher(self, log_path):
         """
@@ -165,7 +179,14 @@ class LogPublisherManager(Thread):
         :rtype : LogPublisher
         """
         if log_path not in self.publishers:
-            self.publishers[log_path] = LogPublisher(log_path, self.stream_definition)
+            self.log.debug("Creating a Log publisher for path \"%s\"" % log_path)
+            self.publishers[log_path] = LogPublisher(
+                log_path,
+                self.stream_definition,
+                self.tenant_id,
+                self.alias,
+                self.date_time,
+                self.cartridge_agent_config.member_id)
 
         return self.publishers[log_path]
 
@@ -185,8 +206,7 @@ class LogPublisherManager(Thread):
 
     @staticmethod
     def get_valid_tenant_id(tenant_id):
-        if tenant_id == constants.INVALID_TENANT_ID \
-                or tenant_id == constants.SUPER_TENANT_ID:
+        if tenant_id == constants.INVALID_TENANT_ID or tenant_id == constants.SUPER_TENANT_ID:
             return "0"
 
         return tenant_id
@@ -243,7 +263,11 @@ class DataPublisherConfiguration:
         self.read_config()
 
     def read_config(self):
-        self.enabled = True if self.cartridge_agent_config.read_property(constants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
+        self.enabled = True if \
+            self.cartridge_agent_config.read_property(constants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() \
+            == "true" \
+            else False
+
         if not self.enabled:
             DataPublisherConfiguration.log.info("Data Publisher disabled")
             return
@@ -254,19 +278,31 @@ class DataPublisherConfiguration:
         if self.monitoring_server_ip is None or self.monitoring_server_ip.strip() == "":
             raise RuntimeError("System property not found: " + constants.MONITORING_RECEIVER_IP)
 
-        self.monitoring_server_port = self.cartridge_agent_config.read_property(constants.MONITORING_RECEIVER_PORT, False)
+        self.monitoring_server_port = self.cartridge_agent_config.read_property(
+            constants.MONITORING_RECEIVER_PORT,
+            False)
+
         if self.monitoring_server_port is None or self.monitoring_server_port.strip() == "":
             raise RuntimeError("System property not found: " + constants.MONITORING_RECEIVER_PORT)
 
-        self.monitoring_server_secure_port = self.cartridge_agent_config.read_property("monitoring.server.secure.port", False)
+        self.monitoring_server_secure_port = self.cartridge_agent_config.read_property(
+            "monitoring.server.secure.port",
+            False)
+
         if self.monitoring_server_secure_port is None or self.monitoring_server_secure_port.strip() == "":
             raise RuntimeError("System property not found: monitoring.server.secure.port")
 
-        self.admin_username = self.cartridge_agent_config.read_property(constants.MONITORING_SERVER_ADMIN_USERNAME, False)
+        self.admin_username = self.cartridge_agent_config.read_property(
+            constants.MONITORING_SERVER_ADMIN_USERNAME,
+            False)
+
         if self.admin_username is None or self.admin_username.strip() == "":
             raise RuntimeError("System property not found: " + constants.MONITORING_SERVER_ADMIN_USERNAME)
 
-        self.admin_password = self.cartridge_agent_config.read_property(constants.MONITORING_SERVER_ADMIN_PASSWORD, False)
+        self.admin_password = self.cartridge_agent_config.read_property(
+            constants.MONITORING_SERVER_ADMIN_PASSWORD,
+            False)
+
         if self.admin_password is None or self.admin_password.strip() == "":
             raise RuntimeError("System property not found: " + constants.MONITORING_SERVER_ADMIN_PASSWORD)
 

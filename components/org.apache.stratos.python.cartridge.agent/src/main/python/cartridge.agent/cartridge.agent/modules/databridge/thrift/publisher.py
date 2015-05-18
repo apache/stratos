@@ -41,7 +41,7 @@ class Publisher:
         self.sessionId = None
         self.streamId = None
 
-        self.event_num = 0
+        # self.event_num = 0
 
     def connect(self, username, password):
         # Create a client to use the protocol encoder
@@ -59,8 +59,8 @@ class Publisher:
     def publish(self, event):
         # Build thrift event bundle
         event.setSessionId(self.sessionId)
-        event.setEventNum(self.event_num)
-        self.event_num += 1
+        event.setEventNum(1)
+        # self.event_num += 1
 
         # Publish
         Publisher.client.publish(event.getEventBundle())
@@ -73,14 +73,16 @@ class Publisher:
 
 
 class EventBundle:
-    __sessionId = ""
-    __eventNum = 0
-    __intAttributeList = []
-    __longAttributeList = []
-    __doubleAttributeList = []
-    __boolAttributeList = []
-    __stringAttributeList = []
-    __arbitraryDataMapMap = None
+
+    def __init__(self):
+        self.__sessionId = ""
+        self.__eventNum = 0
+        self.__intAttributeList = []
+        self.__longAttributeList = []
+        self.__doubleAttributeList = []
+        self.__boolAttributeList = []
+        self.__stringAttributeList = []
+        self.__arbitraryDataMapMap = None
 
     def setSessionId(self, sessionId):
         self.__sessionId = sessionId
@@ -105,6 +107,6 @@ class EventBundle:
 
     def getEventBundle(self):
         return ThriftEventBundle(self.__sessionId, self.__eventNum, self.__intAttributeList,
-                                             self.__longAttributeList, self.__doubleAttributeList,
-                                             self.__boolAttributeList, self.__stringAttributeList,
-                                             self.__arbitraryDataMapMap)
+                                 self.__longAttributeList, self.__doubleAttributeList,
+                                 self.__boolAttributeList, self.__stringAttributeList,
+                                 self.__arbitraryDataMapMap)

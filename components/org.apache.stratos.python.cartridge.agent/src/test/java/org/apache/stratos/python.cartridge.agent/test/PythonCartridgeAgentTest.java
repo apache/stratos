@@ -57,6 +57,7 @@ public class PythonCartridgeAgentTest {
     private static final Log log = LogFactory.getLog(PythonCartridgeAgentTest.class);
 
     private static final String NEW_LINE = System.getProperty("line.separator");
+//    private static final long TIMEOUT = 1440000;
     private static final long TIMEOUT = 120000;
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
@@ -80,6 +81,7 @@ public class PythonCartridgeAgentTest {
     private boolean eventReceiverInitiated = false;
     private TopologyEventReceiver topologyEventReceiver;
     private InstanceStatusEventReceiver instanceStatusEventReceiver;
+    private int cepPort = 7711;
 
     public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
         this.artifactUpdatedEvent = artifactUpdatedEvent;
@@ -139,7 +141,7 @@ public class PythonCartridgeAgentTest {
         this.outputStream = executeCommand("python " + agentPath + "/agent.py");
 
         // Simulate CEP server socket
-        startServerSocket(7711);
+        startServerSocket(cepPort);
     }
 
     /**
@@ -211,6 +213,10 @@ public class PythonCartridgeAgentTest {
                 {privateRepoEvent, true},
                 {privateRepoEvent2, true}
         });
+
+//        return Arrays.asList(new Object[][]{
+//                {publicRepoEvent, true}
+//        });
 
     }
 
