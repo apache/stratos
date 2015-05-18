@@ -47,7 +47,6 @@ public class CartridgeBean {
      * Load balancing ip type: public|private
      */
     private String loadBalancingIPType;
-    private String[] metadataKeys;
     private List<PropertyBean> property;
 
     private String getDeploymentDetails() {
@@ -209,14 +208,6 @@ public class CartridgeBean {
         this.loadBalancingIPType = loadBalancingIPType;
     }
 
-    public String[] getMetadataKeys() {
-        return metadataKeys;
-    }
-
-    public void setMetadataKeys(String[] metadataKeys) {
-        this.metadataKeys = metadataKeys;
-    }
-
     public String toString() {
 
         return "Type: " + getType() +
@@ -233,7 +224,6 @@ public class CartridgeBean {
                 ", IaaS Providers: " + getIaasProviders() +
                 ", Persistence " + (getPersistence() == null ? "" : getPersistence().toString()) +
                 ", Load Balancing IP Type: " + getLoadBalancingIPType() +
-                ", Metadata Keys: " + getMetadataKeys() +
                 ", Properties: " + getProperties();
     }
 }
