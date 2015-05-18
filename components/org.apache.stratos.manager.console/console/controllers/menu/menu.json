@@ -10,7 +10,7 @@
             "description": "Configure Auto-scaling policies, cartridges and manage docker groups",
             "sub-menu": [
                 {
-                    "link": "configure/partitions/",
+                    "link": "configure/networkpartitions/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Network Partitions",

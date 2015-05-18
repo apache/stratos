@@ -29,7 +29,7 @@ var log = new Log("apachestratos.configure_request"),
 include('/controllers/login/validator.jag');
 
 try {
-    if(formtype == 'partitions'){
+    if(formtype == 'networkpartitions'){
         formSubmit = util.RESTCalls.deployPartitionDefinition(formPayload);
     }else if(formtype == 'autoscalingpolicies'){
         formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);

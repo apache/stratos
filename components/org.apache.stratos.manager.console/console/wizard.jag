@@ -43,7 +43,7 @@ if(elements==null){
 }
 
 var vm = {
-        '1':'partitions',
+        '1':'networkpartitions',
         '2':'autoscalingpolicies',
         '3':'deployments',
         '4':'loadbalancer',

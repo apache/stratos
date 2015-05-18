@@ -240,7 +240,7 @@
                 </div>
             {{/each}}
         {{/ifCond}}
-        {{#ifCond formtype "==" "partitions"}}
+        {{#ifCond formtype "==" "networkpartitions"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 col-xs-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -251,23 +251,23 @@
                     <div class="toggle-menu-description">{{description}}</div>
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                id="{{id}}" data-formtype="delete-partitions"> Delete</button>
+                                id="{{id}}" data-formtype="delete-networkpartitions"> Delete</button>
                         <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/partitions/{{id}}/edit" > Edit
+                                data-url="{{url ""}}/configure/networkpartitions/{{id}}/edit" > Edit
                         </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/partitions/{{id}}/" > Details
+                                data-url="{{url ""}}/configure/networkpartitions/{{id}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                    id="{{id}}" data-formtype="delete-partitions"> Delete</button>
+                                    id="{{id}}" data-formtype="delete-networkpartitions"> Delete</button>
                             <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/partitions/{{id}}/edit" > Edit
+                                    data-url="{{url ""}}/configure/networkpartitions/{{id}}/edit" > Edit
                             </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                    data-url="{{url ""}}/configure/partitions/{{id}}/" > Details
+                                    data-url="{{url ""}}/configure/networkpartitions/{{id}}/" > Details
                             </button>
                         </div>
                     </div>

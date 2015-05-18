@@ -84,7 +84,7 @@ if(isEdit == false && elements.action != 'new') {
 
     switch (formtype) {
 
-        case "partitions":
+        case "networkpartitions":
             formTitle = "Network Partition",
                     buttonText = "Network Partition";
             list_data = util.RESTCalls.getPartitions();
@@ -174,7 +174,7 @@ if (elements.action != 'new' && isEdit) {
             formDataEdit = util.RESTCalls.getPolicyDeployment(id);
             break;
 
-        case "partitions":
+        case "networkpartitions":
             formDataEdit = util.RESTCalls.getPartition(id);
             break;
 
@@ -205,7 +205,7 @@ if(elements.action != 'new' && isUpdate){
             id = escape(elements.action);
 
     switch (formtype) {
-        case "partitions":
+        case "networkpartitions":
             formDataUpdate = util.RESTCalls.getPartition(id);
             break;
         case "autoscalingpolicies":
