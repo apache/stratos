@@ -148,6 +148,15 @@ public class CloudControllerUtil {
                 }
             }
         }
+
+        //Setting load balancing type
+        config.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Private));
+        if (StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
+            if (config.getLoadBalancingIPType().equals("public")) {
+                config.setLoadBalancingIPType(
+                        getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Public));
+            }
+        }
     }
 
     public static void sleep(long time) {
