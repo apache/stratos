@@ -20,11 +20,25 @@ package org.apache.stratos.autoscaler.exception.policy;
 
 public class InvalidDeploymentPolicyException extends Exception {
 
+
+    private static final long serialVersionUID = -3086971886563007853L;
+    private String message;
+
     public InvalidDeploymentPolicyException(String message) {
         super(message);
+        this.setMessage(message);
     }
 
     public InvalidDeploymentPolicyException(String message, Exception e) {
         super(message, e);
+        this.setMessage(message);
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

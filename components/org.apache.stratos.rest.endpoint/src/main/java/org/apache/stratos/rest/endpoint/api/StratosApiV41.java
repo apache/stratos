@@ -163,8 +163,9 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidDeploymentPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Deployment policy is not valid")).build();
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy already exists")).build();
@@ -593,17 +594,13 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
         } catch (CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException e) {
-
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, e.getMessage()))
                     .build();
 
         } catch (CloudControllerServiceInvalidNetworkPartitionExceptionException e) {
-
-            //This message is taken following way since the Axis2 does not return the message in e.getMessage method
-            String backendErrorMessage = e.getFaultMessage().getInvalidNetworkPartitionException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, backendErrorMessage))
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, e.getMessage()))
                     .build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
@@ -827,11 +824,11 @@ public class StratosApiV41 extends AbstractApi {
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Invalid application policy")).build();
-        } catch (AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e) {
+        } catch(AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e){
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application policy already exists")).build();
 
-        } catch (RestAPIException e) {
+        }catch (RestAPIException e) {
             throw e;
         }
 
