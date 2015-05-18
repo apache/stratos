@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "id": "root",
     "type": "object",
-    "title":"Network Partition Definition",
+    "title": "Network Partition Definition",
     "name": "Network Partition Policy",
     "options": {
         "disable_properties": true,
@@ -12,47 +12,47 @@
         "id": {
             "id": "root/id",
             "type": "string",
-            "title":"Network Partition Id"
+            "title": "Network Partition Id"
         },
         "provider": {
             "id": "root/provider",
             "type": "string",
-            "title":"Network Partition provider",
+            "title": "Network Partition provider",
             "enum": ["mock", "ec2", "openstack", "kubernetes", "gce"]
         },
         "partitions": {
             "id": "root/partitions",
             "type": "array",
-            "format":"tabs",
-            "title":"Partitions",
+            "format": "tabs",
+            "title": "Partitions",
             "items": {
                 "id": "root/partitions/0",
                 "type": "object",
-                "title":"Partition",
+                "title": "Partition",
                 "properties": {
                     "id": {
                         "id": "root/partitions/0/id",
                         "type": "string",
-                        "title":"Partition Id"
+                        "title": "Partition Id"
                     },
                     "property": {
                         "id": "root/partitions/0/property",
                         "type": "array",
-                        "title":"Property",
-                        "format":"tabs",
+                        "title": "Property",
+                        "format": "tabs",
                         "items": {
                             "id": "root/partitions/0/property/0",
                             "type": "object",
-                            "title":"Property",
+                            "title": "Property",
                             "properties": {
                                 "name": {
                                     "id": "root/partitions/0/property/0/name",
-                                    "title":"Name",
+                                    "title": "Name",
                                     "type": "string"
                                 },
                                 "value": {
                                     "id": "root/partitions/0/property/0/value",
-                                    "title":"Value",
+                                    "title": "Value",
                                     "type": "string"
                                 }
                             }
@@ -60,8 +60,32 @@
                     }
                 }
             }
+        },
+        "properties": {
+            "id": "root/properties",
+            "type": "array",
+            "title": "Properties",
+            "format": "tabs",
+            "items": {
+                "id": "root/properties/0",
+                "type": "object",
+                "title": "Property",
+                "properties": {
+                    "name": {
+                        "id": "root/properties/0/name",
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "value": {
+                        "id": "root/properties/0/value",
+                        "title": "Value",
+                        "type": "string"
+                    }
+                }
+            }
         }
     },
+
     "required": [
         "id",
         "partitions",
