@@ -354,6 +354,9 @@
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
                                 id="{{name}}" data-formtype="delete-groups"> Delete</button>
+                        <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{name}}"
+                                data-url="{{url ""}}/configure/groups/{{name}}/edit" > Edit
+                        </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{name}}"
                                 data-url="{{url ""}}/configure/groups/{{name}}/" > Details
                         </button>
@@ -362,6 +365,9 @@
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
                                     id="{{name}}" data-formtype="delete-groups"> Delete</button>
+                            <button class="btn btn-warning btn-lg hover-details" type="button" id="details_{{name}}"
+                                    data-url="{{url ""}}/configure/groups/{{name}}/edit" > Edit
+                            </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{name}}"
                                     data-url="{{url ""}}/configure/groups/{{name}}/" > Details
                             </button>
