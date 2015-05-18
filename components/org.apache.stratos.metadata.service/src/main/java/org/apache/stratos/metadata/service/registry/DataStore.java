@@ -38,7 +38,11 @@ public interface DataStore {
 
     public void addPropertyToCluster(String applicationId, String clusterId, Property property) throws RegistryException;
 
-    public boolean deleteApplication(String applicationId) throws RegistryException;
+    public boolean deleteApplicationProperties(String applicationId) throws RegistryException;
 
-    public boolean removePropertyFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException;
+    public boolean removePropertyFromApplication(String applicationId, String propertyName) throws RegistryException;
+
+    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException;
+
+
 }

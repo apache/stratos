@@ -174,11 +174,10 @@ public class CarbonRegistry implements DataStore {
 
     }
 
-    public boolean removePropertyFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException {
+    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
 
-        try {
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
@@ -191,18 +190,11 @@ public class CarbonRegistry implements DataStore {
                 log.warn(String.format("Registry [resource] %s not found ", resourcePath));
                 return false;
             }
-
             nodeResource.removePropertyValue(propertyName, valueToRemove);
             registry.put(resourcePath, nodeResource);
             registry.commitTransaction();
 
             log.info(String.format("Application %s property %s value %s is removed from metadata ", applicationId, propertyName, valueToRemove));
-        } catch (Exception e) {
-            String msg = "Failed to persist properties in registry: " + resourcePath;
-            registry.rollbackTransaction();
-            log.error(msg, e);
-            throw new RegistryException(msg, e);
-        }
 
         return true;
     }
@@ -219,12 +211,10 @@ public class CarbonRegistry implements DataStore {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId + "/" + clusterId;
 
-        try {
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-            registry.beginTransaction();
             Resource nodeResource = null;
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
@@ -238,17 +228,8 @@ public class CarbonRegistry implements DataStore {
             nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
             registry.put(resourcePath, nodeResource);
 
-            registry.commitTransaction();
-
             log.info(String.format("Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
                     resourcePath, property.getKey(), Arrays.asList(property.getValues())));
-
-        } catch (Exception e) {
-            String msg = "Failed to persist properties in registry: " + resourcePath;
-            registry.rollbackTransaction();
-            log.error(msg, e);
-            throw new RegistryException(msg, e);
-        }
     }
 
     private UserRegistry getRegistry() throws RegistryException {
@@ -262,7 +243,7 @@ public class CarbonRegistry implements DataStore {
      * @return True if resource exist and able to delete, else false.
      * @throws RegistryException
      */
-    public boolean deleteApplication(String applicationId) throws RegistryException {
+    public boolean deleteApplicationProperties(String applicationId) throws RegistryException {
         if (StringUtils.isBlank(applicationId)) {
             throw new IllegalArgumentException("Application ID can not be null");
         }
@@ -271,22 +252,47 @@ public class CarbonRegistry implements DataStore {
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        Registry registry = null;
+        Registry registry;
         String resourcePath = mainResource + applicationId;
-        try {
+
             registry = getRegistry();
             registry.beginTransaction();
             if (registry.resourceExists(resourcePath)) {
                 registry.delete(resourcePath);
                 registry.commitTransaction();
-                log.info(String.format("Application removed from registry %s", applicationId));
+                log.info(String.format("Application [application-id ] properties removed from registry %s", applicationId));
                 return true;
             }
-        } catch (RegistryException e) {
-            registry.rollbackTransaction();
-            log.error("Could not remove registry resource: [resource-path] " + resourcePath);
-        }
+
         return false;
+    }
+
+    public boolean removePropertyFromApplication(String applicationId, String propertyName) throws org.wso2.carbon.registry.api.RegistryException {
+        Registry registry = getRegistry();
+        String resourcePath = mainResource + applicationId;
+
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+            Resource nodeResource;
+            if (registry.resourceExists(resourcePath)) {
+                nodeResource = registry.get(resourcePath);
+                if(nodeResource.getProperty(propertyName) == null) {
+                    log.info(String.format("[application-id] %s does not have a property [property-name] %s ", applicationId, propertyName));
+                    return false;
+                }else{
+                    nodeResource.removeProperty(propertyName);
+                    registry.put(resourcePath, nodeResource);
+                }
+
+            }else {
+                log.error("Registry resource not not found at " + resourcePath);
+               return false;
+            }
+
+        log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ", applicationId, propertyName));
+        return true;
     }
 
 }

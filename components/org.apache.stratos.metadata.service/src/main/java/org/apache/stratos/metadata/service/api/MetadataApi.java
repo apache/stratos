@@ -225,14 +225,32 @@ public class MetadataApi {
             throws RestAPIException {
 
         try {
-            boolean deleted = registry.deleteApplication(applicationId);
+            boolean deleted = registry.deleteApplicationProperties(applicationId);
             if (!deleted) {
                 log.warn(String.format(
-                        "Either no metadata is associated with given appId %s Or resources could not be deleted",
+                        "No metadata is associated with given appId %s",
                         applicationId));
             }
         } catch (RegistryException e) {
-            String msg = "Resource attached with appId could not be deleted";
+            String msg = "Resource attached with appId could not be deleted [application-id] " + applicationId;
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("applications/{application_id}/properties/{property_name}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response deleteApplicationProperty(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName)
+            throws RestAPIException {
+
+        try {
+            boolean deleted = registry.removePropertyFromApplication(applicationId, propertyName);
+
+        } catch (RegistryException e) {
+            String msg = String.format("[application-id] %s [property-name] deletion failed ", applicationId, propertyName);
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
@@ -243,14 +261,19 @@ public class MetadataApi {
     @Path("applications/{application_id}/properties/{property_name}/value/{value}")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response deleteApplicationPropertValue(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName,
-                                                  @PathParam("value") String propertyValue                      )
+    public Response deleteApplicationPropertyValue(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName,
+                                                   @PathParam("value") String propertyValue)
             throws RestAPIException {
 
         try {
-            registry.removePropertyFromApplication(applicationId, propertyName, propertyValue);
+            boolean deleted = registry.removePropertyValueFromApplication(applicationId, propertyName, propertyValue);
+            if (!deleted) {
+                log.warn(String.format(
+                        "No metadata is associated with given [application-id] %s",
+                        applicationId));
+            }
         } catch (RegistryException e) {
-            String msg = "Resource value deletion failed ";
+            String msg = String.format("[application-id] %s [property-name] %s [value] %s deletion failed" + applicationId, propertyName, propertyValue);
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
