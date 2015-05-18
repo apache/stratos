@@ -257,10 +257,10 @@
         "iaasProvider": {
             "type": "array",
             "id": "root/iaasProvider",
-            "title": "iaas Provider",
-            "name": "iaas Provider",
+            "title": "IaaS Providers",
+            "name": "IaaS Provider",
             "options": {
-                "collapsed": true
+                "collapsed": false
             },
             "format":"tabs",
             "items": {
@@ -268,8 +268,8 @@
                 "id": "root/iaasProvider/0",
                 "format": "grid",
                 "required": ["type", "imageId"],
-                "title": "iaas Provider",
-                "name": "iaas Provider",
+                "title": "IaaS Provider",
+                "name": "IaaS Provider",
                 "properties": {
                     "type": {
                         "type": "string",
