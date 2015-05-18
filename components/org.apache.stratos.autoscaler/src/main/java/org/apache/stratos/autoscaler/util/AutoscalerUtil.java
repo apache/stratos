@@ -660,9 +660,8 @@ public class AutoscalerUtil {
             // network partitions should be added already
             if (null == CloudControllerServiceClient.getInstance().
                     getNetworkPartition(networkPartitionId)) {
-                String msg = String.format("Invalid Application Policy. "
-                                + "Cause -> Network partition not found for network-partition-id : %s",
-                        networkPartitionId);
+                String msg = String.format("Network partition not found : [network-partition-id]  %s in " +
+                                "[application-policy-id] %s", networkPartitionId,applicationPolicy.getId());
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }

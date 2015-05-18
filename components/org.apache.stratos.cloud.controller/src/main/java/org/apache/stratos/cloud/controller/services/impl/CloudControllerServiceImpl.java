@@ -1466,7 +1466,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             handleNullObject(networkPartitionId, "Network Partition ID is null");
 
             if (cloudControllerContext.getNetworkPartition(networkPartitionId) == null) {
-                String message = "Network partition not exists: [network-partiton-id] " + networkPartitionId;
+                String message = "Network partition not found: [network-partition-id] " + networkPartitionId;
                 log.error(message);
                 throw new NetworkPartitionNotExistsException(message);
             }
@@ -1498,7 +1498,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String networkPartitionID = networkPartition.getId();
             if (cloudControllerContext.getNetworkPartition(networkPartitionID) == null) {
-                String message = "Network partition not exists: [network-partition-id] " + networkPartitionID;
+                String message = "Network partition not found: [network-partition-id] " + networkPartitionID;
                 log.error(message);
                 throw new NetworkPartitionNotExistsException(message);
             }

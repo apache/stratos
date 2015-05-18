@@ -31,11 +31,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.stratos.cli.utils.CliUtils;
+import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+
+import static org.apache.stratos.cli.utils.CliUtils.getHttpResponseString;
 
 /**
  * This class has three types of methods
@@ -164,14 +167,8 @@ public class RestClient implements GenericRestClient {
 
     public void deployEntity(String serviceEndpoint, String entityBody, String entityName) {
         try {
-            int responseCode = executePost(serviceEndpoint, entityBody);
-            if (responseCode == 201 || responseCode == 200) {
-                System.out.println(String.format("Successfully added %s", entityName));
-            } else if (responseCode == 500) {
-                System.out.println("Internal server error occurred");
-            } else if (responseCode == 409) {
-                System.out.println(String.format("Specified %s already exists",entityName));
-            }
+            String responseMessage = executePost(serviceEndpoint, entityBody);
+            System.out.println(responseMessage);
         } catch (Exception e) {
             String message = String.format("Error in adding %s", entityName);
             System.out.println(message);
@@ -198,14 +195,8 @@ public class RestClient implements GenericRestClient {
 
     public void updateEntity(String serviceEndpoint, String entityBody, String entityName) {
         try {
-            int responseCode = executePut(serviceEndpoint, entityBody);
-            if (responseCode == 404) {
-                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode == 500) {
-                System.out.println("Internal server error occurred");
-            } else if (responseCode >= 200 && responseCode < 300) {
-                System.out.println(String.format("Successfully updated %s", entityName));
-            }
+           String responseMessage = executePut(serviceEndpoint, entityBody);
+           System.out.println(responseMessage);
         } catch (Exception e) {
             String message = String.format("Error in updating %s", entityName);
             System.out.println(message);
@@ -275,16 +266,16 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    private int executePost(String serviceEndpoint, String postBody) throws IOException {
+    private String executePost(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = doPost(httpClient, getBaseURL() + serviceEndpoint, postBody);
+            String result = getHttpResponseString(response);
 
-            int responseCode = response.getStatusLine().getStatusCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                CliUtils.printError(response);
-            }
-            return responseCode;
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(result, ResponseMessageBean.class).getMessage();
+
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -327,23 +318,22 @@ public class RestClient implements GenericRestClient {
                 CliUtils.printError(response);
                 return null;
             } else {
-                return CliUtils.getHttpResponseString(response);
+                return getHttpResponseString(response);
             }
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
-    private int executePut(String serviceEndpoint, String postBody) throws IOException {
+    private String executePut(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = doPut(httpClient, getBaseURL() + serviceEndpoint, postBody);
+            String result = getHttpResponseString(response);
 
-            int responseCode = response.getStatusLine().getStatusCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                CliUtils.printError(response);
-            }
-            return responseCode;
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(result, ResponseMessageBean.class).getMessage();
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
