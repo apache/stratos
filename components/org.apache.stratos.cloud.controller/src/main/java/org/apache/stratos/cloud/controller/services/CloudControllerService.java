@@ -346,7 +346,8 @@ public interface CloudControllerService {
      * @param networkPartition
      * @throws NetworkPartitionAlreadyExistsException
      */
-    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException, InvalidNetworkPartitionException;
+    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException,
+            InvalidNetworkPartitionException;
 
     /**
      * Remove network partition

@@ -1403,53 +1403,54 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException {
+    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException,
+            InvalidNetworkPartitionException {
 
-        try {
-            handleNullObject(networkPartition, "Network Partition is null");
-            handleNullObject(networkPartition.getId(), "Network Partition ID is null");
+        handleNullObject(networkPartition, "Network Partition is null");
+        handleNullObject(networkPartition.getId(), "Network Partition ID is null");
 
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getId()));
-            }
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getId()));
+        }
 
-            String networkPartitionID = networkPartition.getId();
-            if (cloudControllerContext.getNetworkPartition(networkPartitionID) != null) {
-                String message = "Network partition already exists: [network-partition-id] " + networkPartitionID;
-                log.error(message);
-                throw new NetworkPartitionAlreadyExistsException(message);
-            }
+        String networkPartitionID = networkPartition.getId();
+        if (cloudControllerContext.getNetworkPartition(networkPartitionID) != null) {
+            String message = "Network partition already exists: [network-partition-id] " + networkPartitionID;
+            log.error(message);
+            throw new NetworkPartitionAlreadyExistsException(message);
+        }
 
-            if (networkPartition.getPartitions() != null) {
-                for (Partition partition : networkPartition.getPartitions()) {
-                    if (partition != null) {
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
-                                    networkPartition.getId(), partition.getId()));
-                        }
-                        // Overwrites partition provider with network partition provider
-                        partition.setProvider(networkPartition.getProvider());
+        if (networkPartition.getPartitions() != null) {
+            for (Partition partition : networkPartition.getPartitions()) {
+                if (partition != null) {
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
+                                networkPartition.getId(), partition.getId()));
+                    }
+                    // Overwrites partition provider with network partition provider
+                    partition.setProvider(networkPartition.getProvider());
+                    try {
                         validatePartition(partition);
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
-                                    "[partition-id] %s", networkPartition.getId(), partition.getId()));
-                        }
+                    } catch (InvalidPartitionException e) {
+                        throw new InvalidNetworkPartitionException(String.format("Invalid network partition " +
+                                        "[network-partition-id] %s, due to invalid partition [partition-id] %s ",
+                                networkPartition.getId(), partition.getId()), e);
+                    }
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
+                                "[partition-id] %s", networkPartition.getId(), partition.getId()));
                     }
                 }
             }
+        }
 
-            // adding network partition to CC-Context
-            CloudControllerContext.getInstance().addNetworkPartition(networkPartition);
-            // persisting CC-Context
-            CloudControllerContext.getInstance().persist();
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Network partition added successfully: [network-partition-id] %s",
-                        networkPartition.getId()));
-            }
-        } catch (Exception e) {
-            String message = e.getMessage();
-            log.error(message);
-            throw new CloudControllerException(message, e);
+        // adding network partition to CC-Context
+        CloudControllerContext.getInstance().addNetworkPartition(networkPartition);
+        // persisting CC-Context
+        CloudControllerContext.getInstance().persist();
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Network partition added successfully: [network-partition-id] %s",
+                    networkPartition.getId()));
         }
         return true;
     }
