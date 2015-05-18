@@ -28,6 +28,8 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.MalformedChallengeException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.exception.ExceptionMapper;
@@ -214,7 +216,7 @@ public class RestCommandLineService {
                     if (responseCode == 200) {
                         return true;
                     } else {
-                        System.out.println("Invalid STRATOS_URL");
+                        System.out.println("Invalid value is set for STRATOS_URL");
                     }
                 }
                 return false;
@@ -231,6 +233,11 @@ public class RestCommandLineService {
             printError(message, e);
             return false;
         } catch (Exception e) {
+            if(e.getCause() instanceof MalformedChallengeException){
+                String message="Authentication failed. Please check your username/password";
+                printError(message,e);
+                return  false;
+            }
             String message = "An unknown error occurred: " + e.getMessage();
             printError(message, e);
             return false;
