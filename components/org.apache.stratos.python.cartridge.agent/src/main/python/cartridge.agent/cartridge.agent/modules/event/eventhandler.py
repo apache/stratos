@@ -88,6 +88,9 @@ class EventHandler:
 
             self.__log.info("Executing git checkout")
 
+            if local_repo_path is None:
+                raise GitRepositorySynchronizationException("Repository path is empty. Cannot perform Git operations.")
+
             # create repo object
             local_repo_path = self.get_repo_path_for_tenant(tenant_id, local_repo_path, is_multitenant)
             repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
