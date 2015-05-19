@@ -808,7 +808,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public boolean addApplicationPolicy(ApplicationPolicy applicationPolicy)
-            throws RemoteException, InvalidApplicationPolicyException,ApplicationPolicyAlreadyExistsException {
+            throws RemoteException, InvalidApplicationPolicyException, ApplicationPolicyAlreadyExistsException {
 
         // validating application policy
         AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
@@ -838,8 +838,23 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException {
-        PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
+    public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException, UnremovablePolicyException {
+
+        if (removableApplicationPolicy(applicationPolicyId)) {
+            return PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
+        } else {
+            throw new UnremovablePolicyException("This application policy cannot be removed, since it is used in " +
+                    "applications.");
+        }
+    }
+
+    private boolean removableApplicationPolicy(String applicationPolicyId) {
+
+        for (Application application : ApplicationHolder.getApplications().getApplications().values()) {
+            if (applicationPolicyId.equals(application.getApplicationPolicyId())) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -978,7 +993,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         // deployment policy should contain at least one network partition reference
         if (null == deploymentPolicy.getNetworkPartitionRefs() || deploymentPolicy.getNetworkPartitionRefs().length == 0) {
             String msg = String.format("Deployment policy does not have any network partition references: " +
-                            "[deployment-policy-id] %s", deploymentPolicyId);
+                    "[deployment-policy-id] %s", deploymentPolicyId);
             log.error(msg);
             throw new InvalidDeploymentPolicyException(msg);
         }
@@ -999,7 +1014,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     .getNetworkPartition(networkPartitionId);
             if (networkPartition == null) {
                 String msg = String.format("Network partition is not found: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s", deploymentPolicyId, networkPartitionId);
+                        "[network-partition-id] %s", deploymentPolicyId, networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }

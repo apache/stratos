@@ -119,7 +119,7 @@ public class AutoscalerServiceClient {
 
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy)
             throws RemoteException,
-            AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException,AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
+            AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException, AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
         stub.addApplicationPolicy(applicationPolicy);
     }
 
@@ -138,7 +138,7 @@ public class AutoscalerServiceClient {
     }
 
     public void removeApplicationPolicy(String applicationPolicyId)
-            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException {
+            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceUnremovablePolicyExceptionException {
         stub.removeApplicationPolicy(applicationPolicyId);
     }
 

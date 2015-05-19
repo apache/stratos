@@ -920,6 +920,11 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, backendErrorMessage))
                     .build();
+        } catch (AutoscalerServiceUnremovablePolicyExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "This application policy cannot be removed, since it is used in an " +
+                    "application"))
+                    .build();
         }
     }
 
