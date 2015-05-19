@@ -800,7 +800,12 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application policy already deployed")).build();
         } catch (RestAPIException e) {
-            throw e;
+            if (e.getMessage().contains("Application not found")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                        ResponseMessageBean.ERROR, e.getMessage())).build();
+            } else {
+                throw e;
+            }
         }
     }
 

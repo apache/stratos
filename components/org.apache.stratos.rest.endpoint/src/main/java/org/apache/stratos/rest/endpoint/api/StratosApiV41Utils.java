@@ -1622,7 +1622,7 @@ public class StratosApiV41Utils {
             ApplicationContext application = autoscalerServiceClient.getApplication(applicationId);
 
             if (application == null) {
-                String message = String.format("Application is not found: [application-id] %s", applicationId);
+                String message = String.format("Application not found: [application-id] %s", applicationId);
                 log.error(message);
                 throw new RestAPIException(message);
             }
