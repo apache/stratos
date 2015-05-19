@@ -26,3 +26,10 @@
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
 echo `date`": Instance activated" | tee -a $log
+
+modprobe dummy numdummies=1
+ifconfig dummy0 10.10.10.10 netmask 255.255.255.0
+
+echo `update the dummy interface'
+
+
