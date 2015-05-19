@@ -30,22 +30,11 @@ public class KubernetesMaster extends KubernetesHost implements Serializable {
 
     private static final long serialVersionUID = -4369535909362724532L;
 
-    private String endpoint;
-
     public KubernetesMaster() {
     }
 
     public KubernetesMaster(String hostId, String hostname, String privateIPAddress, String publicIPAddress, String endpoint) {
         super(hostId, hostname, privateIPAddress, publicIPAddress);
-        this.endpoint = endpoint;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
     }
 
     @Override
@@ -53,7 +42,6 @@ public class KubernetesMaster extends KubernetesHost implements Serializable {
         return "KubernetesMaster [hostId=" + getHostId() +
                 " hostname=" + getHostname() +
                 " privateIPAddress=" + getPrivateIPAddress() +
-                " endpoint=" + endpoint +
                 " properties=" + getProperties() + "]";
     }
 
@@ -77,7 +65,7 @@ public class KubernetesMaster extends KubernetesHost implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((this.endpoint == null) ? 0 : this.endpoint.hashCode());
+        result = prime * result;
         return result;
     }
 }
