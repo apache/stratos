@@ -28,7 +28,8 @@
                                         "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
                                         "repoUsername":"",
                                         "repoPassword":""
-                                    }
+                                    },
+                                    "lvsVirtualIP":"192.168.0.40"
                                 }
                             }
                         ]
@@ -47,7 +48,8 @@
                                 "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
                                 "repoUsername":"",
                                 "repoPassword":""
-                            }
+                            },
+                            "lvsVirtualIP":"192.168.0.41"
                         }
                     }
                 ]
@@ -62,6 +64,7 @@
                     "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "deploymentPolicy":"deployment-policy-2",
+                    "lvsVirtualIP":"192.168.0.42",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
