@@ -1488,6 +1488,9 @@ public class StratosApiV41 extends AbstractApi {
         } catch (InvalidEmailException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, String.format("Invalid email [email] %s", tenantInfoBean.getEmail()))).build();
+        } catch (InvalidDomainException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, String.format("Invalid Domain [Domain] %s", tenantInfoBean.getTenantDomain()))).build();
         } catch (Exception e) {
             String msg = "Error in updating tenant " + tenantInfoBean.getTenantDomain();
             log.error(msg, e);

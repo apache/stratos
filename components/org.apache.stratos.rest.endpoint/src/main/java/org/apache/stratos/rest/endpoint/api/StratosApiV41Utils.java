@@ -2928,6 +2928,10 @@ public class StratosApiV41Utils {
         int tenantId;
         try {
             tenantId = tenantManager.getTenantId(tenantDomain);
+            if (tenantId == -1) {
+                String errorMsg = "The tenant with domain name: " + tenantDomain + " does not exist.";
+                throw new InvalidDomainException(errorMsg);
+            }
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant id for the tenant domain: " + tenantDomain + ".";
             log.error(msg, e);
@@ -2937,6 +2941,10 @@ public class StratosApiV41Utils {
         Tenant tenant;
         try {
             tenant = (Tenant) tenantManager.getTenant(tenantId);
+            if (tenant == null) {
+                String errorMsg = "The tenant with tenant id: " + tenantId + " does not exist.";
+                throw new TenantNotFoundException(errorMsg);
+            }
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant from tenant id: " +
                     tenantId + ".";
