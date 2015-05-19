@@ -652,7 +652,7 @@ public class ApplicationBuilder {
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
 
         if (applicationMonitor != null) {
-            NetworkPartitionContext context = applicationMonitor.
+            GroupLevelNetworkPartitionContext context = (GroupLevelNetworkPartitionContext) applicationMonitor.
                     getNetworkPartitionContext(networkPartitionId);
             if (status == ApplicationStatus.Active) {
                 if (log.isDebugEnabled()) {
@@ -693,7 +693,8 @@ public class ApplicationBuilder {
                                            String instanceId, String parentInstanceId) {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
-            NetworkPartitionContext context = monitor.getNetworkPartitionContext(networkPartitionId);
+            GroupLevelNetworkPartitionContext context
+                    = (GroupLevelNetworkPartitionContext) monitor.getNetworkPartitionContext(networkPartitionId);
             if (status == GroupStatus.Active) {
                 if (log.isDebugEnabled()) {
                     log.debug("Moving pending group instance to active list in [group] " + groupId

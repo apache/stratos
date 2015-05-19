@@ -144,7 +144,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     private void handleScalingMaxOut(InstanceContext instanceContext,
                                      NetworkPartitionContext networkPartitionContext) {
-        if (networkPartitionContext.getPendingInstancesCount() == 0) {
+        if (((ApplicationLevelNetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
             //handling the application bursting only when there are no pending instances found
             try {
                 if (log.isInfoEnabled()) {
