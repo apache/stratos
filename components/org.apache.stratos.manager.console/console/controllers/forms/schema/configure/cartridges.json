@@ -100,16 +100,6 @@
             "maxItems": 1,
             "enum": ["private","public"]
         },
-        "tenantPartitions": {
-            "type": "string",
-            "id": "root/tenantPartitions",
-            "title": "Tenant Partitions",
-            "name": "Tenant Partitions",
-            "minLength":2,
-            "default": "[1-10][11-100]",
-            "propertyOrder": 1,
-            "maxItems": 1
-        },
         "portMapping": {
             "type": "array",
             "id": "root/portMapping",
