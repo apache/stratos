@@ -45,8 +45,8 @@
                 <exclude>**/log4j.properties</exclude>
                 <exclude>**/repository/components/**</exclude>
 		        <exclude>**/lib/endorsed/**</exclude>
-                <exclude>**/dbscripts/mysql.sql</exclude>
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
+                <exclude>**/dbscripts/**</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
 		        <exclude>**/repository/conf/axis2/axis2.xml</exclude>
 		        <exclude>**/repository/conf/registry.xml</exclude>
@@ -344,16 +344,40 @@
 				<include>**/*.war</include>
 			</includes>
 		</fileSet>
-        <fileSet>
+
+		<fileSet>
 			<directory>../../resources/cloud-services-icons/target/</directory>
 			<outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps</outputDirectory>
 			<includes>
 				<include>**/*.war</include>
 			</includes>
 		</fileSet>
+
+		<fileSet>
+	        	<directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/</directory>
+        		<outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry/</outputDirectory>
+            	<excludes>
+                	<exclude>**/identity/**</exclude>
+			<!-- new version of mysql.sql and db2.sql is coming from WSO2-CARBON-PATCH-4.2.0-0001 patch. So excluding them-->
+                	<exclude>mysql.sql</exclude>
+                	<exclude>db2.sql</exclude>
+            	</excludes>
+            	<includes>
+                	<include>**/**.sql</include>
+            	</includes>
+		</fileSet>
+
 		<fileSet>
 	        	<directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/</directory>
         		<outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/identity</outputDirectory>
+            	<includes>
+                	<include>**/**.sql</include>
+            	</includes>
+		</fileSet>
+
+		<fileSet>
+	        	<directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts</directory>
+        		<outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
             	<includes>
                 	<include>**/**.sql</include>
             	</includes>
@@ -449,10 +473,12 @@
                 <include>**/patch0008/*.*</include>
             </includes>
         </fileSet>
+<!--
 		<fileSet>
                    <directory>../../dbscripts/</directory>
                    <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
                 </fileSet>
+-->
 		<fileSet>
                    <directory>../../payload</directory>
 		   <includes>
@@ -983,11 +1009,13 @@
         </file>
 
    <!--Copying config files from kernel patches -->
+<!--
         <file>
             <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts/mysql.sql</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
             <filtered>true</filtered>
         </file>
+-->
         <file>
             <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
