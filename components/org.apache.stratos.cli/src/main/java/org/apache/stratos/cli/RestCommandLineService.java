@@ -63,6 +63,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.apache.stratos.cli.utils.CliUtils.getHttpResponseString;
+
 public class RestCommandLineService {
 
     private static final Logger log = LoggerFactory.getLogger(RestCommandLineService.class);
@@ -685,12 +687,9 @@ public class RestCommandLineService {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
                     + ENDPOINT_ADD_USER, jsonString);
 
-            int responseCode = response.getStatusLine().getStatusCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                CliUtils.printError(response);
-            } else {
-                System.out.println("User added successfully: " + userName);
-            }
+            String result = getHttpResponseString(response);
+            System.out.println(gson.fromJson(result, ResponseMessageBean.class).getMessage());
+
         } catch (Exception e) {
             String message = "Could not add user: " + userName;
             printError(message, e);

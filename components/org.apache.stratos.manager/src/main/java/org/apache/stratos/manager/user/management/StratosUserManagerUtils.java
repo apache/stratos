@@ -71,7 +71,7 @@ public class StratosUserManagerUtils {
         } catch (UserStoreException e) {
             String msg = "Error in adding user " + userInfoBean.getUserName() + " to User Store";
             log.error(msg, e);
-            throw new UserManagerException(msg, e);
+            throw new UserManagerException(e.getMessage());
         }
 
     }
