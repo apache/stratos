@@ -40,7 +40,7 @@ public class CartridgeBean {
     private boolean multiTenant;
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
-    private String[] metadataKeys;
+    private List<String> metadataKeys;
     private List<IaasProviderBean> iaasProvider;
     private PersistenceBean persistence;
     /**
@@ -219,11 +219,11 @@ public class CartridgeBean {
                 ", Properties: " + getProperties();
     }
 
-    public String[] getMetadataKeys() {
+    public List<String> getMetadataKeys() {
         return metadataKeys;
     }
 
-    public void setMetadataKeys(String[] metadataKeys) {
+    public void setMetadataKeys(List<String> metadataKeys) {
         this.metadataKeys = metadataKeys;
     }
 }

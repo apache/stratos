@@ -79,7 +79,8 @@ public class ObjectConverter {
         cartridge.setDisplayName(cartridgeBean.getDisplayName());
         cartridge.setDescription(cartridgeBean.getDescription());
         cartridge.setLoadBalancingIPType(cartridgeBean.getLoadBalancingIPType());
-        cartridge.setMetadataKeys(cartridgeBean.getMetadataKeys());
+        cartridge.setMetadataKeys(cartridgeBean.getMetadataKeys().
+                toArray(new String[cartridgeBean.getMetadataKeys().size()]));
 
         // deployment information
         if (cartridgeBean.getDeployment() != null) {
@@ -1591,7 +1592,7 @@ public class ObjectConverter {
         cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
 
         if(cartridgeInfo.getMetadataKeys() != null && cartridgeInfo.getMetadataKeys()[0] != null) {
-            cartridge.setMetadataKeys(cartridgeInfo.getMetadataKeys());
+            cartridge.setMetadataKeys(Arrays.asList(cartridgeInfo.getMetadataKeys()));
         }
 
         //convert persistence
