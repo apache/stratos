@@ -23,8 +23,7 @@ package org.apache.stratos.autoscaler.exception.policy;
  */
 public class ApplicationPolicyAlreadyExistsException extends Exception {
 
-    public ApplicationPolicyAlreadyExistsException(String message)
-    {
+    public ApplicationPolicyAlreadyExistsException(String message) {
         super(message);
     }
 

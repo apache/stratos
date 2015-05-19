@@ -79,7 +79,7 @@ public class ObjectConverter {
         cartridge.setDisplayName(cartridgeBean.getDisplayName());
         cartridge.setDescription(cartridgeBean.getDescription());
         cartridge.setLoadBalancingIPType(cartridgeBean.getLoadBalancingIPType());
-        if(cartridgeBean.getMetadataKeys() != null) {
+        if (cartridgeBean.getMetadataKeys() != null) {
             cartridge.setMetadataKeys(cartridgeBean.getMetadataKeys().
                     toArray(new String[cartridgeBean.getMetadataKeys().size()]));
         }
@@ -138,7 +138,7 @@ public class ObjectConverter {
     private static List<PortMappingBean> convertPortMappingsToStubPortMappingBeans(
             PortMapping[] portMappingps) {
 
-        if (portMappingps == null || portMappingps[0] == null ) {
+        if (portMappingps == null || portMappingps[0] == null) {
             return null;
         }
         List<PortMappingBean> portMappingBeans = new ArrayList<PortMappingBean>();
@@ -165,7 +165,7 @@ public class ObjectConverter {
         }
 
         List<IaasProviderBean> iaasProviderBeans = new ArrayList<IaasProviderBean>();
-        for(IaasConfig iaasConfig : iaasConfigs) {
+        for (IaasConfig iaasConfig : iaasConfigs) {
             IaasProviderBean iaasProviderBean = new IaasProviderBean();
             iaasProviderBean.setType(iaasConfig.getType());
             iaasProviderBean.setImageId(iaasConfig.getImageId());
@@ -327,7 +327,7 @@ public class ObjectConverter {
 
         List<NetworkInterfaceBean> networkInterfaceBeans = new ArrayList<NetworkInterfaceBean>();
 
-        for(NetworkInterface networkInterface : networkInterfaces.getNetworkInterfaces()) {
+        for (NetworkInterface networkInterface : networkInterfaces.getNetworkInterfaces()) {
             NetworkInterfaceBean networkInterfaceBean = new NetworkInterfaceBean();
             networkInterfaceBean.setNetworkUuid(networkInterface.getNetworkUuid());
             networkInterfaceBean.setFixedIp(networkInterface.getFixedIp());
@@ -367,7 +367,7 @@ public class ObjectConverter {
         return floatingNetworks;
     }
 
-    private static List<FloatingNetworkBean>  convertFloatingNetworksToFloatingNetworkBeans(
+    private static List<FloatingNetworkBean> convertFloatingNetworksToFloatingNetworkBeans(
             FloatingNetworks floatingNetworks) {
         List<FloatingNetworkBean> floatingNetworkBeans = new ArrayList<FloatingNetworkBean>();
 
@@ -1521,7 +1521,7 @@ public class ObjectConverter {
     /**
      * Convert Persistence To PersistenceBean
      *
-     * @param baseDir base directory
+     * @param baseDir     base directory
      * @param directories directories
      * @return DeploymentBean
      */
@@ -1592,7 +1592,7 @@ public class ObjectConverter {
         cartridge.setDescription(cartridgeInfo.getDescription());
         cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
 
-        if(cartridgeInfo.getMetadataKeys() != null && cartridgeInfo.getMetadataKeys()[0] != null) {
+        if (cartridgeInfo.getMetadataKeys() != null && cartridgeInfo.getMetadataKeys()[0] != null) {
             cartridge.setMetadataKeys(Arrays.asList(cartridgeInfo.getMetadataKeys()));
         }
 

@@ -32,19 +32,19 @@ public class NodeBuilder {
 
     /**
      * Construct a node structure for the given content.
-     *
-     *            # comment
-     *            property_1 value1;
-     *            property_2 value2;
-     *
-     *            node1 { # comment
-     *              property_3 value3;
-     *              property_4 value4;
-     *
-     *              node2 {
-     *                  property_5 value5;
-     *              }
-     *            }
+     * <p/>
+     * # comment
+     * property_1 value1;
+     * property_2 value2;
+     * <p/>
+     * node1 { # comment
+     * property_3 value3;
+     * property_4 value4;
+     * <p/>
+     * node2 {
+     * property_5 value5;
+     * }
+     * }
      *
      * @return fully constructed root node
      */

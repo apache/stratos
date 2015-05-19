@@ -22,7 +22,7 @@
                     "link": "configure/autoscalingpolicies/",
                     "linkexternal": false,
                     "context": "/configure",
-                    "title": "Auto-scaling Policies",
+                    "title": "Autoscaling Policies",
                     "icon": "fa-expand",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/autoscalingpolicy"],
                     "description": "Manage policies which specify autoscaling threshold values."
