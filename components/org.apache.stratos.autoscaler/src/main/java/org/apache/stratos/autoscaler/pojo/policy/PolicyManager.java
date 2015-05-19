@@ -228,14 +228,14 @@ public class PolicyManager {
         }
     }
 
-    public void removeApplicationPolicyInInformationModel(String applicationId) throws InvalidPolicyException {
-        if (applicationPolicyListMap.containsKey(applicationId)) {
+    public void removeApplicationPolicyInInformationModel(String applicationPolicyId) throws InvalidPolicyException {
+        if (applicationPolicyListMap.containsKey(applicationPolicyId)) {
             if (log.isDebugEnabled()) {
-                log.debug("Removing application policy [application-id] " + applicationId);
+                log.debug("Removing application policy [application-policy-id] " + applicationPolicyId);
             }
-            applicationPolicyListMap.remove(applicationId);
+            applicationPolicyListMap.remove(applicationPolicyId);
         } else {
-            throw new InvalidPolicyException("No such application id [" + applicationId + "] exists");
+            throw new InvalidPolicyException(String.format("Application policy not found: [application-policy-id] %s", applicationPolicyId));
         }
     }
 

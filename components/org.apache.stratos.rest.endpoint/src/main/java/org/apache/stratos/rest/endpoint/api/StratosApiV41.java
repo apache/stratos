@@ -825,8 +825,9 @@ public class StratosApiV41 extends AbstractApi {
                     String.format("Application policy added successfully: [application-policy] %s",
                             applicationPolicy.getId()))).build();
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidApplicationPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Invalid application policy")).build();
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application policy already exists")).build();
@@ -907,11 +908,12 @@ public class StratosApiV41 extends AbstractApi {
                             applicationPolicyId))).build();
         } catch (ApplicationPolicyIdIsEmptyException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Autoscaling policy id is empty"))
+                    ResponseMessageBean.ERROR, "Application policy id is empty"))
                     .build();
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Autoscaling policy is invalid"))
+                    ResponseMessageBean.ERROR, backendErrorMessage))
                     .build();
         }
     }
@@ -934,8 +936,9 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateApplicationPolicy(applicationPolicy);
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidApplicationPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Invalid application policy"))
+                    ResponseMessageBean.ERROR, backendErrorMessage))
                     .build();
         } catch (AutoscalerServiceApplicatioinPolicyNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(

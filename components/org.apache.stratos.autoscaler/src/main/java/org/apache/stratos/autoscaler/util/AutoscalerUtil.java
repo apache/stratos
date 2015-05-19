@@ -604,14 +604,14 @@ public class AutoscalerUtil {
 
         // application policy can't be null
         if (null == applicationPolicy) {
-            String msg = "Invalid Application Policy. Cause -> Application Policy is null";
+            String msg = "Invalid Application Policy: Application Policy is null";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
         }
 
         // application policy id can't be null
         if (applicationPolicy.getId() == null || StringUtils.isBlank(applicationPolicy.getId())) {
-            String msg = "Invalid Application Policy. Cause -> Application policy id null or empty";
+            String msg = "Invalid Application Policy: Application policy id null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
         }
@@ -619,7 +619,7 @@ public class AutoscalerUtil {
         // network partition algorithm can't null or empty
         String algorithm = applicationPolicy.getAlgorithm();
         if (algorithm == null || StringUtils.isBlank(algorithm)) {
-            String msg = "Invalid Application Policy. Cause -> Network " +
+            String msg = "Invalid Application Policy: Network " +
                     "partition algorithm is null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
@@ -628,7 +628,7 @@ public class AutoscalerUtil {
         // network partition algorithm should be either one-after-another or all-at-once
         if (!algorithm.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID)
                 && !algorithm.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
-            String msg = String.format("Invalid Application Policy. Cause -> " +
+            String msg = String.format("Invalid Application Policy: " +
                             "Invalid network partition algorithm. "
                             + "It should be either %s or %s, but found %s",
                     StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID,
@@ -640,8 +640,8 @@ public class AutoscalerUtil {
         // application policy should contain at least one network partition reference
         String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
         if (null == networkPartitionIds || networkPartitionIds.length == 0) {
-            String msg = "Invalid Application Policy. "
-                    + "Cause -> Application Policy is not containing any network partition reference";
+            String msg = "Invalid Application Policy: "
+                    + "Application Policy is not containing any network partition reference";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
         }
@@ -651,8 +651,8 @@ public class AutoscalerUtil {
 
             // network-partition-id can't be null or empty
             if (null == networkPartitionId || networkPartitionId.isEmpty()) {
-                String msg = String.format("Invalid Application Policy. "
-                        + "Cause -> Invalid network-partition-id : %s", networkPartitionId);
+                String msg = String.format("Invalid Application Policy: "
+                        + "Invalid network-partition-id [network-partition-id] %s", networkPartitionId);
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -660,8 +660,8 @@ public class AutoscalerUtil {
             // network partitions should be added already
             if (null == CloudControllerServiceClient.getInstance().
                     getNetworkPartition(networkPartitionId)) {
-                String msg = String.format("Network partition not found : [network-partition-id]  %s in " +
-                                "[application-policy-id] %s", networkPartitionId,applicationPolicy.getId());
+                String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
+                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getId());
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -686,8 +686,8 @@ public class AutoscalerUtil {
                                 for (String networkPartitionId : networkPartitionIds) {
                                     // network-partition-id can't be null or empty
                                     if (null == networkPartitionId || networkPartitionId.isEmpty()) {
-                                        String msg = String.format("Invalid Application Policy. "
-                                                        + "Cause -> Invalid network-partition-id : %s",
+                                        String msg = String.format("Invalid Application Policy: "
+                                                        + "Invalid network-partition-id [network-partition-id] %s",
                                                 networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
@@ -696,9 +696,9 @@ public class AutoscalerUtil {
                                     // network partitions should be added already
                                     if (null == CloudControllerServiceClient.getInstance().
                                             getNetworkPartition(networkPartitionId)) {
-                                        String msg = String.format("Invalid Application Policy. "
-                                                + "Cause -> Network partition not found for " +
-                                                "network-partition-id : %s", networkPartitionId);
+                                        String msg = String.format("Invalid Application Policy: "
+                                                + "Network partition not found for " +
+                                                "[network-partition-id] : %s", networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
                                     }
@@ -738,8 +738,8 @@ public class AutoscalerUtil {
             String networkPartitionId = applicationPolicyNetworkPartitionerence;
             // validate application policy against the given application
             if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
-                String msg = String.format("Invalid Application Policy. "
-                                + "Cause -> Network partition [network-partition-id] %s is not used in application [application-id] %s. "
+                String msg = String.format("Invalid Application Policy: "
+                                + "Network partition [network-partition-id] %s is not used in application [application-id] %s. "
                                 + "Hence application bursting will fail. Either remove %s from application policy or make all the cartridges available in %s",
                         networkPartitionId, applicationId, networkPartitionId, networkPartitionId);
                 log.error(msg);
