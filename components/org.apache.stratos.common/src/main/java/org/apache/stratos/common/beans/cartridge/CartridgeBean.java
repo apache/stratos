@@ -40,6 +40,7 @@ public class CartridgeBean {
     private boolean multiTenant;
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
+    private List<String> metadataKeys;
     private List<IaasProviderBean> iaasProvider;
     private PersistenceBean persistence;
     /**
@@ -212,8 +213,17 @@ public class CartridgeBean {
                 ", Deployment" + getDeploymentDetails() +
                 ", Port Mapping: " + getPortMappings() +
                 ", IaaS Providers: " + getIaasProviders() +
+                ", Metadata keys: " + getMetadataKeys() +
                 ", Persistence " + (getPersistence() == null ? "" : getPersistence().toString()) +
                 ", Load Balancing IP Type: " + getLoadBalancingIPType() +
                 ", Properties: " + getProperties();
+    }
+
+    public List<String> getMetadataKeys() {
+        return metadataKeys;
+    }
+
+    public void setMetadataKeys(List<String> metadataKeys) {
+        this.metadataKeys = metadataKeys;
     }
 }

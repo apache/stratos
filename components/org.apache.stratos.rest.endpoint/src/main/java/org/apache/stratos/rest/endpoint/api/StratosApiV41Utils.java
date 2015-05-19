@@ -1968,6 +1968,32 @@ public class StratosApiV41Utils {
         return false;
     }
 
+
+    /**
+     * Update Kubernetes Cluster
+     *
+     * @param kubernetesClusterBean KubernetesClusterBean
+     * @return add status
+     * @throws RestAPIException
+     */
+    public static boolean updateKubernetesCluster(KubernetesClusterBean kubernetesClusterBean) throws RestAPIException,
+            CloudControllerServiceInvalidKubernetesClusterExceptionException {
+
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
+            org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster =
+                    ObjectConverter.convertToCCKubernetesClusterPojo(kubernetesClusterBean);
+
+            try {
+                return cloudControllerServiceClient.deployKubernetesCluster(kubernetesCluster);
+            } catch (RemoteException e) {
+                log.error(e.getMessage(), e);
+                throw new RestAPIException(e.getMessage(), e);
+            }
+        }
+        return false;
+    }
+
     /**
      * Add Kubernetes Host
      *

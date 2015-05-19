@@ -16,7 +16,7 @@
                     "title": "Network Partitions",
                     "icon": "fa-th-large",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define network partitions globally."
+                    "description": "Manage network partitions."
                 },
                 {
                     "link": "configure/autoscalingpolicies/",
@@ -25,7 +25,7 @@
                     "title": "Auto-scaling Policies",
                     "icon": "fa-expand",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/autoscalingpolicy"],
-                    "description": "Define policies which specify inbound requests, memory usage and CPU usage etc."
+                    "description": "Manage policies which specify autoscaling threshold values."
                 },
                 {
                     "link": "configure/deploymentpolicies/",
@@ -34,7 +34,7 @@
                     "title": "Deployment Policies",
                     "icon": "fa-road",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define specific policies for application deployment."
+                    "description": "Manage policies which specify cartridge deployment in partitions."
                 },
                 {
                     "link": "configure/applicationpolicies/",
@@ -43,7 +43,7 @@
                     "title": "Application Policies",
                     "icon": "fa-cube",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
-                    "description": "Manage application policies"
+                    "description": "Manage policies which specify application deployment in network partitions."
                 },
                 {
                     "link": "configure/cartridges/",
@@ -52,7 +52,7 @@
                     "title": "Cartridges",
                     "icon": "fa-inbox",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define and manage single/multi tenant cartridges."
+                    "description": "Manage single-tenant & multi-tenant cartridges."
                 },
                 {
                     "link": "configure/groups/",
@@ -70,7 +70,7 @@
                     "title": "Kubernetes Clusters",
                     "icon": "fa-sitemap",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define and manage kubernetes clusters."
+                    "description": "Manage Kubernetes clusters."
                 }
             ]
         },
@@ -81,7 +81,7 @@
             "title": "Users",
             "icon": "fa-users",
             "permissionPaths": ["/permission", "/permission/admin" ],
-            "description": "Manage Users and Tenants",
+            "description": "Manage tenants & users.",
             "sub-menu": [
                 {
                     "link": "users/users/",
@@ -110,18 +110,7 @@
             "title": "Applications",
             "icon": "fa-cubes",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
-            "description": "Manage applications",
-           /* "sub-menu": [
-                {
-                    "link": "applications/applications/",
-                    "linkexternal": false,
-                    "context": "/applications",
-                    "title": "Applications",
-                    "icon": "fa-cubes",
-                    "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
-                    "description": "Manage applications"
-                }
-            ]*/
+            "description": "Manage applications."
         },
         {
             "link": "https://issues.apache.org/jira/",
@@ -130,7 +119,7 @@
             "title": "JIRA",
             "icon": "fa-bug",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
-            "description": "Report your issues to keep this alive"
+            "description": "Report your issues that you find."
         },
         {
             "link": "https://cwiki.apache.org/confluence/display/STRATOS/Home",
@@ -139,7 +128,7 @@
             "title": "Documentation",
             "icon": "fa-life-saver",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
-            "description": "Read Documentation to get more information"
+            "description": "Read documentation to get more information."
         }
     ]
 }

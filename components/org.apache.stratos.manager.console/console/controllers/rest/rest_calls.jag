@@ -100,12 +100,20 @@ RESTCalls = new function(){
         return this.send("POST","/kubernetesClusters",clusterDefinition);
     };
 
+    this.updateKubernetesClusterDefinition = function(clusterDefinition){
+        return this.send("PUT","/kubernetesClusters",clusterDefinition);
+    };
+
     this.deleteKubernetesClusterDefinition = function(kubernetesClusterId){
         return this.send("DELETE","/kubernetesClusters/" + kubernetesClusterId , {});
     };
 
     this.deployGroupDefinition = function(groupDefinition){
         return this.send("POST","/cartridgeGroups", groupDefinition);
+    };
+
+    this.updateGroupDefinition = function(groupDefinition){
+        return this.send("PUT","/cartridgeGroups", groupDefinition);
     };
 
     this.deployApplicationDefinition = function(applicationDefinition){

@@ -100,6 +100,19 @@
             "maxItems": 1,
             "enum": ["private","public"]
         },
+        "metadataKeys": {
+            "id": "root/metadataKeys",
+            "type": "array",
+            "title": "Metadata Keys",
+            "name": "Metadata Keys",
+            "format": "tabs",
+            "items": {
+                "id": "root/metadataKeys",
+                "type": "string",
+                "title": "Metadata Key ",
+                "name": "Metadata Key"
+            }
+        },
         "portMapping": {
             "type": "array",
             "id": "root/portMapping",
@@ -508,8 +521,8 @@
                     "items": {
                         "id": "root/deployment/dir",
                         "type": "string",
-                        "title": "Directories ",
-                        "name": "Directories"
+                        "title": "Directory",
+                        "name": "Directory"
                     }
                 }
             }

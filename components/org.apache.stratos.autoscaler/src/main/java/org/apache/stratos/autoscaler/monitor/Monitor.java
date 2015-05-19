@@ -187,7 +187,7 @@ public abstract class Monitor implements EventHandler, Runnable {
     public List<String> getInstancesByParentInstanceId(String parentInstanceId) {
         List<String> instances = new ArrayList<String>();
         for (Instance instance : instanceIdToInstanceMap.values()) {
-            if (instance.getParentId().equals(parentInstanceId)) {
+            if (instance.getParentId() != null && instance.getParentId().equals(parentInstanceId)) {
                 instances.add(instance.getInstanceId());
             }
         }

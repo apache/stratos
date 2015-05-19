@@ -295,6 +295,15 @@ public interface CloudControllerService {
             KubernetesClusterAlreadyExistsException;
 
     /**
+     * Update a Kubernetes cluster.
+     *
+     * @param kubernetesCluster
+     * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterException
+     */
+    public boolean updateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException,
+            KubernetesClusterAlreadyExistsException;
+
+    /**
      * Add a Kubernetes host to a Kubernetes cluster.
      *
      * @param groupId

@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
@@ -652,8 +653,8 @@ public class ApplicationBuilder {
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
 
         if (applicationMonitor != null) {
-            NetworkPartitionContext context = applicationMonitor.
-                    getNetworkPartitionContext(networkPartitionId);
+            ApplicationLevelNetworkPartitionContext context = (ApplicationLevelNetworkPartitionContext)
+                    applicationMonitor.getNetworkPartitionContext(networkPartitionId);
             if (status == ApplicationStatus.Active) {
                 if (log.isDebugEnabled()) {
                     log.debug("Moving pending [application-instance] " + instanceId +
@@ -693,7 +694,8 @@ public class ApplicationBuilder {
                                            String instanceId, String parentInstanceId) {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
-            NetworkPartitionContext context = monitor.getNetworkPartitionContext(networkPartitionId);
+            GroupLevelNetworkPartitionContext context
+                    = (GroupLevelNetworkPartitionContext) monitor.getNetworkPartitionContext(networkPartitionId);
             if (status == GroupStatus.Active) {
                 if (log.isDebugEnabled()) {
                     log.debug("Moving pending group instance to active list in [group] " + groupId

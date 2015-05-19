@@ -33,7 +33,6 @@ public class KubernetesMasterBean {
     private String hostname;
     private String privateIPAddress;
     private String publicIPAddress;
-    private String endpoint;
     private List<PropertyBean> property;
 
     public String getHostId() {
@@ -76,11 +75,4 @@ public class KubernetesMasterBean {
         this.property = property;
     }
 
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
 }

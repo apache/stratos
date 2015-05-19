@@ -51,6 +51,9 @@ try {
         case "applicationpolicies":
             formSubmit = util.RESTCalls.deployApplicationPolicyDefinition(formPayload);
             break;
+        case "update-groups":
+            formSubmit = util.RESTCalls.updateGroupDefinition(formPayload);
+            break;
         case "delete-groups":
             formSubmit = util.RESTCalls.deleteGroup(formPayload);
             break;
@@ -68,6 +71,9 @@ try {
             break;
         case "delete-deploymentpolicy":
             formSubmit = util.RESTCalls.deleteDeploymentPolicyDefinition(formPayload);
+            break;
+        case "update-kubernetes-cluster":
+            formSubmit = util.RESTCalls.updateKubernetesClusterDefinition(formPayload);
             break;
         case "delete-kubernetes-cluster":
             formSubmit = util.RESTCalls.deleteKubernetesClusterDefinition(formPayload);
