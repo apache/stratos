@@ -40,13 +40,13 @@ public class ClusterContextFactory {
         }
 
         String autoscalePolicyName = cluster.getAutoscalePolicyName();
-        AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
 
         if (log.isDebugEnabled()) {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
 
-        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy, hasScalingDependents,
+        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(),
+                autoscalePolicyName, hasScalingDependents,
                 deploymentPolicyId);
     }
 }
