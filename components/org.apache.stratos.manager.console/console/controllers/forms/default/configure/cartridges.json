@@ -8,6 +8,7 @@
     "version":"7",
     "multiTenant":"false",
     "loadBalancingIPType": "private",
+    "metadataKeys" : [],
     "portMapping":[
         {
             "protocol":"http",
