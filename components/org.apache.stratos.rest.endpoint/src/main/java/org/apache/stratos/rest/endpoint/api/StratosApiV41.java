@@ -242,11 +242,13 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
 
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Deployment policy is invalid")).build();
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidDeploymentPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Deployment policy is invalid")).build();
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy not found")).build();
