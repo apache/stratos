@@ -821,15 +821,17 @@ public class ClusterMonitor extends Monitor {
             ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
             if (null != networkPartitionContext) {
                 int totalActiveMemberCount = 0;
-                for (InstanceContext clusterInstanceContext : networkPartitionContext.getActiveInstances()) {
+                for (InstanceContext clusterInstanceContext :
+                        networkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
                     if (clusterInstanceContext instanceof ClusterInstanceContext) {
                         totalActiveMemberCount += ((ClusterInstanceContext) clusterInstanceContext).getActiveMemberCount();
                     }
                 }
-                for (InstanceContext instanceContext : networkPartitionContext.getActiveInstances()) {
+                for (InstanceContext instanceContext : networkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
                     if (instanceContext instanceof ClusterInstanceContext) {
                         ClusterInstanceContext clusterInstanceContext = ((ClusterInstanceContext) instanceContext);
-                        float averageRequestsInFlight = value * clusterInstanceContext.getActiveMemberCount() / totalActiveMemberCount;
+                        float averageRequestsInFlight = value * clusterInstanceContext.getActiveMemberCount() /
+                                totalActiveMemberCount;
                         clusterInstanceContext.setAverageRequestsInFlight(averageRequestsInFlight);
                         log.debug(String.format("Calculated average RIF: [cluster] %s [cluster-instance] %s " +
                                         "[network-partition] %s [average-rif] %s", clusterId,
@@ -874,12 +876,14 @@ public class ClusterMonitor extends Monitor {
             ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
             if (null != networkPartitionContext) {
                 int totalActiveMemberCount = 0;
-                for (InstanceContext clusterInstanceContext : networkPartitionContext.getActiveInstances()) {
+                for (InstanceContext clusterInstanceContext : networkPartitionContext
+                        .getInstanceIdToInstanceContextMap().values()) {
                     if (clusterInstanceContext instanceof ClusterInstanceContext) {
                         totalActiveMemberCount += ((ClusterInstanceContext) clusterInstanceContext).getActiveMemberCount();
                     }
                 }
-                for (InstanceContext instanceContext : networkPartitionContext.getActiveInstances()) {
+                for (InstanceContext instanceContext : networkPartitionContext
+                        .getInstanceIdToInstanceContextMap().values()) {
                     if (instanceContext instanceof ClusterInstanceContext) {
                         ClusterInstanceContext clusterInstanceContext = ((ClusterInstanceContext) instanceContext);
                         float requestsInFlightGradient = value * clusterInstanceContext.getActiveMemberCount() / totalActiveMemberCount;
@@ -925,15 +929,18 @@ public class ClusterMonitor extends Monitor {
             ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
             if (null != networkPartitionContext) {
                 int totalActiveMemberCount = 0;
-                for (InstanceContext clusterInstanceContext : networkPartitionContext.getActiveInstances()) {
+                for (InstanceContext clusterInstanceContext : networkPartitionContext
+                        .getInstanceIdToInstanceContextMap().values()) {
                     if (clusterInstanceContext instanceof ClusterInstanceContext) {
                         totalActiveMemberCount += ((ClusterInstanceContext) clusterInstanceContext).getActiveMemberCount();
                     }
                 }
-                for (InstanceContext instanceContext : networkPartitionContext.getActiveInstances()) {
+                for (InstanceContext instanceContext : networkPartitionContext
+                        .getInstanceIdToInstanceContextMap().values()) {
                     if (instanceContext instanceof ClusterInstanceContext) {
                         ClusterInstanceContext clusterInstanceContext = ((ClusterInstanceContext) instanceContext);
-                        float requestsInFlightSecondDerivative = value * clusterInstanceContext.getActiveMemberCount() / totalActiveMemberCount;
+                        float requestsInFlightSecondDerivative = value * clusterInstanceContext.getActiveMemberCount() /
+                                totalActiveMemberCount;
                         clusterInstanceContext.setRequestsInFlightSecondDerivative(requestsInFlightSecondDerivative);
                         log.debug(String.format("Calculated second derivative RIF: [cluster] %s [cluster-instance] %s " +
                                         "[network-partition] %s [average-rif] %s", clusterId,
