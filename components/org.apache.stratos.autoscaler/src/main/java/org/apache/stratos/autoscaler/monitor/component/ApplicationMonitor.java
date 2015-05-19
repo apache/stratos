@@ -399,74 +399,81 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     private boolean createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
+
         boolean initialStartup = true;
-        List<String> instanceIds = new ArrayList<String>();
-        String instanceId;
+        try {
+            List<String> instanceIds = new ArrayList<String>();
+            String instanceId;
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
-                getApplicationPolicy(application.getApplicationPolicyId());
-        if (applicationPolicy == null) {
-            String msg = String.format("Application policy not found in registry or " +
-                    "in-memory [application-id] %s", appId);
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-
-        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
-                getNetworkPartitionAlgorithmContext(appId);
-        if (algorithmContext == null) {
-            String msg = String.format("Network partition algorithm context not found " +
-                    "in registry or in-memory [application-id] %s", appId);
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-
-        String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
-        if (log.isDebugEnabled()) {
-            String msg = String.format("Network partition algorithm is %s [application-id] %s",
-                    networkPartitionAlgorithmName, appId);
-            log.debug(msg);
-        }
-
-        NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
-                networkPartitionAlgorithmName);
-        if (algorithm == null) {
-            String msg = String.format("Couldn't create network partition algorithm " +
-                    "[application-id] %s", appId);
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-
-        List<String> nextNetworkPartitions = algorithm.getNextNetworkPartitions(algorithmContext);
-        if (nextNetworkPartitions == null || nextNetworkPartitions.isEmpty()) {
-            String msg = String.format("No network partitions available for application bursting " +
-                    "[application-id] %s", appId);
-            log.warn(msg);
-            return false;
-        }
-
-        for (String networkPartitionIds : nextNetworkPartitions) {
-            ApplicationLevelNetworkPartitionContext context =
-                    new ApplicationLevelNetworkPartitionContext(networkPartitionIds);
-            //If application instances found in the ApplicationsTopology,
-            // then have to add them first before creating new one
-            ApplicationInstance appInstance = (ApplicationInstance) application.
-                    getInstanceByNetworkPartitionId(context.getId());
-            if (appInstance != null) {
-                //use the existing instance in the Topology to create the data
-                instanceId = handleApplicationInstanceCreation(application, context, appInstance);
-                initialStartup = false;
-            } else {
-                //create new app instance as it doesn't exist in the Topology
-                instanceId = handleApplicationInstanceCreation(application, context, null);
-
+            ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
+                    getApplicationPolicy(application.getApplicationPolicyId());
+            if (applicationPolicy == null) {
+                String msg = String.format("Application policy not found in registry or " +
+                        "in-memory [application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
             }
-            instanceIds.add(instanceId);
-            log.info("Application instance has been added for the [network partition] " +
-                    networkPartitionIds + " [appInstanceId] " + instanceId);
+
+            NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
+                    getNetworkPartitionAlgorithmContext(appId);
+            if (algorithmContext == null) {
+                String msg = String.format("Network partition algorithm context not found " +
+                        "in registry or in-memory [application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Network partition algorithm is %s [application-id] %s",
+                        networkPartitionAlgorithmName, appId);
+                log.debug(msg);
+            }
+
+            NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
+                    networkPartitionAlgorithmName);
+            if (algorithm == null) {
+                String msg = String.format("Couldn't create network partition algorithm " +
+                        "[application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            List<String> nextNetworkPartitions = algorithm.getNextNetworkPartitions(algorithmContext);
+            if (nextNetworkPartitions == null || nextNetworkPartitions.isEmpty()) {
+                String msg = String.format("No network partitions available for application bursting " +
+                        "[application-id] %s", appId);
+                log.warn(msg);
+                return false;
+            }
+
+            for (String networkPartitionIds : nextNetworkPartitions) {
+                ApplicationLevelNetworkPartitionContext context =
+                        new ApplicationLevelNetworkPartitionContext(networkPartitionIds);
+                //If application instances found in the ApplicationsTopology,
+                // then have to add them first before creating new one
+                ApplicationInstance appInstance = (ApplicationInstance) application.
+                        getInstanceByNetworkPartitionId(context.getId());
+                if (appInstance != null) {
+                    //use the existing instance in the Topology to create the data
+                    instanceId = handleApplicationInstanceCreation(application, context, appInstance);
+                    initialStartup = false;
+                } else {
+                    //create new app instance as it doesn't exist in the Topology
+                    instanceId = handleApplicationInstanceCreation(application, context, null);
+
+                }
+                instanceIds.add(instanceId);
+                log.info("Application instance has been added for the [network partition] " +
+                        networkPartitionIds + " [appInstanceId] " + instanceId);
+            }
+
+            startDependency(application, instanceIds);
+
+        } catch (Exception e){
+            log.error(String.format("Application instance creation failed [applcaition-id] %s", appId), e);
         }
 
-        startDependency(application, instanceIds);
         return initialStartup;
     }
 
