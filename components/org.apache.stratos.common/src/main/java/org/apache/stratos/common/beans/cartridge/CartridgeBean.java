@@ -40,7 +40,6 @@ public class CartridgeBean {
     private boolean multiTenant;
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
-    private String tenantPartitions;
     private List<IaasProviderBean> iaasProvider;
     private PersistenceBean persistence;
     /**
@@ -192,14 +191,6 @@ public class CartridgeBean {
         this.property = property;
     }
 
-    public String getTenantPartitions() {
-        return tenantPartitions;
-    }
-
-    public void setTenantPartitions(String tenantPartitions) {
-        this.tenantPartitions = tenantPartitions;
-    }
-
     public String getLoadBalancingIPType() {
         return loadBalancingIPType;
     }
@@ -220,7 +211,6 @@ public class CartridgeBean {
                 ", Multi-Tenant " + isMultiTenant() +
                 ", Deployment" + getDeploymentDetails() +
                 ", Port Mapping: " + getPortMappings() +
-                ", Tenant Partitions: " + getTenantPartitions() +
                 ", IaaS Providers: " + getIaasProviders() +
                 ", Persistence " + (getPersistence() == null ? "" : getPersistence().toString()) +
                 ", Load Balancing IP Type: " + getLoadBalancingIPType() +

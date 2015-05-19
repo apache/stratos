@@ -78,7 +78,6 @@ public class ObjectConverter {
         cartridge.setMultiTenant(cartridgeBean.isMultiTenant());
         cartridge.setDisplayName(cartridgeBean.getDisplayName());
         cartridge.setDescription(cartridgeBean.getDescription());
-        cartridge.setTenantPartitions(cartridgeBean.getTenantPartitions());
         cartridge.setLoadBalancingIPType(cartridgeBean.getLoadBalancingIPType());
         //cartridge.setMetadataKeys(cartridgeBean.getMetadataKeys());
 
@@ -1596,8 +1595,6 @@ public class ObjectConverter {
         /*if(cartridgeInfo.getMetadataKeys() != null && cartridgeInfo.getMetadataKeys()[0] != null) {
             cartridge.setMetadataKeys(cartridgeInfo.getMetadataKeys());
         }*/
-
-        cartridge.setTenantPartitions(cartridgeInfo.getTenantPartitions());
 
         //convert persistence
         cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
