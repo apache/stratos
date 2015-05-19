@@ -15,7 +15,7 @@
                     "context": "/configure",
                     "title": "Network Partitions",
                     "icon": "fa-th-large",
-                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "permissionPaths": ["/permission", "/permission/admin/manage/getNetworkPartitions"],
                     "description": "Manage network partitions."
                 },
                 {
@@ -24,7 +24,7 @@
                     "context": "/configure",
                     "title": "Autoscaling Policies",
                     "icon": "fa-expand",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/autoscalingpolicy"],
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/getAutoscalingPolicies"],
                     "description": "Manage policies which specify autoscaling threshold values."
                 },
                 {
@@ -33,7 +33,7 @@
                     "context": "/configure",
                     "title": "Deployment Policies",
                     "icon": "fa-road",
-                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "permissionPaths": ["/permission", "/permission/admin/manage/getDeploymentPolicies"],
                     "description": "Manage policies which specify cartridge deployment in partitions."
                 },
                 {
@@ -42,7 +42,7 @@
                     "context": "/configure",
                     "title": "Application Policies",
                     "icon": "fa-cube",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/getApplicationPolicies"],
                     "description": "Manage policies which specify application deployment in network partitions."
                 },
                 {
@@ -51,7 +51,7 @@
                     "context": "/configure",
                     "title": "Cartridges",
                     "icon": "fa-inbox",
-                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "permissionPaths": ["/permission", "/permission/admin/manage/getCartridges"],
                     "description": "Manage single-tenant & multi-tenant cartridges."
                 },
                 {
@@ -60,16 +60,16 @@
                     "context": "/configure",
                     "title": "Cartridge Groups",
                     "icon": "fa-briefcase",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/getServiceGroupDefinition"],
                     "description": "Manage cartridge groups"
                 },
                 {
-                    "link": "configure/docker/",
+                    "link": "configure/kubernetesClusters/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Kubernetes Clusters",
                     "icon": "fa-sitemap",
-                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "permissionPaths": ["/permission", "/permission/admin/manage/getKubernetesClusters"],
                     "description": "Manage Kubernetes clusters."
                 }
             ]
@@ -89,7 +89,7 @@
                     "context": "/users",
                     "title": "Manage Users",
                     "icon": "fa-user",
-                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "permissionPaths": ["/permission", "/permission/protected/manage/getUsers"],
                     "description": "Manage current tenant users."
                 },
                 {
@@ -98,7 +98,7 @@
                     "context": "/users",
                     "title": "Manage Tenants",
                     "icon": "fa-building",
-                    "permissionPaths": ["/permission"],
+                    "permissionPaths": ["/permission/protected/manage/getTenants"],
                     "description": "Manage tenants."
                 }
             ]
@@ -109,7 +109,7 @@
             "context": "/",
             "title": "Applications",
             "icon": "fa-cubes",
-            "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
+            "permissionPaths": ["/permission", "/permission/admin/manage/getApplications"],
             "description": "Manage applications."
         },
         {
@@ -118,7 +118,7 @@
             "context": "/",
             "title": "JIRA",
             "icon": "fa-bug",
-            "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
+            "permissionPaths": ["/permission", "/permission/admin"],
             "description": "Report your issues that you find."
         },
         {
@@ -127,7 +127,7 @@
             "context": "/",
             "title": "Documentation",
             "icon": "fa-life-saver",
-            "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
+            "permissionPaths": ["/permission", "/permission/admin"],
             "description": "Read documentation to get more information."
         }
     ]

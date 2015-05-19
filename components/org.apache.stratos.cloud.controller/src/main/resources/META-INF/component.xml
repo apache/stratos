@@ -23,16 +23,6 @@
             <extension>xml</extension>
             <class>org.apache.stratos.cloud.controller.deployers.CloudControllerDeployer</class>
         </deployer>
-        <!-- >deployer>
-            <directory>cartridges</directory>
-            <extension>xml</extension>
-            <class>org.apache.stratos.cloud.controller.deployers.CartridgeDeployer</class>
-        </deployer-->
-        <!-- >deployer>
-            <directory>services</directory>
-            <extension>xml</extension>
-            <class>org.apache.stratos.cloud.controller.deployers.ServiceDeployer</class>
-        </deployer-->
     </deployers>
     <ManagementPermissions>
         <ManagementPermission>
@@ -57,15 +47,15 @@
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Add Service Group</DisplayName>
-            <ResourceId>/permission/protected/manage/addServiceGroup</ResourceId>
+            <ResourceId>/permission/admin/manage/addServiceGroup</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Get Service Group Definition</DisplayName>
-            <ResourceId>/permission/protected/manage/getServiceGroupDefinition</ResourceId>
+            <ResourceId>/permission/admin/manage/getServiceGroupDefinition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Remove Service Group Definition</DisplayName>
-            <ResourceId>/permission/protected/manage/removeServiceGroup</ResourceId>
+            <ResourceId>/permission/admin/manage/removeServiceGroup</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Add Deployment Policy</DisplayName>
@@ -85,19 +75,19 @@
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Add Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/addNetworkPartition</ResourceId>
+            <ResourceId>/permission/admin/manage/addNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Update Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/updateNetworkPartition</ResourceId>
+            <ResourceId>/permission/admin/manage/updateNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Get Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/getNetworkPartitions</ResourceId>
+            <ResourceId>/permission/admin/manage/getNetworkPartitions</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Remove Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/removeNetworkPartition</ResourceId>
+            <ResourceId>/permission/admin/manage/removeNetworkPartition</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>
