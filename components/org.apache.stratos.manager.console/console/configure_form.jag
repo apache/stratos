@@ -71,7 +71,7 @@ if (!elements) {
         error.push({"errorMessage": e.message});
     }
 
-    if (elements.formtype == 'groups' && elements.action == 'new') {
+    if (elements.formtype == 'cartridgegroups' && elements.action == 'new') {
         applicationHbs = 'applicationsGroupEditor';
         editorCartridges = util.RESTCalls.getCartridges();
     }
@@ -120,7 +120,7 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
-        case "groups":
+        case "cartridgegroups":
             formTitle = "Cartridge Group Definition",
                     buttonText = "Cartridge Group Definition";
             list_data = util.RESTCalls.getGroups();
@@ -182,7 +182,7 @@ if (elements.action != 'new' && isEdit) {
             formDataEdit = util.RESTCalls.getCartridge(id);
             break;
 
-        case "groups":
+        case "cartridgegroups":
             formDataEdit = util.RESTCalls.getPolicyCartridgeGroup(id);
             break;
 
