@@ -1808,10 +1808,10 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Deploy kubernetes host cluster.
+     * Update kubernetes host cluster.
      *
      * @param kubernetesCluster the kubernetes cluster
-     * @return 201 if the kubernetes cluster is successfully created
+     * @return 200 if the kubernetes cluster is successfully updated
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1825,8 +1825,8 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateKubernetesCluster(kubernetesCluster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
-            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Kubernetes cluster added successfully: [kub-host-cluster] %s",
+            return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Kubernetes cluster updated successfully: [kub-host-cluster] %s",
                             kubernetesCluster.getClusterId()))).build();
         } catch (RestAPIException e) {
             throw e;
