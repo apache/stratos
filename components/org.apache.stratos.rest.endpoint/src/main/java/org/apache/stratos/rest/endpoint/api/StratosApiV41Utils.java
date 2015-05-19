@@ -29,8 +29,6 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -971,7 +969,9 @@ public class StratosApiV41Utils {
                     log.error(message, e);
                     throw new RestAPIException(message, e);
                 } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-                    throw new RestAPIException(e);
+                    String message = "Required cartridges not found";
+                    log.error(message, e);
+                    throw new RestAPIException(message, e);
                 }
             }
 
