@@ -38,7 +38,7 @@
             <ResourceId>/permission/admin/manage/getCartridges</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Cartridge By Filter</DisplayName>
+            <DisplayName>Get Cartridges By Filter</DisplayName>
             <ResourceId>/permission/admin/manage/getCartridgesByFilter</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
@@ -46,12 +46,12 @@
             <ResourceId>/permission/admin/manage/removeCartridge</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Service Group</DisplayName>
-            <ResourceId>/permission/admin/manage/addServiceGroup</ResourceId>
+            <DisplayName>Add Cartridge Group</DisplayName>
+            <ResourceId>/permission/admin/manage/addCartridgeGroup</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Service Group Definition</DisplayName>
-            <ResourceId>/permission/admin/manage/getServiceGroupDefinition</ResourceId>
+            <DisplayName>Get Cartridge Groups</DisplayName>
+            <ResourceId>/permission/admin/manage/getCartridgeGroups</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Remove Service Group Definition</DisplayName>
@@ -62,8 +62,8 @@
             <ResourceId>/permission/admin/manage/addDeploymentPolicy</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/getDeploymentPolicy</ResourceId>
+            <DisplayName>Get Deployment Policies</DisplayName>
+            <ResourceId>/permission/admin/manage/getDeploymentPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Update Deployment Policy</DisplayName>
@@ -82,7 +82,7 @@
             <ResourceId>/permission/admin/manage/updateNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Network Partition</DisplayName>
+            <DisplayName>Get Network Partitions</DisplayName>
             <ResourceId>/permission/admin/manage/getNetworkPartitions</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
