@@ -115,7 +115,7 @@ public class Partition implements Serializable {
     }
 
     public String getKubernetesClusterId() {
-        if(properties != null) {
+        if (properties != null) {
             Property property = properties.getProperty(KUBERNETES_CLUSTER);
             if (property != null) {
                 return property.getValue();

@@ -82,9 +82,9 @@ public class ApplicationUtils {
         StringBuilder portMapBuilder = new StringBuilder();
         PortMapping[] portMappings = cartridge.getPortMappings();
 
-        if(cartridge.getPortMappings()[0] == null){
+        if (cartridge.getPortMappings()[0] == null) {
             // first element is null, which means no port mappings.
-            return  null;
+            return null;
         }
 
         for (PortMapping portMapping : portMappings) {

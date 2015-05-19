@@ -60,7 +60,7 @@ public class NovaNetworkingApi implements OpenstackNetworkingApi {
         ComputeServiceContext context = iaasProvider.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasProvider);
 
-        if(StringUtils.isEmpty(region)) {
+        if (StringUtils.isEmpty(region)) {
             throw new RuntimeException("Could not find region in iaas provider: " + iaasProvider.getName());
         }
 
