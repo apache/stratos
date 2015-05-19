@@ -35,7 +35,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.*;
@@ -780,9 +780,9 @@ public class AutoscalerUtil {
                 //Updating the GroupMonitor
                 for (NetworkPartitionContext networkPartitionContext : groupMonitor.
                         getNetworkPartitionContextsMap().values()) {
-                    ((GroupLevelNetworkPartitionContext) networkPartitionContext).
+                    ((ParentLevelNetworkPartitionContext) networkPartitionContext).
                             setMinInstanceCount(newGroup.getGroupMinInstances());
-                    ((GroupLevelNetworkPartitionContext) networkPartitionContext).
+                    ((ParentLevelNetworkPartitionContext) networkPartitionContext).
                             setMaxInstanceCount(newGroup.getGroupMaxInstances());
                 }
 

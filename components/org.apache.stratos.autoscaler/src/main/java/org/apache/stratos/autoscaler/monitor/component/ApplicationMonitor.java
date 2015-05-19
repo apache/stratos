@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
@@ -144,7 +144,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     private void handleScalingMaxOut(InstanceContext instanceContext,
                                      NetworkPartitionContext networkPartitionContext) {
-        if (((ApplicationLevelNetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
+        if (((ParentLevelNetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
             //handling the application bursting only when there are no pending instances found
             try {
                 if (log.isInfoEnabled()) {
@@ -448,8 +448,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
 
             for (String networkPartitionIds : nextNetworkPartitions) {
-                ApplicationLevelNetworkPartitionContext context =
-                        new ApplicationLevelNetworkPartitionContext(networkPartitionIds);
+                ParentLevelNetworkPartitionContext context =
+                        new ParentLevelNetworkPartitionContext(networkPartitionIds);
                 //If application instances found in the ApplicationsTopology,
                 // then have to add them first before creating new one
                 ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -487,7 +487,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @return instance Id
      */
     private String handleApplicationInstanceCreation(Application application,
-                                                     ApplicationLevelNetworkPartitionContext context,
+                                                     ParentLevelNetworkPartitionContext context,
                                                      ApplicationInstance instanceExist) {
         ApplicationInstance instance;
         ApplicationInstanceContext instanceContext;
@@ -580,11 +580,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         for (String networkPartitionId : nextNetworkPartitions) {
             if (!this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
                 String instanceId;
-                ApplicationLevelNetworkPartitionContext context = new
-                        ApplicationLevelNetworkPartitionContext(networkPartitionId);
+                ParentLevelNetworkPartitionContext context = new
+                        ParentLevelNetworkPartitionContext(networkPartitionId);
 
-                //Setting flags saying that it has been created by burst
-                context.setCreatedOnBurst(true);
                 ApplicationInstance appInstance = (ApplicationInstance) application.
                         getInstanceByNetworkPartitionId(context.getId());
 
