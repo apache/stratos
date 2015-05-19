@@ -908,9 +908,7 @@
             <xs:complexType name="KubernetesMaster">
                 <xs:complexContent>
                     <xs:extension base="ax27:KubernetesHost">
-                        <xs:sequence>
-                            <xs:element minOccurs="0" name="endpoint" nillable="true" type="xs:string"/>
-                        </xs:sequence>
+                        <xs:sequence/>
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
