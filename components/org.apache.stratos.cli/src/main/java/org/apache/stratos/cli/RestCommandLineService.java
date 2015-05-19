@@ -1064,8 +1064,11 @@ public class RestCommandLineService {
             RowMapper<AutoscalePolicyBean> rowMapper = new RowMapper<AutoscalePolicyBean>() {
 
                 public String[] getData(AutoscalePolicyBean policy) {
-                    String[] data = new String[1];
+                    String[] data = new String[4];
                     data[0] = policy.getId();
+                    data[1] = String.valueOf(policy.getLoadThresholds().getRequestsInFlight().getThreshold());
+                    data[2] = String.valueOf(policy.getLoadThresholds().getMemoryConsumption().getThreshold());
+                    data[3] = String.valueOf(policy.getLoadThresholds().getLoadAverage().getThreshold());
                     return data;
                 }
             };
@@ -1074,7 +1077,7 @@ public class RestCommandLineService {
             array = list.toArray(array);
 
             System.out.println("Autoscaling policies found:");
-            CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
+            CliUtils.printTable(array, rowMapper, "ID", "Requests In Flight","Memory Consumption","Load Average");
         } catch (Exception e) {
             String message = "Could not list autoscaling policies";
             printError(message, e);
