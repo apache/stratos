@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
@@ -652,8 +653,8 @@ public class ApplicationBuilder {
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
 
         if (applicationMonitor != null) {
-            GroupLevelNetworkPartitionContext context = (GroupLevelNetworkPartitionContext) applicationMonitor.
-                    getNetworkPartitionContext(networkPartitionId);
+            ApplicationLevelNetworkPartitionContext context = (ApplicationLevelNetworkPartitionContext)
+                    applicationMonitor.getNetworkPartitionContext(networkPartitionId);
             if (status == ApplicationStatus.Active) {
                 if (log.isDebugEnabled()) {
                     log.debug("Moving pending [application-instance] " + instanceId +
