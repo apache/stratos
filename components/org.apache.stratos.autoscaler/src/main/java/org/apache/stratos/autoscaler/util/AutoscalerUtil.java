@@ -870,7 +870,8 @@ public class AutoscalerUtil {
             for (String splittedStartupOrder : splittedStartupOrders) {
                 if (!splittedStartupOrder.trim().startsWith("cartridge.") && !splittedStartupOrder.trim().startsWith("group.")) {
                     // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
-                    throw new InvalidServiceGroupException("Invalid Service Group: startup order [" + startupOrder + "] for group " + groupName +
+                    throw new InvalidServiceGroupException("Invalid cartridge group: startup order [" + startupOrder +
+                            "] for group " + groupName +
                             ", should prefixed by either 'cartridge.' or 'group.'");
                 }
             }
@@ -892,7 +893,8 @@ public class AutoscalerUtil {
             for (String splittedDependent : splittedDependents) {
                 if (!splittedDependent.trim().startsWith("cartridge.") && !splittedDependent.trim().startsWith("group.")) {
                     // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
-                    throw new InvalidServiceGroupException("Invalid Service Group: Scaling Dependency [" + scalingDependent + "] for group " + groupName +
+                    throw new InvalidServiceGroupException("Invalid cartridge group: Scaling Dependency [" +
+                            scalingDependent + "] for group " + groupName +
                             ", should prefixed by either 'cartridge.' or 'group.'");
                 }
             }
