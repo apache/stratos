@@ -27,36 +27,11 @@ vrrp_instance VirtIP_10 {
         auth_pass MY_PASS
     }
     virtual_ipaddress {
-        10.10.10.10
+$virtualips
     }
 
     lvs_sync_daemon_interface eth0
 }
 
-! ************************   WEB SERVERS  **************************
 
-virtual_server 10.10.10.10 80 {
-    delay_loop 10
-    lvs_sched wlc
-    lvs_method DR
-    persistence_timeout 5
-    protocol TCP
-
-    real_server 10.10.10.41 80 {
-        weight 50
-        TCP_CHECK {
-            connect_timeout 3
-        }
-    }
-
-    real_server 10.10.10.42 80 {
-        weight 50
-        TCP_CHECK {
-            connect_timeout 3
-        }
-    }
-
-}
-
-
-
+$configuration

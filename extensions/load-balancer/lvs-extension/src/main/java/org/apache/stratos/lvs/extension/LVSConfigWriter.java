@@ -46,26 +46,31 @@ public class LVSConfigWriter {
     private String templateName;
     private String confFilePath;
     private String statsSocketFilePath;
+	private String virtualIPsForServices;
+	private String serverState;
 
     public LVSConfigWriter(String templatePath, String templateName, String confFilePath,
-                           String statsSocketFilePath) {
+                           String statsSocketFilePath,String virtualIPsForServices,String serverState) {
 
         this.templatePath = templatePath;
         this.templateName = templateName;
         this.confFilePath = confFilePath;
         this.statsSocketFilePath = statsSocketFilePath;
+	    this.virtualIPsForServices=virtualIPsForServices;
+	    this.serverState=serverState;
     }
 
     public boolean write(Topology topology) {
 
         StringBuilder configurationBuilder = new StringBuilder();
-
+	    StringBuilder virtualIPBuilder=new StringBuilder();
+		String state;
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
                 if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
                     throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
                 }
-                generateConfigurationForCluster(cluster, service.getPorts(), configurationBuilder);
+                generateConfigurationForCluster(cluster, service.getPorts(), configurationBuilder,virtualIPBuilder,virtualIPsForServices);
             }
         }
 
@@ -80,6 +85,8 @@ public class LVSConfigWriter {
         // Insert strings into the template
         VelocityContext context = new VelocityContext();
         context.put("configuration", configurationBuilder.toString());
+	    context.put("virtualips", virtualIPBuilder.toString());
+	    context.put("state", serverState);
 
         // Create a new string from the template
         StringWriter stringWriter = new StringWriter();
@@ -134,34 +141,55 @@ public class LVSConfigWriter {
      * @param ports
      * @param text
      */
-    private void generateConfigurationForCluster(Cluster cluster, Collection<Port> ports, StringBuilder text) {
+    private void generateConfigurationForCluster(Cluster cluster, Collection<Port> ports, StringBuilder text,StringBuilder virtualIPs,String virtualIPsForServices) {
 
-        for (Port port : ports) {
-            for (String hostname : cluster.getHostNames()) {
+	    String[] virtualIPForServiceArray;
+	    if (virtualIPsForServices.contains(",")) {
+		    virtualIPForServiceArray = virtualIPsForServices.split(",");
+	    } else {
+		    virtualIPForServiceArray = new String[1];
+		    virtualIPForServiceArray[0] = virtualIPsForServices;
+	    }
+	    boolean isServiceAvailable = false;
+	    for (int i = 0; i < virtualIPForServiceArray.length; i++) {
+		    String[] virtualIpForService = virtualIPForServiceArray[i].split("\\|");
+		    for (Port port : ports) {
+			    for (String hostname : cluster.getHostNames()) {
+				    if (virtualIpForService[0].equals(cluster.getServiceName())) {
 
-	            text.append("virtual_server ").append("dummyvirtualip").append(" ").append(port).append(" {").append(
-			            NEW_LINE);
-	            text.append(TAB).append("delay_loop 10").append(NEW_LINE);
-	            text.append(TAB).append("lvs_sched wlc").append(NEW_LINE);
-				text.append(TAB).append("lvs_method DR").append(NEW_LINE);
-				text.append(TAB).append("persistence_timeout 5").append(NEW_LINE);
-				text.append(TAB).append("protocol TCP").append(NEW_LINE).append(NEW_LINE);
+					    text.append("virtual_server ").append(virtualIpForService[1]).append(" ").append(port.getValue()).append(
+							    " {").append(
+							    NEW_LINE);
+					    text.append(TAB).append("delay_loop 10").append(NEW_LINE);
+					    text.append(TAB).append("lvs_sched wlc").append(NEW_LINE);
+					    text.append(TAB).append("lvs_method DR").append(NEW_LINE);
+					    text.append(TAB).append("persistence_timeout 5").append(NEW_LINE);
+					    text.append(TAB).append("protocol TCP").append(NEW_LINE).append(NEW_LINE);
 
-	            //Start real servers block
+					    //Start real servers block
 
-	            for (Member member : cluster.getMembers()) {
-		            // Start upstream server block
-		            text.append(TAB).append("real_server ").append(member.getMemberId()).append(" ").append(port.getValue()).append(" {")
-		                .append(NEW_LINE);
-		            text.append(TAB).append(TAB).append("weight 50").append(NEW_LINE);
-		            text.append(TAB).append(TAB).append("TCP_CHECK {").append(NEW_LINE);
-		            text.append(TAB).append(TAB).append(TAB).append("connect_timeout 3").append(NEW_LINE);
-		            text.append(TAB).append(TAB).append("}").append(NEW_LINE);
-		            text.append(TAB).append("}").append(NEW_LINE);
-	            }
-	            text.append("}");
+					    for (Member member : cluster.getMembers()) {
+						    // Start upstream server block
+						    text.append(TAB).append("real_server ").append(member.getHostName()).append(" ")
+						        .append(port.getValue()).append(" {")
+						        .append(NEW_LINE);
+						    text.append(TAB).append(TAB).append("weight 50").append(NEW_LINE);
+						    text.append(TAB).append(TAB).append("TCP_CHECK {").append(NEW_LINE);
+						    text.append(TAB).append(TAB).append(TAB).append("connect_timeout 3").append(NEW_LINE);
+						    text.append(TAB).append(TAB).append("}").append(NEW_LINE);
+						    text.append(TAB).append("}").append(NEW_LINE);
+					    }
+					    text.append("}").append(NEW_LINE);
+					    isServiceAvailable = true;
+					    virtualIPs.append(TAB).append(TAB).append(virtualIpForService[1]).append(NEW_LINE);
+				    }
+			    }
+		    }
+		    if (!isServiceAvailable) {
+			    log.warn(String.format("Given service is not available in the topology %s", virtualIpForService[0]));
+		    }
+	    }
 
-            }
-        }
+
     }
 }

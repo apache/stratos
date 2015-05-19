@@ -41,6 +41,9 @@ public class LVS implements LoadBalancer {
     private String templateName;
     private String confFilePath;
     private String statsSocketFilePath;
+	private String virtualIPsForServices;
+	private String keepAlivedStartCommand;
+	private String serverState;
 
     public LVS() {
         this.executableFilePath = LVSContext.getInstance().getExecutableFilePath();
@@ -49,6 +52,9 @@ public class LVS implements LoadBalancer {
         this.confFilePath = LVSContext.getInstance().getConfFilePath();
         this.processIdFilePath = confFilePath.replace(".cfg", ".pid");
         this.statsSocketFilePath = LVSContext.getInstance().getStatsSocketFilePath();
+	    this.virtualIPsForServices= LVSContext.getInstance().getVirtualIPsForServices();
+	    this.keepAlivedStartCommand=LVSContext.getInstance().getKeepAlivedStartCommand();
+	    this.serverState=LVSContext.getInstance().getServerState();
     }
 
     /**
@@ -59,7 +65,8 @@ public class LVS implements LoadBalancer {
     public boolean configure(Topology topology) throws LoadBalancerExtensionException {
         try {
             log.info("Generating nginx configuration...");
-            LVSConfigWriter writer = new LVSConfigWriter(templatePath, templateName, confFilePath, statsSocketFilePath);
+            LVSConfigWriter writer = new LVSConfigWriter(templatePath, templateName, confFilePath, statsSocketFilePath,
+                                                         virtualIPsForServices,serverState);
             if(writer.write(topology)) {
                 return true;
             }
@@ -75,26 +82,26 @@ public class LVS implements LoadBalancer {
      * @throws LoadBalancerExtensionException
      */
     public void start() throws LoadBalancerExtensionException {
-        log.info("Starting nginx instance...");
+        log.info("Starting lvs instance...");
         // Check for configuration file
         File conf = new File(confFilePath);
         if (!conf.exists()) {
-            throw new LoadBalancerExtensionException("Could not find nginx configuration file");
+            throw new LoadBalancerExtensionException("Could not find lvs configuration file");
         }
 
         // Start nginx and write pid to processIdFilePath
         try {
-           // String command = executableFilePath + " -c " + confFilePath;
-            //CommandUtils.executeCommand(command);
-            log.info("nginx instance started");
+            String command = keepAlivedStartCommand;
+            CommandUtils.executeCommand(command);
+            log.info("lvs instance started");
         } catch (Exception e) {
-            log.error("Could not start nginx instance");
+            log.error("Could not start lvs instance");
             throw new LoadBalancerExtensionException(e);
         }
     }
 
     /**
-     * Reload nginx instance according to the configuration written in configure() method.
+     * Reload lvs instance according to the configuration written in configure() method.
      * @throws LoadBalancerExtensionException
      */
     public void reload() throws LoadBalancerExtensionException {
@@ -102,7 +109,7 @@ public class LVS implements LoadBalancer {
             log.info("Reloading configuration...");
 
             // Execute hot configuration deployment
-            String command = executableFilePath + " -c " + confFilePath + " -s reload";
+            String command = "service keepalived restart";
             CommandUtils.executeCommand(command);
             if (log.isInfoEnabled()) {
                 log.info("Configuration done");
@@ -122,17 +129,17 @@ public class LVS implements LoadBalancer {
     public void stop() throws LoadBalancerExtensionException {
 
         try {
-            log.info("Stopping nginx...");
+            log.info("Stopping lvs...");
 
             // Execute hot configuration deployment
-            String command = executableFilePath + " -s stop";
-            CommandUtils.executeCommand(command);
+            String command = "service keepalived stop";
+	        CommandUtils.executeCommand(command);
             if (log.isInfoEnabled()) {
                 log.info("LVS stopped");
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Could not stop nginx");
+                log.error("Could not stop lvs");
             }
             throw new LoadBalancerExtensionException(e);
         }
