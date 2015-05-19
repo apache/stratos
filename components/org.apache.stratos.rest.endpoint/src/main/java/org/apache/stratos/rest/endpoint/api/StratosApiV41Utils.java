@@ -3295,7 +3295,7 @@ public class StratosApiV41Utils {
         } catch (UserManagerException e) {
             String msg = "Error in removing user :" + userName;
             log.error(msg, e);
-            throw new RestAPIException(msg, e);
+            throw new RestAPIException(e.getMessage());
         }
     }
 
