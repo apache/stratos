@@ -217,7 +217,8 @@ public class AutoscalerServiceClient {
     }
 
     public void removeDeploymentPolicy(String deploymentPolicyID) throws RemoteException,
-            AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
+            AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
+            AutoscalerServiceUnremovablePolicyExceptionException {
         stub.removeDeployementPolicy(deploymentPolicyID);
     }
 

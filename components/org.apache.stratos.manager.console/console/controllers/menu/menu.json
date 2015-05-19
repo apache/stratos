@@ -55,7 +55,7 @@
                     "description": "Manage single-tenant & multi-tenant cartridges."
                 },
                 {
-                    "link": "configure/groups/",
+                    "link": "configure/cartridgegroups/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Cartridge Groups",

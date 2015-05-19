@@ -42,7 +42,7 @@ try {
         case "cartridges":
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
             break;
-        case "groups":
+        case "cartridgegroups":
             formSubmit = util.RESTCalls.deployGroupDefinition(formPayload);
             break;
         case "docker":
@@ -51,10 +51,10 @@ try {
         case "applicationpolicies":
             formSubmit = util.RESTCalls.deployApplicationPolicyDefinition(formPayload);
             break;
-        case "update-groups":
+        case "update-cartridgegroups":
             formSubmit = util.RESTCalls.updateGroupDefinition(formPayload);
             break;
-        case "delete-groups":
+        case "delete-cartridgegroups":
             formSubmit = util.RESTCalls.deleteGroup(formPayload);
             break;
         case "delete-applicationpolicies":

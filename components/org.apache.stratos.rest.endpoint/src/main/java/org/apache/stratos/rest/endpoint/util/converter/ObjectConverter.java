@@ -79,9 +79,10 @@ public class ObjectConverter {
         cartridge.setDisplayName(cartridgeBean.getDisplayName());
         cartridge.setDescription(cartridgeBean.getDescription());
         cartridge.setLoadBalancingIPType(cartridgeBean.getLoadBalancingIPType());
-        cartridge.setMetadataKeys(cartridgeBean.getMetadataKeys().
-                toArray(new String[cartridgeBean.getMetadataKeys().size()]));
-
+        if(cartridgeBean.getMetadataKeys() != null) {
+            cartridge.setMetadataKeys(cartridgeBean.getMetadataKeys().
+                    toArray(new String[cartridgeBean.getMetadataKeys().size()]));
+        }
         // deployment information
         if (cartridgeBean.getDeployment() != null) {
             cartridge.setBaseDir(cartridgeBean.getDeployment().getBaseDir());

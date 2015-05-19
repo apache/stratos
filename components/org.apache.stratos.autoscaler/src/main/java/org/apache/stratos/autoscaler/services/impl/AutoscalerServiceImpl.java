@@ -125,6 +125,27 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return canRemove;
     }
 
+    /**
+     * Validate the deployment policy removal
+     *
+     * @param deploymentPolicyId
+     * @return
+     */
+    private boolean removableDeploymentPolicy(String deploymentPolicyId) {
+        boolean canRemove = true;
+        Collection<ApplicationContext> appContexts = AutoscalerContext.getInstance().getApplicationContexts();
+        for (ApplicationContext app : appContexts) {
+            CartridgeContext[] cartridgeContexts = app.getComponents().getCartridgeContexts();
+            for (CartridgeContext cartridgeContext : cartridgeContexts) {
+                SubscribableInfoContext subscribableInfoContexts = cartridgeContext.getSubscribableInfoContext();
+                if (subscribableInfoContexts.getDeploymentPolicy().equals(deploymentPolicyId)) {
+                    canRemove = false;
+                }
+            }
+        }
+        return canRemove;
+    }
+
     @Override
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId) {
         return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
@@ -1167,7 +1188,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException {
+    public boolean removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException,
+            UnremovablePolicyException {
         if (log.isInfoEnabled()) {
             log.info("Removing deployment policy: [deployment-policy_id] " + deploymentPolicyID);
         }
@@ -1176,7 +1198,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.error(message);
             throw new DeploymentPolicyNotExistsException(message);
         }
-        PolicyManager.getInstance().removeDeploymentPolicy(deploymentPolicyID);
+        if (removableDeploymentPolicy(deploymentPolicyID)) {
+            PolicyManager.getInstance().removeDeploymentPolicy(deploymentPolicyID);
+        }
+        else {
+            throw new UnremovablePolicyException("This deployment policy cannot be removed, since it is used in an " +
+                    "application.");
+        }
         if (log.isInfoEnabled()) {
             log.info("Successfully removed deployment policy: [deployment_policy_id] " + deploymentPolicyID);
         }

@@ -642,7 +642,10 @@ public class RestCommandLineService {
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
-                CliUtils.printError(response);
+                String resultString = CliUtils.getHttpResponseString(response);
+                String errorMsg = gson.fromJson(resultString, ResponseMessageBean.class).getMessage();
+                System.out.println(errorMsg);
+
             } else {
                 System.out.println("Tenant updated successfully: " + domain);
             }
@@ -1076,7 +1079,8 @@ public class RestCommandLineService {
             array = list.toArray(array);
 
             System.out.println("Autoscaling policies found:");
-            CliUtils.printTable(array, rowMapper, "ID", "Requests In Flight", "Memory Consumption", "Load Average");
+            CliUtils.printTable(array, rowMapper, "ID", "Requests In Flight Threshold", "Memory Consumption Threshold",
+                    "Load Average Threshold");
         } catch (Exception e) {
             String message = "Could not list autoscaling policies";
             printError(message, e);

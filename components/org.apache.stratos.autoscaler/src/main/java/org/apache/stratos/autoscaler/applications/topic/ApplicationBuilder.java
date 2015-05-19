@@ -25,8 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -422,8 +421,8 @@ public class ApplicationBuilder {
                             monitor1.destroy();
                         }
                     }
-                    GroupLevelNetworkPartitionContext networkPartitionContext =
-                            (GroupLevelNetworkPartitionContext) monitor.
+                    org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext networkPartitionContext =
+                            (org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext) monitor.
                                     getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
                     networkPartitionContext.removeInstanceContext(instanceId);
                     if (groupInstance.getPartitionId() != null) {
@@ -653,7 +652,7 @@ public class ApplicationBuilder {
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
 
         if (applicationMonitor != null) {
-            ApplicationLevelNetworkPartitionContext context = (ApplicationLevelNetworkPartitionContext)
+            ParentLevelNetworkPartitionContext context = (ParentLevelNetworkPartitionContext)
                     applicationMonitor.getNetworkPartitionContext(networkPartitionId);
             if (status == ApplicationStatus.Active) {
                 if (log.isDebugEnabled()) {
@@ -694,8 +693,8 @@ public class ApplicationBuilder {
                                            String instanceId, String parentInstanceId) {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
-            GroupLevelNetworkPartitionContext context
-                    = (GroupLevelNetworkPartitionContext) monitor.getNetworkPartitionContext(networkPartitionId);
+            org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext context
+                    = (org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext) monitor.getNetworkPartitionContext(networkPartitionId);
             if (status == GroupStatus.Active) {
                 if (log.isDebugEnabled()) {
                     log.debug("Moving pending group instance to active list in [group] " + groupId

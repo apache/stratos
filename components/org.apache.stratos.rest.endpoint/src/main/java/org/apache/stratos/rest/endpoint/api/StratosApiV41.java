@@ -242,11 +242,13 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
 
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Deployment policy is invalid")).build();
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getInvalidDeploymentPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Deployment policy is invalid")).build();
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy not found")).build();
@@ -271,12 +273,14 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/removeDeploymentPolicy")
     public Response removeDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
-
         try {
             StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyId);
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy not found")).build();
+        } catch (AutoscalerServiceUnremovablePolicyExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Deployment policy is in use")).build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -1486,6 +1490,9 @@ public class StratosApiV41 extends AbstractApi {
         } catch (InvalidEmailException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, String.format("Invalid email [email] %s", tenantInfoBean.getEmail()))).build();
+        } catch (InvalidDomainException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, String.format("Invalid Domain [Domain] %s", tenantInfoBean.getTenantDomain()))).build();
         } catch (Exception e) {
             String msg = "Error in updating tenant " + tenantInfoBean.getTenantDomain();
             log.error(msg, e);
@@ -1806,10 +1813,10 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Deploy kubernetes host cluster.
+     * Update kubernetes host cluster.
      *
      * @param kubernetesCluster the kubernetes cluster
-     * @return 201 if the kubernetes cluster is successfully created
+     * @return 200 if the kubernetes cluster is successfully updated
      * @throws RestAPIException the rest api exception
      */
     @PUT
@@ -1823,8 +1830,8 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateKubernetesCluster(kubernetesCluster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
-            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Kubernetes cluster added successfully: [kub-host-cluster] %s",
+            return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Kubernetes cluster updated successfully: [kub-host-cluster] %s",
                             kubernetesCluster.getClusterId()))).build();
         } catch (RestAPIException e) {
             throw e;
