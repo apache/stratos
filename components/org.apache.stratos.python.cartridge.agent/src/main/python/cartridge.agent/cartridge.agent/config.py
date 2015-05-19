@@ -111,6 +111,8 @@ class CartridgeAgentConfiguration:
             """ :type : bool  """
             self.artifact_update_interval = None
             """ :type : str """
+            self.lvs_virtual_ip = None
+            """ :type : str """
 
             self.initialized = False
             """ :type : bool """
@@ -136,10 +138,11 @@ class CartridgeAgentConfiguration:
                 self.cartridge_key = self.read_property(constants.CARTRIDGE_KEY)
                 self.app_path = self.read_property(constants.APPLICATION_PATH, False)
                 self.repo_url = self.read_property(constants.REPO_URL, False)
-                self.ports = str(self.read_property(constants.PORTS)).replace("'","").split("|")
+                self.ports = str(self.read_property(constants.PORTS)).split("|")
                 self.dependant_cluster_id = self.read_property(constants.DEPENDENCY_CLUSTER_IDS, False)
                 self.export_metadata_keys = self.read_property(constants.EXPORT_METADATA_KEYS, False)
                 self.import_metadata_keys = self.read_property(constants.IMPORT_METADATA_KEYS, False)
+                self.lvs_virtual_ip = self.read_property(constants.LVS_VIRTUAL_IP)
 
                 try:
                     self.log_file_paths = str(
@@ -261,7 +264,7 @@ class CartridgeAgentConfiguration:
             self.log.debug("export_metadata_keys: %r" % self.export_metadata_keys)
             self.log.debug("import_metadata_keys: %r" % self.import_metadata_keys)
             self.log.debug("artifact.update.interval: %r" % self.artifact_update_interval)
-            self.log.debug("log_file_paths: %s" % self.log_file_paths)
+            self.log.debug("lvs-virtual-ip: %r" % self.lvs_virtual_ip)
 
         def __read_conf_file(self):
             """

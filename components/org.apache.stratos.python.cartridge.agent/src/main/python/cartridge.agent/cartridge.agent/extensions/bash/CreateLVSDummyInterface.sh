@@ -24,8 +24,8 @@
 # --------------------------------------------------------------
 #
 
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Artifacts Updated Event" | tee -a $log
 
+modprobe dummy numdummies=1
+ifconfig dummy0 ${STRATOS_LVS_VIRTUAL_IP} netmask 255.255.255.0
 
-
+echo "update the dummy interface with ${STRATOS_LVS_VIRTUAL_IP}"
