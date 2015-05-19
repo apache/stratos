@@ -44,7 +44,7 @@ public class ThriftClientConfig {
             synchronized (ThriftClientConfig.class) {
                 if (instance == null) {
                     String configFilePath = System.getProperty(THRIFT_CLIENT_CONFIG_FILE_PATH);
-                    if(StringUtils.isBlank(configFilePath)) {
+                    if (StringUtils.isBlank(configFilePath)) {
                         throw new RuntimeException(String.format("Thrift client configuration file path system " +
                                 "property is not set: %s", THRIFT_CLIENT_CONFIG_FILE_PATH));
                     }

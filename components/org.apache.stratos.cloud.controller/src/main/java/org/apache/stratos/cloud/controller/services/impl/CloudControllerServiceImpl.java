@@ -1192,8 +1192,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean updateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException
-    {
+    public boolean updateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
         if (kubernetesCluster == null) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster cannot be null");
         }

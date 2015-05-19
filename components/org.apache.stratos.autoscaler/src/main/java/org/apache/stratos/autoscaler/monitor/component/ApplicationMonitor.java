@@ -470,7 +470,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
             startDependency(application, instanceIds);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(String.format("Application instance creation failed [applcaition-id] %s", appId), e);
         }
 

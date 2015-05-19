@@ -298,7 +298,7 @@ public class GroupMonitor extends ParentComponentMonitor {
     private void createGroupInstanceOnScaling(final NetworkPartitionContext networkPartitionContext,
                                               final String parentInstanceId) {
         if (groupScalingEnabled) {
-            if (((ParentLevelNetworkPartitionContext)networkPartitionContext).getPendingInstancesCount() == 0) {
+            if (((ParentLevelNetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
                 //one of the child is loaded and max out.
                 // Hence creating new group instance
                 if (log.isDebugEnabled()) {
@@ -639,8 +639,8 @@ public class GroupMonitor extends ParentComponentMonitor {
      * @return the group level network partition context
      */
     private ParentLevelNetworkPartitionContext getGroupLevelNetworkPartitionContext(String groupAlias,
-                                                                                   String appId,
-                                                                                   Instance parentInstanceContext) {
+                                                                                    String appId,
+                                                                                    Instance parentInstanceContext) {
         ParentLevelNetworkPartitionContext parentLevelNetworkPartitionContext;
         String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, groupAlias);
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
@@ -746,9 +746,9 @@ public class GroupMonitor extends ParentComponentMonitor {
     /**
      * Creates the group instance and adds the required context objects
      *
-     * @param group                             the group
-     * @param parentInstanceContext             the parent instance context
-     * @param partitionContext                  partition-context used to create the group instance
+     * @param group                              the group
+     * @param parentInstanceContext              the parent instance context
+     * @param partitionContext                   partition-context used to create the group instance
      * @param parentLevelNetworkPartitionContext the group level network partition context
      */
     private String createGroupInstanceAndAddToMonitor(Group group, Instance parentInstanceContext,
@@ -868,7 +868,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      * then that will be returned instead of parsing the algorithm
      *
      * @param parentLevelNetworkPartitionContext the group-network-partition-context
-     * @param parentPartitionId                 parent-partition-id
+     * @param parentPartitionId                  parent-partition-id
      * @return the partition-context
      */
     private PartitionContext getPartitionContext(
