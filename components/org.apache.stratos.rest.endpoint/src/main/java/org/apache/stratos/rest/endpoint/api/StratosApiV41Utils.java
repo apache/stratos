@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
+import org.apache.stratos.autoscaler.stub.exception.UnremovablePolicyException;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -775,7 +776,7 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void removeApplicationPolicy(String applicationPolicyId) throws RestAPIException,
-            AutoscalerServiceInvalidPolicyExceptionException {
+            AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceUnremovablePolicyExceptionException {
 
         if (applicationPolicyId == null) {
             String msg = "Application policy bean id null";
