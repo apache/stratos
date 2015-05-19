@@ -273,12 +273,14 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/removeDeploymentPolicy")
     public Response removeDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
-
         try {
             StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyId);
         } catch (AutoscalerServiceDeploymentPolicyNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy not found")).build();
+        } catch (AutoscalerServiceUnremovablePolicyExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Deployment policy is in use")).build();
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,

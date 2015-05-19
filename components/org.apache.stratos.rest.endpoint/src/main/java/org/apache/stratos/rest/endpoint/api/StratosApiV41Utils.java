@@ -2792,7 +2792,8 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void removeDeploymentPolicy(String deploymentPolicyID)
-            throws RestAPIException, AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
+            throws RestAPIException, AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
+            AutoscalerServiceUnremovablePolicyExceptionException {
         try {
             AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyID);
         } catch (RemoteException e) {
