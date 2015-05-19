@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class ApplicationLevelNetworkPartitionContext extends NetworkPartitionCon
 
     public ApplicationLevelNetworkPartitionContext(String id) {
         super(id);
+        pendingInstances = new ArrayList<InstanceContext>();
+        activeInstances = new ArrayList<InstanceContext>();
+        terminatingPending = new ArrayList<InstanceContext>();
     }
 
     public int hashCode() {
