@@ -328,52 +328,57 @@ RESTCalls = new function(){
     this.sendReceive = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
-        // getting the access token from the session.
-        var endpoint = backendServerURL + urlPostFix;
-        var headers = this.getRequestHeaders(false); //NEED TO FIX THIS
-        var response;
-        switch (httpMethod){
-            case  "GET":
-                response = get(endpoint,{},headers);
-                break;
-            case   "POST":
-                response = post(endpoint,stringify(data),headers);
-                break;
-            case    "PUT":
-                response = put(endpoint,stringify(data),headers);
-                break;
-            case    "DELETE":
-                response = del(endpoint,stringify(data),headers);
-                break;
-            default :
-                log.error("Error in the programme flow.");
-        }
-        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
-             if(response.data != null && response.data != undefined) {
-               session.put("get-status", { "message": parse(response.data).message , "status": "success" });
-             }
-        } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
-            if(response.data != null && response.data != undefined) {
-                session.put("get-status", { "message": parse(response.data).message , "status": "warning" } );
+        //handle url null issue
+        if(backendServerURL.indexOf('null') >= 0 ){
+           return request.getContextPath()+'/login/';
+        }else {
+            // getting the access token from the session.
+            var endpoint = backendServerURL + urlPostFix;
+            var headers = this.getRequestHeaders(false); //NEED TO FIX THIS
+            var responseREST;
+            switch (httpMethod) {
+                case  "GET":
+                    responseREST = get(endpoint, {}, headers);
+                    break;
+                case   "POST":
+                    responseREST = post(endpoint, stringify(data), headers);
+                    break;
+                case    "PUT":
+                    responseREST = put(endpoint, stringify(data), headers);
+                    break;
+                case    "DELETE":
+                    responseREST = del(endpoint, stringify(data), headers);
+                    break;
+                default :
+                    log.error("Error in the programme flow.");
             }
-        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
-            if(response.data != null && response.data != undefined) {
-                session.put("get-status",{ "message":  parse(response.data).message, "status": "error" } );
+            if (responseREST.xhr.status >= 200 && responseREST.xhr.status < 300) { //if success
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("get-status", { "message": parse(responseREST.data).message, "status": "success" });
+                }
+            } else if (responseREST.xhr.status >= 300 && responseREST.xhr.status < 400) { //if redirects
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("get-status", { "message": parse(responseREST.data).message, "status": "warning" });
+                }
+            } else if (responseREST.xhr.status >= 400 && responseREST.xhr.status < 500) { //if client error
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("get-status", { "message": parse(responseREST.data).message, "status": "error" });
+                }
+            } else if (responseREST.xhr.status >= 500 && responseREST.xhr.status < 600) { //if server error
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("get-status", { "message": parse(responseREST.data).message, "status": "error" });
+                }
+            } else {
+                session.put("get-status", "Unknown response!");
             }
-        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
-            if(response.data != null && response.data != undefined) {
-                session.put("get-status", { "message": parse(response.data).message, "status": "error" } );
-            }
-        } else {
-            session.put("get-status", "Unknown response!");
-        }
 
-        log.debug("sent is: " + stringify(response));
+            log.debug("sent is: " + stringify(responseREST));
 
-        if (response.data != null && response.data != undefined) {
-            return parse(response.data);
-        } else {
-            return response.data;
+            if (responseREST.data != null && responseREST.data != undefined) {
+                return parse(responseREST.data);
+            } else {
+                return responseREST.data;
+            }
         }
     };
 
@@ -381,51 +386,57 @@ RESTCalls = new function(){
     this.send = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
-        // getting the access token from the session.
-        var endpoint = backendServerURL + urlPostFix;
-        var headers = this.getRequestHeaders(false); //NEED TO FIX THIS
-        var response;
-        switch (httpMethod){
-            case  "GET":
-                response = get(endpoint,{},headers);
-                break;
-            case   "POST":
-                response = post(endpoint,data,headers);
-                break;
-            case    "PUT":
-                response = put(endpoint,data,headers);
-                break;
-            case    "DELETE":
-                response = del(endpoint,data,headers);
-                break;
-            default :
-                log.error("Error in the programme flow.");
-        }
-        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
-             if(response.data != null && response.data != undefined) {
-               session.put("deploy-status", { "message": parse(response.data).message , "status": "success" });
-             }
-        } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
-            if(response.data != null && response.data != undefined) {
-                session.put("deploy-status",{ "message": parse(response.data).message, "status": "warning" } );
+        //handle url null issue
+        if(backendServerURL.indexOf('null') >= 0){
+            return  request.getContextPath()+'/login/';
+        }else {
+            // getting the access token from the session.
+            var endpoint = backendServerURL + urlPostFix;
+            var headers = this.getRequestHeaders(false); //NEED TO FIX THIS
+            var responseREST;
+            switch (httpMethod) {
+                case  "GET":
+                    responseREST = get(endpoint, {}, headers);
+                    break;
+                case   "POST":
+                    responseREST = post(endpoint, data, headers);
+                    break;
+                case    "PUT":
+                    responseREST = put(endpoint, data, headers);
+                    break;
+                case    "DELETE":
+                    responseREST = del(endpoint, data, headers);
+                    break;
+                default :
+                    log.error("Error in the programme flow.");
             }
-        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
-            if(response.data != null && response.data != undefined) {
-                session.put("deploy-status", { "message":  parse(response.data).message, "status": "error"});
+            if (responseREST.xhr.status >= 200 && responseREST.xhr.status < 300) { //if success
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("deploy-status", { "message": parse(responseREST.data).message, "status": "success" });
+                }
+            } else if (responseREST.xhr.status >= 300 && responseREST.xhr.status < 400) { //if redirects
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("deploy-status", { "message": parse(responseREST.data).message, "status": "warning" });
+                }
+            } else if (responseREST.xhr.status >= 400 && responseREST.xhr.status < 500) { //if client error
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("deploy-status", { "message": parse(responseREST.data).message, "status": "error"});
+                }
+            } else if (responseREST.xhr.status >= 500 && responseREST.xhr.status < 600) { //if server error
+                if (responseREST.data != null && responseREST.data != undefined) {
+                    session.put("deploy-status", { "message": parse(responseREST.data).message, "status": "error"});
+                }
+            } else {
+                session.put("deploy-status", "Unknown response!");
             }
-        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
-            if(response.data != null && response.data != undefined) {
-                session.put("deploy-status", { "message": parse(response.data).message, "status": "error"});
+
+            if (responseREST.data != null && responseREST.data != undefined) {
+                return parse(responseREST.data);
+            } else {
+                return responseREST.data;
             }
-        } else {
-            session.put("deploy-status", "Unknown response!");
         }
 
-        if (response.data != null && response.data != undefined) {
-            return parse(response.data);
-        } else {
-            return response.data;
-        }
     };
 
 
@@ -439,8 +450,8 @@ RESTCalls = new function(){
             "Authorization": "Basic "+basicAuthToken,
             "Content-Type": "application/json"
         };
-        var response = get(endpoint,{},headers,"json");
-        return response;
+        var responseREST = get(endpoint,{},headers,"json");
+        return responseREST;
     };
 
     this.getAccessTokenFromSession = function(){
