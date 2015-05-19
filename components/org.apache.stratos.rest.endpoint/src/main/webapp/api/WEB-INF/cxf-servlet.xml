@@ -145,6 +145,8 @@
                 <value>publicIPs</value>
                 <value>ports</value>
                 <value>metadataKeys</value>
+                <value>networkInterfaces</value>
+                <value>iaasProvider</value>
             </list>
         </property>
     </bean>
