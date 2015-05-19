@@ -1736,11 +1736,16 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/removeUser")
     public Response removeUser(
             @PathParam("userName") String userName) throws RestAPIException {
+        try {
+            StratosApiV41Utils.removeUser(userName);
+            log.info("Successfully removed user: [username] " + userName);
+            return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("User deleted successfully: [user] %s", userName))).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getMessage())).build();
+        }
 
-        StratosApiV41Utils.removeUser(userName);
-        log.info("Successfully removed user: [username] " + userName);
-        return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("User deleted successfully: [user] %s", userName))).build();
     }
 
     /**
