@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -16,22 +17,18 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos</artifactId>
         <version>4.1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apache-stratos</artifactId>
     <packaging>jar</packaging>
     <name>Apache Stratos - Distribution</name>
     <description>Apache Stratos Manager Distribution</description>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.rampart</groupId>
@@ -94,7 +91,6 @@
             <version>${carbon.kernel.version}</version>
             <type>zip</type>
         </dependency>
-
         <!-- Synapse dependencies -->
         <!--dependency>
             <groupId>org.apache.synapse</groupId>
@@ -126,7 +122,6 @@
             <artifactId>synapse-extensions</artifactId>
             <version>${synapse.version}</version>
         </dependency-->
-
         <!-- Carbon mediation initializer -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -143,8 +138,6 @@
             <artifactId>org.wso2.carbon.mediation.dependency.mgt</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-
-
         <!-- ### Required Carbon components ### -->
         <!-- Transport managament components -->
         <dependency>
@@ -204,21 +197,18 @@
             <artifactId>org.wso2.carbon.mediator.command.services</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-
         <!--Entitlement mediator dependency -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.identity.entitlement.mediator</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-
         <!--OAuth mediator dependency -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.identity.oauth.mediator</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-
         <!--Drools dependency-->
         <dependency>
             <groupId>org.drools.wso2</groupId>
@@ -291,19 +281,16 @@
             <artifactId>rampart-policy</artifactId>
             <version>1.6.1.wso2v1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.rampart.wso2</groupId>
             <artifactId>rampart-trust</artifactId>
             <version>1.6.1.wso2v1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.rampart.wso2</groupId>
             <artifactId>rampart-core</artifactId>
             <version>1.6.1.wso2v1</version>
         </dependency>
-
         <!-- Policy Editor component -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -362,7 +349,6 @@
             <artifactId>org.wso2.carbon.rm</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-
         <!-- Menus -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -446,20 +432,17 @@
             <artifactId>bcprov-jdk15</artifactId>
             <version>132</version>
         </dependency>
-
         <!-- autoscale components -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.mediator.autoscale</artifactId>
             <version>4.0.3</version>
         </dependency>
-
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.discovery.core</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.relay</artifactId>
@@ -502,7 +485,6 @@
             <version>4.2.0-stratos</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -560,7 +542,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -573,50 +554,25 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <copy
-                                        todir="target/wso2carbon-core-4.2.0/dbscripts/identity"
-                                        overwrite="false">
-                                    <fileset
-                                            dir="${basedir}/../p2-profile-gen/target/wso2carbon-core-4.2.0/dbscripts/identity/">
-                                    </fileset>
+                                <copy todir="target/wso2carbon-core-4.2.0/dbscripts/identity" overwrite="false">
+                                    <fileset dir="${basedir}/../p2-profile-gen/target/wso2carbon-core-4.2.0/dbscripts/identity/" />
                                 </copy>
                                 <path id="h2.classpath">
-                                    <path refid="maven.compile.classpath"/>
+                                    <path refid="maven.compile.classpath" />
                                 </path>
-                                <echo message="########### Adding identity , identity/application-mgt tables to WSO2Carbon DB ##############"/>
-                                <sql
-                                        driver="org.h2.Driver"
-                                        url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database//WSO2CARBON_DB"
-                                        userid="wso2carbon" password="wso2carbon" autocommit="true"
-                                        onerror="continue">
+                                <echo message="########### Adding identity , identity/application-mgt tables to WSO2Carbon DB ##############" />
+                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database//WSO2CARBON_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
-                                        <path refid="h2.classpath"/>
+                                        <path refid="h2.classpath" />
                                     </classpath>
-                                    <fileset
-                                            file="target/wso2carbon-core-4.2.0/dbscripts/identity/application-mgt/h2.sql"/>
+                                    <fileset file="target/wso2carbon-core-4.2.0/dbscripts/identity/application-mgt/h2.sql" />
                                 </sql>
-                                <sql
-                                        driver="org.h2.Driver"
-                                        url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database/WSO2CARBON_DB"
-                                        userid="wso2carbon" password="wso2carbon" autocommit="true"
-                                        onerror="continue">
+                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database/WSO2CARBON_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
-                                        <path refid="h2.classpath"/>
+                                        <path refid="h2.classpath" />
                                     </classpath>
-                                    <fileset
-                                            file="target/wso2carbon-core-4.2.0/dbscripts/identity/h2.sql"/>
+                                    <fileset file="target/wso2carbon-core-4.2.0/dbscripts/identity/h2.sql" />
                                 </sql>
-
-                                <echo message="########### Create Billing Database ##############"/>
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2BILLING_DB"
-                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
-                                    <classpath>
-                                        <path refid="h2.classpath"/>
-                                    </classpath>
-                                    <fileset file="../../dbscripts/billing-h2.sql"/>
-                                    <fileset file="../../dbscripts/metering_h2.sql"/>
-                                </sql>
-                                <echo message="##################### END ########################"/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -625,14 +581,14 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="target/archive-tmp"/>
-                                <delete dir="target/dependency-maven-plugin-markers"/>
-                                <delete dir="target/maven-archiver"/>
-                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
-                                <delete dir="target/shopping-cart-global-${shoppingcart.global.version}"/>
-                                <delete file="target/${project.artifactId}-${project.version}.jar"/>
-                                <delete dir="target/sources"/>
-                                <delete dir="target/database"/>
+                                <delete dir="target/archive-tmp" />
+                                <delete dir="target/dependency-maven-plugin-markers" />
+                                <delete dir="target/maven-archiver" />
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}" />
+                                <delete dir="target/shopping-cart-global-${shoppingcart.global.version}" />
+                                <delete file="target/${project.artifactId}-${project.version}.jar" />
+                                <delete dir="target/sources" />
+                                <delete dir="target/database" />
                             </tasks>
                         </configuration>
                         <goals>
