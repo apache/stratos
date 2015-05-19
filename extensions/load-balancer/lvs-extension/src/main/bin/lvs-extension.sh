@@ -28,9 +28,9 @@ properties="-Dlvs.private.ip=127.0.0.1
             -Dexecutable.file.path=lvs
             -Djndi.properties.dir=${script_path}/../conf
             -Dtemplates.path=${script_path}/../templates
-            -Dtemplates.name=nginx.cfg.template
+            -Dtemplates.name=keepalived.conf.template
             -Dscripts.path=${script_path}/../scripts
-            -Dconf.file.path=/tmp/nginx.cfg
+            -Dconf.file.path=/tmp/keepalived.conf
             -Dstats.socket.file.path=/tmp/nginx-stats.socket
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
@@ -41,7 +41,9 @@ properties="-Dlvs.private.ip=127.0.0.1
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=network-partition-1
             -Dcluster.id=cluster-1
-            -Dservice.name=service-1"
+            -Dservice.name=service-1
+            -Dlvs.service.virtualip.set=tomcat2|192.168.56.40,tomcat1|192.168.56.41
+            -Dserver.state=MASTER"
 
 
 # Uncomment below line to enable remote debugging

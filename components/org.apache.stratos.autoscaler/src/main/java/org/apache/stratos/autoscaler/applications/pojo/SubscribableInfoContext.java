@@ -36,6 +36,8 @@ public class SubscribableInfoContext implements Serializable {
     private ArtifactRepositoryContext artifactRepositoryContext;
     private Properties properties;
     private PersistenceContext persistenceContext;
+	//This is the virtual IP that we need to pass for use LVS as Load Balancer
+	private String lvsVirtualIP;
 
     public String getAlias() {
         return alias;
@@ -108,4 +110,12 @@ public class SubscribableInfoContext implements Serializable {
     public void setPersistenceContext(PersistenceContext persistenceContext) {
         this.persistenceContext = persistenceContext;
     }
+
+	public String getLvsVirtualIP() {
+		return lvsVirtualIP;
+	}
+
+	public void setLvsVirtualIP(String lvsVirtualIP) {
+		this.lvsVirtualIP = lvsVirtualIP;
+	}
 }

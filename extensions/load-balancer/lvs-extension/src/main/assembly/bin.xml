@@ -56,7 +56,7 @@
             <outputDirectory>/templates</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
-                <include>nginx.cfg.template</include>
+                <include>keepalived.conf.template</include>
             </includes>
         </fileSet>
         <fileSet>

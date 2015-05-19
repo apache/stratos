@@ -43,6 +43,9 @@ public class LVSContext {
     private String networkPartitionId;
     private String clusterId;
     private String serviceName;
+	private String virtualIPsForServices;
+	private String keepAlivedStartCommand;
+	private String serverState;
 
     private LVSContext() {
         this.lvsPrivateIp = System.getProperty(Constants.LVS_PRIVATE_IP);
@@ -58,6 +61,9 @@ public class LVSContext {
         this.networkPartitionId = System.getProperty(Constants.NETWORK_PARTITION_ID);
         this.clusterId = System.getProperty(Constants.CLUSTER_ID);
         this.serviceName = System.getProperty(Constants.SERVICE_NAME);
+	    this.virtualIPsForServices=System.getProperty(Constants.VIRTUALIPS_FOR_SERVICES);
+	    this.keepAlivedStartCommand=Constants.KEEPALIVED_START_COMMAND;
+	    this.setServerState(System.getProperty(Constants.SERVER_STATE));
 
         if (log.isDebugEnabled()) {
             log.debug(Constants.LVS_PRIVATE_IP + " = " + lvsPrivateIp);
@@ -72,6 +78,7 @@ public class LVSContext {
             log.debug(Constants.THRIFT_RECEIVER_PORT + " = " + thriftReceiverPort);
             log.debug(Constants.NETWORK_PARTITION_ID + " = " + networkPartitionId);
             log.debug(Constants.CLUSTER_ID + " = " + clusterId);
+	        log.debug(Constants.VIRTUALIPS_FOR_SERVICES + " = " + getVirtualIPsForServices());
         }
     }
 
@@ -154,4 +161,28 @@ public class LVSContext {
     public String getServiceName() {
         return serviceName;
     }
+
+	public String getVirtualIPsForServices() {
+		return virtualIPsForServices;
+	}
+
+	public void setVirtualIPsForServices(String virtualIPsForServices) {
+		this.virtualIPsForServices = virtualIPsForServices;
+	}
+
+	public String getKeepAlivedStartCommand() {
+		return keepAlivedStartCommand;
+	}
+
+	public void setKeepAlivedStartCommand(String keepAlivedStartCommand) {
+		this.keepAlivedStartCommand = keepAlivedStartCommand;
+	}
+
+	public String getServerState() {
+		return serverState;
+	}
+
+	public void setServerState(String serverState) {
+		this.serverState = serverState;
+	}
 }

@@ -180,7 +180,7 @@ public class LoadBalancerExtension {
             @Override
             protected void onEvent(Event event) {
                 try {
-                    if (!loadBalancerStarted) {
+                  if (!loadBalancerStarted) {
                         configureAndStart();
                     }
                 } catch (Exception e) {
