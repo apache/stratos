@@ -41,6 +41,7 @@ public class SubscribableInfo implements Serializable {
     private ArtifactRepositoryBean artifactRepository;
     private List<PropertyBean> property;
     private PersistenceBean persistence;
+	private String lvsVirtualIP;
 
     public String getAlias() {
         return alias;
@@ -113,4 +114,12 @@ public class SubscribableInfo implements Serializable {
     public void setPersistence(PersistenceBean persistence) {
         this.persistence = persistence;
     }
+
+	public String getLvsVirtualIP() {
+		return lvsVirtualIP;
+	}
+
+	public void setLvsVirtualIP(String lvsVirtualIP) {
+		this.lvsVirtualIP = lvsVirtualIP;
+	}
 }
