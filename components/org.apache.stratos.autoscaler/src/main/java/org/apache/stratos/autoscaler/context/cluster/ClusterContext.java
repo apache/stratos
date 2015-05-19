@@ -58,16 +58,16 @@ public class ClusterContext extends AbstractClusterContext {
     // Map<NetworkpartitionId, Network Partition Context>
     protected Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts;
 
-    protected AutoscalePolicy autoscalePolicy;
+    private String autoscalingPolicyId;
 
     private String deploymentPolicyId;
 
-    public ClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
+    public ClusterContext(String clusterId, String serviceId, String autoscalingPolicyId,
                           boolean hasScalingDependents, String deploymentPolicyId) {
 
         super(clusterId, serviceId);
         this.networkPartitionCtxts = new ConcurrentHashMap<String, ClusterLevelNetworkPartitionContext>();
-        this.autoscalePolicy = autoscalePolicy;
+        this.autoscalingPolicyId = autoscalingPolicyId;
         this.deploymentPolicyId = deploymentPolicyId;
     }
 
@@ -76,11 +76,7 @@ public class ClusterContext extends AbstractClusterContext {
     }
 
     public AutoscalePolicy getAutoscalePolicy() {
-        return autoscalePolicy;
-    }
-
-    public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
-        this.autoscalePolicy = autoscalePolicy;
+        return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
     }
 
     public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
