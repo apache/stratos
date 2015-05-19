@@ -1806,6 +1806,35 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
+     * Deploy kubernetes host cluster.
+     *
+     * @param kubernetesCluster the kubernetes cluster
+     * @return 201 if the kubernetes cluster is successfully created
+     * @throws RestAPIException the rest api exception
+     */
+    @PUT
+    @Path("/kubernetesClusters")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/updateKubernetesCluster")
+    public Response updateKubernetesHostCluster(
+            KubernetesClusterBean kubernetesCluster) throws RestAPIException {
+
+        try {
+            StratosApiV41Utils.updateKubernetesCluster(kubernetesCluster);
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
+            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Kubernetes cluster added successfully: [kub-host-cluster] %s",
+                            kubernetesCluster.getClusterId()))).build();
+        } catch (RestAPIException e) {
+            throw e;
+        } catch (CloudControllerServiceInvalidKubernetesClusterExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Kubernetes cluster is invalid")).build();
+        }
+    }
+
+    /**
      * Deploy kubernetes host.
      *
      * @param kubernetesClusterId the kubernetes cluster id

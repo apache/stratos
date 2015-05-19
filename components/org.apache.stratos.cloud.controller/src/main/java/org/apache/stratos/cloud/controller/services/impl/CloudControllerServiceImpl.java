@@ -1192,6 +1192,40 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
+    public boolean updateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException
+    {
+        if (kubernetesCluster == null) {
+            throw new InvalidKubernetesClusterException("Kubernetes cluster cannot be null");
+        }
+        Lock lock = null;
+        try {
+            lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Updating kubernetes cluster: [kubernetes-cluster-id] %s",
+                        kubernetesCluster.getClusterId()));
+            }
+            CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
+
+            // Updating the information model
+            CloudControllerContext.getInstance().updateKubernetesCluster(kubernetesCluster);
+            CloudControllerContext.getInstance().persist();
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Kubernetes cluster updated successfully: [kubernetes-cluster-id] %s",
+                        kubernetesCluster.getClusterId()));
+            }
+            return true;
+        } catch (Exception e) {
+            throw new InvalidKubernetesClusterException(e.getMessage(), e);
+        } finally {
+            if (lock != null) {
+                CloudControllerContext.getInstance().releaseWriteLock(lock);
+            }
+        }
+    }
+
+    @Override
     public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesClusterException {
         if (kubernetesHost == null) {
