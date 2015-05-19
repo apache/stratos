@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * Holds runtime data of a network partition.
  */
-public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
-    private static final Log log = LogFactory.getLog(GroupLevelNetworkPartitionContext.class);
+public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
+    private static final Log log = LogFactory.getLog(ParentLevelNetworkPartitionContext.class);
     private int scaleDownRequestsCount = 0;
     private float averageRequestsServedPerInstance;
     private int pendingMembersFailureCount = 0;
@@ -56,7 +56,7 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     private int currentPartitionIndex;
 
 
-    public GroupLevelNetworkPartitionContext(String id, String partitionAlgo) {
+    public ParentLevelNetworkPartitionContext(String id, String partitionAlgo) {
         super(id);
         this.partitionAlgorithm = partitionAlgo;
         partitionContexts = new ArrayList<GroupLevelPartitionContext>();
@@ -68,7 +68,7 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
 
     }
 
-    public GroupLevelNetworkPartitionContext(String id) {
+    public ParentLevelNetworkPartitionContext(String id) {
         super(id);
         partitionContexts = new ArrayList<GroupLevelPartitionContext>();
         requiredInstanceCountBasedOnStats = minInstanceCount;
@@ -112,10 +112,10 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof GroupLevelNetworkPartitionContext)) {
+        if (!(obj instanceof ParentLevelNetworkPartitionContext)) {
             return false;
         }
-        final GroupLevelNetworkPartitionContext other = (GroupLevelNetworkPartitionContext) obj;
+        final ParentLevelNetworkPartitionContext other = (ParentLevelNetworkPartitionContext) obj;
         if (super.getId() == null) {
             if (super.getId() != null) {
                 return false;
