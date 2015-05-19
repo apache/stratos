@@ -606,17 +606,6 @@
                                     <fileset
                                             file="target/wso2carbon-core-4.2.0/dbscripts/identity/h2.sql"/>
                                 </sql>
-
-                                <echo message="########### Create Billing Database ##############"/>
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2BILLING_DB"
-                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
-                                    <classpath>
-                                        <path refid="h2.classpath"/>
-                                    </classpath>
-                                    <fileset file="../../dbscripts/billing-h2.sql"/>
-                                    <fileset file="../../dbscripts/metering_h2.sql"/>
-                                </sql>
-                                <echo message="##################### END ########################"/>
                             </tasks>
                         </configuration>
                     </execution>
