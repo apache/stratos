@@ -699,16 +699,27 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/addApplication")
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         try {
-            StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
+            StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
+                        getUsername(), getTenantDomain());
+
 
             URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application added successfully: [application] %s",
                             applicationDefinition.getApplicationId()))).build();
         } catch (ApplicationAlreadyExistException e) {
-
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application already exists")).build();
+        }  catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getCartridgeNotFoundException().
+                    getMessage();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
+        } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getCartridgeGroupNotFoundException().
+                    getMessage();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (RestAPIException e) {
             throw e;
         }
@@ -728,11 +739,25 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/addApplication")
     public Response updateApplication(ApplicationBean applicationDefinition) throws RestAPIException {
 
-        StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
-        URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
-        return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Application updated successfully: [application] %s",
-                        applicationDefinition.getApplicationId()))).build();
+        try {
+            StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(),
+                    getUsername(), getTenantDomain());
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
+            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Application updated successfully: [application] %s",
+                            applicationDefinition.getApplicationId()))).build();
+        }  catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getCartridgeNotFoundException().
+                    getMessage();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
+        } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
+            String backendErrorMessage = e.getFaultMessage().getCartridgeGroupNotFoundException().
+                    getMessage();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, backendErrorMessage)).build();
+        }
+
     }
 
     /**

@@ -22,7 +22,9 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.exception.CartridgeGroupNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.messaging.domain.application.Application;
 
@@ -41,7 +43,7 @@ public interface ApplicationParser {
      * @return Application structure denoting the parsed Application
      * @throws ApplicationDefinitionException If the Application Definition is invalid
      */
-    public Application parse(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+    public Application parse(ApplicationContext applicationContext) throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException;
 
     /**
      * Returns a set of ApplicationClusterContext which will comprise of cluster related information

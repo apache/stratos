@@ -91,12 +91,16 @@ public class AutoscalerServiceClient {
     }
 
     public void addApplication(ApplicationContext applicationContext)
-            throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+            throws AutoscalerServiceApplicationDefinitionExceptionException,
+            RemoteException, AutoscalerServiceCartridgeNotFoundExceptionException,
+            AutoscalerServiceCartridgeGroupNotFoundExceptionException {
         stub.addApplication(applicationContext);
     }
 
     public void updateApplication(ApplicationContext applicationContext)
-            throws AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+            throws AutoscalerServiceApplicationDefinitionExceptionException,
+            RemoteException, AutoscalerServiceCartridgeNotFoundExceptionException,
+            AutoscalerServiceCartridgeGroupNotFoundExceptionException {
         stub.updateApplication(applicationContext);
     }
 

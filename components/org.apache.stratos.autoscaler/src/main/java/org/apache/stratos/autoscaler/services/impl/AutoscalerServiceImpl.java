@@ -36,6 +36,7 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -153,7 +154,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public boolean addApplication(ApplicationContext applicationContext)
-            throws ApplicationDefinitionException {
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException,
+            CartridgeNotFoundException {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding application: [application-id] %s",
@@ -181,7 +183,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public boolean updateApplication(ApplicationContext applicationContext)
-            throws ApplicationDefinitionException {
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException,
+            CartridgeNotFoundException {
 
         String applicationId = applicationContext.getApplicationId();
         if (log.isInfoEnabled()) {

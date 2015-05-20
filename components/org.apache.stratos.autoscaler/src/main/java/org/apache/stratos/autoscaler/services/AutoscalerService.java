@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -85,7 +86,9 @@ public interface AutoscalerService {
      * @param applicationContext {@link ApplicationContext}
      * @throws ApplicationDefinitionException if an error occurs
      */
-    public boolean addApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+    public boolean addApplication(ApplicationContext applicationContext)
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException,
+            CartridgeNotFoundException;
 
     /**
      * update an application
@@ -93,7 +96,8 @@ public interface AutoscalerService {
      * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext}
      * @throws ApplicationDefinitionException if an error occurs
      */
-    public boolean updateApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+    public boolean updateApplication(ApplicationContext applicationContext)
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException;
 
 
     /**

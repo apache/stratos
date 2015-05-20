@@ -142,7 +142,7 @@
     {{/if}}
 
     <div class="row general-table row-overide">
-        {{#ifCond formtype "==" "docker"}}
+        {{#ifCond formtype "==" "kubernetes-clusters"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -155,10 +155,10 @@
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
                                 id="{{clusterId}}" data-formtype="delete-kubernetes-cluster"> Delete</button>
                         <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/docker/{{clusterId}}/edit" > Edit
+                                data-url="{{url ""}}/configure/kubernetes-clusters/{{clusterId}}/edit" > Edit
                         </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/docker/{{clusterId}}/" > Details
+                                data-url="{{url ""}}/configure/kubernetes-clusters/{{clusterId}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
@@ -166,10 +166,10 @@
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
                                     id="{{clusterId}}" data-formtype="delete-kubernetes-cluster"> Delete</button>
                             <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/docker/{{clusterId}}/edit" > Edit
+                                    data-url="{{url ""}}/configure/kubernetes-clusters/{{clusterId}}/edit" > Edit
                             </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                    data-url="{{url ""}}/configure/docker/{{clusterId}}/" > Details
+                                    data-url="{{url ""}}/configure/kubernetes-clusters/{{clusterId}}/" > Details
                             </button>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
                 </div>
             {{/each}}
         {{/ifCond}}
-        {{#ifCond formtype "==" "autoscalingpolicies"}}
+        {{#ifCond formtype "==" "autoscaling-policies"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 col-xs-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -223,30 +223,30 @@
                     <div class="toggle-menu-description">{{description}}</div>
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                id="{{id}}" data-formtype="delete-autoscalingpolicy"> Delete</button>
+                                id="{{id}}" data-formtype="delete-autoscaling-policy"> Delete</button>
                         <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/edit" > Edit
+                                data-url="{{url ""}}/configure/autoscaling-policies/{{id}}/edit" > Edit
                         </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
+                                data-url="{{url ""}}/configure/autoscaling-policies/{{id}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                    id="{{id}}" data-formtype="delete-autoscalingpolicy"> Delete</button>
+                                    id="{{id}}" data-formtype="delete-autoscaling-policy"> Delete</button>
                             <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/edit" > Edit
+                                    data-url="{{url ""}}/configure/autoscaling-policies/{{id}}/edit" > Edit
                             </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                    data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
+                                    data-url="{{url ""}}/configure/autoscaling-policies/{{id}}/" > Details
                             </button>
                         </div>
                     </div>
                 </div>
             {{/each}}
         {{/ifCond}}
-        {{#ifCond formtype "==" "networkpartitions"}}
+        {{#ifCond formtype "==" "network-partitions"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 col-xs-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -257,30 +257,30 @@
                     <div class="toggle-menu-description">{{description}}</div>
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                id="{{id}}" data-formtype="delete-networkpartitions"> Delete</button>
+                                id="{{id}}" data-formtype="delete-network-partitions"> Delete</button>
                         <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/networkpartitions/{{id}}/edit" > Edit
+                                data-url="{{url ""}}/configure/network-partitions/{{id}}/edit" > Edit
                         </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/networkpartitions/{{id}}/" > Details
+                                data-url="{{url ""}}/configure/network-partitions/{{id}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                    id="{{id}}" data-formtype="delete-networkpartitions"> Delete</button>
+                                    id="{{id}}" data-formtype="delete-network-partitions"> Delete</button>
                             <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/networkpartitions/{{id}}/edit" > Edit
+                                    data-url="{{url ""}}/configure/network-partitions/{{id}}/edit" > Edit
                             </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                    data-url="{{url ""}}/configure/networkpartitions/{{id}}/" > Details
+                                    data-url="{{url ""}}/configure/network-partitions/{{id}}/" > Details
                             </button>
                         </div>
                     </div>
                 </div>
             {{/each}}
         {{/ifCond}}
-        {{#ifCond formtype "==" "deploymentpolicies"}}
+        {{#ifCond formtype "==" "deployment-policies"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 col-xs-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -291,30 +291,30 @@
                     <div class="toggle-menu-description">{{description}}</div>
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                id="{{id}}" data-formtype="delete-deploymentpolicy"> Delete</button>
+                                id="{{id}}" data-formtype="delete-deployment-policy"> Delete</button>
                         <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/deploymentpolicies/{{id}}/edit" > Edit
+                                data-url="{{url ""}}/configure/deployment-policies/{{id}}/edit" > Edit
                         </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/deploymentpolicies/{{id}}/" > Details
+                                data-url="{{url ""}}/configure/deployment-policies/{{id}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                    id="{{id}}" data-formtype="delete-deploymentpolicy"> Delete</button>
+                                    id="{{id}}" data-formtype="delete-deployment-policy"> Delete</button>
                             <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/deploymentpolicies/{{id}}/edit" > Edit
+                                    data-url="{{url ""}}/configure/deployment-policies/{{id}}/edit" > Edit
                             </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                    data-url="{{url ""}}/configure/deploymentpolicies/{{id}}/" > Details
+                                    data-url="{{url ""}}/configure/deployment-policies/{{id}}/" > Details
                             </button>
                         </div>
                     </div>
                 </div>
             {{/each}}
         {{/ifCond}}
-        {{#ifCond formtype "==" "applicationpolicies"}}
+        {{#ifCond formtype "==" "application-policies"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -325,30 +325,30 @@
                     <div class="toggle-menu-description">{{description}} </div>
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                id="{{id}}"  data-formtype="delete-applicationpolicies"> Delete</button>
+                                id="{{id}}"  data-formtype="delete-application-policies"> Delete</button>
                         <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/applicationpolicies/{{id}}/edit" > Edit
+                                data-url="{{url ""}}/configure/application-policies/{{id}}/edit" > Edit
                         </button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                data-url="{{url ""}}/configure/applicationpolicies/{{id}}/" > Details
+                                data-url="{{url ""}}/configure/application-policies/{{id}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                    id="{{id}}" data-formtype="delete-applicationpolicies"> Delete</button>
+                                    id="{{id}}" data-formtype="delete-application-policies"> Delete</button>
                             <button class="btn btn-warning btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/applicationpolicies/{{id}}/edit" > Edit
+                                    data-url="{{url ""}}/configure/application-policies/{{id}}/edit" > Edit
                             </button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                    data-url="{{url ""}}/configure/applicationpolicies/{{id}}/" > Details
+                                    data-url="{{url ""}}/configure/application-policies/{{id}}/" > Details
                             </button>
                         </div>
                     </div>
                 </div>
             {{/each}}
         {{/ifCond}}
-        {{#ifCond formtype "==" "cartridgegroups"}}
+        {{#ifCond formtype "==" "cartridge-groups"}}
             {{#each content_body.sections}}
                 <div class="block col-md-4 grid-group-item border-right">
                     <div class="toggle-menu-icon">
@@ -359,17 +359,17 @@
                     <div class="toggle-menu-description">{{description}} </div>
                     <div class="list-button" style="display: none;">
                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                id="{{name}}" data-formtype="delete-cartridgegroups"> Delete</button>
+                                id="{{name}}" data-formtype="delete-cartridge-groups"> Delete</button>
                         <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{name}}"
-                                data-url="{{url ""}}/configure/cartridgegroups/{{name}}/" > Details
+                                data-url="{{url ""}}/configure/cartridge-groups/{{name}}/" > Details
                         </button>
                     </div>
                     <div class="bottom-bar-wrapper">
                         <div class="bottom-bar">
                             <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                    id="{{name}}" data-formtype="delete-cartridgegroups"> Delete</button>
+                                    id="{{name}}" data-formtype="delete-cartridge-groups"> Delete</button>
                             <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{name}}"
-                                    data-url="{{url ""}}/configure/cartridgegroups/{{name}}/" > Details
+                                    data-url="{{url ""}}/configure/cartridge-groups/{{name}}/" > Details
                             </button>
                         </div>
                     </div>
