@@ -30,46 +30,46 @@ include('/controllers/login/validator.jag');
 
 try {
     switch (formtype) {
-        case "networkpartitions":
+        case "network-partitions":
             formSubmit = util.RESTCalls.deployPartitionDefinition(formPayload);
             break;
-        case "autoscalingpolicies":
+        case "autoscaling-policies":
             formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);
             break;
-        case "deploymentpolicies":
+        case "deployment-policies":
             formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(formPayload);
             break;
         case "cartridges":
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
             break;
-        case "cartridgegroups":
+        case "cartridge-groups":
             formSubmit = util.RESTCalls.deployGroupDefinition(formPayload);
             break;
-        case "docker":
+        case "kubernetes-clusters":
             formSubmit = util.RESTCalls.deployKubernetesClusterDefinition(formPayload);
             break;
-        case "applicationpolicies":
+        case "application-policies":
             formSubmit = util.RESTCalls.deployApplicationPolicyDefinition(formPayload);
             break;
-        case "update-cartridgegroups":
+        case "update-cartridge-groups":
             formSubmit = util.RESTCalls.updateGroupDefinition(formPayload);
             break;
-        case "delete-cartridgegroups":
+        case "delete-cartridge-groups":
             formSubmit = util.RESTCalls.deleteGroup(formPayload);
             break;
-        case "delete-applicationpolicies":
+        case "delete-application-policies":
             formSubmit = util.RESTCalls.deleteApplicationPolicyDefinition(formPayload);
             break;
-        case "delete-networkpartitions":
+        case "delete-network-partitions":
             formSubmit = util.RESTCalls.deletePartiions(formPayload);
             break;
         case "delete-cartridge":
             formSubmit = util.RESTCalls.deleteCartridgeDefinition(formPayload);
             break;
-        case "delete-autoscalingpolicy":
+        case "delete-autoscaling-policy":
             formSubmit = util.RESTCalls.deleteAutoscalePolicyDefinition(formPayload);
             break;
-        case "delete-deploymentpolicy":
+        case "delete-deployment-policy":
             formSubmit = util.RESTCalls.deleteDeploymentPolicyDefinition(formPayload);
             break;
         case "update-kubernetes-cluster":
@@ -78,16 +78,16 @@ try {
         case "delete-kubernetes-cluster":
             formSubmit = util.RESTCalls.deleteKubernetesClusterDefinition(formPayload);
             break;
-        case "update-networkpartitions":
+        case "update-network-partitions":
             formSubmit = util.RESTCalls.updatePartitionDefinition(formPayload);
             break;
-        case "update-autoscalingpolicies":
+        case "update-autoscaling-policies":
             formSubmit = util.RESTCalls.updateAutoscalePolicyDefinition(formPayload);
             break;
-        case "update-deploymentpolicies":
+        case "update-deployment-policies":
             formSubmit = util.RESTCalls.updateDeploymentPolicyDefinition(formPayload);
             break;
-        case "update-applicationpolicies":
+        case "update-application-policies":
             formSubmit = util.RESTCalls.updateApplicationPolicyDefinition(formPayload);
             break;
         case "update-cartridges":

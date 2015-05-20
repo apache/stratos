@@ -916,7 +916,7 @@ $(document).ready(function(){
             }
             cartridgeBlockTemplate['properties']['subscribableInfo']['properties']['autoscalingPolicy']['enum']
                 =policiesEnum;
-            //get list of deploymentpolicies
+            //get list of deployment-policies
             var dpolicies = editorDeploymentPolicies;
             var dpoliciesEnum = [];
             for(var i=0; i<dpolicies.length; i++){

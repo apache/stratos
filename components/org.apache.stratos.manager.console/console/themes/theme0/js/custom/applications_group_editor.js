@@ -424,7 +424,7 @@ $(document).ready(function(){
     $('#deploy').on('click', function(){
         var  payload = genGroupJSON({}, jsPlumb.getConnections());
         var btn = $(this);
-        var formtype = 'cartridgegroups';
+        var formtype = 'cartridge-groups';
         btn.html("<i class='fa fa-spinner fa-spin'></i> Adding...");
         $.ajax({
             type: "POST",

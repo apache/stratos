@@ -71,7 +71,7 @@ if (!elements) {
         error.push({"errorMessage": e.message});
     }
 
-    if (elements.formtype == 'cartridgegroups' && elements.action == 'new') {
+    if (elements.formtype == 'cartridge-groups' && elements.action == 'new') {
         applicationHbs = 'applicationsGroupEditor';
         editorCartridges = util.RESTCalls.getCartridges();
     }
@@ -84,7 +84,7 @@ if(isEdit == false && elements.action != 'new') {
 
     switch (formtype) {
 
-        case "networkpartitions":
+        case "network-partitions":
             formTitle = "Network Partition",
                     buttonText = "Network Partition";
             list_data = util.RESTCalls.getPartitions();
@@ -93,7 +93,7 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
-        case "autoscalingpolicies":
+        case "autoscaling-policies":
             formTitle = "Auto-scaling Policie",
                     buttonText = "Auto-scaling Policy";
             list_data = util.RESTCalls.getPolicyAutoScales();
@@ -102,7 +102,7 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
-        case "deploymentpolicies":
+        case "deployment-policies":
             formTitle = "Deployment Policie",
                     buttonText = "Deployment Policy";
             list_data = util.RESTCalls.getPolicyDeployments();
@@ -120,7 +120,7 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
-        case "cartridgegroups":
+        case "cartridge-groups":
             formTitle = "Cartridge Group Definition",
                     buttonText = "Cartridge Group Definition";
             list_data = util.RESTCalls.getGroups();
@@ -129,7 +129,7 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
-        case "docker":
+        case "kubernetes-clusters":
             formTitle = "Kubernetes Cluster",
                     buttonText = "Kubernetes Cluster";
             list_data = util.RESTCalls.getKubernetesClusters();
@@ -138,7 +138,7 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
-        case "applicationpolicies":
+        case "application-policies":
             formTitle = "Application Policy Definition",
                     buttonText = "Application Policy Definition";
             list_data = util.RESTCalls.getApplicationPolicies();
@@ -167,14 +167,14 @@ if (elements.action != 'new' && isEdit) {
             id = escape(elements.action);
 
     switch (formtype) {
-        case "autoscalingpolicies":
+        case "autoscaling-policies":
             formDataEdit = util.RESTCalls.getPolicyAutoScale(id);
             break;
-        case "deploymentpolicies":
+        case "deployment-policies":
             formDataEdit = util.RESTCalls.getPolicyDeployment(id);
             break;
 
-        case "networkpartitions":
+        case "network-partitions":
             formDataEdit = util.RESTCalls.getPartition(id);
             break;
 
@@ -182,15 +182,15 @@ if (elements.action != 'new' && isEdit) {
             formDataEdit = util.RESTCalls.getCartridge(id);
             break;
 
-        case "cartridgegroups":
+        case "cartridge-groups":
             formDataEdit = util.RESTCalls.getPolicyCartridgeGroup(id);
             break;
 
-        case "docker":
+        case "kubernetes-clusters":
             formDataEdit = util.RESTCalls.getKubernetesCluster(id);
             break;
 
-        case "applicationpolicies":
+        case "application-policies":
             formDataEdit = util.RESTCalls.getPolicyApplication(id);
             break;
     }
@@ -205,16 +205,16 @@ if(elements.action != 'new' && isUpdate){
             id = escape(elements.action);
 
     switch (formtype) {
-        case "networkpartitions":
+        case "network-partitions":
             formDataUpdate = util.RESTCalls.getPartition(id);
             break;
-        case "autoscalingpolicies":
+        case "autoscaling-policies":
             formDataUpdate = util.RESTCalls.getPolicyAutoScale(id);
             break;
-        case "deploymentpolicies":
+        case "deployment-policies":
             formDataUpdate = util.RESTCalls.getPolicyDeployment(id);
             break;
-        case "applicationpolicies":
+        case "application-policies":
             formDataUpdate = util.RESTCalls.getPolicyApplication(id);
             break;
         case "cartridges":
