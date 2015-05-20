@@ -59,6 +59,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -430,9 +431,16 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.removeCartridge(cartridgeType);
             return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
+        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidCartridgeTypeException().getMessage()))
+                    .build();
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
         }
     }
 

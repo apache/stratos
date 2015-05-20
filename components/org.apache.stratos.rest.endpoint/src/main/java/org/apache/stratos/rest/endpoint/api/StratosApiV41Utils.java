@@ -225,9 +225,10 @@ public class StratosApiV41Utils {
      * @param cartridgeType Cartridge Type
      * @throws RestAPIException
      */
-    public static void removeCartridge(String cartridgeType) throws RestAPIException {
+    public static void removeCartridge(String cartridgeType) throws RestAPIException, RemoteException,
+            CloudControllerServiceCartridgeNotFoundExceptionException,
+            CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
-        try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Removing cartridge: [cartridge-type] %s ", cartridgeType));
             }
@@ -251,13 +252,6 @@ public class StratosApiV41Utils {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
             }
-        } catch (RemoteException e) {
-            throw new RestAPIException(e.getMessage());
-        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-            throw new RestAPIException(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage());
-        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-            throw new RestAPIException(e.getFaultMessage().getCartridgeNotFoundException().getMessage());
-        }
     }
 
     /**
