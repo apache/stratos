@@ -432,8 +432,7 @@ public class StratosApiV41 extends AbstractApi {
             return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();
         } catch (RemoteException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, e.getMessage())).build();
+            throw new RestAPIException(e.getMessage());
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidCartridgeTypeException().getMessage()))
