@@ -31,6 +31,11 @@
             <!-- SM client timeout in ms -->
             <clientTimeout>300000</clientTimeout>
         </stratosManager>
+	<identity>
+                <hostname>localhost</hostname>
+                <port>9443</port>                    
+                <clientTimeout>300000</clientTimeout>
+        </identity>
         <member>
             <!-- this is the maximum time(ms) a member can be in pending member state -->
             <pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>

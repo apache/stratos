@@ -64,6 +64,4 @@ public class AuthenticationApi extends AbstractApi {
         return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
-
-
 }

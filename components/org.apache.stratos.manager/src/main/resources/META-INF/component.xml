@@ -18,109 +18,52 @@
   -->
 <component xmlns="http://products.wso2.org/carbon">
     <ManagementPermissions>
+        <!-- /Stratos -->
         <ManagementPermission>
-            <DisplayName>REST Login</DisplayName>
-            <ResourceId>/permission/protected/restlogin</ResourceId>
+            <DisplayName>Stratos Permissions</DisplayName>
+            <ResourceId>/permission/stratos</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Applications -->
+        <ManagementPermission>
+            <DisplayName>Applications</DisplayName>
+            <ResourceId>/permission/stratos/applications</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Application</DisplayName>
-            <ResourceId>/permission/admin/manage/addApplication</ResourceId>
+            <DisplayName>Manage Applications</DisplayName>
+            <ResourceId>/permission/stratos/applications/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Application</DisplayName>
-            <ResourceId>/permission/admin/manage/getApplications</ResourceId>
+            <DisplayName>View Applications</DisplayName>
+            <ResourceId>/permission/stratos/applications/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Application SignUps-->
+        <ManagementPermission>
+            <DisplayName>Application Sign Ups</DisplayName>
+            <ResourceId>/permission/stratos/applicationSignUps</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Deploy Application</DisplayName>
-            <ResourceId>/permission/admin/manage/deployApplication</ResourceId>
+            <DisplayName>Manage Application Sign Ups</DisplayName>
+            <ResourceId>/permission/stratos/applicationSignUps/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Application Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/getApplicationDeploymentPolicy</ResourceId>
+            <DisplayName>View Application Sign Ups</DisplayName>
+            <ResourceId>/permission/stratos/applicationSignUps/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Domain Mappings -->
+        <ManagementPermission>
+            <DisplayName>Domain Mappings</DisplayName>
+            <ResourceId>/permission/stratos/domainMappings</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Application Sign Up</DisplayName>
-            <ResourceId>/permission/admin/manage/addApplicationSignUp</ResourceId>
+            <DisplayName>Manage Domain Mappings</DisplayName>
+            <ResourceId>/permission/stratos/domainMappings/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Application Sign Up</DisplayName>
-            <ResourceId>/permission/admin/manage/getApplicationSignUp</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Application Sign Up</DisplayName>
-            <ResourceId>/permission/admin/manage/removeApplicationSignUp</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Add Domain Mappings</DisplayName>
-            <ResourceId>/permission/admin/manage/addDomainMappings</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Domain Mappings</DisplayName>
-            <ResourceId>/permission/admin/manage/removeDomainMappings</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Domain Mappings</DisplayName>
-            <ResourceId>/permission/admin/manage/getDomainMappings</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Undeploy Application</DisplayName>
-            <ResourceId>/permission/admin/manage/undeployApplication</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Application Runtime</DisplayName>
-            <ResourceId>/permission/admin/manage/getApplicationRuntime</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Application</DisplayName>
-            <ResourceId>/permission/admin/manage/removeApplication</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Add Tenant</DisplayName>
-            <ResourceId>/permission/admin/manage/addTenant</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Update Tenant</DisplayName>
-            <ResourceId>/permission/admin/manage/updateTenant</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Tenant For Domain</DisplayName>
-            <ResourceId>/permission/admin/manage/getTenantForDomain</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Tenant</DisplayName>
-            <ResourceId>/permission/admin/manage/removeTenant</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Tenants</DisplayName>
-            <ResourceId>/permission/admin/manage/getTenants</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Activate Tenant</DisplayName>
-            <ResourceId>/permission/admin/manage/activateTenant</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Deactivate Tenant</DisplayName>
-            <ResourceId>/permission/admin/manage/deactivateTenant</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Notify Repository</DisplayName>
-            <ResourceId>/permission/admin/manage/notifyRepository</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Add User</DisplayName>
-            <ResourceId>/permission/protected/manage/addUser</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove User</DisplayName>
-            <ResourceId>/permission/protected/manage/removeUser</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Update User</DisplayName>
-            <ResourceId>/permission/protected/manage/updateUser</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Users</DisplayName>
-            <ResourceId>/permission/protected/manage/getUsers</ResourceId>
+            <DisplayName>View Domain Mappings</DisplayName>
+            <ResourceId>/permission/stratos/domainMappings/view</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>

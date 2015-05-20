@@ -82,7 +82,7 @@ public class StratosApiV41 extends AbstractApi {
      */
     @GET
     @Path("/init")
-    @AuthorizationAction("/permission/admin/restlogin")
+    @AuthorizationAction("/permission/admin/login")
     public Response initialize()
             throws RestAPIException {
         ResponseMessageBean response = new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -101,7 +101,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/session")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/restlogin")
+    @AuthorizationAction("/permission/admin/login")
     public Response getSession() {
         HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -115,36 +115,6 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Creates the cartridge definition.
-     *
-     * @param cartridgeDefinitionBean the cartridge definition bean
-     * @return 201 if cartridge is successfully created, 409 if cartridge already exists.
-     * @throws RestAPIException the rest api exception
-     */
-    @POST
-    @Path("/cartridges")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addCartridge")
-    public Response addCartridge(
-            CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
-
-        String cartridgeType = cartridgeDefinitionBean.getType();
-        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
-        if (cartridgeBean != null) {
-            String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
-            log.warn(msg);
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
-        }
-
-        StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
-        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
-        return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
-    }
-
-    /**
      * Creates the Deployment Policy Definition.
      *
      * @param deploymentPolicyDefinitionBean the deployment policy bean
@@ -155,7 +125,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/deploymentPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addDeploymentPolicy")
+    @AuthorizationAction("/permission/stratos/deploymentPolicies/manage")
     public Response addDeploymentPolicy(
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
@@ -186,7 +156,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/deploymentPolicies/{deploymentPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getDeploymentPolicy")
+    @AuthorizationAction("/permission/stratos/deploymentPolicies/view")
     public Response getDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
         DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
@@ -207,7 +177,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/deploymentPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getDeploymentPolicy")
+    @AuthorizationAction("/permission/stratos/deploymentPolicies/view")
     public Response getDeploymentPolicies()
             throws RestAPIException {
         DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
@@ -230,7 +200,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/deploymentPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateDeploymentPolicy")
+    @AuthorizationAction("/permission/stratos/deploymentPolicies/manage")
     public Response updateDeploymentPolicy(
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
@@ -270,7 +240,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/deploymentPolicies/{deploymentPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeDeploymentPolicy")
+    @AuthorizationAction("/permission/stratos/deploymentPolicies/manage")
     public Response removeDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
         try {
@@ -289,6 +259,36 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
+     * Creates the cartridge definition.
+     *
+     * @param cartridgeDefinitionBean the cartridge definition bean
+     * @return 201 if cartridge is successfully created, 409 if cartridge already exists.
+     * @throws RestAPIException the rest api exception
+     */
+    @POST
+    @Path("/cartridges")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/stratos/cartridges/manage")
+    public Response addCartridge(
+            CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
+
+        String cartridgeType = cartridgeDefinitionBean.getType();
+        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        if (cartridgeBean != null) {
+            String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
+            log.warn(msg);
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
+        }
+
+        StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
+        return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
+    }
+
+    /**
      * Updates the cartridge definition.
      *
      * @param cartridgeDefinitionBean the cartridge definition bean
@@ -299,7 +299,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridges")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateCartridge")
+    @AuthorizationAction("/permission/stratos/cartridges/manage")
     public Response updateCartridge(
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
         StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
@@ -320,7 +320,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridges")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getCartridge")
+    @AuthorizationAction("/permission/stratos/cartridges/view")
     public Response getCartridges()
             throws RestAPIException {
 
@@ -345,7 +345,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridges/{cartridgeType}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getCartridge")
+    @AuthorizationAction("/permission/stratos/cartridges/view")
     public Response getCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         CartridgeBean cartridge;
@@ -370,7 +370,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridges/filter/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getCartridgesByFilter")
+    @AuthorizationAction("/permission/stratos/cartridges/view")
     public Response getCartridgesByFilter(
             @DefaultValue("") @PathParam("filter") String filter, @QueryParam("criteria") String criteria)
             throws RestAPIException {
@@ -397,7 +397,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridges/{cartridgeType}/filter/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getCartridgesByFilter")
+    @AuthorizationAction("/permission/stratos/cartridges/view")
     public Response getCartridgeByFilter(
             @PathParam("cartridgeType") String cartridgeType, @DefaultValue("") @PathParam("filter") String filter)
             throws RestAPIException {
@@ -423,7 +423,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridges/{cartridgeType}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeCartridge")
+    @AuthorizationAction("/permission/stratos/cartridges/manage")
     public Response removeCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         try {
@@ -441,7 +441,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Creates the cartridge group definition.
      *
-     * @param serviceGroupDefinition the cartridge group definition
+     * @param cartridgeGroupBean the cartridge group definition
      * @return 201 if group added successfully
      * @throws RestAPIException the rest api exception
      */
@@ -449,17 +449,17 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridgeGroups")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addServiceGroup")
+    @AuthorizationAction("/permission/stratos/cartridgeGroups/manage")
     @SuperTenantService(true)
-    public Response addServiceGroup(
-            CartridgeGroupBean serviceGroupDefinition) throws RestAPIException {
+    public Response addCartridgeGroup(
+            CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
         try {
-            StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
-            URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
+            StratosApiV41Utils.addServiceGroup(cartridgeGroupBean);
+            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
 
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Cartridge Group added successfully: [cartridge-group] %s",
-                            serviceGroupDefinition.getName()))).build();
+                            cartridgeGroupBean.getName()))).build();
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
@@ -480,7 +480,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Updates a cartridge group
      *
-     * @param cartridgeGroup cartridge group definition
+     * @param cartridgeGroupBean cartridge group definition
      * @return 200 if network partition is successfully updated
      * @throws RestAPIException
      */
@@ -488,17 +488,17 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridgeGroups")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateServiceGroup")
-    public Response updateServiceGroup(
-            CartridgeGroupBean cartridgeGroup) throws RestAPIException {
+    @AuthorizationAction("/permission/stratos/cartridgeGroups/manage")
+    public Response updateCartridgeGroup(
+            CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
 
         try {
-            StratosApiV41Utils.updateServiceGroup(cartridgeGroup);
-            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroup.getName()).build();
+            StratosApiV41Utils.updateServiceGroup(cartridgeGroupBean);
+            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
 
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Cartridge group updated successfully: [cartridge-group] %s",
-                            cartridgeGroup.getName()))).build();
+                            cartridgeGroupBean.getName()))).build();
 
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
@@ -513,18 +513,18 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Gets the cartridge group definition.
      *
-     * @param groupDefinitionName the group definition name
+     * @param name the group definition name
      * @return 200 if cartridge group found for group definition, 404 if none is found
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/cartridgeGroups/{groupDefinitionName}")
+    @Path("/cartridgeGroups/{name}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getServiceGroupDefinition")
-    public Response getServiceGroupDefinition(
-            @PathParam("groupDefinitionName") String groupDefinitionName) throws RestAPIException {
-        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
+    @AuthorizationAction("/permission/stratos/cartridgeGroups/view")
+    public Response getCartridgeGroup(
+            @PathParam("name") String name) throws RestAPIException {
+        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(name);
 
         if (serviceGroupDefinition != null) {
             return Response.ok().entity(serviceGroupDefinition).build();
@@ -544,8 +544,8 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cartridgeGroups")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getServiceGroupDefinition")
-    public Response getServiceGroups()
+    @AuthorizationAction("/permission/stratos/cartridgeGroups/view")
+    public Response getCartridgeGroups()
             throws RestAPIException {
         CartridgeGroupBean[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
 
@@ -560,26 +560,26 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Delete cartridge group definition.
      *
-     * @param groupDefinitionName the group definition name
+     * @param name the group definition name
      * @return 200 if cartridge group is successfully removed
      * @throws RestAPIException the rest api exception
      */
     @DELETE
-    @Path("/cartridgeGroups/{groupDefinitionName}")
+    @Path("/cartridgeGroups/{name}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeServiceGroup")
+    @AuthorizationAction("/permission/stratos/cartridgeGroups/manage")
     @SuperTenantService(true)
     public Response removeServiceGroup(
-            @PathParam("groupDefinitionName") String groupDefinitionName) throws RestAPIException {
+            @PathParam("name") String name) throws RestAPIException {
         try {
-            StratosApiV41Utils.removeServiceGroup(groupDefinitionName);
+            StratosApiV41Utils.removeServiceGroup(name);
         } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Cartridge group not found")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Cartridge Group deleted successfully: [cartridge-group] %s", groupDefinitionName)))
+                String.format("Cartridge Group deleted successfully: [cartridge-group] %s", name)))
                 .build();
     }
 
@@ -596,7 +596,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/networkPartitions")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addNetworkPartition")
+    @AuthorizationAction("/permission/stratos/networkPartitions/manage")
     public Response addNetworkPartition(
             NetworkPartitionBean networkPartitionBean) throws RestAPIException {
         String networkPartitionId = networkPartitionBean.getId();
@@ -630,7 +630,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/networkPartitions")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getNetworkPartitions")
+    @AuthorizationAction("/permission/stratos/networkPartitions/view")
     public Response getNetworkPartitions()
             throws RestAPIException {
         NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
@@ -651,7 +651,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/networkPartitions/{networkPartitionId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getNetworkPartitions")
+    @AuthorizationAction("/permission/stratos/networkPartitions/view")
     public Response getNetworkPartition(
             @PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
         NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
@@ -664,6 +664,32 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
+     * Updates a network partition
+     *
+     * @param networkPartition Network Partition
+     * @return 200 if network partition is successfully updated
+     * @throws RestAPIException
+     */
+    @PUT
+    @Path("/networkPartitions")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/stratos/networkPartitions/manage")
+    public Response updateNetworkPartition(
+            NetworkPartitionBean networkPartition) throws RestAPIException {
+
+        try {
+            StratosApiV41Utils.updateNetworkPartition(networkPartition);
+        } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Network partition not found")).build();
+        }
+        return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                String.format("Network Partition updated successfully: [network-partition] %s",
+                        networkPartition.getId()))).build();
+    }
+
+    /**
      * Remove network partition by network partition id
      *
      * @return 200 if specified network partition is successfully deleted, 404 if specified network partition is not
@@ -672,7 +698,7 @@ public class StratosApiV41 extends AbstractApi {
      */
     @DELETE
     @Path("/networkPartitions/{networkPartitionId}")
-    @AuthorizationAction("/permission/protected/manage/removeNetworkPartition")
+    @AuthorizationAction("/permission/stratos/networkPartitions/manage")
     public Response removeNetworkPartition(
             @PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
 
@@ -700,7 +726,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addApplication")
+    @AuthorizationAction("/permission/stratos/applications/manage")
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         try {
             StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
@@ -740,7 +766,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addApplication")
+    @AuthorizationAction("/permission/stratos/applications/manage")
     public Response updateApplication(ApplicationBean applicationDefinition) throws RestAPIException {
 
         try {
@@ -774,7 +800,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplications")
+    @AuthorizationAction("/permission/stratos/applications/view")
     public Response getApplications() throws RestAPIException {
         List<ApplicationBean> applicationDefinitions = StratosApiV41Utils.getApplications();
         if (applicationDefinitions == null || applicationDefinitions.isEmpty()) {
@@ -798,7 +824,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplications")
+    @AuthorizationAction("/permission/stratos/applications/view")
     public Response getApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
@@ -821,7 +847,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/deploy/{applicationPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/deployApplication")
+    @AuthorizationAction("/permission/stratos/applications/manage")
     public Response deployApplication(
             @PathParam("applicationId") String applicationId,
             @PathParam("applicationPolicyId") String applicationPolicyId) throws RestAPIException {
@@ -853,7 +879,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applicationPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addApplicationPolicy")
+    @AuthorizationAction("/permission/stratos/applicationPolicies/manage")
     public Response addApplicationPolicy(
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
         try {
@@ -888,7 +914,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applicationPolicies/{applicationPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplicationPolicy")
+    @AuthorizationAction("/permission/stratos/applicationPolicies/view")
     public Response getApplicationPolicy(
             @PathParam("applicationPolicyId") String applicationPolicyId) throws RestAPIException {
         try {
@@ -914,7 +940,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applicationPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplicationPolicies")
+    @AuthorizationAction("/permission/stratos/applicationPolicies/view")
     public Response getApplicationPolicies()
             throws RestAPIException {
         ApplicationPolicyBean[] applicationPolicies = StratosApiV41Utils.getApplicationPolicies();
@@ -936,7 +962,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applicationPolicies/{applicationPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeApplicationPolicy")
+    @AuthorizationAction("/permission/stratos/applicationPolicies/manage")
     public Response removeApplicationPolicy(
             @PathParam("applicationPolicyId") String applicationPolicyId) throws RestAPIException {
         try {
@@ -972,7 +998,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applicationPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateApplicationPolicy")
+    @AuthorizationAction("/permission/stratos/applicationPolicies/manage")
     public Response updateApplicationPolicy(
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
 
@@ -1003,7 +1029,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/networkPartitions")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplicationNetworkPartitions")
+    @AuthorizationAction("/permission/stratos/applications/view")
     public Response getApplicationNetworkPartitions(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationNetworkPartitionIdListBean appNetworkPartitionsBean = StratosApiV41Utils
@@ -1030,7 +1056,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/signup")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addApplicationSignUp")
+    @AuthorizationAction("/permission/stratos/applicationSignUps/manage")
     public Response addApplicationSignUp(
             @PathParam("applicationId") String applicationId, ApplicationSignUpBean applicationSignUpBean)
             throws RestAPIException {
@@ -1051,7 +1077,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/signup")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplicationSignUp")
+    @AuthorizationAction("/permission/stratos/applicationSignUps/view")
     public Response getApplicationSignUp(
             @PathParam("applicationId") String applicationId) throws RestAPIException,
             StratosManagerServiceApplicationSignUpExceptionException {
@@ -1081,7 +1107,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/signup")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeApplicationSignUp")
+    @AuthorizationAction("/permission/stratos/applicationSignUps/manage")
     public Response removeApplicationSignUp(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         StratosApiV41Utils.removeApplicationSignUp(applicationId);
@@ -1101,7 +1127,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/domainMappings")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addDomainMappings")
+    @AuthorizationAction("/permission/stratos/domainMappings/manage")
     public Response addDomainMappings(
             @PathParam("applicationId") String applicationId, ApplicationDomainMappingsBean domainMappingsBean)
             throws RestAPIException {
@@ -1135,7 +1161,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/domainMappings/{domainName}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeDomainMappings")
+    @AuthorizationAction("/permission/stratos/domainMappings/manage")
     public Response removeDomainMappings(
             @PathParam("applicationId") String applicationId, @PathParam("domainName") String domainName)
             throws RestAPIException {
@@ -1161,7 +1187,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/domainMappings")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getDomainMappings")
+    @AuthorizationAction("/permission/stratos/domainMappings/view")
     public Response getDomainMappings(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         List<DomainMappingBean> domainMappingsBeanList = null;
@@ -1196,7 +1222,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/undeploy")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/undeployApplication")
+    @AuthorizationAction("/permission/stratos/applications/manage")
     public Response undeployApplication(
             @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force)
             throws RestAPIException {
@@ -1232,7 +1258,7 @@ public class StratosApiV41 extends AbstractApi {
     @GET
     @Path("/applications/{applicationId}/runtime")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplicationRuntime")
+    @AuthorizationAction("/permission/stratos/applications/view")
     public Response getApplicationRuntime(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
@@ -1256,7 +1282,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeApplication")
+    @AuthorizationAction("/permission/stratos/applications/manage")
     @SuperTenantService(true)
     public Response removeApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
@@ -1289,7 +1315,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/autoscalingPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getAutoscalingPolicies")
+    @AuthorizationAction("/permission/stratos/autoscalingPolicies/view")
     public Response getAutoscalingPolicies()
             throws RestAPIException {
         AutoscalePolicyBean[] autoScalePolicies = StratosApiV41Utils.getAutoScalePolicies();
@@ -1311,7 +1337,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/autoscalingPolicies/{autoscalePolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getAutoscalingPolicies")
+    @AuthorizationAction("/permission/stratos/autoscalingPolicies/view")
     public Response getAutoscalingPolicy(
             @PathParam("autoscalePolicyId") String autoscalePolicyId) throws RestAPIException {
         AutoscalePolicyBean autoScalePolicy = StratosApiV41Utils.getAutoScalePolicy(autoscalePolicyId);
@@ -1333,7 +1359,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/autoscalingPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addAutoscalingPolicy")
+    @AuthorizationAction("/permission/stratos/autoscalingPolicies/manage")
     public Response addAutoscalingPolicy(
             AutoscalePolicyBean autoscalePolicy) throws RestAPIException {
 
@@ -1365,7 +1391,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/autoscalingPolicies")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateAutoscalingPolicy")
+    @AuthorizationAction("/permission/stratos/autoscalingPolicies/manage")
     public Response updateAutoscalingPolicy(
             AutoscalePolicyBean autoscalePolicy) throws RestAPIException {
 
@@ -1381,32 +1407,6 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Updates a network partition
-     *
-     * @param networkPartition Network Partition
-     * @return 200 if network partition is successfully updated
-     * @throws RestAPIException
-     */
-    @PUT
-    @Path("/networkPartitions")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateNetworkPartition")
-    public Response updateNetworkPartition(
-            NetworkPartitionBean networkPartition) throws RestAPIException {
-
-        try {
-            StratosApiV41Utils.updateNetworkPartition(networkPartition);
-        } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Network partition not found")).build();
-        }
-        return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network Partition updated successfully: [network-partition] %s",
-                        networkPartition.getId()))).build();
-    }
-
-    /**
      * Remove autoscaling policy.
      *
      * @param autoscalingPolicyId the autoscale policy
@@ -1417,7 +1417,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/autoscalingPolicies/{autoscalingPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeAutoscalingPolicy")
+    @AuthorizationAction("/permission/stratos/autoscalingPolicies/manage")
     public Response removeAutoscalingPolicy(
             @PathParam("autoscalingPolicyId") String autoscalingPolicyId) throws RestAPIException {
 
@@ -1447,7 +1447,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/cluster/{clusterId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/cluster")
+    @AuthorizationAction("/permission/stratos/applications/view")
     public Response getCluster(
             @PathParam("clusterId") String clusterId) throws RestAPIException {
         try {
@@ -1477,7 +1477,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/tenants")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/addTenant")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response addTenant(
             org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException {
@@ -1509,7 +1509,7 @@ public class StratosApiV41 extends AbstractApi {
     @PUT
     @Path("/tenants")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateTenant")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response updateTenant(
             org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException {
@@ -1546,7 +1546,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/tenants/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/getTenantForDomain")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response getTenantForDomain(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
@@ -1576,7 +1576,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/tenants/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeTenant")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response removeTenant(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
@@ -1595,7 +1595,7 @@ public class StratosApiV41 extends AbstractApi {
     @GET
     @Path("/tenants")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/getTenants")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response getTenants()
             throws RestAPIException {
@@ -1627,7 +1627,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/tenants/search/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/getTenants")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response getPartialSearchTenants(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
@@ -1659,7 +1659,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/tenants/activate/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/activateTenant")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response activateTenant(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
@@ -1686,7 +1686,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/tenants/deactivate/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/protected/manage/deactivateTenant")
+    @AuthorizationAction("/permission/protected")
     @SuperTenantService(true)
     public Response deactivateTenant(
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
@@ -1715,7 +1715,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/repo/notify")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/notifyRepository")
+    @AuthorizationAction("/permission/stratos/applications/manage")
     public Response notifyRepository(
             GitNotificationPayloadBean payload) throws RestAPIException {
         if (log.isInfoEnabled()) {
@@ -1740,7 +1740,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/users")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/admin/manage/addUser")
+    @AuthorizationAction("/permission/admin")
     public Response addUser(
             UserInfoBean userInfoBean) throws RestAPIException {
 
@@ -1762,7 +1762,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/users/{userName}")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/admin/manage/removeUser")
+    @AuthorizationAction("/permission/admin")
     public Response removeUser(
             @PathParam("userName") String userName) throws RestAPIException {
         try {
@@ -1788,7 +1788,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/users")
     @Consumes("application/json")
     @Produces("application/json")
-    @AuthorizationAction("/permission/admin/manage/updateUser")
+    @AuthorizationAction("/permission/admin")
     public Response updateUser(
             UserInfoBean userInfoBean) throws RestAPIException {
 
@@ -1807,7 +1807,7 @@ public class StratosApiV41 extends AbstractApi {
     @GET
     @Path("/users")
     @Produces("application/json")
-    @AuthorizationAction("/permission/admin/manage/getUsers")
+    @AuthorizationAction("/permission/admin")
     public Response getUsers()
             throws RestAPIException {
 
@@ -1830,8 +1830,8 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addKubernetesCluster")
-    public Response addKubernetesHostCluster(
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
+    public Response addKubernetesCluster(
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         try {
@@ -1862,8 +1862,8 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateKubernetesCluster")
-    public Response updateKubernetesHostCluster(
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
+    public Response updateKubernetesCluster(
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         try {
@@ -1892,7 +1892,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}/minion")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/addKubernetesHost")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
     public Response addKubernetesHost(
             @PathParam("kubernetesClusterId") String kubernetesClusterId, KubernetesHostBean kubernetesHost)
             throws RestAPIException {
@@ -1914,7 +1914,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}/master")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateKubernetesMaster")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
     public Response updateKubernetesMaster(
             KubernetesMasterBean kubernetesMaster) throws RestAPIException {
         try {
@@ -1933,7 +1933,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/host")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/updateKubernetesHost")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
     public Response updateKubernetesHost(
             KubernetesHostBean kubernetesHost) throws RestAPIException {
         try {
@@ -1958,7 +1958,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getKubernetesHostClusters")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/view")
     public Response getKubernetesHostClusters() throws RestAPIException {
         KubernetesClusterBean[] availableKubernetesClusters = StratosApiV41Utils.getAvailableKubernetesClusters();
         if (availableKubernetesClusters == null || availableKubernetesClusters.length == 0) {
@@ -1979,7 +1979,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getKubernetesHostClusters")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/view")
     public Response getKubernetesHostCluster(
             @PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
@@ -2001,7 +2001,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}/hosts")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getKubernetesHostClusters")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/view")
     public Response getKubernetesHostsOfKubernetesCluster(
             @PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
@@ -2023,7 +2023,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}/master")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getKubernetesHostClusters")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/view")
     public Response getKubernetesMasterOfKubernetesCluster(
             @PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
@@ -2045,7 +2045,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeKubernetesHostCluster")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
     public Response removeKubernetesHostCluster(
             @PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
@@ -2073,7 +2073,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/kubernetesClusters/{kubernetesClusterId}/hosts/{hostId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/removeKubernetesHostCluster")
+    @AuthorizationAction("/permission/stratos/kubernetesClusters/manage")
     public Response removeKubernetesHostOfKubernetesCluster(
             @PathParam("hostId") String kubernetesHostId) throws RestAPIException {
         try {

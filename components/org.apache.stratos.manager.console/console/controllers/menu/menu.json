@@ -6,7 +6,32 @@
             "context": "/",
             "title": "Configurations",
             "icon": "fa-gears",
-            "permissionPaths": ["/permission", "/permission/admin"],
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
+                "/permission/stratos",
+                "/permission/stratos/networkpartitions",
+                "/permission/stratos/networkpartitions/manage",
+                "/permission/stratos/networkpartitions/view",
+                "/permission/stratos/autoscalingpolicies",
+                "/permission/stratos/autoscalingpolicies/manage",
+                "/permission/stratos/autoscalingpolicies/view",
+                "/permission/stratos/deploymentpolicies",
+                "/permission/stratos/deploymentpolicies/manage",
+                "/permission/stratos/deploymentpolicies/view",
+                "/permission/stratos/applicationpolicies",
+                "/permission/stratos/applicationpolicies/manage",
+                "/permission/stratos/applicationpolicies/view",
+                "/permission/stratos/cartridges",
+                "/permission/stratos/cartridges/manage",
+                "/permission/stratos/cartridges/view",
+                "/permission/stratos/cartridgegroups",
+                "/permission/stratos/cartridgegroups/manage",
+                "/permission/stratos/cartridgegroups/view",
+                "/permission/stratos/kubernetesclusters",
+                "/permission/stratos/kubernetesclusters/manage",
+                "/permission/stratos/kubernetesclusters/view"
+            ],
             "description": "Configure network partitions, policies, cartridges, cartridge groups and kubernetes clusters",
             "sub-menu": [
                 {
@@ -15,7 +40,13 @@
                     "context": "/configure",
                     "title": "Network Partitions",
                     "icon": "fa-th-large",
-                    "permissionPaths": ["/permission", "/permission/admin/manage/getNetworkPartitions"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/networkpartitions",
+                        "/permission/stratos/networkpartitions/manage",
+                        "/permission/stratos/networkpartitions/view"
+                    ],
                     "description": "Manage network partitions."
                 },
                 {
@@ -24,7 +55,13 @@
                     "context": "/configure",
                     "title": "Autoscaling Policies",
                     "icon": "fa-expand",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/getAutoscalingPolicies"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/autoscalingpolicies",
+                        "/permission/stratos/autoscalingpolicies/manage",
+                        "/permission/stratos/autoscalingpolicies/view"
+                    ],
                     "description": "Manage policies which specify autoscaling threshold values."
                 },
                 {
@@ -33,7 +70,13 @@
                     "context": "/configure",
                     "title": "Deployment Policies",
                     "icon": "fa-road",
-                    "permissionPaths": ["/permission", "/permission/admin/manage/getDeploymentPolicies"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/deploymentpolicies",
+                        "/permission/stratos/deploymentpolicies/manage",
+                        "/permission/stratos/deploymentpolicies/view"
+                    ],
                     "description": "Manage policies which specify cartridge deployment in partitions."
                 },
                 {
@@ -42,7 +85,13 @@
                     "context": "/configure",
                     "title": "Application Policies",
                     "icon": "fa-cube",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/getApplicationPolicies"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/applicationpolicies",
+                        "/permission/stratos/applicationpolicies/manage",
+                        "/permission/stratos/applicationpolicies/view"
+                    ],
                     "description": "Manage policies which specify application deployment in network partitions."
                 },
                 {
@@ -51,7 +100,13 @@
                     "context": "/configure",
                     "title": "Cartridges",
                     "icon": "fa-inbox",
-                    "permissionPaths": ["/permission", "/permission/admin/manage/getCartridges"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/cartridges",
+                        "/permission/stratos/cartridges/manage",
+                        "/permission/stratos/cartridges/view"
+                    ],
                     "description": "Manage single-tenant & multi-tenant cartridges."
                 },
                 {
@@ -60,7 +115,13 @@
                     "context": "/configure",
                     "title": "Cartridge Groups",
                     "icon": "fa-briefcase",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/getServiceGroupDefinition"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/cartridgegroups",
+                        "/permission/stratos/cartridgegroups/manage",
+                        "/permission/stratos/cartridgegroups/view"
+                    ],
                     "description": "Manage cartridge groups"
                 },
                 {
@@ -69,7 +130,13 @@
                     "context": "/configure",
                     "title": "Kubernetes Clusters",
                     "icon": "fa-sitemap",
-                    "permissionPaths": ["/permission", "/permission/admin/manage/getKubernetesClusters"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
+                        "/permission/stratos/kubernetesclusters",
+                        "/permission/stratos/kubernetesclusters/manage",
+                        "/permission/stratos/kubernetesclusters/view"
+                    ],
                     "description": "Manage Kubernetes clusters."
                 }
             ]
@@ -80,7 +147,7 @@
             "context": "/",
             "title": "Users",
             "icon": "fa-users",
-            "permissionPaths": ["/permission", "/permission/admin" ],
+            "permissionPaths": ["/permission", "/permission/admin"],
             "description": "Manage tenants & users.",
             "sub-menu": [
                 {
@@ -89,7 +156,10 @@
                     "context": "/users",
                     "title": "Manage Users",
                     "icon": "fa-user",
-                    "permissionPaths": ["/permission", "/permission/protected/manage/getUsers"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin"
+                    ],
                     "description": "Manage current tenant users."
                 },
                 {
@@ -98,7 +168,9 @@
                     "context": "/users",
                     "title": "Manage Tenants",
                     "icon": "fa-building",
-                    "permissionPaths": ["/permission/protected/manage/getTenants"],
+                    "permissionPaths": [
+                        "/permission"
+                    ],
                     "description": "Manage tenants."
                 }
             ]
@@ -109,7 +181,12 @@
             "context": "/",
             "title": "Applications",
             "icon": "fa-cubes",
-            "permissionPaths": ["/permission", "/permission/admin/manage/getApplications"],
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
+                "/permission/stratos/applications",
+                "/permission/stratos/applications/manage",
+                "/permission/stratos/applications/view"],
             "description": "Manage applications."
         },
         {
@@ -118,7 +195,32 @@
             "context": "/",
             "title": "JIRA",
             "icon": "fa-bug",
-            "permissionPaths": ["/permission", "/permission/admin"],
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
+                "/permission/stratos",
+                "/permission/stratos/networkpartitions",
+                "/permission/stratos/networkpartitions/manage",
+                "/permission/stratos/networkpartitions/view",
+                "/permission/stratos/autoscalingpolicies",
+                "/permission/stratos/autoscalingpolicies/manage",
+                "/permission/stratos/autoscalingpolicies/view",
+                "/permission/stratos/deploymentpolicies",
+                "/permission/stratos/deploymentpolicies/manage",
+                "/permission/stratos/deploymentpolicies/view",
+                "/permission/stratos/applicationpolicies",
+                "/permission/stratos/applicationpolicies/manage",
+                "/permission/stratos/applicationpolicies/view",
+                "/permission/stratos/cartridges",
+                "/permission/stratos/cartridges/manage",
+                "/permission/stratos/cartridges/view",
+                "/permission/stratos/cartridgegroups",
+                "/permission/stratos/cartridgegroups/manage",
+                "/permission/stratos/cartridgegroups/view",
+                "/permission/stratos/kubernetesclusters",
+                "/permission/stratos/kubernetesclusters/manage",
+                "/permission/stratos/kubernetesclusters/view"
+            ],
             "description": "Report your issues that you find."
         },
         {
@@ -127,7 +229,33 @@
             "context": "/",
             "title": "Documentation",
             "icon": "fa-life-saver",
-            "permissionPaths": ["/permission", "/permission/admin"],
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
+                "/permission/stratos",
+                "/permission/stratos/networkpartitions",
+                "/permission/stratos/networkpartitions/manage",
+                "/permission/stratos/networkpartitions/view",
+                "/permission/stratos/autoscalingpolicies",
+                "/permission/stratos/autoscalingpolicies/manage",
+                "/permission/stratos/autoscalingpolicies/view",
+                "/permission/stratos/deploymentpolicies",
+                "/permission/stratos/deploymentpolicies/manage",
+                "/permission/stratos/deploymentpolicies/view",
+                "/permission/stratos/applicationpolicies",
+                "/permission/stratos/applicationpolicies/manage",
+                "/permission/stratos/applicationpolicies/view",
+                "/permission/stratos/cartridges",
+                "/permission/stratos/cartridges/manage",
+                "/permission/stratos/cartridges/view",
+                "/permission/stratos/cartridgegroups",
+                "/permission/stratos/cartridgegroups/manage",
+                "/permission/stratos/cartridgegroups/view",
+                "/permission/stratos/kubernetesclusters",
+                "/permission/stratos/kubernetesclusters/manage",
+                "/permission/stratos/kubernetesclusters/view"
+            ],
+            "icon": "fa-book",
             "description": "Read documentation to get more information."
         }
     ]
