@@ -28,6 +28,9 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserRoleCreator {
 
     private static final Log log = LogFactory.getLog(UserRoleCreator.class);
@@ -36,32 +39,19 @@ public class UserRoleCreator {
      * Creating Internal/user Role at Carbon Server Start-up
      */
     public static void createInternalUserRole(UserStoreManager userStoreManager) throws UserManagerException {
-
         String userRole = "Internal/user";
-
         try {
             if (!userStoreManager.isExistingRole(userRole)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Creating internal user role: " + userRole);
-                }
-                //Set permissions to the Internal/user role
-                Permission[] tenantUserPermissions = new Permission[]{new Permission(PermissionConstants.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_CLUSTER, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_INSTANCE, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.VIEW_KUBERNETES, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.ADD_GIT_SYNC, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.ADD_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.ADD_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                        new Permission(PermissionConstants.REST_LOGIN, UserMgtConstants.EXECUTE_ACTION),
-                };
+                log.info("Creating internal user role: " + userRole);
 
+                //Set permissions to the Internal/user role
+                List<Permission> permissions = new ArrayList<Permission>();
+                for(String permissionResourceId : PermissionConstants.INTERNAL_USER_ROLE_PERMISSIONS) {
+                    Permission permission = new Permission(permissionResourceId, UserMgtConstants.EXECUTE_ACTION);
+                    permissions.add(permission);
+                }
                 String[] userList = new String[]{};
-                userStoreManager.addRole(userRole, userList, tenantUserPermissions);
+                userStoreManager.addRole(userRole, userList, permissions.toArray(new Permission[permissions.size()]));
             }
         } catch (UserStoreException e) {
             String msg = "Error while creating the role: " + userRole;

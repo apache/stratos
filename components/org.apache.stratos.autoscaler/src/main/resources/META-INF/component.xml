@@ -62,7 +62,7 @@
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Get Application Policy</DisplayName>
-            <ResourceId>/permission/protected/manage/getApplicationPolicy</ResourceId>
+            <ResourceId>/permission/admin/manage/getApplicationPolicy</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>
