@@ -126,7 +126,7 @@
             "linkexternal": true,
             "context": "/",
             "title": "Documentation",
-            "icon": "fa-life-saver",
+            "icon": "fa-book",
             "permissionPaths": ["/permission", "/permission/admin"],
             "description": "Read documentation to get more information."
         }
