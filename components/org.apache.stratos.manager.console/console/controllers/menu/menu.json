@@ -169,8 +169,7 @@
                     "title": "Manage Tenants",
                     "icon": "fa-building",
                     "permissionPaths": [
-                        "/permission",
-                        "/permission/admin"
+                        "/permission"
                     ],
                     "description": "Manage tenants."
                 }
