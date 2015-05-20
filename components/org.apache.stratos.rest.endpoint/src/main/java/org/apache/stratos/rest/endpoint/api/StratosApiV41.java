@@ -426,10 +426,14 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/removeCartridge")
     public Response removeCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        StratosApiV41Utils.removeCartridge(cartridgeType);
-        return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();
-
+        try {
+            StratosApiV41Utils.removeCartridge(cartridgeType);
+            return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getMessage())).build();
+        }
     }
 
     // API methods for cartridge groups
