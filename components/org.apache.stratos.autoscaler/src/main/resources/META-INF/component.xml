@@ -20,49 +20,52 @@
     <deployers>
     </deployers>
     <ManagementPermissions>
+        <!-- /Stratos -->
         <ManagementPermission>
-            <DisplayName>Get Autoscaling Policies</DisplayName>
-            <ResourceId>/permission/admin/manage/getAutoscalingPolicies</ResourceId>
+            <DisplayName>Stratos Permissions</DisplayName>
+            <ResourceId>/permission/stratos</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Autoscaling Policies -->
+        <ManagementPermission>
+            <DisplayName>Autoscaling Policies</DisplayName>
+            <ResourceId>/permission/stratos/autoscalingPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Autoscaling Policies</DisplayName>
-            <ResourceId>/permission/admin/manage/addAutoscalingPolicy</ResourceId>
+            <DisplayName>Manage Autoscaling Policies</DisplayName>
+            <ResourceId>/permission/stratos/autoscalingPolicies/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Update Autoscaling Policies</DisplayName>
-            <ResourceId>/permission/admin/manage/updateAutoscalingPolicy</ResourceId>
+            <DisplayName>View Autoscaling Policies</DisplayName>
+            <ResourceId>/permission/stratos/autoscalingPolicies/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Kubernetes Clusters -->
+        <ManagementPermission>
+            <DisplayName>Kubernetes Clusters</DisplayName>
+            <ResourceId>/permission/stratos/kubernetesClusters</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Remove Autoscaling Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/removeAutoscalingPolicy</ResourceId>
+            <DisplayName>Manage Kubernetes Clusters</DisplayName>
+            <ResourceId>/permission/stratos/kubernetesClusters/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Kubernetes Host Cluster</DisplayName>
-            <ResourceId>/permission/admin/manage/addKubernetesHostCluster</ResourceId>
+            <DisplayName>View Kubernetes Clusters</DisplayName>
+            <ResourceId>/permission/stratos/kubernetesClusters/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Application Policies-->
+        <ManagementPermission>
+            <DisplayName>Application Policies</DisplayName>
+            <ResourceId>/permission/stratos/applicationPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Kubernetes Host</DisplayName>
-            <ResourceId>/permission/admin/manage/addKubernetesHost</ResourceId>
+            <DisplayName>Manage Application Policies</DisplayName>
+            <ResourceId>/permission/stratos/applicationPolicies/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Update Kubernetes Master</DisplayName>
-            <ResourceId>/permission/admin/manage/updateKubernetesMaster</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Update Kubernetes Host</DisplayName>
-            <ResourceId>/permission/admin/manage/updateKubernetesHost</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Kubernetes Host Clusters</DisplayName>
-            <ResourceId>/permission/admin/manage/getKubernetesHostClusters</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Kubernetes Host Cluster</DisplayName>
-            <ResourceId>/permission/admin/manage/removeKubernetesHostCluster</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Application Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/getApplicationPolicy</ResourceId>
+            <DisplayName>View Application Policies</DisplayName>
+            <ResourceId>/permission/stratos/applicationPolicies/view</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>
