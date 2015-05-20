@@ -217,8 +217,14 @@ if(elements.action != 'new' && isUpdate){
         case "application-policies":
             formDataUpdate = util.RESTCalls.getPolicyApplication(id);
             break;
+        case "kubernetes-clusters":
+            formDataUpdate = util.RESTCalls.getKubernetesCluster(id);
+            break;
         case "cartridges":
             formDataUpdate = util.RESTCalls.getCartridge(id);
+            break;
+        case "cartridge-groups":
+            formDataUpdate = util.RESTCalls.getPolicyCartridgeGroup(id);
             break;
     }
 }
