@@ -793,19 +793,10 @@ public class RestCommandLineService {
             HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
                     + ENDPOINT_ADD_USER + "/" + userName);
 
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
+            String resultString = CliUtils.getHttpResponseString(response);
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
-
-            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT) || responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have successfully deleted user:" + userName);
-            } else {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-            }
-
+            System.out.println(gson.fromJson(resultString, ResponseMessageBean.class).getMessage());
         } catch (Exception e) {
             String message = "Could not delete user: " + userName;
             printError(message, e);

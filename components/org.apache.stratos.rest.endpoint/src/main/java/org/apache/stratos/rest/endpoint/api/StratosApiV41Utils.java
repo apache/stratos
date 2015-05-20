@@ -55,6 +55,7 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.exception.InvalidEmailException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
@@ -64,6 +65,7 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 import org.apache.stratos.manager.user.management.StratosUserManagerUtils;
+import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -2891,6 +2893,16 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
+
+        try {
+            TenantUserRoleManager tenantUserRoleManager = new TenantUserRoleManager();
+            tenantUserRoleManager.onTenantCreate(tenantInfoBean);
+        } catch (ApacheStratosException e) {
+            String message = "Could create Internal/user role for tenant";
+            log.error(message, e);
+            throw new RestAPIException(message);
+        }
+
         // For the super tenant tenant creation, tenants are always activated as they are created.
         try {
             TenantMgtUtil.activateTenantInitially(
@@ -3295,7 +3307,7 @@ public class StratosApiV41Utils {
         } catch (UserManagerException e) {
             String msg = "Error in removing user :" + userName;
             log.error(msg, e);
-            throw new RestAPIException(msg, e);
+            throw new RestAPIException(e.getMessage());
         }
     }
 
