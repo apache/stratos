@@ -11,7 +11,7 @@
             "default": "KubGrp1",
             "required":false,
             "title": "Kubernetes Cluster Id",
-            "name": "Kubernetes Cluster Id",
+            "name": "Kubernetes Cluster Id"
         },
         "description": {
             "type":"string",
@@ -21,220 +21,6 @@
             "title": "Description",
             "name": "Description",
             "format":"textarea"
-        },
-        "kubernetesHosts": {
-            "type":"array",
-            "id": "root/kubernetesHosts",
-            "required":false,
-            "title": "Kubernetes Hosts",
-            "name": "Kubernetes Hosts",
-            "format":"tabs",
-            "items":[
-                {
-                    "type":"object",
-                    "id": "root/kubernetesHosts/0",
-                    "required":false,
-                    "title": "Kubernetes Host",
-                    "name": "Kubernetes Host",
-                    "properties":{
-                        "hostId": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/0/hostId",
-                            "default": "KubHostSlave1",
-                            "required":false,
-                            "title": "Host Id",
-                            "name": "Host Id"
-                        },
-                        "privateIPAddress": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/0/privateIPAddress",
-                            "default": "172.17.8.101",
-                            "required":true,
-                            "title": "Private IP Address",
-                            "name": "Private IP Address"
-                        },
-                        "publicIPAddress": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/0/publicIPAddress",
-                            "default": "172.17.8.101",
-                            "required":false,
-                            "title": "Public IP Address",
-                            "name": "Public IP Address"
-                        },
-                        "hostname": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/0/hostname",
-                            "default": "slave1.dev.kubernetes.example.org",
-                            "required":false,
-                            "title": "Hostname",
-                            "name": "Hostname"
-                        },
-                        "property": {
-                            "type":"array",
-                            "id": "root/kubernetesHosts/0/property",
-                            "required":false,
-                            "title": "Property",
-                            "name": "Property",
-                            "format":"tabs",
-                            "items":[
-                                {
-                                    "type":"object",
-                                    "id": "root/kubernetesHosts/0/property/0",
-                                    "required":false,
-                                    "title": "Property",
-                                    "name": "Property",
-                                    "properties":{
-                                        "name": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/0/property/0/name",
-                                            "default": "prop1",
-                                            "required":false,
-                                            "uniqueItems": true,
-                                            "title": "Name",
-                                            "name": "Name",
-                                        },
-                                        "value": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/0/property/0/value",
-                                            "default": "val1",
-                                            "required":false,
-                                            "title": "Value",
-                                            "name": "Value",
-                                        }
-                                    }
-                                },
-                                {
-                                    "type":"object",
-                                    "id": "root/kubernetesHosts/0/property/1",
-                                    "required":false,
-                                    "title": "Property",
-                                    "name": "Property",
-                                    "properties":{
-                                        "name": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/0/property/1/name",
-                                            "default": "prop2",
-                                            "uniqueItems": true,
-                                            "required":false,
-                                            "title": "Name",
-                                            "name": "Name",
-                                        },
-                                        "value": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/0/property/1/value",
-                                            "default": "val2",
-                                            "required":false,
-                                            "title": "Value",
-                                            "name": "Value",
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "type":"object",
-                    "id": "root/kubernetesHosts/1",
-                    "required":false,
-                    "title": "Kubernetes Host",
-                    "name": "Kubernetes Host",
-                    "properties":{
-                        "hostId": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/1/hostId",
-                            "default": "KubHostSlave2",
-                            "required":false,
-                            "title": "Host Id",
-                            "name": "Host Id"
-                        },
-                        "privateIPAddress": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/1/privateIPAddress",
-                            "default": "172.17.8.102",
-                            "required":true,
-                            "title": "Private IP Address",
-                            "name": "Private IP Address"
-                        },
-                        "publicIPAddress": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/0/publicIPAddress",
-                            "default": "172.17.8.102",
-                            "required":false,
-                            "title": "Public IP Address",
-                            "name": "Public IP Address"
-                        },
-                        "hostname": {
-                            "type":"string",
-                            "id": "root/kubernetesHosts/1/hostname",
-                            "default": "slave2.dev.kubernetes.example.org",
-                            "required":false,
-                            "title": "Hostname",
-                            "name": "Hostname"
-                        },
-                        "property": {
-                            "type":"array",
-                            "id": "root/kubernetesHosts/1/property",
-                            "required":false,
-                            "title": "Property",
-                            "name": "Property",
-                            "format":"tabs",
-                            "items":[
-                                {
-                                    "type":"object",
-                                    "id": "root/kubernetesHosts/1/property/0",
-                                    "required":false,
-                                    "title": "Property",
-                                    "name": "Property",
-                                    "properties":{
-                                        "name": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/1/property/0/name",
-                                            "default": "prop1",
-                                            "required":false,
-                                            "title": "Name",
-                                            "name": "Name"
-                                        },
-                                        "value": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/1/property/0/value",
-                                            "default": "val1",
-                                            "required":false,
-                                            "title": "Value",
-                                            "name": "Value"
-                                        }
-                                    }
-                                },
-                                {
-                                    "type":"object",
-                                    "id": "root/kubernetesHosts/1/property/1",
-                                    "required":false,
-                                    "title": "Property",
-                                    "name": "Property",
-                                    "properties":{
-                                        "name": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/1/property/1/name",
-                                            "default": "prop2",
-                                            "required":false,
-                                            "title": "Name",
-                                            "name": "Name"
-                                        },
-                                        "value": {
-                                            "type":"string",
-                                            "id": "root/kubernetesHosts/1/property/1/value",
-                                            "default": "val2",
-                                            "required":false,
-                                            "title": "Value",
-                                            "name": "Value"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            ]
         },
         "kubernetesMaster": {
             "type":"object",
@@ -328,6 +114,74 @@
                     ]
                 }
             }
+
+        },
+        "kubernetesHosts": {
+            "id": "root/kubernetesHosts",
+            "type": "array",
+            "format": "tabs",
+            "title": "Minions",
+            "items": {
+                "id": "root/kubernetesHosts/0",
+                "type": "object",
+                "title": "Minion",
+                "properties": {
+                    "hostId": {
+                        "type":"string",
+                        "id": "root/kubernetesHosts/0/hostId",
+                        "required":false,
+                        "default": "KubHostSlave1",
+                        "title": "Host Id"
+                    },
+                    "privateIPAddress": {
+                        "type":"string",
+                        "id": "root/kubernetesHosts/0/privateIPAddress",
+                        "default": "172.17.8.101",
+                        "required":true,
+                        "title": "Private IP Address",
+                        "name": "Private IP Address"
+                    },
+                    "publicIPAddress": {
+                        "type":"string",
+                        "id": "root/kubernetesHosts/0/publicIPAddress",
+                        "default": "172.17.8.101",
+                        "required":false,
+                        "title": "Public IP Address",
+                        "name": "Public IP Address"
+                    },
+                    "hostname": {
+                        "type":"string",
+                        "id": "root/kubernetesHosts/0/hostname",
+                        "default": "slave1.dev.kubernetes.example.org",
+                        "required":false,
+                        "title": "Hostname",
+                        "name": "Hostname"
+                    },
+                    "property": {
+                        "id": "root/kubernetesHosts/0/property",
+                        "type": "array",
+                        "title": "Property",
+                        "format": "tabs",
+                        "items": {
+                            "id": "root/kubernetesHosts/0/property/0",
+                            "type": "object",
+                            "title": "Property",
+                            "properties": {
+                                "name": {
+                                    "id": "root/kubernetesHosts/0/property/0/name",
+                                    "title": "Name",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "id": "root/kubernetesHosts/0/property/0/value",
+                                    "title": "Value",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         },
         "portRange": {
             "type":"object",
@@ -356,56 +210,27 @@
             }
         },
         "property": {
-            "type":"array",
             "id": "root/property",
-            "required":false,
+            "type": "array",
             "title": "Property",
-            "name": "Property",
-            "format":"tabs",
-            "items":[
-                {
-                    "type":"object",
-                    "id": "root/property/0",
-                    "required":false,
-                    "title": "Property",
-                    "name": "Property",
-                    "properties":{
-                        "name": {
-                            "type":"string",
-                            "id": "root/property/0/name",
-                            "default": "prop1",
-                            "required":false
-                        },
-                        "value": {
-                            "type":"string",
-                            "id": "root/property/0/value",
-                            "default": "val1",
-                            "required":false
-                        }
-                    }
-                },
-                {
-                    "type":"object",
-                    "id": "root/property/1",
-                    "required":false,
-                    "title": "Property",
-                    "name": "Property",
-                    "properties":{
-                        "name": {
-                            "type":"string",
-                            "id": "root/property/1/name",
-                            "default": "prop2",
-                            "required":false
-                        },
-                        "value": {
-                            "type":"string",
-                            "id": "root/property/1/value",
-                            "default": "val2",
-                            "required":false
-                        }
+            "format": "tabs",
+            "items": {
+                "id": "root/property/0",
+                "type": "object",
+                "title": "Property",
+                "properties": {
+                    "name": {
+                        "id": "root/property/0/name",
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "value": {
+                        "id": "root/property/0/value",
+                        "title": "Value",
+                        "type": "string"
                     }
                 }
-            ]
+            }
         }
     }
 }
