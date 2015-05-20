@@ -8,7 +8,7 @@
                 "alias": "my-group1",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
-                "deploymentPolicy":"deployment-policy-1",
+                "deploymentPolicy": "deployment-policy-1",
                 "groups": [
                     {
                         "name": "group2",
@@ -23,11 +23,11 @@
                                 "subscribableInfo": {
                                     "alias": "my-c2-group2",
                                     "autoscalingPolicy": "autoscaling-policy-c2",
-                                    "artifactRepository":{
-                                        "privateRepo":false,
-                                        "repoUrl":"https://github.com/imesh/stratos-c2-applications.git",
-                                        "repoUsername":"",
-                                        "repoPassword":""
+                                    "artifactRepository": {
+                                        "privateRepo": false,
+                                        "repoUrl": "https://github.com/imesh/stratos-c2-applications.git",
+                                        "repoUsername": "",
+                                        "repoPassword": ""
                                     }
                                 }
                             },
@@ -38,11 +38,11 @@
                                 "subscribableInfo": {
                                     "alias": "my-c3-group2",
                                     "autoscalingPolicy": "autoscaling-policy-c3",
-                                    "artifactRepository":{
-                                        "privateRepo":false,
-                                        "repoUrl":"https://github.com/imesh/stratos-c3-applications.git",
-                                        "repoUsername":"",
-                                        "repoPassword":""
+                                    "artifactRepository": {
+                                        "privateRepo": false,
+                                        "repoUrl": "https://github.com/imesh/stratos-c3-applications.git",
+                                        "repoUsername": "",
+                                        "repoPassword": ""
                                     }
                                 }
                             }
@@ -57,11 +57,11 @@
                         "subscribableInfo": {
                             "alias": "my-c1-group1",
                             "autoscalingPolicy": "autoscaling-policy-c1",
-                            "artifactRepository":{
-                                "privateRepo":false,
-                                "repoUrl":"https://github.com/imesh/stratos-c1-applications.git",
-                                "repoUsername":"",
-                                "repoPassword":""
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-c1-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
                             }
                         }
                     }
@@ -76,12 +76,12 @@
                 "subscribableInfo": {
                     "alias": "my-c4",
                     "autoscalingPolicy": "autoscaling-policy-c4",
-                    "deploymentPolicy":"deployment-policy-1",
-                    "artifactRepository":{
-                        "privateRepo":false,
-                        "repoUrl":"https://github.com/imesh/stratos-c4-applications.git",
-                        "repoUsername":"",
-                        "repoPassword":""
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-c4-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
                     }
                 }
             }
@@ -89,7 +89,7 @@
         "dependencies": {
             "startupOrders": [
                 {
-                    "aliases" : [
+                    "aliases": [
                         "group.my-group1",
                         "cartridge.my-c4"
                     ]

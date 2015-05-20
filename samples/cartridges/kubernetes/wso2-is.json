@@ -14,13 +14,13 @@
             "proxyPort": "8280"
         }
     ],
-    "iaasProvider":[
+    "iaasProvider": [
         {
-            "type":"kubernetes",
-            "imageId":"chamilad/wso2is:4.1.0-beta",
-            "networkInterfaces":[
+            "type": "kubernetes",
+            "imageId": "chamilad/wso2is:4.1.0-beta",
+            "networkInterfaces": [
             ],
-            "property":[
+            "property": [
             ]
         }
     ]

@@ -7,7 +7,7 @@
     "description": "Tomcat 7 Cartridge",
     "version": "7",
     "multiTenant": "false",
-    "loadBalancingIPType" : "public",
+    "loadBalancingIPType": "public",
     "portMapping": [
         {
             "protocol": "http",
@@ -15,16 +15,16 @@
             "proxyPort": "8281"
         }
     ],
-    "deployment":{
-           "baseDir":"/opt/tomcat/webapps"
+    "deployment": {
+        "baseDir": "/opt/tomcat/webapps"
     },
-    "iaasProvider":[
+    "iaasProvider": [
         {
-            "type":"kubernetes",
-            "imageId":"stratos/tomcat:4.1.0-beta",
-            "networkInterfaces":[
+            "type": "kubernetes",
+            "imageId": "stratos/tomcat:4.1.0-beta",
+            "networkInterfaces": [
             ],
-            "property":[
+            "property": [
             ]
         }
     ]

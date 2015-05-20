@@ -8,7 +8,7 @@
                 "alias": "my-group2",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 2,
-                "deploymentPolicy":"deployment-policy-1",
+                "deploymentPolicy": "deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "c2",
@@ -17,11 +17,11 @@
                         "subscribableInfo": {
                             "alias": "my-c2",
                             "autoscalingPolicy": "autoscaling-policy-c2",
-                            "artifactRepository":{
-                                "privateRepo":false,
-                                "repoUrl":"https://github.com/imesh/stratos-c2-applications.git",
-                                "repoUsername":"",
-                                "repoPassword":""
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-c2-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
                             }
                         }
                     },
@@ -32,11 +32,11 @@
                         "subscribableInfo": {
                             "alias": "my-c3",
                             "autoscalingPolicy": "autoscaling-policy-c3",
-                            "artifactRepository":{
-                                "privateRepo":false,
-                                "repoUrl":"https://github.com/imesh/stratos-c3-applications.git",
-                                "repoUsername":"",
-                                "repoPassword":""
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-c3-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
                             }
                         }
                     }
