@@ -31,11 +31,11 @@
     "property": [
         {
             "name": "KUBERNETES_CONTAINER_CPU",
-            "value": "1"
+            "value": "0"
         },
         {
             "name": "KUBERNETES_CONTAINER_MEMORY",
-            "value": "512"
+            "value": "0"
         }
     ]
 }
