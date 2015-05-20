@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
-import org.apache.stratos.autoscaler.stub.exception.UnremovablePolicyException;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -252,10 +251,12 @@ public class StratosApiV41Utils {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
             }
-        } catch (Exception e) {
-            String msg = "Could not remove cartridge " + e.getLocalizedMessage();
-            log.error(msg, e);
-            throw new RestAPIException(e.getMessage(), e);
+        } catch (RemoteException e) {
+            throw new RestAPIException(e.getMessage());
+        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+            throw new RestAPIException(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage());
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            throw new RestAPIException(e.getFaultMessage().getCartridgeNotFoundException().getMessage());
         }
     }
 
