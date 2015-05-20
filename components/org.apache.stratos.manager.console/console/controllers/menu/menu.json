@@ -6,7 +6,9 @@
             "context": "/",
             "title": "Configurations",
             "icon": "fa-gears",
-            "permissionPaths": ["/permission",
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
                 "/permission/stratos",
                 "/permission/stratos/networkpartitions",
                 "/permission/stratos/networkpartitions/manage",
@@ -38,7 +40,9 @@
                     "context": "/configure",
                     "title": "Network Partitions",
                     "icon": "fa-th-large",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/networkpartitions",
                         "/permission/stratos/networkpartitions/manage",
                         "/permission/stratos/networkpartitions/view"
@@ -51,7 +55,9 @@
                     "context": "/configure",
                     "title": "Autoscaling Policies",
                     "icon": "fa-expand",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/autoscalingpolicies",
                         "/permission/stratos/autoscalingpolicies/manage",
                         "/permission/stratos/autoscalingpolicies/view"
@@ -64,7 +70,9 @@
                     "context": "/configure",
                     "title": "Deployment Policies",
                     "icon": "fa-road",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/deploymentpolicies",
                         "/permission/stratos/deploymentpolicies/manage",
                         "/permission/stratos/deploymentpolicies/view"
@@ -77,7 +85,9 @@
                     "context": "/configure",
                     "title": "Application Policies",
                     "icon": "fa-cube",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/applicationpolicies",
                         "/permission/stratos/applicationpolicies/manage",
                         "/permission/stratos/applicationpolicies/view"
@@ -90,7 +100,9 @@
                     "context": "/configure",
                     "title": "Cartridges",
                     "icon": "fa-inbox",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/cartridges",
                         "/permission/stratos/cartridges/manage",
                         "/permission/stratos/cartridges/view"
@@ -103,7 +115,9 @@
                     "context": "/configure",
                     "title": "Cartridge Groups",
                     "icon": "fa-briefcase",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/cartridgegroups",
                         "/permission/stratos/cartridgegroups/manage",
                         "/permission/stratos/cartridgegroups/view"
@@ -116,7 +130,9 @@
                     "context": "/configure",
                     "title": "Kubernetes Clusters",
                     "icon": "fa-sitemap",
-                    "permissionPaths": ["/permission",
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin",
                         "/permission/stratos/kubernetesclusters",
                         "/permission/stratos/kubernetesclusters/manage",
                         "/permission/stratos/kubernetesclusters/view"
@@ -140,7 +156,10 @@
                     "context": "/users",
                     "title": "Manage Users",
                     "icon": "fa-user",
-                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin"
+                    ],
                     "description": "Manage current tenant users."
                 },
                 {
@@ -149,7 +168,10 @@
                     "context": "/users",
                     "title": "Manage Tenants",
                     "icon": "fa-building",
-                    "permissionPaths": ["/permission"],
+                    "permissionPaths": [
+                        "/permission",
+                        "/permission/admin"
+                    ],
                     "description": "Manage tenants."
                 }
             ]
@@ -160,7 +182,9 @@
             "context": "/",
             "title": "Applications",
             "icon": "fa-cubes",
-            "permissionPaths": ["/permission",
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
                 "/permission/stratos/applications",
                 "/permission/stratos/applications/manage",
                 "/permission/stratos/applications/view"],
@@ -172,7 +196,9 @@
             "context": "/",
             "title": "JIRA",
             "icon": "fa-bug",
-            "permissionPaths": ["/permission",
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
                 "/permission/stratos",
                 "/permission/stratos/networkpartitions",
                 "/permission/stratos/networkpartitions/manage",
@@ -204,7 +230,9 @@
             "context": "/",
             "title": "Documentation",
             "icon": "fa-life-saver",
-            "permissionPaths": ["/permission",
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin",
                 "/permission/stratos",
                 "/permission/stratos/networkpartitions",
                 "/permission/stratos/networkpartitions/manage",
@@ -229,7 +257,6 @@
                 "/permission/stratos/kubernetesclusters/view"
             ],
             "icon": "fa-book",
-            "permissionPaths": ["/permission", "/permission/admin"],
             "description": "Read documentation to get more information."
         }
     ]
