@@ -114,148 +114,42 @@
             }
         },
         "portMapping": {
-            "type": "array",
             "id": "root/portMapping",
-            "title": "Port Mapping",
-            "name": "Port Mapping",
+            "type": "array",
+            "format": "tabs",
             "options": {
                 "collapsed": true
             },
-            "format": "tabs",
-            "items": [
-                {
-                    "type": "object",
-                    "id": "root/portMapping/0",
-                    "required": ["port", "protocol", "proxyPort"],
-                    "format": "grid",
-                    "title": "Port Mapping",
-                    "name": "Port Mapping",
-                    "properties": {
-                        "protocol": {
-                            "type": "string",
-                            "id": "root/portMapping/0/protocol",
-                            "title": "Protocol",
-                            "name": "Protocol",
-                            "default": "http"
-                        },
-                        "port": {
-                            "type": "number",
-                            "id": "root/portMapping/0/port",
-                            "title": "Port",
-                            "name": "Port",
-                            "default": "8280",
-                            "format": "number"
-                        },
-                        "proxyPort": {
-                            "type": "number",
-                            "id": "root/portMapping/0/proxyPort",
-                            "title": "Proxy Port",
-                            "name": "Proxy Port",
-                            "default": "8280",
-                            "format": "number"
-                        }
-                    }
-                },
-                {
-                    "type": "object",
-                    "id": "root/portMapping/1",
-                    "required": false,
-                    "format": "grid",
-                    "title": "Port Mapping",
-                    "name": "Port Mapping",
-                    "properties": {
-                        "protocol": {
-                            "type": "string",
-                            "id": "root/portMapping/1/protocol",
-                            "title": "Protocol",
-                            "name": "Protocol",
-                            "default": "https"
-                        },
-                        "port": {
-                            "type": "number",
-                            "id": "root/portMapping/1/port",
-                            "title": "Port",
-                            "name": "Port",
-                            "default": "8243",
-                            "format": "number"
-                        },
-                        "proxyPort": {
-                            "type": "number",
-                            "id": "root/portMapping/1/proxyPort",
-                            "title": "Proxy Port",
-                            "name": "Proxy Port",
-                            "default": "8243",
-                            "format": "number"
-                        }
-                    }
-                },
-                {
-                    "type": "object",
-                    "id": "root/portMapping/2",
-                    "required": false,
-                    "format": "grid",
-                    "title": "Port Mapping",
-                    "name": "Port Mapping",
-                    "properties": {
-                        "protocol": {
-                            "type": "string",
-                            "id": "root/portMapping/2/protocol",
-                            "title": "Protocol",
-                            "name": "Protocol",
-                            "default": "https"
-                        },
-                        "port": {
-                            "type": "number",
-                            "id": "root/portMapping/2/port",
-                            "title": "Port",
-                            "name": "Port",
-                            "default": "8243",
-                            "format": "number"
-                        },
-                        "proxyPort": {
-                            "type": "number",
-                            "id": "root/portMapping/2/proxyPort",
-                            "title": "Proxy Port",
-                            "name": "Proxy Port",
-                            "default": "8243",
-                            "format": "number"
-                        }
-                    }
-                },
-                {
-                    "type": "object",
-                    "id": "root/portMapping/3",
-                    "required": false,
-                    "format": "grid",
-                    "title": "Port Mapping",
-                    "name": "Port Mapping",
-                    "properties": {
-                        "protocol": {
-                            "type": "string",
-                            "id": "root/portMapping/3/protocol",
-                            "title": "Protocol",
-                            "name": "Protocol",
-                            "default": "https"
-                        },
-                        "port": {
-                            "type": "number",
-                            "id": "root/portMapping/3/port",
-                            "title": "Port",
-                            "name": "Port",
-                            "default": "8243",
-                            "format": "number"
-                        },
-                        "proxyPort": {
-                            "type": "number",
-                            "id": "root/portMapping/3/proxyPort",
-                            "title": "Proxy Port",
-                            "name": "Proxy Port",
-                            "default": "8243",
-                            "format": "number"
-                        }
+            "title": "PortMappings",
+            "items": {
+                "id": "root/portMapping/0",
+                "type": "object",
+                "format": "grid",
+                "required": ["port", "protocol", "proxyPort"],
+                "title": "PortMapping",
+                "properties": {
+                    "protocol": {
+                        "type": "string",
+                        "id": "root/portMapping/0/protocol",
+                        "title": "Protocol",
+                        "default": "http"
+                    },
+                    "port": {
+                        "type": "number",
+                        "id": "root/portMapping/0/port",
+                        "title": "Port",
+                        "default": "8280",
+                        "format": "number"
+                    },
+                    "proxyPort": {
+                        "type": "number",
+                        "id": "root/portMapping/0/proxyPort",
+                        "title": "Proxy Port",
+                        "default": "8280",
+                        "format": "number"
                     }
                 }
-            ]
+            }
         },
         "iaasProvider": {
             "type": "array",
@@ -290,145 +184,49 @@
                         "default": "ap-southeast-1/ami­-70326522"
                     },
                     "property": {
-                        "type": "array",
                         "id": "root/iaasProvider/0/property",
+                        "type": "array",
                         "title": "Property",
-                        "name": "Property",
-                        "required": false,
-                        "format":"tabs",
-                        "items": [
-                            {
-                                "type": "object",
-                                "id": "root/iaasProvider/0/property/0",
-                                "format": "grid",
-                                "required": ["name", "value"],
-                                "title": "Properties",
-                                "name": "Properties",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/0/name",
-                                        "default": "instanceType"
-                                    },
-                                    "value": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/0/value",
-                                        "default": "m1.medium"
-                                    }
-                                }
-                            },
-                            {
-                                "type": "object",
-                                "id": "root/iaasProvider/0/property/1",
-                                "required": false,
-                                "format": "grid",
-                                "title": "Properties",
-                                "name": "Properties",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/1/name",
-                                        "default": "keyPair",
-                                        "required": false
-                                    },
-                                    "value": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/1/value",
-                                        "default": "xxxxxx",
-                                        "required": false
-                                    }
-                                }
-                            },
-                            {
-                                "type": "object",
-                                "id": "root/iaasProvider/0/property/2",
-                                "required": false,
-                                "format": "grid",
-                                "title": "Properties",
-                                "name": "Properties",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/2/name",
-                                        "default": "keyPair",
-                                        "required": false
-                                    },
-                                    "value": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/2/value",
-                                        "default": "xxxxxx",
-                                        "required": false
-                                    }
-                                }
-                            },
-                            {
-                                "type": "object",
-                                "id": "root/iaasProvider/0/property/3",
-                                "required": false,
-                                "format": "grid",
-                                "title": "Properties",
-                                "name": "Properties",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/3/name",
-                                        "default": "keyPair",
-                                        "required": false
-                                    },
-                                    "value": {
-                                        "type": "string",
-                                        "id": "root/iaasProvider/0/property/3/value",
-                                        "default": "xxxxxx",
-                                        "required": false
-                                    }
+                        "format": "tabs",
+                        "items": {
+                            "id": "root/iaasProvider/0/property/0",
+                            "type": "object",
+                            "title": "Property",
+                            "properties": {
+                                "name": {
+                                    "id": "root/iaasProvider/0/property/0/name",
+                                    "title": "Name",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "id": "root/iaasProvider/0/property/0/value",
+                                    "title": "Value",
+                                    "type": "string"
                                 }
                             }
-                        ]
+                        }
                     },
                     "networkInterfaces": {
-                        "type":"array",
                         "id": "root/iaasProvider/0/networkInterfaces",
+                        "type": "array",
+                        "format": "tabs",
+                        "required": true,
                         "title": "Network Interfaces",
-                        "name": "Network Interfaces",
-                        "required":true,
-                        "format":"tabs",
-                        "items":[
-                            {
-                                "type":"object",
-                                "id": "root/iaasProvider/0/networkInterfaces/0",
-                                "required":["networkUuid"],
-                                "title": "Network Interface",
-                                "name": "Network Interface",
-                                "properties":{
-                                    "networkUuid": {
-                                        "type":"string",
-                                        "id": "root/iaasProvider/0/networkInterfaces/0/networkUuid",
-                                        "title": "Network UUID",
-                                        "name": "Network UUID",
-                                        "default": "fb9c21f4-0672-48b2-8279-77334bb63a53",
-                                        /*"pattern":"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"*/
-                                    }
-                                }
-                            },
-                            {
-                                "type":"object",
-                                "id": "root/iaasProvider/0/networkInterfaces/1",
-                                "required":["networkUuid"],
-                                "title": "Network Interface",
-                                "name": "Network Interface",
-                                "properties":{
-                                    "networkUuid": {
-                                        "type":"string",
-                                        "id": "root/iaasProvider/0/networkInterfaces/1/networkUuid",
-                                        "title": "Network UUID",
-                                        "name": "Network UUID",
-                                        "default": "1e43f86f-4165-4f2e-8017-dd4cfb5548b0",
-                                        /*"pattern":"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
-   */                                 }
+                        "items": {
+                            "id": "root/iaasProvider/0/networkInterfaces/0",
+                            "type": "object",
+                            "required": ["networkUuid"],
+                            "title": "NetworkInterface",
+                            "properties": {
+                                "networkUuid": {
+                                    "id": "root/iaasProvider/0/networkInterfaces/0/networkUuid",
+                                    "type": "string",
+                                    "title": "Network UUID"
                                 }
                             }
-                        ]
-                    },
+                        }
+                    }
+
                 }
             }
         },
@@ -450,14 +248,14 @@
                     "default": "true"
                 },
                 "volume": {
-                    "type": "array",
                     "id": "root/persistence/volume",
-                    "title": "Volume",
-                    "name": "Volume",
-                    "format":"tabs",
+                    "type": "array",
+                    "format": "tabs",
+                    "title": "Volumes",
                     "items": {
-                        "type": "object",
                         "id": "root/persistence/volume/0",
+                        "type": "object",
+                        "title": "Volume",
                         "required": ["device", "mappingPath", "size", "removeOnTermination"],
                         "properties": {
                             "device": {
@@ -491,8 +289,6 @@
                             }
                         }
                     }
-
-
                 }
             }
         },

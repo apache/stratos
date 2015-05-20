@@ -31,26 +31,6 @@
                 {
                     "name": "prop1",
                     "value": "val1"
-                },
-                {
-                    "name": "prop2",
-                    "value": "val2"
-                }
-            ]
-        },
-        {
-            "hostId": "KubHostSlave2",
-            "hostname": "slave2.dev.kubernetes.example.org",
-            "privateIPAddress": "172.17.8.102",
-            "publicIPAddress": "172.17.8.102",
-            "property": [
-                {
-                    "name": "prop1",
-                    "value": "val1"
-                },
-                {
-                    "name": "prop2",
-                    "value": "val2"
                 }
             ]
         }
