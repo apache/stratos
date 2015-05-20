@@ -209,25 +209,31 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         ApplicationParser applicationParser = new DefaultApplicationParser();
         Application application = applicationParser.parse(applicationContext);
 
-        //Need to update the application
-        AutoscalerUtil.getInstance().updateApplicationsTopology(application);
+        ApplicationContext existingApplicationContext = AutoscalerContext.getInstance().
+                getApplicationContext(applicationId);
 
-        //Update the clusterMonitors
-        AutoscalerUtil.getInstance().updateClusterMonitor(application);
+        if (existingApplicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+
+            //Need to update the application
+            AutoscalerUtil.getInstance().updateApplicationsTopology(application);
+
+            //Update the clusterMonitors
+            AutoscalerUtil.getInstance().updateClusterMonitor(application);
+
+        }
+
+        applicationContext.setStatus(existingApplicationContext.getStatus());
 
         List<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
         ApplicationClusterContext[] applicationClusterContextsArray = applicationClusterContexts.toArray(
                 new ApplicationClusterContext[applicationClusterContexts.size()]);
         applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContextsArray);
 
-        ApplicationContext existingApplicationContext = AutoscalerContext.getInstance().
-                getApplicationContext(applicationId);
-        applicationContext.setStatus(existingApplicationContext.getStatus());
         //updating the applicationContext
         AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Application added successfully: [application-id] %s",
+            log.info(String.format("Application updated successfully: [application-id] %s",
                     applicationId));
         }
         return true;
@@ -1218,8 +1224,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
         if (removableDeploymentPolicy(deploymentPolicyID)) {
             PolicyManager.getInstance().removeDeploymentPolicy(deploymentPolicyID);
-        }
-        else {
+        } else {
             throw new UnremovablePolicyException("This deployment policy cannot be removed, since it is used in an " +
                     "application.");
         }
