@@ -62,6 +62,10 @@ public class KubernetesIaas extends Iaas {
     private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
     private static final String PAYLOAD_PARAMETER_PREFIX = "payload_parameter.";
     private static final String PORT_MAPPINGS = "PORT_MAPPINGS";
+    private static final String KUBERNETES_CONTAINER_CPU = "KUBERNETES_CONTAINER_CPU";
+    private static final String KUBERNETES_CONTAINER_MEMORY = "KUBERNETES_CONTAINER_MEMORY";
+    private static final String KUBERNETES_CONTAINER_CPU_DEFAULT = "kubernetes.container.cpu.default";
+    private static final String KUBERNETES_CONTAINER_MEMORY_DEFAULT = "kubernetes.container.memory.default";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
@@ -224,9 +228,11 @@ public class KubernetesIaas extends Iaas {
             // Update member context
             updateMemberContext(memberContext, pod, kubernetesCluster);
 
-            log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s [pod]",
+            log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s " +
+                            "[pod] %s [cpu] %d [memory] %d MB",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(),
-                    memberContext.getMemberId(), memberContext.getKubernetesPodId()));
+                    memberContext.getMemberId(), memberContext.getKubernetesPodId(),
+                    memberContext.getInstanceMetadata().getCpu(), memberContext.getInstanceMetadata().getRam()));
             return memberContext;
         } catch (Exception e) {
             String msg = String.format("Could not start container: [application] %s [cartridge] %s [member] %s",
@@ -373,6 +379,17 @@ public class KubernetesIaas extends Iaas {
             throw new RuntimeException(message);
         }
 
+        int cpu = Integer.getInteger(KUBERNETES_CONTAINER_CPU_DEFAULT, 1);
+        int memory = Integer.getInteger(KUBERNETES_CONTAINER_MEMORY_DEFAULT, 1024);
+        Property cpuProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_CPU);
+        if(cpuProperty != null) {
+            cpu = Integer.parseInt(cpuProperty.getValue());
+        }
+        Property memoryProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_MEMORY);
+        if(memoryProperty != null) {
+            memory = Integer.parseInt(memoryProperty.getValue());
+        }
+
         IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getType(), partition.getId());
         if (iaasProvider == null) {
             String message = "Could not find iaas provider: [partition] " + partition.getId();
@@ -392,11 +409,19 @@ public class KubernetesIaas extends Iaas {
                 clusterContext, memberContext);
 
         List<Port> ports = KubernetesIaasUtil.convertPortMappings(Arrays.asList(cartridge.getPortMappings()));
-        kubernetesApi.createPod(podId, podLabel, dockerImage, ports, environmentVariables);
+        kubernetesApi.createPod(podId, podLabel, dockerImage, cpu, memory, ports, environmentVariables);
 
         // Add pod id to member context
         memberContext.setKubernetesPodId(podId);
         memberContext.setKubernetesPodLabel(podLabel);
+
+        // Create instance metadata
+        InstanceMetadata instanceMetadata = new InstanceMetadata();
+        instanceMetadata.setImageId(dockerImage);
+        instanceMetadata.setCpu(cpu);
+        instanceMetadata.setRam(memory);
+        memberContext.setInstanceMetadata(instanceMetadata);
+
         // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
 

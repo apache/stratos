@@ -31,13 +31,15 @@ public interface KubernetesAPIClientInterface {
     /**
      * Create pod.
      *
-     * @param podId
-     * @param podLabel
-     * @param dockerImage
-     * @param ports
+     * @param podId id of the pod
+     * @param podLabel pod label
+     * @param dockerImage docker image name
+     * @param cpu number of cpu cores
+     * @param memory memory allocation in mega bytes
+     * @param ports ports to be opened
      * @throws KubernetesClientException
      */
-    public void createPod(String podId, String podLabel, String dockerImage, List<Port> ports,
+    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory, List<Port> ports,
                           EnvironmentVariable[] environmentVariables)
             throws KubernetesClientException;
 
