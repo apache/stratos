@@ -25,69 +25,66 @@
         </deployer>
     </deployers>
     <ManagementPermissions>
+        <!-- /Stratos-->
         <ManagementPermission>
-            <DisplayName>Add Cartridge</DisplayName>
-            <ResourceId>/permission/admin/manage/addCartridge</ResourceId>
+            <DisplayName>Stratos Permissions</DisplayName>
+            <ResourceId>/permission/stratos</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Cartridges-->
+        <ManagementPermission>
+            <DisplayName>Cartridges</DisplayName>
+            <ResourceId>/permission/stratos/cartridges</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Update Cartridge</DisplayName>
-            <ResourceId>/permission/admin/manage/updateCartridge</ResourceId>
+            <DisplayName>Manage Cartridges</DisplayName>
+            <ResourceId>/permission/stratos/cartridges/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Cartridges</DisplayName>
-            <ResourceId>/permission/admin/manage/getCartridges</ResourceId>
+            <DisplayName>View Cartridges</DisplayName>
+            <ResourceId>/permission/stratos/cartridges/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Cartridge Groups -->
+        <ManagementPermission>
+            <DisplayName>Cartridge Groups</DisplayName>
+            <ResourceId>/permission/stratos/cartridgeGroups</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Cartridges By Filter</DisplayName>
-            <ResourceId>/permission/admin/manage/getCartridgesByFilter</ResourceId>
+            <DisplayName>Manage Cartridge Groups</DisplayName>
+            <ResourceId>/permission/stratos/cartridgeGroups/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Remove Cartridge</DisplayName>
-            <ResourceId>/permission/admin/manage/removeCartridge</ResourceId>
+            <DisplayName>View Cartridge Groups</DisplayName>
+            <ResourceId>/permission/stratos/cartridgeGroups/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Deployment Policies -->
+        <ManagementPermission>
+            <DisplayName>Deployment Policies</DisplayName>
+            <ResourceId>/permission/stratos/deploymentPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Cartridge Group</DisplayName>
-            <ResourceId>/permission/admin/manage/addCartridgeGroup</ResourceId>
+            <DisplayName>Manage Deployment Policies</DisplayName>
+            <ResourceId>/permission/stratos/deploymentPolicies/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Get Cartridge Groups</DisplayName>
-            <ResourceId>/permission/admin/manage/getCartridgeGroups</ResourceId>
+            <DisplayName>View Deployment Policies</DisplayName>
+            <ResourceId>/permission/stratos/deploymentPolicies/view</ResourceId>
+        </ManagementPermission>
+
+        <!-- /Stratos/Network Partitions -->
+        <ManagementPermission>
+            <DisplayName>Network Partitions</DisplayName>
+            <ResourceId>/permission/stratos/networkPartitions</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Remove Service Group Definition</DisplayName>
-            <ResourceId>/permission/admin/manage/removeServiceGroup</ResourceId>
+            <DisplayName>Manage Network Partitions</DisplayName>
+            <ResourceId>/permission/stratos/networkPartitions/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Add Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/addDeploymentPolicy</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Deployment Policies</DisplayName>
-            <ResourceId>/permission/admin/manage/getDeploymentPolicies</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Update Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/updateDeploymentPolicy</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/removeDeploymentPolicy</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Add Network Partition</DisplayName>
-            <ResourceId>/permission/admin/manage/addNetworkPartition</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Update Network Partition</DisplayName>
-            <ResourceId>/permission/admin/manage/updateNetworkPartition</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Network Partitions</DisplayName>
-            <ResourceId>/permission/admin/manage/getNetworkPartitions</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Network Partition</DisplayName>
-            <ResourceId>/permission/admin/manage/removeNetworkPartition</ResourceId>
+            <DisplayName>View Network Partitions</DisplayName>
+            <ResourceId>/permission/stratos/networkPartitions/view</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>
