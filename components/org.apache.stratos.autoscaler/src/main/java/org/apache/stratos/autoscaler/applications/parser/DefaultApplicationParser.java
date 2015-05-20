@@ -35,7 +35,7 @@ import org.apache.stratos.autoscaler.client.OAuthAdminServiceClient;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.CartridgeGroupNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.cartridge.CartridgeNotFoundException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -570,6 +570,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         for (GroupContext groupCtxt : groupCtxts) {
             ServiceGroup serviceGroup = getServiceGroup(groupCtxt.getName());
             if (serviceGroup == null) {
+                log.error("Cartridge group not found group-name: " + groupCtxt.getName());
                 throw new CartridgeGroupNotFoundException("Cartridge group not found group-name: "
                         + groupCtxt.getName());
             }
@@ -597,6 +598,9 @@ public class DefaultApplicationParser implements ApplicationParser {
         List<String> cartridgeTypes = findCartridgeTypesInServiceGroup(serviceGroup);
         for (String cartridgeType : cartridgeTypes) {
             if (findClusterDataInGroup(group, cartridgeType) == null) {
+                log.error(String.format("Cartridge %s not defined in cartridge group: " +
+                                "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
+                        cartridgeType, applicationId, group.getName(), group.getAlias()));
                 throw new CartridgeNotFoundException(String.format("Cartridge %s not defined in cartridge group: " +
                                 "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
                         cartridgeType, applicationId, group.getName(), group.getAlias()));
@@ -991,6 +995,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         try {
             return CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
         } catch (Exception e) {
+            log.error("Unable to get the cartridge: " + cartridgeType, e);
             throw new ApplicationDefinitionException(e);
         }
     }

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.exception.cartridge;
+package org.apache.stratos.autoscaler.exception;
 
 /**
  * When cartridge is not there, this particular exception needs to be thrown

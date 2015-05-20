@@ -24,7 +24,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.CartridgeGroupNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.cartridge.CartridgeNotFoundException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.messaging.domain.application.Application;
 

@@ -36,7 +36,7 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.exception.cartridge.CartridgeNotFoundException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
