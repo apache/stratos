@@ -1335,7 +1335,7 @@ public class StratosApiV41Utils {
      */
     public static void addApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
                                       String userName, String tenantDomain)
-            throws RestAPIException {
+            throws RestAPIException, AutoscalerServiceCartridgeNotFoundExceptionException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
         if (StringUtils.isBlank(appDefinition.getApplicationId())) {
             String message = "Please specify the application name";
@@ -1408,7 +1408,7 @@ public class StratosApiV41Utils {
      */
     public static void updateApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
                                          String userName, String tenantDomain)
-            throws RestAPIException {
+            throws RestAPIException, AutoscalerServiceCartridgeNotFoundExceptionException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
         if (StringUtils.isBlank(appDefinition.getApplicationId())) {
             String message = "Please specify the application name";

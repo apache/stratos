@@ -1,0 +1,60 @@
+{
+    "clusterId": "kubernetes-cluster-2",
+    "description": "Kubernetes Cluster 2",
+    "kubernetesMaster": {
+        "hostId": "master",
+        "hostname": "master.dev.kubernetes.org",
+        "privateIPAddress": "172.17.8.101",
+        "publicIPAddress": "172.17.8.101",
+        "property": [
+        ]
+    },
+    "portRange": {
+        "upper": "5000",
+        "lower": "4500"
+    },
+    "kubernetesHosts": [
+        {
+            "hostId": "minion-1",
+            "hostname": "minion-1.dev.kubernetes.org",
+            "privateIPAddress": "172.17.8.102",
+            "publicIPAddress": "172.17.8.102",
+            "property": [
+            ]
+        },
+        {
+            "hostId": "minion-2",
+            "hostname": "minion-2.dev.kubernetes.org",
+            "privateIPAddress": "172.17.8.103",
+            "publicIPAddress": "172.17.8.103",
+            "property": [
+            ]
+        }
+    ],
+    "property": [
+        {
+            "name": "payload_parameter.MB_IP",
+            "value": "172.17.8.1"
+        },
+        {
+            "name": "payload_parameter.MB_PORT",
+            "value": "1883"
+        },
+        {
+            "name": "payload_parameter.CEP_IP",
+            "value": "172.17.8.1"
+        },
+        {
+            "name": "payload_parameter.CEP_PORT",
+            "value": "7711"
+        },
+        {
+            "name": "payload_parameter.LOG_LEVEL",
+            "value": "DEBUG"
+        },
+        {
+            "name": "payload_parameter.METADATA_SERVICE_URL",
+            "value": "https://172.17.8.1:9443"
+        }
+    ]
+}

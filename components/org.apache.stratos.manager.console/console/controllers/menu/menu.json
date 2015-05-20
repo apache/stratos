@@ -7,10 +7,10 @@
             "title": "Configurations",
             "icon": "fa-gears",
             "permissionPaths": ["/permission", "/permission/admin"],
-            "description": "Configure Auto-scaling policies, cartridges and manage docker groups",
+            "description": "Configure network partitions, policies, cartridges, cartridge groups and kubernetes clusters",
             "sub-menu": [
                 {
-                    "link": "configure/networkpartitions/",
+                    "link": "configure/network-partitions/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Network Partitions",
@@ -19,7 +19,7 @@
                     "description": "Manage network partitions."
                 },
                 {
-                    "link": "configure/autoscalingpolicies/",
+                    "link": "configure/autoscaling-policies/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Autoscaling Policies",
@@ -28,7 +28,7 @@
                     "description": "Manage policies which specify autoscaling threshold values."
                 },
                 {
-                    "link": "configure/deploymentpolicies/",
+                    "link": "configure/deployment-policies/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Deployment Policies",
@@ -37,7 +37,7 @@
                     "description": "Manage policies which specify cartridge deployment in partitions."
                 },
                 {
-                    "link": "configure/applicationpolicies/",
+                    "link": "configure/application-policies/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Application Policies",
@@ -55,7 +55,7 @@
                     "description": "Manage single-tenant & multi-tenant cartridges."
                 },
                 {
-                    "link": "configure/cartridgegroups/",
+                    "link": "configure/cartridge-groups/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Cartridge Groups",
@@ -64,7 +64,7 @@
                     "description": "Manage cartridge groups"
                 },
                 {
-                    "link": "configure/kubernetesClusters/",
+                    "link": "configure/kubernetes-clusters/",
                     "linkexternal": false,
                     "context": "/configure",
                     "title": "Kubernetes Clusters",

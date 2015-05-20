@@ -43,15 +43,15 @@ if(elements==null){
 }
 
 var vm = {
-        '1':'networkpartitions',
-        '2':'autoscalingpolicies',
+        '1':'network-partitions',
+        '2':'autoscaling-policies',
         '3':'deployments',
         '4':'loadbalancer',
         '5':'cartridges' ,
         '6':'multitenant'
         };
-var docker = [
-    'autoscalingpolicies',
+var kubernetesClusters = [
+    'autoscaling-policies',
     'deployments',
     'loadbalancer',
     'cartridges' ,

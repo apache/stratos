@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,13 +19,12 @@
 package org.apache.stratos.autoscaler.exception;
 
 /**
- * This will get thrown when create/deploy the application, the relevant
- * cartridge group is not found
+ * When cartridge is not there, this particular exception needs to be thrown
  */
-public class CartridgeGroupNotFoundException extends Exception {
+public class CartridgeNotFoundException extends Exception {
     private String message;
 
-    public CartridgeGroupNotFoundException(String message) {
+    public CartridgeNotFoundException(String message) {
         super(message);
         this.message = message;
     }

@@ -33,7 +33,9 @@ import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.client.IdentityApplicationManagementServiceClient;
 import org.apache.stratos.autoscaler.client.OAuthAdminServiceClient;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.CartridgeGroupNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -72,7 +74,9 @@ public class DefaultApplicationParser implements ApplicationParser {
     }
 
     @Override
-    public Application parse(ApplicationContext applicationContext) throws ApplicationDefinitionException {
+    public Application parse(ApplicationContext applicationContext)
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException,
+            CartridgeNotFoundException {
 
         if (applicationContext == null) {
             handleError("Invalid application definition, application context is null");
@@ -241,7 +245,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Application buildCompositeAppStructure(ApplicationContext applicationContext,
                                                    Map<String, SubscribableInfoContext> subscribableInfoCtxts)
-            throws ApplicationDefinitionException {
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException {
 
         Application application = new Application(applicationContext.getApplicationId());
 
@@ -343,7 +347,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Map<String, Map<String, ClusterDataHolder>> parseLeafLevelSubscriptions(
             String appId, int tenantId, String key, String groupName,
-            List<CartridgeContext> cartridgeContextList, Set<StartupOrder> dependencyOrder) throws ApplicationDefinitionException {
+            List<CartridgeContext> cartridgeContextList, Set<StartupOrder> dependencyOrder) throws ApplicationDefinitionException, CartridgeNotFoundException {
 
         Map<String, Map<String, ClusterDataHolder>> completeDataHolder = new HashMap<String, Map<String, ClusterDataHolder>>();
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
@@ -361,7 +365,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             Cartridge cartridge = getCartridge(cartridgeType);
             if (cartridge == null) {
-                throw new RuntimeException("Cartridge not found: " + cartridgeType);
+                throw new CartridgeNotFoundException("Cartridge not found " + cartridgeType);
             }
 
             // Add metadata keys defined in cartridges as export metadata keys
@@ -398,10 +402,12 @@ public class DefaultApplicationParser implements ApplicationParser {
                         String[] arrStartUp = startupOrderComponent.split("\\.");
                         if (arrStartUp[0].equals("cartridge")) {
                             String cartridgeAlias = arrStartUp[1];
-                            String dependentCartridgeType = findCartridgeTypeFromAlias(cartridgeContextList, cartridgeAlias);
+                            String dependentCartridgeType =
+                                    findCartridgeTypeFromAlias(cartridgeContextList, cartridgeAlias);
                             if (StringUtils.isBlank(dependentCartridgeType)) {
-                                throw new RuntimeException(String.format("Could not find dependent cartridge for " +
-                                        "cartridge alias: [application] %s [cartridge-alias] %s", appId, cartridgeAlias));
+                                throw new CartridgeNotFoundException(
+                                        String.format("Could not find dependent cartridge for " +
+                                        "application: %s cartridge-alias: %s", appId, cartridgeAlias));
                             }
                             Cartridge dependencyCartridge = getCartridge(dependentCartridgeType);
                             ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
@@ -557,14 +563,16 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Map<String, Group> parseGroups(String appId, int tenantId, String key, List<GroupContext> groupCtxts,
                                            Map<String, SubscribableInfoContext> subscribableInformation)
-            throws ApplicationDefinitionException {
+            throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException {
 
         Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
 
         for (GroupContext groupCtxt : groupCtxts) {
             ServiceGroup serviceGroup = getServiceGroup(groupCtxt.getName());
             if (serviceGroup == null) {
-                throw new RuntimeException("Cartridge group not found: [group-name] " + groupCtxt.getName());
+                log.error("Cartridge group not found group-name: " + groupCtxt.getName());
+                throw new CartridgeGroupNotFoundException("Cartridge group not found group-name: "
+                        + groupCtxt.getName());
             }
             Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, serviceGroup);
             validateCartridgeGroupReference(appId, serviceGroup, group);
@@ -584,11 +592,16 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @param serviceGroup
      * @param group
      */
-    private void validateCartridgeGroupReference(String applicationId, ServiceGroup serviceGroup, Group group) {
+    private void validateCartridgeGroupReference(String applicationId,
+                                                 ServiceGroup serviceGroup, Group group)
+            throws CartridgeNotFoundException {
         List<String> cartridgeTypes = findCartridgeTypesInServiceGroup(serviceGroup);
         for (String cartridgeType : cartridgeTypes) {
             if (findClusterDataInGroup(group, cartridgeType) == null) {
-                throw new RuntimeException(String.format("Cartridge %s not defined in cartridge group: " +
+                log.error(String.format("Cartridge %s not defined in cartridge group: " +
+                                "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
+                        cartridgeType, applicationId, group.getName(), group.getAlias()));
+                throw new CartridgeNotFoundException(String.format("Cartridge %s not defined in cartridge group: " +
                                 "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
                         cartridgeType, applicationId, group.getName(), group.getAlias()));
             }
@@ -704,7 +717,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     private Group parseGroup(String appId, int tenantId, String key, GroupContext groupCtxt,
                              Map<String, SubscribableInfoContext> subscribableInfoCtxts,
                              ServiceGroup serviceGroup)
-            throws ApplicationDefinitionException {
+            throws ApplicationDefinitionException, CartridgeNotFoundException {
 
         Group group = new Group(appId, groupCtxt.getName(), groupCtxt.getAlias());
         group.setGroupScalingEnabled(groupCtxt.getGroupMaxInstances() > 1);
@@ -982,6 +995,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         try {
             return CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
         } catch (Exception e) {
+            log.error("Unable to get the cartridge: " + cartridgeType, e);
             throw new ApplicationDefinitionException(e);
         }
     }
