@@ -1559,20 +1559,11 @@ public class RestCommandLineService {
         try {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
                     + ENDPOINT_UNDEPLOY_APPLICATION.replace("{id}", applicationId), "");
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
+            String result = getHttpResponseString(response);
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
-
-            if (Integer.parseInt(responseCode) < 300 && Integer.parseInt(responseCode) >= 200) {
-                System.out.println("You have successfully undeployed application: " + applicationId);
-            } else {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-            }
-
+            System.out.println(gson.fromJson(result, ResponseMessageBean.class).getMessage());
         } catch (Exception e) {
             String message = "Could not undeploy application: " + applicationId;
             printError(message, e);
