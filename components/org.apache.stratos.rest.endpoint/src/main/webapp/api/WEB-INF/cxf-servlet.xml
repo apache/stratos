@@ -117,7 +117,7 @@
                 <value>property</value>
                 <value>hostNames</value>
                 <value>memberMap</value>
-                <value>portMap</value>
+                <value>portMapping</value>
                 <value>partitionGroup</value>
                 <value>partition</value>
                 <value>member</value>
@@ -147,6 +147,7 @@
                 <value>metadataKeys</value>
                 <value>networkInterfaces</value>
                 <value>iaasProvider</value>
+                <value>floatingNetworks</value>
             </list>
         </property>
     </bean>

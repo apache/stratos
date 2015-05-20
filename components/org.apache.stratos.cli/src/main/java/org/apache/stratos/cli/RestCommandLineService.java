@@ -379,7 +379,7 @@ public class RestCommandLineService {
                     listType, "Cartridge Groups");
 
             if ((cartridgeGroupList == null) || (cartridgeGroupList.size() == 0)) {
-                System.out.println("No cartridges found");
+                System.out.println("No cartridge groups found");
                 return;
             }
 
@@ -444,22 +444,20 @@ public class RestCommandLineService {
             if (cartridge.getIaasProvider() != null) {
                 RowMapper<IaasProviderBean> cartridgeMapper = new RowMapper<IaasProviderBean>() {
                     public String[] getData(IaasProviderBean row) {
-                        String[] data = new String[4];
-                        data[0] = row.getProvider();
-                        data[1] = row.getType();
-                        data[2] = row.getName();
-                        data[3] = row.getImageId();
+                        String[] data = new String[2];
+                        data[0] = row.getType();
+                        data[1] = row.getImageId();
                         return data;
                     }
                 };
 
-                IaasProviderBean[] iaasProviders = new IaasProviderBean[cartridgeList.size()];
+                IaasProviderBean[] iaasProviders = new IaasProviderBean[cartridge.getIaasProvider().size()];
                 iaasProviders = cartridge.getIaasProvider().toArray(iaasProviders);
 
                 System.out.println("-------------------------------------");
                 System.out.println("IaaS Providers: ");
                 System.out.println("-------------------------------------");
-                CliUtils.printTable(iaasProviders, cartridgeMapper, "Provider", "Type", "Name", "Image ID");
+                CliUtils.printTable(iaasProviders, cartridgeMapper, "Type", "Image ID");
             }
             System.out.println("-------------------------------------");
         } catch (Exception e) {
