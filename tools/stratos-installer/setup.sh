@@ -253,6 +253,8 @@ function cc_setup() {
         ./kubernetes.sh $stratos_extract_path
     fi
 
+    ./mock_iaas.sh $stratos_extract_path $mock_iaas_enabled
+
     pushd $stratos_extract_path
     
 

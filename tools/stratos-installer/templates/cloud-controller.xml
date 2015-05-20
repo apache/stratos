@@ -100,5 +100,12 @@
                     <identity svns:secretAlias="cloud.controller.kubernetes.identity">identity</identity>
                     <credential svns:secretAlias="cloud.controller.kubernetes.credential">credential</credential>
                 </iaasProviderKUBERNETES_PROVIDER_END>
+	        <MOCK_IAAS_PROVIDER_STARTiaasProvider type="mock" name="Mock">
+		    <className>org.apache.stratos.cloud.controller.iaases.mock.MockIaas</className>
+		    <provider>mock</provider>
+		    <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
+		    <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>
+		    <property name="api.endpoint" value="https://localhost:9443/mock-iaas/api" />
+		</iaasProviderMOCK_IAAS_PROVIDER_END>
         </iaasProviders>
 </cloudController>
