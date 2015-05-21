@@ -1436,7 +1436,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException,
+    public boolean addNetworkPartition(NetworkPartition networkPartition) throws
+            NetworkPartitionAlreadyExistsException,
             InvalidNetworkPartitionException {
 
         handleNullObject(networkPartition, "Network Partition is null");
@@ -1453,7 +1454,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new NetworkPartitionAlreadyExistsException(message);
         }
 
-        if (networkPartition.getPartitions() != null) {
+        if (networkPartition.getPartitions() != null && networkPartition.getPartitions().length != 0) {
             for (Partition partition : networkPartition.getPartitions()) {
                 if (partition != null) {
                     if (log.isInfoEnabled()) {
@@ -1476,6 +1477,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                 }
             }
+        } else {
+            //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
+            throw new InvalidNetworkPartitionException(String.format("Network partition: " +
+                            "%s doesn't not have any partitions ", networkPartition.getId()));
         }
 
         // adding network partition to CC-Context
