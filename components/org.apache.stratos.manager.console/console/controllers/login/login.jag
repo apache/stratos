@@ -1,6 +1,5 @@
 <%
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -49,10 +48,8 @@ if (username || password) {
 
 try {
     var auth = server.authenticate(username, password);
-
     if (!auth) {
-        session.put("error", "The username or password you entered is incorrect.");
-        print({status: 0});
+        print({ status: 0, "message" : "The username or password you entered is incorrect." });
     } else {
         var userObject = carbon.server.tenantUser(username);
         var um = new carbon.user.UserManager({}, userObject.tenantId);
@@ -70,16 +67,19 @@ try {
             session.put("PERMISSIONS", userPermissions);
             //call the authentication rest-endpoint and get the JSESSION_ID
             var result = util.RESTCalls.getSession(username, password);
-            //save the JSESSION_ID in current console.session.
-            var jSessionId = result.data.Success.sessionId;
-            session.put("JSESSIONID", jSessionId);
+            if((result == null) || (result.data == null) || (result.data.Success == null)) {
+                print({ "status": 0, "message" : "Login permission is not granted for user." });
+            } else {
+                //save the JSESSION_ID in current console.session.
+                var jSessionId = result.data.Success.sessionId;
+                session.put("JSESSIONID", jSessionId);
+                // require('console').server.current(session,username);
+                print({status: 1});
+            }
         } catch (e) {
             log.warn(e);
         }
-        // require('console').server.current(session,username);
-        print({status: 1});
     }
-
 } catch (e) {
     session.put("error", e.toString());
     print({status: e.toString()});

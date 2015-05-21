@@ -78,7 +78,7 @@ $(document).ready(function () {
                     if (data.status === 1) {
                         window.location = caramel.context;
                     } else {
-                        form_error.show().html("The username or password you entered is incorrect.");
+                        form_error.show().html(data.message);
                     }
                 }
             })
