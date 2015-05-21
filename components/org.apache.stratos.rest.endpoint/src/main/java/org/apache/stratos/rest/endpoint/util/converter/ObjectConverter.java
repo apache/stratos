@@ -2110,8 +2110,10 @@ public class ObjectConverter {
             NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
             networkPartitionRef.setId(networkPartitionReferenceBean.getId());
             networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
-            networkPartitionRef.setPartitionRefs(convertToASStubPartitions(
-                    networkPartitionReferenceBean.getPartitions()));
+            if(networkPartitionReferenceBean.getPartitions() != null) {
+                networkPartitionRef.setPartitionRefs(convertToASStubPartitions(
+                        networkPartitionReferenceBean.getPartitions()));
+            }
             networkPartitionRefList.add(networkPartitionRef);
         }
         return networkPartitionRefList.toArray(new NetworkPartitionRef[networkPartitionRefList.size()]);
