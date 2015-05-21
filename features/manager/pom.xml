@@ -37,7 +37,6 @@
 
     <modules>
         <module>stratos-mgt</module>
-        <module>gapp</module>
         <module>deployment</module>
         <module>status-monitor</module>
         <module>tenant-activity</module>
