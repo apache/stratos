@@ -1,14 +1,14 @@
 {
-  "id": "autoscaling-policy-1",
-  "loadThresholds": {
-    "requestsInFlight": {
-      "threshold": 50
-    },
-    "memoryConsumption": {
-      "threshold": 40
-    },
-    "loadAverage": {
-      "threshold": 40
+    "id": "autoscaling-policy-1",
+    "loadThresholds": {
+        "requestsInFlight": {
+            "threshold": 20
+        },
+        "memoryConsumption": {
+            "threshold": 70
+        },
+        "loadAverage": {
+            "threshold": 70
+        }
     }
-  }
 }

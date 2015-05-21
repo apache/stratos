@@ -7,7 +7,7 @@
     "description": "php Cartridge",
     "version": "7",
     "multiTenant": "false",
-    "loadBalancingIPType" : "public",
+    "loadBalancingIPType": "public",
     "portMapping": [
         {
             "protocol": "http",
@@ -15,17 +15,27 @@
             "proxyPort": "8281"
         }
     ],
-    "deployment":{
-        "baseDir":"/var/www"
+    "deployment": {
+        "baseDir": "/var/www"
     },
-    "iaasProvider":[
-       {
-          "type":"kubernetes",
-          "imageId":"stratos/php:4.1.0-beta",
-          "networkInterfaces":[
-          ],
-          "property":[
-          ]
-       }
+    "iaasProvider": [
+        {
+            "type": "kubernetes",
+            "imageId": "stratos/php:4.1.0-beta",
+            "networkInterfaces": [
+            ],
+            "property": [
+            ]
+        }
+    ],
+    "property": [
+        {
+            "name": "KUBERNETES_CONTAINER_CPU",
+            "value": "0"
+        },
+        {
+            "name": "KUBERNETES_CONTAINER_MEMORY",
+            "value": "0"
+        }
     ]
 }

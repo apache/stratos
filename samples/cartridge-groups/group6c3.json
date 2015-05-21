@@ -10,7 +10,7 @@
                 "terminationBehaviour": "terminate-all"
             }
         }
-        ],
+    ],
     "cartridges": [
         "tomcat2"
     ],

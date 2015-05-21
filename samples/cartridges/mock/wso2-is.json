@@ -14,13 +14,13 @@
             "proxyPort": "8280"
         }
     ],
-    "iaasProvider":[
+    "iaasProvider": [
         {
-            "type":"mock",
-            "imageId":"not-needed",
-            "networkInterfaces":[
+            "type": "mock",
+            "imageId": "not-needed",
+            "networkInterfaces": [
             ],
-            "property":[
+            "property": [
             ]
         }
     ]

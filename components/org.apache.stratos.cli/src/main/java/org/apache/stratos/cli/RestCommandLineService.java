@@ -138,10 +138,12 @@ public class RestCommandLineService {
     private static final String ENDPOINT_APPLICATION_SIGNUP = API_CONTEXT + "/applications/{applicationId}/signup";
 
     private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
+    private static final String ENDPOINT_UPDATE_APPLICATION = API_CONTEXT + "/applications";
     private static final String ENDPOINT_UPDATE_APPLICATION_POLICY = API_CONTEXT + "/applicationPolicies";
     private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_UPDATE_USER = API_CONTEXT + "/users";
     private static final String ENDPOINT_UPDATE_TENANT = API_CONTEXT + "/tenants";
+
 
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -1575,6 +1577,16 @@ public class RestCommandLineService {
     }
 
     /**
+     * Update application
+     *
+     * @param entityBody application definition
+     * @throws CommandException
+     */
+    public void updateApplication(String entityBody) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_APPLICATION, entityBody, "application");
+    }
+
+    /**
      * Delete autoscaling policy
      *
      * @param autoscalingPolicyId autoscaling policy id
@@ -1941,5 +1953,6 @@ public class RestCommandLineService {
     public void updateApplicationPolicy(String applicationPolicy) throws CommandException {
         restClient.updateEntity(ENDPOINT_UPDATE_APPLICATION_POLICY, applicationPolicy, "application policy");
     }
+
 
 }

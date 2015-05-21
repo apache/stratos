@@ -54,17 +54,22 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param podId                Identifier of the pod
      * @param podLabel             Pod name to be used by the pod label
      * @param dockerImage          Docker image to be used by the pod
+     * @param cpu                  Number of cpu cores
+     * @param memory               Memory allocation in megabytes
      * @param ports                Ports exposed by the pod
      * @param environmentVariables Environment variables to be passed to the pod
      * @throws KubernetesClientException
      */
     @Override
-    public void createPod(String podId, String podLabel, String dockerImage, List<Port> ports,
+    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory, List<Port> ports,
                           EnvironmentVariable[] environmentVariables)
             throws KubernetesClientException {
+
+        int memoryInMB = 1024 * 1024 * memory;
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Creating kubernetes pod: [pod-id] %s [pod-name] %s [docker-image] %s [ports] %s",
-                    podId, podLabel, dockerImage, ports));
+            log.debug(String.format("Creating kubernetes pod: [pod-id] %s [pod-name] %s [docker-image] %s " +
+                            "[cpu] %d [memory] %d MB [ports] %s",
+                    podId, podLabel, dockerImage, cpu, memoryInMB, ports));
         }
 
         // Create pod definition
@@ -87,6 +92,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         Container containerTemplate = new Container();
         containerTemplate.setName(podLabel);
         containerTemplate.setImage(dockerImage);
+        containerTemplate.setCpu(cpu);
+        containerTemplate.setMemory(memoryInMB);
         containerTemplate.setPorts(ports);
         containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
         if (environmentVariables != null) {
