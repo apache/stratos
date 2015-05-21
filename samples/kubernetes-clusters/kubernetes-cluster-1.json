@@ -21,6 +21,14 @@
             "publicIPAddress": "172.17.8.102",
             "property": [
             ]
+        },
+	{
+            "hostId": "minion-2",
+            "hostname": "minion-2.dev.kubernetes.org",
+            "privateIPAddress": "172.17.8.103",
+            "publicIPAddress": "172.17.8.103",
+            "property": [
+            ]
         }
     ],
     "property": [

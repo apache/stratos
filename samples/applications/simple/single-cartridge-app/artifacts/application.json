@@ -14,7 +14,7 @@
                     "deploymentPolicy": "deployment-policy-1",
                     "artifactRepository": {
                         "privateRepo": false,
-                        "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
+                        "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
                         "repoUsername": "",
                         "repoPassword": ""
                     }
