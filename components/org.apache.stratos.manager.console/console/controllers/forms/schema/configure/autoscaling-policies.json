@@ -56,12 +56,14 @@
                     },
                     "properties":{
                         "threshold": {
-                            "type":"number",
+                            "type":"string",
                             "id": "root/loadThresholds/requestsInFlight/threshold",
                             "title": "Threshold",
                             "name": "Threshold",
+                            "description" : "You need to enter number for the Requests In Flight Threshold",
+                            "format" : "number",
                             "default":30,
-                            "format": "number",
+                            "pattern": "^[0-9]+$",
                             "required":false
                         }
                     }
@@ -78,12 +80,14 @@
                     },
                     "properties":{
                         "threshold": {
-                            "type":"number",
+                            "type":"string",
                             "id": "root/loadThresholds/memoryConsumption/threshold",
                             "title": "Threshold",
+                            "description" : "You need to enter number for the Memory Consumption Threshold",
+                            "format" : "number",
+                            "pattern": "^[0-9]+$",
                             "name": "Threshold",
                             "default":80,
-                            "format": "number",
                             "required":false
                         }
                     }
@@ -100,12 +104,14 @@
                     },
                     "properties":{
                         "threshold": {
-                            "type":"number",
+                            "type":"string",
                             "id": "root/loadThresholds/loadAverage/threshold",
                             "title": "Threshold",
+                            "format" : "number",
+                            "description" : "You need to enter number for the Load Average Threshold",
+                            "pattern": "^[0-9]+$",
                             "name": "Threshold",
                             "default":100,
-                            "format": "number",
                             "required":false
                         }
                     }
