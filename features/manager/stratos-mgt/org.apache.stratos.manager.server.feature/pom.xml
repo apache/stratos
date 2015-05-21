@@ -125,7 +125,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.manager:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.stub:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}</bundleDef>
                                 <bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
                                 <bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
