@@ -18,7 +18,7 @@ Set the environment variables CLI_JAR, PYTHONPATH and WIREMOCK_JAR, WIREMOCK_HTT
 
 ```
 # the stratos CLI_JAR
-export CLI_JAR=~/stratos/components/org.apache.stratos.cli/target/org.apache.stratos.cli-4.0.0-SNAPSHOT.jar
+export CLI_JAR=~/stratos/components/org.apache.stratos.cli/target/org.apache.stratos.cli-4.1.0-SNAPSHOT.jar
 
 # set the PYTHONPATH to include pexpect
 export PYTHONPATH=$PYTHONPATH:~/stratos/components/org.apache.stratos.cli/target/pexpect-3.2
