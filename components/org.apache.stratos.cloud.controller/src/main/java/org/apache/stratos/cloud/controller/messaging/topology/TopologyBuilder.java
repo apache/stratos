@@ -66,7 +66,6 @@ public class TopologyBuilder {
                 if (!topology.serviceExists(cartridge.getType())) {
                     ServiceType serviceType = cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant;
                     service = new Service(cartridge.getType(), serviceType);
-                    List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                     Properties properties = new Properties();
 
                     try {
@@ -92,12 +91,17 @@ public class TopologyBuilder {
                     }
 
                     service.setProperties(properties);
-                    Port port;
-                    //adding ports to the event
-                    for (PortMapping portMapping : portMappings) {
-                        port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
-                        service.addPort(port);
+                    if(cartridge.getPortMappings() != null) {
+                        List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
+                        Port port;
+                        //adding ports to the event
+                        for (PortMapping portMapping : portMappings) {
+                            port = new Port(portMapping.getProtocol(),
+                                    portMapping.getPort(), portMapping.getProxyPort());
+                            service.addPort(port);
+                        }
                     }
+
                     topology.addService(service);
                     TopologyManager.updateTopology(topology);
                 }
