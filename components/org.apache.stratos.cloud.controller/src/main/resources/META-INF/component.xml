@@ -27,64 +27,64 @@
     <ManagementPermissions>
         <!-- /Stratos-->
         <ManagementPermission>
-            <DisplayName>Stratos Permissions</DisplayName>
-            <ResourceId>/permission/stratos</ResourceId>
+            <DisplayName>Stratos</DisplayName>
+            <ResourceId>/permission/admin/stratos</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Cartridges-->
         <ManagementPermission>
             <DisplayName>Cartridges</DisplayName>
-            <ResourceId>/permission/stratos/cartridges</ResourceId>
+            <ResourceId>/permission/admin/stratos/cartridges</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Cartridges</DisplayName>
-            <ResourceId>/permission/stratos/cartridges/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/cartridges/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Cartridges</DisplayName>
-            <ResourceId>/permission/stratos/cartridges/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/cartridges/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Cartridge Groups -->
         <ManagementPermission>
             <DisplayName>Cartridge Groups</DisplayName>
-            <ResourceId>/permission/stratos/cartridgeGroups</ResourceId>
+            <ResourceId>/permission/admin/stratos/cartridgeGroups</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Cartridge Groups</DisplayName>
-            <ResourceId>/permission/stratos/cartridgeGroups/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/cartridgeGroups/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Cartridge Groups</DisplayName>
-            <ResourceId>/permission/stratos/cartridgeGroups/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/cartridgeGroups/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Deployment Policies -->
         <ManagementPermission>
             <DisplayName>Deployment Policies</DisplayName>
-            <ResourceId>/permission/stratos/deploymentPolicies</ResourceId>
+            <ResourceId>/permission/admin/stratos/deploymentPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Deployment Policies</DisplayName>
-            <ResourceId>/permission/stratos/deploymentPolicies/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/deploymentPolicies/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Deployment Policies</DisplayName>
-            <ResourceId>/permission/stratos/deploymentPolicies/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/deploymentPolicies/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Network Partitions -->
         <ManagementPermission>
             <DisplayName>Network Partitions</DisplayName>
-            <ResourceId>/permission/stratos/networkPartitions</ResourceId>
+            <ResourceId>/permission/admin/stratos/networkPartitions</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Network Partitions</DisplayName>
-            <ResourceId>/permission/stratos/networkPartitions/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/networkPartitions/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Network Partitions</DisplayName>
-            <ResourceId>/permission/stratos/networkPartitions/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/networkPartitions/view</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>

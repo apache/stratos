@@ -9,28 +9,28 @@
             "permissionPaths": [
                 "/permission",
                 "/permission/admin",
-                "/permission/stratos",
-                "/permission/stratos/networkpartitions",
-                "/permission/stratos/networkpartitions/manage",
-                "/permission/stratos/networkpartitions/view",
-                "/permission/stratos/autoscalingpolicies",
-                "/permission/stratos/autoscalingpolicies/manage",
-                "/permission/stratos/autoscalingpolicies/view",
-                "/permission/stratos/deploymentpolicies",
-                "/permission/stratos/deploymentpolicies/manage",
-                "/permission/stratos/deploymentpolicies/view",
-                "/permission/stratos/applicationpolicies",
-                "/permission/stratos/applicationpolicies/manage",
-                "/permission/stratos/applicationpolicies/view",
-                "/permission/stratos/cartridges",
-                "/permission/stratos/cartridges/manage",
-                "/permission/stratos/cartridges/view",
-                "/permission/stratos/cartridgegroups",
-                "/permission/stratos/cartridgegroups/manage",
-                "/permission/stratos/cartridgegroups/view",
-                "/permission/stratos/kubernetesclusters",
-                "/permission/stratos/kubernetesclusters/manage",
-                "/permission/stratos/kubernetesclusters/view"
+                "/permission/admin/stratos",
+                "/permission/admin/stratos/networkpartitions",
+                "/permission/admin/stratos/networkpartitions/manage",
+                "/permission/admin/stratos/networkpartitions/view",
+                "/permission/admin/stratos/autoscalingpolicies",
+                "/permission/admin/stratos/autoscalingpolicies/manage",
+                "/permission/admin/stratos/autoscalingpolicies/view",
+                "/permission/admin/stratos/deploymentpolicies",
+                "/permission/admin/stratos/deploymentpolicies/manage",
+                "/permission/admin/stratos/deploymentpolicies/view",
+                "/permission/admin/stratos/applicationpolicies",
+                "/permission/admin/stratos/applicationpolicies/manage",
+                "/permission/admin/stratos/applicationpolicies/view",
+                "/permission/admin/stratos/cartridges",
+                "/permission/admin/stratos/cartridges/manage",
+                "/permission/admin/stratos/cartridges/view",
+                "/permission/admin/stratos/cartridgegroups",
+                "/permission/admin/stratos/cartridgegroups/manage",
+                "/permission/admin/stratos/cartridgegroups/view",
+                "/permission/admin/stratos/kubernetesclusters",
+                "/permission/admin/stratos/kubernetesclusters/manage",
+                "/permission/admin/stratos/kubernetesclusters/view"
             ],
             "description": "Configure network partitions, policies, cartridges, cartridge groups and kubernetes clusters",
             "sub-menu": [
@@ -43,9 +43,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/networkpartitions",
-                        "/permission/stratos/networkpartitions/manage",
-                        "/permission/stratos/networkpartitions/view"
+                        "/permission/admin/stratos/networkpartitions",
+                        "/permission/admin/stratos/networkpartitions/manage",
+                        "/permission/admin/stratos/networkpartitions/view"
                     ],
                     "description": "Manage network partitions."
                 },
@@ -58,9 +58,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/autoscalingpolicies",
-                        "/permission/stratos/autoscalingpolicies/manage",
-                        "/permission/stratos/autoscalingpolicies/view"
+                        "/permission/admin/stratos/autoscalingpolicies",
+                        "/permission/admin/stratos/autoscalingpolicies/manage",
+                        "/permission/admin/stratos/autoscalingpolicies/view"
                     ],
                     "description": "Manage policies which specify autoscaling threshold values."
                 },
@@ -73,9 +73,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/deploymentpolicies",
-                        "/permission/stratos/deploymentpolicies/manage",
-                        "/permission/stratos/deploymentpolicies/view"
+                        "/permission/admin/stratos/deploymentpolicies",
+                        "/permission/admin/stratos/deploymentpolicies/manage",
+                        "/permission/admin/stratos/deploymentpolicies/view"
                     ],
                     "description": "Manage policies which specify cartridge deployment in partitions."
                 },
@@ -88,9 +88,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/applicationpolicies",
-                        "/permission/stratos/applicationpolicies/manage",
-                        "/permission/stratos/applicationpolicies/view"
+                        "/permission/admin/stratos/applicationpolicies",
+                        "/permission/admin/stratos/applicationpolicies/manage",
+                        "/permission/admin/stratos/applicationpolicies/view"
                     ],
                     "description": "Manage policies which specify application deployment in network partitions."
                 },
@@ -103,9 +103,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/cartridges",
-                        "/permission/stratos/cartridges/manage",
-                        "/permission/stratos/cartridges/view"
+                        "/permission/admin/stratos/cartridges",
+                        "/permission/admin/stratos/cartridges/manage",
+                        "/permission/admin/stratos/cartridges/view"
                     ],
                     "description": "Manage single-tenant & multi-tenant cartridges."
                 },
@@ -118,9 +118,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/cartridgegroups",
-                        "/permission/stratos/cartridgegroups/manage",
-                        "/permission/stratos/cartridgegroups/view"
+                        "/permission/admin/stratos/cartridgegroups",
+                        "/permission/admin/stratos/cartridgegroups/manage",
+                        "/permission/admin/stratos/cartridgegroups/view"
                     ],
                     "description": "Manage cartridge groups"
                 },
@@ -133,9 +133,9 @@
                     "permissionPaths": [
                         "/permission",
                         "/permission/admin",
-                        "/permission/stratos/kubernetesclusters",
-                        "/permission/stratos/kubernetesclusters/manage",
-                        "/permission/stratos/kubernetesclusters/view"
+                        "/permission/admin/stratos/kubernetesclusters",
+                        "/permission/admin/stratos/kubernetesclusters/manage",
+                        "/permission/admin/stratos/kubernetesclusters/view"
                     ],
                     "description": "Manage Kubernetes clusters."
                 }
@@ -184,9 +184,9 @@
             "permissionPaths": [
                 "/permission",
                 "/permission/admin",
-                "/permission/stratos/applications",
-                "/permission/stratos/applications/manage",
-                "/permission/stratos/applications/view"],
+                "/permission/admin/stratos/applications",
+                "/permission/admin/stratos/applications/manage",
+                "/permission/admin/stratos/applications/view"],
             "description": "Manage applications."
         },
         {
@@ -198,28 +198,28 @@
             "permissionPaths": [
                 "/permission",
                 "/permission/admin",
-                "/permission/stratos",
-                "/permission/stratos/networkpartitions",
-                "/permission/stratos/networkpartitions/manage",
-                "/permission/stratos/networkpartitions/view",
-                "/permission/stratos/autoscalingpolicies",
-                "/permission/stratos/autoscalingpolicies/manage",
-                "/permission/stratos/autoscalingpolicies/view",
-                "/permission/stratos/deploymentpolicies",
-                "/permission/stratos/deploymentpolicies/manage",
-                "/permission/stratos/deploymentpolicies/view",
-                "/permission/stratos/applicationpolicies",
-                "/permission/stratos/applicationpolicies/manage",
-                "/permission/stratos/applicationpolicies/view",
-                "/permission/stratos/cartridges",
-                "/permission/stratos/cartridges/manage",
-                "/permission/stratos/cartridges/view",
-                "/permission/stratos/cartridgegroups",
-                "/permission/stratos/cartridgegroups/manage",
-                "/permission/stratos/cartridgegroups/view",
-                "/permission/stratos/kubernetesclusters",
-                "/permission/stratos/kubernetesclusters/manage",
-                "/permission/stratos/kubernetesclusters/view"
+                "/permission/admin/stratos",
+                "/permission/admin/stratos/networkpartitions",
+                "/permission/admin/stratos/networkpartitions/manage",
+                "/permission/admin/stratos/networkpartitions/view",
+                "/permission/admin/stratos/autoscalingpolicies",
+                "/permission/admin/stratos/autoscalingpolicies/manage",
+                "/permission/admin/stratos/autoscalingpolicies/view",
+                "/permission/admin/stratos/deploymentpolicies",
+                "/permission/admin/stratos/deploymentpolicies/manage",
+                "/permission/admin/stratos/deploymentpolicies/view",
+                "/permission/admin/stratos/applicationpolicies",
+                "/permission/admin/stratos/applicationpolicies/manage",
+                "/permission/admin/stratos/applicationpolicies/view",
+                "/permission/admin/stratos/cartridges",
+                "/permission/admin/stratos/cartridges/manage",
+                "/permission/admin/stratos/cartridges/view",
+                "/permission/admin/stratos/cartridgegroups",
+                "/permission/admin/stratos/cartridgegroups/manage",
+                "/permission/admin/stratos/cartridgegroups/view",
+                "/permission/admin/stratos/kubernetesclusters",
+                "/permission/admin/stratos/kubernetesclusters/manage",
+                "/permission/admin/stratos/kubernetesclusters/view"
             ],
             "description": "Report your issues that you find."
         },
@@ -232,28 +232,28 @@
             "permissionPaths": [
                 "/permission",
                 "/permission/admin",
-                "/permission/stratos",
-                "/permission/stratos/networkpartitions",
-                "/permission/stratos/networkpartitions/manage",
-                "/permission/stratos/networkpartitions/view",
-                "/permission/stratos/autoscalingpolicies",
-                "/permission/stratos/autoscalingpolicies/manage",
-                "/permission/stratos/autoscalingpolicies/view",
-                "/permission/stratos/deploymentpolicies",
-                "/permission/stratos/deploymentpolicies/manage",
-                "/permission/stratos/deploymentpolicies/view",
-                "/permission/stratos/applicationpolicies",
-                "/permission/stratos/applicationpolicies/manage",
-                "/permission/stratos/applicationpolicies/view",
-                "/permission/stratos/cartridges",
-                "/permission/stratos/cartridges/manage",
-                "/permission/stratos/cartridges/view",
-                "/permission/stratos/cartridgegroups",
-                "/permission/stratos/cartridgegroups/manage",
-                "/permission/stratos/cartridgegroups/view",
-                "/permission/stratos/kubernetesclusters",
-                "/permission/stratos/kubernetesclusters/manage",
-                "/permission/stratos/kubernetesclusters/view"
+                "/permission/admin/stratos",
+                "/permission/admin/stratos/networkpartitions",
+                "/permission/admin/stratos/networkpartitions/manage",
+                "/permission/admin/stratos/networkpartitions/view",
+                "/permission/admin/stratos/autoscalingpolicies",
+                "/permission/admin/stratos/autoscalingpolicies/manage",
+                "/permission/admin/stratos/autoscalingpolicies/view",
+                "/permission/admin/stratos/deploymentpolicies",
+                "/permission/admin/stratos/deploymentpolicies/manage",
+                "/permission/admin/stratos/deploymentpolicies/view",
+                "/permission/admin/stratos/applicationpolicies",
+                "/permission/admin/stratos/applicationpolicies/manage",
+                "/permission/admin/stratos/applicationpolicies/view",
+                "/permission/admin/stratos/cartridges",
+                "/permission/admin/stratos/cartridges/manage",
+                "/permission/admin/stratos/cartridges/view",
+                "/permission/admin/stratos/cartridgegroups",
+                "/permission/admin/stratos/cartridgegroups/manage",
+                "/permission/admin/stratos/cartridgegroups/view",
+                "/permission/admin/stratos/kubernetesclusters",
+                "/permission/admin/stratos/kubernetesclusters/manage",
+                "/permission/admin/stratos/kubernetesclusters/view"
             ],
             "icon": "fa-book",
             "description": "Read documentation to get more information."

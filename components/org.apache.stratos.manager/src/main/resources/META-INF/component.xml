@@ -20,50 +20,50 @@
     <ManagementPermissions>
         <!-- /Stratos -->
         <ManagementPermission>
-            <DisplayName>Stratos Permissions</DisplayName>
-            <ResourceId>/permission/stratos</ResourceId>
+            <DisplayName>Stratos</DisplayName>
+            <ResourceId>/permission/admin/stratos</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Applications -->
         <ManagementPermission>
             <DisplayName>Applications</DisplayName>
-            <ResourceId>/permission/stratos/applications</ResourceId>
+            <ResourceId>/permission/admin/stratos/applications</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Applications</DisplayName>
-            <ResourceId>/permission/stratos/applications/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/applications/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Applications</DisplayName>
-            <ResourceId>/permission/stratos/applications/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/applications/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Application SignUps-->
         <ManagementPermission>
             <DisplayName>Application Sign Ups</DisplayName>
-            <ResourceId>/permission/stratos/applicationSignUps</ResourceId>
+            <ResourceId>/permission/admin/stratos/applicationSignUps</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Application Sign Ups</DisplayName>
-            <ResourceId>/permission/stratos/applicationSignUps/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/applicationSignUps/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Application Sign Ups</DisplayName>
-            <ResourceId>/permission/stratos/applicationSignUps/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/applicationSignUps/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Domain Mappings -->
         <ManagementPermission>
             <DisplayName>Domain Mappings</DisplayName>
-            <ResourceId>/permission/stratos/domainMappings</ResourceId>
+            <ResourceId>/permission/admin/stratos/domainMappings</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Domain Mappings</DisplayName>
-            <ResourceId>/permission/stratos/domainMappings/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/domainMappings/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Domain Mappings</DisplayName>
-            <ResourceId>/permission/stratos/domainMappings/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/domainMappings/view</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>

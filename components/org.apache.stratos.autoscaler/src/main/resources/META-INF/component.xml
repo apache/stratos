@@ -22,50 +22,50 @@
     <ManagementPermissions>
         <!-- /Stratos -->
         <ManagementPermission>
-            <DisplayName>Stratos Permissions</DisplayName>
-            <ResourceId>/permission/stratos</ResourceId>
+            <DisplayName>Stratos</DisplayName>
+            <ResourceId>/permission/admin/stratos</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Autoscaling Policies -->
         <ManagementPermission>
             <DisplayName>Autoscaling Policies</DisplayName>
-            <ResourceId>/permission/stratos/autoscalingPolicies</ResourceId>
+            <ResourceId>/permission/admin/stratos/autoscalingPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Autoscaling Policies</DisplayName>
-            <ResourceId>/permission/stratos/autoscalingPolicies/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/autoscalingPolicies/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Autoscaling Policies</DisplayName>
-            <ResourceId>/permission/stratos/autoscalingPolicies/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/autoscalingPolicies/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Kubernetes Clusters -->
         <ManagementPermission>
             <DisplayName>Kubernetes Clusters</DisplayName>
-            <ResourceId>/permission/stratos/kubernetesClusters</ResourceId>
+            <ResourceId>/permission/admin/stratos/kubernetesClusters</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Kubernetes Clusters</DisplayName>
-            <ResourceId>/permission/stratos/kubernetesClusters/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/kubernetesClusters/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Kubernetes Clusters</DisplayName>
-            <ResourceId>/permission/stratos/kubernetesClusters/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/kubernetesClusters/view</ResourceId>
         </ManagementPermission>
 
         <!-- /Stratos/Application Policies-->
         <ManagementPermission>
             <DisplayName>Application Policies</DisplayName>
-            <ResourceId>/permission/stratos/applicationPolicies</ResourceId>
+            <ResourceId>/permission/admin/stratos/applicationPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Manage Application Policies</DisplayName>
-            <ResourceId>/permission/stratos/applicationPolicies/manage</ResourceId>
+            <ResourceId>/permission/admin/stratos/applicationPolicies/manage</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>View Application Policies</DisplayName>
-            <ResourceId>/permission/stratos/applicationPolicies/view</ResourceId>
+            <ResourceId>/permission/admin/stratos/applicationPolicies/view</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>
