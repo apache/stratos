@@ -28,8 +28,8 @@ var render = function (theme, data, meta, require) {
                         {
                             partial: 'index_title',
                             context: {
-                                page_title: 'Apache Stratos - Application Managment',
-                                page_description: 'Apache Stratos - Application Managment'
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
                             }
                         }
                     ],
