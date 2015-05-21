@@ -185,16 +185,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.admin.mgt.ui</artifactId>
-                <version>${carbon.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.account.mgt</artifactId>
-                <version>${stratos.component.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.tenant.mgt</artifactId>
                 <version>2.2.2</version>
             </dependency>
@@ -228,7 +218,6 @@
                 <artifactId>org.apache.stratos.redirector.servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
             <dependency>
                 <groupId>org.apache.batik.wso2</groupId>
                 <artifactId>batik</artifactId>
