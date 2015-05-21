@@ -38,43 +38,25 @@
         "properties": {
             "id": "root/properties",
             "type": "array",
-            "title": "Properties ",
-            "name": "Properties",
-            "format":"tabs",
-            "items": [
-                {
-                    "id": "root/properties/0",
-                    "type": "object",
-                    "title": "Properties ",
-                    "name": "Properties",
-                    "properties": {
-                        "name": {
-                            "id": "root/properties/0/name",
-                            "type": "string"
-                        },
-                        "value": {
-                            "id": "root/properties/0/value",
-                            "type": "string"
-                        }
-                    }
-                },
-                {
-                    "id": "root/properties/1",
-                    "type": "object",
-                    "title": "Properties ",
-                    "name": "Properties",
-                    "properties": {
-                        "name": {
-                            "id": "root/properties/1/name",
-                            "type": "string"
-                        },
-                        "value": {
-                            "id": "root/properties/1/value",
-                            "type": "string"
-                        }
+            "title": "Properties",
+            "format": "tabs",
+            "items": {
+                "id": "root/properties/0",
+                "type": "object",
+                "title": "Property",
+                "properties": {
+                    "name": {
+                        "id": "root/properties/0/name",
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "value": {
+                        "id": "root/properties/0/value",
+                        "title": "Value",
+                        "type": "string"
                     }
                 }
-            ]
+            }
         }
     },
     "required": [
