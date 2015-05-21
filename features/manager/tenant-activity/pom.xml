@@ -29,7 +29,6 @@
     <name>Apache Stratos - Tenant activity Feature Aggregator Module</name>
     <url>http://apache.org</url>
     <modules>
-        <module>org.apache.stratos.tenant.activity.ui.feature</module>
         <module>org.apache.stratos.tenant.activity.server.feature</module>
     </modules>
 </project>

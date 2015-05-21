@@ -60,14 +60,9 @@
         <module>org.apache.stratos.load.balancer.extension.api</module>
         <!-- Tenant Activity -->
         <module>org.apache.stratos.tenant.activity</module>
-        <module>org.apache.stratos.tenant.activity.ui</module>
         <!-- Account Mgt -->
-        <module>org.apache.stratos.account.mgt</module>
-        <module>org.apache.stratos.account.mgt.ui</module>
         <module>org.apache.stratos.email.sender</module>
         <!-- Domain Validation -->
-        <module>org.apache.stratos.validate.domain</module>
-        <module>org.apache.stratos.validate.domain.ui</module>
         <!-- Redirector -->
         <module>org.apache.stratos.sso.redirector.ui</module>
         <module>org.apache.stratos.keystore.mgt</module>
