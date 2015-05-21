@@ -57,11 +57,6 @@
             <version>2.2.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common.stub</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.theme.mgt.ui</artifactId>
             <version>2.2.0</version>
@@ -101,7 +96,6 @@
 
                                 <!-- Tenant Mgmt-->
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.ui</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.common.stub</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.stub</bundleDef>
                                 <!-- Tenant Mgmt End-->
 
