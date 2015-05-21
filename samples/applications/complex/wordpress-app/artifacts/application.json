@@ -15,7 +15,7 @@
                         "cartridgeMax": 5,
                         "subscribableInfo": {
                             "alias": "my-mysql",
-			    "deploymentPolicy":"deployment-policy-2",
+                            "deploymentPolicy": "deployment-policy-2",
                             "autoscalingPolicy": "autoscaling-policy-1"
                         }
                     },
@@ -25,11 +25,11 @@
                         "cartridgeMax": 5,
                         "subscribableInfo": {
                             "alias": "my-php",
-                            "deploymentPolicy":"deployment-policy-2",
+                            "deploymentPolicy": "deployment-policy-2",
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "artifactRepository":{
-                               "privateRepo":false,
-                               "repoUrl":"https://github.com/imesh/stratos-php-applications.git"
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-php-applications.git"
                             }
                         }
                     }

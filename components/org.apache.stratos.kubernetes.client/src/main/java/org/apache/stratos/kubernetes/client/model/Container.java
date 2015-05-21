@@ -30,6 +30,8 @@ public class Container {
 
     private String name;
     private String image;
+    private int cpu;
+    private int memory;
     private String workingDir;
     private String[] command;
     private VolumeMount[] volumeMounts;
@@ -55,6 +57,23 @@ public class Container {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+
+    public int getCpu() {
+        return cpu;
+    }
+
+    public void setCpu(int cpu) {
+        this.cpu = cpu;
+    }
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
     }
 
     public String getWorkingDir() {
@@ -103,11 +122,15 @@ public class Container {
 
     @Override
     public String toString() {
-        return "Container [name=" + name + ", image=" + image + ", workingDir="
-                + workingDir + ", command=" + Arrays.toString(command)
-                + ", volumeMounts=" + Arrays.toString(volumeMounts)
-                + ", ports=" + ports + ", env="
-                + Arrays.toString(env) + "]";
+        return "Container [name=" + name +
+                ", image=" + image +
+                ", cpu=" + cpu +
+                ", memory=" + memory +
+                ", workingDir=" + workingDir +
+                ", command=" + Arrays.toString(command) +
+                ", volumeMounts=" + Arrays.toString(volumeMounts) +
+                ", ports=" + ports +
+                ", env=" + Arrays.toString(env) + "]";
     }
 
     public String getImagePullPolicy() {

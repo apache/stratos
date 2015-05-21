@@ -14,16 +14,16 @@
             "proxyPort": "8280"
         }
     ],
-    "deployment":{
-           "baseDir":"/opt/tomcat/webapps"
+    "deployment": {
+        "baseDir": "/opt/tomcat/webapps"
     },
-    "iaasProvider":[
+    "iaasProvider": [
         {
-            "type":"mock",
-            "imageId":"not-needed",
-            "networkInterfaces":[
+            "type": "mock",
+            "imageId": "not-needed",
+            "networkInterfaces": [
             ],
-            "property":[
+            "property": [
             ]
         }
     ]

@@ -10,12 +10,12 @@
                 "subscribableInfo": {
                     "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
-	                "deploymentPolicy":"deployment-policy-1",
-                    "artifactRepository":{
-                        "privateRepo":false,
-                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
-                        "repoUsername":"",
-                        "repoPassword":""
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
                     }
                 }
             },
@@ -26,12 +26,12 @@
                 "subscribableInfo": {
                     "alias": "my-php",
                     "autoscalingPolicy": "autoscaling-policy-1",
-	                "deploymentPolicy":"deployment-policy-1",
-                    "artifactRepository":{
-                        "privateRepo":false,
-                        "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
-                        "repoUsername":"",
-                        "repoPassword":""
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
                     }
                 }
             }
@@ -39,7 +39,7 @@
         "dependencies": {
             "scalingDependents": [
                 {
-                    "aliases" : [
+                    "aliases": [
                         "cartridge.my-tomcat",
                         "cartridge.my-php"
                     ]

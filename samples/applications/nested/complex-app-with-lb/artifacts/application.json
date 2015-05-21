@@ -8,7 +8,7 @@
                 "alias": "my-group6",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
-                "deploymentPolicy":"deployment-policy-1",
+                "deploymentPolicy": "deployment-policy-1",
                 "groups": [
                     {
                         "name": "group7",
@@ -23,11 +23,11 @@
                                 "subscribableInfo": {
                                     "alias": "my-tomcat1-group7",
                                     "autoscalingPolicy": "autoscaling-policy-1",
-                                    "artifactRepository":{
-                                       "privateRepo":false,
-                                       "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
-                                       "repoUsername":"",
-                                       "repoPassword":""
+                                    "artifactRepository": {
+                                        "privateRepo": false,
+                                        "repoUrl": "https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername": "",
+                                        "repoPassword": ""
                                     }
                                 }
                             }
@@ -42,11 +42,11 @@
                         "subscribableInfo": {
                             "alias": "my-tomcat2-group6",
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "artifactRepository":{
-                               "privateRepo":false,
-                               "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
-                               "repoUsername":"",
-                               "repoPassword":""
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
                             }
                         }
                     }
@@ -57,7 +57,7 @@
                 "alias": "my-group8",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
-                "deploymentPolicy":"deployment-policy-1",
+                "deploymentPolicy": "deployment-policy-1",
                 "groups": [
                     {
                         "name": "group9",
@@ -72,11 +72,11 @@
                                 "subscribableInfo": {
                                     "alias": "my-tomcat1-group9",
                                     "autoscalingPolicy": "autoscaling-policy-1",
-                                    "artifactRepository":{
-                                       "privateRepo":false,
-                                       "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
-                                       "repoUsername":"",
-                                       "repoPassword":""
+                                    "artifactRepository": {
+                                        "privateRepo": false,
+                                        "repoUrl": "https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername": "",
+                                        "repoPassword": ""
                                     }
                                 }
                             }
@@ -91,11 +91,11 @@
                         "subscribableInfo": {
                             "alias": "my-tomcat2-group8",
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "artifactRepository":{
-                               "privateRepo":false,
-                               "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
-                               "repoUsername":"",
-                               "repoPassword":""
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
                             }
                         }
                     }
@@ -110,7 +110,7 @@
                 "subscribableInfo": {
                     "alias": "my-stratos-lb",
                     "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy":"deployment-policy-1"
+                    "deploymentPolicy": "deployment-policy-1"
                 }
             },
             {
@@ -120,12 +120,12 @@
                 "subscribableInfo": {
                     "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy":"deployment-policy-1",
-                    "artifactRepository":{
-                       "privateRepo":false,
-                       "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
-                       "repoUsername":"",
-                       "repoPassword":""
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
                     }
                 }
             }
@@ -133,7 +133,7 @@
         "dependencies": {
             "startupOrders": [
                 {
-                    "aliases" : [
+                    "aliases": [
                         "cartridge.my-tomcat",
                         "cartridge.my-stratos-lb",
                         "group.my-group6",

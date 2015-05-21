@@ -123,10 +123,10 @@ public class AbstractLiveTest extends TestCase {
         log.info("Kubernetes resources cleaned");
     }
 
-    protected void createPod(String podId, String podName, String containerPortName) throws KubernetesClientException {
+    protected void createPod(String podId, String podName, String containerPortName, int cpu, int memory) throws KubernetesClientException {
         log.info("Creating pod: [pod] " + podId);
         List<Port> ports = createPorts(containerPortName);
-        client.createPod(podId, podName, dockerImage, ports, null);
+        client.createPod(podId, podName, dockerImage, cpu, memory, ports, null);
         podIdList.add(podId);
 
         sleep(2000);

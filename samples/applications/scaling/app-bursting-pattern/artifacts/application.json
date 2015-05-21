@@ -1,25 +1,25 @@
-{  
-   "applicationId":"app-bursting-pattern-app",
-   "alias":"app-bursting-pattern-app",
-   "multiTenant":false,
-   "components":{  
-      "cartridges":[  
-         {  
-                "type":"php",
+{
+    "applicationId": "app-bursting-pattern-app",
+    "alias": "app-bursting-pattern-app",
+    "multiTenant": false,
+    "components": {
+        "cartridges": [
+            {
+                "type": "php",
                 "cartridgeMin": 1,
-                "cartridgeMax": 10,    
-		"subscribableInfo":{  
-               	"alias":"my-php",
-               	"autoscalingPolicy":"autoscaling-policy-1",
-                "deploymentPolicy":"deployment-policy-4",
-                "artifactRepository":{
-                   "privateRepo":false,
-                   "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
-                   "repoUsername":"",
-                   "repoPassword":""
+                "cartridgeMax": 10,
+                "subscribableInfo": {
+                    "alias": "my-php",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy": "deployment-policy-4",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
                 }
             }
-         }
-      ]
-   }
+        ]
+    }
 }

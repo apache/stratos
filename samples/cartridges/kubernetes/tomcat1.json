@@ -14,19 +14,19 @@
             "proxyPort": "8280"
         }
     ],
-    "deployment":{
-           "baseDir":"/var/www"
+    "deployment": {
+        "baseDir": "/var/www"
     },
-    "iaasProvider":[
+    "iaasProvider": [
         {
-            "type":"kubernetes",
-            "imageId":"stratos/cartridge:4.1.0-alpha",
-            "networkInterfaces":[
-            {
-                "networkUuid":""
-            }
+            "type": "kubernetes",
+            "imageId": "stratos/cartridge:4.1.0-alpha",
+            "networkInterfaces": [
+                {
+                    "networkUuid": ""
+                }
             ],
-            "property":[
+            "property": [
             ]
         }
     ]

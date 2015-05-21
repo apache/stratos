@@ -4,21 +4,23 @@
         {
             "name": "group7",
             "cartridges": [
-                "tomcat", "tomcat1"
+                "tomcat",
+                "tomcat1"
             ],
             "dependencies": {
                 "terminationBehaviour": "terminate-none",
                 "startupOrders": []
             }
         },
-	{
+        {
             "name": "group-tom2",
             "dependencies": {
                 "terminationBehaviour": "terminate-none",
                 "startupOrders": []
             },
             "cartridges": [
-                "tomcat2","tomcat3"
+                "tomcat2",
+                "tomcat3"
             ]
         }
     ]

@@ -14,16 +14,16 @@
             "proxyPort": "8280"
         }
     ],
-    "deployment":{
-           "baseDir":"/opt/tomcat/webapps"
+    "deployment": {
+        "baseDir": "/opt/tomcat/webapps"
     },
-    "iaasProvider":[
+    "iaasProvider": [
         {
-            "type":"kubernetes",
-            "imageId":"chamilad/tomcat:4.1.0-beta",
-            "networkInterfaces":[
+            "type": "kubernetes",
+            "imageId": "chamilad/tomcat:4.1.0-beta",
+            "networkInterfaces": [
             ],
-            "property":[
+            "property": [
             ]
         }
     ]

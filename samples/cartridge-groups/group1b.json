@@ -7,7 +7,7 @@
     "dependencies": {
         "startupOrders": [
             {
-                "aliases" : [
+                "aliases": [
                     "cartridge.my-c3",
                     "cartridge.my-c2"
                 ]

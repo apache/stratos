@@ -773,18 +773,27 @@ public class AutoscalerUtil {
         for (Group existingGroup : existingGroups) {
             Group newGroup = application.getGroupRecursively(existingGroup.getUniqueIdentifier());
             if (newGroup != null) {
-                //Finding the GroupMonitor based on ApplicationMonitor
-                GroupMonitor groupMonitor = (GroupMonitor) AutoscalerContext.getInstance().
-                        getAppMonitor(application.getUniqueIdentifier()).
-                        findGroupMonitorWithId(existingGroup.getUniqueIdentifier());
-                //Updating the GroupMonitor
-                for (NetworkPartitionContext networkPartitionContext : groupMonitor.
-                        getNetworkPartitionContextsMap().values()) {
-                    ((ParentLevelNetworkPartitionContext) networkPartitionContext).
-                            setMinInstanceCount(newGroup.getGroupMinInstances());
-                    ((ParentLevelNetworkPartitionContext) networkPartitionContext).
-                            setMaxInstanceCount(newGroup.getGroupMaxInstances());
+
+                ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
+                        getAppMonitor(application.getUniqueIdentifier());
+
+                if (applicationMonitor != null) {
+                    //Finding the GroupMonitor based on ApplicationMonitor
+                    GroupMonitor groupMonitor = (GroupMonitor) applicationMonitor.
+                            findGroupMonitorWithId(existingGroup.getUniqueIdentifier());
+
+                    if (groupMonitor != null) {
+                        //Updating the GroupMonitor
+                        for (NetworkPartitionContext networkPartitionContext : groupMonitor.
+                                getNetworkPartitionContextsMap().values()) {
+                            ((ParentLevelNetworkPartitionContext) networkPartitionContext).
+                                    setMinInstanceCount(newGroup.getGroupMinInstances());
+                            ((ParentLevelNetworkPartitionContext) networkPartitionContext).
+                                    setMaxInstanceCount(newGroup.getGroupMaxInstances());
+                        }
+                    }
                 }
+
 
                 try {
                     ApplicationHolder.acquireWriteLock();
