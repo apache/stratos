@@ -95,8 +95,8 @@ var formtype = elements.formtype;
 
 switch (formtype) {
     case "applications":
-        formTitle = "Application Definition",
-                buttonText = "Application Definition";
+        formTitle = "Application",
+                buttonText = "Application";
         list_data = util.RESTCalls.getApplications();
         if (list_data.status == 'error') {
             list_data = null;

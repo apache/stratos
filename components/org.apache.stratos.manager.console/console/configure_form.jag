@@ -113,7 +113,7 @@ if(isEdit == false && elements.action != 'new') {
 
         case "cartridges":
             formTitle = "Cartridge",
-                    buttonText = "Cartridge Definition";
+                    buttonText = "Cartridge";
             list_data = util.RESTCalls.getCartridges();
             if (list_data.status == 'error') {
                 list_data = null;
@@ -121,8 +121,8 @@ if(isEdit == false && elements.action != 'new') {
             break;
 
         case "cartridge-groups":
-            formTitle = "Cartridge Group Definition",
-                    buttonText = "Cartridge Group Definition";
+            formTitle = "Cartridge Group",
+                    buttonText = "Cartridge Group";
             list_data = util.RESTCalls.getGroups();
             if (list_data.status == 'error') {
                 list_data = null;
@@ -139,8 +139,8 @@ if(isEdit == false && elements.action != 'new') {
             break;
 
         case "application-policies":
-            formTitle = "Application Policy Definition",
-                    buttonText = "Application Policy Definition";
+            formTitle = "Application Policy",
+                    buttonText = "Application Policy";
             list_data = util.RESTCalls.getApplicationPolicies();
             if (list_data.status == 'error') {
                 list_data = null;
