@@ -300,13 +300,7 @@ public class CloudControllerUtil {
         try {
             validateKubernetesMaster(kubernetesCluster.getKubernetesMaster());
             validateKubernetesHosts(kubernetesCluster.getKubernetesHosts());
-
-            // check whether master already exists
-            if (context.kubernetesHostExists(kubernetesCluster.getKubernetesMaster().getHostId())) {
-                throw new InvalidKubernetesClusterException("Kubernetes host already exists [id] " +
-                        kubernetesCluster.getKubernetesMaster().getHostId());
-            }
-
+            
             // Check for duplicate hostIds
             if (kubernetesCluster.getKubernetesHosts() != null) {
                 List<String> hostIds = new ArrayList<String>();
