@@ -38,7 +38,6 @@
     <modules>
         <module>stratos-mgt</module>
         <module>deployment</module>
-        <module>status-monitor</module>
         <module>tenant-activity</module>
         <module>logging-mgt</module>
         <module>rest-endpoint/org.apache.stratos.rest.endpoint.feature</module>
