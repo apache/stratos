@@ -36,7 +36,6 @@
     <modules>                            
         <module>org.apache.stratos.cloud.controller.service.stub</module>
         <module>org.apache.stratos.manager.service.stub</module>
-        <module>org.apache.stratos.common.stub</module>
         <module>org.apache.stratos.autoscaler.service.stub</module>
     </modules>
 
