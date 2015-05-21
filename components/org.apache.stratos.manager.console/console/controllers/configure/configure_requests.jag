@@ -72,10 +72,10 @@ try {
         case "delete-deployment-policy":
             formSubmit = util.RESTCalls.deleteDeploymentPolicyDefinition(formPayload);
             break;
-        case "update-kubernetes-cluster":
+        case "update-kubernetes-clusters":
             formSubmit = util.RESTCalls.updateKubernetesClusterDefinition(formPayload);
             break;
-        case "delete-kubernetes-cluster":
+        case "delete-kubernetes-clusters":
             formSubmit = util.RESTCalls.deleteKubernetesClusterDefinition(formPayload);
             break;
         case "update-network-partitions":

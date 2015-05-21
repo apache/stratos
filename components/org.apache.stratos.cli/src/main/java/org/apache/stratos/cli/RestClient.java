@@ -188,8 +188,8 @@ public class RestClient implements GenericRestClient {
 
     public void updateEntity(String serviceEndpoint, String entityBody, String entityName) {
         try {
-           String responseMessage = executePut(serviceEndpoint, entityBody);
-           System.out.println(responseMessage);
+            String responseMessage = executePut(serviceEndpoint, entityBody);
+            System.out.println(responseMessage);
         } catch (Exception e) {
             String message = String.format("Error in updating %s", entityName);
             System.out.println(message);

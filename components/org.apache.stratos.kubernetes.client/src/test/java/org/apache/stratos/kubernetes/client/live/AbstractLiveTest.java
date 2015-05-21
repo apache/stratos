@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Abstract live test class.
@@ -65,8 +66,8 @@ public class AbstractLiveTest extends TestCase {
     protected boolean testPodActivation;
     protected boolean testServiceSocket;
     protected String[] minionPublicIPs = {"172.17.8.102"};
-    protected List<String> podIdList = new ArrayList<String>();
-    protected List<String> serviceIdList = new ArrayList<String>();
+    protected List<String> podIdList = new CopyOnWriteArrayList<String>();
+    protected List<String> serviceIdList = new CopyOnWriteArrayList<String>();
 
     @BeforeClass
     public void setUp() {

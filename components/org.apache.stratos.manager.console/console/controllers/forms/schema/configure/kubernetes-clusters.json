@@ -62,56 +62,27 @@
                     "name": "Hostname"
                 },
                 "property": {
-                    "type":"array",
                     "id": "root/kubernetesMaster/property",
-                    "required":false,
+                    "type": "array",
                     "title": "Property",
-                    "name": "Property",
-                    "format":"tabs",
-                    "items":[
-                        {
-                            "type":"object",
-                            "id": "root/kubernetesMaster/property/0",
-                            "required":false,
-                            "title": "Property",
-                            "name": "Property",
-                            "properties":{
-                                "name": {
-                                    "type":"string",
-                                    "id": "root/kubernetesMaster/property/0/name",
-                                    "default": "prop1",
-                                    "required":false
-                                },
-                                "value": {
-                                    "type":"string",
-                                    "id": "root/kubernetesMaster/property/0/value",
-                                    "default": "val1",
-                                    "required":false
-                                }
-                            }
-                        },
-                        {
-                            "type":"object",
-                            "id": "root/kubernetesMaster/property/1",
-                            "required":false,
-                            "title": "Property",
-                            "name": "Property",
-                            "properties":{
-                                "name": {
-                                    "type":"string",
-                                    "id": "root/kubernetesMaster/property/1/name",
-                                    "default": "prop2",
-                                    "required":false
-                                },
-                                "value": {
-                                    "type":"string",
-                                    "id": "root/kubernetesMaster/property/1/value",
-                                    "default": "val2",
-                                    "required":false
-                                }
+                    "format": "tabs",
+                    "items": {
+                        "id": "root/kubernetesMaster/property/0",
+                        "type": "object",
+                        "title": "Property",
+                        "properties": {
+                            "name": {
+                                "id": "root/kubernetesMaster/property/0/name",
+                                "title": "Name",
+                                "type": "string"
+                            },
+                            "value": {
+                                "id": "root/kubernetesMaster/property/0/value",
+                                "title": "Value",
+                                "type": "string"
                             }
                         }
-                    ]
+                    }
                 }
             }
 

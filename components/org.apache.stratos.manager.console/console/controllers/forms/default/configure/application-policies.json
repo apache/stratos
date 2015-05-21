@@ -8,10 +8,6 @@
         {
             "name": "key-1",
             "value": "value-1"
-        },
-        {
-            "name": "key-2",
-            "value": "value-2"
         }
     ]
 }

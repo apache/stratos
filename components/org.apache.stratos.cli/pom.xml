@@ -57,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.manager.stub</artifactId>
+            <artifactId>org.apache.stratos.manager.service.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
