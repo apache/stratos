@@ -379,8 +379,9 @@ public class KubernetesIaas extends Iaas {
             throw new RuntimeException(message);
         }
 
-        int cpu = Integer.getInteger(KUBERNETES_CONTAINER_CPU_DEFAULT, 1);
-        int memory = Integer.getInteger(KUBERNETES_CONTAINER_MEMORY_DEFAULT, 1024);
+        // Set default values to zero to avoid cpu and memory restrictions
+        int cpu = Integer.getInteger(KUBERNETES_CONTAINER_CPU_DEFAULT, 0);
+        int memory = Integer.getInteger(KUBERNETES_CONTAINER_MEMORY_DEFAULT, 0);
         Property cpuProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_CPU);
         if(cpuProperty != null) {
             cpu = Integer.parseInt(cpuProperty.getValue());
@@ -409,7 +410,18 @@ public class KubernetesIaas extends Iaas {
                 clusterContext, memberContext);
 
         List<Port> ports = KubernetesIaasUtil.convertPortMappings(Arrays.asList(cartridge.getPortMappings()));
+
+        log.info(String.format("Starting pod: [application] %s [cartridge] %s [member] %s " +
+                        "[cpu] %d [memory] %d MB",
+                memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                memberContext.getMemberId(), cpu, memory));
+
         kubernetesApi.createPod(podId, podLabel, dockerImage, cpu, memory, ports, environmentVariables);
+
+        log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s " +
+                        "[pod] %s [cpu] %d [memory] %d MB",
+                memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                memberContext.getMemberId(), podId, cpu, memory));
 
         // Add pod id to member context
         memberContext.setKubernetesPodId(podId);
@@ -424,12 +436,6 @@ public class KubernetesIaas extends Iaas {
 
         // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
-
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Kubernetes pod created successfully: [application] %s [cartridge] %s [member] %s " +
-                            "[pod] %s", applicationId, cartridgeType,
-                    memberId, memberContext.getKubernetesPodId()));
-        }
     }
 
     /**
