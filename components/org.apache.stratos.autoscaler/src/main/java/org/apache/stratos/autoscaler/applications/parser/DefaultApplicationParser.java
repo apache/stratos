@@ -407,7 +407,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                             if (StringUtils.isBlank(dependentCartridgeType)) {
                                 throw new CartridgeNotFoundException(
                                         String.format("Could not find dependent cartridge for " +
-                                        "application: %s cartridge-alias: %s", appId, cartridgeAlias));
+                                                "application: %s cartridge-alias: %s", appId, cartridgeAlias));
                             }
                             Cartridge dependencyCartridge = getCartridge(dependentCartridgeType);
                             ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);

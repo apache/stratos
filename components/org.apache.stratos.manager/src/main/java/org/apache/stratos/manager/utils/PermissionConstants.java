@@ -21,7 +21,7 @@ package org.apache.stratos.manager.utils;
 
 public class PermissionConstants {
 
-    public static final String[] STRATOS_PERMISSIONS = new String[] {
+    public static final String[] STRATOS_PERMISSIONS = new String[]{
             "/permission/stratos",
             "/permission/stratos/autoscalingPolicies",
             "/permission/stratos/autoscalingPolicies/manage",

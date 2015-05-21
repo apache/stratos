@@ -383,11 +383,11 @@ public class KubernetesIaas extends Iaas {
         int cpu = Integer.getInteger(KUBERNETES_CONTAINER_CPU_DEFAULT, 0);
         int memory = Integer.getInteger(KUBERNETES_CONTAINER_MEMORY_DEFAULT, 0);
         Property cpuProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_CPU);
-        if(cpuProperty != null) {
+        if (cpuProperty != null) {
             cpu = Integer.parseInt(cpuProperty.getValue());
         }
         Property memoryProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_MEMORY);
-        if(memoryProperty != null) {
+        if (memoryProperty != null) {
             memory = Integer.parseInt(memoryProperty.getValue());
         }
 

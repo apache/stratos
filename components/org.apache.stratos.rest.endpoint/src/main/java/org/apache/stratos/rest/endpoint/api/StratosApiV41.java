@@ -737,7 +737,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         try {
             StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
-                        getUsername(), getTenantDomain());
+                    getUsername(), getTenantDomain());
 
 
             URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
@@ -747,7 +747,7 @@ public class StratosApiV41 extends AbstractApi {
         } catch (ApplicationAlreadyExistException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application already exists")).build();
-        }  catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
+        } catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getCartridgeNotFoundException().
                     getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
@@ -783,7 +783,7 @@ public class StratosApiV41 extends AbstractApi {
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application updated successfully: [application] %s",
                             applicationDefinition.getApplicationId()))).build();
-        }  catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
+        } catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getCartridgeNotFoundException().
                     getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(

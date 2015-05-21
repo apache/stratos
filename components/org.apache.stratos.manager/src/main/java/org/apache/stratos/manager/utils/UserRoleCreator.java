@@ -46,7 +46,7 @@ public class UserRoleCreator {
 
                 //Set permissions to the Internal/user role
                 List<Permission> permissions = new ArrayList<Permission>();
-                for(String permissionResourceId : PermissionConstants.STRATOS_PERMISSIONS) {
+                for (String permissionResourceId : PermissionConstants.STRATOS_PERMISSIONS) {
                     Permission permission = new Permission(permissionResourceId, UserMgtConstants.EXECUTE_ACTION);
                     permissions.add(permission);
                 }

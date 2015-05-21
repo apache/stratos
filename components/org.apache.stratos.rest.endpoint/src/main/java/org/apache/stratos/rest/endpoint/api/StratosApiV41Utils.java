@@ -229,29 +229,29 @@ public class StratosApiV41Utils {
             CloudControllerServiceCartridgeNotFoundExceptionException,
             CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Removing cartridge: [cartridge-type] %s ", cartridgeType));
-            }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Removing cartridge: [cartridge-type] %s ", cartridgeType));
+        }
 
-            CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-            if (cloudControllerServiceClient.getCartridge(cartridgeType) == null) {
-                throw new RuntimeException("Cartridge not found: [cartridge-type] " + cartridgeType);
-            }
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient.getCartridge(cartridgeType) == null) {
+            throw new RuntimeException("Cartridge not found: [cartridge-type] " + cartridgeType);
+        }
 
-            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+        StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
-            // Validate whether cartridge can be removed
-            if (!smServiceClient.canCartridgeBeRemoved(cartridgeType)) {
-                String message = "Cannot remove cartridge : [cartridge-type] " + cartridgeType +
-                        " since it is used in another cartridge group or an application";
-                log.error(message);
-                throw new RestAPIException(message);
-            }
-            cloudControllerServiceClient.removeCartridge(cartridgeType);
+        // Validate whether cartridge can be removed
+        if (!smServiceClient.canCartridgeBeRemoved(cartridgeType)) {
+            String message = "Cannot remove cartridge : [cartridge-type] " + cartridgeType +
+                    " since it is used in another cartridge group or an application";
+            log.error(message);
+            throw new RestAPIException(message);
+        }
+        cloudControllerServiceClient.removeCartridge(cartridgeType);
 
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
-            }
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
+        }
     }
 
     /**
