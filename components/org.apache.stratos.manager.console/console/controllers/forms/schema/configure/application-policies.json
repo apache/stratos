@@ -20,7 +20,7 @@
             "type": "string",
             "title": "Application Policy Algorithm ",
             "name": "Application Policy Algorithm",
-            "enum": ["one-after-another","all-at-once","weighted-one-after-another"],
+            "enum": ["one-after-another","all-at-once"],
         },
         "networkPartitions": {
             "id": "root/networkPartitions",
