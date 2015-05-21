@@ -70,15 +70,15 @@ public class CloudControllerUtil {
         }
     }
 
-    public static void extractIaaSProvidersFromCartridge(Cartridge config) {
-        if (config == null) {
+    public static void extractIaaSProvidersFromCartridge(Cartridge cartridge) {
+        if (cartridge == null) {
             return;
         }
 
         List<IaasProvider> iaases = CloudControllerConfig.getInstance().getIaasProviders();
 
         // populate IaaSes
-        IaasConfig[] iaasConfigs = config.getIaasConfigs();
+        IaasConfig[] iaasConfigs = cartridge.getIaasConfigs();
         if (iaasConfigs != null) {
             for (IaasConfig iaasConfig : iaasConfigs) {
                 if (iaasConfig != null) {
@@ -144,17 +144,8 @@ public class CloudControllerUtil {
                         iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
                     }
 
-                    CloudControllerContext.getInstance().addIaasProvider(config.getType(), iaasProvider);
+                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getType(), iaasProvider);
                 }
-            }
-        }
-
-        //Setting load balancing type
-        config.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Private));
-        if (StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
-            if (config.getLoadBalancingIPType().equals("public")) {
-                config.setLoadBalancingIPType(
-                        getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Public));
             }
         }
     }
@@ -388,17 +379,16 @@ public class CloudControllerUtil {
         if (loadBalancingIPType == LoadBalancingIPType.Private) {
             return CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE;
         } else if (loadBalancingIPType == LoadBalancingIPType.Public) {
-            return CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE;
+            return CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIC;
         }
         return null;
     }
 
     public static LoadBalancingIPType getLoadBalancingIPTypeEnumFromString(String loadBalancingIPType) {
-        if (loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE)) {
+        if (CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIC.equals(loadBalancingIPType)) {
             return LoadBalancingIPType.Public;
-        } else if (loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE)) {
+        } else {
             return LoadBalancingIPType.Private;
         }
-        return null;
     }
 }
