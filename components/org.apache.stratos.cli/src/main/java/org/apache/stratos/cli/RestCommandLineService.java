@@ -432,36 +432,8 @@ public class RestCommandLineService {
                 return;
             }
 
-            System.out.println("-------------------------------------");
-            System.out.println("Cartridge Information:");
-            System.out.println("-------------------------------------");
-            System.out.println("Type: " + cartridge.getType());
-            System.out.println("Category: " + cartridge.getCategory());
-            System.out.println("Name: " + cartridge.getDisplayName());
-            System.out.println("Description: " + cartridge.getDescription());
-            System.out.println("Version: " + cartridge.getVersion());
-            System.out.println("Multi-Tenant: " + cartridge.isMultiTenant());
-            System.out.println("Hostname: " + cartridge.getHost());
+            System.out.println(getGson().toJson(cartridge));
 
-            if (cartridge.getIaasProvider() != null) {
-                RowMapper<IaasProviderBean> cartridgeMapper = new RowMapper<IaasProviderBean>() {
-                    public String[] getData(IaasProviderBean row) {
-                        String[] data = new String[2];
-                        data[0] = row.getType();
-                        data[1] = row.getImageId();
-                        return data;
-                    }
-                };
-
-                IaasProviderBean[] iaasProviders = new IaasProviderBean[cartridge.getIaasProvider().size()];
-                iaasProviders = cartridge.getIaasProvider().toArray(iaasProviders);
-
-                System.out.println("-------------------------------------");
-                System.out.println("IaaS Providers: ");
-                System.out.println("-------------------------------------");
-                CliUtils.printTable(iaasProviders, cartridgeMapper, "Type", "Image ID");
-            }
-            System.out.println("-------------------------------------");
         } catch (Exception e) {
             String message = "Error in describing cartridge: " + cartridgeType;
             printError(message, e);
