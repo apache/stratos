@@ -1983,7 +1983,7 @@ public class StratosApiV41Utils {
                     ObjectConverter.convertToCCKubernetesClusterPojo(kubernetesClusterBean);
 
             try {
-                return cloudControllerServiceClient.deployKubernetesCluster(kubernetesCluster);
+                return cloudControllerServiceClient.updateKubernetesCluster(kubernetesCluster);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);

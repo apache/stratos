@@ -143,7 +143,7 @@ under the License.
         }
         isManager = logViewerClient.isManager();
         if (isManager) {
-            serviceNames = logViewerClient.getSubscribedCartridgeList();
+            serviceNames = logViewerClient.getServiceNames();
         } else {
             serviceNames = logViewerClient.getServiceNames();
         }
