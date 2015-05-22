@@ -11,7 +11,7 @@
         {
             "name": "http-80",
             "protocol": "http",
-            "port": "80",
+            "port": "8080",
             "proxyPort": "8280"
         },
         {

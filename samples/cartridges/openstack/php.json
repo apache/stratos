@@ -11,7 +11,7 @@
         {
             "name": "http-80",
             "protocol": "http",
-            "port": "80",
+            "port": "8080",
             "proxyPort": "8280"
         }
     ],
@@ -23,17 +23,22 @@
             "imageId": "RegionOne/b4ca55e3-58ab-4937-82ce-817ebd10240e",
             "networkInterfaces": [
                 {
+<<<<<<< HEAD
                     "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
+=======
+                    "name": "network-routable",
+                    "networkUuid": "512e1f54-1e85-4dac-b2e6-f0b30fc552cf"
+>>>>>>> f5bb41e... Update the INSTALL.md file and samples
                 }
             ],
             "property": [
                 {
                     "name": "instanceType",
-                    "value": "RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
+                    "value": "RegionOne/15c3065c-462c-4977-9143-094d63d1c2c7"
                 },
                 {
                     "name": "keyPair",
-                    "value": "vishanth-key"
+                    "value": "gayan-os"
                 },
                 {
                     "name": "securityGroups",

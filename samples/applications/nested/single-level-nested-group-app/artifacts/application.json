@@ -8,7 +8,7 @@
                 "alias": "my-group6",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
-                "deploymentPolicy": "deployment-policy-2",
+                "deploymentPolicy":"deployment-policy-2",
                 "groups": [
                     {
                         "name": "group7",
@@ -23,12 +23,13 @@
                                 "subscribableInfo": {
                                     "alias": "my-tomcat1-group7",
                                     "autoscalingPolicy": "autoscaling-policy-1",
-                                    "artifactRepository": {
-                                        "privateRepo": false,
-                                        "repoUrl": "https://github.com/imesh/stratos-tomcat1-applications.git",
-                                        "repoUsername": "",
-                                        "repoPassword": ""
-                                    }
+                                    "artifactRepository":{
+                                        "privateRepo":false,
+                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                                        "repoUsername":"",
+                                        "repoPassword":""
+                                    },
+                                    "lvsVirtualIP":"192.168.56.40"
                                 }
                             }
                         ]
@@ -42,12 +43,13 @@
                         "subscribableInfo": {
                             "alias": "my-tomcat2-group6",
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "artifactRepository": {
-                                "privateRepo": false,
-                                "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
-                                "repoUsername": "",
-                                "repoPassword": ""
-                            }
+                            "artifactRepository":{
+                                "privateRepo":false,
+                                "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
+                                "repoUsername":"",
+                                "repoPassword":""
+                            },
+                            "lvsVirtualIP":"192.168.56.41"
                         }
                     }
                 ]
@@ -61,12 +63,13 @@
                 "subscribableInfo": {
                     "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy": "deployment-policy-2",
-                    "artifactRepository": {
-                        "privateRepo": false,
-                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
-                        "repoUsername": "",
-                        "repoPassword": ""
+                    "deploymentPolicy":"deployment-policy-2",
+                    "lvsVirtualIP":"192.168.56.42",
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername":"",
+                        "repoPassword":""
                     }
                 }
             }
@@ -74,7 +77,7 @@
         "dependencies": {
             "startupOrders": [
                 {
-                    "aliases": [
+                    "aliases" : [
                         "group.my-group6",
                         "cartridge.my-tomcat"
                     ]

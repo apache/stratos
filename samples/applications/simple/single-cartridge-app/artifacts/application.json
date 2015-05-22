@@ -6,18 +6,19 @@
         "cartridges": [
             {
                 "type": "php",
-                "cartridgeMin": 1,
-                "cartridgeMax": 5,
+		"cartridgeMin": 2,
+                "cartridgeMax": 10,
                 "subscribableInfo": {
                     "alias": "my-php",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "deploymentPolicy": "deployment-policy-1",
                     "artifactRepository": {
                         "privateRepo": false,
-                        "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+                        "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
                         "repoUsername": "",
                         "repoPassword": ""
-                    }
+                    },
+                    "lvsVirtualIP":"192.168.30.30"
                 }
             }
         ]

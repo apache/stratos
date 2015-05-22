@@ -77,7 +77,7 @@ public class Main {
 				log.error(e);
 			}
 			if (extension != null) {
-                log.info("Shutting nginx instance...");
+                log.info("Shutting lvs instance...");
 				extension.stop();
 			}
 		}

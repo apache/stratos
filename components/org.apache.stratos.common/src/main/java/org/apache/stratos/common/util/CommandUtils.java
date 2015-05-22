@@ -65,6 +65,36 @@ public class CommandUtils {
         return output.toString();
     }
 
+	public static String executeCommand(String[] command) throws IOException {
+		String line;
+		Runtime r = Runtime.getRuntime();
+		if (log.isDebugEnabled()) {
+			log.debug("command = " + command);
+		}
+		Process p = r.exec(command);
+
+		StringBuilder output = new StringBuilder();
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		while ((line = in.readLine()) != null) {
+			if (log.isDebugEnabled()) {
+				log.debug("output = " + line);
+			}
+			output.append(line).append(NEW_LINE);
+		}
+		StringBuilder errors = new StringBuilder();
+		BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+		while ((line = error.readLine()) != null) {
+			if (log.isDebugEnabled()) {
+				log.debug("error = " + line);
+			}
+			errors.append(line).append(NEW_LINE);
+		}
+		if (errors.length() > 0) {
+			throw new RuntimeException("Command execution failed: " + NEW_LINE + errors.toString());
+		}
+
+		return output.toString();
+	}
     public static String executeCommand(String command, Map<String, String> envParameters) throws IOException {
         String line;
         ProcessBuilder pb = new ProcessBuilder(command);

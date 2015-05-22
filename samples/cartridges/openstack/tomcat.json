@@ -13,6 +13,11 @@
             "protocol": "http",
             "port": "22",
             "proxyPort": "8280"
+        },
+        {
+            "protocol": "http",
+            "port": "8080",
+            "proxyPort": "80"
         }
     ],
     "deployment": {
@@ -20,6 +25,7 @@
     "iaasProvider": [
         {
             "type": "openstack",
+<<<<<<< HEAD
             "imageId": "RegionOne/4c812285-d761-4208-b4b3-d453eace5aff",
             "networkInterfaces": [
                 {
@@ -39,6 +45,28 @@
                     "name": "securityGroups",
                     "value": "default"
                 }
+=======
+            "imageId": "RegionOne/4c812285-d761-4208-b4b3-d453eace5aff",      
+	    "networkInterfaces":[
+        	    {
+	               "name":"network-non-routable",
+        	       "networkUuid":"b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
+	            }
+        	 ],
+	     "property": [
+	    {
+               "name":"instanceType",
+               "value":"RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
+            },
+            {
+               "name":"keyPair",
+               "value":"gayan-os"
+            },
+            {
+               "name":"securityGroups",
+               "value":"default"
+            }
+>>>>>>> f5bb41e... Update the INSTALL.md file and samples
             ]
         }
     ]
