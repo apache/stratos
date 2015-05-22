@@ -64,7 +64,7 @@ public class LVS implements LoadBalancer {
      */
     public boolean configure(Topology topology) throws LoadBalancerExtensionException {
         try {
-            log.info("Generating nginx configuration...");
+            log.info("Generating lvs configuration...");
             LVSConfigWriter writer = new LVSConfigWriter(templatePath, templateName, confFilePath, statsSocketFilePath,
                                                          virtualIPsForServices,serverState);
             if(writer.write(topology)) {
@@ -72,13 +72,13 @@ public class LVS implements LoadBalancer {
             }
             return false;
         } catch (Exception e) {
-            log.error("Could not generate nginx configuration");
+            log.error("Could not generate lvs configuration");
             throw new LoadBalancerExtensionException(e);
         }
     }
 
     /**
-     * Start nginx instance
+     * Start lvs instance
      * @throws LoadBalancerExtensionException
      */
     public void start() throws LoadBalancerExtensionException {
@@ -123,7 +123,7 @@ public class LVS implements LoadBalancer {
     }
 
     /**
-     * Stop nginx instance
+     * Stop lvs instance
      * @throws LoadBalancerExtensionException
      */
     public void stop() throws LoadBalancerExtensionException {

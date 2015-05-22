@@ -6,7 +6,7 @@
         "cartridges": [
             {
                 "type": "php",
-		"cartridgeMin": 1,
+		"cartridgeMin": 2,
                 "cartridgeMax": 10,
                 "subscribableInfo": {
                     "alias": "my-php",
@@ -17,7 +17,8 @@
                         "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
                         "repoUsername": "",
                         "repoPassword": ""
-                    }
+                    },
+                    "lvsVirtualIP":"192.168.30.30"
                 }
             }
         ]

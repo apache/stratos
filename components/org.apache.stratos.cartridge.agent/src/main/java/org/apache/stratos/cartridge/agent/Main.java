@@ -23,9 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
+import org.apache.stratos.common.util.CommandUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 
 /**
@@ -37,6 +39,33 @@ public class Main {
     private static CartridgeAgent cartridgeAgent = null;
 
     public static void main(String[] args) {
+
+	    String output;
+	    String[] array;
+	    int totalWeight = 0, weight;
+
+
+			    String[] command = { "/bin/sh", "-c","sudo ipvsadm -l --stats | grep TCP"};
+			    try {
+				    output = CommandUtils.executeCommand(command);
+				    if ((output != null) && (output.length() > 0)) {
+					    array = output.split("\n");
+					    for (int i = 0; i < array.length; i++) {
+						   weight=Integer.parseInt(array[i].substring(38,42).toString().trim());
+						   totalWeight += weight;
+						   }
+				    }
+			    } catch (IOException e) {
+				    if (log.isErrorEnabled()) {
+					    log.error(e);
+				    }
+			    }
+			    if (log.isInfoEnabled()) {
+				    log.info(String.format("Cluster weight found: [cluster] %s [weight] %d","",
+				                           totalWeight));
+
+		        }
+
         try {
             // Add shutdown hook
             final Thread mainThread = Thread.currentThread();
