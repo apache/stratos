@@ -16,7 +16,7 @@
 # under the License.
 
 class python_agent(
-  $version                = '4.1.0-SNAPSHOT',
+  $version                = '4.1.0',
   $owner                  = 'root',
   $group                  = 'root',
   $target                 = "/mnt",
