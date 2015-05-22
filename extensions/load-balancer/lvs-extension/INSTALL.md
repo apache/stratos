@@ -4,8 +4,10 @@ Apache Stratos LVS Extension could be used for integrating LVS load balancer wit
 below steps to proceed with the installation:
 
 1. Install keepalived and ipvsadm:
+   ```
    apt-get install keepalived ipvsadm
-
+   ```
+   
 2. Open <lvs-extension-home>/bin/lvs-extension.sh file in a text editor and update following system properties:
    ```
    #Keepalived configuration file location:
