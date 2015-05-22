@@ -553,6 +553,6 @@
         <carbon.platform.package.export.version>4.2.0</carbon.platform.package.export.version>
         <axis2.osgi.version>1.6.1.wso2v10</axis2.osgi.version>
         <jclouds.version>1.8.1</jclouds.version>
-        <jclouds.stratos.version>1.8.1-stratos</jclouds.stratos.version>
+        <project.jclouds.stratos.version>1.8.1-stratos</project.jclouds.stratos.version>
     </properties>
 </project>

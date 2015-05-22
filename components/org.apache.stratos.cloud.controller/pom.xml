@@ -220,7 +220,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>aws-ec2</artifactId>
-            <version>${jclouds.stratos.version}</version>
+            <version>${project.jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
@@ -230,7 +230,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>openstack-neutron</artifactId>
-            <version>${jclouds.stratos.version}</version>
+            <version>${project.jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
@@ -245,12 +245,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>vcloud</artifactId>
-            <version>${jclouds.stratos.version}</version>
+            <version>${project.jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>gce</artifactId>
-            <version>${jclouds.stratos.version}</version>
+            <version>${project.jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jamesmurty.utils.wso2</groupId>
