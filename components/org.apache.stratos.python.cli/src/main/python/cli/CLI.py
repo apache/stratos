@@ -1,12 +1,16 @@
 from cmd2 import *
 from Utils import *
 from Stratos import *
+import Configs
 
 
 class CLI(Cmd):
     """Apache Stratos CLI"""
 
-    prompt = 'stratos> '
+    prompt = Configs.stratos_prompt
+    # resolving the '-' issue
+    Cmd.legalChars += '-'
+    Cmd.shortcuts.update({'deploy-user': 'deploy_user'})
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -33,3 +37,7 @@ class CLI(Cmd):
 
         else:
             print("Some required argument(s) missing")
+
+    def do_deploy_user(self, line , opts=None):
+        """Illustrate the base class method use."""
+        print("hello User")
