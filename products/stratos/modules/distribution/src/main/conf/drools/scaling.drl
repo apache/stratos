@@ -177,7 +177,7 @@ dialect "mvel"
                                 " [rifPredictedValue] " + rifPredictedValue + " [rifThreshold] " + rifThreshold +
                                 " scaleup due to MC: " + (mcReset && (mcPredictedValue > mcThreshold)) +
                                 " [mcPredictedValue] " + mcPredictedValue + " [mcThreshold] " + mcThreshold +
-                                " scaleup due to MC: " + (laReset && (laPredictedValue > laThreshold)) +
+                                " scaleup due to LA: " + (laReset && (laPredictedValue > laThreshold)) +
                                 " [laPredictedValue] " + laPredictedValue + " [laThreshold] " + laThreshold);
 
                             log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
@@ -229,7 +229,7 @@ dialect "mvel"
                                 " [rifPredictedValue] " + rifPredictedValue + " [rifThreshold] " + rifThreshold +
                                 " scaledown due to MC: " + (mcReset && (mcPredictedValue < mcThreshold)) +
                                 " [mcPredictedValue] " + mcPredictedValue + " [mcThreshold] " + mcThreshold +
-                                " scaledown due to MC: " + (laReset && (laPredictedValue < laThreshold)) +
+                                " scaledown due to LA: " + (laReset && (laPredictedValue < laThreshold)) +
                                 " [laPredictedValue] " + laPredictedValue + " [laThreshold] " + laThreshold
                             );
 
