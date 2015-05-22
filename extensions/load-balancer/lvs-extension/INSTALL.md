@@ -7,10 +7,10 @@ below steps to proceed with the installation:
    ```
    apt-get install keepalived ipvsadm
    ```
-   
+
 2. Open <lvs-extension-home>/bin/lvs-extension.sh file in a text editor and update following system properties:
    ```
-   #Keepalived configuration file location:
+   # Keepalived configuration file location:
    -Dconf.file.path=/etc/keepalived/keepalived.conf
 
    # Enable/disable cep statistics publisher:
