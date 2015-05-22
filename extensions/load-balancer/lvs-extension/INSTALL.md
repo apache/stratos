@@ -8,11 +8,8 @@ below steps to proceed with the installation:
 
 2. Open <lvs-extension-home>/bin/lvs-extension.sh file in a text editor and update following system properties:
    ```
-   # Define nginx host private ip address:
-   -Dlvs.private.ip=127.0.0.1
-
-   # Define the nginx executable file path:
-   -Dexecutable.file.path=<lvs-home>/nginx
+   #Keepalived configuration file location:
+   -Dconf.file.path=/etc/keepalived/keepalived.conf
 
    # Enable/disable cep statistics publisher:
    -Dcep.stats.publisher.enabled=false
