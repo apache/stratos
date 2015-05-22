@@ -273,10 +273,7 @@ public class CloudControllerUtil {
         if (StringUtils.isEmpty(kubernetesCluster.getClusterId())) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster groupId can not be empty");
         }
-        if (context.kubernetesClusterExists(kubernetesCluster)) {
-            throw new InvalidKubernetesClusterException(String.format("Kubernetes cluster already exists " +
-                    "[id] %s", kubernetesCluster.getClusterId()));
-        }
+
         if (kubernetesCluster.getKubernetesMaster() == null) {
             throw new InvalidKubernetesClusterException("Mandatory field master has not been set " +
                     "for the Kubernetes cluster [id] " + kubernetesCluster.getClusterId());
@@ -310,12 +307,6 @@ public class CloudControllerUtil {
                     if (hostIds.contains(kubernetesHost.getHostId())) {
                         throw new InvalidKubernetesClusterException(
                                 String.format("Kubernetes host [id] %s already defined in the request", kubernetesHost.getHostId()));
-                    }
-
-                    // check whether host already exists
-                    if (context.kubernetesHostExists(kubernetesHost.getHostId())) {
-                        throw new InvalidKubernetesClusterException("Kubernetes host already exists [id] " +
-                                kubernetesHost.getHostId());
                     }
 
                     hostIds.add(kubernetesHost.getHostId());
