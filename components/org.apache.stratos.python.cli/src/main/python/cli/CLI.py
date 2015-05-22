@@ -12,6 +12,10 @@ class CLI(Cmd):
     Cmd.legalChars += '-'
     Cmd.shortcuts.update({'deploy-user': 'deploy_user'})
 
+    def completenames(self, text, *ignored):
+        return [a[3:].replace('_','-') for a in self.get_names() if a.replace('_','-').startswith('do-'+text)]
+
+
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
