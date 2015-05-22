@@ -1,4 +1,4 @@
-# Installing Apache Stratos Nginx Extension
+# Installing Apache Stratos LVS Extension
 
 Apache Stratos LVS Extension could be used for integrating LVS load balancer with Apache Stratos. Please follow
 below steps to proceed with the installation:
