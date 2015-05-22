@@ -74,7 +74,7 @@
                             </importFeatures>
                             <includedFeatures>
                                 <includedFeatureDef>
-                                    org.apache.stratos:org.apache.stratos.event.processor.server.feature:4.1.0-SNAPSHOT
+                                    org.apache.stratos:org.apache.stratos.event.processor.server.feature:${project.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
                                     org.wso2.carbon:org.wso2.carbon.event.processor.ui.feature:1.0.0
