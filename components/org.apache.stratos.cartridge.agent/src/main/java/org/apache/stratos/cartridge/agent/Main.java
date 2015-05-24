@@ -52,12 +52,6 @@ public class Main {
                 }
             });
 
-            // Configure log4j properties
-            if (log.isDebugEnabled()) {
-                log.debug("Configuring log4j.properties file path");
-            }
-            PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
-
             // Initialize cartridge agent configuration
             CartridgeAgentConfiguration.getInstance();
 
