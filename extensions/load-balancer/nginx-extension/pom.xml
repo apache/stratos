@@ -27,7 +27,7 @@
         <version>4.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.stratos.nginx.extension</artifactId>
+    <artifactId>apache-stratos-nginx-extension</artifactId>
     <name>Apache Stratos - Nginx Extension</name>
     <description>Apache Stratos Nginx Extension for Load Balancing</description>
 
