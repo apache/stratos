@@ -20,7 +20,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "chamilad/tomcat:4.1.0-beta",
+            "imageId": "stratos/tomcat:7.0.5-sso-sample",
             "networkInterfaces": [
             ],
             "property": [
