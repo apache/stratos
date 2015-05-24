@@ -119,11 +119,14 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
                 try {
                     // Generate access URLs for kubernetes services
                     for (KubernetesService kubernetesService : kubernetesServices) {
+                        // Public IP = Kubernetes minion public IP
                         String[] publicIPs = kubernetesService.getPublicIPs();
                         if((publicIPs != null) && (publicIPs.length > 0)) {
-                            URL accessURL = new URL(kubernetesService.getProtocol(), publicIPs[0],
-                                    kubernetesService.getPort(), "");
-                            cluster.addAccessUrl(accessURL.toString());
+                            for(String publicIP : publicIPs) {
+                                URL accessURL = new URL(kubernetesService.getProtocol(), publicIP,
+                                        kubernetesService.getPort(), "");
+                                cluster.addAccessUrl(accessURL.toString());
+                            }
                         }
                     }
                 } catch (Exception e) {
