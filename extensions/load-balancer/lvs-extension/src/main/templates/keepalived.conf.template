@@ -15,7 +15,7 @@ global_defs {
 ! *************************   WEB SERVICES VIP  *************************
 ! ***********************************************************************
 vrrp_instance VirtIP_10 {
-    state MASTER
+    state $state
     interface eth0
     virtual_router_id 10
 ! UNIQUE:
