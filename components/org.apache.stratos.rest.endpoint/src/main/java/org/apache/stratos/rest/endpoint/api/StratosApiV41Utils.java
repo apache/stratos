@@ -2620,11 +2620,14 @@ public class StratosApiV41Utils {
             if (applicationContexts != null) {
                 for (ApplicationContext applicationContext : applicationContexts) {
                     if (applicationContext != null) {
-                        String[] networkPartitions = AutoscalerServiceClient.getInstance().getApplicationNetworkPartitions(applicationContext.getApplicationId());
+                        String[] networkPartitions = AutoscalerServiceClient.getInstance().
+                                getApplicationNetworkPartitions(applicationContext.getApplicationId());
                         if (networkPartitions != null) {
                             for (int i = 0; i < networkPartitions.length; i++) {
                                 if (networkPartitions[i].equals(networkPartitionId)) {
-                                    String message = String.format("Cannot remove the network partition %s, since it is used in application %s", networkPartitionId, applicationContext.getApplicationId());
+                                    String message = String.format("Cannot remove the network partition %s, since" +
+                                            " it is used in application %s", networkPartitionId,
+                                            applicationContext.getApplicationId());
                                     log.error(message);
                                     throw new RestAPIException(message);
                                 }
