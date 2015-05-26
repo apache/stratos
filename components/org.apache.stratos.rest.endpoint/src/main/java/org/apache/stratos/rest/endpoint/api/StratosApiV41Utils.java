@@ -2616,9 +2616,30 @@ public class StratosApiV41Utils {
     public static void removeNetworkPartition(String networkPartitionId) throws RestAPIException,
             CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         try {
+            ApplicationContext[] applicationContexts = AutoscalerServiceClient.getInstance().getApplications();
+            if (applicationContexts != null) {
+            	for (ApplicationContext applicationContext : applicationContexts) {
+            		if (applicationContext != null) {
+            			String[] networkPartitions = AutoscalerServiceClient.getInstance().getApplicationNetworkPartitions(applicationContext.getApplicationId());
+            			if (networkPartitions != null) {
+            				for (int i = 0; i < networkPartitions.length; i++) {
+            					if (networkPartitions[i].equals(networkPartitionId)) {
+                                    String message = String.format("Cannot remove the network partition %s, since it is used in application %s", networkPartitionId, applicationContext.getApplicationId());
+                                    log.error(message);
+            						throw new RestAPIException(message);
+            					}
+            				}
+            			}
+            		}
+            	}
+            }
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId);
-        } catch (RemoteException e) {
+        } catch (AutoscalerServiceAutoScalerExceptionException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
+		} catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);
