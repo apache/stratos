@@ -364,8 +364,7 @@ public interface CloudControllerService {
      * @param networkPartitionId
      * @throws NetworkPartitionNotExistsException
      */
-    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException,
-            InvalidNetworkPartitionException;
+    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException;
 
     /**
      * Update network partition

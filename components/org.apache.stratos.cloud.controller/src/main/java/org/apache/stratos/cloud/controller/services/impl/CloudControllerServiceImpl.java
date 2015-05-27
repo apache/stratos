@@ -21,8 +21,6 @@ package org.apache.stratos.cloud.controller.services.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
-import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -37,7 +35,6 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -1498,8 +1495,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException,
-            InvalidNetworkPartitionException {
+    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException {
 
         try {
             if (log.isInfoEnabled()) {
@@ -1513,7 +1509,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new NetworkPartitionNotExistsException(message);
             }
             // removing from CC-Context
-            validateNetworkPartition(networkPartitionId);
             CloudControllerContext.getInstance().removeNetworkPartition(networkPartitionId);
             // persisting CC-Context
             CloudControllerContext.getInstance().persist();
@@ -1527,53 +1522,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new CloudControllerException(message, e);
         }
         return true;
-    }
-
-    private void validateNetworkPartition(String networkPartitionId) {
-
-        try {
-            DeploymentPolicy[] deploymentPolicies = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
-
-            if (deploymentPolicies != null) {
-                for (DeploymentPolicy deploymentPolicy : deploymentPolicies) {
-                    for (org.apache.stratos.autoscaler.stub.partition.NetworkPartitionRef networkPartitionRef :
-                            deploymentPolicy.getNetworkPartitionRefs()) {
-                        if (networkPartitionRef.getId().equals(networkPartitionId)) {
-                            String message = String.format("Cannot remove the network partition %s, since" +
-                                            " it is used in deployment policy %s", networkPartitionId,
-                                    deploymentPolicy.getDeploymentPolicyID());
-                            log.error(message);
-                            throw new InvalidNetworkPartitionException(message);
-                        }
-                    }
-                }
-            }
-
-            ApplicationPolicy[] applicationPolicies = AutoscalerServiceClient.getInstance().getApplicationPolicies();
-
-            if (applicationPolicies != null) {
-                for (ApplicationPolicy applicationPolicy : applicationPolicies) {
-
-                    for (String networkPartition :
-                            applicationPolicy.getNetworkPartitions()) {
-
-                        if (networkPartition.equals(networkPartitionId)) {
-                            String message = String.format("Cannot remove the network partition %s, since" +
-                                            " it is used in application policy %s", networkPartitionId,
-                                    applicationPolicy.getId());
-                            log.error(message);
-                            throw new InvalidNetworkPartitionException(message);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            String message = e.getMessage();
-            log.error(message, e);
-            throw new CloudControllerException(message, e);
-        }
-
-
     }
 
     @Override
