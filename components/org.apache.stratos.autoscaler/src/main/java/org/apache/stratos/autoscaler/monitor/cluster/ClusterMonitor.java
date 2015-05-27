@@ -430,15 +430,15 @@ public class ClusterMonitor extends Monitor {
                                 boolean averageRequestServedPerInstanceReset
                                         = instanceContext.isAverageRequestServedPerInstanceReset();
 
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
-                                            + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
-                                            + " [Is loadAverage Reset] : " + loadAverageReset);
-                                }
-
                                 if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
-                                    log.info("Executing scaling rule as statistics have been reset");
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Executing scaling Rule, [Is rif Reset] : " + rifReset
+                                                + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
+                                                + " [Is loadAverage Reset] : " + loadAverageReset + "[cluster] " +
+                                                clusterId);
+                                    }
+
                                     ClusterContext clusterContext = ClusterMonitor.this.clusterContext;
 
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("applicationId", getAppId());
