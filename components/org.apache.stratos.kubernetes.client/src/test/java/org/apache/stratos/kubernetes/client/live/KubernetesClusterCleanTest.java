@@ -40,7 +40,7 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
     public void testClean() {
         try {
             log.info("Cleaning kubernetes cluster...");
-            List<Pod> podList = client.getPods();
+            List<Pod> podList = getPods();
             while ((podList != null) && (podList.size() > 0)) {
                 for (Pod pod : podList) {
                     deletePod(pod.getId());
@@ -61,10 +61,20 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
         }
     }
 
+    private List<Pod> getPods() throws KubernetesClientException {
+        List<Pod> podList = new ArrayList<Pod>();
+        for(Pod pod : client.getPods()) {
+            if(!pod.getId().startsWith("kube")) {
+                podList.add(pod);
+            }
+        }
+        return podList;
+    }
+
     private List<Service> getServices() throws KubernetesClientException {
         List<Service> serviceList = new ArrayList<Service>();
         for (Service service : client.getServices()) {
-            if (!service.getId().startsWith("kubernetes")) {
+            if (!service.getId().startsWith("kube")) {
                 serviceList.add(service);
             }
         }
