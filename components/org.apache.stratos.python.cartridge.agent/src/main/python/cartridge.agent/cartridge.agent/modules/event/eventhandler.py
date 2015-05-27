@@ -61,8 +61,11 @@ class EventHandler:
 
     def create_dummy_interface(self):
         self.__log.debug("Processing lvs dummy interface creation...")
+        lvs_vip = self.__config.lvs_virtual_ip.split("|")
+        self.__log.debug("LVS dummy interface creation values %s %s " %(lvs_vip[0], lvs_vip[1]) )
         self.execute_event_extendables(constants.CREATE_LVS_DUMMY_INTERFACE,
-                                       {"LVS_VIRTUAL_IP": self.__config.lvs_virtual_ip})
+                                       {"EVENT": constants.CREATE_LVS_DUMMY_INTERFACE, "LVS_DUMMY_VIRTUAL_IP": lvs_vip[0],
+                                        "LVS_SUBNET_MASK": lvs_vip[1]})
 
     def on_instance_activated_event(self):
         self.__log.debug("Processing instance activated event...")
@@ -637,7 +640,8 @@ class EventHandler:
         lb_private_ip, lb_public_ip = EventHandler.get_lb_member_ip(lb_cluster_id_in_payload)
         plugin_values["LB_IP"] = lb_private_ip if lb_private_ip is not None else self.__config.lb_private_ip
         plugin_values["LB_PUBLIC_IP"] = lb_public_ip if lb_public_ip is not None else self.__config.lb_public_ip
-        plugin_values["LVS_VIRTUAL_IP"] =self.__config.lvs_virtual_ip
+
+
 
         topology = TopologyContext.get_topology()
         if topology.initialized:

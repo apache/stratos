@@ -26,6 +26,6 @@
 
 
 modprobe dummy numdummies=1
-ifconfig dummy0 ${STRATOS_LVS_VIRTUAL_IP} netmask 255.255.255.0
+ifconfig dummy0 ${STRATOS_LVS_DUMMY_VIRTUAL_IP} netmask ${STRATOS_LVS_SUBNET_MASK}
 
-echo "update the dummy interface with ${STRATOS_LVS_VIRTUAL_IP}"
+echo "update the dummy interface with ${STRATOS_LVS_DUMMY_VIRTUAL_IP} and ${STRATOS_LVS_SUBNET_MASK}"
