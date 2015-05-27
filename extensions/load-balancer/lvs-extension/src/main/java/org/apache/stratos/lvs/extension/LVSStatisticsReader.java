@@ -34,7 +34,7 @@ import java.io.IOException;
 public class LVSStatisticsReader implements LoadBalancerStatisticsReader {
 
 	private static final Log log = LogFactory.getLog(LVSStatisticsReader.class);
-	private static final String IPVSADM_STATS_COMMAND = "sudo ipvsadm -l --stats | grep TCP";
+	private static final String IPVSADM_STATS_COMMAND = "sudo ipvsadm -L -n |grep Route"; //"ipvsadm -l --stats | grep TCP"
 
 	private TopologyProvider topologyProvider;
 
@@ -55,7 +55,7 @@ public class LVSStatisticsReader implements LoadBalancerStatisticsReader {
 			if ((output != null) && (output.length() > 0)) {
 				array = output.split("\n");
 				for (int i = 0; i < array.length; i++) {
-					weight = Integer.parseInt(array[i].substring(38, 42).toString().trim());
+					weight = Integer.parseInt(array[i].substring(46, 50).toString().trim());
 					totalWeight += weight;
 				}
 			}
