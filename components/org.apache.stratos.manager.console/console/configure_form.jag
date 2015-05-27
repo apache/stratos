@@ -139,7 +139,7 @@ if(isEdit == false && elements.action != 'new') {
             break;
 
         case "application-policies":
-            formTitle = "Application Policy",
+            formTitle = "Application Policie",
                     buttonText = "Application Policy";
             list_data = util.RESTCalls.getApplicationPolicies();
             if (list_data.status == 'error') {
