@@ -61,7 +61,7 @@ define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $targ
   exec {
     "creating_target_for_python_${name}":
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-      command => "mkdir -p ${target}/${agent_name}",
+      command => "mkdir -p ${target}",
       require => Exec["pip installs-pexpect"];
 
     "creating_local_package_repo_for_python_${name}":
@@ -82,7 +82,6 @@ define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $targ
     "extracting_${agent_name}.zip_for_${name}":
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       cwd       => "$target/${agent_name}",
-      #/mnt/apache-stratos-python-cartridge-agent-1.0.0/agent.py
       unless    => "test -d ${target}/${agent_name}/agent.conf",
       command   => "unzip -o ${local_dir}/${agent_name}.zip",
       logoutput => 'on_failure',
@@ -91,8 +90,8 @@ define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $targ
     "setting_permission_for_python_${name}":
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       cwd       => $target,
-      command   => "chown -R ${owner}:${owner} ${target}/${agent_name} ;
-                    chmod -R 755 ${target}/${agent_name}",
+      command   => "chown -R ${owner}:${owner} ${target} ;
+                    chmod -R 755 ${target}",
       logoutput => 'on_failure',
       require   => Exec["extracting_${agent_name}.zip_for_${name}"];
   }
