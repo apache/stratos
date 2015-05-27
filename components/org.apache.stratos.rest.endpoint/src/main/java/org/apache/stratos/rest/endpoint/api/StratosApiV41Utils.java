@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.cloud.controller.stub.exception.InvalidNetworkPartitionException;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -56,6 +57,7 @@ import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.exception.InvalidEmailException;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
@@ -2614,7 +2616,8 @@ public class StratosApiV41Utils {
      * @param networkPartitionId networkPartitionId
      */
     public static void removeNetworkPartition(String networkPartitionId) throws RestAPIException,
-            CloudControllerServiceNetworkPartitionNotExistsExceptionException {
+            CloudControllerServiceNetworkPartitionNotExistsExceptionException,
+            CloudControllerServiceInvalidNetworkPartitionExceptionException {
         try {
             ApplicationContext[] applicationContexts = AutoscalerServiceClient.getInstance().getApplications();
             if (applicationContexts != null) {
@@ -2626,7 +2629,7 @@ public class StratosApiV41Utils {
                             for (int i = 0; i < networkPartitions.length; i++) {
                                 if (networkPartitions[i].equals(networkPartitionId)) {
                                     String message = String.format("Cannot remove the network partition %s, since" +
-                                            " it is used in application %s", networkPartitionId,
+                                                    " it is used in application %s", networkPartitionId,
                                             applicationContext.getApplicationId());
                                     log.error(message);
                                     throw new RestAPIException(message);

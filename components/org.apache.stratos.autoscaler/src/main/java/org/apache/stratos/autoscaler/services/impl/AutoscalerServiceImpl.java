@@ -53,6 +53,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
@@ -1047,6 +1048,21 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         "[network-partition-id] %s", deploymentPolicyId, networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
+            }
+
+            // network partition - partition id should be already added
+            for (PartitionRef partitionRef : networkPartitionRef.getPartitionRefs()) {
+                String partitionId = partitionRef.getId();
+
+                for (Partition partition : networkPartition.getPartitions()) {
+                    if (!partition.getId().equals(partitionId)) {
+                        String msg = String.format("Partition Id is not found: [deployment-policy-id] %s " +
+                                        "[network-partition-id] %s [partition-id] %s",
+                                deploymentPolicyId, networkPartitionId, partitionId);
+                        log.error(msg);
+                        throw new InvalidDeploymentPolicyException(msg);
+                    }
+                }
             }
 
             // partition algorithm can't be null or empty

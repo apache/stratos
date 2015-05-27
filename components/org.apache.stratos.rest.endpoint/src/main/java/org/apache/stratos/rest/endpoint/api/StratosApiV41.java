@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.cloud.controller.stub.exception.InvalidNetworkPartitionException;
 import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -714,6 +715,10 @@ public class StratosApiV41 extends AbstractApi {
         } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Network partition is not found")).build();
+        } catch (CloudControllerServiceInvalidNetworkPartitionExceptionException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Network partition is not found")).build();
+
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Network partition deleted successfully: [network-partition] %s",

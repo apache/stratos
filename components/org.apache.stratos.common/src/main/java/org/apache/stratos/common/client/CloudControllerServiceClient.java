@@ -233,7 +233,8 @@ public class CloudControllerServiceClient {
     }
 
     public void removeNetworkPartition(String networkPartitionId) throws RemoteException,
-            CloudControllerServiceNetworkPartitionNotExistsExceptionException {
+            CloudControllerServiceNetworkPartitionNotExistsExceptionException,
+            CloudControllerServiceInvalidNetworkPartitionExceptionException {
         stub.removeNetworkPartition(networkPartitionId);
     }
 
