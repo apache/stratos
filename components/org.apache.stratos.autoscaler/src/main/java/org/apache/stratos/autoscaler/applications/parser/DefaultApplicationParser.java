@@ -153,7 +153,8 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         if (!ApplicationUtils.isAliasValid(alias)) {
             handleError(String.format("Alias is not valid: [application-id] %s " +
-                    "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    "[cartridge-type] %s [alias] %s [valid-pattern] %s", applicationId, cartridgeType, alias,
+                    ApplicationUtils.ALIAS_PATTERN.pattern()));
         }
 
         if (subscribableInfoContextMap.get(alias) != null) {
