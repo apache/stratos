@@ -18,7 +18,7 @@
                         "repoUsername": "",
                         "repoPassword": ""
                     },
-                    "lvsVirtualIP":"192.168.30.30"
+                    "lvsVirtualIP":"192.168.30.30|255.255.255.0"
                 }
             }
         ]
