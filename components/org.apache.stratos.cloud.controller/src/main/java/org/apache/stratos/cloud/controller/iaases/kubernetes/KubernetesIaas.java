@@ -64,6 +64,7 @@ public class KubernetesIaas extends Iaas {
     private static final String PORT_MAPPINGS = "PORT_MAPPINGS";
     private static final String KUBERNETES_CONTAINER_CPU = "KUBERNETES_CONTAINER_CPU";
     private static final String KUBERNETES_CONTAINER_MEMORY = "KUBERNETES_CONTAINER_MEMORY";
+    private static final String KUBERNETES_SERVICE_SESSION_AFFINITY = "KUBERNETES_SERVICE_SESSION_AFFINITY";
     private static final String KUBERNETES_CONTAINER_CPU_DEFAULT = "kubernetes.container.cpu.default";
     private static final String KUBERNETES_CONTAINER_MEMORY_DEFAULT = "kubernetes.container.memory.default";
 
@@ -463,6 +464,12 @@ public class KubernetesIaas extends Iaas {
             throw new RuntimeException(message);
         }
 
+        String sessionAffinity = null;
+        Property sessionAffinityProperty = cartridge.getProperties().getProperty(KUBERNETES_SERVICE_SESSION_AFFINITY);
+        if(sessionAffinityProperty != null) {
+            sessionAffinity = sessionAffinityProperty.getValue();
+        }
+
         List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
         if (kubernetesServices == null) {
             kubernetesServices = new ArrayList<KubernetesService>();
@@ -511,8 +518,9 @@ public class KubernetesIaas extends Iaas {
                 String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(portMapping);
 
                 try {
+                    String[] publicIPs = minionPrivateIPList.toArray(new String[minionPrivateIPList.size()]);
                     kubernetesApi.createService(serviceId, serviceLabel, servicePort, containerPortName,
-                            minionPrivateIPList.toArray(new String[minionPrivateIPList.size()]));
+                            publicIPs, sessionAffinity);
                 } finally {
                     // Persist kubernetes service sequence no
                     CloudControllerContext.getInstance().persist();

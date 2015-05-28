@@ -135,10 +135,11 @@ public interface KubernetesAPIClientInterface {
      * @param servicePort
      * @param containerPortName
      * @param publicIPs
+     * @param sessionAffinity
      * @throws KubernetesClientException
      */
     public void createService(String serviceId, String serviceLabel, int servicePort,
-                              String containerPortName, String[] publicIPs) throws KubernetesClientException;
+                              String containerPortName, String[] publicIPs, String sessionAffinity) throws KubernetesClientException;
 
     /**
      * Get the Service with the given id.

@@ -44,6 +44,7 @@ public class Service implements Serializable {
     private Labels labels;
     private String[] publicIPs;
     private String portalIP;
+    private String sessionAffinity;
 
     public String getKind() {
         return kind;
@@ -141,11 +142,19 @@ public class Service implements Serializable {
         this.portalIP = portalIP;
     }
 
+    public void setSessionAffinity(String sessionAffinity) {
+        this.sessionAffinity = sessionAffinity;
+    }
+
+    public String getSessionAffinity() {
+        return sessionAffinity;
+    }
+
     @Override
     public String toString() {
         return "Service [kind=" + kind + ", id=" + id + ", creationTimestamp=" + creationTimestamp + ", selfLink="
                 + selfLink + ", name=" + name + ", port=" + port + ", containerPort=" + containerPort + ", selector="
                 + selector + ", apiVersion=" + apiVersion + ", labels=" + labels + ", publicIPs="
-                + Arrays.toString(publicIPs) + "portalIP=" + portalIP + "]";
+                + Arrays.toString(publicIPs) + "portalIP=" + portalIP + ", sessionAffinity=" + sessionAffinity + "]";
     }
 }

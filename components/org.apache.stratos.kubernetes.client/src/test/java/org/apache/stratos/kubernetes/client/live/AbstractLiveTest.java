@@ -182,7 +182,8 @@ public class AbstractLiveTest extends TestCase {
     protected void createService(String serviceId, String serviceName, int servicePort, String containerPortName,
                                  String[] publicIPs) throws KubernetesClientException, InterruptedException, IOException {
         log.info("Creating service...");
-        client.createService(serviceId, serviceName, servicePort, containerPortName, publicIPs);
+        client.createService(serviceId, serviceName, servicePort, containerPortName, publicIPs,
+                KubernetesConstants.SESSION_AFFINITY_CLIENT_IP);
         serviceIdList.add(serviceId);
 
         sleep(1000);

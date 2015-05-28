@@ -513,12 +513,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param serviceLabel      Service name to be used by the label name
      * @param servicePort       Port to be exposed by the service
      * @param containerPortName Container port name defined in the port label
-     * @param publicIPs
+     * @param publicIPs         Public IP addresses of the minions
+     * @param sessionAffinity   Session affinity configuration
      * @throws KubernetesClientException
      */
     @Override
     public void createService(String serviceId, String serviceLabel, int servicePort,
-                              String containerPortName, String[] publicIPs) throws KubernetesClientException {
+                              String containerPortName, String[] publicIPs, String sessionAffinity)
+            throws KubernetesClientException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Creating kubernetes service: [service-id] %s [service-name] %s [service-port] %d " +
@@ -534,6 +536,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             service.setPort(servicePort);
             service.setPublicIPs(publicIPs);
             service.setContainerPort(containerPortName);
+            service.setSessionAffinity(sessionAffinity);
 
             // Set service labels
             Labels serviceLabels = new Labels();
