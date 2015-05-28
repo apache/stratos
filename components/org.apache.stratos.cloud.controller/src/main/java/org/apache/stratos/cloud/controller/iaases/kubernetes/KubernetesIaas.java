@@ -477,6 +477,7 @@ public class KubernetesIaas extends Iaas {
 
         // Prepare minion public IP addresses
         List<String> minionPrivateIPList = new ArrayList<String>();
+        List<String> minionPublicIPList = new ArrayList<String>();
         KubernetesHost[] kubernetesHosts = kubernetesCluster.getKubernetesHosts();
         if ((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
             throw new RuntimeException("Hosts not found in kubernetes cluster: [cluster] "
@@ -485,6 +486,7 @@ public class KubernetesIaas extends Iaas {
         for (KubernetesHost host : kubernetesHosts) {
             if (host != null) {
                 minionPrivateIPList.add(host.getPrivateIPAddress());
+                minionPublicIPList.add(host.getPublicIPAddress());
             }
         }
         if (log.isDebugEnabled()) {
@@ -518,9 +520,10 @@ public class KubernetesIaas extends Iaas {
                 String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(portMapping);
 
                 try {
-                    String[] publicIPs = minionPrivateIPList.toArray(new String[minionPrivateIPList.size()]);
+                    // Services need to use minions private IP addresses for creating iptable rules
+                    String[] minionPrivateIPArray = minionPrivateIPList.toArray(new String[minionPrivateIPList.size()]);
                     kubernetesApi.createService(serviceId, serviceLabel, servicePort, containerPortName,
-                            publicIPs, sessionAffinity);
+                            minionPrivateIPArray, sessionAffinity);
                 } finally {
                     // Persist kubernetes service sequence no
                     CloudControllerContext.getInstance().persist();
@@ -536,7 +539,9 @@ public class KubernetesIaas extends Iaas {
                 KubernetesService kubernetesService = new KubernetesService();
                 kubernetesService.setId(service.getId());
                 kubernetesService.setPortalIP(service.getPortalIP());
-                kubernetesService.setPublicIPs(service.getPublicIPs());
+                // Expose minions public IP addresses as they need to be accessed by external networks
+                String[] minionPublicIPArray = minionPublicIPList.toArray(new String[minionPublicIPList.size()]);
+                kubernetesService.setPublicIPs(minionPublicIPArray);
                 kubernetesService.setProtocol(portMapping.getProtocol());
                 kubernetesService.setPort(service.getPort());
                 kubernetesService.setContainerPort(containerPort);

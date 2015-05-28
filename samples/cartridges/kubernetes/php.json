@@ -21,7 +21,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/php:4.1.0-beta",
+            "imageId": "stratos/php:4.1.0",
             "networkInterfaces": [
             ],
             "property": [
@@ -36,6 +36,10 @@
         {
             "name": "KUBERNETES_CONTAINER_MEMORY",
             "value": "0"
+        },
+        {
+            "name": "KUBERNETES_SERVICE_SESSION_AFFINITY",
+            "value": "ClientIP"
         }
     ]
 }
