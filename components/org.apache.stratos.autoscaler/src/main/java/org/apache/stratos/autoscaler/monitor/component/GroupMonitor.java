@@ -948,7 +948,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             null);
                     instanceIdsToStart.add(groupInstanceId);
                 } else {
-                    log.warn("[Group] " + group.getUniqueIdentifier() + " has reached " +
+                    log.warn("Partition context is null, [Group] " + group.getUniqueIdentifier() + " has reached " +
                             "the maximum limit as [max] " + groupMax +
                             ". Hence trying to notify the parent.");
                 }
