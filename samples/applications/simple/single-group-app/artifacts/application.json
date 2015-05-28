@@ -14,6 +14,7 @@
                         "type": "esb",
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
+                        "lvsVirtualIP": "192.168.56.50|255.255.255.0",
                         "subscribableInfo": {
                             "alias": "my-esb",
                             "autoscalingPolicy": "autoscaling-policy-1",
@@ -30,7 +31,7 @@
                         "type": "php",
                         "cartridgeMin": 2,
                         "cartridgeMax": 4,
-                        "lvsVirtualIP": "192.168.56.50|255.255.255.0",
+                        "lvsVirtualIP": "192.168.56.51|255.255.255.0",
                         "subscribableInfo": {
                             "alias": "my-php",
                             "autoscalingPolicy": "autoscaling-policy-1",
@@ -51,7 +52,7 @@
                 "type": "tomcat",
                 "cartridgeMin": 2,
                 "cartridgeMax": 4,
-                "lvsVirtualIP": "192.168.56.50|255.255.255.0",
+                "lvsVirtualIP": "192.168.56.52|255.255.255.0",
                 "subscribableInfo": {
                     "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
