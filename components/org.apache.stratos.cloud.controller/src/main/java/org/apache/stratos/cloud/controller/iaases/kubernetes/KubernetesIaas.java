@@ -593,7 +593,7 @@ public class KubernetesIaas extends Iaas {
 
                         // Add port mappings to payload
                         if (portMappingStrBuilder.toString().length() > 0) {
-                            portMappingStrBuilder.append(":");
+                            portMappingStrBuilder.append(",");
                         }
                         portMappingStrBuilder.append(String.format("PROTOCOL:%s|PORT:%d|PROXY_PORT:%d",
                                 portMapping.getProtocol(), portMapping.getKubernetesServicePort(), portMapping.getProxyPort()));
