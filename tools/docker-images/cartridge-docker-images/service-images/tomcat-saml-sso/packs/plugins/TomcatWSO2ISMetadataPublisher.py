@@ -36,7 +36,6 @@ class TomcatWSO2ISMetadataPublisher(ICartridgeAgentPlugin):
 
         log.info("Reading port mappings...")
         port_mappings_str = values["PORT_MAPPINGS"]
-
         tomcat_http_port = None
 
         # port mappings format: """NAME:mgt-console|PROTOCOL:https|PORT:4500|PROXY_PORT:8443;
@@ -56,6 +55,8 @@ class TomcatWSO2ISMetadataPublisher(ICartridgeAgentPlugin):
                     port = name_value_array[2].split(":")[1]
                     if name == "tomcat-http" and protocol == "http":
                         tomcat_http_port = port
+
+        log.info("Kubernetes service port of tomcat http transport: %s" % tomcat_http_port)
 
         callback_url = "http://%s:%s/travelocity.com/home.jsp" % (cluster_hostname, tomcat_http_port)
 

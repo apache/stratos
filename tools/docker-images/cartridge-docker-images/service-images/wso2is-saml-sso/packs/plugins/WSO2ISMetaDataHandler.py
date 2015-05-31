@@ -122,7 +122,9 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         port_mappings_str = values["PORT_MAPPINGS"]
         https_port = None
 
-        # port mappings format: "PROTOCOL:http|PORT:80|PROXY_PORT:8280,PROTOCOL:https|PORT:773|PROXY_PORT:9443"
+        # port mappings format: """NAME:mgt-console|PROTOCOL:https|PORT:4500|PROXY_PORT:8443;
+        #                          NAME:tomcat-http|PROTOCOL:http|PORT:4501|PROXY_PORT:7280;"""
+
         log.info("Port mappings: %s" % port_mappings_str)
         if port_mappings_str is not None:
 
@@ -137,7 +139,7 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
                     if protocol == "https":
                         https_port = port
 
-        log.info("Kubernetes service management console https port: %s" % https_port)
+        log.info("Kubernetes service port of wso2is management console https transport: %s" % https_port)
 
         saml_endpoint = "https://%s:%s/samlsso" % (member_hostname, https_port)
         saml_endpoint_property = {"key": "SAML_ENDPOINT", "values": [ saml_endpoint ]}
