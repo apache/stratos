@@ -33,13 +33,20 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.CreateLoadBalancerRequest;
 import com.amazonaws.services.elasticloadbalancing.model.CreateLoadBalancerResult;
+import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerRequest;
+import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerResult;
+import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import com.amazonaws.services.elasticloadbalancing.model.Listener;
+import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerRequest;
+import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerResult;
+import com.amazonaws.services.opsworks.model.AttachElasticLoadBalancerRequest;
 
 
 public class AWSHelper 
 {
 	private String awsAccessKey;
 	private String awsSecretKey;
+	private String httpProxy;
 	private String availabilityZone;
 
 	private BasicAWSCredentials awsCredentials;
@@ -49,7 +56,7 @@ public class AWSHelper
 	
 	public AWSHelper()
 	{
-		// Read values for awsAccessKey and awsSecretKey from config file
+		// Read values for awsAccessKey, awsSecretKey etc. from config file
 		// Throw a proper exception / log warning if cant read credentials ?
 		
 		awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
@@ -80,9 +87,75 @@ public class AWSHelper
 		}
 		catch(Exception e)
 		{
-			log.error("Could not create load balancer " + name + ".", e);
+			log.error("Could not create load balancer " + name + ".");
 			return null;
 		}
+	}
+	
+	public void registerInstancesToLoadBalancer(String loadBalancerName, List<Instance> instances)
+	{
+		try
+		{
+			RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest = new RegisterInstancesWithLoadBalancerRequest(loadBalancerName, instances);
+		
+			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(awsCredentials, clientConfiguration);
+			
+			RegisterInstancesWithLoadBalancerResult result = lbClient.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
+		}
+		catch(Exception e)
+		{
+			log.error("Could not register instances to load balancer " + loadBalancerName);
+		}
+	}
+	
+	public void deregisterInstancesFromLoadBalancer(String loadBalancerName, List<Instance> instances)
+	{
+		try
+		{
+			DeregisterInstancesFromLoadBalancerRequest deregisterInstancesFromLoadBalancerRequest = new DeregisterInstancesFromLoadBalancerRequest(loadBalancerName, instances);
+		
+			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(awsCredentials, clientConfiguration);
+			
+			DeregisterInstancesFromLoadBalancerResult result = lbClient.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
+		}
+		catch(Exception e)
+		{
+			log.error("Could not de-register instances from load balancer " + loadBalancerName);
+		}
+	}
+	
+	public List<Instance> getAttachedInstances(String loadBalancerName)
+	{
+		return new ArrayList<Instance>();
+	}
+	
+	public void addListenersToLoadBalancer(String loadBalancerName, List<Listener> listeners)
+	{
+		try
+		{
+			
+		}
+		catch(Exception e)
+		{
+			log.error("Could not add listeners to load balancer " + loadBalancerName);
+		}
+	}
+	
+	public void removeListenersFromLoadBalancer(String loadBalancerName, List<Listener> listeners)
+	{
+		try
+		{
+			
+		}
+		catch(Exception e)
+		{
+			log.error("Could not remove listeners from load balancer " + loadBalancerName);
+		}
+	}
+	
+	public List<Listener> getAttachedListeners(String loadBalancerName)
+	{
+		return new ArrayList<Listener>();
 	}
 	
 	public List<Listener> getRequiredListeners(Service service)

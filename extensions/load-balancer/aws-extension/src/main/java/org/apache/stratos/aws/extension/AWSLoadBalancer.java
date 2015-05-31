@@ -19,8 +19,13 @@
 
 package org.apache.stratos.aws.extension;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
+import javax.management.InstanceAlreadyExistsException;
 
 import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
@@ -29,6 +34,7 @@ import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import com.amazonaws.services.elasticloadbalancing.model.Listener;
 
 
@@ -36,13 +42,13 @@ import com.amazonaws.services.elasticloadbalancing.model.Listener;
 public class AWSLoadBalancer implements LoadBalancer {
 	
 	// A map <clusterId, load balancer id>
-	private HashMap<String, String> clusterToLoadBalancer;
+	private HashMap<String, String> clusterIdToLoadBalancerMap;
 
 	private AWSHelper awsHelper;
 	
 	public AWSLoadBalancer()
 	{
-		clusterToLoadBalancer = new HashMap<String, String>();
+		clusterIdToLoadBalancerMap = new HashMap<String, String>();
 		awsHelper = new AWSHelper();
 	}
 	
@@ -56,18 +62,109 @@ public class AWSLoadBalancer implements LoadBalancer {
                 
             	// Check if a load balancer is created for this cluster
             	
-            	if(clusterToLoadBalancer.containsKey(cluster.getClusterId()))
+            	if(clusterIdToLoadBalancerMap.containsKey(cluster.getClusterId()))
     			{
-            		// Get the load balancer
-            		// Update it 
+            		// A load balancer is already present for this cluster
+            		
+            		// Get the load balancer and update it.
+            		
+            		String loadBalancerName = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
+            		
+            		// 1. Get all the instances attached
+            		//    Add/remove instances as necessary
+            		
+            		List<Instance> attachedInstances = awsHelper.getAttachedInstances(loadBalancerName);
+            		
+            		Collection<Member> clusterInstances = cluster.getMembers();
+            		
+            		List<Instance> instancesToAddToLoadBalancer = new ArrayList<Instance>();
+            		
+            		for(Member member : clusterInstances)
+            		{
+            			// if instance id of member is not in attachedInstances
+            			// 		add this to instancesToAddToLoadBalancer
+            		}
+            		
+            		List<Instance> instancesToRemoveFromLoadBalancer = new ArrayList<Instance>();
+            		
+            		for(Instance instance : attachedInstances)
+            		{
+            			if(!clusterInstances.contains(instance.getInstanceId()))
+            			{
+            				instancesToRemoveFromLoadBalancer.add(instance);
+            			}
+            		}
+            		
+            		if(instancesToRemoveFromLoadBalancer.size() > 0)
+            			awsHelper.deregisterInstancesFromLoadBalancer(loadBalancerName, instancesToRemoveFromLoadBalancer);
+            		
+            		if(instancesToAddToLoadBalancer.size() > 0)
+            			awsHelper.registerInstancesToLoadBalancer(loadBalancerName, instancesToAddToLoadBalancer);
+
+            		
+            		// 2. Get all the listeners
+            		//    Add/Remove listeners as necessary
+            		
+            		// Is it really necessary to add/remove listeners from a lb to a cluster
+            		// Need to add only if a cluster can be used for more than one service (because a service my get added later)
+            		//                     or service port mappings may change
+     
+            		// Need to remove only if ... same for above reason
+            		
+            		List<Listener> attachedListeners = awsHelper.getAttachedListeners(loadBalancerName);
+            		
+            		List<Listener> listenersToAddToLoadBalancer = new ArrayList<Listener>();
+            		
+            		for(Listener listener : listenersForThisService)
+            		{
+            			// Need to check if Listener class supports equals method or not
+            			
+            			// if listener required for this service is not in attachedListeners
+            			// 		add this to listenersToAddToLoadBalancer
+            		}
+            		
+            		List<Listener> listenersToRemoveFromLoadBalancer = new ArrayList<Listener>();
+            		
+            		for(Listener listener : attachedListeners)
+            		{
+            			// Need to check if Listener class supports equals method or not
+            			
+            			if(!listenersForThisService.contains(listener))
+            			{
+            				listenersToRemoveFromLoadBalancer.add(listener);
+            			}
+            		}
+            		
+            		if(listenersToRemoveFromLoadBalancer.size() > 0)
+            			awsHelper.removeListenersFromLoadBalancer(loadBalancerName, listenersToRemoveFromLoadBalancer);
+            		
+            		if(listenersToAddToLoadBalancer.size() > 0)
+            			awsHelper.addListenersToLoadBalancer(loadBalancerName, listenersToAddToLoadBalancer);
+
     			}
             	else
             	{
-            		String loadBalancerName =service.getServiceName()+"-"+cluster.getClusterId();
+            		// Create a new load balancer for this cluster
+            		
+            		String loadBalancerName = service.getServiceName() + "-" + cluster.getClusterId();
             		
             		String loadBalancerDNSName = awsHelper.createLoadBalancer(loadBalancerName, listenersForThisService);
             		
             		// register instances to LB
+            		
+            		List<Instance> instances = new ArrayList<Instance>();
+            		
+            		for(Member m : cluster.getMembers())
+            		{
+            			String instanceId = ""; // of member // after making changes suggested in mail
+            			
+            			Instance instance = new Instance();
+            			instance.setInstanceId(instanceId);
+            			
+            			instances.add(instance);
+            		}
+            		
+            		awsHelper.registerInstancesToLoadBalancer(loadBalancerName, instances);
             		
             		// Create domain mappings
             	}
@@ -86,7 +183,16 @@ public class AWSLoadBalancer implements LoadBalancer {
 		
 	}
 	     
-	public void stop() throws LoadBalancerExtensionException {
+	public void stop() throws LoadBalancerExtensionException 
+	{
+		// Remove all load balancers
 		
+		for(String loadBalancerName : clusterIdToLoadBalancerMap.values())
+		{
+			// remove load balancer
+			// Check what all needs to be done
+		}
+		
+		// Remove domain mappings
 	}	
 }
