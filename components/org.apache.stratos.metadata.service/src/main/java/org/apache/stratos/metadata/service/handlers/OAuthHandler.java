@@ -93,6 +93,8 @@ public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
                 if (!valid) {
                     return Response.status(Response.Status.FORBIDDEN).build();
                 }
+            }else{
+                return Response.status(Response.Status.FORBIDDEN).build();
             }
         } catch (Exception e) {
             log.error("Error while validating access token", e);
