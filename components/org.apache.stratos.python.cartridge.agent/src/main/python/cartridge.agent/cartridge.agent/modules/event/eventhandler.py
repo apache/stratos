@@ -352,7 +352,7 @@ class EventHandler:
         )
 
         if self.__config.application_id == application_signup_removal_event.applicationId:
-            AgentGitHandler.remove_repo(application_signup_removal_event.tenant_Id)
+            AgentGitHandler.remove_repo(application_signup_removal_event.tenantId)
 
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
 
