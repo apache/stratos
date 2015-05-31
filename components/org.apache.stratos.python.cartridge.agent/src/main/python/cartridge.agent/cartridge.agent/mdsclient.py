@@ -73,13 +73,18 @@ def get(app=False):
     try:
         if app:
             log.debug("Retrieving metadata from the Metadata service. [URL] %s" % app_resource_url)
-            req_response = urllib2.urlopen(app_resource_url)
+	    request = urllib2.Request(app_resource_url)
         else:
             log.debug("Retrieving metadata from the Metadata service. [URL] %s" % alias_resource_url)
-            req_response = urllib2.urlopen(alias_resource_url)
+	    request = urllib2.Request(alias_resource_url)
 
-        get_response = json.loads(req_response.read())
-        properties = get_response["properties"]
+	    request.add_header("Authorization", "Bearer %s" % token)
+	    request.add_header('Content-Type', 'application/json')
+
+	    response = urllib2.urlopen(request).read()
+	    get_response = json.loads(response)
+	    properties = get_response["properties"]
+
         log.debug("Retrieved values from Metadata service: %s" % properties)
         response_obj = MDSResponse()
 
