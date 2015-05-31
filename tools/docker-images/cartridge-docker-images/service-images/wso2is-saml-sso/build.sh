@@ -18,26 +18,4 @@
 #  under the License.
 # ---------------------------------------------------------------
 
-set -e
-
-prgdir=`dirname "$0"`
-script_path=`cd "$prgdir"; pwd`
-pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent/distribution/"; pwd`
-
-pushd ${pca_distribution_path}
-mvn clean install -Dmaven.test.skip=true
-cp -vf target/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip ${script_path}/base-image/packs/
-popd
-
-pushd ${script_path}/base-image/
-echo "Building base docker image..."
-docker build -t stratos/base-image:4.1.0 .
-
-pushd ${script_path}/service-images/php
-echo "Building php docker image..."
-docker build -t stratos/php:4.1.0 .
-
-pushd ${script_path}/service-images/tomcat
-echo "Building tomcat docker image..."
-docker build -t stratos/tomcat:4.1.0 .
-
+docker build -t stratos/wso2is:5.0.0-sp1-saml-sso .

@@ -17,7 +17,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/wso2is:4.1.0-sso-sample",
+            "imageId": "stratos/wso2is:5.0.0-sp1-saml-sso",
             "networkInterfaces": [
             ],
             "property": [

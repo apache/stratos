@@ -20,7 +20,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/tomcat:7.0.5-sso-sample",
+            "imageId": "stratos/tomcat:7.0.5-saml-sso",
             "networkInterfaces": [
             ],
             "property": [
