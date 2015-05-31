@@ -126,6 +126,7 @@ public class ObjectConverter {
 
         for (int i = 0; i < portMappingBeanArray.length; i++) {
             PortMapping portMapping = new PortMapping();
+            portMapping.setName(portMappingBeanArray[i].getName());
             portMapping.setProtocol(portMappingBeanArray[i].getProtocol());
             portMapping.setPort(portMappingBeanArray[i].getPort());
             portMapping.setProxyPort(portMappingBeanArray[i].getProxyPort());
@@ -145,6 +146,7 @@ public class ObjectConverter {
 
         for (PortMapping portMapping : portMappingps) {
             PortMappingBean portMappingBean = new PortMappingBean();
+            portMappingBean.setName(portMapping.getName());
             portMappingBean.setProtocol(portMapping.getProtocol());
             portMappingBean.setPort(portMapping.getPort());
             portMappingBean.setProxyPort(portMapping.getProxyPort());

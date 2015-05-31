@@ -24,6 +24,7 @@ public class PortMapping implements Serializable {
 
     private static final long serialVersionUID = -5387564414633460306L;
 
+    private String name;
     private String protocol;
     private int port;
     private int proxyPort;
@@ -37,6 +38,14 @@ public class PortMapping implements Serializable {
         this.protocol = protocol;
         this.port = port;
         this.proxyPort = proxyPort;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getProtocol() {
