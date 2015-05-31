@@ -9,6 +9,7 @@
     "multiTenant": "false",
     "portMapping": [
         {
+			"name": "tomcat-http",
             "protocol": "http",
             "port": "8080",
             "proxyPort": "8280"

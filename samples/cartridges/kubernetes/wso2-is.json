@@ -9,9 +9,10 @@
     "multiTenant": "false",
     "portMapping": [
         {
+			"name": "mgt-console",
             "protocol": "http",
             "port": "9443",
-            "proxyPort": "8280"
+            "proxyPort": "8443"
         }
     ],
     "iaasProvider": [

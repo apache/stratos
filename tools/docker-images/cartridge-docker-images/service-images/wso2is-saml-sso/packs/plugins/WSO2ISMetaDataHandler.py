@@ -29,6 +29,8 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
 
     def run_plugin(self, values):
         log = LogFactory().get_log(__name__)
+        log.info("Starting wso2is metadata handler...")
+
         # read tomcat app related values from metadata
         mds_response = None
         while mds_response is None:
@@ -166,3 +168,5 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         p = subprocess.Popen(wso2is_start_command, env=env_var, shell=True)
         output, errors = p.communicate()
         log.debug("WSO2 IS server started")
+
+        log.info("wso2is metadata handler completed")
