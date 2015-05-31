@@ -140,12 +140,9 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         log.info("Kubernetes service management console https port: %s" % https_port)
 
         saml_endpoint = "https://%s:%s/samlsso" % (member_hostname, https_port)
-        publish_data = mdsclient.MDSPutRequest()
-        hostname_entry = {"key": "SAML_ENDPOINT", "values": saml_endpoint}
-        properties_data = [hostname_entry]
-        publish_data.properties = properties_data
-
-        mdsclient.put(publish_data, app=True)
+        saml_endpoint_property = {"key": "SAML_ENDPOINT", "values": [ saml_endpoint ]}
+        mdsclient.put(saml_endpoint_property, app=True)
+        log.info("Published property to metadata API: SAML_ENDPOINT: %s" % saml_endpoint)
 
         # start servers
         log.info("Starting WSO2 IS server")

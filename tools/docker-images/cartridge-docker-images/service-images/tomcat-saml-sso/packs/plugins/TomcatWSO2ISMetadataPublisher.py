@@ -58,15 +58,15 @@ class TomcatWSO2ISMetadataPublisher(ICartridgeAgentPlugin):
                         tomcat_http_port = port
 
         callback_url = "http://%s:%s/travelocity.com/home.jsp" % (cluster_hostname, tomcat_http_port)
-        saml_callback_entry = {"key": "CALLBACK_URL", "values": [ callback_url ]}
-        issuer_entry = {"key": "SSO_ISSUER", "values": [ "travelocity.com" ]}
-        #properties_data = [saml_callback_entry, issuer_entry]
-        #publish_data.properties = properties_data
 
-        mdsclient.put(saml_callback_entry, app=True)
-        mdsclient.put(issuer_entry, app=True)
+        callback_url_property = {"key": "CALLBACK_URL", "values": [ callback_url ]}
+        mdsclient.put(callback_url_property, app=True)
+        log.info("Published property to metadata API: CALLBACK_URL: %s" % callback_url)
 
-        log.info("Published values to metadata API: CALLBACK_URL: %s, SSO_ISSUER: travelocity.com" % callback_url)
+        issuer_property = {"key": "SSO_ISSUER", "values": [ "travelocity.com" ]}
+        mdsclient.put(issuer_property, app=True)
+        log.info("Published property to metadata API: SSO_ISSUER: travelocity.com")
+
         log.info("Tomcat metadata publisher completed")
 
 
