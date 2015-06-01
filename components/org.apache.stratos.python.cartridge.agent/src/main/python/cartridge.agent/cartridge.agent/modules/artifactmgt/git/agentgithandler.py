@@ -208,6 +208,7 @@ class AgentGitHandler:
         :return: GitRepository object
         :rtype: GitRepository
         """
+        tenant_id = str(tenant_id)
         if tenant_id in AgentGitHandler.__git_repositories:
             return AgentGitHandler.__git_repositories[tenant_id]
 
