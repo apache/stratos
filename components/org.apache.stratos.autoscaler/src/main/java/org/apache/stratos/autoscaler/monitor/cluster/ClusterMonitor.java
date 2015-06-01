@@ -1467,8 +1467,10 @@ public class ClusterMonitor extends Monitor {
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
                         parentMonitorInstance.getNetworkPartitionId());
-                log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
-                        "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
+                            "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
+                }
             }
             return true;
 
