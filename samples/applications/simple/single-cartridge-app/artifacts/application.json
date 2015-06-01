@@ -5,11 +5,11 @@
     "components": {
         "cartridges": [
             {
-                "type": "php",
+                "type": "tomcat",
 		"cartridgeMin": 2,
                 "cartridgeMax": 10,
                 "subscribableInfo": {
-                    "alias": "my-php",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "deploymentPolicy": "deployment-policy-1",
                     "artifactRepository": {

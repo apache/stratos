@@ -10,11 +10,6 @@
     "portMapping": [
         {
             "protocol": "http",
-            "port": "22",
-            "proxyPort": "8280"
-        },
-        {
-            "protocol": "http",
             "port": "8080",
             "proxyPort": "80"
         }

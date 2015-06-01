@@ -37,8 +37,8 @@ public class MockIPAddressPool {
 
     private static final String MOCK_IAAS_PRIVATE_IP_SEQUENCE = "/cloud.controller/mock/iaas/private-ip-sequence";
     private static final String MOCK_IAAS_PUBLIC_IP_SEQUENCE = "/cloud.controller/mock/iaas/public-ip-sequence";
-    private static final String PRIVATE_IP_PREFIX = "10.0.0.";
-    private static final String PUBLIC_IP_PREFIX = "20.0.0.";
+    private static final String PRIVATE_IP_PREFIX = "192.168.55.";
+    private static final String PUBLIC_IP_PREFIX = "192.168.56.";
 
     private static volatile MockIPAddressPool instance;
 
