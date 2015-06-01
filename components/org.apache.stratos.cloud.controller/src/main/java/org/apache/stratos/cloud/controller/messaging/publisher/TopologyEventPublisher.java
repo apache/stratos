@@ -157,7 +157,7 @@ public class TopologyEventPublisher {
                         "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
                         "[partition-id] %s [lb-cluster-id] %s",
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
-                memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
+                memberContext.getMemberId(), memberContext.getClusterInstanceId(), memberContext.getNetworkPartitionId(),
                 memberContext.getPartition().getId(), memberContext.getLbClusterId()));
         publishEvent(memberCreatedEvent);
     }
