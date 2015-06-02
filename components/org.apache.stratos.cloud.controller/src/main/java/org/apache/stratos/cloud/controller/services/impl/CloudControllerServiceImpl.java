@@ -413,7 +413,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
                             String propertyName = property.getName();
                             String payloadParamName = propertyName.substring(propertyName.indexOf(".") + 1);
-                            addToPayload(payload, payloadParamName, property.getValue());
+                            if (payload.toString().contains(payloadParamName)) {
+                                replaceInPayload(payloadParamName, payload, payloadParamName, property.getValue());
+                            } else {
+                                addToPayload(payload, payloadParamName, property.getValue());
+                            }
                         }
                     }
                 }
@@ -539,6 +543,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private void addToPayload(StringBuilder payload, String name, String value) {
         payload.append(",");
         payload.append(name + "=" + value);
+    }
+
+    private void replaceInPayload(String payloadParamName, StringBuilder payload, String name, String value) {
+
+        payload.replace(payload.indexOf(payloadParamName), payload.indexOf(",", payload.indexOf(payloadParamName)),
+                "," + name + "=" + value);
     }
 
     private String generateMemberId(String clusterId) {
