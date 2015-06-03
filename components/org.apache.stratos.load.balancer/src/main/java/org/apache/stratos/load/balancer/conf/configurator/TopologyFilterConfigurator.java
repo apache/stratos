@@ -47,10 +47,16 @@ public class TopologyFilterConfigurator {
             System.setProperty(StratosConstants.TOPOLOGY_MEMBER_FILTER, memberFilter);
         }
 
+        String networkPartitionFilter = configuration.getTopologyMemberFilter();
+        if (StringUtils.isNotBlank(networkPartitionFilter)) {
+            System.setProperty(StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER, memberFilter);
+        }
+
         if (log.isDebugEnabled()) {
             log.debug(String.format("Setting service-fTopologyFilterConfigurator.javailter = %s", System.getProperty(StratosConstants.TOPOLOGY_SERVICE_FILTER)));
             log.debug(String.format("Setting cluster-filter = %s", System.getProperty(StratosConstants.TOPOLOGY_CLUSTER_FILTER)));
             log.debug(String.format("Setting member-filter = %s", System.getProperty(StratosConstants.TOPOLOGY_MEMBER_FILTER)));
+            log.debug(String.format("Setting network-partition-filter = %s", System.getProperty(StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER)));
         }
     }
 }
