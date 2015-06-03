@@ -47,7 +47,7 @@ public class TopologyFilterConfigurator {
             System.setProperty(StratosConstants.TOPOLOGY_MEMBER_FILTER, memberFilter);
         }
 
-        String networkPartitionFilter = configuration.getTopologyMemberFilter();
+        String networkPartitionFilter = configuration.getNetworkPartitionId();
         if (StringUtils.isNotBlank(networkPartitionFilter)) {
             System.setProperty(StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER, networkPartitionFilter);
         }
