@@ -74,10 +74,8 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
                             String networkPartitionIdFilter = System.getProperty(
                                     StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER);
-                            if (networkPartitionIdFilter != null) {
-                                networkPartitionIdFilter = networkPartitionIdFilter.trim();
-                            }
-                            if (!networkPartitionIdFilter.equals("")) {
+
+                            if (networkPartitionIdFilter != null && !networkPartitionIdFilter.equals("")) {
                                 if (member.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                                     addMember(serviceName, clusterId, memberId);
                                     membersFound = true;
@@ -129,10 +127,8 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                     TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
                     String networkPartitionIdFilter = System.getProperty(
                             StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER);
-                    if (networkPartitionIdFilter != null) {
-                        networkPartitionIdFilter = networkPartitionIdFilter.trim();
-                    }
-                    if (!networkPartitionIdFilter.equals("")) {
+
+                    if (networkPartitionIdFilter != null && !networkPartitionIdFilter.equals("")) {
                         if (memberActivatedEvent.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                             addMember(serviceName, clusterId, memberId);
                         }
