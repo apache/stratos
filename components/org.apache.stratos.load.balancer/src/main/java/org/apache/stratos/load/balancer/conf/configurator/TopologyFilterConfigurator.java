@@ -49,7 +49,7 @@ public class TopologyFilterConfigurator {
 
         String networkPartitionFilter = configuration.getTopologyMemberFilter();
         if (StringUtils.isNotBlank(networkPartitionFilter)) {
-            System.setProperty(StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER, memberFilter);
+            System.setProperty(StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER, networkPartitionFilter);
         }
 
         if (log.isDebugEnabled()) {
