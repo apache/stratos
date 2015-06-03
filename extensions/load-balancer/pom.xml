@@ -36,7 +36,6 @@
     <modules>
         <module>haproxy-extension</module>
         <module>nginx-extension</module>
-        <module>gce-extension</module>
     </modules>
 </project>
 
