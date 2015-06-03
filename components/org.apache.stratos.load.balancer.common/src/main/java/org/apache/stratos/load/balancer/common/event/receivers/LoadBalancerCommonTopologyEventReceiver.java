@@ -66,8 +66,21 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                 for (Cluster cluster : service.getClusters()) {
                     for (Member member : cluster.getMembers()) {
                         if (member.getStatus() == MemberStatus.Active) {
-                            addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
-                            membersFound = true;
+
+                            String serviceName = member.getServiceName();
+                            String clusterId = member.getClusterId();
+                            String memberId = member.getMemberId();
+
+                            String networkPartitionIdFilter = System.getProperty("network.partition.id").trim();
+                            if (!networkPartitionIdFilter.equals("")) {
+                                if (member.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
+                                    addMember(serviceName, clusterId, memberId);
+                                    membersFound = true;
+                                }
+                            } else {
+                                addMember(serviceName, clusterId, memberId);
+                                membersFound = true;
+                            }
                         }
                     }
                 }
@@ -109,7 +122,14 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
                 try {
                     TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
-                    addMember(serviceName, clusterId, memberId);
+                    String networkPartitionIdFilter = System.getProperty("network.partition.id").trim();
+                    if (!networkPartitionIdFilter.equals("")) {
+                        if (memberActivatedEvent.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
+                            addMember(serviceName, clusterId, memberId);
+                        }
+                    } else {
+                        addMember(serviceName, clusterId, memberId);
+                    }
                 } catch (Exception e) {
                     log.error("Error processing event", e);
                 } finally {
