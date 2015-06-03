@@ -81,7 +81,7 @@ define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $targ
   exec {
     "extracting_${agent_name}.zip_for_${name}":
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-      cwd       => "$target/${agent_name}",
+      cwd       => "$target",
       unless    => "test -d ${target}/${agent_name}/agent.conf",
       command   => "unzip -o ${local_dir}/${agent_name}.zip",
       logoutput => 'on_failure',
