@@ -181,9 +181,9 @@ public class GCEIaas extends JcloudsIaas {
         // in vCloud case we need to run a script
         IaasProvider iaasInfo = getIaasProvider();
 
-        if (iaasInfo.getTemplate() == null || iaasInfo.getPayload() == null) {
+        if (iaasInfo.getTemplate() == null || payload == null) {
             if (log.isDebugEnabled()) {
-                log.debug("Payload for GCE not found");
+                log.debug("Template or payload for GCE not found");
             }
             return;
         }
