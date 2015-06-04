@@ -91,7 +91,7 @@ if [[ $answer = y ]] ; then
 	ARGS=("-n${NODEID}" "-d${DOMAIN}" "-s${PUPPET_IP}")
 	${ECHO} "\nRunning puppet installation with arguments: ${ARGS[@]}"
 	/root/bin/puppetinstall/puppetinstall "${ARGS[@]}"
-	if [[ -e ${LOCKFILE} ]]; then
+	if [ -e ${LOCKFILE} ]; then
 	    ${RM} ${LOCKFILE}
 	fi
 
