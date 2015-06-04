@@ -34,7 +34,8 @@ import java.io.IOException;
 public class LVSStatisticsReader implements LoadBalancerStatisticsReader {
 
 	private static final Log log = LogFactory.getLog(LVSStatisticsReader.class);
-	private static final String IPVSADM_STATS_COMMAND = "sudo ipvsadm -L -n |grep Route"; //"ipvsadm -l --stats | grep TCP"
+	private static final String IPVSADM_STATS_COMMAND = "sudo ipvsadm -L -n |grep Route";
+			//"ipvsadm -l --stats | grep TCP"
 
 	private TopologyProvider topologyProvider;
 

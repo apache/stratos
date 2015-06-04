@@ -44,6 +44,7 @@ public class LVS implements LoadBalancer {
 	private String virtualIPsForServices;
 	private String keepAlivedStartCommand;
 	private String serverState;
+	private String scheduleAlgo;
 
     public LVS() {
         this.executableFilePath = LVSContext.getInstance().getExecutableFilePath();
@@ -55,6 +56,7 @@ public class LVS implements LoadBalancer {
 	    this.virtualIPsForServices= LVSContext.getInstance().getVirtualIPsForServices();
 	    this.keepAlivedStartCommand=LVSContext.getInstance().getKeepAlivedStartCommand();
 	    this.serverState=LVSContext.getInstance().getServerState();
+	    this.scheduleAlgo=LVSContext.getInstance().getLvsScheduleAlgo();
     }
 
     /**
@@ -66,7 +68,7 @@ public class LVS implements LoadBalancer {
         try {
             log.info("Generating lvs configuration...");
             LVSConfigWriter writer = new LVSConfigWriter(templatePath, templateName, confFilePath, statsSocketFilePath,
-                                                         virtualIPsForServices,serverState);
+                                                         virtualIPsForServices,serverState,scheduleAlgo);
             if(writer.write(topology)) {
                 return true;
             }
