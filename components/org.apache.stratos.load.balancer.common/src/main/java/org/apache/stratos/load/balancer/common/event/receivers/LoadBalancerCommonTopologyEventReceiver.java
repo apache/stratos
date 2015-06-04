@@ -22,6 +22,7 @@ package org.apache.stratos.load.balancer.common.event.receivers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -71,8 +72,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                             String clusterId = member.getClusterId();
                             String memberId = member.getMemberId();
 
-                            String networkPartitionIdFilter = System.getProperty("network.partition.id").trim();
-                            if (!networkPartitionIdFilter.equals("")) {
+                            String networkPartitionIdFilter = System.getProperty(
+                                    StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER);
+
+                            if (networkPartitionIdFilter != null && !networkPartitionIdFilter.equals("")) {
                                 if (member.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                                     addMember(serviceName, clusterId, memberId);
                                     membersFound = true;
@@ -122,8 +125,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
                 try {
                     TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
-                    String networkPartitionIdFilter = System.getProperty("network.partition.id").trim();
-                    if (!networkPartitionIdFilter.equals("")) {
+                    String networkPartitionIdFilter = System.getProperty(
+                            StratosConstants.TOPOLOGY_NETWORK_PARTITION_FILTER);
+
+                    if (networkPartitionIdFilter != null && !networkPartitionIdFilter.equals("")) {
                         if (memberActivatedEvent.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                             addMember(serviceName, clusterId, memberId);
                         }

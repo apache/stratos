@@ -171,6 +171,7 @@ public class StratosConstants {
     public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
     public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
     public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
+    public static final String TOPOLOGY_NETWORK_PARTITION_FILTER = "stratos.topology.network.partition.filter";
 
     // to identify a lb cluster
     public static final String LOAD_BALANCER_REF = "load.balancer.ref";

@@ -367,6 +367,11 @@ public class LoadBalancerConfiguration {
                 configuration.setMultiTenancyEnabled(Boolean.parseBoolean(multiTenancyEnabled));
             }
 
+
+            String networkPartitionId = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_NETWORK_PARTITION_ID);
+            validateRequiredPropertyInNode(Constants.CONF_PROPERTY_NETWORK_PARTITION_ID, networkPartitionId, "loadbalancer");
+            configuration.setNetworkPartitionId(networkPartitionId);
+
             // Read topology service filter and topology cluster filter
             if (configuration.isTopologyEventListenerEnabled()) {
                 String serviceFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER);
@@ -382,6 +387,7 @@ public class LoadBalancerConfiguration {
                 if (StringUtils.isNotBlank(memberFilter)) {
                     configuration.setTopologyMemberFilter(memberFilter);
                 }
+
             }
 
             // Read cep ip and port if cep stats publisher is enabled
@@ -394,9 +400,6 @@ public class LoadBalancerConfiguration {
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_CEP_PORT, cepPort, "loadbalancer");
                 configuration.setCepPort(Integer.parseInt(cepPort));
 
-                String networkPartitionId = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_NETWORK_PARTITION_ID);
-                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_NETWORK_PARTITION_ID, networkPartitionId, "loadbalancer");
-                configuration.setNetworkPartitionId(networkPartitionId);
             }
 
             if (configuration.isMultiTenancyEnabled()) {
