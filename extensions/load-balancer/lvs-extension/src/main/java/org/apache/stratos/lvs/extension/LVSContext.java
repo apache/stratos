@@ -46,6 +46,7 @@ public class LVSContext {
 	private String virtualIPsForServices;
 	private String keepAlivedStartCommand;
 	private String serverState;
+	private String lvsScheduleAlgo;
 
     private LVSContext() {
         this.lvsPrivateIp = System.getProperty(Constants.LVS_PRIVATE_IP);
@@ -63,7 +64,8 @@ public class LVSContext {
         this.serviceName = System.getProperty(Constants.SERVICE_NAME);
 	    this.virtualIPsForServices=System.getProperty(Constants.VIRTUALIPS_FOR_SERVICES);
 	    this.keepAlivedStartCommand=Constants.KEEPALIVED_START_COMMAND;
-	    this.setServerState(System.getProperty(Constants.SERVER_STATE));
+	    this.serverState=System.getProperty(Constants.SERVER_STATE);
+	    this.lvsScheduleAlgo = System.getProperty(Constants.LVS_SCHEDULE_ALGO);
 
         if (log.isDebugEnabled()) {
             log.debug(Constants.LVS_PRIVATE_IP + " = " + lvsPrivateIp);
@@ -78,7 +80,8 @@ public class LVSContext {
             log.debug(Constants.THRIFT_RECEIVER_PORT + " = " + thriftReceiverPort);
             log.debug(Constants.NETWORK_PARTITION_ID + " = " + networkPartitionId);
             log.debug(Constants.CLUSTER_ID + " = " + clusterId);
-	        log.debug(Constants.VIRTUALIPS_FOR_SERVICES + " = " + getVirtualIPsForServices());
+	        log.debug(Constants.VIRTUALIPS_FOR_SERVICES + " = " + virtualIPsForServices);
+	        log.debug(Constants.LVS_SCHEDULE_ALGO + " = " + lvsScheduleAlgo);
         }
     }
 
@@ -184,5 +187,13 @@ public class LVSContext {
 
 	public void setServerState(String serverState) {
 		this.serverState = serverState;
+	}
+
+	public String getLvsScheduleAlgo() {
+		return lvsScheduleAlgo;
+	}
+
+	public void setLvsScheduleAlgo(String lvsScheduleAlgo) {
+		this.lvsScheduleAlgo = lvsScheduleAlgo;
 	}
 }

@@ -43,6 +43,7 @@ properties="-Dlvs.private.ip=127.0.0.1
             -Dcluster.id=cluster-1
             -Dservice.name=service-1
             -Dlvs.service.virtualip.set=tomcat2|192.168.56.40,tomcat1|192.168.56.41
+            -Dschedule.algorithm=rr
             -Dserver.state=MASTER"
 
 

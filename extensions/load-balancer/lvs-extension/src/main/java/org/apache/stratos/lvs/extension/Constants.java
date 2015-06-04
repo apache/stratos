@@ -39,4 +39,5 @@ public class Constants {
 	public static final String VIRTUALIPS_FOR_SERVICES = "lvs.service.virtualip.set" ;
 	public static final String KEEPALIVED_START_COMMAND = "service keepalived restart";
 	public static final String SERVER_STATE ="server.state" ;
+	public static final String LVS_SCHEDULE_ALGO = "schedule.algorithm";
 }
