@@ -164,7 +164,7 @@ public class LVSConfigWriter {
 					if (virtualIpForService[0].equals(cluster.getServiceName())) {
 
 						text.append("virtual_server ").append(virtualIpForService[1]).append(" ")
-						    .append(port.getValue()).append(
+						    .append(port.getProxy()).append(
 								" {").append(
 								NEW_LINE);
 						text.append(TAB).append("delay_loop 10").append(NEW_LINE);
