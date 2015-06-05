@@ -27,6 +27,8 @@ import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
@@ -37,9 +39,9 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import com.amazonaws.services.elasticloadbalancing.model.Listener;
 
-
-
 public class AWSLoadBalancer implements LoadBalancer {
+	
+	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 	
 	// A map <clusterId, load balancer id>
 	private HashMap<String, String> clusterIdToLoadBalancerMap;
@@ -65,7 +67,6 @@ public class AWSLoadBalancer implements LoadBalancer {
             	if(clusterIdToLoadBalancerMap.containsKey(cluster.getClusterId()))
     			{
             		// A load balancer is already present for this cluster
-            		
             		// Get the load balancer and update it.
             		
             		String loadBalancerName = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
@@ -83,6 +84,8 @@ public class AWSLoadBalancer implements LoadBalancer {
             		{
             			// if instance id of member is not in attachedInstances
             			// 		add this to instancesToAddToLoadBalancer
+            			
+            			
             		}
             		
             		List<Instance> instancesToRemoveFromLoadBalancer = new ArrayList<Instance>();
@@ -172,15 +175,19 @@ public class AWSLoadBalancer implements LoadBalancer {
             }
         }
 		
+		// Find out clusters which were present earlier but are not now.
+		// Delete load balancers associated with those clusters.
+		
 		return true;
 	}
 	
 	public void start() throws LoadBalancerExtensionException {
 		
+		log.info("Started AWS load balancer extension.");
 	}
 	
 	public void reload() throws LoadBalancerExtensionException {
-		
+		// Check what is appropriate to do here.
 	}
 	     
 	public void stop() throws LoadBalancerExtensionException 
@@ -190,6 +197,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 		for(String loadBalancerName : clusterIdToLoadBalancerMap.values())
 		{
 			// remove load balancer
+			awsHelper.deleteLoadBalancer(loadBalancerName);
+			
 			// Check what all needs to be done
 		}
 		

@@ -31,14 +31,7 @@ import org.apache.stratos.load.balancer.common.domain.*;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
-import com.amazonaws.services.elasticloadbalancing.model.CreateLoadBalancerRequest;
-import com.amazonaws.services.elasticloadbalancing.model.CreateLoadBalancerResult;
-import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerRequest;
-import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerResult;
-import com.amazonaws.services.elasticloadbalancing.model.Instance;
-import com.amazonaws.services.elasticloadbalancing.model.Listener;
-import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerRequest;
-import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerResult;
+import com.amazonaws.services.elasticloadbalancing.model.*;
 import com.amazonaws.services.opsworks.model.AttachElasticLoadBalancerRequest;
 
 
@@ -65,6 +58,7 @@ public class AWSHelper
 	
 	/*
 	 * Creates a load balancer and returns its DNS name.
+	 * Useful when a new cluster is added.
 	 */
 	public String createLoadBalancer(String name, List<Listener> listeners)
 	{
@@ -87,11 +81,36 @@ public class AWSHelper
 		}
 		catch(Exception e)
 		{
-			log.error("Could not create load balancer " + name + ".");
+			log.error("Could not create load balancer : " + name + ".");
 			return null;
 		}
 	}
 	
+	/*
+	 * Deletes a load balancer with the name provided.
+	 * Useful when a cluster, with which this load balancer was associated, is removed.
+	 */
+	public void deleteLoadBalancer(String loadBalancerName)
+	{
+		try
+		{
+			DeleteLoadBalancerRequest deleteLoadBalancerRequest = new DeleteLoadBalancerRequest();
+			deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
+			
+			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(awsCredentials, clientConfiguration);
+			
+			lbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
+		}
+		catch(Exception e)
+		{
+			log.error("Could not delete load balancer : " + loadBalancerName);
+		}
+	}
+	
+	/*
+	 * Attaches provided instances to the load balancer.
+	 * Useful when new instances get added to the cluster with which this load balancer is associated.
+	 */
 	public void registerInstancesToLoadBalancer(String loadBalancerName, List<Instance> instances)
 	{
 		try
@@ -108,6 +127,10 @@ public class AWSHelper
 		}
 	}
 	
+	/*
+	 * Detaches provided instances from the load balancer, associated with some cluster.
+	 * Useful when instances are removed from the cluster with which this load balancer is associated.
+	 */
 	public void deregisterInstancesFromLoadBalancer(String loadBalancerName, List<Instance> instances)
 	{
 		try
@@ -124,16 +147,71 @@ public class AWSHelper
 		}
 	}
 	
-	public List<Instance> getAttachedInstances(String loadBalancerName)
+	/*
+	 * Returns description of the Load Balancer which is helpful in determining instances, listeners associated with load balancer 
+	 */
+	private LoadBalancerDescription getLoadBalancerDescription(String loadBalancerName)
 	{
-		return new ArrayList<Instance>();
+		List<String> loadBalancers = new ArrayList<String>();
+		
+		loadBalancers.add(loadBalancerName);
+		
+		DescribeLoadBalancersRequest describeLoadBalancersRequest = new DescribeLoadBalancersRequest(loadBalancers);
+
+		AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(awsCredentials, clientConfiguration);
+		
+		DescribeLoadBalancersResult result = lbClient.describeLoadBalancers(describeLoadBalancersRequest);
+		
+		if(result.getLoadBalancerDescriptions() == null || result.getLoadBalancerDescriptions().size() == 0)
+			return null;
+		else
+			return result.getLoadBalancerDescriptions().get(0);
 	}
 	
-	public void addListenersToLoadBalancer(String loadBalancerName, List<Listener> listeners)
+	/*
+	 * Returns instances attached to the load balancer.
+	 * Useful when deciding if all attached instances are required or some should be detached.
+	 */
+	public List<Instance> getAttachedInstances(String loadBalancerName)
 	{
 		try
 		{
+			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName);
 			
+			if(lbDescription == null)
+			{
+				log.warn("Could not find description of load balancer " + loadBalancerName);	
+			 	return null;
+			}
+			
+			return lbDescription.getInstances();
+			
+		}
+		catch(Exception e)
+		{
+			log.error("Could not find description of load balancer " + loadBalancerName);
+			return null;
+		}
+	}
+	
+	/*
+	 * Adds listeners provided to the load balancer.
+	 * Useful when service definition is changed, in particular port mappings. So new listeners need to be added.
+	 */
+	public void addListenersToLoadBalancer(String loadBalancerName, List<Listener> listeners)
+	{
+		if(listeners.size() == 0)
+			return;
+		
+		try
+		{
+			CreateLoadBalancerListenersRequest createLoadBalancerListenersRequest = new CreateLoadBalancerListenersRequest();
+			createLoadBalancerListenersRequest.setListeners(listeners);
+			createLoadBalancerListenersRequest.setLoadBalancerName(loadBalancerName);
+			
+			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(awsCredentials, clientConfiguration);
+			
+			lbClient.createLoadBalancerListeners(createLoadBalancerListenersRequest);
 		}
 		catch(Exception e)
 		{
@@ -141,10 +219,32 @@ public class AWSHelper
 		}
 	}
 	
+	/*
+	 * Remove listeners provided from the load balancer.
+	 * Useful when attached listeners are no longer required.
+	 */
 	public void removeListenersFromLoadBalancer(String loadBalancerName, List<Listener> listeners)
 	{
+		if(listeners.size() == 0)
+			return;
+		
 		try
 		{
+			DeleteLoadBalancerListenersRequest deleteLoadBalancerListenersRequest = new DeleteLoadBalancerListenersRequest();
+			deleteLoadBalancerListenersRequest.setLoadBalancerName(loadBalancerName);
+			
+			List<Integer> loadBalancerPorts = new ArrayList<Integer>();
+			
+			for(Listener listener : listeners)
+			{
+				loadBalancerPorts.add(listener.getLoadBalancerPort());
+			}
+			
+			deleteLoadBalancerListenersRequest.setLoadBalancerPorts(loadBalancerPorts);
+
+			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(awsCredentials, clientConfiguration);
+			
+			lbClient.deleteLoadBalancerListeners(deleteLoadBalancerListenersRequest);
 			
 		}
 		catch(Exception e)
@@ -153,11 +253,47 @@ public class AWSHelper
 		}
 	}
 	
+	/*
+	 * Returns all the listeners attached to the load balancer.
+	 * Useful while deciding if all the listeners are necessary or some should be removed.
+	 */
 	public List<Listener> getAttachedListeners(String loadBalancerName)
 	{
-		return new ArrayList<Listener>();
+		try
+		{
+			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName);
+			
+			if(lbDescription == null)
+			{			
+				log.warn("Could not find description of load balancer " + loadBalancerName);
+				return null;
+			}
+			
+			List<Listener> listeners = new ArrayList<Listener>();
+			
+			List<ListenerDescription> listenerDescriptions = lbDescription.getListenerDescriptions();
+			
+			for(ListenerDescription listenerDescription : listenerDescriptions)
+			{
+				listeners.add(listenerDescription.getListener());
+			}
+			
+			return listeners;
+
+		}
+		catch(Exception e)
+		{
+			log.error("Could not find description of load balancer " + loadBalancerName);
+			return null;
+		}
+
+		
 	}
 	
+	/*
+	 * Returns the Listeners required for the service.
+	 * Listeners are derived from the proxy port, port and protocol values of the service.
+	 */
 	public List<Listener> getRequiredListeners(Service service)
 	{
 		List<Listener> listeners = new ArrayList<Listener>();
@@ -165,9 +301,12 @@ public class AWSHelper
 		for(Port port : service.getPorts())
 		{
 			int instancePort = port.getValue();
-			// Read other values as well and create a listener object
+			int proxyPort = port.getProxy();
+			String protocol = port.getProtocol();
 			
+			Listener listener = new Listener(protocol, proxyPort, instancePort);
 			
+			listeners.add(listener);
 		}
 		
 		return listeners;
