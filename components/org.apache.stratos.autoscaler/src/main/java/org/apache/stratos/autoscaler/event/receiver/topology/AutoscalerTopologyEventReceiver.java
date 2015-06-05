@@ -397,6 +397,7 @@ public class AutoscalerTopologyEventReceiver {
                 try {
                     MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
                     String clusterId = memberActivatedEvent.getClusterId();
+                    log.info("MemberActivated event received for " + memberActivatedEvent.toString());
                     ClusterMonitor monitor;
                     AutoscalerContext asCtx = AutoscalerContext.getInstance();
                     monitor = asCtx.getClusterMonitor(clusterId);
