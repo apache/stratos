@@ -29,6 +29,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -716,7 +717,22 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                                         "[cluster instance] %s",
                                 obsoleteMember.getMemberId(), obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
                                 obsoleteMember.getClusterInstanceId()));
-                        iterator.remove();
+                        try {
+                            //notifying CC, about the removal of obsolete member
+                            CloudControllerServiceClient.getInstance().removeMemberFromCloudController(obsoleteMember);
+                            iterator.remove();
+
+                            log.info(String.format("Obsolete member is removed from autoscaler and cloud controller " +
+                                            "[obsolete member] %s [cluster] %s " +
+                                            "[cluster instance] %s",
+                                    obsoleteMember.getMemberId(), obsoleteMember.getClusterId(),
+                                    obsoleteMember.getClusterInstanceId()));
+                        } catch (RemoteException e) {
+                            log.error(String.format("Error while removing member from cloud controller for obsolete " +
+                                    "member, [member-id] %s ", obsoleteMember.getMemberId()));
+                        }
+
+
                     }
                 }
                 try {

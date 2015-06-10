@@ -263,4 +263,8 @@ public class CloudControllerServiceClient {
             throw new RuntimeException(msg, e);
         }
     }
+
+    public void removeMemberFromCloudController(MemberContext member) throws RemoteException {
+        stub.removeMemberFromCloudController(member);
+    }
 }
