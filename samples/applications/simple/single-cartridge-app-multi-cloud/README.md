@@ -8,9 +8,9 @@ A simple application with a php cartridge.
                                                |
           _____________________________________|__________________________________
           |                                    |                                 |
-single-cartridge-app-1(ec2 R1)     single-cartridge-app-2(ec2 R2)      single-cartridge-app-3
-          |                                    |                                 |
-    my-php(member 1)                     my-php(member 2)                  my-php(member 3)
+single-cartridge-app-1(ec2 R1)     single-cartridge-app-2(ec2 R2)      single-cartridge-app-3   <br />
+          |                                    |                                 |              <br />
+    my-php(member 1)                     my-php(member 2)                  my-php(member 3)     <br />
 
 Application folder structure
 ----------------------------
