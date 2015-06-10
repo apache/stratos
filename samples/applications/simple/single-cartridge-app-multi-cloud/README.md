@@ -7,6 +7,10 @@ Application view
 single-cartridge-app            <br />
 -- single-cartridge-app-1       <br />
 -- -- my-php                    <br />
+-- single-cartridge-app-2       <br />
+-- -- my-php                    <br />
+-- single-cartridge-app-3       <br />
+-- -- my-php                    <br />
 
 Application folder structure
 ----------------------------
