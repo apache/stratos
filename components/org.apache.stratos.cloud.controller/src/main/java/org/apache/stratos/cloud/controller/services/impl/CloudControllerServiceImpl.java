@@ -1608,4 +1608,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new CloudControllerException(message, e);
         }
     }
+
+    @Override
+    public void removeMemberFromCloudController(MemberContext member) {
+
+        CloudControllerServiceUtil.executeMemberTerminationPostProcess(member);
+
+    }
 }

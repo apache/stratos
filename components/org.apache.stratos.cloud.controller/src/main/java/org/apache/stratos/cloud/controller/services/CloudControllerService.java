@@ -388,4 +388,10 @@ public interface CloudControllerService {
      * @return
      */
     public NetworkPartition getNetworkPartition(String networkPartitionId);
+
+    /**
+     * Remove member from cloud controller side context, topology etc.
+     * @param member member to be removed
+     */
+    void removeMemberFromCloudController(MemberContext member);
 }
