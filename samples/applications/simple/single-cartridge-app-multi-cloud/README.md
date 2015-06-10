@@ -2,21 +2,21 @@ Single Cartridge Application in a multi cloud environment
 =========================================================
 A simple application with a php cartridge.
 
-Application view
-----------------
-single-cartridge-app            <br />
--- single-cartridge-app-1       <br />
--- -- my-php                    <br />
--- single-cartridge-app-2       <br />
--- -- my-php                    <br />
--- single-cartridge-app-3       <br />
--- -- my-php                    <br />
+                                        Application view
+                                        ----------------
+                                      single-cartridge-app
+                                               |
+          _____________________________________|__________________________________
+          |                                    |                                 |
+single-cartridge-app-1(ec2 R1)     single-cartridge-app-2(ec2 R2)      single-cartridge-app-3
+          |                                    |                                 |
+    my-php(member 1)                     my-php(member 2)                  my-php(member 3)
 
 Application folder structure
 ----------------------------
--- artifacts/multi/ IaaS specific artifacts                <br />
--- scripts/common/ Common scripts for all iaases            <br />
--- scripts/multi IaaS specific scripts                     <br />
+-- artifacts/multi/     IaaS specific artifacts                <br />
+-- scripts/common/      Common scripts for all iaases            <br />
+-- scripts/multi        IaaS specific scripts                     <br />
 
 How to run
 ----------
