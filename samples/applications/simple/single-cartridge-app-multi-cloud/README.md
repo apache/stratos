@@ -1,17 +1,17 @@
 Single Cartridge Application in a multi cloud environment
 =========================================================
-A simple application with a php cartridge.
+A simple application with a php cartridge in
 
 Application view
 ----------------
 
-                                      single-cartridge-app
-                                               |
-          _____________________________________|__________________________________
-          |                                    |                                 |
-    single-cartridge-app-1(ec2 R1)		single-cartridge-app-2(ec2 R2)      single-cartridge-app-3
-          |                                    |                                 |
-    my-php(member 1)                     my-php(member 2)                  my-php(member 3)
+                                            single-cartridge-app
+                                                     |
+                _____________________________________|__________________________________
+                |                                    |                                 |
+    single-cartridge-app-1(ec2 R1)    single-cartridge-app-2(ec2 R2)   single-cartridge-app-3(Openstack region)
+                |                                    |                                 |
+         my-php(member 1)                     my-php(member 2)                  my-php(member 3)
 
 Application folder structure
 ----------------------------
