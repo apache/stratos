@@ -1,0 +1,10 @@
+{
+	"id": "multi-cloud-application-policy",
+	"algorithm": "one-after-another",
+	"networkPartitions": [
+                "ap-southeast-1-nw-partition",
+                "ap-southeast-2-nw-partition",
+                "openstack-nw-partition"
+	],
+	"properties": []
+}

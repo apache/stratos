@@ -1,0 +1,75 @@
+{
+    "type": "php",
+    "provider": "apache",
+    "category": "framework",
+    "host": "php.stratos.org",
+    "displayName": "php",
+    "description": "php Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "protocol": "http",
+            "port": "80",
+            "proxyPort": "8280"
+        }
+    ],
+    "deployment": {
+    },
+    "iaasProvider": [
+        {
+            "type": "ec2-singapore",
+            "imageId": "ap-southeast-1/ami-eeert6bc",
+            "property": [
+                {
+                    "name": "instanceType",
+                    "value": "m3.medium"
+                },
+                {
+                    "name": "keyPair",
+                    "value": "key-demo"
+                },
+                {
+                    "name": "securityGroups",
+                    "value": "stratos-demo"
+                }
+            ]
+        },
+        {
+            "type": "ec2-sydney",
+            "imageId": "ap-southeast-2/ami-259ok3a1f",
+            "property": [
+                {
+                    "name": "instanceType",
+                    "value": "m3.medium"
+                },
+                {
+                    "name": "keyPair",
+                    "value": "key-demo-sydney"
+                },
+                {
+                    "name": "securityGroups",
+                    "value": "stratos-demo"
+                }
+            ]
+        },
+        {
+            "type": "openstack",
+            "imageId": "RegionOne/b4ca55e3-58ab-4937-82ce-817ebd10240e",
+            "property": [
+                {
+                    "name": "instanceType",
+                    "value": "RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
+                },
+                {
+                    "name": "keyPair",
+                    "value": "key-demo"
+                },
+                {
+                    "name": "securityGroups",
+                    "value": "default"
+                }
+            ]
+        }
+    ]
+}

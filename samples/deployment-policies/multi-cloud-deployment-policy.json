@@ -1,0 +1,35 @@
+{
+    "id": "multi-cloud-deployment-policy",
+    "networkPartitions": [
+        {
+            "id": "ap-southeast-1-nw-partition",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "ap-southeast-1a-partition",
+                    "partitionMax": 4
+                }
+            ]
+        },
+        {
+            "id": "ap-southeast-2-nw-partition",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "ap-southeast-2b-partition",
+                    "partitionMax": 4
+                }
+            ]
+        },
+        {
+            "id": "openstack-nw-partition",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 2
+                }
+            ]
+        }
+    ]
+}
