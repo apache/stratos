@@ -719,7 +719,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                                 obsoleteMember.getClusterInstanceId()));
                         try {
                             //notifying CC, about the removal of obsolete member
-                            CloudControllerServiceClient.getInstance().removeMemberFromCloudController(obsoleteMember);
+                            CloudControllerServiceClient.getInstance().removeExpiredObsoledMemberFromCloudController(
+                                    obsoleteMember);
                             iterator.remove();
 
                             log.info(String.format("Obsolete member is removed from autoscaler and cloud controller " +
