@@ -1190,6 +1190,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                         clusterLevelPartitionContext.movePendingMemberToObsoleteMembers(
                                 memberContextIterator.next().getMemberId());
+
                     }
                 }
             }

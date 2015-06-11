@@ -712,25 +712,28 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                     long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
                     if (obsoleteTime >= obsoletedMemberExpiryTime) {
 
+                        String obsoleteMemberId = obsoleteMember.getMemberId();
                         log.info(String.format("Obsolete state of member is expired, member will be disposed and will " +
                                         "not be tracked anymore [obsolete member] %s [expiry time] %s [cluster] %s " +
                                         "[cluster instance] %s",
-                                obsoleteMember.getMemberId(), obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
+                                obsoleteMemberId, obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
                                 obsoleteMember.getClusterInstanceId()));
                         try {
                             //notifying CC, about the removal of obsolete member
                             CloudControllerServiceClient.getInstance().removeExpiredObsoledMemberFromCloudController(
                                     obsoleteMember);
                             iterator.remove();
-                            memberStatsContexts.remove(obsoleteMember.getMemberId());
+                            if (memberStatsContexts.containsKey(obsoleteMemberId)) {
+                                memberStatsContexts.remove(obsoleteMemberId);
+                            }
                             log.info(String.format("Obsolete member is removed from autoscaler and cloud controller " +
                                             "[obsolete member] %s [cluster] %s " +
                                             "[cluster instance] %s",
-                                    obsoleteMember.getMemberId(), obsoleteMember.getClusterId(),
+                                    obsoleteMemberId, obsoleteMember.getClusterId(),
                                     obsoleteMember.getClusterInstanceId()));
                         } catch (RemoteException e) {
                             log.error(String.format("Error while removing member from cloud controller for obsolete " +
-                                    "member, [member-id] %s ", obsoleteMember.getMemberId()));
+                                    "member, [member-id] %s ", obsoleteMemberId));
                         }
 
 

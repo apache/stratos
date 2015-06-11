@@ -93,7 +93,8 @@ public class AutoscalerTopologyEventReceiver {
                                 if (AutoscalerUtil.allClustersInitialized(application)) {
                                     ApplicationContext applicationContext = AutoscalerContext.getInstance().
                                             getApplicationContext(application.getUniqueIdentifier());
-                                    if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                                    if (applicationContext != null && applicationContext.getStatus().equals(
+                                            ApplicationContext.STATUS_DEPLOYED)) {
                                         AutoscalerUtil.getInstance().startApplicationMonitor(application.getUniqueIdentifier());
                                     } else {
                                         log.info("The application is not yet " +
