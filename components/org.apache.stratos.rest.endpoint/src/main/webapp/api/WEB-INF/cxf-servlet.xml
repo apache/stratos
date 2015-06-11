@@ -115,6 +115,7 @@
             <list>
                 <value>partitions</value>
                 <value>property</value>
+                <value>properties</value>
                 <value>hostNames</value>
                 <value>memberMap</value>
                 <value>portMapping</value>

@@ -451,6 +451,7 @@ public class ObjectConverter {
 
         NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
+        networkPartition.setProvider(stubNetworkPartition.getProvider());
         if (stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for (org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition : stubNetworkPartition.getPartitions()) {
