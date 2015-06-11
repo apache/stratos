@@ -1610,7 +1610,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void removeMemberFromCloudController(MemberContext member) {
+    public void removeExpiredObsoledMemberFromCloudController(MemberContext member) {
 
         CloudControllerServiceUtil.executeMemberTerminationPostProcess(member);
 
