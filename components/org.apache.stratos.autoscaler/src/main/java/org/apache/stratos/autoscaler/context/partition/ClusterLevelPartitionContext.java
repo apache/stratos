@@ -186,6 +186,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.pendingMembers.add(ctxt);
     }
 
+    public void addTerminationPendingMember(MemberContext ctxt) {
+        this.terminationPendingMembers.add(ctxt);
+    }
+
     public boolean removePendingMember(String id) {
         if (id == null) {
             return false;

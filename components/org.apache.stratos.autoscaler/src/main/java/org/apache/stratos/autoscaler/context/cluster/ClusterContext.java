@@ -355,34 +355,64 @@ public class ClusterContext extends AbstractClusterContext {
                 memberContext.setPartition(AutoscalerObjectConverter.convertPartitionToCCPartition(partition));
                 memberContext.setProperties(AutoscalerUtil.toStubProperties(member.getProperties()));
 
-                if (MemberStatus.Active.equals(member.getStatus())) {
+                if (MemberStatus.Active.equals(member.getStatus()) || MemberStatus.Suspended.equals(member.getStatus())) {
                     clusterLevelPartitionContext.addActiveMember(memberContext);
                     if (log.isDebugEnabled()) {
-                        String msg = String.format("Active member read from topology and added " +
+                        String msg = String.format("Active or suspended member read from topology and added " +
                                         "to active member list: [application] %s [cluster] %s " +
                                         "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
                                 cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
                                 clusterLevelPartitionContext.getPartitionId(), member.toString());
                         log.debug(msg);
                     }
-                } else if (MemberStatus.Created.equals(member.getStatus()) ||
-                        MemberStatus.Starting.equals(member.getStatus())) {
+
+                    clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Member stat context has been added: [application] %s " +
+                                        "[cluster] %s [clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                                clusterLevelPartitionContext.getPartitionId(), memberId));
+                    }
+                } else if (MemberStatus.Created.equals(member.getStatus())
+                        || MemberStatus.Starting.equals(member.getStatus())) {
                     clusterLevelPartitionContext.addPendingMember(memberContext);
                     if (log.isDebugEnabled()) {
-                        String msg = String.format("Pending member read from topology and added to " +
+                        String msg = String.format("Created or starting member read from topology and added to " +
                                         "pending member list: [application] %s [cluster] %s " +
                                         "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
                                 cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
                                 clusterLevelPartitionContext.getPartitionId(), member.toString());
                         log.debug(msg);
                     }
-                }
-                clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Member stat context has been added: [application] %s " +
-                                    "[cluster] %s [clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
-                            cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
-                            clusterLevelPartitionContext.getPartitionId(), memberId));
+                } else if (MemberStatus.In_Maintenance.equals(member.getStatus())) {
+                    clusterLevelPartitionContext.addTerminationPendingMember(memberContext);
+                    if (log.isDebugEnabled()) {
+                        String msg = String.format("In maintenance member is read from topology " +
+                                        "and added to termination pending member list: [application] %s [cluster] %s " +
+                                        "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                                clusterLevelPartitionContext.getPartitionId(), member.toString());
+                        log.debug(msg);
+                    }
+                } else if (MemberStatus.ReadyToShutDown.equals(member.getStatus())) {
+                    clusterLevelPartitionContext.addObsoleteMember(memberContext);
+                    if (log.isDebugEnabled()) {
+                        String msg = String.format("Ready to shutdown member is read from topology " +
+                                        "and added to obsolete member list: [application] %s [cluster] %s " +
+                                        "[clusterInstanceContext] %s [partitionContext] %s [member-id] %s",
+                                cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                                clusterLevelPartitionContext.getPartitionId(), member.toString());
+                        log.debug(msg);
+                    }
+                } else if (MemberStatus.Terminated.equals(member.getStatus())) {
+                    if (log.isDebugEnabled()) {
+                        String msg = String.format("Terminated member is read from topology ignored without adding to " +
+                                        "Autoscaler contexts: [application] %s [cluster] %s [clusterInstanceContext] %s" +
+                                        " [partitionContext] %s [member-id] %s",
+                                cluster.getAppId(), cluster.getClusterId(), ClusterInstanceId,
+                                clusterLevelPartitionContext.getPartitionId(), member.toString());
+                        log.debug(msg);
+                    }
                 }
             }
         }
