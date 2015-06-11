@@ -204,6 +204,7 @@ public class RuleTasksDelegator {
                 ClusterLevelPartitionContext partitionContext = clusterInstanceContext.
                         getPartitionCtxt(clusterMonitorPartitionContext.getPartitionId());
                 partitionContext.addPendingMember(memberContext);
+                partitionContext.addMemberStatsContext(new MemberStatsContext(memberContext.getMemberId()));
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
                             memberContext.getPartition().getId()));
