@@ -7,7 +7,11 @@
             "property": [
                 {
                     "name": "region",
-                    "value": "default"
+                    "value": "ap-southeast-2"
+                },
+                {
+                    "name": "region",
+                    "value": "ap-southeast-2b"
                 }
             ]
         }
