@@ -716,23 +716,19 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                                         "[cluster instance] %s",
                                 obsoleteMemberId, obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
                                 obsoleteMember.getClusterInstanceId()));
-                        try {
-                            //notifying CC, about the removal of obsolete member
-                            CloudControllerServiceClient.getInstance().removeExpiredObsoledMemberFromCloudController(
-                                    obsoleteMember);
-                            iterator.remove();
-                            if (ctxt.getMemberStatsContexts().containsKey(obsoleteMemberId)) {
-                                ctxt.getMemberStatsContexts().remove(obsoleteMemberId);
-                            }
-                            log.info(String.format("Obsolete member is removed from autoscaler and cloud controller " +
-                                            "[obsolete member] %s [cluster] %s " +
-                                            "[cluster instance] %s",
-                                    obsoleteMemberId, obsoleteMember.getClusterId(),
-                                    obsoleteMember.getClusterInstanceId()));
-                        } catch (RemoteException e) {
-                            log.error(String.format("Error while removing member from cloud controller for obsolete " +
-                                    "member, [member-id] %s ", obsoleteMemberId));
+
+                        //notifying CC, about the removal of obsolete member
+                        CloudControllerServiceClient.getInstance().removeExpiredObsoledMemberFromCloudController(
+                                obsoleteMember);
+                        iterator.remove();
+                        if (ctxt.getMemberStatsContexts().containsKey(obsoleteMemberId)) {
+                            ctxt.getMemberStatsContexts().remove(obsoleteMemberId);
                         }
+                        log.info(String.format("Obsolete member is removed from autoscaler and cloud controller " +
+                                        "[obsolete member] %s [cluster] %s " +
+                                        "[cluster instance] %s",
+                                obsoleteMemberId, obsoleteMember.getClusterId(),
+                                obsoleteMember.getClusterInstanceId()));
 
 
                     }

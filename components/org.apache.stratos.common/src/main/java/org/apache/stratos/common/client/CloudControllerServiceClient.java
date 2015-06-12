@@ -264,7 +264,13 @@ public class CloudControllerServiceClient {
         }
     }
 
-    public void removeExpiredObsoledMemberFromCloudController(MemberContext member) throws RemoteException {
-        stub.removeExpiredObsoledMemberFromCloudController(member);
+    public void removeExpiredObsoledMemberFromCloudController(MemberContext member) {
+        try {
+
+            stub.removeExpiredObsoledMemberFromCloudController(member);
+        } catch (RemoteException e) {
+            log.error(String.format("Error while removing member from cloud controller for obsolete " +
+                    "member, [member-id] %s ", member.getMemberId()));
+        }
     }
 }
