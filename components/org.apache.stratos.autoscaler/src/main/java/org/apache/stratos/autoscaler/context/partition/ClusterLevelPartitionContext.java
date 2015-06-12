@@ -631,13 +631,6 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     }
 
-
-//    @Override
-//    public int getCurrentElementCount() {
-//        //TODO find and return correct member instance count
-//        return 0;
-//    }
-
     private class PendingMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
         private final Log log = LogFactory.getLog(PendingMemberWatcher.class);
@@ -674,7 +667,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                             ctxt.addObsoleteMember(pendingMember);
                             pendingMembersFailureCount++;
                             if (pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD) {
-                                setPendingMemberExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold of failure exceeded
+                                setPendingMemberExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold
+                                // of failure exceeded
                                 //TODO Implement an alerting system: STRATOS-369
                             }
                         }
