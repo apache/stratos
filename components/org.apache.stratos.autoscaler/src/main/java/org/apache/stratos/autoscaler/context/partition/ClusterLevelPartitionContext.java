@@ -22,6 +22,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
@@ -30,7 +31,6 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -720,7 +720,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
                         //notifying CC, about the removal of obsolete member
                         try {
-                            CloudControllerServiceClient.getInstance().removeExpiredObsoletedMemberFromCloudController(
+                            AutoscalerCloudControllerClient.getInstance().removeExpiredObsoletedMemberFromCloudController(
                                     obsoleteMember);
                         } catch (AxisFault axisFault) {
                             log.error(String.format("Error while removing member from cloud controller for obsolete " +

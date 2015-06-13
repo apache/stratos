@@ -46,9 +46,9 @@ import java.util.List;
 /**
  * This class will call cloud controller web service to take the action decided by Autoscaler
  */
-public class CloudControllerClient {
+public class AutoscalerCloudControllerClient {
 
-    private static final Log log = LogFactory.getLog(CloudControllerClient.class);
+    private static final Log log = LogFactory.getLog(AutoscalerCloudControllerClient.class);
 
     private static CloudControllerServiceStub stub;
 
@@ -57,14 +57,14 @@ public class CloudControllerClient {
      * CloudControllerClient is created only once. Hence it is singleton.
      */
     private static class InstanceHolder {
-        private static final CloudControllerClient INSTANCE = new CloudControllerClient();
+        private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
     }
 
-    public static CloudControllerClient getInstance() {
+    public static AutoscalerCloudControllerClient getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
-    private CloudControllerClient() {
+    private AutoscalerCloudControllerClient() {
         try {
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
             int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
@@ -203,5 +203,15 @@ public class CloudControllerClient {
             volumes.add(volume);
         }
         return volumes.toArray(new Volume[volumes.size()]);
+    }
+
+    public void removeExpiredObsoletedMemberFromCloudController(MemberContext member) {
+        try {
+
+            stub.removeExpiredObsoletedMemberFromCloudController(member);
+        } catch (RemoteException e) {
+            log.error(String.format("Error while removing member from cloud controller for obsolete " +
+                    "member, [member-id] %s ", member.getMemberId()));
+        }
     }
 }

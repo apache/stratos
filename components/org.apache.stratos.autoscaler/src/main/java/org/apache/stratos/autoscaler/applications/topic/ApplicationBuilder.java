@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
@@ -74,7 +74,7 @@ public class ApplicationBuilder {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());
         }
-        CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+        AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                 appClusterContexts);
         ApplicationHolder.persistApplication(application);
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
