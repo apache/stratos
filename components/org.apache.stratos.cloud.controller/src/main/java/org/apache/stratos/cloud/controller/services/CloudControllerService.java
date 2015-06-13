@@ -393,5 +393,5 @@ public interface CloudControllerService {
      * Remove member from cloud controller side context, topology etc.
      * @param member member to be removed
      */
-    void removeExpiredObsoledMemberFromCloudController(MemberContext member);
+    void removeExpiredObsoletedMemberFromCloudController(MemberContext member);
 }

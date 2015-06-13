@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.context.partition;
 
+import org.apache.axis2.AxisFault;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -718,8 +719,13 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                                 obsoleteMember.getClusterInstanceId()));
 
                         //notifying CC, about the removal of obsolete member
-                        CloudControllerServiceClient.getInstance().removeExpiredObsoledMemberFromCloudController(
-                                obsoleteMember);
+                        try {
+                            CloudControllerServiceClient.getInstance().removeExpiredObsoletedMemberFromCloudController(
+                                    obsoleteMember);
+                        } catch (AxisFault axisFault) {
+                            log.error(String.format("Error while removing member from cloud controller for obsolete " +
+                                    "member, [member-id] %s ", obsoleteMemberId));
+                        }
                         iterator.remove();
                         if (ctxt.getMemberStatsContexts().containsKey(obsoleteMemberId)) {
                             ctxt.getMemberStatsContexts().remove(obsoleteMemberId);
