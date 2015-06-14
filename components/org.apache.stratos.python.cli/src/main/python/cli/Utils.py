@@ -1,4 +1,6 @@
 from texttable import *
+import Configs
+from Logging import logging
 
 
 class PrintableTree:
@@ -46,4 +48,20 @@ class PrintableTable(Texttable):
 
     def print_table(self):
         print self.draw()
+
+def auth(func):
+    """Authenticate"""
+    def auth_inner(self, *args, **kwargs):
+
+        if len(args) > 1 and args[1].username is not None:
+            Configs.stratos_username = args[1].username
+        if len(args) > 1 and args[1].password is not None:
+            Configs.stratos_password = args[1].password
+
+        if Configs.stratos_username is "" and Configs.stratos_password is "":
+            print("Pre authentication failed. Some authentication details are missing")
+            logging.warning("Pre authentication failed. Some authentication details are missing")
+        else:
+            return func(self, *args, **kwargs)
+    return auth_inner
 
