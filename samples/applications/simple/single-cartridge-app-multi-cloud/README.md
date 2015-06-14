@@ -1,6 +1,6 @@
 Single Cartridge Application in a multi cloud environment
 =========================================================
-A simple application with a php cartridge in
+A simple application with a php cartridge in two AWS EC2 regions and Openstack on-premise deployment 
 
 Application view
 ----------------
