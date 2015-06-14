@@ -57,7 +57,7 @@ public class TopologyEventPublisher {
                             : ServiceType.SingleTenant));
 
             // Add ports to the event
-            if(cartridge.getPortMappings() != null) {
+            if (cartridge.getPortMappings() != null) {
                 Port port;
                 List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                 for (PortMapping portMapping : portMappings) {

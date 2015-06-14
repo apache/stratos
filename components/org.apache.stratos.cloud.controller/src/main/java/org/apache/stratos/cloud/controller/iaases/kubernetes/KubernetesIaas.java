@@ -466,7 +466,7 @@ public class KubernetesIaas extends Iaas {
 
         String sessionAffinity = null;
         Property sessionAffinityProperty = cartridge.getProperties().getProperty(KUBERNETES_SERVICE_SESSION_AFFINITY);
-        if(sessionAffinityProperty != null) {
+        if (sessionAffinityProperty != null) {
             sessionAffinity = sessionAffinityProperty.getValue();
         }
 
