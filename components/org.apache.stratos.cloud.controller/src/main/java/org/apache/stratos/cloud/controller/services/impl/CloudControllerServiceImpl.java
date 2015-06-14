@@ -25,6 +25,18 @@ import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.domain.ApplicationClusterContext;
+import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.ClusterContext;
+import org.apache.stratos.cloud.controller.domain.Dependencies;
+import org.apache.stratos.cloud.controller.domain.InstanceContext;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.domain.Partition;
+import org.apache.stratos.cloud.controller.domain.PortMapping;
+import org.apache.stratos.cloud.controller.domain.Registrant;
+import org.apache.stratos.cloud.controller.domain.ServiceGroup;
+import org.apache.stratos.cloud.controller.domain.Volume;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
@@ -33,6 +45,7 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
@@ -1610,9 +1623,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void removeExpiredObsoletedMemberFromCloudController(MemberContext member) {
+    public boolean removeExpiredObsoletedMemberFromCloudController(String applicationId, String cartridgeType,
+                                                                   String clusterId, String memberId,
+                                                                   String networkPartitionId, Partition partition) {
 
-        CloudControllerServiceUtil.executeMemberTerminationPostProcess(member);
-
+        MemberContext obsoleteMember = new MemberContext(applicationId, cartridgeType, clusterId, memberId);
+        obsoleteMember.setNetworkPartitionId(networkPartitionId);
+        obsoleteMember.setPartition(partition);
+        CloudControllerServiceUtil.executeMemberTerminationPostProcess(obsoleteMember);
+        return true;
     }
+
 }

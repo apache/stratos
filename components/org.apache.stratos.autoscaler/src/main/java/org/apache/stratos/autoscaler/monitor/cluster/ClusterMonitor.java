@@ -1191,6 +1191,8 @@ public class ClusterMonitor extends Monitor {
                             "and moved to obsolete list: [member] %s " +
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
+
+
             } else if (partitionCtxt.getObsoleteMember(memberId) != null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Member is  in obsolete list: [member] %s " +

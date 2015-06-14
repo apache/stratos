@@ -121,6 +121,7 @@ public class AutoscalerCloudControllerClient {
 
             long startTime = System.currentTimeMillis();
             MemberContext memberContext = stub.startInstance(instanceContext);
+
             if (log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 log.debug(String.format("Service call startInstance() returned in %dms", (endTime - startTime)));
@@ -208,7 +209,10 @@ public class AutoscalerCloudControllerClient {
     public void removeExpiredObsoletedMemberFromCloudController(MemberContext member) {
         try {
 
-            stub.removeExpiredObsoletedMemberFromCloudController(member);
+            stub.removeExpiredObsoletedMemberFromCloudController(member.getApplicationId(), member.getCartridgeType(),
+                    member.getClusterId(), member.getMemberId(), member.getNetworkPartitionId(),
+                    member.getPartition());
+
         } catch (RemoteException e) {
             log.error(String.format("Error while removing member from cloud controller for obsolete " +
                     "member, [member-id] %s ", member.getMemberId()));

@@ -571,8 +571,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 // member is pending termination
                 // remove from pending termination list
                 iterator.remove();
+
                 // add to the obsolete list
                 this.obsoletedMembers.put(memberId, terminationPendingMember);
+
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Termination pending member is removed and added to the " +
@@ -719,9 +721,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                                 obsoleteMember.getClusterInstanceId()));
 
                         //notifying CC, about the removal of obsolete member
-
-                            AutoscalerCloudControllerClient.getInstance().removeExpiredObsoletedMemberFromCloudController(
-                                    obsoleteMember);
+                        AutoscalerCloudControllerClient.getInstance().removeExpiredObsoletedMemberFromCloudController(
+                                obsoleteMember);
 
                         iterator.remove();
                         if (ctxt.getMemberStatsContexts().containsKey(obsoleteMemberId)) {
