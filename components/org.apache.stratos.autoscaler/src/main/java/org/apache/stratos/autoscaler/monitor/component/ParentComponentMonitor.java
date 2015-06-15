@@ -52,6 +52,7 @@ import org.apache.stratos.messaging.domain.application.ParentComponent;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -332,7 +333,34 @@ public abstract class ParentComponentMonitor extends Monitor {
         boolean startDep = false;
         if (!aliasToActiveChildMonitorsMap.containsKey(childId) ||
                 !pendingChildMonitorsList.contains(childId)) {
-            startDep = startDependency(childId, instanceId);
+
+            // Need to decide whether it has become active in the first iteration.
+            // Then need to start the dependents.
+            // If it is a second iteration, then if there is no dependents,
+            // no need to invoke start dependencies.
+
+            Monitor childMonitor = aliasToActiveChildMonitorsMap.get(childId);
+            if(childMonitor != null) {
+                Instance instance = childMonitor.getInstance(instanceId);
+                boolean firstIteration = false;
+                if(instance != null) {
+                    if(instance instanceof GroupInstance) {
+                        GroupInstance groupInstance = (GroupInstance)instance;
+                        firstIteration = groupInstance.getPreviousState() == GroupStatus.Created;
+                    } else if(instance instanceof ClusterInstance) {
+                        ClusterInstance clusterInstance = (ClusterInstance)instance;
+                        firstIteration = clusterInstance.getPreviousState() == ClusterStatus.Created;
+                    }
+                    if(firstIteration || childMonitor.hasStartupDependents()) {
+                        startDep = startDependency(childId, instanceId);
+                    }
+                } else {
+                    startDep = startDependency(childId, instanceId);
+                }
+            } else {
+                startDep = startDependency(childId, instanceId);
+            }
+
         }
 
         //Checking whether all the monitors got created
