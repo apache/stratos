@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.application.*;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
@@ -2113,12 +2114,22 @@ public class ObjectConverter {
             NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
             networkPartitionRef.setId(networkPartitionReferenceBean.getId());
             networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
-            if(networkPartitionReferenceBean.getPartitions() != null) {
+            if (networkPartitionReferenceBean.getPartitions() != null) {
                 networkPartitionRef.setPartitionRefs(convertToASStubPartitions(
                         networkPartitionReferenceBean.getPartitions()));
             }
             networkPartitionRefList.add(networkPartitionRef);
         }
         return networkPartitionRefList.toArray(new NetworkPartitionRef[networkPartitionRefList.size()]);
+    }
+
+    public static IaasProviderInfoBean convertStringArrayToIaasProviderInfoBean(String[] iaasProviders) {
+        IaasProviderInfoBean iaasProviderInfoBean = new IaasProviderInfoBean();
+
+        if (iaasProviders != null) {
+            iaasProviderInfoBean.setIaasProviders(Arrays.asList(iaasProviders));
+        }
+
+        return iaasProviderInfoBean;
     }
 }
