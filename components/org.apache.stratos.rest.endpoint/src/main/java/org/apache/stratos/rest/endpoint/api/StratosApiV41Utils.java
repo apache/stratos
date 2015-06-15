@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -3524,6 +3525,23 @@ public class StratosApiV41Utils {
                 throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
                         "cyclic group behaviour identified: " + group);
             }
+        }
+    }
+
+    /**
+     * Get Iaas Providers
+     *
+     * @return Array of Strings
+     */
+    public static IaasProviderInfoBean getIaasProviders() throws RestAPIException {
+        try {
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            String[] iaasProviders = serviceClient.getIaasProviders();
+            return ObjectConverter.convertStringArrayToIaasProviderInfoBean(iaasProviders);
+        } catch (RemoteException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
         }
     }
 }

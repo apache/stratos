@@ -25,6 +25,19 @@ import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.domain.ApplicationClusterContext;
+import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.ClusterContext;
+import org.apache.stratos.cloud.controller.domain.Dependencies;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.InstanceContext;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.domain.Partition;
+import org.apache.stratos.cloud.controller.domain.PortMapping;
+import org.apache.stratos.cloud.controller.domain.Registrant;
+import org.apache.stratos.cloud.controller.domain.ServiceGroup;
+import org.apache.stratos.cloud.controller.domain.Volume;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
@@ -33,6 +46,7 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
@@ -1619,6 +1633,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         obsoleteMember.setPartition(partition);
         CloudControllerServiceUtil.executeMemberTerminationPostProcess(obsoleteMember);
         return true;
+    }
+
+    @Override
+    public String[] getIaasProviders() {
+
+        try {
+            Collection<IaasProvider> iaasProviders = CloudControllerConfig.getInstance().getIaasProviders();
+            List<String> iaases = new ArrayList<String>();
+
+            for (IaasProvider iaas : iaasProviders) {
+                iaases.add(iaas.getProvider());
+            }
+
+            return iaases.toArray(new String[iaases.size()]);
+        } catch (Exception e) {
+            String message = String.format("Could not get Iaas Providers");
+            log.error(message);
+            throw new CloudControllerException(message, e);
+        }
+
     }
 
 }

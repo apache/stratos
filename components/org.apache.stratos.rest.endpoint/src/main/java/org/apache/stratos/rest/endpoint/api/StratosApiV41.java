@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -2092,5 +2093,26 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Kubernetes Host removed successfully: [kub-host] %s", kubernetesHostId)))
                 .build();
+    }
+
+    /**
+     * Get Iaas Providers
+     *
+     * @return 200 if iaas providers are found
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/iaasProviders")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/stratos/iaasProviders/view")
+    public Response getIaasProviders()
+            throws RestAPIException {
+        IaasProviderInfoBean iaasProviderInfoBean = StratosApiV41Utils.getIaasProviders();
+        if (iaasProviderInfoBean == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "No IaaS Providers found")).build();
+        }
+        return Response.ok(iaasProviderInfoBean).build();
     }
 }

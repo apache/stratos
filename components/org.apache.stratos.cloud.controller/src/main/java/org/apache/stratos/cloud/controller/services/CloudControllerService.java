@@ -410,4 +410,9 @@ public interface CloudControllerService {
                                                             String clusterId, String memberId,
                                                             String networkPartitionId, Partition partition);
 
+    /**
+     * Returns the available Iaas Providers
+     */
+    public String[] getIaasProviders();
+
 }
