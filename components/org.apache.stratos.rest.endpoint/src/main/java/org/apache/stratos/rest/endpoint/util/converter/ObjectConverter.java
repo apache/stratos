@@ -1847,14 +1847,12 @@ public class ObjectConverter {
             DependencyBean dependencyBean = new DependencyBean();
             String[] startupOrders = dependencies.getStartupOrders();
             if (startupOrders != null && startupOrders[0] != null) {
-                List<String> startupOrdersDef = Arrays.asList(startupOrders);
-                //dependencyBean.setStartupOrders(startupOrdersDef);
+                dependencyBean.setStartupOrders(convertStringArrayToStartupOrderBeans(startupOrders));
             }
 
             String[] scalingDependants = dependencies.getScalingDependants();
             if (scalingDependants != null && scalingDependants[0] != null) {
-                List<String> scalingDependenciesDef = Arrays.asList(scalingDependants);
-                //dependencyBean.setScalingDependents(scalingDependenciesDef);
+                dependencyBean.setScalingDependents(convertStringArrayToDependentScalingBeans(scalingDependants));
             }
 
             dependencyBean.setTerminationBehaviour(dependencies.getTerminationBehaviour());
