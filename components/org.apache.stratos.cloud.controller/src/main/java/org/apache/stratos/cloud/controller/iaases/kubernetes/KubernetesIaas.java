@@ -19,6 +19,10 @@
 
 package org.apache.stratos.cloud.controller.iaases.kubernetes;
 
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,10 +43,6 @@ import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.Port;
-import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.util.ArrayList;
@@ -250,8 +250,8 @@ public class KubernetesIaas extends Iaas {
 
     private void updateMemberContext(MemberContext memberContext, Pod pod, KubernetesCluster kubernetesCluster) {
 
-        String memberPrivateIPAddress = pod.getCurrentState().getPodIP();
-        String podHostIPAddress = pod.getCurrentState().getHost();
+        String memberPrivateIPAddress = pod.getStatus().getPodIP();
+        String podHostIPAddress = pod.getStatus().getHostIP();
         String memberPublicIPAddress = podHostIPAddress;
         String kubernetesHostPublicIP = findKubernetesHostPublicIPAddress(kubernetesCluster, podHostIPAddress);
 
@@ -263,7 +263,7 @@ public class KubernetesIaas extends Iaas {
             }
         }
 
-        memberContext.setInstanceId(pod.getId());
+        memberContext.setInstanceId(pod.getMetadata().getName());
         memberContext.setDefaultPrivateIP(memberPrivateIPAddress);
         memberContext.setPrivateIPs(new String[]{memberPrivateIPAddress});
         memberContext.setDefaultPublicIP(memberPublicIPAddress);
@@ -297,15 +297,15 @@ public class KubernetesIaas extends Iaas {
             pod = kubernetesApi.getPod(memberContext.getKubernetesPodId());
             if (pod != null) {
                 podCreated = true;
-                if (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING)) {
+                if (pod.getStatus().getPhase().equals(KubernetesConstants.POD_STATUS_RUNNING)) {
                     log.info(String.format("Pod status changed to running: [application] %s [cartridge] %s [member] %s " +
                                     "[pod] %s", memberContext.getApplicationId(), memberContext.getCartridgeType(),
-                            memberContext.getMemberId(), pod.getId()));
+                            memberContext.getMemberId(), pod.getMetadata().getName()));
                     return pod;
                 } else {
                     log.info(String.format("Waiting pod status to be changed to running: [application] %s " +
                                     "[cartridge] %s [member] %s [pod] %s", memberContext.getApplicationId(),
-                            memberContext.getCartridgeType(), memberContext.getMemberId(), pod.getId()));
+                            memberContext.getCartridgeType(), memberContext.getMemberId(), pod.getMetadata().getName()));
                 }
             } else {
                 log.info(String.format("Waiting for pod to be created: [application] %s " +
@@ -407,10 +407,10 @@ public class KubernetesIaas extends Iaas {
         String podId = "pod" + "-" + podSeqNo;
         String podLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
         String dockerImage = iaasProvider.getImage();
-        EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
+        List<EnvVar> environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
 
-        List<Port> ports = KubernetesIaasUtil.convertPortMappings(Arrays.asList(cartridge.getPortMappings()));
+        List<ContainerPort> ports = KubernetesIaasUtil.convertPortMappings(Arrays.asList(cartridge.getPortMappings()));
 
         log.info(String.format("Starting pod: [application] %s [cartridge] %s [member] %s " +
                         "[cpu] %d [memory] %d MB",
@@ -521,9 +521,8 @@ public class KubernetesIaas extends Iaas {
 
                 try {
                     // Services need to use minions private IP addresses for creating iptable rules
-                    String[] minionPrivateIPArray = minionPrivateIPList.toArray(new String[minionPrivateIPList.size()]);
                     kubernetesApi.createService(serviceId, serviceLabel, servicePort, containerPortName,
-                            minionPrivateIPArray, sessionAffinity);
+                            containerPort, minionPrivateIPList, sessionAffinity);
                 } finally {
                     // Persist kubernetes service sequence no
                     CloudControllerContext.getInstance().persist();
@@ -537,13 +536,13 @@ public class KubernetesIaas extends Iaas {
                 Service service = kubernetesApi.getService(serviceId);
 
                 KubernetesService kubernetesService = new KubernetesService();
-                kubernetesService.setId(service.getId());
-                kubernetesService.setPortalIP(service.getPortalIP());
+                kubernetesService.setId(service.getMetadata().getName());
+                kubernetesService.setPortalIP(service.getSpec().getPortalIP());
                 // Expose minions public IP addresses as they need to be accessed by external networks
                 String[] minionPublicIPArray = minionPublicIPList.toArray(new String[minionPublicIPList.size()]);
                 kubernetesService.setPublicIPs(minionPublicIPArray);
                 kubernetesService.setProtocol(portMapping.getProtocol());
-                kubernetesService.setPort(service.getPort());
+                kubernetesService.setPort(service.getSpec().getPorts().get(0).getPort());
                 kubernetesService.setContainerPort(containerPort);
                 kubernetesServices.add(kubernetesService);
 

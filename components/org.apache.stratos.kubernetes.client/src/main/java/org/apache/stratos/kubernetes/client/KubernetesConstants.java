@@ -25,10 +25,11 @@ package org.apache.stratos.kubernetes.client;
 public class KubernetesConstants {
 
     public static final String POD_STATUS_RUNNING = "Running";
-    public static final String KUBERNETES_API_VERSION = "v1beta1";
-    public static final String KIND_SERVICE = "Service";
-    public static final String KIND_REPLICATION_CONTROLLER = "ReplicationController";
-    public static final String KIND_POD = "Pod";
-    public static final String POLICY_PULL_IF_NOT_PRESENT = "PullIfNotPresent";
+    public static final String POLICY_PULL_IF_NOT_PRESENT = "IfNotPresent";
     public static final String SESSION_AFFINITY_CLIENT_IP = "ClientIP";
+    public static final String KIND_POD = "Pod";
+    public static final String KIND_SERVICE = "Service";
+    public static final String LABEL_NAME = "name";
+    public static final String RESOURCE_CPU = "cpu";
+    public static final String RESOURCE_MEMORY = "memory";
 }

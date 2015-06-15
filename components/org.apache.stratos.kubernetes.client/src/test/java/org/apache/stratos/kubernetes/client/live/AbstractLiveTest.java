@@ -19,6 +19,11 @@
 
 package org.apache.stratos.kubernetes.client.live;
 
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.resource.Quantity;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -26,15 +31,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.Port;
-import org.apache.stratos.kubernetes.client.model.Service;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -65,7 +69,7 @@ public class AbstractLiveTest extends TestCase {
     protected int containerPort;
     protected boolean testPodActivation;
     protected boolean testServiceSocket;
-    protected String[] minionPublicIPs = {"172.17.8.102"};
+    protected List<String> minionPublicIPs = Arrays.asList("172.17.8.102");
     protected List<String> podIdList = new CopyOnWriteArrayList<String>();
     protected List<String> serviceIdList = new CopyOnWriteArrayList<String>();
 
@@ -74,8 +78,7 @@ public class AbstractLiveTest extends TestCase {
         log.info("Setting up live test...");
         endpoint = System.getProperty(KUBERNETES_API_ENDPOINT);
         if (endpoint == null) {
-            endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":" + KUBERNETES_API_PORT + "/api/"
-                    + KubernetesConstants.KUBERNETES_API_VERSION + "/";
+            endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":" + KUBERNETES_API_PORT;
         }
         log.info(KUBERNETES_API_ENDPOINT + ": " + endpoint);
         client = new KubernetesApiClient(endpoint);
@@ -110,7 +113,7 @@ public class AbstractLiveTest extends TestCase {
 
         String minionPublicIPsStr = System.getProperty(MINION_PUBLIC_IPS);
         if (StringUtils.isNotBlank(minionPublicIPsStr)) {
-            minionPublicIPs = minionPublicIPsStr.split(",");
+            minionPublicIPs = Arrays.asList(minionPublicIPsStr.split(","));
         }
         log.info(MINION_PUBLIC_IPS + ": " + minionPublicIPsStr);
         log.info("Kubernetes live test setup completed");
@@ -124,9 +127,11 @@ public class AbstractLiveTest extends TestCase {
         log.info("Kubernetes resources cleaned");
     }
 
-    protected void createPod(String podId, String podName, String containerPortName, int cpu, int memory) throws KubernetesClientException {
+    protected void createPod(String podId, String podName, String containerPortName, int cpu, int memory)
+            throws KubernetesClientException {
+
         log.info("Creating pod: [pod] " + podId);
-        List<Port> ports = createPorts(containerPortName);
+        List<ContainerPort> ports = createPorts(containerPortName);
         client.createPod(podId, podName, dockerImage, cpu, memory, ports, null);
         podIdList.add(podId);
 
@@ -134,6 +139,17 @@ public class AbstractLiveTest extends TestCase {
         Pod pod = client.getPod(podId);
         assertNotNull(pod);
         log.info("Pod created successfully: [pod] " + podId);
+
+        List<Container> containers = pod.getSpec().getContainers();
+        assertEquals(1, containers.size());
+
+        Map<String, Quantity> limits = containers.get(0).getResources().getLimits();
+        int memoryInMb = memory * 1024 * 1024;
+
+        log.info("Verifying container resource limits...");
+        assertEquals(String.valueOf(cpu), limits.get(KubernetesConstants.RESOURCE_CPU).getAmount());
+        assertEquals(String.valueOf(memoryInMb), limits.get(KubernetesConstants.RESOURCE_MEMORY).getAmount());
+        log.info("Container resource limits verified successfully");
 
         if (testPodActivation) {
             boolean activated = false;
@@ -148,15 +164,19 @@ public class AbstractLiveTest extends TestCase {
                 log.info("Waiting pod status to be changed to running: [pod] " + podId);
                 sleep(2000);
                 pod = client.getPod(podId);
-                if ((pod != null) && (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING))) {
+                if ((pod != null) && (pod.getStatus().getPhase().equals(KubernetesConstants.POD_STATUS_RUNNING))) {
                     activated = true;
-                    log.info("Pod state changed to running: [pod]" + pod.getId());
+                    log.info("Pod state changed to running: [pod]" + pod.getMetadata().getName());
                 }
             }
 
             assertNotNull(pod);
-            assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getCurrentState().getStatus());
+            assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getStatus().getPhase());
         }
+    }
+
+    Pod getPod(String podId) throws KubernetesClientException {
+        return client.getPod(podId);
     }
 
     void deletePod(String podId) throws KubernetesClientException {
@@ -180,9 +200,9 @@ public class AbstractLiveTest extends TestCase {
     }
 
     protected void createService(String serviceId, String serviceName, int servicePort, String containerPortName,
-                                 String[] publicIPs) throws KubernetesClientException, InterruptedException, IOException {
+                                 int containerPort, List<String> publicIPs) throws KubernetesClientException, InterruptedException, IOException {
         log.info("Creating service...");
-        client.createService(serviceId, serviceName, servicePort, containerPortName, publicIPs,
+        client.createService(serviceId, serviceName, servicePort, containerPortName, containerPort, publicIPs,
                 KubernetesConstants.SESSION_AFFINITY_CLIENT_IP);
         serviceIdList.add(serviceId);
 
@@ -190,6 +210,10 @@ public class AbstractLiveTest extends TestCase {
         Service service = client.getService(serviceId);
         assertNotNull(service);
         log.info("Service creation successful");
+    }
+
+    Service getService(String serviceId) throws KubernetesClientException {
+        return client.getService(serviceId);
     }
 
     void deleteService(String serviceId) throws KubernetesClientException {
@@ -219,9 +243,9 @@ public class AbstractLiveTest extends TestCase {
         }
     }
 
-    protected List<Port> createPorts(String containerPortName) {
-        List<Port> ports = new ArrayList<Port>();
-        Port port = new Port();
+    protected List<ContainerPort> createPorts(String containerPortName) {
+        List<ContainerPort> ports = new ArrayList<ContainerPort>();
+        ContainerPort port = new ContainerPort();
         port.setName(containerPortName);
         port.setContainerPort(containerPort);
         port.setProtocol("tcp");

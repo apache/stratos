@@ -19,11 +19,11 @@
 
 package org.apache.stratos.kubernetes.client.live;
 
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.Service;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
             List<Pod> podList = getPods();
             while ((podList != null) && (podList.size() > 0)) {
                 for (Pod pod : podList) {
-                    deletePod(pod.getId());
+                    deletePod(pod.getMetadata().getName());
                 }
                 podList = client.getPods();
             }
@@ -51,7 +51,7 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
             List<Service> serviceList = getServices();
             while ((serviceList != null) && (serviceList.size() > 0)) {
                 for (Service service : serviceList) {
-                    deleteService(service.getId());
+                    deleteService(service.getMetadata().getName());
                 }
                 serviceList = getServices();
             }
@@ -64,7 +64,7 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
     private List<Pod> getPods() throws KubernetesClientException {
         List<Pod> podList = new ArrayList<Pod>();
         for(Pod pod : client.getPods()) {
-            if(!pod.getId().startsWith("kube")) {
+            if(!pod.getMetadata().getName().startsWith("kube")) {
                 podList.add(pod);
             }
         }
@@ -74,7 +74,7 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
     private List<Service> getServices() throws KubernetesClientException {
         List<Service> serviceList = new ArrayList<Service>();
         for (Service service : client.getServices()) {
-            if (!service.getId().startsWith("kube")) {
+            if (!service.getMetadata().getName().startsWith("kube")) {
                 serviceList.add(service);
             }
         }

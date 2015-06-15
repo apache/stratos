@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cloud.controller.iaases.kubernetes;
 
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
@@ -28,8 +30,6 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.domain.NameValuePair;
-import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
-import org.apache.stratos.kubernetes.client.model.Port;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,11 +58,10 @@ public class KubernetesIaasUtil {
      * @param memberContext
      * @return
      */
-    public static EnvironmentVariable[] prepareEnvironmentVariables(ClusterContext clusterContext,
-                                                                    MemberContext memberContext) {
+    public static List<EnvVar> prepareEnvironmentVariables(ClusterContext clusterContext, MemberContext memberContext) {
 
         String kubernetesClusterId = clusterContext.getKubernetesClusterId();
-        List<EnvironmentVariable> environmentVariables = new ArrayList<EnvironmentVariable>();
+        List<EnvVar> environmentVariables = new ArrayList<EnvVar>();
 
         // Set dynamic payload
         NameValuePair[] payload = memberContext.getDynamicPayload();
@@ -90,8 +89,7 @@ public class KubernetesIaasUtil {
                     memberContext.getClusterId(), memberContext.getMemberId(), environmentVariables.toString()));
         }
 
-        EnvironmentVariable[] array = new EnvironmentVariable[environmentVariables.size()];
-        return environmentVariables.toArray(array);
+        return environmentVariables;
     }
 
     /**
@@ -101,26 +99,26 @@ public class KubernetesIaasUtil {
      * @param name
      * @param value
      */
-    private static void addToEnvironmentVariables(List<EnvironmentVariable> environmentVariables, String name, String value) {
-        EnvironmentVariable environmentVariable = new EnvironmentVariable();
+    private static void addToEnvironmentVariables(List<EnvVar> environmentVariables, String name, String value) {
+        EnvVar environmentVariable = new EnvVar();
         environmentVariable.setName(name);
         environmentVariable.setValue(value);
         environmentVariables.add(environmentVariable);
     }
 
     /**
-     * Convert stratos port mappings to kubernetes ports
+     * Convert stratos port mappings to kubernetes container ports
      *
      * @param portMappings
      * @return
      */
-    public static List<Port> convertPortMappings(List<PortMapping> portMappings) {
-        List<Port> ports = new ArrayList<Port>();
+    public static List<ContainerPort> convertPortMappings(List<PortMapping> portMappings) {
+        List<ContainerPort> ports = new ArrayList<ContainerPort>();
         for (PortMapping portMapping : portMappings) {
-            Port port = new Port();
-            port.setName(preparePortNameFromPortMapping(portMapping));
-            port.setContainerPort(portMapping.getPort());
-            ports.add(port);
+            ContainerPort containerPort = new ContainerPort();
+            containerPort.setName(preparePortNameFromPortMapping(portMapping));
+            containerPort.setContainerPort(portMapping.getPort());
+            ports.add(containerPort);
         }
         return ports;
     }
