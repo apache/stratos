@@ -70,6 +70,10 @@ if (!elements) {
             var iaasProviders = util.RESTCalls.getIaaSProviders();
             formData['properties']['provider']['enum'] = iaasProviders['iaasProviders'];
         }
+        if(elements.formtype == 'cartridges'){
+            var iaasProviders = util.RESTCalls.getIaaSProviders();
+            formData['properties']['iaasProvider']['items']['properties']['type']['enum'] = iaasProviders['iaasProviders'];          
+        }
 
 
     } catch (e) {
