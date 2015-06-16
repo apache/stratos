@@ -234,6 +234,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/cartridgeGroups",{});
     };
 
+    this.getIaaSProviders = function(){
+        return this.sendReceive("GET","/iaasProviders",{});
+    };
+
     this.getApplications = function(){
         return this.sendReceive("GET","/applications",{});
     };

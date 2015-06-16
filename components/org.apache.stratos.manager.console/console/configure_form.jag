@@ -66,6 +66,10 @@ if (!elements) {
                 formDataRaw = require('controllers/forms/default/configure/' + elements.formtype + '.json'),
                 formTitle = formData.title,
                 buttonText = formData.name;
+
+        var iaasProviders = util.RESTCalls.getIaaSProviders();
+        formData['properties']['provider']['enum'] = iaasProviders['iaasProviders'];
+
     } catch (e) {
         log.error(e.message);
         error.push({"errorMessage": e.message});
