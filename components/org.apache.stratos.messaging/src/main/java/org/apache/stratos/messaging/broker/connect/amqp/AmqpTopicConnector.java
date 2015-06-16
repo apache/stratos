@@ -50,7 +50,7 @@ public abstract class AmqpTopicConnector implements TopicConnector {
             String jndiPropFileDir = System.getProperty("jndi.properties.dir");
             if(StringUtils.isEmpty(jndiPropFileDir)) {
                 // jndi.properties.dir system property not found, set default
-                jndiPropFileDir = CarbonUtils.getCarbonHome();
+                jndiPropFileDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf";
             }
             Properties environment = MessagingUtil.getProperties(jndiPropFileDir + File.separator + "jndi.properties");
             environment.put("org.wso2.carbon.context.RequestBaseContext", "true"); // always returns the base context.
