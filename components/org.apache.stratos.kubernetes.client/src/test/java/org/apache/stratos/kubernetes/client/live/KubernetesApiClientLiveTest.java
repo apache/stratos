@@ -20,6 +20,7 @@
  */
 package org.apache.stratos.kubernetes.client.live;
 
+import io.fabric8.kubernetes.api.model.Pod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
@@ -47,7 +48,7 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
     public void testPodCreation() throws Exception {
         log.info("Testing pod creation...");
 
-        createPod("stratos-test-pod-2", "stratos-test-pod", "http-1", 1, 512);
+        createPod("stratos-test-pod-1", "stratos-test-pod", "http-1", 1, 512);
         createPod("stratos-test-pod-2", "stratos-test-pod", "http-1", 2, 512);
 
         deletePod("stratos-test-pod-1");
@@ -71,23 +72,24 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
         String serviceName = "stratos-test-pod";
         String containerPortName = "http-1";
 
-        createService(serviceId, serviceName, SERVICE_PORT, containerPortName, minionPublicIPs);
+        createService(serviceId, serviceName, SERVICE_PORT, containerPortName, containerPort, minionPublicIPs);
 
-        createPod("stratos-test-pod-1", serviceName, containerPortName, 1, 512);
-        createPod("stratos-test-pod-2", serviceName, containerPortName, 2, 512);
+        createPod("stratos-test-pod-3", serviceName, containerPortName, 1, 512);
+        createPod("stratos-test-pod-4", serviceName, containerPortName, 2, 512);
 
         if (testServiceSocket) {
             // test service accessibility
-            log.info(String.format("Connecting to service: [portal] %s:%d", minionPublicIPs[0], SERVICE_PORT));
+            log.info(String.format("Connecting to service: [portal] %s:%d", minionPublicIPs.get(0), SERVICE_PORT));
             sleep(4000);
-            Socket socket = new Socket(minionPublicIPs[0], SERVICE_PORT);
+            Socket socket = new Socket(minionPublicIPs.get(0), SERVICE_PORT);
             assertTrue(socket.isConnected());
-            log.info(String.format("Connecting to service successful: [portal] %s:%d", minionPublicIPs[0], SERVICE_PORT));
+            log.info(String.format("Connecting to service successful: [portal] %s:%d", minionPublicIPs.get(0),
+                    SERVICE_PORT));
         }
 
         deleteService(serviceId);
 
-        deletePod("stratos-test-pod-1");
-        deletePod("stratos-test-pod-2");
+        deletePod("stratos-test-pod-3");
+        deletePod("stratos-test-pod-4");
     }
 }

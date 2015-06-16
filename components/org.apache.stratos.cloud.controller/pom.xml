@@ -60,6 +60,8 @@
                             org.apache.commons.logging; version=0.0.0,
                             org.apache.commons.io.*,
                             org.wso2.carbon.utils.*,
+                            org.apache.stratos.kubernetes.client,
+                            org.apache.stratos.kubernetes.client.exceptions,
                             <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
                             org.jclouds*;version="${jclouds.version}",-->
                             *; resolution:=optional
@@ -311,6 +313,11 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>kubernetes-api</artifactId>
+            <version>2.1.11-stratosv1</version>
         </dependency>
     </dependencies>
     <properties>

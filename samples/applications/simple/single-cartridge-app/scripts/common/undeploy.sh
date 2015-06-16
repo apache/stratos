@@ -47,5 +47,4 @@ curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://
 
 echo "Removing network partitions..."
 curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/networkPartitions/network-partition-1
-curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/networkPartitions/network-partition-2
 

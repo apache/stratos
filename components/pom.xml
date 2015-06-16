@@ -66,7 +66,6 @@
         <!-- Redirector -->
         <module>org.apache.stratos.sso.redirector.ui</module>
         <module>org.apache.stratos.keystore.mgt</module>
-        <module>org.apache.stratos.activation</module>
         <!--Logging mgt-->
         <module>org.apache.stratos.logging.view.ui</module>
         <!-- RESTful admin services -->

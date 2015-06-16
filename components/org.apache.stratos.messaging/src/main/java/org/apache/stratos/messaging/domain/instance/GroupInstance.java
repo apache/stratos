@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.domain.instance;
 
 import org.apache.stratos.messaging.domain.application.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateTransitionBehavior;
 
@@ -51,6 +52,24 @@ public class GroupInstance extends Instance<GroupStatus> implements LifeCycleSta
     @Override
     public boolean setStatus(GroupStatus newState) {
         return this.lifeCycleStateManager.changeState(newState);
+    }
+
+    /**
+     * Get the current state
+     *
+     * @return the current state
+     */
+    public GroupStatus getCurrentState() {
+        return lifeCycleStateManager.getCurrentState();
+    }
+
+    /**
+     * Retrieves the previous state
+     *
+     * @return previous state
+     */
+    public GroupStatus getPreviousState() {
+        return lifeCycleStateManager.getPreviousState();
     }
 
 

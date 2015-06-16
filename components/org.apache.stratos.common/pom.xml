@@ -47,6 +47,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.common.*,
+                            org.apache.stratos.common.domain.*,
                             org.apache.stratos.common.client.*,
                             org.apache.stratos.common.services.*,
                             org.apache.stratos.common.statistics.publisher.*,

@@ -20,9 +20,11 @@
  */
 package org.apache.stratos.kubernetes.client.interfaces;
 
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.*;
-
 import java.util.List;
 
 
@@ -37,10 +39,11 @@ public interface KubernetesAPIClientInterface {
      * @param cpu number of cpu cores
      * @param memory memory allocation in mega bytes
      * @param ports ports to be opened
+     * @param environmentVariables environment variables
      * @throws KubernetesClientException
      */
-    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory, List<Port> ports,
-                          EnvironmentVariable[] environmentVariables)
+    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory,
+                          List<ContainerPort> ports, List<EnvVar> environmentVariables)
             throws KubernetesClientException;
 
     /**
@@ -61,15 +64,6 @@ public interface KubernetesAPIClientInterface {
     public List<Pod> getPods() throws KubernetesClientException;
 
     /**
-     * Run a label query and retrieve a sub set of Pods.
-     *
-     * @param labels of labels for the label query
-     * @return Pods selected Pods by executing the label query.
-     * @throws KubernetesClientException
-     */
-    public List<Pod> queryPods(Labels[] labels) throws KubernetesClientException;
-
-    /**
      * Delete a Pod
      *
      * @param podId Id of the Pod to be deleted
@@ -78,68 +72,21 @@ public interface KubernetesAPIClientInterface {
     public void deletePod(String podId) throws KubernetesClientException;
 
     /**
-     * Create replication controller.
-     *
-     * @param replicationControllerId
-     * @param replicationControllerName
-     * @param dockerImage
-     * @param ports
-     * @param replicas
-     * @throws KubernetesClientException
-     */
-    public void createReplicationController(String replicationControllerId,
-                                            String replicationControllerName,
-                                            String dockerImage,
-                                            List<Port> ports,
-                                            EnvironmentVariable[] environmentVariables,
-                                            int replicas) throws KubernetesClientException;
-
-    /**
-     * Get a Replication Controller Info
-     *
-     * @param controllerId id of the Replication Controller
-     * @return {@link ReplicationController}
-     * @throws KubernetesClientException
-     */
-    public ReplicationController getReplicationController(String controllerId) throws KubernetesClientException;
-
-    /**
-     * Get all Replication Controllers.
-     *
-     * @return {@link ReplicationController}s
-     * @throws KubernetesClientException
-     */
-    public List<ReplicationController> getReplicationControllers() throws KubernetesClientException;
-
-    /**
-     * Update a Replication Controller (update the number of replicas).
-     *
-     * @param replicationController replication controller to be updated
-     * @throws KubernetesClientException
-     */
-    public void updateReplicationController(ReplicationController replicationController) throws KubernetesClientException;
-
-    /**
-     * Delete a Replication Controller.
-     *
-     * @param replicationControllerId controller id controller id to be deleted.
-     * @throws KubernetesClientException
-     */
-    public void deleteReplicationController(String replicationControllerId) throws KubernetesClientException;
-
-    /**
      * Create service.
      *
      * @param serviceId
      * @param serviceLabel
      * @param servicePort
      * @param containerPortName
+     * @param containerPort
      * @param publicIPs
      * @param sessionAffinity
      * @throws KubernetesClientException
      */
     public void createService(String serviceId, String serviceLabel, int servicePort,
-                              String containerPortName, String[] publicIPs, String sessionAffinity) throws KubernetesClientException;
+                              String containerPortName, int containerPort, List<String> publicIPs,
+                              String sessionAffinity)
+            throws KubernetesClientException;
 
     /**
      * Get the Service with the given id.
