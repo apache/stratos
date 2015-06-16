@@ -1629,7 +1629,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             List<String> iaases = new ArrayList<String>();
 
             for (IaasProvider iaas : iaasProviders) {
-                iaases.add(iaas.getProvider());
+                iaases.add(iaas.getType());
             }
 
             return iaases.toArray(new String[iaases.size()]);
