@@ -206,16 +206,36 @@ public class AutoscalerCloudControllerClient {
         return volumes.toArray(new Volume[volumes.size()]);
     }
 
-    public void removeExpiredObsoletedMemberFromCloudController(MemberContext member) {
-        try {
+    public void terminateInstance(String memberId) throws Exception {
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
+        }
+        long startTime = System.currentTimeMillis();
+        stub.terminateInstance(memberId);
+        if (log.isDebugEnabled()) {
+            long endTime = System.currentTimeMillis();
+            log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
+        }
+    }
 
-            stub.removeExpiredObsoletedMemberFromCloudController(member.getApplicationId(), member.getCartridgeType(),
-                    member.getClusterId(), member.getMemberId(), member.getNetworkPartitionId(),
-                    member.getPartition());
+    public void terminateInstanceForcefully(String memberId) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Terminating instance forcefully via cloud controller: [member] %s", memberId));
+        }
+        stub.terminateInstanceForcefully(memberId);
+    }
 
-        } catch (RemoteException e) {
-            log.error(String.format("Error while removing member from cloud controller for obsolete " +
-                    "member, [member-id] %s ", member.getMemberId()));
+    public void terminateAllInstances(String clusterId) throws RemoteException,
+            CloudControllerServiceInvalidClusterExceptionException {
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
+        }
+        long startTime = System.currentTimeMillis();
+        stub.terminateInstances(clusterId);
+
+        if (log.isDebugEnabled()) {
+            long endTime = System.currentTimeMillis();
+            log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
         }
     }
 }

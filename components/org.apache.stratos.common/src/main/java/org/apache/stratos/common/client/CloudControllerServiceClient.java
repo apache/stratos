@@ -112,39 +112,6 @@ public class CloudControllerServiceClient {
         return stub.getServiceGroup(name);
     }
 
-    public void terminateInstance(String memberId) throws Exception {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
-        }
-        long startTime = System.currentTimeMillis();
-        stub.terminateInstance(memberId);
-        if (log.isDebugEnabled()) {
-            long endTime = System.currentTimeMillis();
-            log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
-        }
-    }
-
-    public void terminateInstanceForcefully(String memberId) throws Exception {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Terminating instance forcefully via cloud controller: [member] %s", memberId));
-        }
-        stub.terminateInstanceForcefully(memberId);
-    }
-
-    public void terminateAllInstances(String clusterId) throws RemoteException,
-            CloudControllerServiceInvalidClusterExceptionException {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
-        }
-        long startTime = System.currentTimeMillis();
-        stub.terminateInstances(clusterId);
-
-        if (log.isDebugEnabled()) {
-            long endTime = System.currentTimeMillis();
-            log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
-        }
-    }
-
     public String[] getRegisteredCartridges() throws RemoteException {
         return stub.getCartridges();
     }

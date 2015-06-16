@@ -396,21 +396,6 @@ public interface CloudControllerService {
      */
 
     /**
-     * Remove member from cloud controller side context, topology etc.
-     *
-     * @param applicationId      app of the member
-     * @param cartridgeType      cartridge of the member
-     * @param clusterId          cluster of the member
-     * @param memberId           id of the member
-     * @param networkPartitionId nw partition of the member
-     * @param partition          partition of the member
-     * @return whether the removal is successful
-     */
-    boolean removeExpiredObsoletedMemberFromCloudController(String applicationId, String cartridgeType,
-                                                            String clusterId, String memberId,
-                                                            String networkPartitionId, Partition partition);
-
-    /**
      * Returns the available Iaas Providers
      */
     public String[] getIaasProviders();

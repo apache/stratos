@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
 import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
@@ -961,7 +962,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 try {
                     log.info(String.format("Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
                             "[application-id] %s", memberIdToTerminate, clusterId, application));
-                    CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
+                    AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
                 } catch (Exception e) {
                     log.error(String.format("Forceful termination of member %s has failed, but continuing forceful " +
                             "deletion of other members", memberIdToTerminate));

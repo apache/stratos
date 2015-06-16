@@ -124,7 +124,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Forcefully terminating member [member-id] %s", memberId));
             }
-            CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberId);
+            AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberId);
         } catch (Exception e) {
             log.error("Error occurred while terminating instance", e);
         }
@@ -721,8 +721,14 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                                 obsoleteMember.getClusterInstanceId()));
 
                         //notifying CC, about the removal of obsolete member
-                        AutoscalerCloudControllerClient.getInstance().removeExpiredObsoletedMemberFromCloudController(
-                                obsoleteMember);
+                        try {
+                            AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(
+                                    obsoleteMember.getMemberId());
+                        } catch (Exception e) {
+                            log.error(String.format("Termination of obsolete member %s is failed, but all the contexts" +
+                                    "will be removed", obsoleteMember.getMemberId()));
+
+                        }
 
                         iterator.remove();
                         if (ctxt.getMemberStatsContexts().containsKey(obsoleteMemberId)) {
