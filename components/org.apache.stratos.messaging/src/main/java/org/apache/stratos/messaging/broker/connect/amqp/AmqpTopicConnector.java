@@ -19,11 +19,13 @@
 
 package org.apache.stratos.messaging.broker.connect.amqp;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.util.MessagingUtil;
+import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.jms.*;
 import javax.naming.InitialContext;
@@ -46,6 +48,10 @@ public abstract class AmqpTopicConnector implements TopicConnector {
     public void create() {
         try {
             String jndiPropFileDir = System.getProperty("jndi.properties.dir");
+            if(StringUtils.isEmpty(jndiPropFileDir)) {
+                // jndi.properties.dir system property not found, set default
+                jndiPropFileDir = CarbonUtils.getCarbonHome();
+            }
             Properties environment = MessagingUtil.getProperties(jndiPropFileDir + File.separator + "jndi.properties");
             environment.put("org.wso2.carbon.context.RequestBaseContext", "true"); // always returns the base context.
             initialContext = new InitialContext(environment);
