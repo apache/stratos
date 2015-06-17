@@ -34,8 +34,6 @@ import java.util.List;
 public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
     private static final Log log = LogFactory.getLog(ParentLevelNetworkPartitionContext.class);
     private int scaleDownRequestsCount = 0;
-    private float averageRequestsServedPerInstance;
-    private int pendingMembersFailureCount = 0;
 
     private int minInstanceCount = 0, maxInstanceCount = 0;
     private int requiredInstanceCountBasedOnStats;
@@ -196,25 +194,6 @@ public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext 
         partitionContexts.add(partitionContext);
     }
 
-    public int getNonTerminatedMemberCountOfPartition(String partitionId) {
-
-        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
-            if (partitionContext.getPartitionId().equals(partitionId)) {
-                return partitionContext.getNonTerminatedInstanceCount();
-            }
-        }
-        return 0;
-    }
-
-    public int getActiveMemberCount(String currentPartitionId) {
-
-        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
-            if (partitionContext.getPartitionId().equals(currentPartitionId)) {
-                return partitionContext.getActiveInstanceCount();
-            }
-        }
-        return 0;
-    }
 
     public GroupLevelPartitionContext getPartitionContextById(String partitionId) {
         for (GroupLevelPartitionContext partitionContext : partitionContexts) {

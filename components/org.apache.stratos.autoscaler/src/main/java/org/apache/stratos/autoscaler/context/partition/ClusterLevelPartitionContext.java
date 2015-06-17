@@ -29,6 +29,8 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -654,12 +656,18 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                     Iterator<MemberContext> iterator = pendingMembers.listIterator();
                     while (iterator.hasNext()) {
                         MemberContext pendingMember = iterator.next();
+                        String clusterInstanceId = pendingMember.getClusterInstanceId();
+                        String clusterId = pendingMember.getClusterId();
+                        String serviceName = pendingMember.getCartridgeType();
+                        ClusterStatus status = TopologyManager.getTopology().
+                                getService(serviceName).getCluster(clusterId).
+                                getInstanceContexts(clusterInstanceId).getStatus();
 
                         if (pendingMember == null) {
                             continue;
                         }
                         long pendingTime = System.currentTimeMillis() - pendingMember.getInitTime();
-                        if (pendingTime >= expiryTime) {
+                        if (pendingTime >= expiryTime || status.equals(ClusterStatus.Terminating)) {
 
                             log.info(String.format("Pending state of member expired, member will be moved to obsolete list. " +
                                             "[pending member] %s [expiry time] %s [cluster] %s " + "[cluster instance] %s",
@@ -773,6 +781,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 while (iterator.hasNext()) {
 
                     MemberContext terminationPendingMember = iterator.next();
+
                     if (terminationPendingMember == null) {
                         continue;
                     }
