@@ -503,13 +503,15 @@ public class GroupMonitor extends ParentComponentMonitor {
                 if (!active) {
                     onChildTerminatedEvent(childId, instanceId);
                 } else {
-                    log.info("[Group Instance] " + instanceId + " is still active upon termination" +
+                    log.info("[Group Instance] " + instanceId + " for [application] " + appId +
+                            " is still active upon termination" +
                             " of the [child] " + childId);
                 }
             }
         } else {
-            log.warn("The required instance cannot be found in the the [GroupMonitor] " +
-                    id);
+            log.warn("The required [instance] " + instanceId + " for [application] " + appId +
+                    " cannot be found in the the [GroupMonitor] " +
+                    id + " upon termination of the [child] " + childId);
         }
     }
 
@@ -938,19 +940,31 @@ public class GroupMonitor extends ParentComponentMonitor {
         } else {
             //have to create one more instance
             if (group.getInstanceContextCount() < groupMax) {
-                // Get partitionContext to create instance in
-                partitionContext = getPartitionContext(parentLevelNetworkPartitionContext,
-                        parentPartitionId);
-                if (partitionContext != null) {
+                //Check whether group level deployment policy is there
+                String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, id);
+                if(deploymentPolicyId != null) {
+                    // Get partitionContext to create instance in
+                    partitionContext = getPartitionContext(parentLevelNetworkPartitionContext,
+                            parentPartitionId);
+                    if (partitionContext != null) {
+                        groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
+                                partitionContext,
+                                parentLevelNetworkPartitionContext,
+                                null);
+                        instanceIdsToStart.add(groupInstanceId);
+
+                    } else {
+                        log.warn("Partition context is null, there is no more partition available " +
+                                "for the [Group] " + group.getUniqueIdentifier() + " has reached " +
+                                "the maximum limit as [max] " + groupMax +
+                                ". Hence trying to notify the parent.");
+                    }
+                } else {
                     groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
-                            partitionContext,
+                            null,
                             parentLevelNetworkPartitionContext,
                             null);
                     instanceIdsToStart.add(groupInstanceId);
-                } else {
-                    log.warn("Partition context is null, [Group] " + group.getUniqueIdentifier() + " has reached " +
-                            "the maximum limit as [max] " + groupMax +
-                            ". Hence trying to notify the parent.");
                 }
             } else {
                 log.warn("[Group] " + group.getUniqueIdentifier() + " has reached " +
