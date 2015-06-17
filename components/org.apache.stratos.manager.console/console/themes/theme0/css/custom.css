@@ -218,6 +218,10 @@ button.hover-undeploy{
     margin-top: .7em;
 }
 
+button.hover-force-undeploy{
+    margin-top: .7em;
+}
+
 div#textform>div>h3 {
     display: none;
 }

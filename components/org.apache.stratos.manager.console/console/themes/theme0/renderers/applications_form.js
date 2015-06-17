@@ -135,6 +135,7 @@ var render = function (theme, data, meta, require) {
                                 appName: data.appName,
                                 topologyData: data.topologyData,
                                 applicationJSON:data.applicationJSON,
+                                applicationStatus: data.applicationStatus,
                                 form_action: data.form_action,
                                 formHtml: data.formHtml,
                                 formData: data.formData,

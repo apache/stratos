@@ -29,6 +29,7 @@ public class ApplicationContext implements Serializable {
 
     public static final String STATUS_CREATED = "Created";
     public static final String STATUS_DEPLOYED = "Deployed";
+    public static final String STATUS_UNDEPLOYING = "Undeploying";
 
     private String applicationId;
     private String alias;

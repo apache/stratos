@@ -554,7 +554,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 log.error(message);
                 throw new RuntimeException(message);
             }
-
+            applicationContext.setStatus(ApplicationContext.STATUS_UNDEPLOYING);
             // Remove application signup(s) in stratos manager
             removeApplicationSignUp(applicationContext);
 
