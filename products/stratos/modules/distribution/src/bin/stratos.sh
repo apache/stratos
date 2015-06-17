@@ -176,7 +176,7 @@ if [ "$CMD" = "--debug" ]; then
   echo "Please start the remote debugging client to continue..."
 elif [ "$CMD" = "start" ]; then
   if [ -e "$CARBON_HOME/wso2carbon.pid" ]; then
-    if  ps -p $PID >&- ; then
+    if  ps -p $PID > /dev/null ; then
       echo "Process is already running"
       exit 0
     fi
