@@ -103,6 +103,7 @@ import java.util.regex.Pattern;
 public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
+    public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
 
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
