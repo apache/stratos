@@ -1540,6 +1540,7 @@ public class StratosApiV41Utils {
     private static void validateGroupAliasesInApplicationDefinition(ApplicationBean applicationDefinition) throws RestAPIException {
 
         ConcurrentHashMap<String, CartridgeGroupReferenceBean> groupsInApplicationDefinition = new ConcurrentHashMap<String, CartridgeGroupReferenceBean>();
+        boolean groupParentHasDP = false;
 
         if ((applicationDefinition.getComponents().getGroups() != null) &&
                 (!applicationDefinition.getComponents().getGroups().isEmpty())) {
@@ -1551,14 +1552,62 @@ public class StratosApiV41Utils {
                             group.getAlias();
                     throw new RestAPIException(message);
                 }
+
+                // Validate top level group deployment policy with cartridges
+                if (group.getCartridges() != null) {
+                    if (group.getDeploymentPolicy() != null) {
+                        groupParentHasDP = true;
+                    }
+                    validateCartridgesForDeploymentPolicy(group.getCartridges(), groupParentHasDP);
+                }
+
                 groupsInApplicationDefinition.put(group.getAlias(), group);
 
                 if (group.getGroups() != null) {
                     //This is to validate the groups aliases recursively
-                    validateGroupsRecursively(groupsInApplicationDefinition, group.getGroups());
+                    validateGroupsRecursively(groupsInApplicationDefinition, group.getGroups(), groupParentHasDP);
                 }
             }
         }
+
+        if ((applicationDefinition.getComponents().getCartridges() != null) &&
+                (!applicationDefinition.getComponents().getCartridges().isEmpty())) {
+            validateCartridgesForDeploymentPolicy(applicationDefinition.getComponents().getCartridges(), false);
+        }
+
+    }
+
+    /**
+     * This method validates cartridges in groups
+     * Deployment policy should not defined in cartridge if group has a deployment policy
+     *
+     * @param cartridgeReferenceBeans - Cartridges in a group
+     * @throws RestAPIException
+     */
+    private static void validateCartridgesForDeploymentPolicy(List<CartridgeReferenceBean> cartridgeReferenceBeans,
+                                                              boolean hasDP) throws RestAPIException {
+
+        if (hasDP) {
+            for (CartridgeReferenceBean cartridge : cartridgeReferenceBeans) {
+                if (cartridge.getSubscribableInfo().getDeploymentPolicy() != null) {
+                    String message = "Group deployment policy already exists. Remove deployment policy from " +
+                            "cartridge subscription : [cartridge] " + cartridge.getSubscribableInfo().getAlias();
+                    throw new RestAPIException(message);
+                }
+            }
+        } else {
+            for (CartridgeReferenceBean cartridge : cartridgeReferenceBeans) {
+                if (cartridge.getSubscribableInfo().getDeploymentPolicy() == null) {
+                    String message = String.format("Deployment policy is not defined for cartridge [cartridge] %s." +
+                                    "It has not inherited any deployment policies.",
+                            cartridge.getSubscribableInfo().getAlias());
+                    throw new RestAPIException(message);
+                }
+            }
+
+        }
+
+
     }
 
     /**
@@ -1570,17 +1619,34 @@ public class StratosApiV41Utils {
      */
 
     private static void validateGroupsRecursively(ConcurrentHashMap<String, CartridgeGroupReferenceBean> groupsSet,
-                                                  Collection<CartridgeGroupReferenceBean> groups) throws RestAPIException {
+                                                  Collection<CartridgeGroupReferenceBean> groups, boolean hasDP)
+            throws RestAPIException {
+
         for (CartridgeGroupReferenceBean group : groups) {
             if (groupsSet.get(group.getAlias()) != null) {
                 String message = "Cartridge group alias exists more than once: [group-alias] " +
                         group.getAlias();
                 throw new RestAPIException(message);
             }
+
+            if (group.getDeploymentPolicy() != null) {
+                if (hasDP) {
+                    String message = "Parent Group has a deployment policy. Remove deployment policy from the" +
+                            " group: [group-alias] " + group.getAlias();
+                    throw new RestAPIException(message);
+                } else {
+                    hasDP = true;
+                }
+            }
+
+            if (group.getCartridges() != null) {
+                validateCartridgesForDeploymentPolicy(group.getCartridges(), hasDP);
+            }
+
             groupsSet.put(group.getAlias(), group);
 
             if (group.getGroups() != null) {
-                validateGroupsRecursively(groupsSet, group.getGroups());
+                validateGroupsRecursively(groupsSet, group.getGroups(), hasDP);
             }
         }
     }
