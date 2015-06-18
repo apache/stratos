@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 from texttable import *
 import Configs
 from Logging import logging
@@ -10,15 +12,15 @@ class PrintableTree:
         pass
 
     def print_tree(self):
-        def _print(t, level=0, ups=""):
+        def _print_tree(t, level=0, ups=""):
             if isinstance(t, list):
                 print('|')
                 for element in t[:-1]:
-                    print(ups + "+-")
-                    _print(element, level + 1, ups + "| ")
+                    print(ups + "+-", end='')
+                    _print_tree(element, level + 1, ups + "| ")
                 else:
-                    print(ups + "+-")
-                    _print(t[-1], level + 1, ups + "  ")
+                    print(ups + "+-", end='')
+                    _print_tree(t[-1], level + 1, ups + "  ")
             elif isinstance(t, dict):
                 print('|')
                 l = []
@@ -26,18 +28,18 @@ class PrintableTree:
                     if isinstance(v, list) or isinstance(v, dict):
                         l.extend([k, v])
                     else:
-                        l.extend([k + " : " + v])
+                        l.extend([str(k) + " : " + str(v)])
                 t = l
                 for element in t[:-1]:
-                    print(ups + "+-")
-                    _print(element, level + 1, ups + "| ")
+                    print(ups + "+-", end='')
+                    _print_tree(element, level + 1, ups + "| ")
                 else:
-                    print(ups + "+-")
-                    _print(t[-1], level + 1, ups + "  ")
+                    print(ups + "+-", end='')
+                    _print_tree(t[-1], level + 1, ups + "  ")
             else:
-                print(t)
-
-            _print(self.tree_data)
+                print(str(t))
+        print("_")
+        _print_tree(self.tree_data)
 
 
 class PrintableTable(Texttable):
@@ -47,15 +49,15 @@ class PrintableTable(Texttable):
         self.set_deco(Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
 
     def print_table(self):
-        print self.draw()
+        print(self.draw())
 
 def auth(func):
     """Authenticate"""
     def auth_inner(self, *args, **kwargs):
 
-        if len(args) > 1 and args[1].username is not None:
+        if len(args) > 1 and hasattr(args[1], 'username') and args[1].username is not None:
             Configs.stratos_username = args[1].username
-        if len(args) > 1 and args[1].password is not None:
+        if len(args) > 1 and hasattr(args[1], 'password') and args[1].password is not None:
             Configs.stratos_password = args[1].password
 
         if Configs.stratos_username is "" and Configs.stratos_password is "":
