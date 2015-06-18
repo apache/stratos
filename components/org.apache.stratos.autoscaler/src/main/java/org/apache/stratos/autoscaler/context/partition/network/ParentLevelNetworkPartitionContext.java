@@ -269,7 +269,6 @@ public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext 
                     iterator.remove();
                     // add to the activated list
                     this.activeInstances.add(pendingInstance);
-                    pendingMembersFailureCount = 0;
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Pending instance is removed and added to the " +
                                 "activated instance list. [Instance Id] %s", instanceId));
