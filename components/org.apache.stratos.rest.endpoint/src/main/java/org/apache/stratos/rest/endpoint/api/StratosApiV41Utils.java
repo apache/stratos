@@ -1580,7 +1580,7 @@ public class StratosApiV41Utils {
     /**
      * This method validates cartridges in groups
      * Deployment policy should not defined in cartridge if group has a deployment policy
-     *
+     * If group does not have a DP, then cartridge should have one
      * @param cartridgeReferenceBeans - Cartridges in a group
      * @throws RestAPIException
      */
