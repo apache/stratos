@@ -19,14 +19,19 @@
 
 package org.apache.stratos.aws.extension;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.domain.*;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -43,9 +48,37 @@ public class AWSHelper {
 
 	private static final Log log = LogFactory.getLog(AWSHelper.class);
 
-	public AWSHelper() {
+	public AWSHelper() throws LoadBalancerExtensionException {
 		// Read values for awsAccessKey, awsSecretKey etc. from config file
 		// Throw a proper exception / log warning if cant read credentials ?
+
+		String awsCredentialsFile = System
+				.getProperty(Constants.AWS_CREDENTIALS_FILE);
+
+		Properties properties = new Properties();
+
+		InputStream inputStream = null;
+
+		try {
+			inputStream = new FileInputStream(awsCredentialsFile);
+
+			properties.load(inputStream);
+
+			this.awsAccessKey = properties
+					.getProperty(Constants.AWS_ACCESS_KEY);
+			this.awsSecretKey = properties
+					.getProperty(Constants.AWS_SECRET_KEY);
+		} catch (IOException e) {
+			log.error("Error reading aws configuration file.");
+			throw new LoadBalancerExtensionException(
+					"Error reading aws configuration file.", e);
+		} finally {
+			try {
+				inputStream.close();
+			} catch (Exception e) {
+				log.warn("Failed to close input stream to aws configuration file.");
+			}
+		}
 
 		awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
 		clientConfiguration = new ClientConfiguration();

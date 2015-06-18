@@ -26,6 +26,7 @@ lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
+            -Daws.credentials.file=${script_path}/../conf/aws-credentials.conf
             -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=wso2carbon
             -Dthrift.client.config.file.path=${script_path}/../conf/thrift-client-config.xml

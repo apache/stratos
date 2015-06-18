@@ -42,13 +42,15 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	private AWSHelper awsHelper;
 
-	public AWSLoadBalancer() {
+	public AWSLoadBalancer() throws LoadBalancerExtensionException {
 		clusterIdToLoadBalancerMap = new HashMap<String, String>();
 		awsHelper = new AWSHelper();
 	}
 
 	public boolean configure(Topology topology)
 			throws LoadBalancerExtensionException {
+
+		log.info("AWS load balancer extension re-configured.");
 
 		for (Service service : topology.getServices()) {
 
@@ -190,11 +192,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	public void start() throws LoadBalancerExtensionException {
 
-		log.info("Started AWS load balancer extension.");
+		log.info("AWS load balancer extension started.");
 	}
 
 	public void reload() throws LoadBalancerExtensionException {
 		// Check what is appropriate to do here.
+		log.info("AWS load balancer extension reloaded.");
 	}
 
 	public void stop() throws LoadBalancerExtensionException {

@@ -20,7 +20,7 @@
 package org.apache.stratos.aws.extension;
 
 /**
- * HA proxy extension constants.
+ * AWS proxy extension constants.
  */
 public class Constants {
     public static final String CEP_STATS_PUBLISHER_ENABLED = "cep.stats.publisher.enabled";
@@ -29,4 +29,7 @@ public class Constants {
     public static final String NETWORK_PARTITION_ID = "network.partition.id";
     public static final String CLUSTER_ID = "cluster.id";
     public static final String SERVICE_NAME = "service.name";
+    public static final String AWS_CREDENTIALS_FILE="aws.credentials.file";
+    public static final String AWS_ACCESS_KEY = "access-key";
+    public static final String AWS_SECRET_KEY = "secret-key";
 }

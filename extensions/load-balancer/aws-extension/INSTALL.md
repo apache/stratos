@@ -24,7 +24,9 @@ below steps to proceed with the installation:
 
 1. Extract org.apache.stratos.aws.extension-<version>.zip to a desired location: <aws-extension-home>.
 
-2. Open <aws-extension-home>/bin/aws-extension.sh file in a text editor and update following system properties:
+2. Open <aws-extension-home>/conf/aws-credentials.conf file in text editor and update AWS access key and secret key information.
+
+3. Open <aws-extension-home>/bin/aws-extension.sh file in a text editor and update following system properties:
    ```
    # Enable/disable cep statistics publisher:
    -Dcep.stats.publisher.enabled=false
@@ -35,9 +37,9 @@ below steps to proceed with the installation:
    -Dnetwork.partition.id=network-partition-1
    ```
 
-3. Open <aws-extension-home>/conf/jndi.properties file in a text editor and update message broker information:
+4. Open <aws-extension-home>/conf/jndi.properties file in a text editor and update message broker information:
    ```
    java.naming.provider.url=tcp://localhost:61616
    ```
-4. Run <aws-extension-home>/bin/aws-extension.sh as the root user.
+5. Run <aws-extension-home>/bin/aws-extension.sh as the root user.
 
