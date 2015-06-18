@@ -1054,15 +1054,19 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // network partition - partition id should be already added
             for (PartitionRef partitionRef : networkPartitionRef.getPartitionRefs()) {
                 String partitionId = partitionRef.getId();
+                boolean isPartitionFound = false;
 
                 for (Partition partition : networkPartition.getPartitions()) {
-                    if (!partition.getId().equals(partitionId)) {
-                        String msg = String.format("Partition Id is not found: [deployment-policy-id] %s " +
-                                        "[network-partition-id] %s [partition-id] %s",
-                                deploymentPolicyId, networkPartitionId, partitionId);
-                        log.error(msg);
-                        throw new InvalidDeploymentPolicyException(msg);
+                    if (partition.getId().equals(partitionId)) {
+                        isPartitionFound = true;
                     }
+                }
+                if (isPartitionFound == false) {
+                    String msg = String.format("Partition Id is not found: [deployment-policy-id] %s " +
+                                    "[network-partition-id] %s [partition-id] %s",
+                            deploymentPolicyId, networkPartitionId, partitionId);
+                    log.error(msg);
+                    throw new InvalidDeploymentPolicyException(msg);
                 }
             }
 
