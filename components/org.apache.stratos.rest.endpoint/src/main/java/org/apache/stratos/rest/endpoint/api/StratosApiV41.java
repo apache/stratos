@@ -276,7 +276,12 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        CartridgeBean cartridgeBean = null;
+        try {
+            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException ignore) {
+            //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
+        }
         if (cartridgeBean != null) {
             String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
             log.warn(msg);
