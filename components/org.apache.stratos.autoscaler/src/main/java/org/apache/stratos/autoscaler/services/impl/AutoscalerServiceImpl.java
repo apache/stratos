@@ -629,7 +629,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
             String msg = "Cartridge group cannot be null or service name cannot be empty.";
             log.error(msg);
-            throw new IllegalArgumentException(msg);
+            throw new InvalidServiceGroupException(msg);
         }
 
         if (log.isInfoEnabled()) {
