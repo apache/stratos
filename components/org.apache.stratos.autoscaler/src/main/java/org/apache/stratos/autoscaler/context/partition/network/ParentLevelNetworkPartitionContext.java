@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Holds runtime data of a network partition.
@@ -167,6 +168,16 @@ public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext 
         this.requiredInstanceCountBasedOnStats = requiredInstanceCountBasedOnStats;
     }
 
+    public List<InstanceContext> getInstanceIdToInstanceContextMap(String parentInstanceId) {
+        List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
+        for(InstanceContext instanceContext : instanceIdToInstanceContextMap.values()) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+        return instanceContexts;
+    }
+
     public int getRequiredInstanceCountBasedOnDependencies() {
         return requiredInstanceCountBasedOnDependencies;
     }
@@ -208,12 +219,32 @@ public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext 
         return activeInstances;
     }
 
+    public List<InstanceContext> getActiveInstances(String parentInstanceId) {
+        List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
+        for(InstanceContext instanceContext : activeInstances) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+        return instanceContexts;
+    }
+
     public void setActiveInstances(List<InstanceContext> activeInstances) {
         this.activeInstances = activeInstances;
     }
 
     public List<InstanceContext> getPendingInstances() {
         return pendingInstances;
+    }
+
+    public List<InstanceContext> getPendingInstances(String parentInstanceId) {
+        List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
+        for(InstanceContext instanceContext : pendingInstances) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+        return instanceContexts;
     }
 
     public void setPendingInstances(List<InstanceContext> pendingInstances) {
@@ -228,8 +259,29 @@ public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext 
         return this.pendingInstances.size();
     }
 
+    public int getPendingInstancesCount(String parentInstanceId) {
+        List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
+        for(InstanceContext instanceContext : pendingInstances) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+        return instanceContexts.size();
+    }
+
+
     public int getActiveInstancesCount() {
         return this.activeInstances.size();
+    }
+
+    public int getActiveInstancesCount(String parentInstanceId) {
+        List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
+        for(InstanceContext instanceContext : activeInstances) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+        return instanceContexts.size();
     }
 
     public InstanceContext getActiveInstance(String instanceId) {
@@ -337,6 +389,23 @@ public class ParentLevelNetworkPartitionContext extends NetworkPartitionContext 
 
     public int getNonTerminatedInstancesCount() {
         return this.activeInstances.size() + this.pendingInstances.size();
+    }
+
+    public int getNonTerminatedInstancesCount(String parentInstanceId) {
+        List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
+
+        for(InstanceContext instanceContext : activeInstances) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+
+        for(InstanceContext instanceContext : pendingInstances) {
+            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+                instanceContexts.add(instanceContext);
+            }
+        }
+        return instanceContexts.size();
     }
 
     public List<InstanceContext> getTerminatingPending() {
