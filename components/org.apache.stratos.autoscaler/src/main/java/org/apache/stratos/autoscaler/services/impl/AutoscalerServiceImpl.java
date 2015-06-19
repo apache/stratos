@@ -273,12 +273,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 throw new RuntimeException("Application context not found: " + applicationId);
             }
 
+            // validating application policy against the application
+            AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
+
             // Create application clusters in cloud controller and send application created event
             ApplicationBuilder.handleApplicationDeployment(application,
                     applicationContext.getComponents().getApplicationClusterContexts());
-
-            // validating application policy against the application
-            AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
 
             // Setting application policy id in application object
             try {
