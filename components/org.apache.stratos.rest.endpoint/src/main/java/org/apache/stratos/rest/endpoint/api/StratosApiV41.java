@@ -484,7 +484,7 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidServiceGroupException().getMessage())).build();
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, e.getMessage())).build();
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
         }
     }
 
