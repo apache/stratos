@@ -74,10 +74,7 @@ import org.drools.runtime.rule.FactHandle;
 
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -92,12 +89,13 @@ public class ClusterMonitor extends Monitor {
 
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;
+    // future to cancel it when destroying monitors
+    private ScheduledFuture<?> schedulerFuture;
     protected String serviceType;
     private AtomicBoolean monitoringStarted;
     protected String clusterId;
     private Cluster cluster;
     private int monitoringIntervalMilliseconds;
-    private boolean isDestroyed;
     //has scaling dependents
     private boolean hasScalingDependents;
     private boolean groupScalingEnabledSubtree;
@@ -130,7 +128,8 @@ public class ClusterMonitor extends Monitor {
     }
 
     public void startScheduler() {
-        scheduler.scheduleAtFixedRate(this, 0, getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
+        schedulerFuture = scheduler.scheduleAtFixedRate(this, 0,
+                getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -203,14 +202,6 @@ public class ClusterMonitor extends Monitor {
 
     public void setMonitorIntervalMilliseconds(int monitorIntervalMilliseconds) {
         this.monitoringIntervalMilliseconds = monitorIntervalMilliseconds;
-    }
-
-    public boolean isDestroyed() {
-        return isDestroyed;
-    }
-
-    public void setDestroyed(boolean isDestroyed) {
-        this.isDestroyed = isDestroyed;
     }
 
     public void setHasFaultyMember(boolean hasFaultyMember) {
@@ -304,22 +295,18 @@ public class ClusterMonitor extends Monitor {
 
     @Override
     public void run() {
-        while (!isDestroyed()) {
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cluster monitor is running.. " + this.toString());
-                }
-                monitor();
-            } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Cluster monitor is running.. " + this.toString());
             }
-            try {
-                Thread.sleep(getMonitorIntervalMilliseconds());
-            } catch (InterruptedException ignore) {
-            }
+            monitor();
+        } catch (Exception e) {
+            log.error("Cluster monitor: Monitor failed." + this.toString(), e);
         }
-
-
+        try {
+            Thread.sleep(getMonitorIntervalMilliseconds());
+        } catch (InterruptedException ignore) {
+        }
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {
@@ -532,22 +519,11 @@ public class ClusterMonitor extends Monitor {
 
     @Override
     public void destroy() {
-        for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
+        //shutting down the scheduler
+        schedulerFuture.cancel(true);
 
-            Collection<InstanceContext> clusterInstanceContexts = networkPartitionContext.
-                    getInstanceIdToInstanceContextMap().values();
-
-            for (final InstanceContext pInstanceContext : clusterInstanceContexts) {
-                ClusterInstanceContext instanceContext = (ClusterInstanceContext) pInstanceContext;
-                instanceContext.getMinCheckKnowledgeSession().dispose();
-                instanceContext.getObsoleteCheckKnowledgeSession().dispose();
-                instanceContext.getScaleCheckKnowledgeSession().dispose();
-            }
-        }
-
-        setDestroyed(true);
         if (log.isDebugEnabled()) {
-            log.debug("ClusterMonitor Drools session has been disposed. " + this.toString());
+            log.debug("ClusterMonitor task has been stopped " + this.toString());
         }
     }
 

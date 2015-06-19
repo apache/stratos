@@ -183,6 +183,12 @@ public class GroupMonitor extends ParentComponentMonitor {
                                             getActiveInstancesCount();
                                     if (activeAppInstances > 0) {
                                         //Creating new group instance based on the existing parent instances
+                                        if(log.isDebugEnabled()) {
+                                            log.debug("Creating a group instance of [application] "
+                                                    + appId + " [group] " + id +
+                                                    " as the the minimum required instances not met");
+
+                                        }
                                         createInstanceOnDemand(parentInstanceContext.getId());
                                     }
                                 }
@@ -200,6 +206,12 @@ public class GroupMonitor extends ParentComponentMonitor {
                             for (int i = 0; i < instancesToBeTerminated; i++) {
                                 InstanceContext instanceContext = contextList.get(i);
                                 //scale down only when extra instances found
+                                if(log.isDebugEnabled()) {
+                                    log.debug("Terminating a group instance of [application] "
+                                            + appId + " [group] " + id + " as it exceeded the " +
+                                            "maximum no of instances by " + instancesToBeTerminated);
+
+                                }
                                 handleScalingDownBeyondMin(instanceContext,
                                         networkPartitionContext, true);
 
@@ -312,9 +324,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 //one of the child is loaded and max out.
                 // Hence creating new group instance
                 if (log.isDebugEnabled()) {
-                    log.debug("Handling group scaling for the [group] " + id +
-                            "upon a max out event from " +
-                            "the children");
+                    log.debug("Handling group scaling for the [application] " + appId + " [group] "
+                            + id + " upon a max out event from the children");
                 }
                 boolean createOnDemand = createInstanceOnDemand(parentInstanceId);
                 if (!createOnDemand) {
@@ -560,6 +571,10 @@ public class GroupMonitor extends ParentComponentMonitor {
         } else if (statusEvent.getStatus() == ClusterStatus.Created ||
                 statusEvent.getStatus() == GroupStatus.Created) {
             //starting a new instance of this monitor
+            if(log.isDebugEnabled()) {
+                log.debug("Creating a [group-instance] for [application] " + appId + " [group] " +
+                id + " as the parent scaled by group or application bursting");
+            }
             createInstanceOnDemand(statusEvent.getInstanceId());
         }
     }
@@ -816,6 +831,9 @@ public class GroupMonitor extends ParentComponentMonitor {
         boolean initialStartup = true;
         List<String> instanceIdsToStart = new ArrayList<String>();
 
+        log.info("Creating a group instance of [application] " + appId + " [group] " + id +
+                " in order to satisfy the minimum required instances");
+
         for (String parentInstanceId : parentInstanceIds) {
             // Get parent instance context
             Instance parentInstanceContext = getParentInstanceContext(parentInstanceId);
@@ -923,6 +941,9 @@ public class GroupMonitor extends ParentComponentMonitor {
         Group group = ApplicationHolder.getApplications().
                 getApplication(this.appId).getGroupRecursively(this.id);
 
+        log.info("Creating a group instance of [application] " + appId + " [group] " + id +
+                " in order to satisfy the demand on scaling for " +
+                "[parent-instance] " + parentInstanceId);
         // Get existing or create new GroupLevelNetworkPartitionContext
         ParentLevelNetworkPartitionContext parentLevelNetworkPartitionContext =
                 getGroupLevelNetworkPartitionContext(group.getUniqueIdentifier(),

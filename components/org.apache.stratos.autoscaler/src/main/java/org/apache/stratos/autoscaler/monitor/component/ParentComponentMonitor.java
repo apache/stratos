@@ -311,7 +311,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
         //calling monitor to go for group scaling or notify the parent
-        this.monitor();
+        //this.monitor();
 
     }
 

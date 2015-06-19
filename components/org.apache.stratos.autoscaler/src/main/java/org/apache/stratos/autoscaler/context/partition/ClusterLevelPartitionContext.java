@@ -29,7 +29,9 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.Serializable;
@@ -659,13 +661,21 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                         String clusterInstanceId = pendingMember.getClusterInstanceId();
                         String clusterId = pendingMember.getClusterId();
                         String serviceName = pendingMember.getCartridgeType();
-                        ClusterStatus status = TopologyManager.getTopology().
-                                getService(serviceName).getCluster(clusterId).
-                                getInstanceContexts(clusterInstanceId).getStatus();
+                         Service service = TopologyManager.getTopology().
+                                getService(serviceName);
+
+                        ClusterStatus status = ClusterStatus.Terminated;
+                        if(service != null) {
+                            Cluster cluster = service.getCluster(clusterId);
+                            if(cluster != null) {
+                                status = cluster. getInstanceContexts(clusterInstanceId).getStatus();
+                            }
+                        }
 
                         if (pendingMember == null) {
                             continue;
                         }
+
                         long pendingTime = System.currentTimeMillis() - pendingMember.getInitTime();
                         if (pendingTime >= expiryTime || status.equals(ClusterStatus.Terminating)) {
 
