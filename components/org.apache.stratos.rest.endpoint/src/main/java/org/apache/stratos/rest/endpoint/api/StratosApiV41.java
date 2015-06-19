@@ -467,7 +467,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
         try {
-            StratosApiV41Utils.addServiceGroup(cartridgeGroupBean);
+            StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
 
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -476,17 +476,15 @@ public class StratosApiV41 extends AbstractApi {
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
-        } catch (RestAPIException e) {
-            if (e.getCause().getMessage().contains("already exists")) {
-                return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                        ResponseMessageBean.ERROR, "Cartridge group not found")).build();
-            } else if (e.getCause().getMessage().contains("Invalid Service Group") || e.getCause().getMessage()
-                    .contains("Required cartridges not found")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                        ResponseMessageBean.ERROR, e.getCause().getMessage())).build();
-            } else {
-                throw e;
-            }
+        } catch (ServiceGroupDefinitionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getMessage())).build();
+        } catch (AutoscalerServiceInvalidServiceGroupExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidServiceGroupException().getMessage())).build();
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getMessage())).build();
         }
     }
 
