@@ -1667,18 +1667,6 @@ public class StratosApiV41Utils {
             throw new RestAPIException(message);
         }
 
-        if (StringUtils.isEmpty(applicationPolicyId)) {
-            String message = "Application policy id is Empty";
-            log.error(message);
-            throw new RestAPIException(message);
-        }
-        if (StringUtils.isEmpty(applicationPolicyId)) {
-            String message = String.format("Application policy id cannot be null : [application-policy-id] %s. "
-                    + "Are you passing application policy?", applicationPolicyId);
-            log.error(message);
-            throw new RestAPIException(message);
-        }
-
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Starting to deploy application: [application-id] %s", applicationId));
