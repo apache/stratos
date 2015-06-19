@@ -627,7 +627,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
-            String msg = "Cartridge group cannot be null or service name cannot be empty.";
+            String msg = "Cartridge group is null or cartridge group name is empty.";
             log.error(msg);
             throw new InvalidServiceGroupException(msg);
         }
