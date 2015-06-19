@@ -276,7 +276,12 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        CartridgeBean cartridgeBean = null;
+        try {
+            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException ignore) {
+            //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
+        }
         if (cartridgeBean != null) {
             String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
             log.warn(msg);
@@ -462,7 +467,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
         try {
-            StratosApiV41Utils.addServiceGroup(cartridgeGroupBean);
+            StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
 
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -471,17 +476,15 @@ public class StratosApiV41 extends AbstractApi {
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
-        } catch (RestAPIException e) {
-            if (e.getCause().getMessage().contains("already exists")) {
-                return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                        ResponseMessageBean.ERROR, "Cartridge group not found")).build();
-            } else if (e.getCause().getMessage().contains("Invalid Service Group") || e.getCause().getMessage()
-                    .contains("Required cartridges not found")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                        ResponseMessageBean.ERROR, e.getCause().getMessage())).build();
-            } else {
-                throw e;
-            }
+        } catch (ServiceGroupDefinitionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getMessage())).build();
+        } catch (AutoscalerServiceInvalidServiceGroupExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidServiceGroupException().getMessage())).build();
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
         }
     }
 

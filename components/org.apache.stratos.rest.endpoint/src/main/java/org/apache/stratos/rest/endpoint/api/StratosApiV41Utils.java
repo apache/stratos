@@ -500,15 +500,14 @@ public class StratosApiV41Utils {
      * @return CartridgeBean
      * @throws RestAPIException
      */
-    public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException {
+    public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException,
+            CloudControllerServiceCartridgeNotFoundExceptionException {
         try {
             Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
             if (cartridgeInfo == null) {
                 return null;
             }
             return ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
-        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-            return null;
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message, e);
@@ -925,102 +924,98 @@ public class StratosApiV41Utils {
      * @throws InvalidCartridgeGroupDefinitionException
      * @throws RestAPIException
      */
-    public static void addServiceGroup(CartridgeGroupBean serviceGroupDefinition)
-            throws InvalidCartridgeGroupDefinitionException, RestAPIException {
-        try {
-            if (serviceGroupDefinition == null) {
-                throw new RuntimeException("Cartridge group definition is null");
+    public static void addCartridgeGroup(CartridgeGroupBean serviceGroupDefinition)
+            throws InvalidCartridgeGroupDefinitionException, ServiceGroupDefinitionException, RestAPIException,
+            CloudControllerServiceCartridgeNotFoundExceptionException,
+            AutoscalerServiceInvalidServiceGroupExceptionException {
+
+        if (serviceGroupDefinition == null) {
+            throw new RuntimeException("Cartridge group definition is null");
+        }
+
+        List<String> cartridgeTypes = new ArrayList<String>();
+        String[] cartridgeNames = null;
+        List<String> groupNames;
+        String[] cartridgeGroupNames;
+
+        if (log.isDebugEnabled()) {
+            log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+        }
+
+        findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
+
+        //validate the group definition to check if cartridges duplicate in any groups defined
+        validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
+
+        //validate the group definition to check if groups duplicate in any groups and
+        //validate the group definition to check for cyclic group behaviour
+        validateGroupDuplicationInGroupDefinition(serviceGroupDefinition);
+
+        CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
+
+        cartridgeNames = new String[cartridgeTypes.size()];
+        int j = 0;
+        for (String cartridgeType : cartridgeTypes) {
+            try {
+                if (ccServiceClient.getCartridge(cartridgeType) == null) {
+                    // cartridge is not deployed, can't continue
+                    log.error("Invalid cartridge found in cartridge group " + cartridgeType);
+                    throw new InvalidCartridgeException();
+                } else {
+                    cartridgeNames[j] = cartridgeType;
+                    j++;
+                }
+            } catch (RemoteException e) {
+                String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
             }
+        }
 
-            List<String> cartridgeTypes = new ArrayList<String>();
-            String[] cartridgeNames = null;
-            List<String> groupNames;
-            String[] cartridgeGroupNames;
 
+        // if any sub groups are specified in the group, they should be already deployed
+        if (serviceGroupDefinition.getGroups() != null) {
             if (log.isDebugEnabled()) {
-                log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+                log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
             }
 
-            findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
+            List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
+            groupNames = new ArrayList<String>();
+            cartridgeGroupNames = new String[groupDefinitions.size()];
+            int i = 0;
+            for (CartridgeGroupBean groupList : groupDefinitions) {
+                groupNames.add(groupList.getName());
+                cartridgeGroupNames[i] = groupList.getName();
+                i++;
+            }
 
-            //validate the group definition to check if cartridges duplicate in any groups defined
-            validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
+            Set<String> duplicates = findDuplicates(groupNames);
+            if (duplicates.size() > 0) {
 
-            //validate the group definition to check if groups duplicate in any groups and
-            //validate the group definition to check for cyclic group behaviour
-            validateGroupDuplicationInGroupDefinition(serviceGroupDefinition);
-
-            CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
-
-            cartridgeNames = new String[cartridgeTypes.size()];
-            int j = 0;
-            for (String cartridgeType : cartridgeTypes) {
-                try {
-                    if (ccServiceClient.getCartridge(cartridgeType) == null) {
-                        // cartridge is not deployed, can't continue
-                        log.error("Invalid cartridge found in cartridge group " + cartridgeType);
-                        throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);
-                    } else {
-                        cartridgeNames[j] = cartridgeType;
-                        j++;
-                    }
-                } catch (RemoteException e) {
-                    String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
-                    log.error(message, e);
-                    throw new RestAPIException(message, e);
-                } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-                    String message = "Required cartridges not found";
-                    log.error(message, e);
-                    throw new RestAPIException(message, e);
+                StringBuilder duplicatesOutput = new StringBuilder();
+                for (String dup : duplicates) {
+                    duplicatesOutput.append(dup).append(" ");
                 }
-            }
-
-
-            // if any sub groups are specified in the group, they should be already deployed
-            if (serviceGroupDefinition.getGroups() != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
+                    log.debug("duplicate sub-groups defined: " + duplicatesOutput.toString());
                 }
-
-                List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
-                groupNames = new ArrayList<String>();
-                cartridgeGroupNames = new String[groupDefinitions.size()];
-                int i = 0;
-                for (CartridgeGroupBean groupList : groupDefinitions) {
-                    groupNames.add(groupList.getName());
-                    cartridgeGroupNames[i] = groupList.getName();
-                    i++;
-                }
-
-                Set<String> duplicates = findDuplicates(groupNames);
-                if (duplicates.size() > 0) {
-
-                    StringBuilder duplicatesOutput = new StringBuilder();
-                    for (String dup : duplicates) {
-                        duplicatesOutput.append(dup).append(" ");
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("duplicate sub-groups defined: " + duplicatesOutput.toString());
-                    }
-                    throw new RestAPIException("Invalid cartridge group definition, duplicate sub-groups defined:" +
-                            duplicatesOutput.toString());
-                }
+                throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, duplicate " +
+                        "sub-groups defined:" + duplicatesOutput.toString());
             }
+        }
 
-            ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
-                    serviceGroupDefinition);
+        ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
+                serviceGroupDefinition);
 
-            AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+        AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+        try {
             asServiceClient.addServiceGroup(serviceGroup);
-
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
-        } catch (InvalidCartridgeGroupDefinitionException e) {
-            throw e;
-        } catch (Exception e) {
-            // TODO: InvalidServiceGroupException is not received, only AxisFault. Need to fix get the custom exception
-            String message = "Could not add cartridge group";
+        } catch (RemoteException e) {
+
+            String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
@@ -1581,6 +1576,7 @@ public class StratosApiV41Utils {
      * This method validates cartridges in groups
      * Deployment policy should not defined in cartridge if group has a deployment policy
      * If group does not have a DP, then cartridge should have one
+     *
      * @param cartridgeReferenceBeans - Cartridges in a group
      * @throws RestAPIException
      */

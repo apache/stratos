@@ -33,6 +33,7 @@ import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
@@ -66,6 +67,7 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
@@ -625,9 +627,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
-            String msg = "Cartridge group cannot be null or service name cannot be empty.";
+            String msg = "Cartridge group is null or cartridge group name is empty.";
             log.error(msg);
-            throw new IllegalArgumentException(msg);
+            throw new InvalidServiceGroupException(msg);
         }
 
         if (log.isInfoEnabled()) {
@@ -939,7 +941,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             ApplicationManager.releaseReadLockForApplication(applicationId);
         }
 
-
         Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : allClusters) {
             String serviceType = clusterDataHolder.getServiceType();
@@ -951,6 +952,23 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
             } finally {
                 TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
+            }
+
+            //If there are no members in cluster Instance, send cluster Terminated Event
+            Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
+            for (ClusterInstance clusterInstance : allClusterInstances) {
+                boolean anyMembersInClusterInstance = false;
+
+                for (Member member : cluster.getMembers()) {
+                    if (member.getClusterInstanceId().equals(clusterInstance.getInstanceId())) {
+                        anyMembersInClusterInstance = true;
+                    }
+                }
+
+                if (anyMembersInClusterInstance == false) {
+                    ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId, cluster.getServiceName(),
+                            clusterId, clusterInstance.getInstanceId());
+                }
             }
 
             List<String> memberListToTerminate = new LinkedList<String>();
