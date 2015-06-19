@@ -135,6 +135,14 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                 handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
                             }
                         }
+
+                        //Resetting the events events
+                        instanceContext.setIdToScalingDownBeyondMinEvent(
+                                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
+                        instanceContext.setIdToScalingEvent(
+                                new ConcurrentHashMap<String, ScalingEvent>());
+                        instanceContext.setIdToScalingOverMaxEvent(
+                                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                     }
                 }
             }
@@ -166,9 +174,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         "Hence waiting for it to become active");
             }
         }
-        //Resetting the values
-        instanceContext.setIdToScalingOverMaxEvent(
-                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
 
     }
 
@@ -242,11 +247,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
 
         }
-
-        //Resetting the events
-        instanceContext.setIdToScalingDownBeyondMinEvent(
-                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
-
     }
 
 

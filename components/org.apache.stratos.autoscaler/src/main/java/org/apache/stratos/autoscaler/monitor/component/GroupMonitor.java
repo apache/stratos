@@ -146,8 +146,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                             }
 
                             //Resetting the events events
-                            instanceContext.setIdToScalingOverMaxEvent(
-                                    new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
+                            instanceContext.setIdToScalingDownBeyondMinEvent(
+                                    new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
                             instanceContext.setIdToScalingEvent(
                                     new ConcurrentHashMap<String, ScalingEvent>());
                             instanceContext.setIdToScalingOverMaxEvent(
