@@ -28,8 +28,8 @@ import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.PartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -159,7 +159,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             = (ParentLevelNetworkPartitionContext) networkPartitionContext;
                     Collection<Instance> parentInstances = parent.getInstances();
 
-                    for(Instance parentInstance : parentInstances) {
+                    for (Instance parentInstance : parentInstances) {
                         int nonTerminatedInstancesCount = parentLevelNetworkPartitionContext.
                                 getNonTerminatedInstancesCount(parentInstance.getInstanceId());
                         int minInstances = parentLevelNetworkPartitionContext.
@@ -183,7 +183,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                             getActiveInstancesCount();
                                     if (activeAppInstances > 0) {
                                         //Creating new group instance based on the existing parent instances
-                                        if(log.isDebugEnabled()) {
+                                        if (log.isDebugEnabled()) {
                                             log.debug("Creating a group instance of [application] "
                                                     + appId + " [group] " + id +
                                                     " as the the minimum required instances not met");
@@ -200,13 +200,13 @@ public class GroupMonitor extends ParentComponentMonitor {
                         if (activeInstances > maxInstances) {
                             int instancesToBeTerminated = activeInstances - maxInstances;
                             List<InstanceContext> contexts =
-                                    ((ParentLevelNetworkPartitionContext)networkPartitionContext).
-                                    getInstanceIdToInstanceContextMap(parentInstance.getInstanceId());
+                                    ((ParentLevelNetworkPartitionContext) networkPartitionContext).
+                                            getInstanceIdToInstanceContextMap(parentInstance.getInstanceId());
                             List<InstanceContext> contextList = new ArrayList<InstanceContext>(contexts);
                             for (int i = 0; i < instancesToBeTerminated; i++) {
                                 InstanceContext instanceContext = contextList.get(i);
                                 //scale down only when extra instances found
-                                if(log.isDebugEnabled()) {
+                                if (log.isDebugEnabled()) {
                                     log.debug("Terminating a group instance of [application] "
                                             + appId + " [group] " + id + " as it exceeded the " +
                                             "maximum no of instances by " + instancesToBeTerminated);
@@ -427,22 +427,18 @@ public class GroupMonitor extends ParentComponentMonitor {
             // then have to use parent instance Id when notifying the parent
             // as parent doesn't aware if more than one group instances are there
             if (this.isGroupScalingEnabled() || minGroupInstances > 1 || maxGroupInstances > 1) {
-                try {
-                    ApplicationHolder.acquireReadLock();
-                    Application application = ApplicationHolder.getApplications().
-                            getApplication(this.appId);
-                    if (application != null) {
-                        //Notifying the parent using parent's instance Id,
-                        // as it has group scaling enabled. Notify parent
-                        log.info("[Group] " + this.id + " is notifying the [parent] " +
-                                this.parent.getId() + " [instance] " + parentInstanceId);
-                        MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
-                                status, this.id, parentInstanceId);
+                Application application = ApplicationHolder.getApplications().
+                        getApplication(this.appId);
+                if (application != null) {
+                    //Notifying the parent using parent's instance Id,
+                    // as it has group scaling enabled. Notify parent
+                    log.info("[Group] " + this.id + " is notifying the [parent] " +
+                            this.parent.getId() + " [instance] " + parentInstanceId);
+                    MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
+                            status, this.id, parentInstanceId);
 
-                    }
-                } finally {
-                    ApplicationHolder.releaseReadLock();
                 }
+
             } else {
                 // notifying the parent
                 log.info("[Group] " + this.id + " is notifying the [parent] "
@@ -463,36 +459,43 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
     @Override
-    public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
-        String childId = statusEvent.getId();
-        String instanceId = statusEvent.getInstanceId();
-        LifeCycleState status1 = statusEvent.getStatus();
-        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
-        if (status1 == GroupStatus.Active) {
-            //Verifying whether all the minimum no of instances of child
-            // became active to take next action
-            boolean isChildActive = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
-            if (isChildActive) {
-                onChildActivatedEvent(childId, instanceId);
-            } else {
-                log.info("Waiting for other group instances to be active");
+    public void onChildStatusEvent(final MonitorStatusEvent statusEvent) {
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String childId = statusEvent.getId();
+                String instanceId = statusEvent.getInstanceId();
+                LifeCycleState status1 = statusEvent.getStatus();
+                //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+                if (status1 == GroupStatus.Active) {
+                    //Verifying whether all the minimum no of instances of child
+                    // became active to take next action
+                    boolean isChildActive = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                    if (isChildActive) {
+                        onChildActivatedEvent(childId, instanceId);
+                    } else {
+                        log.info("Waiting for other group instances to be active");
+                    }
+
+                } else if (status1 == ClusterStatus.Active) {
+                    onChildActivatedEvent(childId, instanceId);
+
+                } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
+                    markInstanceAsInactive(childId, instanceId);
+                    onChildInactiveEvent(childId, instanceId);
+
+                } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+                    //mark the child monitor as inactive in the map
+                    markInstanceAsTerminating(childId, instanceId);
+
+                } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
+                    //Act upon child instance termination
+                    onTerminationOfInstance(childId, instanceId);
+                }
             }
+        };
+        executorService.execute(monitoringRunnable);
 
-        } else if (status1 == ClusterStatus.Active) {
-            onChildActivatedEvent(childId, instanceId);
-
-        } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            markInstanceAsInactive(childId, instanceId);
-            onChildInactiveEvent(childId, instanceId);
-
-        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inactive in the map
-            markInstanceAsTerminating(childId, instanceId);
-
-        } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
-            //Act upon child instance termination
-            onTerminationOfInstance(childId, instanceId);
-        }
     }
 
     /**
@@ -538,45 +541,52 @@ public class GroupMonitor extends ParentComponentMonitor {
 
 
     @Override
-    public void onParentStatusEvent(MonitorStatusEvent statusEvent)
+    public void onParentStatusEvent(final MonitorStatusEvent statusEvent)
             throws MonitorNotFoundException {
-        String instanceId = statusEvent.getInstanceId();
-        // send the ClusterTerminating event
-        if (statusEvent.getStatus() == GroupStatus.Terminating ||
-                statusEvent.getStatus() == ApplicationStatus.Terminating) {
-            //Get all the instances which related to this instanceId
-            GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
-            if (instance != null) {
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Publishing Group terminating event for [application] " +
-                            "%s [group] %s [instance] %s", appId, id, instanceId));
-                }
-                ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
-            } else {
-                //Using parentId need to get the all the children and ask them to terminate
-                // as they can't exist without the parent
-                List<String> instanceIds = this.getInstancesByParentInstanceId(instanceId);
-                if (!instanceIds.isEmpty()) {
-                    for (String instanceId1 : instanceIds) {
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String instanceId = statusEvent.getInstanceId();
+                // send the ClusterTerminating event
+                if (statusEvent.getStatus() == GroupStatus.Terminating ||
+                        statusEvent.getStatus() == ApplicationStatus.Terminating) {
+                    //Get all the instances which related to this instanceId
+                    GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
+                    if (instance != null) {
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Publishing Group terminating event for" +
-                                            " [application] %s [group] %s [instance] %s",
-                                    appId, id, instanceId1));
+                            log.info(String.format("Publishing Group terminating event for [application] " +
+                                    "%s [group] %s [instance] %s", appId, id, instanceId));
                         }
-                        ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
-                    }
-                }
+                        ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
+                    } else {
+                        //Using parentId need to get the all the children and ask them to terminate
+                        // as they can't exist without the parent
+                        List<String> instanceIds = getInstancesByParentInstanceId(instanceId);
+                        if (!instanceIds.isEmpty()) {
+                            for (String instanceId1 : instanceIds) {
+                                if (log.isInfoEnabled()) {
+                                    log.info(String.format("Publishing Group terminating event for" +
+                                                    " [application] %s [group] %s [instance] %s",
+                                            appId, id, instanceId1));
+                                }
+                                ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
+                            }
+                        }
 
+                    }
+                } else if (statusEvent.getStatus() == ClusterStatus.Created ||
+                        statusEvent.getStatus() == GroupStatus.Created) {
+                    //starting a new instance of this monitor
+                    if (log.isDebugEnabled()) {
+                        log.debug("Creating a [group-instance] for [application] " + appId + " [group] " +
+                                id + " as the parent scaled by group or application bursting");
+                    }
+                    createInstanceOnDemand(statusEvent.getInstanceId());
+                }
             }
-        } else if (statusEvent.getStatus() == ClusterStatus.Created ||
-                statusEvent.getStatus() == GroupStatus.Created) {
-            //starting a new instance of this monitor
-            if(log.isDebugEnabled()) {
-                log.debug("Creating a [group-instance] for [application] " + appId + " [group] " +
-                id + " as the parent scaled by group or application bursting");
-            }
-            createInstanceOnDemand(statusEvent.getInstanceId());
-        }
+        };
+        executorService.execute(monitoringRunnable);
+
     }
 
     @Override
@@ -976,7 +986,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                     < groupMax) {
                 //Check whether group level deployment policy is there
                 String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, id);
-                if(deploymentPolicyId != null) {
+                if (deploymentPolicyId != null) {
                     // Get partitionContext to create instance in
                     partitionContext = getPartitionContext(parentLevelNetworkPartitionContext,
                             parentPartitionId);
@@ -1051,4 +1061,34 @@ public class GroupMonitor extends ParentComponentMonitor {
         stopScheduler();
     }
 
+    @Override
+    public boolean createInstanceOnTermination(String parentInstanceId) {
+        // Get parent instance context
+        Instance parentInstanceContext = getParentInstanceContext(parentInstanceId);
+
+        Group group = ApplicationHolder.getApplications().
+                getApplication(this.appId).getGroupRecursively(this.id);
+
+        ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+
+        log.info("Starting to Create a group instance of [application] " + appId + " [group] "
+                + id + " upon termination of an group instance for [parent-instance] "
+                + parentInstanceId);
+        // Get existing or create new GroupLevelNetworkPartitionContext
+        ParentLevelNetworkPartitionContext parentLevelNetworkPartitionContext =
+                getGroupLevelNetworkPartitionContext(group.getUniqueIdentifier(),
+                        this.appId, parentInstanceContext);
+
+        int groupMin = group.getGroupMinInstances();
+        //have to create one more instance
+        if (parentLevelNetworkPartitionContext.getNonTerminatedInstancesCount(parentInstanceId)
+                < groupMin) {
+            if (!appMonitor.isTerminating()) {
+                createInstanceOnDemand(parentInstanceId);
+                return true;
+            }
+        }
+        return false;
+
+    }
 }

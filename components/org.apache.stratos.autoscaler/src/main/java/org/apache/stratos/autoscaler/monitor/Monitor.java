@@ -65,7 +65,6 @@ public abstract class Monitor implements EventHandler, Runnable {
      */
     public abstract boolean createInstanceOnDemand(String instanceId);
 
-
     /**
      * Return the id of the monitor
      *

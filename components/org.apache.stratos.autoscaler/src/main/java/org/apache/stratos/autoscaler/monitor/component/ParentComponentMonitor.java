@@ -115,6 +115,14 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
+     * This will create Instance on demand as requested by monitors
+     *
+     * @param instanceId instance Id of the instance to be created
+     * @return whether it is created or not
+     */
+    public abstract boolean createInstanceOnTermination(String instanceId);
+
+    /**
      * Starting the scheduler for the monitor
      */
     public void startScheduler() {
@@ -199,7 +207,11 @@ public abstract class ParentComponentMonitor extends Monitor {
                 //starting a new instance of the child
                 Monitor monitor = aliasToActiveChildMonitorsMap.get(context.getId());
                 //Creating the new instance
-                monitor.createInstanceOnDemand(instanceId);
+                if(monitor instanceof ParentComponentMonitor) {
+                    ((ParentComponentMonitor) monitor).createInstanceOnTermination(instanceId);
+                } else {
+                    monitor.createInstanceOnDemand(instanceId);
+                }
             }
         }
     }

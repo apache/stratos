@@ -29,8 +29,8 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -315,53 +315,60 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
-    public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
-        String childId = statusEvent.getId();
-        String instanceId = statusEvent.getInstanceId();
-        LifeCycleState status1 = statusEvent.getStatus();
-        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
-        if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(childId, instanceId);
+    public void onChildStatusEvent(final MonitorStatusEvent statusEvent) {
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String childId = statusEvent.getId();
+                String instanceId = statusEvent.getInstanceId();
+                LifeCycleState status1 = statusEvent.getStatus();
+                //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+                if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
+                    onChildActivatedEvent(childId, instanceId);
 
-        } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            this.markInstanceAsInactive(childId, instanceId);
-            onChildInactiveEvent(childId, instanceId);
+                } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
+                    markInstanceAsInactive(childId, instanceId);
+                    onChildInactiveEvent(childId, instanceId);
 
-        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inActive in the map
-            markInstanceAsTerminating(childId, instanceId);
+                } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+                    //mark the child monitor as inActive in the map
+                    markInstanceAsTerminating(childId, instanceId);
 
-        } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
-            //Check whether all dependent goes Terminated and then start them in parallel.
-            removeInstanceFromFromInactiveMap(childId, instanceId);
-            removeInstanceFromFromTerminatingMap(childId, instanceId);
+                } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
+                    //Check whether all dependent goes Terminated and then start them in parallel.
+                    removeInstanceFromFromInactiveMap(childId, instanceId);
+                    removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-            ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
-            if (instance != null) {
-                if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
-                        instance.getStatus() == ApplicationStatus.Terminated) {
-                    ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
-                            appId, instanceId);
-                } else {
-                    Monitor monitor = this.getMonitor(childId);
-                    boolean active = false;
-                    if (monitor instanceof GroupMonitor) {
-                        //Checking whether the Group is still active in case the faulty member
-                        // identified after scaling up
-                        active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
-                    }
-                    if (!active) {
-                        onChildTerminatedEvent(childId, instanceId);
+                    ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
+                    if (instance != null) {
+                        if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
+                                instance.getStatus() == ApplicationStatus.Terminated) {
+                            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
+                                    appId, instanceId);
+                        } else {
+                            Monitor monitor = getMonitor(childId);
+                            boolean active = false;
+                            if (monitor instanceof GroupMonitor) {
+                                //Checking whether the Group is still active in case the faulty member
+                                // identified after scaling up
+                                active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                            }
+                            if (!active) {
+                                onChildTerminatedEvent(childId, instanceId);
+                            } else {
+                                log.info("[Group Instance] " + instanceId + " is still active " +
+                                        "upon termination of the [child ] " + childId);
+                            }
+                        }
                     } else {
-                        log.info("[Group Instance] " + instanceId + " is still active " +
-                                "upon termination of the [child ] " + childId);
+                        log.warn("The required instance cannot be found in the the [GroupMonitor] " +
+                                id);
                     }
                 }
-            } else {
-                log.warn("The required instance cannot be found in the the [GroupMonitor] " +
-                        this.id);
             }
-        }
+        };
+        executorService.execute(monitoringRunnable);
+
     }
 
     @Override
@@ -686,5 +693,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public void setForce(boolean force) {
         this.force = force;
+    }
+
+    @Override
+    public boolean createInstanceOnTermination(String instanceId) {
+        return false;
     }
 }
