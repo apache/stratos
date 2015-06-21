@@ -445,6 +445,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                 member.addPort(transformPort(port));
             }
         }
+        
+        if (messagingMember.getInstanceId() != null) {
+            member.setInstanceId(messagingMember.getInstanceId());
+        }
         return member;
     }
 }
