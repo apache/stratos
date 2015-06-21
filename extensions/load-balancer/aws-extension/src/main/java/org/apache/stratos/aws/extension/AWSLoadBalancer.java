@@ -85,6 +85,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 						// if instance id of member is not in attachedInstances
 						// add this to instancesToAddToLoadBalancer
 
+						Instance instance = new Instance(member.getInstanceId());
+
+						if (!attachedInstances.contains(instance)) {
+							instancesToAddToLoadBalancer.add(instance);
+						}
+						
 					}
 
 					List<Instance> instancesToRemoveFromLoadBalancer = new ArrayList<Instance>();
