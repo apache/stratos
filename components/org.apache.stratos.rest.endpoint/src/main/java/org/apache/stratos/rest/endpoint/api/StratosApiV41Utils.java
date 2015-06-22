@@ -1875,21 +1875,41 @@ public class StratosApiV41Utils {
      * @param applicationId Application Id
      * @return ApplicationInfoBean
      */
-    public static ApplicationInfoBean getApplicationRuntime(String applicationId) {
+    public static ApplicationInfoBean getApplicationRuntime(String applicationId)
+            throws RestAPIException {
         ApplicationInfoBean applicationBean = null;
+        ApplicationContext applicationContext = null;
+        //Checking whether application is in deployed mode
         try {
-            ApplicationManager.acquireReadLockForApplication(applicationId);
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
-            if (application == null) {
-                return null;
+            applicationContext = getAutoscalerServiceClient().
+                    getApplication(applicationId);
+        } catch (RemoteException e) {
+            String message = "Could not get application definition: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+
+        } catch (RestAPIException e) {
+            String message = "Could not get application definition: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+
+        }
+
+        if(applicationContext != null && applicationContext.getStatus().equals("Deployed")) {
+            try {
+                ApplicationManager.acquireReadLockForApplication(applicationId);
+                Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                if (application == null) {
+                    return null;
+                }
+                applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
+                for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
+                    addClustersInstancesToApplicationInstanceBean(instanceBean, application);
+                    addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                }
+            } finally {
+                ApplicationManager.releaseReadLockForApplication(applicationId);
             }
-            applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
-            for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
-                addClustersInstancesToApplicationInstanceBean(instanceBean, application);
-                addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(applicationId);
         }
         return applicationBean;
     }

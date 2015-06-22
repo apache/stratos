@@ -1272,6 +1272,8 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/view")
     public Response getApplicationRuntime(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
+
+
         ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
