@@ -48,10 +48,7 @@ import org.wso2.siddhi.query.api.extension.annotation.SiddhiExtension;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * CEP window processor to handle faulty member instances. This window processor is responsible for
@@ -68,6 +65,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     private ExecutorService executorService;
     private ScheduledExecutorService faultHandleScheduler;
+    private ScheduledFuture<?> lastSchedule;
 	private ThreadBarrier threadBarrier;
 	private long timeToKeep;
 	private ISchedulerSiddhiQueue<StreamEvent> window;
@@ -246,7 +244,10 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         } catch (Throwable t) {
             log.error(t.getMessage(), t);
         } finally {
-            faultHandleScheduler.schedule(this, timeToKeep, TimeUnit.MILLISECONDS);
+            if (lastSchedule != null) {
+                lastSchedule.cancel(false);
+            }
+            lastSchedule = faultHandleScheduler.schedule(this, timeToKeep, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -298,12 +299,18 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     @Override
     public void schedule() {
-        faultHandleScheduler.schedule(this, timeToKeep, TimeUnit.MILLISECONDS);
+        if (lastSchedule != null) {
+            lastSchedule.cancel(false);
+        }
+        lastSchedule = faultHandleScheduler.schedule(this, timeToKeep, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void scheduleNow() {
-        faultHandleScheduler.schedule(this, 0, TimeUnit.MILLISECONDS);
+        if (lastSchedule != null) {
+            lastSchedule.cancel(false);
+        }
+        lastSchedule = faultHandleScheduler.schedule(this, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
