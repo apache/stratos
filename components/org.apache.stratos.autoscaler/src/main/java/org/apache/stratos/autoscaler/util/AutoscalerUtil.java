@@ -389,7 +389,7 @@ public class AutoscalerUtil {
      */
     public static List<String> getNetworkPartitionIdsReferedInApplication(String applicationId) {
 
-        List<String> deploymentPolicyIdsReferedInApplication = getDeploymentPolicyIdsReferedInApplication(applicationId);
+        List<String> deploymentPolicyIdsReferedInApplication = getDeploymentPolicyIdsReferredInApplication(applicationId);
         if (deploymentPolicyIdsReferedInApplication == null) {
             return null;
         }
@@ -422,7 +422,7 @@ public class AutoscalerUtil {
      * @param applicationId the application id
      * @return list of deployment policy ids
      */
-    private static List<String> getDeploymentPolicyIdsReferedInApplication(String applicationId) {
+    private static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
 
         if (applicationId == null || StringUtils.isBlank(applicationId)) {
             return null;
@@ -748,14 +748,40 @@ public class AutoscalerUtil {
         }
     }
 
+    /**
+     * Validate whether all the deployment policies used in the application are using the same network partitions of Application policy
+     */
     private static boolean isAppUsingNetworkPartitionId(String applicationId, String networkPartitionId) {
         if (applicationId == null || StringUtils.isBlank(applicationId)
                 || networkPartitionId == null || StringUtils.isBlank(networkPartitionId)) {
             return false;
         }
-        List<String> networkPartitionsReferredInApplication = AutoscalerUtil.getNetworkPartitionIdsReferedInApplication(applicationId);
-        for (String appNetworkPartitionId : networkPartitionsReferredInApplication) {
-            if (appNetworkPartitionId != null && appNetworkPartitionId.equals(networkPartitionId)) {
+        List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.getDeploymentPolicyIdsReferredInApplication(applicationId);
+        if (deploymentPolicyIdsReferredInApplication == null) {
+            return false;
+        }
+
+        for (String deploymentPolicyIDReferredInApp : deploymentPolicyIdsReferredInApplication) {
+            int referencesOfNetworkPartition = 0;
+            try {
+                DeploymentPolicy deploymentPolicyInApp = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyIDReferredInApp);
+                if (deploymentPolicyInApp != null) {
+                    for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
+                        if (networkPartitionOfDeploymentPolicy != null) {
+                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getId().
+                                    equals(networkPartitionId)) {
+                                referencesOfNetworkPartition++;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s ",
+                        deploymentPolicyIDReferredInApp);
+                log.error(msg, e);
+                throw new AutoScalerException(msg, e);
+            }
+            if (deploymentPolicyIdsReferredInApplication.size() == referencesOfNetworkPartition) {
                 return true;
             }
         }
