@@ -48,7 +48,11 @@ import org.wso2.siddhi.query.api.extension.annotation.SiddhiExtension;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CEP window processor to handle faulty member instances. This window processor is responsible for
