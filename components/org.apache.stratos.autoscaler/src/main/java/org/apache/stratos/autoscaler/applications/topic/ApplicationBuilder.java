@@ -201,7 +201,7 @@ public class ApplicationBuilder {
             application.setStatus(status, instanceId);
             updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(), instanceId);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
+            ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, instanceId);
         } else {
             log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                             " [instance-id] %s [current-status] %s [status-requested] %s",
