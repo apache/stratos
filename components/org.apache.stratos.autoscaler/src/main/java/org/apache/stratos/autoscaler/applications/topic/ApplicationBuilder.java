@@ -285,6 +285,7 @@ public class ApplicationBuilder {
                 networkPartitionContext.removeInstanceContext(instanceId);
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
+                ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(applicationId,
                         instanceId);
 
