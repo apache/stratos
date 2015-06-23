@@ -1905,11 +1905,11 @@ public class StratosApiV41Utils {
                 if (application == null) {
                     return null;
                 }
-            }
-            applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
-            for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
-                addClustersInstancesToApplicationInstanceBean(instanceBean, application);
-                addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
+                for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
+                    addClustersInstancesToApplicationInstanceBean(instanceBean, application);
+                    addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                }
             }
         } finally {
             ApplicationManager.releaseReadLockForApplication(applicationId);
