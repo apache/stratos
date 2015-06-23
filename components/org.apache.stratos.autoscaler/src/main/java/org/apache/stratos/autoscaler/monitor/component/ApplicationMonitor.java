@@ -48,6 +48,7 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -77,9 +78,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             TopologyInConsistentException {
         super(application);
 
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_SIZE, 20);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_ID, 100);
         this.executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID, threadPoolSize);
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
 
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
@@ -473,6 +474,26 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 instanceIds.add(instanceId);
                 log.info("Application instance has been added for the [network partition] " +
                         networkPartitionIds + " [appInstanceId] " + instanceId);
+            }
+
+            //Find whether any other instances exists in cluster
+            // which has not been added to in-memory model in the restart
+            Map<String, ApplicationInstance> instanceMap = application.getInstanceIdToInstanceContextMap();
+            for(ApplicationInstance instance : instanceMap.values()) {
+                if(!instanceIds.contains(instance.getInstanceId())) {
+                    ParentLevelNetworkPartitionContext context =
+                            new ParentLevelNetworkPartitionContext(instance.getNetworkPartitionId());
+                    //If application instances found in the ApplicationsTopology,
+                    // then have to add them first before creating new one
+                    ApplicationInstance appInstance = (ApplicationInstance) application.
+                            getInstanceByNetworkPartitionId(context.getId());
+                    //use the existing instance in the Topology to create the data
+                    handleApplicationInstanceCreation(application, context, appInstance);
+                    instanceIds.add(instance.getInstanceId());
+                    log.info("Burst Application instance has been added in the restart for " +
+                            "the [network partition] " + instance.getNetworkPartitionId() +
+                            " [appInstanceId] " + instance.getInstanceId());
+                }
             }
 
             startDependency(application, instanceIds);

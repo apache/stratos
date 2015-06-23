@@ -42,15 +42,15 @@ import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Factory class to get the Monitors.
@@ -147,6 +147,15 @@ public class MonitorFactory {
 
         Group group = application.getGroupRecursively(context.getId());
 
+        //Find whether any other instances exists in group
+        // which has not been added to in-memory model in the restart
+        Collection<Instance> instances = parentMonitor.getInstances();
+        for(Instance instance : instances) {
+            if(!instanceIds.contains(instance.getInstanceId())) {
+                instanceIds.add(instance.getInstanceId());
+            }
+        }
+
         // Starting the minimum dependencies
         groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
 
@@ -226,7 +235,14 @@ public class MonitorFactory {
                         serviceName, clusterId);
                 throw new RuntimeException(msg);
             }
-
+            //Find whether any other instances exists in group
+            // which has not been added to in-memory model in the restart
+            Collection<Instance> instances = parentMonitor.getInstances();
+            for(Instance instance : instances) {
+                if(!parentInstanceIds.contains(instance.getInstanceId())) {
+                    parentInstanceIds.add(instance.getInstanceId());
+                }
+            }
 
             // deployment policy validation
             String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(parentMonitor.appId,

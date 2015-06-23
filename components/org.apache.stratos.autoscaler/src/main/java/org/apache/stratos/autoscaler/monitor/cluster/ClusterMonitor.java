@@ -109,9 +109,9 @@ public class ClusterMonitor extends Monitor {
                           String deploymentPolicyId) {
 
         scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 50);
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 50);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
         executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
         this.clusterId = cluster.getClusterId();
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;

@@ -85,9 +85,9 @@ public class GroupMonitor extends ParentComponentMonitor {
             TopologyInConsistentException {
         super(group);
 
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.GROUP_MONITOR_THREAD_POOL_SIZE, 20);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
         this.executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.GROUP_MONITOR_THREAD_POOL_ID, threadPoolSize);
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
 
         this.groupScalingEnabled = group.isGroupScalingEnabled();
         this.appId = appId;
