@@ -9,6 +9,7 @@
     "multiTenant": "false",
     "portMapping": [
         {
+            "name": "http-22",
             "protocol": "http",
             "port": "22",
             "proxyPort": "8280"
