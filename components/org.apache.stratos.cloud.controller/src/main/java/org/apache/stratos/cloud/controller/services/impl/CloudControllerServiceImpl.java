@@ -1050,23 +1050,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Map<String, List<String>> accessUrls = new HashMap<String, List<String>>();
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
+                String clusterId = appClusterCtxt.getClusterId();
                 if (appClusterCtxt.isLbCluster()) {
                     String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
                     if (dependencyClusterIDs != null) {
                         for (int i = 0; i < dependencyClusterIDs.length; i++) {
-                            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(
-                                    appClusterCtxt.getCartridgeType());
+
                             List<String> accessUrlPerCluster = new ArrayList();
-                            List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
-                            for (PortMapping portMap : portMappings) {
+                            Collection<ClusterPortMapping> clusterPortMappings =
+                                    CloudControllerContext.getInstance().getClusterPortMappings(appId, clusterId);
+
+                            for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                                 try {
-                                    if (portMap.isKubernetesServicePortMapping()) {
-                                        URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
-                                                portMap.getKubernetesServicePort(), "");
+                                    if (clusterPortMapping.isKubernetes()) {
+                                        URL accessUrl = new URL(clusterPortMapping.getProtocol(), appClusterCtxt.getHostName(),
+                                                clusterPortMapping.getKubernetesServicePort(), "");
                                         accessUrlPerCluster.add(accessUrl.toString());
                                     } else {
-                                        URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
-                                                portMap.getProxyPort(), "");
+                                        URL accessUrl = new URL(clusterPortMapping.getProtocol(), appClusterCtxt.getHostName(),
+                                                clusterPortMapping.getProxyPort(), "");
                                         accessUrlPerCluster.add(accessUrl.toString());
                                     }
                                 } catch (MalformedURLException e) {

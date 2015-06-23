@@ -21,10 +21,8 @@ package org.apache.stratos.cloud.controller.messaging.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.domain.PortMapping;
+import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
@@ -193,11 +191,32 @@ public class TopologyBuilder {
                     log.info("Application Cluster " + cluster.getClusterId() + " created in CC topology");
                 }
             }
-
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
         }
+
+        log.debug("Creating cluster port mappings: [appication-id] " + appId);
+        for(Cluster cluster : appClusters) {
+            String cartridgeType = cluster.getServiceName();
+            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
+            if(cartridge == null) {
+                throw new CloudControllerException("Cartridge not found: [cartridge-type] " + cartridgeType);
+            }
+
+            for(PortMapping portMapping : cartridge.getPortMappings()) {
+                ClusterPortMapping clusterPortMapping = new ClusterPortMapping(appId,
+                        cluster.getClusterId(), portMapping.getName(), portMapping.getProtocol(), portMapping.getPort(),
+                        portMapping.getProxyPort());
+                CloudControllerContext.getInstance().addClusterPortMapping(clusterPortMapping);
+                log.debug("Cluster port mapping created: " + clusterPortMapping.toString());
+            }
+        }
+
+        // Persist cluster port mappings
+        CloudControllerContext.getInstance().persist();
+
+        // Send application clusters created event
         TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
     }
 
@@ -234,6 +253,10 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
+
+        // Remove cluster port mappings of application
+        CloudControllerContext.getInstance().removeClusterPortMappings(appId);
+        CloudControllerContext.getInstance().persist();
 
         TopologyEventPublisher.sendApplicationClustersRemoved(appId, clusterData);
 

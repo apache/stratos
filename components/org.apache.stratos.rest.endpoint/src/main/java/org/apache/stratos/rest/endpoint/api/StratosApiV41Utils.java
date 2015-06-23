@@ -127,6 +127,13 @@ public class StratosApiV41Utils {
                         cartridgeBean.getType()));
             }
 
+            for(PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
+                if(StringUtils.isBlank(portMapping.getName())) {
+                    throw new RestAPIException(String.format("A name is required for each port mapping: " +
+                            "[cartridge] %s", cartridgeBean.getType()));
+                }
+            }
+
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.addCartridge(cartridgeConfig);

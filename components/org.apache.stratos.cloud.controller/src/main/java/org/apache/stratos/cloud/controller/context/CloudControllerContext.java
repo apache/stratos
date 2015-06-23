@@ -62,6 +62,9 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
     private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
     private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
+    private static final String CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP = "CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP";
+    private static final String CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP = "CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP";
+    private static final String CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP = "CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP";
 
     private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
     private static final String CC_MEMBER_CTX_WRITE_LOCK = "CC_MEMBER_CTX_WRITE_LOCK";
@@ -71,8 +74,6 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGES_WRITE_LOCK = "CC_CARTRIDGES_WRITE_LOCK";
     private static final String CC_SERVICE_GROUPS_WRITE_LOCK = "CC_SERVICE_GROUPS_WRITE_LOCK";
 
-    private static final String CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP = "CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP";
-    private static final String CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP = "CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP";
     private static volatile CloudControllerContext instance;
 
     private final transient DistributedObjectProvider distributedObjectProvider;
@@ -163,6 +164,12 @@ public class CloudControllerContext implements Serializable {
      */
     private Map<String, List<IaasProvider>> cartridgeTypeToIaasProviders;
 
+    /**
+     * Key - Application id
+     * Value - Cluster port mappings against application id, cluster id
+     */
+    private Map<String, Map<String, List<ClusterPortMapping>>> applicationIdToClusterIdToPortMappings;
+
     private String streamId;
     private boolean isPublisherRunning;
     private boolean isTopologySyncRunning;
@@ -194,6 +201,8 @@ public class CloudControllerContext implements Serializable {
         networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
         partitionToIaasProviderByCartridge = distributedObjectProvider.getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
         cartridgeTypeToIaasProviders = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP);
+        applicationIdToClusterIdToPortMappings = distributedObjectProvider.getMap(CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP);
+
         // Update context from the registry
         updateContextFromRegistry();
     }
@@ -712,6 +721,8 @@ public class CloudControllerContext implements Serializable {
                                 partitionToIaasProviderByCartridge);
                         copyMap(serializedObj.cartridgeTypeToIaasProviders,
                                 cartridgeTypeToIaasProviders);
+                        copyMap(serializedObj.applicationIdToClusterIdToPortMappings,
+                                applicationIdToClusterIdToPortMappings);
 
                         if (log.isDebugEnabled()) {
                             log.debug("Cloud controller context is read from the registry");
@@ -833,5 +844,59 @@ public class CloudControllerContext implements Serializable {
     public List<IaasProvider> getIaasProviders(String cartridgeType) {
         List<IaasProvider> iaasProviderList = cartridgeTypeToIaasProviders.get(cartridgeType);
         return iaasProviderList;
+    }
+
+    /**
+     * Add a cluster port mapping.
+     * @param portMapping
+     */
+    public void addClusterPortMapping(ClusterPortMapping portMapping) {
+        String applicationId = portMapping.getApplicationId();
+        String clusterId = portMapping.getClusterId();
+
+        List<ClusterPortMapping> portMappings = null;
+        Map<String, List<ClusterPortMapping>> clusterIdToPortMappings =
+                applicationIdToClusterIdToPortMappings.get(applicationId);
+
+        if(clusterIdToPortMappings == null) {
+            clusterIdToPortMappings = new HashMap<String, List<ClusterPortMapping>>();
+            applicationIdToClusterIdToPortMappings.put(applicationId, clusterIdToPortMappings);
+        } else {
+            portMappings = clusterIdToPortMappings.get(portMapping.getClusterId());
+        }
+        if(portMappings == null) {
+            portMappings = new ArrayList<ClusterPortMapping>();
+            clusterIdToPortMappings.put(clusterId, portMappings);
+        }
+
+        if(!portMappings.contains(portMapping)) {
+            portMappings.add(portMapping);
+        }
+    }
+
+    /**
+     * Get cluster port mappings of an application cluster.
+     * @param applicationId
+     * @param clusterId
+     * @return
+     */
+    public List<ClusterPortMapping> getClusterPortMappings(String applicationId, String clusterId) {
+        Map<String, List<ClusterPortMapping>> clusterIdToPortMappings =
+                applicationIdToClusterIdToPortMappings.get(applicationId);
+
+        if(clusterIdToPortMappings != null) {
+            return clusterIdToPortMappings.get(clusterId);
+        }
+        return null;
+    }
+
+    /**
+     * Remove all the cluster port mappings of the given application.
+     * @param applicationId
+     */
+    public void removeClusterPortMappings(String applicationId) {
+        if(applicationIdToClusterIdToPortMappings.containsKey(applicationId)) {
+            applicationIdToClusterIdToPortMappings.remove(applicationId);
+        }
     }
 }
