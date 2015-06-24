@@ -129,8 +129,12 @@ public class StratosApiV41Utils {
 
             for(PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
                 if(StringUtils.isBlank(portMapping.getName())) {
-                    throw new RestAPIException(String.format("A name is required for each port mapping: " +
-                            "[cartridge] %s", cartridgeBean.getType()));
+                    portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Port mapping name not found, default value generated: " +
+                                        "[cartridge-type] %s [port-mapping-name] %s",
+                                cartridgeBean.getType(), portMapping.getName()));
+                    }
                 }
             }
 
