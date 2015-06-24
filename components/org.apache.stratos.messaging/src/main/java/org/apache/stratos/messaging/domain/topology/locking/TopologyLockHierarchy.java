@@ -65,6 +65,9 @@ public class TopologyLockHierarchy {
         TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceName);
         if (topologyLock == null && forceCreationIfNotFound) {
             topologyLock = new TopologyLock();
+            if (log.isDebugEnabled()) {
+                log.debug("Lock created for topology service: [service-id] " + serviceName);
+            }
             serviceNameToTopologyLockMap.put(serviceName, topologyLock);
 
         }
@@ -75,6 +78,9 @@ public class TopologyLockHierarchy {
         TopologyLock topologyLock = clusterIdToTopologyLockMap.get(clusterId);
         if (topologyLock == null && forceCreationIfNotFound) {
             topologyLock = new TopologyLock();
+            if (log.isDebugEnabled()) {
+                log.debug("Lock created for topology cluster: [cluster-id] " + clusterId);
+            }
             clusterIdToTopologyLockMap.put(clusterId, topologyLock);
         }
         return topologyLock;

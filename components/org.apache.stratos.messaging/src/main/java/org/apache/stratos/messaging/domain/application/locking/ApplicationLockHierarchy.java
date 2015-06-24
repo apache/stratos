@@ -61,9 +61,8 @@ public class ApplicationLockHierarchy {
 
         if (applicationLock == null) {
             applicationLock = new ApplicationLock();
-            if (log.isInfoEnabled()) {
-                log.info("Lock created for application: [application-id] " + appId +
-                        "  " + applicationLock.toString() + " size of application lock in map : " + appIdToApplicationLockMap.size());
+            if (log.isDebugEnabled()) {
+                log.debug("Lock created for application: [application-id] " + appId);
             }
             appIdToApplicationLockMap.put(appId, applicationLock);
         }
