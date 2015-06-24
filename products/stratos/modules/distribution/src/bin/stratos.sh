@@ -302,6 +302,7 @@ do
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     -Dthrift.client.config.file.path="$CARBON_HOME/repository/conf/thrift-client-config.xml" \
     -Dstratos.component.startup.synchronizer.enabled=true \
+    -Dread.write.lock.monitor.enabled=false \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done
