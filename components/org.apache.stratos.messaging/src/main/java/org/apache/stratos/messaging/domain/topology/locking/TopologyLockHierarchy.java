@@ -61,28 +61,21 @@ public class TopologyLockHierarchy {
         return topologyLockHierarchy;
     }
 
-    public TopologyLock getTopologyLockForService(String serviceName, boolean forceCreationIfNotFound) {
+    public synchronized TopologyLock getTopologyLockForService(String serviceName, boolean forceCreationIfNotFound) {
         TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceName);
         if (topologyLock == null && forceCreationIfNotFound) {
-            synchronized (TopologyLockHierarchy.class) {
-                if (topologyLock == null) {
-                    topologyLock = new TopologyLock();
-                    serviceNameToTopologyLockMap.put(serviceName, topologyLock);
-                }
-            }
+            topologyLock = new TopologyLock();
+            serviceNameToTopologyLockMap.put(serviceName, topologyLock);
+
         }
         return topologyLock;
     }
 
-    public TopologyLock getTopologyLockForCluster(String clusterId, boolean forceCreationIfNotFound) {
+    public synchronized TopologyLock getTopologyLockForCluster(String clusterId, boolean forceCreationIfNotFound) {
         TopologyLock topologyLock = clusterIdToTopologyLockMap.get(clusterId);
         if (topologyLock == null && forceCreationIfNotFound) {
-            synchronized (TopologyLockHierarchy.class) {
-                if (topologyLock == null) {
-                    topologyLock = new TopologyLock();
-                    clusterIdToTopologyLockMap.put(clusterId, topologyLock);
-                }
-            }
+            topologyLock = new TopologyLock();
+            clusterIdToTopologyLockMap.put(clusterId, topologyLock);
         }
         return topologyLock;
     }
