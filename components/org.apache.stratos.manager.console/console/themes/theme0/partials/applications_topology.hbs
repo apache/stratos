@@ -174,8 +174,8 @@ var payload =$(this).attr("value");
                                 var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
                             }
                             window.setTimeout(function(){
-                                location.reload();
-                            }, 1000);
+                                window.location.href = '../';
+                            }, 1500);
                         }
                     }).always(function () {
 
