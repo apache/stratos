@@ -186,7 +186,10 @@ dialect "mvel"
                             count++;
                         } else {
 
-                            log.debug("[scale-up] No partition available!, [cluster] " + clusterId);
+                            log.warn("[scale-up] No more partition available even though " +
+                             "cartridge-max is not reached!, [cluster] " + clusterId +
+                            " Please update deployment-policy with new partitions or with higher " +
+                             "partition-max");
                             partitionsAvailable = false;
                         }
                     }
