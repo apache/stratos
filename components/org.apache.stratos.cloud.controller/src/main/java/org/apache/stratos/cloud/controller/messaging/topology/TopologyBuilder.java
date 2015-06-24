@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.messaging.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -25,6 +26,7 @@ import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
+import org.apache.stratos.cloud.controller.iaases.kubernetes.KubernetesIaas;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -1040,6 +1042,13 @@ public class TopologyBuilder {
                         event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
+
+                // Remove kubernetes services if available
+                ClusterContext clusterContext =
+                        CloudControllerContext.getInstance().getClusterContext(event.getClusterId());
+                if(StringUtils.isNotBlank(clusterContext.getKubernetesClusterId())) {
+                    KubernetesIaas.removeKubernetesServices(event.getAppId(), event.getClusterId());
+                }
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",

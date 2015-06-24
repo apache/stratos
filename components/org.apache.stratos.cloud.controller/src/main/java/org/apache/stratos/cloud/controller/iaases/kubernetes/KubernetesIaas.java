@@ -866,4 +866,35 @@ public class KubernetesIaas extends Iaas {
     @Override
     public void allocateIpAddresses(String clusterId, MemberContext memberContext, Partition partition) {
     }
+
+    /**
+     * Remove kubernetes services if available for application cluster.
+     * @param applicationId
+     * @param clusterId
+     */
+    public static void removeKubernetesServices(String applicationId, String clusterId) {
+
+        ClusterContext clusterContext =
+                CloudControllerContext.getInstance().getClusterContext(clusterId);
+        if(clusterContext != null) {
+            String kubernetesClusterId = clusterContext.getKubernetesClusterId();
+            if(org.apache.commons.lang3.StringUtils.isNotBlank(kubernetesClusterId)) {
+                KubernetesClusterContext kubernetesClusterContext =
+                        CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
+                if(kubernetesClusterContext != null) {
+                    KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
+                    for (KubernetesService kubernetesService : clusterContext.getKubernetesServices()) {
+                        log.info(String.format("Deleting kubernetes service: [application-id] %s " +
+                                "[service-id] %s", applicationId, kubernetesService.getId()));
+                        try {
+                            kubernetesApiClient.deleteService(kubernetesService.getId());
+                        } catch (KubernetesClientException e) {
+                            log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
+                                    "[service-id] %s", applicationId, kubernetesService.getId()));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
