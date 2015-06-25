@@ -422,7 +422,7 @@ public class AutoscalerUtil {
      * @param applicationId the application id
      * @return list of deployment policy ids
      */
-    private static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
+    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
 
         if (applicationId == null || StringUtils.isBlank(applicationId)) {
             return null;

@@ -101,12 +101,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean removeAutoScalingPolicy(String autoscalePolicyId) throws UnremovablePolicyException,
             PolicyDoesNotExistException {
-        if (removableAutoScalerPolicy(autoscalePolicyId)) {
+        //if (removableAutoScalerPolicy(autoscalePolicyId)) {
             return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
-        } else {
+       /* } else {
             throw new UnremovablePolicyException("This autoscaler policy cannot be removed, since it is used in " +
                     "applications.");
-        }
+        }*/
     }
 
     /**
@@ -138,12 +138,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
      */
     private boolean removableDeploymentPolicy(String deploymentPolicyId) {
         boolean canRemove = true;
-        Collection<ApplicationContext> appContexts = AutoscalerContext.getInstance().getApplicationContexts();
-        for (ApplicationContext app : appContexts) {
-            CartridgeContext[] cartridgeContexts = app.getComponents().getCartridgeContexts();
-            for (CartridgeContext cartridgeContext : cartridgeContexts) {
-                SubscribableInfoContext subscribableInfoContexts = cartridgeContext.getSubscribableInfoContext();
-                if (subscribableInfoContexts.getDeploymentPolicy().equals(deploymentPolicyId)) {
+        Map<String, Application> applications = ApplicationHolder.getApplications().getApplications();
+        for (Application application : applications.values()) {
+            List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.
+                    getDeploymentPolicyIdsReferredInApplication(application.getUniqueIdentifier());
+            for (String deploymentPolicyIdInApp : deploymentPolicyIdsReferredInApplication) {
+                if (deploymentPolicyId.equals(deploymentPolicyIdInApp)) {
                     canRemove = false;
                 }
             }
