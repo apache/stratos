@@ -498,7 +498,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
 
         if (appMonitor == null) {
-            log.info(String.format("Could not find application monitor for the application %s, hence returning", applicationId));
+            log.info(String.format("Could not find application monitor for the application %s, " +
+                    "hence returning", applicationId));
             return false;
         }
         if (!force) {
@@ -517,14 +518,16 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (appMonitor.isTerminating()) {
 
                 if (appMonitor.isForce()) {
-                    log.warn(String.format("Force un-deployment is already in progress, hence not invoking again " +
+                    log.warn(String.format("Force un-deployment is already in progress, " +
+                            "hence not invoking again " +
                             "[application-id] %s", applicationId));
                     return false;
                 } else {
                     log.info(String.format("Previous graceful un-deployment is in progress for " +
-                            "[application-id] %s , thus  terminating instances directly", applicationId));
+                            "[application-id] %s , thus  terminating instances directly",
+                            applicationId));
                     appMonitor.setForce(true);
-                    terminateAllApplicationMembersForcefully(applicationId);
+                    terminateAllMembersAndClustersForcefully(applicationId);
                 }
             } else {
                 log.info(String.format("Forcefully un-deploying the application " + applicationId));
@@ -542,7 +545,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 log.info("Starting to undeploy application: [application-id] " + applicationId);
             }
 
-            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+            ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                    getApplicationContext(applicationId);
             Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if ((applicationContext == null) || (application == null)) {
                 String msg = String.format("Application not found: [application-id] %s", applicationId);
@@ -923,7 +927,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return PolicyManager.getInstance().getApplicationPolicies();
     }
 
-    private void terminateAllApplicationMembersForcefully(String applicationId) {
+    private void terminateAllMembersAndClustersForcefully(String applicationId) {
         if (StringUtils.isEmpty(applicationId)) {
             throw new IllegalArgumentException("Application Id cannot be empty");
         }
@@ -955,38 +959,43 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             //If there are no members in cluster Instance, send cluster Terminated Event
-            Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
-            for (ClusterInstance clusterInstance : allClusterInstances) {
-                boolean anyMembersInClusterInstance = false;
-
-                for (Member member : cluster.getMembers()) {
-                    if (member.getClusterInstanceId().equals(clusterInstance.getInstanceId())) {
-                        anyMembersInClusterInstance = true;
-                    }
+            //Stopping the cluster monitor thread
+            ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
+                    getClusterMonitor(clusterId);
+            if(clusterMonitor != null) {
+                clusterMonitor.destroy();
+            } else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster monitor cannot be found for [application] %s " +
+                            "[cluster] %s", applicationId, clusterId));
                 }
-
-                if (anyMembersInClusterInstance == false) {
+            }
+            if(cluster != null) {
+                Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
+                for (ClusterInstance clusterInstance : allClusterInstances) {
                     ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId, cluster.getServiceName(),
                             clusterId, clusterInstance.getInstanceId());
                 }
-            }
 
-            List<String> memberListToTerminate = new LinkedList<String>();
-            for (Member member : cluster.getMembers()) {
-                memberListToTerminate.add(member.getMemberId());
-            }
+                List<String> memberListToTerminate = new LinkedList<String>();
+                for (Member member : cluster.getMembers()) {
+                    memberListToTerminate.add(member.getMemberId());
+                }
 
-            for (String memberIdToTerminate : memberListToTerminate) {
-                try {
-                    log.info(String.format("Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
-                            "[application-id] %s", memberIdToTerminate, clusterId, application));
-                    AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
-                } catch (Exception e) {
-                    log.error(String.format("Forceful termination of member %s has failed, but continuing forceful " +
-                            "deletion of other members", memberIdToTerminate));
+                for (String memberIdToTerminate : memberListToTerminate) {
+                    try {
+                        log.info(String.format("Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
+                                "[application-id] %s", memberIdToTerminate, clusterId, application));
+                        AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
+                    } catch (Exception e) {
+                        log.error(String.format("Forceful termination of member %s has failed, but continuing forceful " +
+                                "deletion of other members", memberIdToTerminate));
+                    }
                 }
             }
+
         }
+
     }
 
 
