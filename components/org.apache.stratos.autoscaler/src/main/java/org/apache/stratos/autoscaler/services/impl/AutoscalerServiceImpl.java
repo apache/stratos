@@ -26,6 +26,13 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
 import org.apache.stratos.autoscaler.applications.pojo.*;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
+import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
+import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
+import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
+import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
@@ -50,6 +57,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoscalerService;
+import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
@@ -89,7 +97,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws AutoScalingPolicyAlreadyExistException {
+    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy)
+            throws AutoScalingPolicyAlreadyExistException {
         return PolicyManager.getInstance().addAutoscalePolicy(autoscalePolicy);
     }
 
@@ -101,12 +110,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean removeAutoScalingPolicy(String autoscalePolicyId) throws UnremovablePolicyException,
             PolicyDoesNotExistException {
-        //if (removableAutoScalerPolicy(autoscalePolicyId)) {
+        if (removableAutoScalerPolicy(autoscalePolicyId)) {
             return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
-       /* } else {
-            throw new UnremovablePolicyException("This autoscaler policy cannot be removed, since it is used in " +
+        } else {
+            throw new UnremovablePolicyException("This autoscaler policy cannot be removed, " +
+                    "since it is used in " +
                     "applications.");
-        }*/
+        }
     }
 
     /**
@@ -116,18 +126,46 @@ public class AutoscalerServiceImpl implements AutoscalerService {
      * @return
      */
     private boolean removableAutoScalerPolicy(String autoscalePolicyId) {
-        boolean canRemove = true;
-        Collection<ApplicationContext> appContexts = AutoscalerContext.getInstance().getApplicationContexts();
-        for (ApplicationContext app : appContexts) {
-            CartridgeContext[] cartrideContexts = app.getComponents().getCartridgeContexts();
-            for (CartridgeContext cartridgeContext : cartrideContexts) {
-                SubscribableInfoContext subscribableInfoContexts = cartridgeContext.getSubscribableInfoContext();
-                if (subscribableInfoContexts.getAutoscalingPolicy().equals(autoscalePolicyId)) {
-                    canRemove = false;
+        Collection<ApplicationContext> applicationContexts = AutoscalerContext.getInstance().
+                getApplicationContexts();
+        for (ApplicationContext applicationContext : applicationContexts) {
+            if(applicationContext.getComponents().getCartridgeContexts() != null) {
+                for(CartridgeContext cartridgeContext : applicationContext.getComponents().
+                        getCartridgeContexts()) {
+                    if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
+                            getAutoscalingPolicy())) {
+                        return false;
+                    }
                 }
             }
+
+            if(applicationContext.getComponents().getGroupContexts() != null) {
+                return findAutoscalingPolicyInGroup(applicationContext.getComponents().getGroupContexts(),
+                        autoscalePolicyId);
+            }
         }
-        return canRemove;
+        return true;
+    }
+
+
+    private boolean findAutoscalingPolicyInGroup(GroupContext[] groupContexts,
+                                                 String autoscalePolicyId) {
+        for(GroupContext groupContext : groupContexts) {
+            if(groupContext.getCartridgeContexts() != null) {
+                for(CartridgeContext cartridgeContext : groupContext.getCartridgeContexts()) {
+                    if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
+                            getAutoscalingPolicy())) {
+                        return false;
+                    }
+                }
+
+            }
+            if(groupContext.getGroupContexts() != null) {
+                return findAutoscalingPolicyInGroup(groupContext.getGroupContexts(),
+                        autoscalePolicyId);
+            }
+        }
+        return true;
     }
 
     /**
