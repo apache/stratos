@@ -63,6 +63,7 @@ import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Stratos API v4.1 for Stratos 4.1.0 release.
@@ -611,6 +612,11 @@ public class StratosApiV41 extends AbstractApi {
     public Response addNetworkPartition(
             NetworkPartitionBean networkPartitionBean) throws RestAPIException {
         String networkPartitionId = networkPartitionBean.getId();
+        networkPartitionBean.setUuid(UUID.randomUUID().toString());
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        networkPartitionBean.setTenantId(carbonContext.getTenantId());
+
         try {
             StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
         } catch (CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException e) {
@@ -627,7 +633,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network partition added successfully: [network-partition] %s", networkPartitionId)))
+                String.format("Network partition added successfully: [network-partition-uuid] %s", networkPartitionId)))
                 .build();
     }
 

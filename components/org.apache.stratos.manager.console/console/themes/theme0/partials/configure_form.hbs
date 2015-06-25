@@ -434,6 +434,10 @@ $(document).ready(function () {
             }else if(editor.getEditor('root.type')){
                 editor.getEditor('root.type').disable();
             }
+
+            if(editor.getEditor('root.uuid')){
+                editor.getEditor('root.uuid').disable();
+            }
        {{/if}}
 
         //    Hook up the validation indicator to update its

@@ -1,4 +1,5 @@
 {
+    "uuid": "",
     "id": "network-partition-1",
     "provider": "mock",
     "partitions": [

@@ -1453,13 +1453,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             InvalidNetworkPartitionException {
 
         handleNullObject(networkPartition, "Network Partition is null");
-        handleNullObject(networkPartition.getId(), "Network Partition ID is null");
+        handleNullObject(networkPartition.getUuid(), "Network Partition ID is null");
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getId()));
+            log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getUuid()));
         }
 
-        String networkPartitionID = networkPartition.getId();
+        String networkPartitionID = networkPartition.getUuid();
         if (cloudControllerContext.getNetworkPartition(networkPartitionID) != null) {
             String message = "Network partition already exists: [network-partition-id] " + networkPartitionID;
             log.error(message);
@@ -1471,7 +1471,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (partition != null) {
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
-                                networkPartition.getId(), partition.getId()));
+                                networkPartition.getUuid(), partition.getId()));
                     }
                     // Overwrites partition provider with network partition provider
                     partition.setProvider(networkPartition.getProvider());
@@ -1481,18 +1481,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
                         throw new InvalidNetworkPartitionException(String.format("Network partition " +
                                         " %s, is invalid since the partition %s is invalid",
-                                networkPartition.getId(), partition.getId()), e);
+                                networkPartition.getUuid(), partition.getId()), e);
                     }
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
-                                "[partition-id] %s", networkPartition.getId(), partition.getId()));
+                                "[partition-id] %s", networkPartition.getUuid(), partition.getId()));
                     }
                 }
             }
         } else {
             //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
             throw new InvalidNetworkPartitionException(String.format("Network partition: " +
-                    "%s doesn't not have any partitions ", networkPartition.getId()));
+                    "%s doesn't not have any partitions ", networkPartition.getUuid()));
         }
 
         // adding network partition to CC-Context
@@ -1501,7 +1501,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         CloudControllerContext.getInstance().persist();
         if (log.isInfoEnabled()) {
             log.info(String.format("Network partition added successfully: [network-partition-id] %s",
-                    networkPartition.getId()));
+                    networkPartition.getUuid()));
         }
         return true;
     }
@@ -1540,10 +1540,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException {
         try {
             handleNullObject(networkPartition, "Network Partition is null");
-            handleNullObject(networkPartition.getId(), "Network Partition ID is null");
+            handleNullObject(networkPartition.getUuid(), "Network Partition ID is null");
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Updating network partition: [network-partition-id] %s", networkPartition.getId()));
+                log.info(String.format("Updating network partition: [network-partition-id] %s", networkPartition.getUuid()));
             }
 
             String networkPartitionID = networkPartition.getId();
@@ -1558,14 +1558,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     if (partition != null) {
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
-                                    networkPartition.getId(), partition.getId()));
+                                    networkPartition.getUuid(), partition.getId()));
                         }
                         // Overwrites partition provider with network partition provider
                         partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
-                                    "[partition-id] %s", networkPartition.getId(), partition.getId()));
+                                    "[partition-id] %s", networkPartition.getUuid(), partition.getId()));
                         }
                     }
                 }
@@ -1577,7 +1577,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
             if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition updated successfully: [network-partition-id] %s",
-                        networkPartition.getId()));
+                        networkPartition.getUuid()));
             }
             return true;
         } catch (Exception e) {

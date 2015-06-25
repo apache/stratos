@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
 import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
@@ -2521,7 +2522,7 @@ public class StratosApiV41Utils {
         }
 
         if (!application.isMultiTenant()) {
-            throw new RestAPIException("Application singups not available for single-tenant applications");
+            throw new RestAPIException("Application signups not available for single-tenant applications");
         }
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -2695,7 +2696,23 @@ public class StratosApiV41Utils {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions =
                     serviceClient.getNetworkPartitions();
-            return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitions);
+
+            NetworkPartition[] networkPartitionsForTenantArray = new NetworkPartition[0];
+
+            if (networkPartitions != null) {
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                List<NetworkPartition> networkPartitionsForTenant = new ArrayList<NetworkPartition>();
+                for (NetworkPartition networkPartition : networkPartitions) {
+                    if (carbonContext.getTenantId() == networkPartition.getTenantId()) {
+                        networkPartitionsForTenant.add(networkPartition);
+                    }
+                }
+                if (networkPartitionsForTenant.size() != 0) {
+                    networkPartitionsForTenantArray = networkPartitionsForTenant.toArray(new
+                            NetworkPartition[networkPartitionsForTenant.size()]);
+                }
+            }
+            return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitionsForTenantArray);
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);

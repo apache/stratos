@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "root",
+    "uuid": "root",
     "type": "object",
     "title": "Network Partition Definition",
     "name": "Network Partition Policy",
@@ -9,6 +9,11 @@
         "disable_collapse": true
     },
     "properties": {
+        "uuid": {
+            "id": "root/uuid",
+            "type": "string",
+            "title": "UUID"
+        },
         "id": {
             "id": "root/id",
             "type": "string",
