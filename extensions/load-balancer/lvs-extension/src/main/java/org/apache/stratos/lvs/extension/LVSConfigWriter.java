@@ -21,6 +21,7 @@ package org.apache.stratos.lvs.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.util.CommandUtils;
 import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -148,6 +149,15 @@ public class LVSConfigWriter {
 	private void generateConfigurationForCluster(Cluster cluster, Collection<Port> ports, StringBuilder text,
 	                                             StringBuilder virtualIPs, String virtualIPsForServices,
 	                                             String scheduleAlgo) {
+		String commandClear = "ipvsadm --clear";
+		try {
+			CommandUtils.executeCommand(commandClear);
+		} catch (IOException e) {
+			if (log.isErrorEnabled()) {
+				log.error(String.format("Could not run the command: %s", commandClear));
+			}
+			throw new RuntimeException(e);
+		}
 
 		String[] virtualIPForServiceArray;
 		if (virtualIPsForServices.contains(",")) {
@@ -159,7 +169,17 @@ public class LVSConfigWriter {
 		boolean isServiceAvailable = false;
 		for (int i = 0; i < virtualIPForServiceArray.length; i++) {
 			String[] virtualIpForService = virtualIPForServiceArray[i].split("\\|");
-			for (Port port : ports) {
+		    for (Port port : ports) {
+			    String command = "ipvsadm -A -t " + virtualIpForService[1]+":" + port.getProxy()+ " -s " + scheduleAlgo;
+
+			    try {
+				    CommandUtils.executeCommand(command);
+			    } catch (IOException e) {
+				    if (log.isErrorEnabled()) {
+					    log.error(String.format("Could not run the command: %s", command));
+				    }
+				    throw new RuntimeException(e);
+			    }
 				for (String hostname : cluster.getHostNames()) {
 					if (virtualIpForService[0].equals(cluster.getServiceName())) {
 
@@ -185,10 +205,21 @@ public class LVSConfigWriter {
 							text.append(TAB).append(TAB).append(TAB).append("connect_timeout 3").append(NEW_LINE);
 							text.append(TAB).append(TAB).append("}").append(NEW_LINE);
 							text.append(TAB).append("}").append(NEW_LINE);
+							String commandMember = "ipvsadm -a -t " + virtualIpForService[1] + ":" + port.getProxy()+" -r " + member.getHostName() + " -m";
+
+							try {
+								CommandUtils.executeCommand(commandMember);
+							} catch (IOException e) {
+								if (log.isErrorEnabled()) {
+									log.error(String.format("Could not run the command: %s", commandMember));
+								}
+								throw new RuntimeException(e);
+							}
 						}
 						text.append("}").append(NEW_LINE);
 						isServiceAvailable = true;
 						virtualIPs.append(TAB).append(TAB).append(virtualIpForService[1]).append(NEW_LINE);
+
 					}
 				}
 			}
