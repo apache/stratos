@@ -21,9 +21,13 @@ package org.apache.stratos.cloud.controller.messaging.receiver.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
+import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.ApplicationDeletedEvent;
+import org.apache.stratos.messaging.event.application.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.listener.application.ApplicationDeletedEventListener;
+import org.apache.stratos.messaging.listener.application.ApplicationInstanceTerminatedEventListener;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
@@ -52,14 +56,23 @@ public class ApplicationEventReceiver {
     }
 
     private void addEventListeners() {
-        applicationsEventReceiver.addEventListener(new ApplicationDeletedEventListener() {
+
+        applicationsEventReceiver.addEventListener(new ApplicationInstanceTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 // Remove the application related data
-                ApplicationDeletedEvent deletedEvent = (ApplicationDeletedEvent) event;
-                log.info("Application deleted event received: [application-id] " + deletedEvent.getAppId());
-                String appId = deletedEvent.getAppId();
-                TopologyBuilder.handleApplicationClustersRemoved(appId, deletedEvent.getClusterData());
+                ApplicationInstanceTerminatedEvent instanceTerminatedEvent =
+                        (ApplicationInstanceTerminatedEvent) event;
+                log.info("Application instance terminated event received: [application-id] " +
+                        instanceTerminatedEvent.getAppId());
+                String appId = instanceTerminatedEvent.getAppId();
+                Application application = ApplicationManager.getApplications().
+                        getApplication(instanceTerminatedEvent.getAppId());
+
+                if(application.getInstanceContextCount() == 0) {
+                    TopologyBuilder.handleApplicationClustersRemoved(appId,
+                            application.getClusterDataRecursively());
+                }
             }
         });
     }

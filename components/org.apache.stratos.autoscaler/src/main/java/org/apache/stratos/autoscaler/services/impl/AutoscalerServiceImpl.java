@@ -509,7 +509,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         "un-deployment is has already been attempted thus not invoking again");
                 return false;
             } else {
-                log.info(String.format("Gracefully un-deploying the application " + applicationId));
+                log.info(String.format("Gracefully un-deploying the [application] %s ", applicationId));
                 appMonitor.setTerminating(true);
                 undeployApplicationGracefully(applicationId);
             }
