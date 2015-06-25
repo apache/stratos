@@ -24,7 +24,6 @@ import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundExcept
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
@@ -44,12 +43,6 @@ public class MonitorStatusEventBuilder {
                                               String groupId, String instanceId) {
         GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId, instanceId);
         notifyParent(parent, groupStatusEvent);
-    }
-
-    public static void handleApplicationStatusEvent(ParentComponentMonitor parent, ApplicationStatus status,
-                                                    String appId, String instanceId) {
-        ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId, instanceId);
-        notifyParent(parent, applicationStatusEvent);
     }
 
     public static void handleClusterScalingEvent(ParentComponentMonitor parent,
@@ -93,29 +86,6 @@ public class MonitorStatusEventBuilder {
         }
     }
 
-    public static void notifyChildGroup(Monitor child, GroupStatus state, String instanceId)
-            throws MonitorNotFoundException {
-        MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getId(), instanceId);
-        child.onParentStatusEvent(statusEvent);
-    }
-
-    /*public static void notifyChildCluster(Monitor child, ClusterStatus state, List<String> instanceId) {
-        MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, instanceId, child.getApplicationId());
-        child.onParentStatusEvent(statusEvent);
-    }
-
-    public static void notifyChildGroup(Monitor child, GroupStatus state, List<String> instanceIds)
-            throws ParentMonitorNotFoundException {
-        MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getApplicationId(), instanceIds);
-        child.onParentStatusEvent(statusEvent);
-    }*/
-
-    public static void notifyChildCluster(Monitor child, ClusterStatus state, String instanceId)
-            throws MonitorNotFoundException {
-        MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, child.getId(), instanceId);
-        child.onParentStatusEvent(statusEvent);
-    }
-
     private static void notifyParent(ParentComponentMonitor parent, ScalingEvent scalingEvent) {
         parent.onChildScalingEvent(scalingEvent);
     }
@@ -127,11 +97,4 @@ public class MonitorStatusEventBuilder {
     private static void notifyParent(ParentComponentMonitor parent, ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent) {
         parent.onChildScalingOverMaxEvent(scalingUpBeyondMaxEvent);
     }
-
-    public static void notifyChildren(ParentComponentMonitor componentMonitor, ScalingEvent scalingEvent) {
-        for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveChildMonitorsMap().values()) {
-            activeChildMonitor.onParentScalingEvent(scalingEvent);
-        }
-    }
-
 }
