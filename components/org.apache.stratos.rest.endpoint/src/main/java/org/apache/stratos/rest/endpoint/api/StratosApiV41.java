@@ -1240,15 +1240,15 @@ public class StratosApiV41 extends AbstractApi {
 
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
         if (applicationDefinition == null) {
-            String msg = String.format("Application does not exist [application-id] %s", applicationId);
-            log.info(msg);
+            String message = String.format("Application does not exist [application-id] %s", applicationId);
+            log.error(message);
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, msg)).build();
+                    ResponseMessageBean.ERROR, message)).build();
         }
         if (applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)) {
             String message = String.format("Could not undeploy since application is not in DEPLOYED status " +
                     "[application-id] %s [current status] %S", applicationId, applicationDefinition.getStatus());
-            log.info(message);
+            log.error(message);
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, message)).build();
         }
