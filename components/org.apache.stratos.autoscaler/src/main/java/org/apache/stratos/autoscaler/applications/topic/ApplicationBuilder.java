@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -246,6 +247,7 @@ public class ApplicationBuilder {
             }
 
             AutoscalerContext.getInstance().removeApplicationContext(appId);
+            RegistryManager.getInstance().removeApplicationContext(appId);
             ApplicationHolder.removeApplication(appId);
 
         } finally {
@@ -307,6 +309,7 @@ public class ApplicationBuilder {
                     // update application status in application context
                     applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                     AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+                    RegistryManager.getInstance().persistApplicationContext(applicationContext);
 
                     log.info("Application un-deployed successfully: [application-id] " + applicationId);
                 }

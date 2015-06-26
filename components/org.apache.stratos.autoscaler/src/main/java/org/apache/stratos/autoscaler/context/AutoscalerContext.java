@@ -76,29 +76,16 @@ public class AutoscalerContext {
         // Initialize distributed object provider
         distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
 
-        applicationContextMap = readApplicationContextsFromRegistry();
         if (applicationContextMap == null) {
             applicationContextMap = distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP);//new ConcurrentHashMap<String, ApplicationContext>();
         }
         setClusterMonitors(distributedObjectProvider.getMap(AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP));
         setApplicationMonitors(distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP));
         pendingApplicationMonitors = distributedObjectProvider.getList(AS_PENDING_APPLICATION_MONITOR_LIST);//new ArrayList<String>();
-        applicationIdToNetworkPartitionAlgorithmContextMap = distributedObjectProvider.getMap(AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP);
+        applicationIdToNetworkPartitionAlgorithmContextMap =
+                distributedObjectProvider.getMap(AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP);
     }
 
-    private Map<String, ApplicationContext> readApplicationContextsFromRegistry() {
-        String[] resourcePaths = RegistryManager.getInstance().getApplicationContextResourcePaths();
-        if ((resourcePaths == null) || (resourcePaths.length == 0)) {
-            return null;
-        }
-
-        Map<String, ApplicationContext> applicationContextMap = distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP);//new ConcurrentHashMap<String, ApplicationContext>();
-        for (String resourcePath : resourcePaths) {
-            ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContextByResourcePath(resourcePath);
-            applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
-        }
-        return applicationContextMap;
-    }
 
     public static AutoscalerContext getInstance() {
         if (instance == null) {
@@ -169,11 +156,9 @@ public class AutoscalerContext {
 
     public void addApplicationContext(ApplicationContext applicationContext) {
         applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
-        RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 
     public ApplicationContext removeApplicationContext(String applicationId) {
-        RegistryManager.getInstance().removeApplicationContext(applicationId);
         return applicationContextMap.remove(applicationId);
     }
 
