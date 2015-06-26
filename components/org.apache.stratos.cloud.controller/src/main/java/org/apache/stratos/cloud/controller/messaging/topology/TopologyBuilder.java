@@ -222,7 +222,8 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
     }
 
-    public static void handleApplicationClustersRemoved(String appId, Set<ClusterDataHolder> clusterData) {
+    public static void handleApplicationClustersRemoved(String appId,
+                                                        Set<ClusterDataHolder> clusterData) {
         TopologyManager.acquireWriteLock();
 
         List<Cluster> removedClusters = new ArrayList<Cluster>();
@@ -237,12 +238,14 @@ public class TopologyBuilder {
                     if (aService != null) {
                         removedClusters.add(aService.removeCluster(aClusterData.getClusterId()));
                     } else {
-                        log.warn("Service " + aClusterData.getServiceType() + " not found, unable to remove Cluster " + aClusterData.getClusterId());
+                        log.warn("Service " + aClusterData.getServiceType() + " not found, " +
+                                "unable to remove Cluster " + aClusterData.getClusterId());
                     }
                     // remove runtime data
                     context.removeClusterContext(aClusterData.getClusterId());
 
-                    log.info("Removed application [ " + appId + " ]'s Cluster [ " + aClusterData.getClusterId() + " ] from the topology");
+                    log.info("Removed application [ " + appId + " ]'s Cluster " +
+                            "[ " + aClusterData.getClusterId() + " ] from the topology");
                 }
                 // persist runtime data changes
                 CloudControllerContext.getInstance().persist();
