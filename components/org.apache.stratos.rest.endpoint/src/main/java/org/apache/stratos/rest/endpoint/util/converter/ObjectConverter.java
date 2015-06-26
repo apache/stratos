@@ -693,6 +693,7 @@ public class ObjectConverter {
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
                 memberBean.setPartitionId(member.getPartitionId());
                 memberBean.setMemberId(member.getMemberId());
+                memberBean.setClusterInstanceId(member.getClusterInstanceId());
                 memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
                 memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
                 memberBean.setMemberPrivateIPs(member.getMemberPrivateIPs());
