@@ -52,6 +52,8 @@ public class CloudControllerContext implements Serializable {
     private static final long serialVersionUID = -2662307358852779897L;
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
+    public static boolean unitTest = false;
+
     private static final String CC_CLUSTER_ID_TO_MEMBER_CTX_MAP = "CC_CLUSTER_ID_TO_MEMBER_CTX_MAP";
     private static final String CC_CLUSTER_ID_TO_CLUSTER_CTX = "CC_CLUSTER_ID_TO_CLUSTER_CTX";
     private static final String CC_MEMBER_ID_TO_MEMBER_CTX_MAP = "CC_MEMBER_ID_TO_MEMBER_CTX_MAP";
@@ -203,8 +205,10 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToIaasProviders = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP);
         applicationIdToClusterIdToPortMappings = distributedObjectProvider.getMap(CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP);
 
-        // Update context from the registry
-        updateContextFromRegistry();
+        if(!unitTest) {
+            // Update context from the registry
+            updateContextFromRegistry();
+        }
     }
 
     public static CloudControllerContext getInstance() {
