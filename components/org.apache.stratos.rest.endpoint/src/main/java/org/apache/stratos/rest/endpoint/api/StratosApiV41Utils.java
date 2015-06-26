@@ -1910,18 +1910,21 @@ public class StratosApiV41Utils {
 
         try {
             ApplicationManager.acquireReadLockForApplication(applicationId);
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
-            if (application.getInstanceContextCount() > 0
-                    || (applicationContext != null &&
-                    applicationContext.getStatus().equals("Deployed"))) {
+            Application application = ApplicationManager.getApplications().
+                    getApplication(applicationId);
+            if(application != null) {
+                if (application.getInstanceContextCount() > 0
+                        || (applicationContext != null &&
+                        applicationContext.getStatus().equals("Deployed"))) {
 
-                if (application == null) {
-                    return null;
-                }
-                applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
-                for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
-                    addClustersInstancesToApplicationInstanceBean(instanceBean, application);
-                    addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                    if (application == null) {
+                        return null;
+                    }
+                    applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
+                    for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
+                        addClustersInstancesToApplicationInstanceBean(instanceBean, application);
+                        addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                    }
                 }
             }
         } finally {
