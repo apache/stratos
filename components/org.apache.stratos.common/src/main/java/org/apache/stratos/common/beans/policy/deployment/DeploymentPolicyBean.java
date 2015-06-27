@@ -28,6 +28,24 @@ import java.util.List;
 public class DeploymentPolicyBean {
 
     private String id;
+    private String uuid;
+    private int tenantId;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
 
     private List<NetworkPartitionReferenceBean> networkPartitions;
 

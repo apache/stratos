@@ -133,7 +133,7 @@ public class PolicyManager {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Deployment policy is added successfully: [deployment-policy-id] %s",
-                    policy.getDeploymentPolicyID()));
+                    policy.getUuid()));
         }
     }
 
@@ -145,27 +145,27 @@ public class PolicyManager {
      */
     public void addDeploymentPolicyToInformationModel(DeploymentPolicy deploymentPolicy)
             throws InvalidDeploymentPolicyException {
-        if (!deploymentPolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+        if (!deploymentPolicyListMap.containsKey(deploymentPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
+                log.debug("Adding deployment policy: " + deploymentPolicy.getUuid());
             }
-            deploymentPolicyListMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
+            deploymentPolicyListMap.put(deploymentPolicy.getUuid(), deploymentPolicy);
         } else {
             String errMsg = "Specified deployment policy [" +
-                    deploymentPolicy.getDeploymentPolicyID() + "] already exists";
+                    deploymentPolicy.getUuid() + "] already exists";
             log.error(errMsg);
             throw new InvalidDeploymentPolicyException(errMsg);
         }
     }
 
     public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
+        if (StringUtils.isEmpty(policy.getUuid())) {
             throw new AutoScalerException("Deployment policy id cannot be empty");
         }
         this.updateDeploymentPolicyInInformationModel(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getDeploymentPolicyID()));
+            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getUuid()));
         }
         return true;
     }
@@ -209,11 +209,11 @@ public class PolicyManager {
     }
 
     public void updateDeploymentPolicyInInformationModel(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
-        if (deploymentPolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+        if (deploymentPolicyListMap.containsKey(deploymentPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Updating deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
+                log.debug("Updating deployment policy: " + deploymentPolicy.getUuid());
             }
-            deploymentPolicyListMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
+            deploymentPolicyListMap.put(deploymentPolicy.getUuid(), deploymentPolicy);
         }
     }
 
@@ -278,16 +278,16 @@ public class PolicyManager {
 
 
     private void addDeploymentPolicyToPolicyListMap(DeploymentPolicy policy) {
-        if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
+        if (StringUtils.isEmpty(policy.getUuid())) {
             throw new RuntimeException("Application id is not found in the deployment policy");
         }
-        if (!deploymentPolicyListMap.containsKey(policy.getDeploymentPolicyID())) {
+        if (!deploymentPolicyListMap.containsKey(policy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding deployment policy: [deployment-policy-id] " + policy.getDeploymentPolicyID());
+                log.debug("Adding deployment policy: [deployment-policy-id] " + policy.getUuid());
             }
-            deploymentPolicyListMap.put(policy.getDeploymentPolicyID(), policy);
+            deploymentPolicyListMap.put(policy.getUuid(), policy);
         } else {
-            String errMsg = "Deployment policy already exists: [deployment-policy-id] " + policy.getDeploymentPolicyID();
+            String errMsg = "Deployment policy already exists: [deployment-policy-id] " + policy.getUuid();
             log.error(errMsg);
         }
     }
@@ -300,9 +300,9 @@ public class PolicyManager {
 
     public void updateDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
         if (log.isDebugEnabled()) {
-            log.debug("Updating deployment policy: " + policy.getDeploymentPolicyID());
+            log.debug("Updating deployment policy: " + policy.getUuid());
         }
-        deploymentPolicyListMap.put(policy.getDeploymentPolicyID(), policy);
+        deploymentPolicyListMap.put(policy.getUuid(), policy);
     }
 
     /**

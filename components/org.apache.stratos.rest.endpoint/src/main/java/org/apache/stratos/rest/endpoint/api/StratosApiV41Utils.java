@@ -2760,7 +2760,7 @@ public class StratosApiV41Utils {
                         if (networkPartitionRef.getId().equals(networkPartitionId)) {
                             String message = String.format("Cannot remove the network partition %s, since" +
                                             " it is used in deployment policy %s", networkPartitionId,
-                                    deploymentPolicy.getDeploymentPolicyID());
+                                    deploymentPolicy.getId());
                             log.error(message);
                             throw new RestAPIException(message);
                         }
@@ -2875,22 +2875,35 @@ public class StratosApiV41Utils {
     /**
      * Get deployment policy by deployment policy id
      *
-     * @param deploymentPolicyID deployment policy id
+     * @param deploymentPolicyId deployment policy id
      * @return {@link DeploymentPolicyBean}
      */
-    public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) throws RestAPIException {
+    public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyId) throws RestAPIException {
 
         DeploymentPolicyBean deploymentPolicyBean;
         try {
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
+                    = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
 
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy
-                    = AutoscalerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyID);
+            DeploymentPolicy deploymentPolicy = null;
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            List<DeploymentPolicy> deploymentPoliciesForTenant = new ArrayList<DeploymentPolicy>();
+            for (DeploymentPolicy deploymentPolicy1 : deploymentPolicies) {
+                if (carbonContext.getTenantId() == deploymentPolicy1.getTenantId()) {
+                    deploymentPoliciesForTenant.add(deploymentPolicy1);
+                    if (deploymentPolicy1.getId().equals(deploymentPolicyId)) {
+                        deploymentPolicy = deploymentPolicy1;
+                    }
+                }
+            }
+            //org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy
+            //       = AutoscalerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyID);
             if (deploymentPolicy == null) {
                 return null;
             }
             deploymentPolicyBean = ObjectConverter.convertCCStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
         } catch (RemoteException e) {
-            String msg = "Could not find deployment policy: [deployment-policy-id] " + deploymentPolicyID;
+            String msg = "Could not find deployment policy: [deployment-policy-id] " + deploymentPolicyId;
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -2907,7 +2920,22 @@ public class StratosApiV41Utils {
         try {
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
                     = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
-            return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
+
+            DeploymentPolicy[] deploymentPoliciesForTenantArray = new DeploymentPolicy[0];
+            if (deploymentPolicies != null) {
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                List<DeploymentPolicy> deploymentPoliciesForTenant = new ArrayList<DeploymentPolicy>();
+                for (DeploymentPolicy deploymentPolicy : deploymentPolicies) {
+                    if (carbonContext.getTenantId() == deploymentPolicy.getTenantId()) {
+                        deploymentPoliciesForTenant.add(deploymentPolicy);
+                        }
+                }
+                if (deploymentPoliciesForTenant.size() != 0) {
+                deploymentPoliciesForTenantArray = deploymentPoliciesForTenant.toArray(new
+                        DeploymentPolicy[deploymentPoliciesForTenant.size()]);
+                }
+            }
+            return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPoliciesForTenantArray);
         } catch (RemoteException e) {
             String message = "Could not get deployment policies";
             log.error(message);

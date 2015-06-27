@@ -25,7 +25,6 @@ import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitio
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
@@ -57,7 +56,6 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoscalerService;
-import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
@@ -1044,13 +1042,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         validateDeploymentPolicy(deploymentPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info("Adding deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
+            log.info("Adding deployment policy: [deployment-policy-id] " + deploymentPolicy.getUuid());
         }
         if (log.isDebugEnabled()) {
             log.debug("Deployment policy definition: " + deploymentPolicy.toString());
         }
 
-        String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
+        String deploymentPolicyID = deploymentPolicy.getUuid();
         if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyID) != null) {
             String message = "Deployment policy already exists: [deployment-policy-id] " + deploymentPolicyID;
             log.error(message);
@@ -1080,7 +1078,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // deployment policy id can't be null or empty
-        String deploymentPolicyId = deploymentPolicy.getDeploymentPolicyID();
+        String deploymentPolicyId = deploymentPolicy.getUuid();
         if (StringUtils.isBlank(deploymentPolicyId)) {
             String msg = String.format("Deployment policy id is blank");
             log.error(msg);
@@ -1173,13 +1171,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         validateDeploymentPolicy(deploymentPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info("Updating deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
+            log.info("Updating deployment policy: [deployment-policy-id] " + deploymentPolicy.getUuid());
         }
         if (log.isDebugEnabled()) {
             log.debug("Updating Deployment policy definition: " + deploymentPolicy.toString());
         }
 
-        String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
+        String deploymentPolicyID = deploymentPolicy.getUuid();
         if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyID) == null) {
             String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
             log.error(message);
@@ -1201,30 +1199,30 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         for (ClusterMonitor clusterMonitor : AutoscalerContext.getInstance().getClusterMonitors().values()) {
             //Following if statement checks the relevant clusters for the updated deployment policy
-            if (deploymentPolicy.getDeploymentPolicyID().equals(clusterMonitor.getDeploymentPolicyId())) {
+            if (deploymentPolicy.getUuid().equals(clusterMonitor.getDeploymentPolicyId())) {
                 for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                     ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
 
                     try {
                         addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
-                                deploymentPolicy.getDeploymentPolicyID(), clusterMonitor.getClusterContext().getServiceId());
+                                deploymentPolicy.getUuid(), clusterMonitor.getClusterContext().getServiceId());
                     } catch (RemoteException e) {
 
                         String message = "Connection to cloud controller failed, Cluster monitor update failed for" +
-                                " [deployment-policy] " + deploymentPolicy.getDeploymentPolicyID();
+                                " [deployment-policy] " + deploymentPolicy.getUuid();
                         log.error(message);
                         throw new CloudControllerConnectionException(message, e);
                     } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
 
                         String message = "Invalid partition, Cluster monitor update failed for [deployment-policy] "
-                                + deploymentPolicy.getDeploymentPolicyID();
+                                + deploymentPolicy.getUuid();
                         log.error(message);
                         throw new InvalidDeploymentPolicyException(message, e);
                     } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
 
                         String message = "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
-                                + deploymentPolicy.getDeploymentPolicyID() + " [cartridge] "
+                                + deploymentPolicy.getUuid() + " [cartridge] "
                                 + clusterMonitor.getClusterContext().getServiceId();
                         log.error(message);
                         throw new InvalidDeploymentPolicyException(message, e);

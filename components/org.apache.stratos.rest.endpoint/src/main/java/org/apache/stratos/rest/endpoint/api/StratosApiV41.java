@@ -133,6 +133,10 @@ public class StratosApiV41 extends AbstractApi {
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
         String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+        deploymentPolicyDefinitionBean.setUuid(UUID.randomUUID().toString());
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        deploymentPolicyDefinitionBean.setTenantId(carbonContext.getTenantId());
         try {
             StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
