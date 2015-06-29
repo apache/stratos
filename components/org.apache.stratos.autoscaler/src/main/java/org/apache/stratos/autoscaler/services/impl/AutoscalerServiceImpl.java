@@ -887,9 +887,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         // validating application policy
         AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
 
-        //Update application Monitor
-
-
         // updating application policy
         PolicyManager.getInstance().updateApplicationPolicy(applicationPolicy);
         return true;

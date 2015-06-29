@@ -520,7 +520,9 @@ public class ClusterMonitor extends Monitor {
     @Override
     public void destroy() {
         //shutting down the scheduler
-        schedulerFuture.cancel(true);
+        if(schedulerFuture != null) {
+            schedulerFuture.cancel(true);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("ClusterMonitor task has been stopped " + this.toString());

@@ -187,7 +187,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                         if (log.isDebugEnabled()) {
                                             log.debug("Creating a group instance of [application] "
                                                     + appId + " [group] " + id +
-                                                    " as the the minimum required instances not met");
+                                                    " as the the minimum required instances are not met");
 
                                         }
                                         createInstanceOnDemand(parentInstanceContext.getId());

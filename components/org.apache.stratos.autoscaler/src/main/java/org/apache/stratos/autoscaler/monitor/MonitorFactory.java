@@ -140,7 +140,6 @@ public class MonitorFactory {
             } else {
                 groupMonitor.setHasStartupDependents(false);
             }
-            groupMonitor.startScheduler();
         } finally {
             ApplicationHolder.releaseReadLock();
         }
@@ -155,9 +154,10 @@ public class MonitorFactory {
                 instanceIds.add(instance.getInstanceId());
             }
         }
-
         // Starting the minimum dependencies
         groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
+        //Starting the scheduler for the group monitor
+        groupMonitor.startScheduler();
 
         return groupMonitor;
 
@@ -188,13 +188,13 @@ public class MonitorFactory {
 
             applicationMonitor = new ApplicationMonitor(application);
             applicationMonitor.setHasStartupDependents(false);
-            // Starting the scheduler of the application monitor
-            applicationMonitor.startScheduler();
         } finally {
             ApplicationHolder.releaseReadLock();
         }
-
+        //Creating the immediate dependencies
         applicationMonitor.startMinimumDependencies(application);
+        // Starting the scheduler of the application monitor
+        applicationMonitor.startScheduler();
 
         return applicationMonitor;
     }
