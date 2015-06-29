@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Defines a cluster of a service.
@@ -89,9 +90,9 @@ public class Cluster implements Serializable {
         this.deploymentPolicyName = deploymentPolicyName;
         this.autoscalePolicyName = autoscalePolicyName;
         this.setHostNames(new ArrayList<String>());
-        this.memberMap = new HashMap<String, Member>();
+        this.memberMap = new ConcurrentHashMap<String, Member>();
         this.appId = appId;
-        this.setInstanceIdToInstanceContextMap(new HashMap<String, ClusterInstance>());
+        this.setInstanceIdToInstanceContextMap(new ConcurrentHashMap<String, ClusterInstance>());
         this.accessUrls = new ArrayList<String>();
         this.kubernetesServices = new ArrayList<KubernetesService>();
     }
