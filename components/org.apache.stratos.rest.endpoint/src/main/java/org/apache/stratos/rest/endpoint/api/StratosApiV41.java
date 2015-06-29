@@ -132,8 +132,9 @@ public class StratosApiV41 extends AbstractApi {
     public Response addDeploymentPolicy(
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
-        String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+        String deploymentPolicyId = deploymentPolicyDefinitionBean.getId();
         deploymentPolicyDefinitionBean.setUuid(UUID.randomUUID().toString());
+        String deploymentPolicyUuid = deploymentPolicyDefinitionBean.getUuid();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         deploymentPolicyDefinitionBean.setTenantId(carbonContext.getTenantId());
@@ -147,10 +148,10 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy already exists")).build();
         }
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Deployment policy added successfully: " + "[deployment-policy-id] %s",
-                        deploymentPolicyID))).build();
+                String.format("Deployment policy added successfully: [deployment-policy-uuid] %s " +
+                                "[deployment-policy-uuid] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
     }
 
     /**
@@ -166,7 +167,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/deploymentPolicies/view")
     public Response getDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
-        DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
+        DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeploymentPolicy(deploymentPolicyId);
         if (deploymentPolicyBean == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy not found")).build();
@@ -187,7 +188,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/deploymentPolicies/view")
     public Response getDeploymentPolicies()
             throws RestAPIException {
-        DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
+        DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeploymentPolicies();
         if (deploymentPolicies == null || deploymentPolicies.length == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "No deployment policies found")).build();
@@ -211,7 +212,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateDeploymentPolicy(
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
-        String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+        String deploymentPolicyId = deploymentPolicyDefinitionBean.getId();
+        String deploymentPolicyUuid = deploymentPolicyDefinitionBean.getUuid();
         // TODO :: Deployment policy validation
 
         try {
@@ -230,10 +232,10 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Deployment policy not found")).build();
         }
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Deployment policy updated successfully: " + "[deployment-policy-id] %s",
-                        deploymentPolicyID))).build();
+                String.format("Deployment policy updated successfully: [deployment-policy-uuid] %s " +
+                                "[deployment-policy-id] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
     }
 
     /**
@@ -261,7 +263,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Deployment policy removed successfully: " + "[deployment-policy-id] %s",
+                String.format("Deployment policy removed successfully: [deployment-policy-id] %s",
                         deploymentPolicyId))).build();
     }
 
@@ -637,8 +639,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network partition added successfully: [network-partition-uuid] %s", networkPartitionId)))
-                .build();
+                String.format("Network partition added successfully: [network-partition-uuid] %s " +
+                        "[network-partition-uuid] %s", networkPartitionBean.getUuid(), networkPartitionId))).build();
     }
 
     /**

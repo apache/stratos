@@ -2841,26 +2841,27 @@ public class StratosApiV41Utils {
     /**
      * Add deployment policy
      *
-     * @param deployementPolicyDefinitionBean DeploymentPolicyBean
+     * @param deploymentPolicyDefinitionBean DeploymentPolicyBean
      */
-    public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean)
+    public static void addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
             throws RestAPIException,
             AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException,
             AutoscalerServiceInvalidDeploymentPolicyExceptionException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ",
-                        deployementPolicyDefinitionBean.getId()));
+                        deploymentPolicyDefinitionBean.getId()));
             }
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
 
-                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deployementPolicyDefinitionBean);
+                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
             AutoscalerServiceClient.getInstance().addDeploymentPolicy(deploymentPolicy);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
-                        deployementPolicyDefinitionBean.getId()));
+                log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-uuid] %s " +
+                                "[deployment-policy-id] %s", deploymentPolicyDefinitionBean.getUuid(),
+                        deploymentPolicyDefinitionBean.getId()));
             }
         } catch (RemoteException e) {
             String msg = e.getMessage();
@@ -2879,7 +2880,7 @@ public class StratosApiV41Utils {
      * @param deploymentPolicyId deployment policy id
      * @return {@link DeploymentPolicyBean}
      */
-    public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyId) throws RestAPIException {
+    public static DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
 
         DeploymentPolicyBean deploymentPolicyBean;
         try {
@@ -2888,10 +2889,10 @@ public class StratosApiV41Utils {
 
             DeploymentPolicy deploymentPolicy = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            List<DeploymentPolicy> deploymentPoliciesForTenant = new ArrayList<DeploymentPolicy>();
+           // List<DeploymentPolicy> deploymentPoliciesForTenant = new ArrayList<DeploymentPolicy>();
             for (DeploymentPolicy deploymentPolicy1 : deploymentPolicies) {
                 if (carbonContext.getTenantId() == deploymentPolicy1.getTenantId()) {
-                    deploymentPoliciesForTenant.add(deploymentPolicy1);
+                    //deploymentPoliciesForTenant.add(deploymentPolicy1);
                     if (deploymentPolicy1.getId().equals(deploymentPolicyId)) {
                         deploymentPolicy = deploymentPolicy1;
                     }
@@ -2917,7 +2918,7 @@ public class StratosApiV41Utils {
      *
      * @return array of {@link DeploymentPolicyBean}
      */
-    public static DeploymentPolicyBean[] getDeployementPolicies() throws RestAPIException {
+    public static DeploymentPolicyBean[] getDeploymentPolicies() throws RestAPIException {
         try {
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
                     = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
@@ -2945,7 +2946,7 @@ public class StratosApiV41Utils {
     }
 
     /**
-     * Update deployement policy
+     * Update deployment policy
      *
      * @param deploymentPolicyDefinitionBean DeploymentPolicyBean
      * @throws RestAPIException
@@ -2956,7 +2957,8 @@ public class StratosApiV41Utils {
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Updating deployment policy: [deployment-policy-id] %s ",
+                log.debug(String.format("Updating deployment policy: [deployment-policy-uuid] %s " +
+                                "[deployment-policy-id] %s ", deploymentPolicyDefinitionBean.getUuid(),
                         deploymentPolicyDefinitionBean.getId()));
             }
 
@@ -2966,7 +2968,8 @@ public class StratosApiV41Utils {
             AutoscalerServiceClient.getInstance().updateDeploymentPolicy(deploymentPolicy);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("DeploymentPolicy updated successfully : [deployment-policy-id] %s ",
+                log.debug(String.format("DeploymentPolicy updated successfully : [deployment-policy-uuid] %s " +
+                                "[deployment-policy-id] %s ", deploymentPolicyDefinitionBean.getUuid(),
                         deploymentPolicyDefinitionBean.getId()));
             }
         } catch (RemoteException e) {
@@ -2990,14 +2993,18 @@ public class StratosApiV41Utils {
     /**
      * Remove deployment policy
      *
-     * @param deploymentPolicyID Deployment policy ID
+     * @param deploymentPolicyId Deployment policy Id
      * @throws RestAPIException
      */
-    public static void removeDeploymentPolicy(String deploymentPolicyID)
+    public static void removeDeploymentPolicy(String deploymentPolicyId)
             throws RestAPIException, AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
             AutoscalerServiceUnremovablePolicyExceptionException {
+
+        DeploymentPolicyBean deploymentPolicyBean;
         try {
-            AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyID);
+            deploymentPolicyBean = getDeploymentPolicy(deploymentPolicyId);
+            AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyBean.getUuid());
+
         } catch (RemoteException e) {
             String msg = "Could not remove deployment policy " + e.getLocalizedMessage();
             log.error(msg, e);
