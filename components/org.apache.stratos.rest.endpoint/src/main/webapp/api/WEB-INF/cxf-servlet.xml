@@ -144,12 +144,13 @@
                 <value>accessUrls</value>
                 <value>kubernetesServices</value>
                 <value>publicIPs</value>
-                <value>ports</value>
+                <val>ports</val
                 <value>metadataKeys</value>
                 <value>networkInterfaces</value>
                 <value>iaasProvider</value>
                 <value>floatingNetworks</value>
                 <value>scalingDependents</value>
+                <value>aliases</value>
             </list>
         </property>
     </bean>
