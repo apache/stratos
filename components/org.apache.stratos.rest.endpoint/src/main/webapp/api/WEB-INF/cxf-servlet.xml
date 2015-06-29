@@ -144,7 +144,7 @@
                 <value>accessUrls</value>
                 <value>kubernetesServices</value>
                 <value>publicIPs</value>
-                <val>ports</val
+                <value>ports</value>
                 <value>metadataKeys</value>
                 <value>networkInterfaces</value>
                 <value>iaasProvider</value>
