@@ -1644,7 +1644,7 @@ public class StratosApiV41Utils {
 
             if (group.getDeploymentPolicy() != null) {
                 if (hasDeploymentPolicy) {
-                    String message = "Parent Group has a deployment policy. Remove deployment policy from the" +
+                    String message = "Parent group has a deployment policy. Remove deployment policy from the" +
                             " group: [group-alias] " + group.getAlias();
                     throw new RestAPIException(message);
                 } else {
