@@ -1422,7 +1422,8 @@ public class StratosApiV41Utils {
                     usedCartridgeGroups.toArray(new String[usedCartridgeGroups.size()]));
 
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
-            throw new RestAPIException(e);
+            String message = e.getFaultMessage().getApplicationDefinitionException().getMessage();
+            throw new RestAPIException(message, e);
         } catch (RemoteException e) {
             throw new RestAPIException(e);
         }
@@ -1469,7 +1470,8 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient.getInstance().updateApplication(applicationContext);
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
-            throw new RestAPIException(e);
+            String message = e.getFaultMessage().getApplicationDefinitionException().getMessage();
+            throw new RestAPIException(message, e);
         } catch (RemoteException e) {
             throw new RestAPIException(e);
         }
