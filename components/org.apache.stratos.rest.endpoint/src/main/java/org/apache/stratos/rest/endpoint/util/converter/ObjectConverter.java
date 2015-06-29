@@ -410,6 +410,8 @@ public class ObjectConverter {
                 org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy();
 
         autoscalePolicy.setId(autoscalePolicyBean.getId());
+        autoscalePolicy.setUuid(autoscalePolicyBean.getUuid());
+        autoscalePolicy.setTenantId(autoscalePolicyBean.getTenantId());
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
         autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
 
@@ -858,9 +860,10 @@ public class ObjectConverter {
 
         AutoscalePolicyBean autoscalePolicyBean = new AutoscalePolicyBean();
         autoscalePolicyBean.setId(autoscalePolicy.getId());
+        autoscalePolicyBean.setUuid(autoscalePolicy.getUuid());
+        autoscalePolicyBean.setTenantId(autoscalePolicy.getTenantId());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
-        autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         if (autoscalePolicy.getLoadThresholds() != null) {
             autoscalePolicyBean.setLoadThresholds(convertStubLoadThresholdsToLoadThresholds(autoscalePolicy.getLoadThresholds()));
         }

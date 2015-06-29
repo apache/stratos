@@ -25,9 +25,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AutoscalePolicyBean {
 
     private String id;
+    private String uuid;
+    private int tenantId;
     private String displayName;
     private String description;
     private LoadThresholdsBean loadThresholds;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public String getId() {
         return id;

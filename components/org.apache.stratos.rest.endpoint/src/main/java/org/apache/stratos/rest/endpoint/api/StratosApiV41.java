@@ -1387,13 +1387,18 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/autoscalingPolicies/manage")
     public Response addAutoscalingPolicy(
             AutoscalePolicyBean autoscalePolicy) throws RestAPIException {
+        String autoscalingPolicyId = autoscalePolicy.getId();
+        autoscalePolicy.setUuid(UUID.randomUUID().toString());
+        String autoscalingPolicyUuid = autoscalePolicy.getUuid();
 
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        autoscalePolicy.setTenantId(carbonContext.getTenantId());
         try {
             StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
             URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Autoscaling policy added successfully: [autoscale-policy] %s",
-                            autoscalePolicy.getId()))).build();
+                    String.format("Autoscaling policy added successfully: [autoscale-policy-uuid] %s " +
+                                    "[autoscale-policy-id] %s", autoscalingPolicyUuid, autoscalingPolicyId))).build();
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Provided Autoscaling policy is invalid")).build();

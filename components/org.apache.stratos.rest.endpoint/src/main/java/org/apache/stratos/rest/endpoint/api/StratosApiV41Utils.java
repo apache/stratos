@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
+import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
@@ -850,9 +851,10 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-
+            AutoscalePolicyBean autoscalePolicyBean;
             try {
-                autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicyId);
+                autoscalePolicyBean = getAutoScalePolicy(autoscalePolicyId);
+                autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicyBean.getUuid());
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -870,17 +872,31 @@ public class StratosApiV41Utils {
 
         org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        AutoscalePolicy[] autoscalingPoliciesForTenantArray = new AutoscalePolicy[0];
+
         if (autoscalerServiceClient != null) {
             try {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
-
+                if (autoscalePolicies != null) {
+                    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    List<AutoscalePolicy> autoscalingPoliciesForTenant = new ArrayList<AutoscalePolicy>();
+                    for (AutoscalePolicy autoscalePolicy : autoscalePolicies) {
+                        if (carbonContext.getTenantId() == autoscalePolicy.getTenantId()) {
+                            autoscalingPoliciesForTenant.add(autoscalePolicy);
+                        }
+                    }
+                    if (autoscalingPoliciesForTenant.size() != 0) {
+                        autoscalingPoliciesForTenantArray = autoscalingPoliciesForTenant.toArray(new
+                                AutoscalePolicy[autoscalingPoliciesForTenant.size()]);
+                    }
+                }
             } catch (RemoteException e) {
                 String errorMsg = "Error while getting available autoscaling policies. Cause : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg, e);
             }
         }
-        return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalePolicies);
+        return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalingPoliciesForTenantArray);
     }
 
     /**
@@ -892,21 +908,30 @@ public class StratosApiV41Utils {
      */
     public static AutoscalePolicyBean getAutoScalePolicy(String autoscalePolicyId) throws RestAPIException {
 
-        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                autoscalePolicy = autoscalerServiceClient.getAutoScalePolicy(autoscalePolicyId);
+        AutoscalePolicyBean autoscalePolicyBean;
+        try {
+            AutoscalePolicy[] autoscalePolicies = AutoscalerServiceClient.getInstance().getAutoScalePolicies();
 
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting information for autoscaling policy with id " +
-                        autoscalePolicyId + ".  Cause: " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+            AutoscalePolicy autoscalePolicy = null;
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            for (AutoscalePolicy autoscalePolicy1 : autoscalePolicies) {
+                if (carbonContext.getTenantId() == autoscalePolicy1.getTenantId()) {
+                    if (autoscalePolicy1.getId().equals(autoscalePolicyId)) {
+                        autoscalePolicy = autoscalePolicy1;
+                    }
+                }
             }
+            if (autoscalePolicy == null) {
+                return null;
+            }
+            autoscalePolicyBean = ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
+        } catch (RemoteException e) {
+            String errorMsg = "Error while getting information for autoscaling policy with id " +
+                    autoscalePolicyId + ".  Cause: " + e.getMessage();
+            log.error(errorMsg, e);
+            throw new RestAPIException(errorMsg, e);
         }
-
-        return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
+        return autoscalePolicyBean;
     }
 
     // Util methods for repo actions
@@ -2849,13 +2874,13 @@ public class StratosApiV41Utils {
             AutoscalerServiceInvalidDeploymentPolicyExceptionException {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ",
+                log.debug(String.format("Adding deployment policy: [deployment-policy-uuid] %s [deployment-policy-id]" +
+                                " %s ", deploymentPolicyDefinitionBean.getUuid(),
                         deploymentPolicyDefinitionBean.getId()));
             }
 
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-
-                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = ObjectConverter
+                    .convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
             AutoscalerServiceClient.getInstance().addDeploymentPolicy(deploymentPolicy);
 
             if (log.isDebugEnabled()) {

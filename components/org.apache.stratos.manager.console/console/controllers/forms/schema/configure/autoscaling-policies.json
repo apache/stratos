@@ -1,15 +1,20 @@
 {
     "type":"object",
     "$schema": "http://json-schema.org/draft-04/schema",
-    "id": "root",
+    "uuid": "root",
     "title":"Auto-scaling Policy Definition",
-    "name": "Auto-scaling Policy",
+    "name": "Auto-scaling Policy UUID",
     "options": {
         "disable_properties": true,
         "disable_collapse": true
     },
     "required" : ["id", "loadThresholds"],
     "properties":{
+        "uuid": {
+            "type":"string",
+            "id": "root/uuid",
+            "title":"Auto Scale policy UUID"
+        },
         "id": {
             "type":"string",
             "id": "root/id",
