@@ -847,7 +847,7 @@ public class StratosApiV41Utils {
             AutoscalerServicePolicyDoesNotExistExceptionException,
             AutoscalerServiceUnremovablePolicyExceptionException {
 
-        log.info(String.format("Removing autoscaling policy: [id] %s", autoscalePolicyId));
+        log.info(String.format("Removing autoscaling policy: [autoscaling-policy-id] %s", autoscalePolicyId));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -926,8 +926,8 @@ public class StratosApiV41Utils {
             }
             autoscalePolicyBean = ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
         } catch (RemoteException e) {
-            String errorMsg = "Error while getting information for autoscaling policy with id " +
-                    autoscalePolicyId + ".  Cause: " + e.getMessage();
+            String errorMsg = "Error while getting information for autoscaling policy with id " + autoscalePolicyId +
+                    ".  Cause: " + e.getMessage();
             log.error(errorMsg, e);
             throw new RestAPIException(errorMsg, e);
         }

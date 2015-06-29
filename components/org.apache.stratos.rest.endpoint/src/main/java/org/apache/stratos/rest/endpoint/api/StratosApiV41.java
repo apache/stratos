@@ -1432,7 +1432,8 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Autoscaling policy is invalid")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Autoscaling policy updated successfully: [autoscale-policy] %s",
+                String.format("Autoscaling policy updated successfully: [autoscale-policy-uuid] %s " +
+                                "[autoscale-policy-id] %s", autoscalePolicy.getUuid(),
                         autoscalePolicy.getId()))).build();
     }
 
@@ -1461,7 +1462,7 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Autoscaling policy not found")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s",
+                String.format("Autoscaling policy deleted successfully: [autoscale-policy-id] %s",
                         autoscalingPolicyId))).build();
     }
 
