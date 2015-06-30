@@ -24,6 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -73,10 +74,16 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
         List<Cluster> clusters = event.getClusterList();
 
         for (Cluster cluster : clusters) {
+            String applicationId = cluster.getAppId();
             String serviceName = cluster.getServiceName();
             String clusterId = cluster.getClusterId();
             TopologyUpdater.acquireWriteLockForService(serviceName);
+
             try {
+                // Apply application filter
+                if(TopologyApplicationFilter.apply(applicationId)) {
+                    continue;
+                }
 
                 // Apply service filter
                 if (TopologyServiceFilter.apply(serviceName)) {

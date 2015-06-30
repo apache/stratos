@@ -54,8 +54,8 @@ public class TopologyServiceFilter extends MessageFilter {
             if (StringUtils.isNotBlank(serviceName) && getInstance().serviceExcluded(serviceName)) {
                 excluded = true;
             }
-            if (excluded && log.isDebugEnabled()) {
-                log.debug(String.format("Service is excluded: [lb-cluster] %s", serviceName));
+            if (excluded && log.isInfoEnabled()) {
+                log.info(String.format("Service is excluded: [service-name] %s", serviceName));
             }
         }
         return excluded;

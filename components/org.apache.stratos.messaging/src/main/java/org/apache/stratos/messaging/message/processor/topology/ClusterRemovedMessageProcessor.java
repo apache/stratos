@@ -20,9 +20,11 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -103,6 +105,13 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
                         event.getClusterId()));
             }
         } else {
+
+            Cluster cluster = service.getCluster(event.getClusterId());
+
+            // Apply application filter
+            if(TopologyApplicationFilter.apply(cluster.getAppId())) {
+                return false;
+            }
 
             // Apply changes to the topology
             service.removeCluster(event.getClusterId());

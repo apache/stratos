@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.test;
 
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.message.filter.MessageFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -104,12 +105,7 @@ public class MessageFilterTest {
     @Test
     public final void testMemberFilter() {
         System.setProperty(StratosConstants.TOPOLOGY_MEMBER_FILTER,
-                TopologyMemberFilter.TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID + "=lb-cluster1,lb-cluster2|" +
-                        TopologyMemberFilter.TOPOLOGY_MEMBER_FILTER_NETWORK_PARTITION_ID + "=np1,np2");
-
-        assertFalse(TopologyMemberFilter.apply("lb-cluster1", null));
-        assertFalse(TopologyMemberFilter.apply("lb-cluster2", null));
-        assertTrue(TopologyMemberFilter.apply("lb-cluster3", null));
+                TopologyMemberFilter.TOPOLOGY_MEMBER_FILTER_NETWORK_PARTITION_ID + "=np1,np2");
 
         assertFalse(TopologyMemberFilter.apply(null, "np1"));
         assertFalse(TopologyMemberFilter.apply(null, "np2"));
@@ -118,5 +114,16 @@ public class MessageFilterTest {
         assertFalse(TopologyMemberFilter.apply("lb-cluster1", "np1"));
         assertFalse(TopologyMemberFilter.apply("lb-cluster2", "np2"));
         assertTrue(TopologyMemberFilter.apply("lb-cluster3", "np3"));
+    }
+
+    @Test
+    public final void testApplicationFilter() {
+        System.setProperty(StratosConstants.TOPOLOGY_APPLICATION_FILTER,
+                TopologyApplicationFilter.TOPOLOGY_APPLICATION_FILTER_APPLICATION_ID +
+                        "=application-1,application-2");
+
+        assertFalse(TopologyApplicationFilter.apply("application-1"));
+        assertFalse(TopologyApplicationFilter.apply("application-2"));
+        assertTrue(TopologyApplicationFilter.apply("application-3"));
     }
 }

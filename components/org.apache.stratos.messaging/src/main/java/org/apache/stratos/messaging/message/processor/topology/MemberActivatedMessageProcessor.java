@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -71,8 +72,14 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess(MemberActivatedEvent event, Topology topology) {
 
+        String applicationId = event.getApplicationId();
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(applicationId)) {
+            return false;
+        }
 
         // Apply service filter
         if (TopologyServiceFilter.apply(serviceName)) {

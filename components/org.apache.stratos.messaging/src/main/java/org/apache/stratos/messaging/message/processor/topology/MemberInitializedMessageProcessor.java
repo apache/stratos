@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -99,6 +100,12 @@ public class MemberInitializedMessageProcessor extends MessageProcessor {
             }
             return false;
         }
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(cluster.getAppId())) {
+            return false;
+        }
+
         Member member = cluster.getMember(event.getMemberId());
         if (member == null) {
             if (log.isWarnEnabled()) {

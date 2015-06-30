@@ -168,6 +168,7 @@ public class StratosConstants {
     public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
     public static final String FILTER_VALUE_SEPARATOR = ",";
+    public static final String TOPOLOGY_APPLICATION_FILTER = "stratos.topology.application.filter";
     public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
     public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
     public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
