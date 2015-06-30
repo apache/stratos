@@ -1345,6 +1345,62 @@ public class ClusterMonitor extends Monitor {
         memberTerminator.start();
     }
 
+    public void terminatePendingMembers(final String instanceId, final String networkPartitionId) {
+        final ClusterMonitor monitor = this;
+        Thread memberTerminator = new Thread(new Runnable() {
+            public void run() {
+
+                ClusterInstanceContext instanceContext =
+                        (ClusterInstanceContext) getAllNetworkPartitionCtxts().get(networkPartitionId)
+                                .getInstanceContext(instanceId);
+                boolean allMovedToObsolete = true;
+                for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Starting to terminate all members in cluster [" + getClusterId() + "] " +
+                                "Network Partition [" + instanceContext.getNetworkPartitionId() + "], Partition [" +
+                                partitionContext.getPartitionId() + "]");
+                    }
+
+                    if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
+                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s", partitionContext.getPartitionId(), getAppId()));
+                        partitionContext.terminateAllRemainingInstances();
+                    }
+                    //Need to terminate pending members
+                    Iterator<MemberContext> pendingIterator = partitionContext.getPendingMembers().listIterator();
+                    List<String> pendingMemberIdList = new ArrayList<String>();
+                    while (pendingIterator.hasNext()) {
+                        MemberContext pendingMemberContext = pendingIterator.next();
+                        pendingMemberIdList.add(pendingMemberContext.getMemberId());
+
+                    }
+                    for (String memberId : pendingMemberIdList) {
+                        // pending members
+                        if (log.isDebugEnabled()) {
+                            log.debug("Moving pending member [member id] " + memberId + " to obsolete list");
+                        }
+                        partitionContext.movePendingMemberToObsoleteMembers(memberId);
+                    }
+
+                    /*
+                    if (partitionContext.getTotalMemberCount() == 0) {
+                        allMovedToObsolete = allMovedToObsolete && true;
+                    } else {
+                        allMovedToObsolete = false;
+                    }
+                    */
+                    allMovedToObsolete = partitionContext.getTotalMemberCount() == 0;
+                }
+
+                if (allMovedToObsolete) {
+                    monitor.monitor();
+                }
+            }
+        }, "Member Terminator - [cluster id] " + getClusterId());
+
+        memberTerminator.start();
+    }
+
+
     public Map<String, ClusterLevelNetworkPartitionContext> getAllNetworkPartitionCtxts() {
         return (this.clusterContext).getNetworkPartitionCtxts();
     }

@@ -151,7 +151,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 if (application != null) {
                     List<String> defaultNetworkPartitions = getDefaultNetworkPartitions(application);
                     //Checking for whether minimum application instances are there.
-                    checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
+                    if(defaultNetworkPartitions != null) {
+                        checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
+                    }
 
                     /*//Checking for whether any application instances need to be terminated.
                     checkForApplicationInstanceTermination(application, defaultNetworkPartitions);*/
@@ -268,7 +270,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 getNetworkPartitionAlgorithmContext(appId);
         ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
                 getApplicationPolicy(application.getApplicationPolicyId());
-        List<String> defaultNetworkPartitions = new ArrayList<String>();
+        List<String> defaultNetworkPartitions = null;
 
         if (applicationPolicy != null) {
             String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
