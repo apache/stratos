@@ -325,7 +325,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
         }
         //Starting the dependencies
-        if(instanceIds.isEmpty()) {
+        if(!instanceIds.isEmpty()) {
             startDependency(application, instanceIds);
         }
 
