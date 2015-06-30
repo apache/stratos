@@ -494,6 +494,8 @@ public class ObjectConverter {
 
         ApplicationPolicyBean applicationPolicyBean = new ApplicationPolicyBean();
         applicationPolicyBean.setId(applicationPolicy.getId());
+        applicationPolicyBean.setUuid(applicationPolicy.getUuid());
+        applicationPolicyBean.setTenantId(applicationPolicy.getTenantId());
         applicationPolicyBean.setAlgorithm(applicationPolicy.getAlgorithm());
         applicationPolicyBean.setNetworkPartitions(applicationPolicy.getNetworkPartitions());
 
@@ -2001,6 +2003,8 @@ public class ObjectConverter {
         applicationPolicy.setId(applicationPolicyBean.getId());
         applicationPolicy.setAlgorithm(applicationPolicyBean.getAlgorithm());
         applicationPolicy.setNetworkPartitions(applicationPolicyBean.getNetworkPartitions());
+        applicationPolicy.setUuid(applicationPolicyBean.getUuid());
+        applicationPolicy.setTenantId(applicationPolicyBean.getTenantId());
         if (applicationPolicyBean.getProperties() != null) {
             if (!applicationPolicyBean.getProperties().isEmpty()) {
                 applicationPolicy.setProperties(getASPropertiesFromCommonProperties(applicationPolicyBean.getProperties()));

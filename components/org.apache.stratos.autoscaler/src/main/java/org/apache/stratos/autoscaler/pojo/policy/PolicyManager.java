@@ -349,7 +349,7 @@ public class PolicyManager {
 
 
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidApplicationPolicyException {
-        String applicationPolicyId = applicationPolicy.getId();
+        String applicationPolicyId = applicationPolicy.getUuid();
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding application policy : [application-policy-id] %s", applicationPolicyId));
         }
@@ -357,8 +357,7 @@ public class PolicyManager {
         RegistryManager.getInstance().persistApplicationPolicy(applicationPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info(String
-                    .format("Application policy is added successfully: [application-policy-id] %s",
+            log.info(String.format("Application policy is added successfully: [application-policy-id] %s",
                             applicationPolicyId));
         }
 
@@ -378,7 +377,7 @@ public class PolicyManager {
 
     public void addApplicationPolicyToInformationModel(ApplicationPolicy applicationPolicy)
             throws InvalidApplicationPolicyException {
-        String applicationPolicyId = applicationPolicy.getId();
+        String applicationPolicyId = applicationPolicy.getUuid();
         if (!applicationPolicyListMap.containsKey(applicationPolicyId)) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding application policy : " + applicationPolicyId);
@@ -403,22 +402,22 @@ public class PolicyManager {
     }
 
     public void updateApplicationPolicyInInformationModel(ApplicationPolicy applicationPolicy) {
-        if (applicationPolicyListMap.containsKey(applicationPolicy.getId())) {
+        if (applicationPolicyListMap.containsKey(applicationPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Updating application policy: " + applicationPolicy.getId());
+                log.debug("Updating application policy: " + applicationPolicy.getUuid());
             }
-            applicationPolicyListMap.put(applicationPolicy.getId(), applicationPolicy);
+            applicationPolicyListMap.put(applicationPolicy.getUuid(), applicationPolicy);
         }
     }
 
     public boolean updateApplicationPolicy(ApplicationPolicy applicationPolicy) {
-        if (StringUtils.isEmpty(applicationPolicy.getId())) {
+        if (StringUtils.isEmpty(applicationPolicy.getUuid())) {
             throw new AutoScalerException("Application policy id cannot be empty");
         }
         this.updateApplicationPolicyInInformationModel(applicationPolicy);
         RegistryManager.getInstance().persistApplicationPolicy(applicationPolicy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Application policy is updated successfully: [id] %s", applicationPolicy.getId()));
+            log.info(String.format("Application policy is updated successfully: [id] %s", applicationPolicy.getUuid()));
         }
         return true;
     }

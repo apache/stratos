@@ -704,7 +704,8 @@ public class StratosApiV41Utils {
             AutoscalerServiceInvalidApplicationPolicyExceptionException,
             AutoscalerServiceApplicatioinPolicyNotExistsExceptionException {
 
-        log.info(String.format("Updating application policy: [id] %s", applicationPolicyBean.getId()));
+        log.info(String.format("Updating application policy: [application-policy-uuid] %s [application-policy-id] " +
+                "%s", applicationPolicyBean.getUuid(), applicationPolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -736,16 +737,30 @@ public class StratosApiV41Utils {
 
         ApplicationPolicy[] applicationPolicies = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        ApplicationPolicy[] applicationPoliciesForTenantArray = new ApplicationPolicy[0];
         if (autoscalerServiceClient != null) {
             try {
                 applicationPolicies = autoscalerServiceClient.getApplicationPolicies();
+                if (applicationPolicies != null) {
+                    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    List<ApplicationPolicy> applicationPoliciesForTenant = new ArrayList<ApplicationPolicy>();
+                    for (ApplicationPolicy applicationPolicy : applicationPolicies) {
+                        if (carbonContext.getTenantId() == applicationPolicy.getTenantId()) {
+                            applicationPoliciesForTenant.add(applicationPolicy);
+                        }
+                    }
+                    if (applicationPoliciesForTenant.size() != 0) {
+                        applicationPoliciesForTenantArray = applicationPoliciesForTenant.toArray(new
+                                ApplicationPolicy[applicationPoliciesForTenant.size()]);
+                    }
+                }
             } catch (RemoteException e) {
                 String msg = "Could not get application policies" + e.getLocalizedMessage();
                 log.error(msg, e);
                 throw new RestAPIException(msg);
             }
         }
-        return ObjectConverter.convertASStubApplicationPoliciesToApplicationPolicies(applicationPolicies);
+        return ObjectConverter.convertASStubApplicationPoliciesToApplicationPolicies(applicationPoliciesForTenantArray);
     }
 
     /**
@@ -771,7 +786,21 @@ public class StratosApiV41Utils {
 
         try {
             AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
-            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicy(applicationPolicyId);
+            ApplicationPolicy[] applicationPolicies = serviceClient.getApplicationPolicies();
+            ApplicationPolicy applicationPolicy = null;
+
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            for (ApplicationPolicy applicationPolicy1 : applicationPolicies) {
+                if (carbonContext.getTenantId() == applicationPolicy1.getTenantId()) {
+                    if (applicationPolicy1.getId().equals(applicationPolicyId)) {
+                        applicationPolicy = applicationPolicy1;
+                    }
+                }
+            }
+            if (applicationPolicy == null) {
+                return null;
+            }
+
             return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
         } catch (RemoteException e) {
             String message = String.format("Could not get application policy [application-policy-id] %s",

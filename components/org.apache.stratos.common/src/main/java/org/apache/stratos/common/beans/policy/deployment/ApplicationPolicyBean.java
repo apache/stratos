@@ -28,9 +28,27 @@ import java.util.List;
 public class ApplicationPolicyBean {
 
     private String id;
+    private String uuid;
+    private int tenantId;
     private String algorithm;
     String[] networkPartitions;
     List<PropertyBean> properties;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public String getId() {
         return id;

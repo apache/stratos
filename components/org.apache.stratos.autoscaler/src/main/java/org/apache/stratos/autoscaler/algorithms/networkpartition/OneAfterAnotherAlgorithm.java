@@ -68,7 +68,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        String applicationPolicyId = applicationPolicy.getId();
+        String applicationPolicyId = applicationPolicy.getUuid();
         String[] networkPartitionGroups = applicationPolicy.getNetworkPartitionGroups();
         if (networkPartitionGroups != null && networkPartitionGroups.length != 0) {
             if (log.isDebugEnabled()) {
@@ -223,7 +223,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        String applicationPolicyId = applicationPolicy.getId();
+        String applicationPolicyId = applicationPolicy.getUuid();
         String[] networkPartitionGroups = applicationPolicy.getNetworkPartitionGroups();
         List<String> selectedNetworkPartitions = new ArrayList<String>();
 

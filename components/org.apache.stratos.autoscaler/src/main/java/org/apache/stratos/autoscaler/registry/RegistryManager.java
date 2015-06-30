@@ -682,10 +682,10 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getId();
+                    AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getUuid();
             persist(applicationPolicy, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getId()));
+                log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getUuid()));
             }
         } finally {
             endTenantFlow();

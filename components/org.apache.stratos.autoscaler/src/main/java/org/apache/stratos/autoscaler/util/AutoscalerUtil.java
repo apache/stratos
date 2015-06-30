@@ -610,7 +610,7 @@ public class AutoscalerUtil {
         }
 
         // application policy id can't be null
-        if (applicationPolicy.getId() == null || StringUtils.isBlank(applicationPolicy.getId())) {
+        if (applicationPolicy.getUuid() == null || StringUtils.isBlank(applicationPolicy.getUuid())) {
             String msg = "Invalid Application Policy: Application policy id null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
@@ -661,7 +661,7 @@ public class AutoscalerUtil {
             if (null == CloudControllerServiceClient.getInstance().
                     getNetworkPartition(networkPartitionId)) {
                 String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
-                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getId());
+                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getUuid());
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }

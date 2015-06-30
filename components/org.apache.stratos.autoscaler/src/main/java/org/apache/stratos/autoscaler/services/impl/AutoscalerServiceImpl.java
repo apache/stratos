@@ -888,13 +888,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info("Adding application policy: [application-policy-id] " + applicationPolicy.getId());
+            log.info("Adding application policy: [application-policy-id] " + applicationPolicy.getUuid());
         }
         if (log.isDebugEnabled()) {
             log.debug("Application policy definition: " + applicationPolicy.toString());
         }
 
-        String applicationPolicyID = applicationPolicy.getId();
+        String applicationPolicyID = applicationPolicy.getUuid();
         if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyID) != null) {
             String message = "Application policy already exists: [application-policy-id] " + applicationPolicyID;
             log.error(message);
@@ -942,7 +942,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             throw new InvalidApplicationPolicyException(msg);
         }
 
-        String applicationPolicyId = applicationPolicy.getId();
+        String applicationPolicyId = applicationPolicy.getUuid();
         ApplicationPolicy existingApplicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
         if (existingApplicationPolicy == null) {
             String msg = String.format("No such application policy found [application-policy-id] %s", applicationPolicyId);

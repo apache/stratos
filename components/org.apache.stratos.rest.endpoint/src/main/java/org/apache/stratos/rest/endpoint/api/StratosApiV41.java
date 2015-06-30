@@ -905,12 +905,19 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applicationPolicies/manage")
     public Response addApplicationPolicy(
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
+
+        String applicationPolicyId = applicationPolicy.getId();
+        applicationPolicy.setUuid(UUID.randomUUID().toString());
+        String applicationPolicyUuid = applicationPolicy.getUuid();
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        applicationPolicy.setTenantId(carbonContext.getTenantId());
         try {
             StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
             URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Application policy added successfully: [application-policy] %s",
-                            applicationPolicy.getId()))).build();
+                    String.format("Application policy added successfully: [application-policy-uuid] %s " +
+                                    "[application-policy-id] %s", applicationPolicyUuid, applicationPolicyId))).build();
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getInvalidApplicationPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "root",
+    "uuid": "root",
     "type": "object",
     "title": "Application Policy Definition",
     "name": "Application Policy",
@@ -9,18 +9,24 @@
         "disable_collapse": true
     },
     "properties": {
+        "uuid": {
+            "id": "root/uuid",
+            "type": "string",
+            "title": "Application Policy UUID ",
+            "name": "Application Policy UUID"
+        },
         "id": {
             "id": "root/id",
             "type": "string",
             "title": "Application Policy Id ",
-            "name": "Application Policy Id",
+            "name": "Application Policy Id"
         },
         "algorithm": {
             "id": "root/algorithm",
             "type": "string",
             "title": "Application Policy Algorithm ",
             "name": "Application Policy Algorithm",
-            "enum": ["one-after-another","all-at-once"],
+            "enum": ["one-after-another","all-at-once"]
         },
         "networkPartitions": {
             "id": "root/networkPartitions",
