@@ -148,12 +148,16 @@ public class MonitorFactory {
 
         //Find whether any other instances exists in group
         // which has not been added to in-memory model in the restart
-        Collection<Instance> instances = parentMonitor.getInstances();
-        for(Instance instance : instances) {
-            if(!instanceIds.contains(instance.getInstanceId())) {
-                instanceIds.add(instance.getInstanceId());
+        ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+        if(applicationMonitor != null && applicationMonitor.isTerminating()) {
+            Collection<Instance> instances = parentMonitor.getInstances();
+            for(Instance instance : instances) {
+                if(!instanceIds.contains(instance.getInstanceId())) {
+                    instanceIds.add(instance.getInstanceId());
+                }
             }
         }
+
         // Starting the minimum dependencies
         groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
         //Starting the scheduler for the group monitor

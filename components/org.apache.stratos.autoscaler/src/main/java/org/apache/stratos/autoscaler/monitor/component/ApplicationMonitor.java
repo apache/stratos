@@ -71,6 +71,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
+    private boolean isRestarting;
+
     // Flag to set if forceful un-deployment is invoked for the application.
     private boolean force;
 
@@ -571,6 +573,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     initialStartup = false;
                 } else {
                     //create new app instance as it doesn't exist in the Topology
+                    this.setRestarting(true);
                     instanceId = handleApplicationInstanceCreation(application, context, null);
 
                 }
@@ -823,5 +826,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     @Override
     public boolean createInstanceOnTermination(String instanceId) {
         return false;
+    }
+
+    public boolean isRestarting() {
+        return isRestarting;
+    }
+
+    public void setRestarting(boolean isRestarting) {
+        this.isRestarting = isRestarting;
     }
 }
