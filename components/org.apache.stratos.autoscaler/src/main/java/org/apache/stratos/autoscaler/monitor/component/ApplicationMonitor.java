@@ -153,8 +153,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     //Checking for whether minimum application instances are there.
                     checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
 
-                    //Checking for whether any application instances need to be terminated.
-                    checkForApplicationInstanceTermination(application, defaultNetworkPartitions);
+                    /*//Checking for whether any application instances need to be terminated.
+                    checkForApplicationInstanceTermination(application, defaultNetworkPartitions);*/
                 }
 
 
@@ -325,7 +325,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
         }
         //Starting the dependencies
-        if(!instanceIds.isEmpty()) {
+        if(instanceIds.isEmpty()) {
             startDependency(application, instanceIds);
         }
 

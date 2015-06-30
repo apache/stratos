@@ -285,6 +285,8 @@ public class ApplicationBuilder {
                         getNetworkPartitionContext(applicationInstance.
                                 getNetworkPartitionId());
                 networkPartitionContext.removeInstanceContext(instanceId);
+                applicationMonitor.removeNetworkPartitionContext(applicationInstance.
+                        getNetworkPartitionId());
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
                 ApplicationHolder.persistApplication(application);

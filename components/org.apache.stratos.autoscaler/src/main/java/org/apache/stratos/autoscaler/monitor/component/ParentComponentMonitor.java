@@ -944,6 +944,15 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
+     * This will give the network partitions used by this monitor
+     *
+     * @return network-partition-contexts
+     */
+    public void removeNetworkPartitionContext(String networkPartitionId) {
+        networkPartitionContextsMap.remove(networkPartitionId);
+    }
+
+    /**
      * Inner class used a Thread to start the relevant child monitor in a asynchronous manner
      */
     private class MonitorAdder implements Runnable {
