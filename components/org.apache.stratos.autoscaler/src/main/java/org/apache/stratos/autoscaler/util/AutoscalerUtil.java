@@ -50,6 +50,7 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -658,8 +659,9 @@ public class AutoscalerUtil {
             }
 
             // network partitions should be added already
-            if (null == CloudControllerServiceClient.getInstance().
-                    getNetworkPartition(networkPartitionId)) {
+            NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
+                    .getNetworkPartition(networkPartitionId);
+            if (null == networkPartition || (applicationPolicy.getTenantId() != networkPartition.getTenantId())) {
                 String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
                         "[application-policy-id] %s", networkPartitionId, applicationPolicy.getUuid());
                 log.error(msg);

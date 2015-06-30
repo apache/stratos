@@ -2866,8 +2866,21 @@ public class StratosApiV41Utils {
     public static NetworkPartitionBean getNetworkPartition(String networkPartitionId) throws RestAPIException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
-            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition =
-                    serviceClient.getNetworkPartition(networkPartitionId);
+            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions =
+                    serviceClient.getNetworkPartitions();
+
+            NetworkPartition networkPartition = null;
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            for (NetworkPartition networkPartition1 : networkPartitions) {
+                if (carbonContext.getTenantId() == networkPartition1.getTenantId()) {
+                    if (networkPartition1.getId().equals(networkPartitionId)) {
+                        networkPartition = networkPartition1;
+                    }
+                }
+            }
+            if (networkPartition == null) {
+                return null;
+            }
             return ObjectConverter.convertCCStubNetworkPartitionToNetworkPartition(networkPartition);
         } catch (RemoteException e) {
             String message = e.getMessage();
@@ -2945,17 +2958,13 @@ public class StratosApiV41Utils {
 
             DeploymentPolicy deploymentPolicy = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-           // List<DeploymentPolicy> deploymentPoliciesForTenant = new ArrayList<DeploymentPolicy>();
             for (DeploymentPolicy deploymentPolicy1 : deploymentPolicies) {
                 if (carbonContext.getTenantId() == deploymentPolicy1.getTenantId()) {
-                    //deploymentPoliciesForTenant.add(deploymentPolicy1);
                     if (deploymentPolicy1.getId().equals(deploymentPolicyId)) {
                         deploymentPolicy = deploymentPolicy1;
                     }
                 }
             }
-            //org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy
-            //       = AutoscalerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyID);
             if (deploymentPolicy == null) {
                 return null;
             }

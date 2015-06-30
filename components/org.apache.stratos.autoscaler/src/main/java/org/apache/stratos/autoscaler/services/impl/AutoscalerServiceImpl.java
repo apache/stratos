@@ -25,13 +25,7 @@ import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitio
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
-import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
-import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
-import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
@@ -44,7 +38,6 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -894,9 +887,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.debug("Application policy definition: " + applicationPolicy.toString());
         }
 
-        String applicationPolicyID = applicationPolicy.getUuid();
-        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyID) != null) {
-            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyID;
+        String applicationPolicyId = applicationPolicy.getUuid();
+        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId) != null) {
+            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
             log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);
         }
@@ -1048,9 +1041,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.debug("Deployment policy definition: " + deploymentPolicy.toString());
         }
 
-        String deploymentPolicyID = deploymentPolicy.getUuid();
-        if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyID) != null) {
-            String message = "Deployment policy already exists: [deployment-policy-id] " + deploymentPolicyID;
+        String deploymentPolicyId = deploymentPolicy.getUuid();
+        if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId) != null) {
+            String message = "Deployment policy already exists: [deployment-policy-id] " + deploymentPolicyId;
             log.error(message);
             throw new DeploymentPolicyAlreadyExistsException(message);
         }
@@ -1058,7 +1051,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info("Successfully added deployment policy: [deployment-policy-id] " + deploymentPolicyID);
+            log.info("Successfully added deployment policy: [deployment-policy-id] " + deploymentPolicyId);
         }
         return true;
     }
@@ -1078,7 +1071,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // deployment policy id can't be null or empty
-        String deploymentPolicyId = deploymentPolicy.getUuid();
+        String deploymentPolicyUuid = deploymentPolicy.getUuid();
+        String deploymentPolicyId = deploymentPolicy.getId();
         if (StringUtils.isBlank(deploymentPolicyId)) {
             String msg = String.format("Deployment policy id is blank");
             log.error(msg);
@@ -1088,7 +1082,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         // deployment policy should contain at least one network partition reference
         if (null == deploymentPolicy.getNetworkPartitionRefs() || deploymentPolicy.getNetworkPartitionRefs().length == 0) {
             String msg = String.format("Deployment policy does not have any network partition references: " +
-                    "[deployment-policy-id] %s", deploymentPolicyId);
+                    "[deployment-policy-uuid] %s [deployment-policy-id] %s", deploymentPolicyUuid, deploymentPolicyId);
             log.error(msg);
             throw new InvalidDeploymentPolicyException(msg);
         }
@@ -1098,8 +1092,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // network partition id can't be null or empty
             String networkPartitionId = networkPartitionRef.getId();
             if (StringUtils.isBlank(networkPartitionId)) {
-                String msg = String.format("Network partition id is blank: [deployment-policy-id] %s",
-                        deploymentPolicyId);
+                String msg = String.format("Network partition id is blank: [deployment-policy-uuid] %s " +
+                                "[deployment-policy-id] %s", deploymentPolicyUuid, deploymentPolicyId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
@@ -1107,9 +1101,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // network partitions should be already added
             NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
                     .getNetworkPartition(networkPartitionId);
-            if (networkPartition == null) {
-                String msg = String.format("Network partition is not found: [deployment-policy-id] %s " +
-                        "[network-partition-id] %s", deploymentPolicyId, networkPartitionId);
+
+            if (networkPartition == null || (deploymentPolicy.getTenantId() != networkPartition.getTenantId())) {
+                String msg = String.format("Network partition is not found: [deployment-policy-uuid] %s " +
+                        "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyUuid,
+                        deploymentPolicyId, networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
@@ -1320,11 +1316,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
+    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) {
         if (log.isDebugEnabled()) {
-            log.debug("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyID);
+            log.debug("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyId);
         }
-        return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyID);
+        return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
     }
 
     @Override

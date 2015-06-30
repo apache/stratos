@@ -1456,7 +1456,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(networkPartition.getUuid(), "Network Partition ID is null");
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getUuid()));
+            log.info(String.format("Adding network partition: [network-partition-uuid] %s",
+                    networkPartition.getUuid()));
         }
 
         String networkPartitionUuid = networkPartition.getUuid();
