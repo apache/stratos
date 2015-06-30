@@ -19,7 +19,7 @@
 #
 # --------------------------------------------------------------
 
-FROM stratos/base-image:4.1.0-beta
+FROM stratos/base-image:4.1.0
 MAINTAINER dev@stratos.apache.org
 
 ENV DEBIAN_FRONTEND noninteractive

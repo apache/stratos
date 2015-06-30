@@ -29,8 +29,8 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -48,6 +48,7 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -77,9 +78,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             TopologyInConsistentException {
         super(application);
 
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_SIZE, 20);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
         this.executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID, threadPoolSize);
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
 
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
@@ -135,8 +136,28 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                 handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
                             }
                         }
+
+                        //Resetting the events events
+                        instanceContext.setIdToScalingDownBeyondMinEvent(
+                                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
+                        instanceContext.setIdToScalingEvent(
+                                new ConcurrentHashMap<String, ScalingEvent>());
+                        instanceContext.setIdToScalingOverMaxEvent(
+                                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                     }
                 }
+
+                Application application = ApplicationHolder.getApplications().getApplication(appId);
+                if (application != null) {
+                    List<String> defaultNetworkPartitions = getDefaultNetworkPartitions(application);
+                    //Checking for whether minimum application instances are there.
+                    checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
+
+                    /*//Checking for whether any application instances need to be terminated.
+                    checkForApplicationInstanceTermination(application, defaultNetworkPartitions);*/
+                }
+
+
             }
         };
         executorService.execute(monitoringRunnable);
@@ -166,9 +187,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         "Hence waiting for it to become active");
             }
         }
-        //Resetting the values
-        instanceContext.setIdToScalingOverMaxEvent(
-                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
 
     }
 
@@ -242,10 +260,94 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
 
         }
+    }
 
-        //Resetting the events
-        instanceContext.setIdToScalingDownBeyondMinEvent(
-                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
+    public List<String> getDefaultNetworkPartitions(Application application) {
+        //Minimum check, Need to get the network partition
+        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
+                getNetworkPartitionAlgorithmContext(appId);
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
+                getApplicationPolicy(application.getApplicationPolicyId());
+        List<String> defaultNetworkPartitions = new ArrayList<String>();
+
+        if (applicationPolicy != null) {
+            String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Network partition algorithm is %s [application-id] %s",
+                        networkPartitionAlgorithmName, appId);
+                log.debug(msg);
+            }
+
+            NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
+                    networkPartitionAlgorithmName);
+            if (algorithm == null) {
+                String msg = String.format("Couldn't create network partition algorithm " +
+                        "[application-id] %s", appId);
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+
+            // Check whether the network-partition of the application
+            // instance belongs to default set of network-partitions.
+            // If it is default set, then application instance cannot be terminated.
+            defaultNetworkPartitions = algorithm.
+                    getDefaultNetworkPartitions(algorithmContext);
+        }
+
+        return defaultNetworkPartitions;
+    }
+
+    private void checkForMinimumApplicationInstances(Application application,
+                                                     List<String> defaultNetworkPartitions) {
+        List<String> instanceIds = new ArrayList<String>();
+        for (String networkPartitionId : defaultNetworkPartitions) {
+            if (!networkPartitionContextsMap.containsKey(networkPartitionId)) {
+                String instanceId;
+                log.info("Detected a newly updated [network-partition] " + networkPartitionId +
+                        " for [application] " + appId + ". Hence new application instance " +
+                        "creation is going to start now!");
+                ParentLevelNetworkPartitionContext context =
+                        new ParentLevelNetworkPartitionContext(networkPartitionId);
+                //If application instances found in the ApplicationsTopology,
+                // then have to add them first before creating new one
+                ApplicationInstance appInstance = (ApplicationInstance) application.
+                        getInstanceByNetworkPartitionId(context.getId());
+                if (appInstance != null) {
+                    log.warn("The [application] " + appId + " already has the " +
+                            "[application-instance] " + appInstance.getInstanceId() + " for the " +
+                            "[network-partition] " + networkPartitionId);
+                    return;
+                }
+                instanceId = handleApplicationInstanceCreation(application, context, null);
+                instanceIds.add(instanceId);
+
+            }
+        }
+        //Starting the dependencies
+        if(instanceIds.isEmpty()) {
+            startDependency(application, instanceIds);
+        }
+
+    }
+
+    private void checkForApplicationInstanceTermination(Application application,
+                                                        List<String> defaultNetworkPartitions) {
+
+        for (NetworkPartitionContext networkPartitionContext : networkPartitionContextsMap.values()) {
+            String nPartitionId = networkPartitionContext.getId();
+            if(!defaultNetworkPartitions.contains(nPartitionId)) {
+                log.info("The [application] " + appId + " runtime cannot be in [network-partition] "
+                        + nPartitionId + " as it is removed from the [application-policy]...!");
+                for(InstanceContext instanceContext:  networkPartitionContext.
+                        getInstanceIdToInstanceContextMap().values()) {
+                    //Handling application instance termination
+                    ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
+                            instanceContext.getId());
+                }
+
+            }
+        }
 
     }
 
@@ -315,53 +417,60 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
-    public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
-        String childId = statusEvent.getId();
-        String instanceId = statusEvent.getInstanceId();
-        LifeCycleState status1 = statusEvent.getStatus();
-        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
-        if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(childId, instanceId);
+    public void onChildStatusEvent(final MonitorStatusEvent statusEvent) {
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String childId = statusEvent.getId();
+                String instanceId = statusEvent.getInstanceId();
+                LifeCycleState status1 = statusEvent.getStatus();
+                //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+                if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
+                    onChildActivatedEvent(childId, instanceId);
 
-        } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            this.markInstanceAsInactive(childId, instanceId);
-            onChildInactiveEvent(childId, instanceId);
+                } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
+                    markInstanceAsInactive(childId, instanceId);
+                    onChildInactiveEvent(childId, instanceId);
 
-        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inActive in the map
-            markInstanceAsTerminating(childId, instanceId);
+                } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+                    //mark the child monitor as inActive in the map
+                    markInstanceAsTerminating(childId, instanceId);
 
-        } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
-            //Check whether all dependent goes Terminated and then start them in parallel.
-            removeInstanceFromFromInactiveMap(childId, instanceId);
-            removeInstanceFromFromTerminatingMap(childId, instanceId);
+                } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
+                    //Check whether all dependent goes Terminated and then start them in parallel.
+                    removeInstanceFromFromInactiveMap(childId, instanceId);
+                    removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-            ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
-            if (instance != null) {
-                if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
-                        instance.getStatus() == ApplicationStatus.Terminated) {
-                    ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
-                            appId, instanceId);
-                } else {
-                    Monitor monitor = this.getMonitor(childId);
-                    boolean active = false;
-                    if (monitor instanceof GroupMonitor) {
-                        //Checking whether the Group is still active in case the faulty member
-                        // identified after scaling up
-                        active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
-                    }
-                    if (!active) {
-                        onChildTerminatedEvent(childId, instanceId);
+                    ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
+                    if (instance != null) {
+                        if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
+                                instance.getStatus() == ApplicationStatus.Terminated) {
+                            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
+                                    appId, instanceId);
+                        } else {
+                            Monitor monitor = getMonitor(childId);
+                            boolean active = false;
+                            if (monitor instanceof GroupMonitor) {
+                                //Checking whether the Group is still active in case the faulty member
+                                // identified after scaling up
+                                active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                            }
+                            if (!active) {
+                                onChildTerminatedEvent(childId, instanceId);
+                            } else {
+                                log.info("[Group Instance] " + instanceId + " is still active " +
+                                        "upon termination of the [child ] " + childId);
+                            }
+                        }
                     } else {
-                        log.info("[Group Instance] " + instanceId + " is still active " +
-                                "upon termination of the [child ] " + childId);
+                        log.warn("The required instance cannot be found in the the [GroupMonitor] " +
+                                id);
                     }
                 }
-            } else {
-                log.warn("The required instance cannot be found in the the [GroupMonitor] " +
-                        this.id);
             }
-        }
+        };
+        executorService.execute(monitoringRunnable);
+
     }
 
     @Override
@@ -468,7 +577,28 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         networkPartitionIds + " [appInstanceId] " + instanceId);
             }
 
-            startDependency(application, instanceIds);
+            //Find whether any other instances exists in cluster
+            // which has not been added to in-memory model in the restart
+            Map<String, ApplicationInstance> instanceMap = application.getInstanceIdToInstanceContextMap();
+            for (ApplicationInstance instance : instanceMap.values()) {
+                if (!instanceIds.contains(instance.getInstanceId())) {
+                    ParentLevelNetworkPartitionContext context =
+                            new ParentLevelNetworkPartitionContext(instance.getNetworkPartitionId());
+                    //If application instances found in the ApplicationsTopology,
+                    // then have to add them first before creating new one
+                    ApplicationInstance appInstance = (ApplicationInstance) application.
+                            getInstanceByNetworkPartitionId(context.getId());
+                    //use the existing instance in the Topology to create the data
+                    handleApplicationInstanceCreation(application, context, appInstance);
+                    instanceIds.add(instance.getInstanceId());
+                    log.info("Burst Application instance has been added in the restart for " +
+                            "the [network partition] " + instance.getNetworkPartitionId() +
+                            " [appInstanceId] " + instance.getInstanceId());
+                }
+            }
+            if(!instanceIds.isEmpty()) {
+                startDependency(application, instanceIds);
+            }
 
         } catch (Exception e) {
             log.error(String.format("Application instance creation failed [applcaition-id] %s", appId), e);
@@ -686,5 +816,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public void setForce(boolean force) {
         this.force = force;
+    }
+
+    @Override
+    public boolean createInstanceOnTermination(String instanceId) {
+        return false;
     }
 }

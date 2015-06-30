@@ -9,6 +9,7 @@
     "multiTenant": "false",
     "portMapping": [
         {
+            "name": "http-80",
             "protocol": "http",
             "port": "80",
             "proxyPort": "8280"

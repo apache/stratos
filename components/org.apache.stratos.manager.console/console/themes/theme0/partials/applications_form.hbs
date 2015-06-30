@@ -115,25 +115,41 @@
 
                             <div class="toggle-menu-description">{{description}} {{status}}</div>
                             {{#ifCond status "!=" "Created"}}
-                            <div class="list-button" style="display: none;">
-                                <button class="btn btn-danger btn-lg hover-undeploy" type="button"
-                                        id="{{applicationId}}"> Undeploy</button>
-                                <button class="btn btn-info btn-lg hover-details" type="button"
-                                        id="details_list_{{applicationId}}"
-                                        data-url="{{url ""}}/applications/{{applicationId}}/" > View
-                                </button>
-                            </div>
-                            <div class="bottom-bar-wrapper">
-                                <div class="bottom-bar">
-                                    <button class="btn btn-danger btn-lg hover-undeploy" type="button"
-                                            id="{{applicationId}}"> Undeploy</button>
-                                    <button class="btn btn-info btn-lg hover-details" type="button"
-                                            id="details_{{applicationId}}"
-                                            data-url="{{url ""}}/applications/{{applicationId}}/" > View
-                                    </button>
+                                {{#ifCond status "==" "Deployed"}}
+                                    <div class="list-button" style="display: none;">
+                                        <button class="btn btn-danger btn-lg hover-undeploy" type="button"
+                                                id="{{applicationId}}"> Undeploy</button>
+                                        <button class="btn btn-info btn-lg hover-details" type="button"
+                                                id="details_list_{{applicationId}}"
+                                                data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                        </button>
+                                    </div>
+                                    <div class="bottom-bar-wrapper">
+                                        <div class="bottom-bar">
+                                            <button class="btn btn-danger btn-lg hover-undeploy" type="button"
+                                                    id="{{applicationId}}"> Undeploy</button>
+                                            <button class="btn btn-info btn-lg hover-details" type="button"
+                                                    id="details_{{applicationId}}"
+                                                    data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                            </button>
 
+                                        </div>
+                                {{else}}
+                                    <div class="list-button" style="display: none;">
+                                        <button class="btn btn-info btn-lg hover-details" type="button"
+                                                id="details_list_{{applicationId}}"
+                                                data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                        </button>
+                                    </div>
+                                    <div class="bottom-bar-wrapper">
+                                    <div class="bottom-bar">
+                                        <button class="btn btn-info btn-lg hover-details" type="button"
+                                                id="details_{{applicationId}}"
+                                                data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                        </button>
+                                    </div>
+                                {{/ifCond}}
                                 </div>
-                            </div>
                             {{else}}
                                 <div class="list-button" style="display: none;">
                                     <button class="btn btn-danger btn-lg hover-delete" type="button"

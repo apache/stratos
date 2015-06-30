@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -95,6 +96,7 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
             }
             return false;
         }
+
         Cluster cluster = service.getCluster(event.getClusterId());
         if (cluster == null) {
             if (log.isWarnEnabled()) {
@@ -102,6 +104,12 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
             }
             return false;
         }
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(cluster.getAppId())) {
+            return false;
+        }
+
         Member member = cluster.getMember(event.getMemberId());
         if (member != null) {
             // Apply member filter

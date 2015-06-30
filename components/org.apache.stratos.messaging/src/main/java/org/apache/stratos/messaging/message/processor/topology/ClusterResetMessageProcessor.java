@@ -26,6 +26,7 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterResetEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -76,8 +77,14 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
 
     private boolean doProcess(ClusterResetEvent event, Topology topology) {
 
+        String applicationId = event.getAppId();
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(applicationId)) {
+            return false;
+        }
 
         // Apply service filter
         if (TopologyServiceFilter.apply(serviceName)) {

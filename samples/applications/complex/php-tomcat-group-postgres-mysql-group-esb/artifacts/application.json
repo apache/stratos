@@ -21,7 +21,7 @@
                                 "repoUsername": "user"
                             },
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-2"
+                            "deploymentPolicy": "deployment-policy-1"
                         }
                     },
                     {
@@ -37,7 +37,7 @@
                                 "repoUsername": "user"
                             },
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-2"
+                            "deploymentPolicy": "deployment-policy-1"
                         }
                     }
                 ],
@@ -63,7 +63,7 @@
                                 "repoUsername": "user"
                             },
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-2"
+                            "deploymentPolicy": "deployment-policy-1"
                         }
                     },
                     {
@@ -80,7 +80,7 @@
                                 "repoUsername": "user"
                             },
                             "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-2"
+                            "deploymentPolicy": "deployment-policy-1"
                         }
                     }
                 ],
@@ -103,7 +103,7 @@
                         "repoUsername": "user"
                     },
                     "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy": "deployment-policy-2"
+                    "deploymentPolicy": "deployment-policy-1"
                 }
             }
         ],

@@ -297,7 +297,7 @@ public class CloudControllerUtil {
         try {
             validateKubernetesMaster(kubernetesCluster.getKubernetesMaster());
             validateKubernetesHosts(kubernetesCluster.getKubernetesHosts());
-            
+
             // Check for duplicate hostIds
             if (kubernetesCluster.getKubernetesHosts() != null) {
                 List<String> hostIds = new ArrayList<String>();

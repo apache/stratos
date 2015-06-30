@@ -45,11 +45,6 @@
             <artifactId>org.apache.stratos.landing.page.deployer</artifactId>
             <version>${project.version}</version>
         </dependency-->
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.activation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!--<dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.sample.installer</artifactId>
@@ -193,7 +188,6 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.common:${project.version}</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet:2.2.1</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.activation:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.sample.installer:${stratos.version}</bundleDef>-->
                                 <!--
                                                                 <bundleDef>org.apache.stratos:org.apache.stratos.tenant.dispatcher</bundleDef>

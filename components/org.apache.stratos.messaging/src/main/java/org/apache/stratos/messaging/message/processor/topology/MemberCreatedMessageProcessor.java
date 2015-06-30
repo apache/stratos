@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberCreatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -103,6 +104,12 @@ public class MemberCreatedMessageProcessor extends MessageProcessor {
             }
             return false;
         }
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(cluster.getAppId())) {
+            return false;
+        }
+
         if (cluster.memberExists(event.getMemberId())) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member already exists: [service] %s [cluster] %s [member] %s",

@@ -29,6 +29,8 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
 
     def run_plugin(self, values):
         log = LogFactory().get_log(__name__)
+        log.info("Starting wso2is metadata handler...")
+
         # read tomcat app related values from metadata
         mds_response = None
         while mds_response is None:
@@ -114,18 +116,35 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         # publish SAML_ENDPOINT to metadata service
         # member_hostname = socket.gethostname()
         member_hostname = values["HOST_NAME"]
-        payload_ports = values["PORT_MAPPINGS"].split("|")
-        if values.get("LB_CLUSTER_ID") is not None:
-            port_no = payload_ports[2].split(":")[1]
-        else:
-            port_no = payload_ports[1].split(":")[1]
-        saml_endpoint = "https://%s:%s/samlsso" % (member_hostname, port_no)
-        publish_data = mdsclient.MDSPutRequest()
-        hostname_entry = {"key": "SAML_ENDPOINT", "values": saml_endpoint}
-        properties_data = [hostname_entry]
-        publish_data.properties = properties_data
 
-        mdsclient.put(publish_data, app=True)
+        # read kubernetes service https port
+        log.info("Reading port mappings...")
+        port_mappings_str = values["PORT_MAPPINGS"]
+        https_port = None
+
+        # port mappings format: """NAME:mgt-console|PROTOCOL:https|PORT:4500|PROXY_PORT:8443;
+        #                          NAME:tomcat-http|PROTOCOL:http|PORT:4501|PROXY_PORT:7280;"""
+
+        log.info("Port mappings: %s" % port_mappings_str)
+        if port_mappings_str is not None:
+
+            port_mappings_array = port_mappings_str.split(";")
+            if port_mappings_array:
+
+                for port_mapping in port_mappings_array:
+                    log.debug("port_mapping: %s" % port_mapping)
+                    name_value_array = port_mapping.split("|")
+                    protocol = name_value_array[1].split(":")[1]
+                    port = name_value_array[2].split(":")[1]
+                    if protocol == "https":
+                        https_port = port
+
+        log.info("Kubernetes service port of wso2is management console https transport: %s" % https_port)
+
+        saml_endpoint = "https://%s:%s/samlsso" % (member_hostname, https_port)
+        saml_endpoint_property = {"key": "SAML_ENDPOINT", "values": [ saml_endpoint ]}
+        mdsclient.put(saml_endpoint_property, app=True)
+        log.info("Published property to metadata API: SAML_ENDPOINT: %s" % saml_endpoint)
 
         # start servers
         log.info("Starting WSO2 IS server")
@@ -137,7 +156,7 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         output, errors = p.communicate()
         log.debug("Set carbon.xml hostname")
 
-        catalina_replace_command = "sed -i \"s/STRATOS_IS_PROXY_PORT/%s/g\" %s" % (port_no, "${CARBON_HOME}/repository/conf/tomcat/catalina-server.xml")
+        catalina_replace_command = "sed -i \"s/STRATOS_IS_PROXY_PORT/%s/g\" %s" % (https_port, "${CARBON_HOME}/repository/conf/tomcat/catalina-server.xml")
 
         p = subprocess.Popen(catalina_replace_command, shell=True)
         output, errors = p.communicate()
@@ -148,3 +167,5 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         p = subprocess.Popen(wso2is_start_command, env=env_var, shell=True)
         output, errors = p.communicate()
         log.debug("WSO2 IS server started")
+
+        log.info("wso2is metadata handler completed")

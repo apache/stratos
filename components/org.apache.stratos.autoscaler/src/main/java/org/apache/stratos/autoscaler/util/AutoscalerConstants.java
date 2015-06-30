@@ -71,13 +71,9 @@ public final class AutoscalerConstants {
      */
     public static final String PAYLOAD_DEPLOYMENT = "default";
 
-    public static final String APPLICATION_MONITOR_THREAD_POOL_ID = "application.monitor.thread.pool";
-    public static final String APPLICATION_MONITOR_THREAD_POOL_SIZE = "application.monitor.thread.pool.size";
-    public static final String GROUP_MONITOR_THREAD_POOL_ID = "group.monitor.thread.pool";
-    public static final String GROUP_MONITOR_THREAD_POOL_SIZE = "group.monitor.thread.pool.size";
+    public static final String MONITOR_THREAD_POOL_ID = "monitor.thread.pool";
+    public static final String MONITOR_THREAD_POOL_SIZE = "monitor.thread.pool.size";
     public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
-    public static final String CLUSTER_MONITOR_THREAD_POOL_ID = "cluster.monitor.thread.pool";
-    public static final String CLUSTER_MONITOR_THREAD_POOL_SIZE = "cluster.monitor.thread.pool.size";
     public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";
     //scheduler
     public static final int SCHEDULE_DEFAULT_INITIAL_DELAY = 30;

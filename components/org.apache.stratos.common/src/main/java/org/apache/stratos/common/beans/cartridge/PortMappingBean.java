@@ -24,12 +24,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "portMapping")
 public class PortMappingBean {
 
+    private String name;
     private String protocol;
     private int port;
     private int proxyPort;
 
-    public String toString() {
-        return " [ Protocol: " + getProtocol() + ", Port: " + getPort() + ", Proxy port: " + getProxyPort() + "] ";
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getProtocol() {
@@ -54,5 +59,12 @@ public class PortMappingBean {
 
     public void setProxyPort(int proxyPort) {
         this.proxyPort = proxyPort;
+    }
+
+    public String toString() {
+        return " [ Name: " + getName() + ", " +
+                  "Protocol: " + getProtocol() + ", " +
+                  "Port: " + getPort() + ", " +
+                  "Proxy port: " + getProxyPort() + "] ";
     }
 }

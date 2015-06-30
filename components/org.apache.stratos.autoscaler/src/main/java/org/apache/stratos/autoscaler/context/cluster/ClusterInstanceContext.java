@@ -32,7 +32,9 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * It holds the runtime data of a VM cluster
@@ -43,7 +45,7 @@ public class ClusterInstanceContext extends InstanceContext {
 
     private final String partitionAlgorithm;
     // Map<PartitionId, Partition Context>
-    protected List<ClusterLevelPartitionContext> partitionCtxts;
+    protected Map<String, ClusterLevelPartitionContext> partitionCtxts;
     //boolean values to keep whether the requests in flight parameters are reset or not
     private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
     //boolean values to keep whether the memory consumption parameters are reset or not
@@ -93,9 +95,8 @@ public class ClusterInstanceContext extends InstanceContext {
         this.clusterId = clusterId;
         this.minInstanceCount = min;
         this.maxInstanceCount = max;
-        partitionCtxts = new ArrayList<ClusterLevelPartitionContext>();
         this.partitionAlgorithm = partitionAlgo;
-        //partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
+        partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
@@ -119,10 +120,10 @@ public class ClusterInstanceContext extends InstanceContext {
     }
 
     public List<ClusterLevelPartitionContext> getPartitionCtxts() {
-        return partitionCtxts;
+        return new ArrayList<ClusterLevelPartitionContext>(partitionCtxts.values());
     }
 
-    public void setPartitionCtxts(List<ClusterLevelPartitionContext> partitionCtxt) {
+    public void setPartitionCtxt(Map<String, ClusterLevelPartitionContext> partitionCtxt) {
         this.partitionCtxts = partitionCtxt;
     }
 
@@ -131,55 +132,38 @@ public class ClusterInstanceContext extends InstanceContext {
 //    }
 
     public ClusterLevelPartitionContext[] getPartitionCtxtsAsAnArray() {
-
-        return partitionCtxts.toArray(new ClusterLevelPartitionContext[partitionCtxts.size()]);
+        return partitionCtxts.values().toArray(new ClusterLevelPartitionContext[partitionCtxts.size()]);
     }
 
     public boolean partitionCtxtAvailable(String partitionId) {
-
-        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
-            if (partitionContext.getPartitionId().equals(partitionId)) {
-                return true;
-            }
-        }
-        return false;
+        return partitionCtxts.containsKey(partitionId);
     }
 
     public void addPartitionCtxt(ClusterLevelPartitionContext ctxt) {
-        this.partitionCtxts.add(ctxt);
+        this.partitionCtxts.put(ctxt.getPartitionId(), ctxt);
     }
 
     public void removePartitionCtxt(String partitionId) {
-        this.partitionCtxts.remove(partitionId);
+        if (partitionCtxts.containsKey(partitionId)) {
+            partitionCtxts.remove(partitionId);
+        }
     }
 
     public ClusterLevelPartitionContext getPartitionCtxt(String id) {
-
-        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
-            if (partitionContext.getPartitionId().equals(id)) {
-                return partitionContext;
-            }
-        }
-        return null;
+        return partitionCtxts.get(id);
     }
 
     public ClusterLevelPartitionContext getPartitionCtxt(Member member) {
         log.info("Getting [Partition] " + member.getPartitionId());
         String partitionId = member.getPartitionId();
 
-        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
-            if (partitionContext.getPartitionId().equals(partitionId)) {
-                log.info("Returning partition context, of [partition] " + partitionId);
-                return partitionContext;
-            }
-        }
-        return null;
+        return partitionCtxts.get(partitionId);
     }
 
     public int getActiveMemberCount() {
 
         int activeMemberCount = 0;
-        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts.values()) {
 
             activeMemberCount += partitionContext.getActiveMemberCount();
         }
@@ -189,7 +173,7 @@ public class ClusterInstanceContext extends InstanceContext {
     public int getNonTerminatedMemberCount() {
 
         int nonTerminatedMemberCount = 0;
-        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts.values()) {
 
             nonTerminatedMemberCount += partitionContext.getNonTerminatedMemberCount();
         }
@@ -488,7 +472,7 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public int getActiveMembers() {
         int activeMembers = 0;
-        for (ClusterLevelPartitionContext partitionContext : this.partitionCtxts) {
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts.values()) {
             activeMembers += partitionContext.getActiveInstanceCount();
         }
         return activeMembers;

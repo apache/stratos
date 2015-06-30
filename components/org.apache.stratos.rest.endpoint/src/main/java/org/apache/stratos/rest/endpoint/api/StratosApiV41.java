@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -275,7 +276,12 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        CartridgeBean cartridgeBean = null;
+        try {
+            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException ignore) {
+            //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
+        }
         if (cartridgeBean != null) {
             String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
             log.warn(msg);
@@ -461,7 +467,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
         try {
-            StratosApiV41Utils.addServiceGroup(cartridgeGroupBean);
+            StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
 
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -470,17 +476,15 @@ public class StratosApiV41 extends AbstractApi {
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
-        } catch (RestAPIException e) {
-            if (e.getCause().getMessage().contains("already exists")) {
-                return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                        ResponseMessageBean.ERROR, "Cartridge group not found")).build();
-            } else if (e.getCause().getMessage().contains("Invalid Service Group") || e.getCause().getMessage()
-                    .contains("Required cartridges not found")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                        ResponseMessageBean.ERROR, e.getCause().getMessage())).build();
-            } else {
-                throw e;
-            }
+        } catch (ServiceGroupDefinitionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getMessage())).build();
+        } catch (AutoscalerServiceInvalidServiceGroupExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidServiceGroupException().getMessage())).build();
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
         }
     }
 
@@ -1236,21 +1240,21 @@ public class StratosApiV41 extends AbstractApi {
 
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
         if (applicationDefinition == null) {
-            String msg = String.format("Application does not exist [application-id] %s", applicationId);
-            log.info(msg);
+            String message = String.format("Application does not exist [application-id] %s", applicationId);
+            log.error(message);
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, msg)).build();
+                    ResponseMessageBean.ERROR, message)).build();
         }
-        if (!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_DEPLOYED)) {
+        if (applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)) {
             String message = String.format("Could not undeploy since application is not in DEPLOYED status " +
                     "[application-id] %s [current status] %S", applicationId, applicationDefinition.getStatus());
-            log.info(message);
+            log.error(message);
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, message)).build();
         }
         StratosApiV41Utils.undeployApplication(applicationId, force);
         return Response.accepted().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Application undeployed successfully: [application-id] %s", applicationId))).build();
+                String.format("Application undeploy process started successfully: [application-id] %s", applicationId))).build();
     }
 
     /**
@@ -1268,6 +1272,8 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/view")
     public Response getApplicationRuntime(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
+
+
         ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
@@ -2092,5 +2098,26 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Kubernetes Host removed successfully: [kub-host] %s", kubernetesHostId)))
                 .build();
+    }
+
+    /**
+     * Get Iaas Providers
+     *
+     * @return 200 if iaas providers are found
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/iaasProviders")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/stratos/iaasProviders/view")
+    public Response getIaasProviders()
+            throws RestAPIException {
+        IaasProviderInfoBean iaasProviderInfoBean = StratosApiV41Utils.getIaasProviders();
+        if (iaasProviderInfoBean == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "No IaaS Providers found")).build();
+        }
+        return Response.ok(iaasProviderInfoBean).build();
     }
 }

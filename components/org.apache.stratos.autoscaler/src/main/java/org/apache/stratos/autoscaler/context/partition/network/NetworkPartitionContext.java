@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This will keep track of network partition level information.
@@ -32,12 +33,12 @@ public abstract class NetworkPartitionContext {
     //id of the network partition context
     protected final String id;
     //group instances kept inside a partition
-    private Map<String, InstanceContext> instanceIdToInstanceContextMap;
+    protected Map<String, InstanceContext> instanceIdToInstanceContextMap;
     private int pendingMembersFailureCount = 0;
 
     protected NetworkPartitionContext(String id) {
         this.id = id;
-        instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
+        instanceIdToInstanceContextMap = new ConcurrentHashMap<String, InstanceContext>();
 
     }
 

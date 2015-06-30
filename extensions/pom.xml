@@ -34,6 +34,7 @@
 
     <modules>
         <module>cep/stratos-cep-extension</module>
+        <module>cep/distribution/</module>
         <module>load-balancer</module>
     </modules>
 </project>

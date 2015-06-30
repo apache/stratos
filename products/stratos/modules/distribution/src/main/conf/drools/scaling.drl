@@ -106,7 +106,8 @@ dialect "mvel"
 
 
         scaleUp : Boolean() from (activeInstancesCount < numberOfRequiredInstances)
-        scaleDown : Boolean() from (activeInstancesCount > numberOfRequiredInstances)
+        scaleDown : Boolean() from (activeInstancesCount > numberOfRequiredInstances || (numberOfRequiredInstances == 1 && activeInstancesCount == 1))
+
 
         eval(log.debug("[scaling] " + "[cluster] " + clusterId + " RIF Resetted?: " + rifReset))
         eval(log.debug("[scaling] " + "[cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
@@ -185,7 +186,10 @@ dialect "mvel"
                             count++;
                         } else {
 
-                            log.debug("[scale-up] No partition available!, [cluster] " + clusterId);
+                            log.warn("[scale-up] No more partition available even though " +
+                             "cartridge-max is not reached!, [cluster] " + clusterId +
+                            " Please update deployment-policy with new partitions or with higher " +
+                             "partition-max");
                             partitionsAvailable = false;
                         }
                     }

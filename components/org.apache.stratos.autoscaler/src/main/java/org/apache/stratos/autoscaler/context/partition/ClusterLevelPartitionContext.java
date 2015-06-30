@@ -18,15 +18,21 @@
  */
 package org.apache.stratos.autoscaler.context.partition;
 
+import org.apache.axis2.AxisFault;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -122,7 +128,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Forcefully terminating member [member-id] %s", memberId));
             }
-            CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberId);
+            AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberId);
         } catch (Exception e) {
             log.error("Error occurred while terminating instance", e);
         }
@@ -183,6 +189,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     public void addPendingMember(MemberContext ctxt) {
         this.pendingMembers.add(ctxt);
+    }
+
+    public void addTerminationPendingMember(MemberContext ctxt) {
+        this.terminationPendingMembers.add(ctxt);
     }
 
     public boolean removePendingMember(String id) {
@@ -565,8 +575,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 // member is pending termination
                 // remove from pending termination list
                 iterator.remove();
+
                 // add to the obsolete list
                 this.obsoletedMembers.put(memberId, terminationPendingMember);
+
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Termination pending member is removed and added to the " +
@@ -626,13 +638,6 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     }
 
-
-//    @Override
-//    public int getCurrentElementCount() {
-//        //TODO find and return correct member instance count
-//        return 0;
-//    }
-
     private class PendingMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
         private final Log log = LogFactory.getLog(PendingMemberWatcher.class);
@@ -653,12 +658,26 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                     Iterator<MemberContext> iterator = pendingMembers.listIterator();
                     while (iterator.hasNext()) {
                         MemberContext pendingMember = iterator.next();
+                        String clusterInstanceId = pendingMember.getClusterInstanceId();
+                        String clusterId = pendingMember.getClusterId();
+                        String serviceName = pendingMember.getCartridgeType();
+                         Service service = TopologyManager.getTopology().
+                                getService(serviceName);
+
+                        ClusterStatus status = ClusterStatus.Terminated;
+                        if(service != null) {
+                            Cluster cluster = service.getCluster(clusterId);
+                            if(cluster != null) {
+                                status = cluster. getInstanceContexts(clusterInstanceId).getStatus();
+                            }
+                        }
 
                         if (pendingMember == null) {
                             continue;
                         }
+
                         long pendingTime = System.currentTimeMillis() - pendingMember.getInitTime();
-                        if (pendingTime >= expiryTime) {
+                        if (pendingTime >= expiryTime || status.equals(ClusterStatus.Terminating)) {
 
                             log.info(String.format("Pending state of member expired, member will be moved to obsolete list. " +
                                             "[pending member] %s [expiry time] %s [cluster] %s " + "[cluster instance] %s",
@@ -669,7 +688,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                             ctxt.addObsoleteMember(pendingMember);
                             pendingMembersFailureCount++;
                             if (pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD) {
-                                setPendingMemberExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold of failure exceeded
+                                setPendingMemberExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold
+                                // of failure exceeded
                                 //TODO Implement an alerting system: STRATOS-369
                             }
                         }
@@ -711,12 +731,34 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                     long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
                     if (obsoleteTime >= obsoletedMemberExpiryTime) {
 
+                        String obsoleteMemberId = obsoleteMember.getMemberId();
                         log.info(String.format("Obsolete state of member is expired, member will be disposed and will " +
                                         "not be tracked anymore [obsolete member] %s [expiry time] %s [cluster] %s " +
                                         "[cluster instance] %s",
-                                obsoleteMember.getMemberId(), obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
+                                obsoleteMemberId, obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
                                 obsoleteMember.getClusterInstanceId()));
+
+                        //notifying CC, about the removal of obsolete member
+                        try {
+                            AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(
+                                    obsoleteMember.getMemberId());
+                        } catch (Exception e) {
+                            log.error(String.format("Termination of obsolete member %s is failed, but all the contexts" +
+                                    "will be removed", obsoleteMember.getMemberId()));
+
+                        }
+
                         iterator.remove();
+                        if (ctxt.getMemberStatsContexts().containsKey(obsoleteMemberId)) {
+                            ctxt.getMemberStatsContexts().remove(obsoleteMemberId);
+                        }
+                        log.info(String.format("Obsolete member is removed from autoscaler and cloud controller " +
+                                        "[obsolete member] %s [cluster] %s " +
+                                        "[cluster instance] %s",
+                                obsoleteMemberId, obsoleteMember.getClusterId(),
+                                obsoleteMember.getClusterInstanceId()));
+
+
                     }
                 }
                 try {
@@ -749,6 +791,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 while (iterator.hasNext()) {
 
                     MemberContext terminationPendingMember = iterator.next();
+
                     if (terminationPendingMember == null) {
                         continue;
                     }

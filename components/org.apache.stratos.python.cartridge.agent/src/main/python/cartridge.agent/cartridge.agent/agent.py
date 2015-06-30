@@ -128,7 +128,7 @@ class CartridgeAgent(threading.Thread):
         :return: void
         """
         self.__terminated = True
-        
+
     def register_instance_topic_listeners(self):
         self.__log.debug("Starting instance notifier event message receiver thread")
 

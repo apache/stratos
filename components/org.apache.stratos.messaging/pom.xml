@@ -30,7 +30,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.messaging</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Messaging Component</name>
+    <name>Apache Stratos - Messaging</name>
     <url>http://apache.org</url>
 
     <dependencies>
@@ -113,12 +113,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
+                            org.apache.stratos.messaging,
                             org.apache.stratos.messaging.*,
+                            org.apache.stratos.messaging.topology,
+                            org.apache.stratos.messaging.topology.*,
                             org.apache.stratos.messaging.util.MessagingConstants,
                         </Export-Package>
-                        <!--Private-Package>
-                        	org.apache.stratos.messaging.internal;
-                        </Private-Package-->
                         <Import-Package>
                             !org.apache.commons.logging,
                             org.apache.commons.logging; version=0.0.0,

@@ -9,15 +9,16 @@
     "multiTenant": "false",
     "portMapping": [
         {
-            "protocol": "http",
+			"name": "mgt-console",
+            "protocol": "https",
             "port": "9443",
-            "proxyPort": "8280"
+            "proxyPort": "8443"
         }
     ],
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "chamilad/wso2is:4.1.0-beta",
+            "imageId": "stratos/wso2is:5.0.0-sp1-saml-sso",
             "networkInterfaces": [
             ],
             "property": [

@@ -123,6 +123,7 @@ var caramelData = {
     applicationAlias:applicationAlias,
     applicationName:applicationName,
     applicationJSON:JSON.stringify(applicationJSON),
+    applicationStatus: applicationJSON.status,
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     formtype:elements.formtype,

@@ -490,31 +490,6 @@
         </fileSet>
         <!-- autoscaler -->
         <fileSet>
-            <directory>src/main/autoscale-policies</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/autoscale-policies</outputDirectory>
-            <directoryMode>0600</directoryMode>
-            <includes>
-                <include>*.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/deployment-policies</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/deployment-policies</outputDirectory>
-            <directoryMode>0600</directoryMode>
-            <includes>
-                <include>*.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/partitions</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/partitions</outputDirectory>
-            <directoryMode>0600</directoryMode>
-            <includes>
-                <include>*.xml</include>
-            </includes>
-        </fileSet>
-        <!-- autoscaler -->
-        <fileSet>
             <directory>../../conf/temp-artifacts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
             <includes>

@@ -36,6 +36,7 @@ import java.util.Map;
 /**
  * This Class provides the operations related to adding/updating/deleting and listing users using
  * the carbon UserStoreManager in the particular tenant space
+ * TODO : Update the util class to be able to support multiple roles for user
  */
 public class StratosUserManagerUtils {
 
@@ -161,7 +162,14 @@ public class StratosUserManagerUtils {
         for (String user : users) {
             UserInfoBean userInfoBean = new UserInfoBean();
             userInfoBean.setUserName(user);
-            userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, user)[0]);
+            String[] refinedListOfRolesOfUser = getRefinedListOfRolesOfUser(userStoreManager, user);
+            //TODO : Should support multiple roles for user
+            if (refinedListOfRolesOfUser.length != 0) {
+                userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, user)[0]);
+            }
+            else{
+                userInfoBean.setRole(INTERNAL_EVERYONE_ROLE);
+            }
             userList.add(userInfoBean);
         }
 

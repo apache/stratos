@@ -21,10 +21,7 @@ package org.apache.stratos.autoscaler.monitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.messaging.domain.instance.Instance;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Abstract class for the monitoring functionality in Autoscaler.
@@ -67,7 +64,6 @@ public abstract class Monitor implements EventHandler, Runnable {
      * @return whether it is created or not
      */
     public abstract boolean createInstanceOnDemand(String instanceId);
-
 
     /**
      * Return the id of the monitor
@@ -167,6 +163,24 @@ public abstract class Monitor implements EventHandler, Runnable {
      */
     public Instance getInstance(String instanceId) {
         return instanceIdToInstanceMap.get(instanceId);
+    }
+
+    /**
+     * Return the instances count
+     *
+     * @return number of exiting instances
+     */
+    public int getInstanceCount() {
+        return instanceIdToInstanceMap.size();
+    }
+
+    /**
+     * Return the instances
+     *
+     * @return exiting instances
+     */
+    public Collection<Instance> getInstances() {
+        return instanceIdToInstanceMap.values();
     }
 
     /**

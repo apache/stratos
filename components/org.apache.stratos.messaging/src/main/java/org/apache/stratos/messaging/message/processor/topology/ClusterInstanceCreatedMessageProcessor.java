@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -97,7 +98,13 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             }
             return false;
         }
+
         Cluster cluster = service.getCluster(event.getClusterId());
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(cluster.getAppId())) {
+            return false;
+        }
 
         if (cluster == null) {
             if (log.isDebugEnabled()) {

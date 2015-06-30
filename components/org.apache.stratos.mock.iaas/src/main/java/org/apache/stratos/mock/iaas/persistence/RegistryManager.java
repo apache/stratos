@@ -45,10 +45,10 @@ public class RegistryManager implements PersistenceManager {
     /**
      * Persist a serializable object in the registry with the given resource path.
      *
-     * @param serializableObject object to be persisted.
+     * @param object object to be persisted.
      */
     @Override
-    public synchronized void persist(String resourcePath, Serializable serializableObject) throws RegistryException {
+    public synchronized void persist(String resourcePath, Object object) throws RegistryException {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Persisting resource in registry: [resource-path] %s", resourcePath));
         }
@@ -63,7 +63,7 @@ public class RegistryManager implements PersistenceManager {
             registry.beginTransaction();
 
             Resource nodeResource = registry.newResource();
-            nodeResource.setContent(serializeToByteArray(serializableObject));
+            nodeResource.setContent(serializeToByteArray(object));
             registry.put(resourcePath, nodeResource);
 
             registry.commitTransaction();
@@ -142,17 +142,17 @@ public class RegistryManager implements PersistenceManager {
     /**
      * Serialize an object to a byte array.
      *
-     * @param serializableObject serializable object
+     * @param object object
      * @return byte array
      * @throws java.io.IOException
      */
-    private byte[] serializeToByteArray(Serializable serializableObject) throws IOException {
+    private byte[] serializeToByteArray(Object object) throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(serializableObject);
+            out.writeObject(object);
             return bos.toByteArray();
 
         } finally {

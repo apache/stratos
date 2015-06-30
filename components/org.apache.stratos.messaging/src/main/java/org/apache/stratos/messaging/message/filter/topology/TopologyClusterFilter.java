@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.message.filter.topology;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.message.filter.MessageFilter;
 
 import java.util.Collection;
@@ -34,12 +35,11 @@ public class TopologyClusterFilter extends MessageFilter {
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
 
     public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster-id";
-    public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
 
     private static volatile TopologyClusterFilter instance;
 
     public TopologyClusterFilter() {
-        super(TOPOLOGY_CLUSTER_FILTER);
+        super(StratosConstants.TOPOLOGY_CLUSTER_FILTER);
     }
 
     /**
@@ -54,8 +54,8 @@ public class TopologyClusterFilter extends MessageFilter {
             if (StringUtils.isNotBlank(clusterId) && getInstance().clusterExcluded(clusterId)) {
                 excluded = true;
             }
-            if (excluded && log.isDebugEnabled()) {
-                log.debug(String.format("Cluster is excluded: [cluster] %s", clusterId));
+            if (excluded && log.isInfoEnabled()) {
+                log.info(String.format("Cluster is excluded: [cluster-id] %s", clusterId));
             }
         }
         return excluded;

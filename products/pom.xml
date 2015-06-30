@@ -33,7 +33,7 @@
     <url>http://apache.org</url>
 
     <modules>
-	<module>python-cartridge-agent</module>
+	    <module>python-cartridge-agent</module>
         <module>cartridge-agent</module>
         <module>stratos-cli</module>
         <module>load-balancer</module>

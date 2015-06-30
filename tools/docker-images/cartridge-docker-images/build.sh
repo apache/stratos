@@ -22,33 +22,22 @@ set -e
 
 prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
-pca_source_path=`cd "$script_path/../../../components/org.apache.stratos.python.cartridge.agent/"; pwd`
+pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent/distribution/"; pwd`
 
-pushd ${pca_source_path}
+pushd ${pca_distribution_path}
 mvn clean install -Dmaven.test.skip=true
 cp -vf target/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip ${script_path}/base-image/packs/
 popd
 
 pushd ${script_path}/base-image/
 echo "Building base docker image..."
-docker build -t stratos/base-image:4.1.0-beta .
-
-echo "Pushing base docker image to docker hub..."
-docker push stratos/base-image:4.1.0-beta
-popd
+docker build -t stratos/base-image:4.1.0 .
 
 pushd ${script_path}/service-images/php
 echo "Building php docker image..."
-docker build -t stratos/php:4.1.0-beta .
-
-echo "Pushing php docker image to docker hub..."
-docker push stratos/php:4.1.0-beta
-popd
+docker build -t stratos/php:4.1.0 .
 
 pushd ${script_path}/service-images/tomcat
 echo "Building tomcat docker image..."
-docker build -t stratos/tomcat:4.1.0-beta .
+docker build -t stratos/tomcat:4.1.0 .
 
-echo "Pushing tomcat docker image to docker hub..."
-docker push stratos/tomcat:4.1.0-beta
-popd

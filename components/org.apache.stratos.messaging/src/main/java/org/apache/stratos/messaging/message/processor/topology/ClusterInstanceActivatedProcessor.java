@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceActivatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -80,8 +81,14 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
 
     private boolean doProcess(ClusterInstanceActivatedEvent event, Topology topology) {
 
+        String applicationId = event.getAppId();
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
+
+        // Apply application filter
+        if(TopologyApplicationFilter.apply(applicationId)) {
+            return false;
+        }
 
         // Apply service filter
         if (TopologyServiceFilter.apply(serviceName)) {
@@ -119,11 +126,14 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
                 try {
                     // Generate access URLs for kubernetes services
                     for (KubernetesService kubernetesService : kubernetesServices) {
+                        // Public IP = Kubernetes minion public IP
                         String[] publicIPs = kubernetesService.getPublicIPs();
                         if((publicIPs != null) && (publicIPs.length > 0)) {
-                            URL accessURL = new URL(kubernetesService.getProtocol(), publicIPs[0],
-                                    kubernetesService.getPort(), "");
-                            cluster.addAccessUrl(accessURL.toString());
+                            for(String publicIP : publicIPs) {
+                                URL accessURL = new URL(kubernetesService.getProtocol(), publicIP,
+                                        kubernetesService.getPort(), "");
+                                cluster.addAccessUrl(accessURL.toString());
+                            }
                         }
                     }
                 } catch (Exception e) {

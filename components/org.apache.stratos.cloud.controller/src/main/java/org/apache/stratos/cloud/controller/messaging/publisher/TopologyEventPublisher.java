@@ -57,7 +57,7 @@ public class TopologyEventPublisher {
                             : ServiceType.SingleTenant));
 
             // Add ports to the event
-            if(cartridge.getPortMappings() != null) {
+            if (cartridge.getPortMappings() != null) {
                 Port port;
                 List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                 for (PortMapping portMapping : portMappings) {
@@ -157,7 +157,7 @@ public class TopologyEventPublisher {
                         "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
                         "[partition-id] %s [lb-cluster-id] %s",
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
-                memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
+                memberContext.getMemberId(), memberContext.getClusterInstanceId(), memberContext.getNetworkPartitionId(),
                 memberContext.getPartition().getId(), memberContext.getLbClusterId()));
         publishEvent(memberCreatedEvent);
     }

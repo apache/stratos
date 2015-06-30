@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -74,7 +75,7 @@ public class ApplicationBuilder {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());
         }
-        CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+        AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                 appClusterContexts);
         ApplicationHolder.persistApplication(application);
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
@@ -201,7 +202,7 @@ public class ApplicationBuilder {
             application.setStatus(status, instanceId);
             updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(), instanceId);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
+            ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, instanceId);
         } else {
             log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                             " [instance-id] %s [current-status] %s [status-requested] %s",
@@ -246,6 +247,7 @@ public class ApplicationBuilder {
             }
 
             AutoscalerContext.getInstance().removeApplicationContext(appId);
+            RegistryManager.getInstance().removeApplicationContext(appId);
             ApplicationHolder.removeApplication(appId);
 
         } finally {
@@ -283,8 +285,11 @@ public class ApplicationBuilder {
                         getNetworkPartitionContext(applicationInstance.
                                 getNetworkPartitionId());
                 networkPartitionContext.removeInstanceContext(instanceId);
+                applicationMonitor.removeNetworkPartitionContext(applicationInstance.
+                        getNetworkPartitionId());
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
+                ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(applicationId,
                         instanceId);
 
@@ -306,6 +311,7 @@ public class ApplicationBuilder {
                     // update application status in application context
                     applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                     AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+                    RegistryManager.getInstance().persistApplicationContext(applicationContext);
 
                     log.info("Application un-deployed successfully: [application-id] " + applicationId);
                 }

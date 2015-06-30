@@ -176,7 +176,7 @@ if [ "$CMD" = "--debug" ]; then
   echo "Please start the remote debugging client to continue..."
 elif [ "$CMD" = "start" ]; then
   if [ -e "$CARBON_HOME/wso2carbon.pid" ]; then
-    if  ps -p $PID >&- ; then
+    if  ps -p $PID > /dev/null ; then
       echo "Process is already running"
       exit 0
     fi
@@ -302,6 +302,7 @@ do
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     -Dthrift.client.config.file.path="$CARBON_HOME/repository/conf/thrift-client-config.xml" \
     -Dstratos.component.startup.synchronizer.enabled=true \
+    -Dread.write.lock.monitor.enabled=false \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done

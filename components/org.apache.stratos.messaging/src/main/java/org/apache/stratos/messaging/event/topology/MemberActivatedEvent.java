@@ -58,6 +58,10 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
         this.partitionId = partitionId;
         this.portMap = new HashMap<Integer, Port>();
     }
+    
+    public String toString(){
+        return String.format("[member-id] %s, [application-id] %s, [cluster-id] %s [cluster-instance-id] %s ", memberId, applicationId, clusterId, clusterInstanceId);
+    }
 
     public String getServiceName() {
         return serviceName;

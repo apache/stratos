@@ -106,7 +106,7 @@ public class PythonCartridgeAgentTest {
         executorList = new HashMap<String, Executor>();
 
         if (!this.eventReceiverInitiated) {
-            ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
+            ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 15);
             topologyEventReceiver = new TopologyEventReceiver();
             topologyEventReceiver.setExecutorService(executorService);
             topologyEventReceiver.execute();

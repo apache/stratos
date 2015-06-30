@@ -107,8 +107,8 @@ public class MockInstance implements Runnable, Serializable {
         instanceNotifierEventReceiver.addEventListener(new InstanceCleanupMemberEventListener() {
             @Override
             protected void onEvent(Event event) {
-                InstanceCleanupMemberEvent instanceCleanupClusterEvent = (InstanceCleanupMemberEvent) event;
-                if (mockMemberContext.getMemberId().equals(instanceCleanupClusterEvent.getMemberId())) {
+                InstanceCleanupMemberEvent instanceCleanupMemberEvent = (InstanceCleanupMemberEvent) event;
+                if (mockMemberContext.getMemberId().equals(instanceCleanupMemberEvent.getMemberId())) {
                     handleMemberTermination();
                 }
             }

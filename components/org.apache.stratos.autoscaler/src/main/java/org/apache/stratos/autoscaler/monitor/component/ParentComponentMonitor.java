@@ -52,6 +52,7 @@ import org.apache.stratos.messaging.domain.application.ParentComponent;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -112,6 +113,14 @@ public abstract class ParentComponentMonitor extends Monitor {
                 AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
         networkPartitionContextsMap = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
+
+    /**
+     * This will create Instance on demand as requested by monitors
+     *
+     * @param instanceId instance Id of the instance to be created
+     * @return whether it is created or not
+     */
+    public abstract boolean createInstanceOnTermination(String instanceId);
 
     /**
      * Starting the scheduler for the monitor
@@ -198,7 +207,11 @@ public abstract class ParentComponentMonitor extends Monitor {
                 //starting a new instance of the child
                 Monitor monitor = aliasToActiveChildMonitorsMap.get(context.getId());
                 //Creating the new instance
-                monitor.createInstanceOnDemand(instanceId);
+                if(monitor instanceof ParentComponentMonitor) {
+                    ((ParentComponentMonitor) monitor).createInstanceOnTermination(instanceId);
+                } else {
+                    monitor.createInstanceOnDemand(instanceId);
+                }
             }
         }
     }
@@ -310,7 +323,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
         //calling monitor to go for group scaling or notify the parent
-        this.monitor();
+        //this.monitor();
 
     }
 
@@ -332,7 +345,34 @@ public abstract class ParentComponentMonitor extends Monitor {
         boolean startDep = false;
         if (!aliasToActiveChildMonitorsMap.containsKey(childId) ||
                 !pendingChildMonitorsList.contains(childId)) {
-            startDep = startDependency(childId, instanceId);
+
+            // Need to decide whether it has become active in the first iteration.
+            // Then need to start the dependents.
+            // If it is a second iteration, then if there is no dependents,
+            // no need to invoke start dependencies.
+
+            Monitor childMonitor = aliasToActiveChildMonitorsMap.get(childId);
+            if(childMonitor != null) {
+                Instance instance = childMonitor.getInstance(instanceId);
+                boolean firstIteration = false;
+                if(instance != null) {
+                    if(instance instanceof GroupInstance) {
+                        GroupInstance groupInstance = (GroupInstance)instance;
+                        firstIteration = groupInstance.getPreviousState() == GroupStatus.Created;
+                    } else if(instance instanceof ClusterInstance) {
+                        ClusterInstance clusterInstance = (ClusterInstance)instance;
+                        firstIteration = clusterInstance.getPreviousState() == ClusterStatus.Created;
+                    }
+                    if(firstIteration || childMonitor.hasStartupDependents()) {
+                        startDep = startDependency(childId, instanceId);
+                    }
+                } else {
+                    startDep = startDependency(childId, instanceId);
+                }
+            } else {
+                startDep = startDependency(childId, instanceId);
+            }
+
         }
 
         //Checking whether all the monitors got created
@@ -616,6 +656,13 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
 
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Calculating the group instances status for [application] " +
+                    "%s [group] %s [group-instance] %s [required-status] %s [no-of-instances] %s",
+                    appId, childId, instanceId, requiredStatus.toString(),
+                    noOfInstancesOfRequiredStatus));
+        }
+
         if (!groupInstances.isEmpty()) {
             ParentLevelNetworkPartitionContext networkPartitionContext =
                     (ParentLevelNetworkPartitionContext) ((GroupMonitor) monitor).
@@ -624,12 +671,27 @@ public abstract class ParentComponentMonitor extends Monitor {
             //if terminated all the instances in this instances map should be in terminated state
             if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
                     requiredStatus == GroupStatus.Terminated) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Group instances in required status for [application] " +
+                                    "%s [group] %s [group-instance] %s [required-status] %s",
+                            appId, childId, instanceId, GroupStatus.Terminated.toString()));
+                }
                 return true;
             } else if (noOfInstancesOfRequiredStatus >= minInstances) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Group instances in required status for [application] " +
+                                    "%s [group] %s [group-instance] %s [required-status] %s",
+                            appId, childId, instanceId, requiredStatus.toString()));
+                }
                 return true;
             } else {
                 //of only one is inActive implies that the whole group is Inactive
                 if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Group instances in required status for [application] " +
+                                        "%s [group] %s [group-instance] %s [required-status] %s",
+                                appId, childId, instanceId, GroupStatus.Inactive.toString()));
+                    }
                     return true;
                 }
             }
@@ -879,6 +941,15 @@ public abstract class ParentComponentMonitor extends Monitor {
      */
     public Map<String, NetworkPartitionContext> getNetworkPartitionContextsMap() {
         return networkPartitionContextsMap;
+    }
+
+    /**
+     * This will give the network partitions used by this monitor
+     *
+     * @return network-partition-contexts
+     */
+    public void removeNetworkPartitionContext(String networkPartitionId) {
+        networkPartitionContextsMap.remove(networkPartitionId);
     }
 
     /**

@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @SiddhiExtension(namespace = "stratos", function = "gradient")
@@ -53,6 +54,7 @@ public class GradientFinderWindowProcessor extends WindowProcessor implements Ru
 
     static final Logger log = Logger.getLogger(GradientFinderWindowProcessor.class);
     private ScheduledExecutorService eventRemoverScheduler;
+    private ScheduledFuture<?> lastSchedule;
     private long timeToKeep;
     private int subjectedAttrIndex;
     private Attribute.Type subjectedAttrType;
@@ -135,9 +137,12 @@ public class GradientFinderWindowProcessor extends WindowProcessor implements Ru
 
 						long diff = timeToKeep - (System.currentTimeMillis() - scheduledTime);
 						if (diff > 0) {
-							try {
-								eventRemoverScheduler.schedule(this, diff, TimeUnit.MILLISECONDS);
-							} catch (RejectedExecutionException ex) {
+                            try {
+                                if (lastSchedule != null) {
+                                    lastSchedule.cancel(false);
+                                }
+                                lastSchedule = eventRemoverScheduler.schedule(this, diff, TimeUnit.MILLISECONDS);
+                            } catch (RejectedExecutionException ex) {
 								log.warn("scheduling cannot be accepted for execution: elementID " +
 								         elementId);
 							}
@@ -247,11 +252,17 @@ public class GradientFinderWindowProcessor extends WindowProcessor implements Ru
 
     @Override
     public void schedule() {
-        eventRemoverScheduler.schedule(this, timeToKeep, TimeUnit.MILLISECONDS);
+        if (lastSchedule != null) {
+            lastSchedule.cancel(false);
+            }
+        lastSchedule = eventRemoverScheduler.schedule(this, timeToKeep, TimeUnit.MILLISECONDS);
     }
 
     public void scheduleNow() {
-        eventRemoverScheduler.schedule(this, 0, TimeUnit.MILLISECONDS);
+        if (lastSchedule != null) {
+            lastSchedule.cancel(false);
+        }
+        lastSchedule = eventRemoverScheduler.schedule(this, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override

@@ -413,7 +413,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
                             String propertyName = property.getName();
                             String payloadParamName = propertyName.substring(propertyName.indexOf(".") + 1);
-                            addToPayload(payload, payloadParamName, property.getValue());
+                            if (payload.toString().contains(payloadParamName)) {
+                                replaceInPayload(payloadParamName, payload, payloadParamName, property.getValue());
+                            } else {
+                                addToPayload(payload, payloadParamName, property.getValue());
+                            }
                         }
                     }
                 }
@@ -541,6 +545,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         payload.append(name + "=" + value);
     }
 
+    private void replaceInPayload(String payloadParamName, StringBuilder payload, String name, String value) {
+
+        payload.replace(payload.indexOf(payloadParamName), payload.indexOf(",", payload.indexOf(payloadParamName)),
+                "," + name + "=" + value);
+    }
+
     private String generateMemberId(String clusterId) {
         UUID memberId = UUID.randomUUID();
         return clusterId + memberId.toString();
@@ -564,7 +574,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.info(String.format("Member terminated [member-id] %s ", memberId));
         } else {
             log.warn(String.format("Stratos could not terminate the member [member-id] %s. This may due to a issue " +
-                    "in the underlying IaaS, Please terminate the member manually", memberId));
+                    "in the underlying IaaS, Please terminate the member manually if it is available", memberId));
             MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
         }
@@ -1040,23 +1050,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Map<String, List<String>> accessUrls = new HashMap<String, List<String>>();
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
+                String clusterId = appClusterCtxt.getClusterId();
                 if (appClusterCtxt.isLbCluster()) {
                     String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
                     if (dependencyClusterIDs != null) {
                         for (int i = 0; i < dependencyClusterIDs.length; i++) {
-                            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(
-                                    appClusterCtxt.getCartridgeType());
+
                             List<String> accessUrlPerCluster = new ArrayList();
-                            List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
-                            for (PortMapping portMap : portMappings) {
+                            Collection<ClusterPortMapping> clusterPortMappings =
+                                    CloudControllerContext.getInstance().getClusterPortMappings(appId, clusterId);
+
+                            for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                                 try {
-                                    if (portMap.isKubernetesServicePortMapping()) {
-                                        URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
-                                                portMap.getKubernetesServicePort(), "");
+                                    if (clusterPortMapping.isKubernetes()) {
+                                        URL accessUrl = new URL(clusterPortMapping.getProtocol(), appClusterCtxt.getHostName(),
+                                                clusterPortMapping.getKubernetesServicePort(), "");
                                         accessUrlPerCluster.add(accessUrl.toString());
                                     } else {
-                                        URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
-                                                portMap.getProxyPort(), "");
+                                        URL accessUrl = new URL(clusterPortMapping.getProtocol(), appClusterCtxt.getHostName(),
+                                                clusterPortMapping.getProxyPort(), "");
                                         accessUrlPerCluster.add(accessUrl.toString());
                                     }
                                 } catch (MalformedURLException e) {
@@ -1480,7 +1492,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         } else {
             //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
             throw new InvalidNetworkPartitionException(String.format("Network partition: " +
-                            "%s doesn't not have any partitions ", networkPartition.getId()));
+                    "%s doesn't not have any partitions ", networkPartition.getId()));
         }
 
         // adding network partition to CC-Context
@@ -1598,4 +1610,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new CloudControllerException(message, e);
         }
     }
+
+    @Override
+    public String[] getIaasProviders() {
+
+        try {
+            Collection<IaasProvider> iaasProviders = CloudControllerConfig.getInstance().getIaasProviders();
+            List<String> iaases = new ArrayList<String>();
+
+            for (IaasProvider iaas : iaasProviders) {
+                iaases.add(iaas.getType());
+            }
+
+            return iaases.toArray(new String[iaases.size()]);
+        } catch (Exception e) {
+            String message = String.format("Could not get Iaas Providers");
+            log.error(message);
+            throw new CloudControllerException(message, e);
+        }
+
+    }
+
 }

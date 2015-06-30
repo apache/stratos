@@ -21,6 +21,9 @@ package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * TODO : Should be able to support multiple roles for user
+ */
 @XmlRootElement
 public class UserInfoBean {
 

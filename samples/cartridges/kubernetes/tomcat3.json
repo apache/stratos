@@ -9,6 +9,7 @@
     "multiTenant": "false",
     "portMapping": [
         {
+			"name": "tomcat-http",
             "protocol": "http",
             "port": "8080",
             "proxyPort": "8280"
@@ -20,7 +21,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "chamilad/tomcat:4.1.0-beta",
+            "imageId": "stratos/tomcat:7.0.5-saml-sso",
             "networkInterfaces": [
             ],
             "property": [

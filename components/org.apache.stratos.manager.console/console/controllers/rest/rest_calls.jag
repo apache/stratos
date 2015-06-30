@@ -140,6 +140,10 @@ RESTCalls = new function(){
         return this.send("POST","/applications/"+applicationId+"/undeploy",{});
     };
 
+    this.forceUndeployApplication = function(applicationId){
+        return this.send("POST","/applications/"+applicationId+"/undeploy?force=true",{});
+    };
+
     this.deleteGroup = function(groupName){
         return this.send("DELETE","/cartridgeGroups/" + groupName,{});
     };
@@ -232,6 +236,10 @@ RESTCalls = new function(){
 
     this.getGroups = function(){
         return this.sendReceive("GET","/cartridgeGroups",{});
+    };
+
+    this.getIaaSProviders = function(){
+        return this.sendReceive("GET","/iaasProviders",{});
     };
 
     this.getApplications = function(){

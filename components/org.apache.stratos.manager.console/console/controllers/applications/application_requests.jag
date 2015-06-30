@@ -43,6 +43,9 @@ try {
         case "undeployapplication":
             formSubmit = util.RESTCalls.undeployApplication(applicationId);
             break;
+        case "forceundeployapplication":
+            formSubmit = util.RESTCalls.forceUndeployApplication(applicationId);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 

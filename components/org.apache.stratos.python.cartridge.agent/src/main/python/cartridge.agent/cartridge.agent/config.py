@@ -136,7 +136,7 @@ class CartridgeAgentConfiguration:
                 self.cartridge_key = self.read_property(constants.CARTRIDGE_KEY)
                 self.app_path = self.read_property(constants.APPLICATION_PATH, False)
                 self.repo_url = self.read_property(constants.REPO_URL, False)
-                self.ports = str(self.read_property(constants.PORTS)).split("|")
+                self.ports = str(self.read_property(constants.PORTS)).replace("'","").split("|")
                 self.dependant_cluster_id = self.read_property(constants.DEPENDENCY_CLUSTER_IDS, False)
                 self.export_metadata_keys = self.read_property(constants.EXPORT_METADATA_KEYS, False)
                 self.import_metadata_keys = self.read_property(constants.IMPORT_METADATA_KEYS, False)

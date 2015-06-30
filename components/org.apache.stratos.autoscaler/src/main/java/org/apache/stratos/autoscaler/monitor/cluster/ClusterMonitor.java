@@ -74,10 +74,7 @@ import org.drools.runtime.rule.FactHandle;
 
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -92,12 +89,13 @@ public class ClusterMonitor extends Monitor {
 
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;
+    // future to cancel it when destroying monitors
+    private ScheduledFuture<?> schedulerFuture;
     protected String serviceType;
     private AtomicBoolean monitoringStarted;
     protected String clusterId;
     private Cluster cluster;
     private int monitoringIntervalMilliseconds;
-    private boolean isDestroyed;
     //has scaling dependents
     private boolean hasScalingDependents;
     private boolean groupScalingEnabledSubtree;
@@ -111,9 +109,9 @@ public class ClusterMonitor extends Monitor {
                           String deploymentPolicyId) {
 
         scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 50);
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 50);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
         executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
         this.clusterId = cluster.getClusterId();
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
@@ -130,7 +128,8 @@ public class ClusterMonitor extends Monitor {
     }
 
     public void startScheduler() {
-        scheduler.scheduleAtFixedRate(this, 0, getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
+        schedulerFuture = scheduler.scheduleAtFixedRate(this, 0,
+                getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -203,14 +202,6 @@ public class ClusterMonitor extends Monitor {
 
     public void setMonitorIntervalMilliseconds(int monitorIntervalMilliseconds) {
         this.monitoringIntervalMilliseconds = monitorIntervalMilliseconds;
-    }
-
-    public boolean isDestroyed() {
-        return isDestroyed;
-    }
-
-    public void setDestroyed(boolean isDestroyed) {
-        this.isDestroyed = isDestroyed;
     }
 
     public void setHasFaultyMember(boolean hasFaultyMember) {
@@ -304,22 +295,18 @@ public class ClusterMonitor extends Monitor {
 
     @Override
     public void run() {
-        while (!isDestroyed()) {
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cluster monitor is running.. " + this.toString());
-                }
-                monitor();
-            } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Cluster monitor is running.. " + this.toString());
             }
-            try {
-                Thread.sleep(getMonitorIntervalMilliseconds());
-            } catch (InterruptedException ignore) {
-            }
+            monitor();
+        } catch (Exception e) {
+            log.error("Cluster monitor: Monitor failed." + this.toString(), e);
         }
-
-
+        try {
+            Thread.sleep(getMonitorIntervalMilliseconds());
+        } catch (InterruptedException ignore) {
+        }
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {
@@ -430,15 +417,15 @@ public class ClusterMonitor extends Monitor {
                                 boolean averageRequestServedPerInstanceReset
                                         = instanceContext.isAverageRequestServedPerInstanceReset();
 
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
-                                            + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
-                                            + " [Is loadAverage Reset] : " + loadAverageReset);
-                                }
-
                                 if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
-                                    log.info("Executing scaling rule as statistics have been reset");
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Executing scaling Rule, [Is rif Reset] : " + rifReset
+                                                + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
+                                                + " [Is loadAverage Reset] : " + loadAverageReset + "[cluster] " +
+                                                clusterId);
+                                    }
+
                                     ClusterContext clusterContext = ClusterMonitor.this.clusterContext;
 
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("applicationId", getAppId());
@@ -532,22 +519,13 @@ public class ClusterMonitor extends Monitor {
 
     @Override
     public void destroy() {
-        for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
-
-            Collection<InstanceContext> clusterInstanceContexts = networkPartitionContext.
-                    getInstanceIdToInstanceContextMap().values();
-
-            for (final InstanceContext pInstanceContext : clusterInstanceContexts) {
-                ClusterInstanceContext instanceContext = (ClusterInstanceContext) pInstanceContext;
-                instanceContext.getMinCheckKnowledgeSession().dispose();
-                instanceContext.getObsoleteCheckKnowledgeSession().dispose();
-                instanceContext.getScaleCheckKnowledgeSession().dispose();
-            }
+        //shutting down the scheduler
+        if(schedulerFuture != null) {
+            schedulerFuture.cancel(true);
         }
 
-        setDestroyed(true);
         if (log.isDebugEnabled()) {
-            log.debug("ClusterMonitor Drools session has been disposed. " + this.toString());
+            log.debug("ClusterMonitor task has been stopped " + this.toString());
         }
     }
 
@@ -1157,12 +1135,16 @@ public class ClusterMonitor extends Monitor {
                 clusterInstanceId);
         ClusterLevelPartitionContext clusterMonitorPartitionContext = networkPartitionCtxt.
                 getPartitionCtxt(partitionId);
-        clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+
+        clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+        if (clusterMonitorPartitionContext.getMemberStatsContext(memberId) != null) {
+            clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
+        }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Member has been moved as pending termination: "
+            log.debug(String.format("Member has been moved as pending termination, and member stat context is removed: "
                     + "[member] %s", memberId));
         }
-        clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+
     }
 
     public void handleMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
@@ -1187,6 +1169,8 @@ public class ClusterMonitor extends Monitor {
                             "and moved to obsolete list: [member] %s " +
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
+
+
             } else if (partitionCtxt.getObsoleteMember(memberId) != null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Member is  in obsolete list: [member] %s " +
@@ -1467,8 +1451,10 @@ public class ClusterMonitor extends Monitor {
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
                         parentMonitorInstance.getNetworkPartitionId());
-                log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
-                        "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
+                            "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
+                }
             }
             return true;
 

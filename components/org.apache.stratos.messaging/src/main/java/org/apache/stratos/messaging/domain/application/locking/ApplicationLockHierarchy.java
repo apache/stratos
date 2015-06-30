@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationLockHierarchy {
 
@@ -39,7 +40,7 @@ public class ApplicationLockHierarchy {
 
     private ApplicationLockHierarchy() {
         this.applicationLock = new ApplicationLock();
-        this.appIdToApplicationLockMap = new HashMap<String, ApplicationLock>();
+        this.appIdToApplicationLockMap = new ConcurrentHashMap<String, ApplicationLock>();
     }
 
     public static ApplicationLockHierarchy getInstance() {
@@ -55,16 +56,18 @@ public class ApplicationLockHierarchy {
         return applicationLockHierarchy;
     }
 
-    public ApplicationLock getLockForApplication(String appId) {
+    public synchronized ApplicationLock getLockForApplication(String appId) {
         ApplicationLock applicationLock = appIdToApplicationLockMap.get(appId);
+
         if (applicationLock == null) {
-            synchronized (ApplicationLockHierarchy.class) {
-                if (applicationLock == null) {
-                    applicationLock = new ApplicationLock();
-                    appIdToApplicationLockMap.put(appId, applicationLock);
-                }
+            applicationLock = new ApplicationLock();
+            if (log.isDebugEnabled()) {
+                log.debug("Lock created for application: [application-id] " + appId);
             }
+            appIdToApplicationLockMap.put(appId, applicationLock);
         }
+
+
         return applicationLock;
     }
 

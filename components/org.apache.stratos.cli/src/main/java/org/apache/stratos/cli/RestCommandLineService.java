@@ -43,7 +43,6 @@ import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingB
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
-import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
@@ -1607,7 +1606,7 @@ public class RestCommandLineService {
                             "application");
 
             if (application == null) {
-                System.out.println("Application not found: " + applicationId);
+                System.out.println("Application Runtime not found: " + applicationId);
                 return;
             }
 

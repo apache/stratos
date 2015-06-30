@@ -21,31 +21,47 @@ package org.apache.stratos.mock.iaas.persistence;
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Mock persistence manager.
+ * Mock persistence manager for managing objects in memory.
  */
 public class MockPersistenceManager implements PersistenceManager {
 
-    private Map<String, Serializable> resourcePathToObjectMap;
+    private Map<String, Object> resourcePathToObjectMap;
 
     MockPersistenceManager() {
-        resourcePathToObjectMap = new ConcurrentHashMap<String, Serializable>();
+        resourcePathToObjectMap = new ConcurrentHashMap<String, Object>();
     }
 
+    /**
+     * Persist an object in memory with the given resource path.
+     * @param resourcePath
+     * @param object
+     * @throws RegistryException
+     */
     @Override
-    public void persist(String resourcePath, Serializable serializableObject) throws RegistryException {
-        resourcePathToObjectMap.put(resourcePath, serializableObject);
+    public void persist(String resourcePath, Object object) throws RegistryException {
+        resourcePathToObjectMap.put(resourcePath, object);
     }
 
+    /**
+     * Read an object in memory with the given resource path.
+     * @param resourcePath
+     * @return
+     * @throws RegistryException
+     */
     @Override
     public Object read(String resourcePath) throws RegistryException {
         return resourcePathToObjectMap.get(resourcePath);
     }
 
+    /**
+     * Remove an object in memory with the given resource path.
+     * @param resourcePath
+     * @throws RegistryException
+     */
     @Override
     public void remove(String resourcePath) throws RegistryException {
         resourcePathToObjectMap.remove(resourcePath);

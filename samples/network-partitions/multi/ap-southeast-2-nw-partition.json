@@ -1,0 +1,25 @@
+{
+    "id": "ap-southeast-2-nw-partition",
+    "provider": "ec2-sydney",
+    "partitions": [
+        {
+            "id": "ap-southeast-2b-partition",
+            "property": [
+                {
+                    "name": "region",
+                    "value": "ap-southeast-2"
+                },
+                {
+                    "name": "zone",
+                    "value": "ap-southeast-2b"
+                }
+            ]
+        }
+    ],
+    "properties": [
+    	{
+    		"name": "payload_parameter.PUPPET_IP",
+    		"value": "172.31.9.64"
+    	}
+    ]
+}

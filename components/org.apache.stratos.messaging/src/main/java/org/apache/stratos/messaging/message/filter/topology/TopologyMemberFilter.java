@@ -23,6 +23,7 @@ package org.apache.stratos.messaging.message.filter.topology;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.message.filter.MessageFilter;
 
 import java.util.Collection;
@@ -33,16 +34,13 @@ import java.util.Collection;
 public class TopologyMemberFilter extends MessageFilter {
 
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-    public static final String TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID = "lb-cluster-id";
     public static final String TOPOLOGY_MEMBER_FILTER_NETWORK_PARTITION_ID = "network-partition-id";
-    public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
 
     private static volatile TopologyMemberFilter instance;
 
     public TopologyMemberFilter() {
-        super(TOPOLOGY_MEMBER_FILTER);
+        super(StratosConstants.TOPOLOGY_MEMBER_FILTER);
     }
 
     /**
@@ -55,14 +53,11 @@ public class TopologyMemberFilter extends MessageFilter {
     public static boolean apply(String lbClusterId, String networkPartitionId) {
         boolean excluded = false;
         if (getInstance().isActive()) {
-            if (StringUtils.isNotBlank(lbClusterId) && getInstance().lbClusterIdExcluded(lbClusterId)) {
-                excluded = true;
-            }
             if (StringUtils.isNotBlank(networkPartitionId) && getInstance().networkPartitionExcluded(networkPartitionId)) {
                 excluded = true;
             }
-            if (excluded && log.isDebugEnabled()) {
-                log.debug(String.format("Member is excluded: [lb-cluster] %s", lbClusterId));
+            if (excluded && log.isInfoEnabled()) {
+                log.info(String.format("Member is excluded: [network-partition-id] %s", networkPartitionId));
             }
         }
         return excluded;
@@ -82,14 +77,6 @@ public class TopologyMemberFilter extends MessageFilter {
         return instance;
     }
 
-    private boolean lbClusterIdExcluded(String value) {
-        return excluded(TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID, value);
-    }
-
-    private Collection<String> getIncludedLbClusterIds() {
-        return getIncludedPropertyValues(TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID);
-    }
-
     private boolean networkPartitionExcluded(String value) {
         return excluded(TOPOLOGY_MEMBER_FILTER_NETWORK_PARTITION_ID, value);
     }
@@ -101,14 +88,6 @@ public class TopologyMemberFilter extends MessageFilter {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID + "=");
-        for (String clusterId : getInstance().getIncludedLbClusterIds()) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(clusterId);
-        }
-        sb.append(LINE_SEPARATOR);
         sb.append(TOPOLOGY_MEMBER_FILTER_NETWORK_PARTITION_ID + "=");
         for (String networkPartitionId : getInstance().getIncludedNetworkPartitionIds()) {
             if (sb.length() > 0) {

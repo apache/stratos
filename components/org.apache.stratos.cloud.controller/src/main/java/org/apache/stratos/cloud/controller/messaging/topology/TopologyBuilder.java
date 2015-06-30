@@ -18,12 +18,15 @@
  */
 package org.apache.stratos.cloud.controller.messaging.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
+import org.apache.stratos.cloud.controller.iaases.kubernetes.KubernetesIaas;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -91,7 +94,7 @@ public class TopologyBuilder {
                     }
 
                     service.setProperties(properties);
-                    if(cartridge.getPortMappings() != null) {
+                    if (cartridge.getPortMappings() != null) {
                         List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                         Port port;
                         //adding ports to the event
@@ -190,15 +193,37 @@ public class TopologyBuilder {
                     log.info("Application Cluster " + cluster.getClusterId() + " created in CC topology");
                 }
             }
-
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
         }
+
+        log.debug("Creating cluster port mappings: [appication-id] " + appId);
+        for(Cluster cluster : appClusters) {
+            String cartridgeType = cluster.getServiceName();
+            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
+            if(cartridge == null) {
+                throw new CloudControllerException("Cartridge not found: [cartridge-type] " + cartridgeType);
+            }
+
+            for(PortMapping portMapping : cartridge.getPortMappings()) {
+                ClusterPortMapping clusterPortMapping = new ClusterPortMapping(appId,
+                        cluster.getClusterId(), portMapping.getName(), portMapping.getProtocol(), portMapping.getPort(),
+                        portMapping.getProxyPort());
+                CloudControllerContext.getInstance().addClusterPortMapping(clusterPortMapping);
+                log.debug("Cluster port mapping created: " + clusterPortMapping.toString());
+            }
+        }
+
+        // Persist cluster port mappings
+        CloudControllerContext.getInstance().persist();
+
+        // Send application clusters created event
         TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
     }
 
-    public static void handleApplicationClustersRemoved(String appId, Set<ClusterDataHolder> clusterData) {
+    public static void handleApplicationClustersRemoved(String appId,
+                                                        Set<ClusterDataHolder> clusterData) {
         TopologyManager.acquireWriteLock();
 
         List<Cluster> removedClusters = new ArrayList<Cluster>();
@@ -213,12 +238,14 @@ public class TopologyBuilder {
                     if (aService != null) {
                         removedClusters.add(aService.removeCluster(aClusterData.getClusterId()));
                     } else {
-                        log.warn("Service " + aClusterData.getServiceType() + " not found, unable to remove Cluster " + aClusterData.getClusterId());
+                        log.warn("Service " + aClusterData.getServiceType() + " not found, " +
+                                "unable to remove Cluster " + aClusterData.getClusterId());
                     }
                     // remove runtime data
                     context.removeClusterContext(aClusterData.getClusterId());
 
-                    log.info("Removed application [ " + appId + " ]'s Cluster [ " + aClusterData.getClusterId() + " ] from the topology");
+                    log.info("Removed application [ " + appId + " ]'s Cluster " +
+                            "[ " + aClusterData.getClusterId() + " ] from the topology");
                 }
                 // persist runtime data changes
                 CloudControllerContext.getInstance().persist();
@@ -231,6 +258,10 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
+
+        // Remove cluster port mappings of application
+        CloudControllerContext.getInstance().removeClusterPortMappings(appId);
+        CloudControllerContext.getInstance().persist();
 
         TopologyEventPublisher.sendApplicationClustersRemoved(appId, clusterData);
 
@@ -1008,13 +1039,20 @@ public class TopologyBuilder {
             ClusterStatus status = ClusterStatus.Terminating;
             if (context.isStateTransitionValid(status)) {
                 context.setStatus(status);
-                log.info("Cluster Terminating adding status started for " + cluster.getClusterId());
+                log.info("Cluster Terminating started for " + cluster.getClusterId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
                 ClusterInstanceTerminatingEvent clusterTerminaingEvent = new ClusterInstanceTerminatingEvent(event.getAppId(),
                         event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
+
+                // Remove kubernetes services if available
+                ClusterContext clusterContext =
+                        CloudControllerContext.getInstance().getClusterContext(event.getClusterId());
+                if(StringUtils.isNotBlank(clusterContext.getKubernetesClusterId())) {
+                    KubernetesIaas.removeKubernetesServices(event.getAppId(), event.getClusterId());
+                }
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",

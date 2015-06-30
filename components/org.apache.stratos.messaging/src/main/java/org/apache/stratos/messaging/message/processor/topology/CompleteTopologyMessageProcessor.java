@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -88,13 +89,16 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             topology.addService(service);
         }
 
-        // Apply cluster filter
+        // Apply application & cluster filters
         for (Service service : topology.getServices()) {
             List<Cluster> clustersToRemove = new ArrayList<Cluster>();
             for (Cluster cluster : service.getClusters()) {
-                if (TopologyClusterFilter.apply(cluster.getClusterId())) {
+                if (TopologyApplicationFilter.apply(cluster.getAppId())) {
                     clustersToRemove.add(cluster);
-                } else {
+                } else if (TopologyClusterFilter.apply(cluster.getClusterId())) {
+                    clustersToRemove.add(cluster);
+                }
+                else {
                     // Add non filtered clusters to clusterId-cluster map
                     if (!topology.clusterExist(cluster.getClusterId())) {
                         topology.addToCluterMap(cluster);

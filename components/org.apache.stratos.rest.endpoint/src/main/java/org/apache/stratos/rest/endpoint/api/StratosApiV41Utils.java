@@ -25,10 +25,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
@@ -101,6 +103,7 @@ import java.util.regex.Pattern;
 public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
+    public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
 
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
@@ -122,6 +125,17 @@ public class StratosApiV41Utils {
             if ((iaasProviders == null) || iaasProviders.size() == 0) {
                 throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
                         cartridgeBean.getType()));
+            }
+
+            for (PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
+                if (StringUtils.isBlank(portMapping.getName())) {
+                    portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Port mapping name not found, default value generated: " +
+                                        "[cartridge-type] %s [port-mapping-name] %s",
+                                cartridgeBean.getType(), portMapping.getName()));
+                    }
+                }
             }
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
@@ -498,15 +512,14 @@ public class StratosApiV41Utils {
      * @return CartridgeBean
      * @throws RestAPIException
      */
-    public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException {
+    public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException,
+            CloudControllerServiceCartridgeNotFoundExceptionException {
         try {
             Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
             if (cartridgeInfo == null) {
                 return null;
             }
             return ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
-        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-            return null;
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message, e);
@@ -923,102 +936,98 @@ public class StratosApiV41Utils {
      * @throws InvalidCartridgeGroupDefinitionException
      * @throws RestAPIException
      */
-    public static void addServiceGroup(CartridgeGroupBean serviceGroupDefinition)
-            throws InvalidCartridgeGroupDefinitionException, RestAPIException {
-        try {
-            if (serviceGroupDefinition == null) {
-                throw new RuntimeException("Cartridge group definition is null");
+    public static void addCartridgeGroup(CartridgeGroupBean serviceGroupDefinition)
+            throws InvalidCartridgeGroupDefinitionException, ServiceGroupDefinitionException, RestAPIException,
+            CloudControllerServiceCartridgeNotFoundExceptionException,
+            AutoscalerServiceInvalidServiceGroupExceptionException {
+
+        if (serviceGroupDefinition == null) {
+            throw new RuntimeException("Cartridge group definition is null");
+        }
+
+        List<String> cartridgeTypes = new ArrayList<String>();
+        String[] cartridgeNames = null;
+        List<String> groupNames;
+        String[] cartridgeGroupNames;
+
+        if (log.isDebugEnabled()) {
+            log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+        }
+
+        findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
+
+        //validate the group definition to check if cartridges duplicate in any groups defined
+        validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
+
+        //validate the group definition to check if groups duplicate in any groups and
+        //validate the group definition to check for cyclic group behaviour
+        validateGroupDuplicationInGroupDefinition(serviceGroupDefinition);
+
+        CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
+
+        cartridgeNames = new String[cartridgeTypes.size()];
+        int j = 0;
+        for (String cartridgeType : cartridgeTypes) {
+            try {
+                if (ccServiceClient.getCartridge(cartridgeType) == null) {
+                    // cartridge is not deployed, can't continue
+                    log.error("Invalid cartridge found in cartridge group " + cartridgeType);
+                    throw new InvalidCartridgeException();
+                } else {
+                    cartridgeNames[j] = cartridgeType;
+                    j++;
+                }
+            } catch (RemoteException e) {
+                String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
             }
+        }
 
-            List<String> cartridgeTypes = new ArrayList<String>();
-            String[] cartridgeNames = null;
-            List<String> groupNames;
-            String[] cartridgeGroupNames;
 
+        // if any sub groups are specified in the group, they should be already deployed
+        if (serviceGroupDefinition.getGroups() != null) {
             if (log.isDebugEnabled()) {
-                log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+                log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
             }
 
-            findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
+            List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
+            groupNames = new ArrayList<String>();
+            cartridgeGroupNames = new String[groupDefinitions.size()];
+            int i = 0;
+            for (CartridgeGroupBean groupList : groupDefinitions) {
+                groupNames.add(groupList.getName());
+                cartridgeGroupNames[i] = groupList.getName();
+                i++;
+            }
 
-            //validate the group definition to check if cartridges duplicate in any groups defined
-            validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
+            Set<String> duplicates = findDuplicates(groupNames);
+            if (duplicates.size() > 0) {
 
-            //validate the group definition to check if groups duplicate in any groups and
-            //validate the group definition to check for cyclic group behaviour
-            validateGroupDuplicationInGroupDefinition(serviceGroupDefinition);
-
-            CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
-
-            cartridgeNames = new String[cartridgeTypes.size()];
-            int j = 0;
-            for (String cartridgeType : cartridgeTypes) {
-                try {
-                    if (ccServiceClient.getCartridge(cartridgeType) == null) {
-                        // cartridge is not deployed, can't continue
-                        log.error("Invalid cartridge found in cartridge group " + cartridgeType);
-                        throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);
-                    } else {
-                        cartridgeNames[j] = cartridgeType;
-                        j++;
-                    }
-                } catch (RemoteException e) {
-                    String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
-                    log.error(message, e);
-                    throw new RestAPIException(message, e);
-                } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-                    String message = "Required cartridges not found";
-                    log.error(message, e);
-                    throw new RestAPIException(message, e);
+                StringBuilder duplicatesOutput = new StringBuilder();
+                for (String dup : duplicates) {
+                    duplicatesOutput.append(dup).append(" ");
                 }
-            }
-
-
-            // if any sub groups are specified in the group, they should be already deployed
-            if (serviceGroupDefinition.getGroups() != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
+                    log.debug("duplicate sub-groups defined: " + duplicatesOutput.toString());
                 }
-
-                List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
-                groupNames = new ArrayList<String>();
-                cartridgeGroupNames = new String[groupDefinitions.size()];
-                int i = 0;
-                for (CartridgeGroupBean groupList : groupDefinitions) {
-                    groupNames.add(groupList.getName());
-                    cartridgeGroupNames[i] = groupList.getName();
-                    i++;
-                }
-
-                Set<String> duplicates = findDuplicates(groupNames);
-                if (duplicates.size() > 0) {
-
-                    StringBuilder duplicatesOutput = new StringBuilder();
-                    for (String dup : duplicates) {
-                        duplicatesOutput.append(dup).append(" ");
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("duplicate sub-groups defined: " + duplicatesOutput.toString());
-                    }
-                    throw new RestAPIException("Invalid cartridge group definition, duplicate sub-groups defined:" +
-                            duplicatesOutput.toString());
-                }
+                throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, duplicate " +
+                        "sub-groups defined:" + duplicatesOutput.toString());
             }
+        }
 
-            ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
-                    serviceGroupDefinition);
+        ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
+                serviceGroupDefinition);
 
-            AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+        AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+        try {
             asServiceClient.addServiceGroup(serviceGroup);
-
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
-        } catch (InvalidCartridgeGroupDefinitionException e) {
-            throw e;
-        } catch (Exception e) {
-            // TODO: InvalidServiceGroupException is not received, only AxisFault. Need to fix get the custom exception
-            String message = "Could not add cartridge group";
+        } catch (RemoteException e) {
+
+            String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
@@ -1328,9 +1337,10 @@ public class StratosApiV41Utils {
      * @param tenantDomain  Tenant Domain
      * @throws RestAPIException
      */
-    public static void addApplication(ApplicationBean appDefinition, ConfigurationContext ctxt,
-                                      String userName, String tenantDomain)
-            throws RestAPIException, AutoscalerServiceCartridgeNotFoundExceptionException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
+    public static void addApplication(ApplicationBean appDefinition, ConfigurationContext ctxt, String userName,
+                                      String tenantDomain) throws RestAPIException,
+            AutoscalerServiceCartridgeNotFoundExceptionException,
+            AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
         if (StringUtils.isBlank(appDefinition.getApplicationId())) {
             String message = "Please specify the application name";
@@ -1350,7 +1360,7 @@ public class StratosApiV41Utils {
         validateApplication(appDefinition);
 
         // To validate groups have unique alias in the application definition
-        validateGroupAliasesInApplicationDefinition(appDefinition);
+        validateGroupsInApplicationDefinition(appDefinition);
 
 
         ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(
@@ -1386,7 +1396,8 @@ public class StratosApiV41Utils {
                     usedCartridgeGroups.toArray(new String[usedCartridgeGroups.size()]));
 
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
-            throw new RestAPIException(e);
+            String message = e.getFaultMessage().getApplicationDefinitionException().getMessage();
+            throw new RestAPIException(message, e);
         } catch (RemoteException e) {
             throw new RestAPIException(e);
         }
@@ -1433,7 +1444,8 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient.getInstance().updateApplication(applicationContext);
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
-            throw new RestAPIException(e);
+            String message = e.getFaultMessage().getApplicationDefinitionException().getMessage();
+            throw new RestAPIException(message, e);
         } catch (RemoteException e) {
             throw new RestAPIException(e);
         }
@@ -1535,9 +1547,10 @@ public class StratosApiV41Utils {
      * @param applicationDefinition - the application definition
      * @throws RestAPIException
      */
-    private static void validateGroupAliasesInApplicationDefinition(ApplicationBean applicationDefinition) throws RestAPIException {
+    private static void validateGroupsInApplicationDefinition(ApplicationBean applicationDefinition) throws RestAPIException {
 
         ConcurrentHashMap<String, CartridgeGroupReferenceBean> groupsInApplicationDefinition = new ConcurrentHashMap<String, CartridgeGroupReferenceBean>();
+        boolean groupParentHasDeploymentPolicy = false;
 
         if ((applicationDefinition.getComponents().getGroups() != null) &&
                 (!applicationDefinition.getComponents().getGroups().isEmpty())) {
@@ -1549,14 +1562,65 @@ public class StratosApiV41Utils {
                             group.getAlias();
                     throw new RestAPIException(message);
                 }
+
+                // Validate top level group deployment policy with cartridges
+                if (group.getCartridges() != null) {
+                    if (group.getDeploymentPolicy() != null) {
+                        groupParentHasDeploymentPolicy = true;
+                    } else {
+                        groupParentHasDeploymentPolicy = false;
+                    }
+                    validateCartridgesForDeploymentPolicy(group.getCartridges(), groupParentHasDeploymentPolicy);
+                }
+
                 groupsInApplicationDefinition.put(group.getAlias(), group);
 
                 if (group.getGroups() != null) {
                     //This is to validate the groups aliases recursively
-                    validateGroupsRecursively(groupsInApplicationDefinition, group.getGroups());
+                    validateGroupsRecursively(groupsInApplicationDefinition, group.getGroups(), groupParentHasDeploymentPolicy);
                 }
             }
         }
+
+        if ((applicationDefinition.getComponents().getCartridges() != null) &&
+                (!applicationDefinition.getComponents().getCartridges().isEmpty())) {
+            validateCartridgesForDeploymentPolicy(applicationDefinition.getComponents().getCartridges(), false);
+        }
+
+    }
+
+    /**
+     * This method validates cartridges in groups
+     * Deployment policy should not defined in cartridge if group has a deployment policy
+     * If group does not have a DP, then cartridge should have one
+     *
+     * @param cartridgeReferenceBeans - Cartridges in a group
+     * @throws RestAPIException
+     */
+    private static void validateCartridgesForDeploymentPolicy(List<CartridgeReferenceBean> cartridgeReferenceBeans,
+                                                              boolean hasDeploymentPolicy) throws RestAPIException {
+
+        if (hasDeploymentPolicy) {
+            for (CartridgeReferenceBean cartridge : cartridgeReferenceBeans) {
+                if (cartridge.getSubscribableInfo().getDeploymentPolicy() != null) {
+                    String message = "Group deployment policy already exists. Remove deployment policy from " +
+                            "cartridge subscription : [cartridge] " + cartridge.getSubscribableInfo().getAlias();
+                    throw new RestAPIException(message);
+                }
+            }
+        } else {
+            for (CartridgeReferenceBean cartridge : cartridgeReferenceBeans) {
+                if (cartridge.getSubscribableInfo().getDeploymentPolicy() == null) {
+                    String message = String.format("Deployment policy is not defined for cartridge [cartridge] %s." +
+                                    "It has not inherited any deployment policies.",
+                            cartridge.getSubscribableInfo().getAlias());
+                    throw new RestAPIException(message);
+                }
+            }
+
+        }
+
+
     }
 
     /**
@@ -1568,17 +1632,38 @@ public class StratosApiV41Utils {
      */
 
     private static void validateGroupsRecursively(ConcurrentHashMap<String, CartridgeGroupReferenceBean> groupsSet,
-                                                  Collection<CartridgeGroupReferenceBean> groups) throws RestAPIException {
+                                                  Collection<CartridgeGroupReferenceBean> groups, boolean hasDeploymentPolicy)
+            throws RestAPIException {
+
+        boolean groupHasDeploymentPolicy = false;
+
         for (CartridgeGroupReferenceBean group : groups) {
             if (groupsSet.get(group.getAlias()) != null) {
                 String message = "Cartridge group alias exists more than once: [group-alias] " +
                         group.getAlias();
                 throw new RestAPIException(message);
             }
+
+            if (group.getDeploymentPolicy() != null) {
+                if (hasDeploymentPolicy) {
+                    String message = "Parent group has a deployment policy. Remove deployment policy from the" +
+                            " group: [group-alias] " + group.getAlias();
+                    throw new RestAPIException(message);
+                } else {
+                    groupHasDeploymentPolicy = true;
+                }
+            } else {
+                groupHasDeploymentPolicy = hasDeploymentPolicy;
+            }
+
+            if (group.getCartridges() != null) {
+                validateCartridgesForDeploymentPolicy(group.getCartridges(), groupHasDeploymentPolicy);
+            }
+
             groupsSet.put(group.getAlias(), group);
 
             if (group.getGroups() != null) {
-                validateGroupsRecursively(groupsSet, group.getGroups());
+                validateGroupsRecursively(groupsSet, group.getGroups(), groupHasDeploymentPolicy);
             }
         }
     }
@@ -1595,18 +1680,6 @@ public class StratosApiV41Utils {
 
         if (StringUtils.isEmpty(applicationPolicyId)) {
             String message = "Application policy id is Empty";
-            log.error(message);
-            throw new RestAPIException(message);
-        }
-
-        if (StringUtils.isEmpty(applicationPolicyId)) {
-            String message = "Application policy id is Empty";
-            log.error(message);
-            throw new RestAPIException(message);
-        }
-        if (StringUtils.isEmpty(applicationPolicyId)) {
-            String message = String.format("Application policy id cannot be null : [application-policy-id] %s. "
-                    + "Are you passing application policy?", applicationPolicyId);
             log.error(message);
             throw new RestAPIException(message);
         }
@@ -1815,22 +1888,49 @@ public class StratosApiV41Utils {
      * @param applicationId Application Id
      * @return ApplicationInfoBean
      */
-    public static ApplicationInfoBean getApplicationRuntime(String applicationId) {
+    public static ApplicationInfoBean getApplicationRuntime(String applicationId)
+            throws RestAPIException {
         ApplicationInfoBean applicationBean = null;
+        ApplicationContext applicationContext = null;
+        //Checking whether application is in deployed mode
+        try {
+            applicationContext = getAutoscalerServiceClient().
+                    getApplication(applicationId);
+        } catch (RemoteException e) {
+            String message = "Could not get application definition: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+
+        } catch (RestAPIException e) {
+            String message = "Could not get application definition: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+
+        }
+
         try {
             ApplicationManager.acquireReadLockForApplication(applicationId);
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
-            if (application == null) {
-                return null;
-            }
-            applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
-            for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
-                addClustersInstancesToApplicationInstanceBean(instanceBean, application);
-                addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+            Application application = ApplicationManager.getApplications().
+                    getApplication(applicationId);
+            if(application != null) {
+                if (application.getInstanceContextCount() > 0
+                        || (applicationContext != null &&
+                        applicationContext.getStatus().equals("Deployed"))) {
+
+                    if (application == null) {
+                        return null;
+                    }
+                    applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
+                    for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
+                        addClustersInstancesToApplicationInstanceBean(instanceBean, application);
+                        addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                    }
+                }
             }
         } finally {
             ApplicationManager.releaseReadLockForApplication(applicationId);
         }
+
         return applicationBean;
     }
 
@@ -2616,8 +2716,72 @@ public class StratosApiV41Utils {
     public static void removeNetworkPartition(String networkPartitionId) throws RestAPIException,
             CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         try {
+
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+            ApplicationContext[] applicationContexts = autoscalerServiceClient.getApplications();
+            if (applicationContexts != null) {
+                for (ApplicationContext applicationContext : applicationContexts) {
+                    if (applicationContext != null) {
+                        String[] networkPartitions = AutoscalerServiceClient.getInstance().
+                                getApplicationNetworkPartitions(applicationContext.getApplicationId());
+                        if (networkPartitions != null) {
+                            for (int i = 0; i < networkPartitions.length; i++) {
+                                if (networkPartitions[i].equals(networkPartitionId)) {
+                                    String message = String.format("Cannot remove the network partition " +
+                                                    "[network-partition-id] %s, since it is used in application " +
+                                                    "[application-id] %s", networkPartitionId,
+                                            applicationContext.getApplicationId());
+                                    log.error(message);
+                                    throw new RestAPIException(message);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            DeploymentPolicy[] deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
+
+            if (deploymentPolicies != null) {
+                for (DeploymentPolicy deploymentPolicy : deploymentPolicies) {
+                    for (org.apache.stratos.autoscaler.stub.partition.NetworkPartitionRef networkPartitionRef :
+                            deploymentPolicy.getNetworkPartitionRefs()) {
+                        if (networkPartitionRef.getId().equals(networkPartitionId)) {
+                            String message = String.format("Cannot remove the network partition %s, since" +
+                                            " it is used in deployment policy %s", networkPartitionId,
+                                    deploymentPolicy.getDeploymentPolicyID());
+                            log.error(message);
+                            throw new RestAPIException(message);
+                        }
+                    }
+                }
+            }
+
+            ApplicationPolicy[] applicationPolicies = autoscalerServiceClient.getApplicationPolicies();
+
+            if (applicationPolicies != null) {
+                for (ApplicationPolicy applicationPolicy : applicationPolicies) {
+
+                    for (String networkPartition :
+                            applicationPolicy.getNetworkPartitions()) {
+
+                        if (networkPartition.equals(networkPartitionId)) {
+                            String message = String.format("Cannot remove the network partition %s, since" +
+                                            " it is used in application policy %s", networkPartitionId,
+                                    applicationPolicy.getId());
+                            log.error(message);
+                            throw new RestAPIException(message);
+                        }
+                    }
+                }
+            }
+
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId);
+        } catch (AutoscalerServiceAutoScalerExceptionException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
@@ -3460,6 +3624,23 @@ public class StratosApiV41Utils {
                 throw new InvalidCartridgeGroupDefinitionException("Invalid cartridge group definition, " +
                         "cyclic group behaviour identified: " + group);
             }
+        }
+    }
+
+    /**
+     * Get Iaas Providers
+     *
+     * @return Array of Strings
+     */
+    public static IaasProviderInfoBean getIaasProviders() throws RestAPIException {
+        try {
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            String[] iaasProviders = serviceClient.getIaasProviders();
+            return ObjectConverter.convertStringArrayToIaasProviderInfoBean(iaasProviders);
+        } catch (RemoteException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
         }
     }
 }

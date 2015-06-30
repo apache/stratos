@@ -32,7 +32,13 @@
                 <div class='col-md-1'>
                     <button class='btn btn-default btn-lg' type='button' style="margin-left: -15px; "
                             onclick='window.location.replace(document.referrer)'> Back</button>
+                    </div>
+        {{#ifCond applicationStatus "==" "Undeploying"}}
+                <div class='col-md-1'>
+                    <button class="btn btn-danger btn-lg" type="button" style="..."
+                            value="{{appName}}" id="force_undeploy">Force Undeploy</button>
                 </div>
+        {{/ifCond}}
             </div>
         </div>
         <!-- Nav tabs -->
@@ -142,6 +148,52 @@ $(window).load(function() {
         downloadCanvas(this, 'canvasOriginal', '{{{appName}}}.png');
     });
 
+$( "#force_undeploy" ).click(function() {
+var payload =$(this).attr("value");
+  noty({
+            layout: 'bottomRight',
+            type: 'warning',
+            text: 'Are you sure you want to <strong>forcefully undeploy</strong> application: <strong>'
+            +$(this).attr("value") + "</strong> ?",
+            buttons: [
+                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                    var formtype = 'forceundeployapplication';
+                    $noty.close();
 
+                    $.ajax({
+                        type: "POST",
+                        url: caramel.context + "/controllers/applications/application_requests.jag",
+                        dataType: 'json',
+                        data: { "applicationId": payload, "formtype": formtype },
+                        success: function (data) {
+                            if (data.status == 'error') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                            } else if (data.status == 'warning') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                            } else {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                            }
+                            window.setTimeout(function(){
+                                window.location.href = '../';
+                            }, 1500);
+                        }
+                    }).always(function () {
+
+                    });
+
+                }
+                },
+                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                    $noty.close();
+                }
+                }
+            ]
+        });
+    });
 });
+
+
+
+
+
 </script>

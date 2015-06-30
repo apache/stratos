@@ -42,7 +42,7 @@ public class ApplicationUtils {
     public static final String TOKEN_PAYLOAD_PARAM_NAME = "TOKEN";
     public static final String DEPLOYMENT = "DEPLOYMENT";
     public static final String PAYLOAD_PARAMETER = "payload_parameter.";
-    private static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
+    public static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
     public static boolean isAliasValid(String alias) {
         return ALIAS_PATTERN.matcher(alias).matches();

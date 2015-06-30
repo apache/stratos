@@ -54,5 +54,6 @@ public class PermissionConstants {
             "/permission/admin/stratos/domainMappings",
             "/permission/admin/stratos/domainMappings/manage",
             "/permission/admin/stratos/domainMappings/view",
+            "/permission/admin/stratos/iaasProviders/view",
     };
 }

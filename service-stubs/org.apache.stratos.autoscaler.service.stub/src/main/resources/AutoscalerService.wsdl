@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://common.stratos.apache.org/xsd" xmlns:ax21="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax22="http://partition.common.stratos.apache.org/xsd" xmlns:ax216="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://rmi.java/xsd" xmlns:ax220="http://io.java/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax212="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax225="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax25="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://partition.common.stratos.apache.org/xsd" xmlns:ax217="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax21="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax22="http://common.stratos.apache.org/xsd" xmlns:ax219="http://rmi.java/xsd" xmlns:ax214="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax220="http://io.java/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax212="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax225="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
     <wsdl:types>
         <xs:schema xmlns:ax221="http://io.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://rmi.java/xsd">
             <xs:import namespace="http://io.java/xsd"/>
@@ -21,7 +21,7 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="instanceRoundingFactor" type="xs:float"/>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax210:LoadThresholds"/>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax212:LoadThresholds"/>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
@@ -33,17 +33,17 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax28="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax23="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
             <xs:complexType name="ApplicationContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="components" nillable="true" type="ax27:ComponentContext"/>
+                    <xs:element minOccurs="0" name="components" nillable="true" type="ax21:ComponentContext"/>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
                     <xs:element minOccurs="0" name="status" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="tenantAdminUsername" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"/>
@@ -52,10 +52,10 @@
             </xs:complexType>
             <xs:complexType name="ComponentContext">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="applicationClusterContexts" nillable="true" type="ax27:ApplicationClusterContext"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax27:CartridgeContext"/>
-                    <xs:element minOccurs="0" name="dependencyContext" nillable="true" type="ax27:DependencyContext"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax27:GroupContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="applicationClusterContexts" nillable="true" type="ax21:ApplicationClusterContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax21:CartridgeContext"/>
+                    <xs:element minOccurs="0" name="dependencyContext" nillable="true" type="ax21:DependencyContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax21:GroupContext"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicationClusterContext">
@@ -66,8 +66,8 @@
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="dependencyClusterIds" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="persistenceContext" nillable="true" type="ax27:PersistenceContext"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="persistenceContext" nillable="true" type="ax21:PersistenceContext"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -75,7 +75,7 @@
             <xs:complexType name="PersistenceContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="persistenceRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax27:VolumeContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax21:VolumeContext"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="VolumeContext">
@@ -94,21 +94,21 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="cartridgeMax" type="xs:int"/>
                     <xs:element minOccurs="0" name="cartridgeMin" type="xs:int"/>
-                    <xs:element minOccurs="0" name="subscribableInfoContext" nillable="true" type="ax27:SubscribableInfoContext"/>
+                    <xs:element minOccurs="0" name="subscribableInfoContext" nillable="true" type="ax21:SubscribableInfoContext"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="SubscribableInfoContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="artifactRepositoryContext" nillable="true" type="ax27:ArtifactRepositoryContext"/>
+                    <xs:element minOccurs="0" name="artifactRepositoryContext" nillable="true" type="ax21:ArtifactRepositoryContext"/>
                     <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="dependencyAliases" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="maxMembers" type="xs:int"/>
                     <xs:element minOccurs="0" name="minMembers" type="xs:int"/>
-                    <xs:element minOccurs="0" name="persistenceContext" nillable="true" type="ax27:PersistenceContext"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="persistenceContext" nillable="true" type="ax21:PersistenceContext"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ArtifactRepositoryContext">
@@ -130,9 +130,9 @@
             <xs:complexType name="GroupContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax27:CartridgeContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax21:CartridgeContext"/>
                     <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax27:GroupContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax21:GroupContext"/>
                     <xs:element minOccurs="0" name="groupMaxInstances" type="xs:int"/>
                     <xs:element minOccurs="0" name="groupMinInstances" type="xs:int"/>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
@@ -156,27 +156,28 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax218="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://rmi.java/xsd" xmlns:ax224="http://common.stratos.apache.org/xsd" xmlns:ax211="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax226="http://pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
+        <xs:schema xmlns:ax29="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax218="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://rmi.java/xsd" xmlns:ax213="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax224="http://common.stratos.apache.org/xsd" xmlns:ax211="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax226="http://pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
             <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://application.exception.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://rmi.java/xsd"/>
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
             <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"/>
-            <xs:element name="getDeploymentPolicy">
+            <xs:element name="findClusterId">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyID" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDeploymentPolicyResponse">
+            <xs:element name="findClusterIdResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:DeploymentPolicy"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -188,7 +189,7 @@
             <xs:element name="getApplicationsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:ApplicationContext"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:ApplicationContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -202,7 +203,42 @@
             <xs:element name="getApplicationResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ApplicationContext"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax24:ApplicationContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyID" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:DeploymentPolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoscalerServiceAutoScalingPolicyAlreadyExistException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AutoScalingPolicyAlreadyExistException" nillable="true" type="ax210:AutoScalingPolicyAlreadyExistException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAutoScalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax212:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAutoScalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -216,7 +252,7 @@
             <xs:element name="getAutoscalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax210:AutoscalePolicy"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax212:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -228,21 +264,42 @@
             <xs:element name="getAutoScalingPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax210:AutoscalePolicy"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax212:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoscalerServiceInvalidPolicyException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax214:InvalidPolicyException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateAutoScalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax212:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateAutoScalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServiceUnremovablePolicyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="UnremovablePolicyException" nillable="true" type="ax215:UnremovablePolicyException"/>
+                        <xs:element minOccurs="0" name="UnremovablePolicyException" nillable="true" type="ax214:UnremovablePolicyException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServicePolicyDoesNotExistException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="PolicyDoesNotExistException" nillable="true" type="ax215:PolicyDoesNotExistException"/>
+                        <xs:element minOccurs="0" name="PolicyDoesNotExistException" nillable="true" type="ax214:PolicyDoesNotExistException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -270,21 +327,21 @@
             <xs:element name="AutoscalerServiceCartridgeGroupNotFoundException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeGroupNotFoundException" nillable="true" type="ax218:CartridgeGroupNotFoundException"/>
+                        <xs:element minOccurs="0" name="CartridgeGroupNotFoundException" nillable="true" type="ax210:CartridgeGroupNotFoundException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServiceCartridgeNotFoundException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax218:CartridgeNotFoundException"/>
+                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax210:CartridgeNotFoundException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addApplication">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax29:ApplicationContext"/>
+                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax24:ApplicationContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -298,7 +355,7 @@
             <xs:element name="updateApplication">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax29:ApplicationContext"/>
+                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax24:ApplicationContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -384,14 +441,14 @@
             <xs:element name="AutoscalerServiceApplicationPolicyAlreadyExistsException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationPolicyAlreadyExistsException" nillable="true" type="ax215:ApplicationPolicyAlreadyExistsException"/>
+                        <xs:element minOccurs="0" name="ApplicationPolicyAlreadyExistsException" nillable="true" type="ax214:ApplicationPolicyAlreadyExistsException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addApplicationPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax26:ApplicationPolicy"/>
+                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax29:ApplicationPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -412,14 +469,7 @@
             <xs:element name="getApplicationPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ApplicationPolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="AutoscalerServiceInvalidPolicyException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax215:InvalidPolicyException"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ApplicationPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -440,14 +490,14 @@
             <xs:element name="AutoscalerServiceApplicatioinPolicyNotExistsException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicatioinPolicyNotExistsException" nillable="true" type="ax215:ApplicatioinPolicyNotExistsException"/>
+                        <xs:element minOccurs="0" name="ApplicatioinPolicyNotExistsException" nillable="true" type="ax214:ApplicatioinPolicyNotExistsException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="updateApplicationPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax26:ApplicationPolicy"/>
+                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax29:ApplicationPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -466,64 +516,14 @@
             <xs:element name="getApplicationPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:ApplicationPolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="findClusterId">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="findClusterIdResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="AutoscalerServiceAutoScalingPolicyAlreadyExistException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="AutoScalingPolicyAlreadyExistException" nillable="true" type="ax218:AutoScalingPolicyAlreadyExistException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax210:AutoscalePolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addAutoScalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax210:AutoscalePolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateAutoScalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:ApplicationPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServiceInvalidArgumentException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax218:InvalidArgumentException"/>
+                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax210:InvalidArgumentException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -531,7 +531,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
+                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax22:Properties"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -608,7 +608,7 @@
             <xs:element name="AutoscalerServiceAutoScalerException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="AutoScalerException" nillable="true" type="ax218:AutoScalerException"/>
+                        <xs:element minOccurs="0" name="AutoScalerException" nillable="true" type="ax210:AutoScalerException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -629,21 +629,21 @@
             <xs:element name="AutoscalerServiceInvalidDeploymentPolicyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidDeploymentPolicyException" nillable="true" type="ax215:InvalidDeploymentPolicyException"/>
+                        <xs:element minOccurs="0" name="InvalidDeploymentPolicyException" nillable="true" type="ax214:InvalidDeploymentPolicyException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServiceDeploymentPolicyAlreadyExistsException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="DeploymentPolicyAlreadyExistsException" nillable="true" type="ax215:DeploymentPolicyAlreadyExistsException"/>
+                        <xs:element minOccurs="0" name="DeploymentPolicyAlreadyExistsException" nillable="true" type="ax214:DeploymentPolicyAlreadyExistsException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addDeployementPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax26:DeploymentPolicy"/>
+                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax29:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -657,21 +657,21 @@
             <xs:element name="AutoscalerServiceDeploymentPolicyNotExistsException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="DeploymentPolicyNotExistsException" nillable="true" type="ax215:DeploymentPolicyNotExistsException"/>
+                        <xs:element minOccurs="0" name="DeploymentPolicyNotExistsException" nillable="true" type="ax214:DeploymentPolicyNotExistsException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServiceCloudControllerConnectionException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="CloudControllerConnectionException" nillable="true" type="ax218:CloudControllerConnectionException"/>
+                        <xs:element minOccurs="0" name="CloudControllerConnectionException" nillable="true" type="ax210:CloudControllerConnectionException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="updateDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax26:DeploymentPolicy"/>
+                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax29:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -704,7 +704,7 @@
             <xs:element name="getDeploymentPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:DeploymentPolicy"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -749,13 +749,13 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax25="http://partition.common.stratos.apache.org/xsd" xmlns:ax223="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax28="http://partition.common.stratos.apache.org/xsd" xmlns:ax223="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd">
             <xs:import namespace="http://partition.common.stratos.apache.org/xsd"/>
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
             <xs:complexType name="DeploymentPolicy">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="deploymentPolicyID" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionRefs" nillable="true" type="ax25:NetworkPartitionRef"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionRefs" nillable="true" type="ax28:NetworkPartitionRef"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicationPolicy">
@@ -764,17 +764,17 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionGroups" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitions" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax22:Properties"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax24="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.common.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax27="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.common.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
             <xs:complexType name="NetworkPartitionRef">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionRefs" nillable="true" type="ax22:PartitionRef"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionRefs" nillable="true" type="ax26:PartitionRef"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PartitionRef">
@@ -783,7 +783,7 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -807,7 +807,7 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax23:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax22:Property"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
@@ -817,29 +817,29 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax214="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.exception.autoscaler.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.exception.autoscaler.stratos.apache.org/xsd">
             <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
+            <xs:complexType name="InvalidPolicyException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="UnremovablePolicyException">
                 <xs:complexContent>
-                    <xs:extension base="ax214:AutoScalerException">
+                    <xs:extension base="ax216:AutoScalerException">
                         <xs:sequence/>
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
             <xs:complexType name="PolicyDoesNotExistException">
                 <xs:complexContent>
-                    <xs:extension base="ax214:AutoScalerException">
+                    <xs:extension base="ax216:AutoScalerException">
                         <xs:sequence/>
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
             <xs:complexType name="ApplicationPolicyAlreadyExistsException">
                 <xs:sequence/>
-            </xs:complexType>
-            <xs:complexType name="InvalidPolicyException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicatioinPolicyNotExistsException">
                 <xs:sequence>
@@ -864,6 +864,9 @@
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="AutoScalingPolicyAlreadyExistException">
+                <xs:sequence/>
+            </xs:complexType>
             <xs:complexType name="AutoScalerException">
                 <xs:complexContent>
                     <xs:extension base="xs:RuntimeException">
@@ -880,9 +883,6 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="AutoScalingPolicyAlreadyExistException">
-                <xs:sequence/>
             </xs:complexType>
             <xs:complexType name="InvalidArgumentException">
                 <xs:sequence>

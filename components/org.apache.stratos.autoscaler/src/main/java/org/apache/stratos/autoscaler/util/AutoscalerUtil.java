@@ -389,7 +389,7 @@ public class AutoscalerUtil {
      */
     public static List<String> getNetworkPartitionIdsReferedInApplication(String applicationId) {
 
-        List<String> deploymentPolicyIdsReferedInApplication = getDeploymentPolicyIdsReferedInApplication(applicationId);
+        List<String> deploymentPolicyIdsReferedInApplication = getDeploymentPolicyIdsReferredInApplication(applicationId);
         if (deploymentPolicyIdsReferedInApplication == null) {
             return null;
         }
@@ -422,7 +422,7 @@ public class AutoscalerUtil {
      * @param applicationId the application id
      * @return list of deployment policy ids
      */
-    private static List<String> getDeploymentPolicyIdsReferedInApplication(String applicationId) {
+    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
 
         if (applicationId == null || StringUtils.isBlank(applicationId)) {
             return null;
@@ -748,16 +748,43 @@ public class AutoscalerUtil {
         }
     }
 
+    /**
+     * Validate whether all the deployment policies used in the application are using the same network partitions of Application policy
+     */
     private static boolean isAppUsingNetworkPartitionId(String applicationId, String networkPartitionId) {
         if (applicationId == null || StringUtils.isBlank(applicationId)
                 || networkPartitionId == null || StringUtils.isBlank(networkPartitionId)) {
             return false;
         }
-        List<String> networkPartitionsReferredInApplication = AutoscalerUtil.getNetworkPartitionIdsReferedInApplication(applicationId);
-        for (String appNetworkPartitionId : networkPartitionsReferredInApplication) {
-            if (appNetworkPartitionId != null && appNetworkPartitionId.equals(networkPartitionId)) {
-                return true;
+        List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.getDeploymentPolicyIdsReferredInApplication(applicationId);
+        if (deploymentPolicyIdsReferredInApplication == null) {
+            return false;
+        }
+
+        int referencesOfNetworkPartition = 0;
+        for (String deploymentPolicyIDReferredInApp : deploymentPolicyIdsReferredInApplication) {
+            try {
+                DeploymentPolicy deploymentPolicyInApp = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyIDReferredInApp);
+                if (deploymentPolicyInApp != null) {
+                    for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
+                        if (networkPartitionOfDeploymentPolicy != null) {
+                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getId().
+                                    equals(networkPartitionId)) {
+                                referencesOfNetworkPartition++;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s ",
+                        deploymentPolicyIDReferredInApp);
+                log.error(msg, e);
+                throw new AutoScalerException(msg, e);
             }
+        }
+        //If network-partition referred in application policy is found in all the deployment policies of application, return true
+        if (deploymentPolicyIdsReferredInApplication.size() == referencesOfNetworkPartition) {
+            return true;
         }
         return false;
     }
@@ -910,7 +937,87 @@ public class AutoscalerUtil {
         }
     }
 
-    public void updateMonitors() {
+    /**
+     * Validate the Auto Scalar policy removal
+     *
+     * @param autoscalePolicyId Auto Scalar policy id boolean
+     * @return
+     */
+    public static boolean removableAutoScalerPolicy(String autoscalePolicyId) {
+        Collection<ApplicationContext> applicationContexts = AutoscalerContext.getInstance().
+                getApplicationContexts();
+        for (ApplicationContext applicationContext : applicationContexts) {
+            if(applicationContext.getComponents().getCartridgeContexts() != null) {
+                for(CartridgeContext cartridgeContext : applicationContext.getComponents().
+                        getCartridgeContexts()) {
+                    if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
+                            getAutoscalingPolicy())) {
+                        return false;
+                    }
+                }
+            }
 
+            if(applicationContext.getComponents().getGroupContexts() != null) {
+                return findAutoscalingPolicyInGroup(applicationContext.getComponents().getGroupContexts(),
+                        autoscalePolicyId);
+            }
+        }
+        return true;
     }
+
+    public static boolean findAutoscalingPolicyInGroup(GroupContext[] groupContexts,
+                                                String autoscalePolicyId) {
+        for(GroupContext groupContext : groupContexts) {
+            if(groupContext.getCartridgeContexts() != null) {
+                for(CartridgeContext cartridgeContext : groupContext.getCartridgeContexts()) {
+                    if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
+                            getAutoscalingPolicy())) {
+                        return false;
+                    }
+                }
+
+            }
+            if(groupContext.getGroupContexts() != null) {
+                return findAutoscalingPolicyInGroup(groupContext.getGroupContexts(),
+                        autoscalePolicyId);
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Validate the deployment policy removal
+     *
+     * @param deploymentPolicyId
+     * @return
+     */
+    public static boolean removableDeploymentPolicy(String deploymentPolicyId) {
+        boolean canRemove = true;
+        Map<String, Application> applications = ApplicationHolder.getApplications().getApplications();
+        for (Application application : applications.values()) {
+            List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.
+                    getDeploymentPolicyIdsReferredInApplication(application.getUniqueIdentifier());
+            for (String deploymentPolicyIdInApp : deploymentPolicyIdsReferredInApplication) {
+                if (deploymentPolicyId.equals(deploymentPolicyIdInApp)) {
+                    canRemove = false;
+                }
+            }
+        }
+        return canRemove;
+    }
+
+    public static void readApplicationContextsFromRegistry() {
+        String[] resourcePaths = RegistryManager.getInstance().getApplicationContextResourcePaths();
+        if ((resourcePaths == null) || (resourcePaths.length == 0)) {
+            return;
+        }
+
+        for (String resourcePath : resourcePaths) {
+            ApplicationContext applicationContext = RegistryManager.getInstance().
+                    getApplicationContextByResourcePath(resourcePath);
+            AutoscalerContext.getInstance().addApplicationContext( applicationContext);
+        }
+    }
+
 }

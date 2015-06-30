@@ -1,0 +1,25 @@
+{
+    "applicationId": "single-cartridge-multi-cloud-app",
+    "alias": "single-cartridge-multi-cloud-app",
+    "multiTenant": false,
+    "components": {
+        "cartridges": [
+            {
+                "type": "php",
+                "cartridgeMin": 1,
+                "cartridgeMax": 10,
+                "subscribableInfo": {
+                    "alias": "my-php",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy": "multi-cloud-deployment-policy",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
+                }
+            }
+        ]
+    }
+}

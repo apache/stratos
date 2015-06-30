@@ -89,21 +89,26 @@ public class AutoscalerTopologyEventReceiver {
                         ApplicationHolder.acquireReadLock();
                         Applications applications = ApplicationHolder.getApplications();
                         if (applications != null) {
-                            for (Application application : applications.getApplications().values()) {
-                                if (AutoscalerUtil.allClustersInitialized(application)) {
-                                    ApplicationContext applicationContext = AutoscalerContext.getInstance().
-                                            getApplicationContext(application.getUniqueIdentifier());
-                                    if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-                                        AutoscalerUtil.getInstance().startApplicationMonitor(application.getUniqueIdentifier());
-                                    } else {
-                                        log.info("The application is not yet " +
-                                                "deployed for this [application] " +
+                            for (Application application : applications.
+                                    getApplications().values()) {
+                                ApplicationContext applicationContext =
+                                        AutoscalerContext.getInstance().
+                                        getApplicationContext(application.getUniqueIdentifier());
+                                if (applicationContext != null && applicationContext.getStatus().
+                                        equals(ApplicationContext.STATUS_DEPLOYED)) {
+                                    if (AutoscalerUtil.allClustersInitialized(application)) {
+                                        AutoscalerUtil.getInstance().startApplicationMonitor(
                                                 application.getUniqueIdentifier());
+                                    } else {
+                                        log.error("Complete Topology is not consistent with " +
+                                                "the applications which got persisted");
                                     }
                                 } else {
-                                    log.error("Complete Topology is not consistent with the applications " +
-                                            "which got persisted");
+                                    log.info("The application is not yet " +
+                                            "deployed for this [application] " +
+                                            application.getUniqueIdentifier());
                                 }
+
                             }
                             topologyInitialized = true;
                         } else {
@@ -321,7 +326,7 @@ public class AutoscalerTopologyEventReceiver {
                 monitor.notifyParentMonitor(ClusterStatus.Terminated, instanceId);
                 //Removing the instance and instanceContext
                 ClusterInstance instance = (ClusterInstance) monitor.getInstance(instanceId);
-                ((ClusterContext) monitor.getClusterContext()).
+                monitor.getClusterContext().
                         getNetworkPartitionCtxt(instance.getNetworkPartitionId()).
                         removeInstanceContext(instanceId);
                 monitor.removeInstance(instanceId);
@@ -397,6 +402,7 @@ public class AutoscalerTopologyEventReceiver {
                 try {
                     MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
                     String clusterId = memberActivatedEvent.getClusterId();
+                    log.info("MemberActivated event received for " + memberActivatedEvent.toString());
                     ClusterMonitor monitor;
                     AutoscalerContext asCtx = AutoscalerContext.getInstance();
                     monitor = asCtx.getClusterMonitor(clusterId);

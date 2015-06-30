@@ -57,11 +57,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.activation</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.sample.installer</artifactId>
                 <version>${stratos.version}</version>

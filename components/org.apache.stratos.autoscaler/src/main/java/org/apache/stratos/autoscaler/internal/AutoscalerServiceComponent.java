@@ -40,6 +40,7 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.Component;
@@ -209,6 +210,9 @@ public class AutoscalerServiceComponent {
             AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
         }
 
+        //Adding application context from registry
+        AutoscalerUtil.readApplicationContextsFromRegistry();
+
         //starting the processor chain
         ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
         ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
@@ -265,16 +269,10 @@ public class AutoscalerServiceComponent {
         shutdownScheduledExecutorService(AutoscalerConstants.AUTOSCALER_SCHEDULER_ID);
 
         // Shutdown application monitor executor service
-        shutdownExecutorService(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID);
-
-        // Shutdown group monitor executor service
-        shutdownExecutorService(AutoscalerConstants.GROUP_MONITOR_THREAD_POOL_ID);
+        shutdownExecutorService(AutoscalerConstants.MONITOR_THREAD_POOL_ID);
 
         // Shutdown cluster monitor scheduler executor service
         shutdownScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID);
-
-        // Shutdown cluster monitor executor service
-        shutdownExecutorService(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID);
     }
 
     private void shutdownExecutorService(String executorServiceId) {

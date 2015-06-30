@@ -75,17 +75,12 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 if (contexts == null || contexts.isEmpty() && status == GroupStatus.Terminated) {
                     groupStat = true;
                 } else {
-                    int minGroupInstances = group.getGroupMinInstances();
-                    int sameStateInstances = 0;
                     for (Instance context1 : contexts) {
-                        if (((GroupInstance) context1).getStatus().equals(status)) {
-                            sameStateInstances++;
+                        if (!((GroupInstance) context1).getStatus().equals(status)) {
+                            return false;
+                        } else {
+                            groupStat = true;
                         }
-                    }
-                    if (sameStateInstances >= minGroupInstances) {
-                        groupStat = true;
-                    } else {
-                        return false;
                     }
                 }
             }

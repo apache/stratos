@@ -34,10 +34,11 @@
 
     <modules>
         <module>jclouds/apis/vcloud/1.8.1-stratos</module>
-	<module>jclouds/apis/openstack-neutron/1.8.1-stratos</module>
+	    <module>jclouds/apis/openstack-neutron/1.8.1-stratos</module>
         <module>jclouds/apis/gce/1.8.1-stratos</module>
         <module>jclouds/provider/aws-ec2/1.8.1-stratos</module>
         <module>org.wso2.carbon.ui</module>
+        <module>fabric8</module>
     </modules>
 </project>
 

@@ -65,7 +65,7 @@ class EventHandler:
 
     def on_artifact_updated_event(self, artifacts_updated_event):
         self.__log.info("Processing Artifact update event: [tenant] %s [cluster] %s [status] %s" %
-                        (artifacts_updated_event.tenant_id,
+                        (str(artifacts_updated_event.tenant_id),
                          artifacts_updated_event.cluster_id,
                          artifacts_updated_event.status))
 
@@ -92,7 +92,7 @@ class EventHandler:
                 raise GitRepositorySynchronizationException("Repository path is empty. Cannot perform Git operations.")
 
             # create repo object
-            local_repo_path = self.get_repo_path_for_tenant(tenant_id, local_repo_path, is_multitenant)
+            local_repo_path = self.get_repo_path_for_tenant(str(tenant_id), local_repo_path, is_multitenant)
             repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
 
             # checkout code
@@ -300,7 +300,7 @@ class EventHandler:
     def on_domain_mapping_added_event(self, domain_mapping_added_event):
         tenant_domain = EventHandler.find_tenant_domain(domain_mapping_added_event.tenant_id)
         self.__log.info(
-            "Processing Domain mapping added event: [tenant-id] " + domain_mapping_added_event.tenant_id +
+            "Processing Domain mapping added event: [tenant-id] " + str(domain_mapping_added_event.tenant_id) +
             " [tenant-domain] " + tenant_domain + " [domain-name] " + domain_mapping_added_event.domain_name +
             " [application-context] " + domain_mapping_added_event.application_context
         )
@@ -319,7 +319,7 @@ class EventHandler:
     def on_domain_mapping_removed_event(self, domain_mapping_removed_event):
         tenant_domain = EventHandler.find_tenant_domain(domain_mapping_removed_event.tenant_id)
         self.__log.info(
-            "Domain mapping removed event received: [tenant-id] " + domain_mapping_removed_event.tenant_id +
+            "Domain mapping removed event received: [tenant-id] " + str(domain_mapping_removed_event.tenant_id) +
             " [tenant-domain] " + tenant_domain + " [domain-name] " + domain_mapping_removed_event.domain_name
         )
 
@@ -339,7 +339,7 @@ class EventHandler:
 
     def on_tenant_subscribed_event(self, tenant_subscribed_event):
         self.__log.info(
-            "Processing Tenant subscribed event: [tenant] " + tenant_subscribed_event.tenant_id +
+            "Processing Tenant subscribed event: [tenant] " + str(tenant_subscribed_event.tenant_id) +
             " [service] " + tenant_subscribed_event.service_name + " [cluster] " + tenant_subscribed_event.cluster_ids
         )
 
@@ -347,12 +347,12 @@ class EventHandler:
 
     def on_application_signup_removed_event(self, application_signup_removal_event):
         self.__log.info(
-            "Processing Tenant unsubscribed event: [tenant] " + application_signup_removal_event.tenantId +
-            " [application ID] " + application_signup_removal_event.applicationId
+            "Processing Tenant unsubscribed event: [tenant] " + str(application_signup_removal_event.tenantId) +
+            " [application ID] " + str(application_signup_removal_event.applicationId)
         )
 
         if self.__config.application_id == application_signup_removal_event.applicationId:
-            AgentGitHandler.remove_repo(application_signup_removal_event.tenant_id)
+            AgentGitHandler.remove_repo(application_signup_removal_event.tenantId)
 
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
 
@@ -696,7 +696,7 @@ class EventHandler:
     def find_tenant_domain(tenant_id):
         tenant = TenantContext.get_tenant(tenant_id)
         if tenant is None:
-            raise RuntimeError("Tenant could not be found: [tenant-id] %s" % tenant_id)
+            raise RuntimeError("Tenant could not be found: [tenant-id] %s" % str(tenant_id))
 
         return tenant.tenant_domain
 
