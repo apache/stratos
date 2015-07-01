@@ -71,6 +71,11 @@
           <artifactId>aws-java-sdk</artifactId>
           <version>1.8.8</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.5.wso2v1</version>
+        </dependency>
     </dependencies>
 
     <build>

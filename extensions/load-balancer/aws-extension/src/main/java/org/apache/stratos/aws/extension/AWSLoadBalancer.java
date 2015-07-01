@@ -85,6 +85,9 @@ public class AWSLoadBalancer implements LoadBalancer {
 						// if instance id of member is not in attachedInstances
 						// add this to instancesToAddToLoadBalancer
 
+						System.out.println("Instance Id :");
+						System.out.println(member.getInstanceId());
+						
 						Instance instance = new Instance(member.getInstanceId());
 
 						if (!attachedInstances.contains(instance)) {
@@ -161,8 +164,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 				} else {
 					// Create a new load balancer for this cluster
 
-					String loadBalancerName = service.getServiceName() + "-"
-							+ cluster.getClusterId();
+					String loadBalancerName = awsHelper.getLoadBalancerName(cluster.getClusterId());
 
 					String loadBalancerDNSName = awsHelper.createLoadBalancer(
 							loadBalancerName, listenersForThisService);
@@ -171,10 +173,11 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 					List<Instance> instances = new ArrayList<Instance>();
 
-					for (Member m : cluster.getMembers()) {
-						String instanceId = ""; // of member // after making
-												// changes suggested in mail
+					for (Member member : cluster.getMembers()) {
+						String instanceId = member.getInstanceId();
 
+						System.out.println("Instance id : " + instanceId);
+						
 						Instance instance = new Instance();
 						instance.setInstanceId(instanceId);
 

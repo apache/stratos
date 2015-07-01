@@ -38,10 +38,15 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.*;
 
+/**
+ * @author swapnil
+ * 
+ */
 public class AWSHelper {
 	private String awsAccessKey;
 	private String awsSecretKey;
 	private String availabilityZone;
+	private String region;
 
 	private BasicAWSCredentials awsCredentials;
 	private ClientConfiguration clientConfiguration;
@@ -68,6 +73,9 @@ public class AWSHelper {
 					.getProperty(Constants.AWS_ACCESS_KEY);
 			this.awsSecretKey = properties
 					.getProperty(Constants.AWS_SECRET_KEY);
+			this.availabilityZone = properties
+					.getProperty(Constants.AVAILABILITY_ZONE_KEY);
+			this.region = properties.getProperty(Constants.REGION_KEY);
 		} catch (IOException e) {
 			log.error("Error reading aws configuration file.");
 			throw new LoadBalancerExtensionException(
@@ -106,6 +114,8 @@ public class AWSHelper {
 
 			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
 					awsCredentials, clientConfiguration);
+			lbClient.setEndpoint("elasticloadbalancing." + this.region
+					+ ".amazonaws.com");
 
 			CreateLoadBalancerResult clbResult = lbClient
 					.createLoadBalancer(createLoadBalancerRequest);
@@ -113,6 +123,7 @@ public class AWSHelper {
 			return clbResult.getDNSName();
 		} catch (Exception e) {
 			log.error("Could not create load balancer : " + name + ".");
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -365,5 +376,21 @@ public class AWSHelper {
 		}
 
 		return listeners;
+	}
+
+	/**
+	 * Constructs name of the load balancer to be associated with the cluster
+	 * 
+	 * @param clusterId
+	 * @return name of the load balancer
+	 */
+	public String getLoadBalancerName(String clusterId) {
+		String name = null;
+		int length = clusterId.length();
+		int endIndex = length > 31 ? 31 : length;
+		name = clusterId.substring(0, endIndex);
+		name = name.replace('.', '-');
+
+		return name;
 	}
 }
