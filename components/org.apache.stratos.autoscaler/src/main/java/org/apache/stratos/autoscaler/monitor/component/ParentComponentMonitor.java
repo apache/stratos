@@ -244,11 +244,13 @@ public abstract class ParentComponentMonitor extends Monitor {
                     Monitor monitor = aliasToActiveChildMonitorsMap.get(context.getId());
                     // Creating new instance
                     for (String instanceId : parentInstanceIds) {
-                        if(monitor.getInstancesByParentInstanceId(instanceId) == null) {
+                        if(monitor.getInstancesByParentInstanceId(instanceId) == null ||
+                                monitor.getInstancesByParentInstanceId(instanceId).isEmpty()) {
                             monitor.createInstanceOnDemand(instanceId);
                         } else {
                             log.info(String.format("Instance has already exists for [application] " +
-                                    "%s [component] %s", getAppId(), context.getId()));
+                                    "%s [component] %s [instance-id] %s", getAppId(),
+                                    context.getId(), instanceId));
                         }
                     }
                 }
