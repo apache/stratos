@@ -38,6 +38,7 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -62,7 +63,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
     private ExecutorService executorService;
-
+    private int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
     public CloudControllerServiceImpl() {
         executorService = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread.pool", 50);
 
@@ -1453,7 +1454,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             InvalidNetworkPartitionException {
 
         handleNullObject(networkPartition, "Network Partition is null");
-        handleNullObject(networkPartition.getUuid(), "Network Partition ID is null");
+        handleNullObject(networkPartition.getUuid(), "Network Partition Id is null");
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding network partition: [network-partition-uuid] %s",
@@ -1464,6 +1465,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (cloudControllerContext.getNetworkPartition(networkPartitionUuid) != null) {
             String message = "Network partition already exists: [network-partition-uuid] " + networkPartitionUuid +
                     "[network-partition-id] " + networkPartition.getId();
+            log.error(message);
+            throw new NetworkPartitionAlreadyExistsException(message);
+        }
+
+        String networkPartitionId = networkPartition.getId();
+        if (cloudControllerContext.getNetworkPartition(networkPartitionId) != null && cloudControllerContext
+                .getNetworkPartition(networkPartitionId).getTenantId() == networkPartition.getTenantId()) {
+            String message = "Network partition already exists: [network-partition-id] " + networkPartitionId;
             log.error(message);
             throw new NetworkPartitionAlreadyExistsException(message);
         }

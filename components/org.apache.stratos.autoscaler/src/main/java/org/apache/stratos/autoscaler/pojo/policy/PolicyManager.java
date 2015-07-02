@@ -138,7 +138,7 @@ public class PolicyManager {
     }
 
     /**
-     * Retrieve deployment policies from registy and add it to in memory model
+     * Retrieve deployment policies from registry and add it to in memory model
      *
      * @param deploymentPolicy
      * @throws InvalidDeploymentPolicyException
@@ -173,16 +173,16 @@ public class PolicyManager {
     /**
      * Remove deployment policy from in memory map and registry.
      *
-     * @param deploymentPolicyID
+     * @param deploymentPolicyId Deployment policy Id
      * @throws InvalidPolicyException
      */
-    public void removeDeploymentPolicy(String deploymentPolicyID) {
-        removeDeploymentPolicyFromMap(deploymentPolicyID);
-        RegistryManager.getInstance().removeDeploymentPolicy(deploymentPolicyID);
+    public void removeDeploymentPolicy(String deploymentPolicyId) {
+        removeDeploymentPolicyFromMap(deploymentPolicyId);
+        RegistryManager.getInstance().removeDeploymentPolicy(deploymentPolicyId);
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Deployment policy is removed successfully: [deployment-policy-id] %s",
-                    deploymentPolicyID));
+                    deploymentPolicyId));
         }
     }
 
@@ -269,11 +269,27 @@ public class PolicyManager {
     /**
      * Returns the autoscale policy to which the specified id is mapped or null
      *
-     * @param id
+     * @param uuid Autoscale policy UUID
      * @return
      */
-    public AutoscalePolicy getAutoscalePolicy(String id) {
-        return autoscalePolicyListMap.get(id);
+    public AutoscalePolicy getAutoscalePolicy(String uuid) {
+        return autoscalePolicyListMap.get(uuid);
+    }
+
+    /**
+     * Returns the autoscale policy to which the specified id is mapped or null
+     *
+     * @param id Autoscle policy Id
+     * @return
+     */
+    public AutoscalePolicy getAutoscalePolicyById(String id) {
+        AutoscalePolicy autoscalePolicy = null;
+        for (AutoscalePolicy autoscalePolicy1 : getAutoscalePolicyList()) {
+            if (autoscalePolicy1.getId().equals(id)) {
+                autoscalePolicy = autoscalePolicy1;
+            }
+        }
+        return autoscalePolicy;
     }
 
 
@@ -340,11 +356,27 @@ public class PolicyManager {
     /**
      * Returns the deployment policy to which the specified id is mapped or null
      *
-     * @param id
+     * @param uuid UUID of the deployment policy
      * @return
      */
-    public DeploymentPolicy getDeploymentPolicy(String id) {
-        return deploymentPolicyListMap.get(id);
+    public DeploymentPolicy getDeploymentPolicy(String uuid) {
+        return deploymentPolicyListMap.get(uuid);
+    }
+
+    /**
+     * Returns the deployment policy to which the specified id is mapped or null
+     *
+     * @param id Id of the deployment policy
+     * @return
+     */
+    public DeploymentPolicy getDeploymentPolicyById(String id) {
+        DeploymentPolicy deploymentPolicy = null;
+        for (DeploymentPolicy deploymentPolicy1 : getDeploymentPolicies()) {
+            if (deploymentPolicy1.getId().equals(id)) {
+                deploymentPolicy = deploymentPolicy1;
+            }
+        }
+        return deploymentPolicy;
     }
 
 
@@ -394,11 +426,27 @@ public class PolicyManager {
     /**
      * Retruns an ApplicationPolicy of a given application
      *
-     * @param applicationPolicyId
+     * @param applicationPolicyId Application policy Id
      * @return
      */
     public ApplicationPolicy getApplicationPolicy(String applicationPolicyId) {
         return applicationPolicyListMap.get(applicationPolicyId);
+    }
+
+    /**
+     * Returns the deployment policy to which the specified id is mapped or null
+     *
+     * @param id Id of the deployment policy
+     * @return
+     */
+    public ApplicationPolicy getApplicationPolicyById(String id) {
+        ApplicationPolicy applicationPolicy = null;
+        for (ApplicationPolicy applicationPolicy1 : getApplicationPolicies()) {
+            if (applicationPolicy1.getId().equals(id)) {
+                applicationPolicy = applicationPolicy1;
+            }
+        }
+        return applicationPolicy;
     }
 
     public void updateApplicationPolicyInInformationModel(ApplicationPolicy applicationPolicy) {

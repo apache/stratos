@@ -90,6 +90,14 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy)
             throws AutoScalingPolicyAlreadyExistException {
+        String autoscalePolicyId = autoscalePolicy.getId();
+        if (PolicyManager.getInstance().getAutoscalePolicyById(autoscalePolicyId) != null && PolicyManager
+                .getInstance().getAutoscalePolicyById(autoscalePolicyId).getTenantId() == autoscalePolicy.getTenantId
+                ()) {
+            String message = "Autoscaling policy already exists: [autoscaling-policy-id] " + autoscalePolicyId;
+            log.error(message);
+            throw new AutoScalingPolicyAlreadyExistException(message);
+        }
         return PolicyManager.getInstance().addAutoscalePolicy(autoscalePolicy);
     }
 
@@ -887,8 +895,16 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.debug("Application policy definition: " + applicationPolicy.toString());
         }
 
-        String applicationPolicyId = applicationPolicy.getUuid();
-        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId) != null) {
+        String applicationPolicyUuid = applicationPolicy.getUuid();
+        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyUuid) != null) {
+            String message = "Application policy already exists: [application-policy-uuid] " + applicationPolicyUuid;
+            log.error(message);
+            throw new ApplicationPolicyAlreadyExistsException(message);
+        }
+
+        String applicationPolicyId = applicationPolicy.getId();
+        if (PolicyManager.getInstance().getApplicationPolicyById(applicationPolicyId) != null && PolicyManager
+                .getInstance().getApplicationPolicyById(applicationPolicyId).getTenantId() == applicationPolicy.getTenantId()) {
             String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
             log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);
@@ -1041,17 +1057,26 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.debug("Deployment policy definition: " + deploymentPolicy.toString());
         }
 
-        String deploymentPolicyId = deploymentPolicy.getUuid();
-        if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId) != null) {
+        String deploymentPolicyUuid = deploymentPolicy.getUuid();
+        if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyUuid) != null) {
+            String message = "Deployment policy already exists: [deployment-policy-uuid] " + deploymentPolicyUuid;
+            log.error(message);
+            throw new DeploymentPolicyAlreadyExistsException(message);
+        }
+
+        String deploymentPolicyId = deploymentPolicy.getId();
+        if (PolicyManager.getInstance().getDeploymentPolicyById(deploymentPolicyId) != null && PolicyManager
+                .getInstance().getDeploymentPolicyById(deploymentPolicyId).getTenantId() == deploymentPolicy.getTenantId()) {
             String message = "Deployment policy already exists: [deployment-policy-id] " + deploymentPolicyId;
             log.error(message);
             throw new DeploymentPolicyAlreadyExistsException(message);
         }
+
         // Add cartridge to the cloud controller context and persist
         PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info("Successfully added deployment policy: [deployment-policy-id] " + deploymentPolicyId);
+            log.info("Successfully added deployment policy: [deployment-policy-uuid] " + deploymentPolicyUuid);
         }
         return true;
     }

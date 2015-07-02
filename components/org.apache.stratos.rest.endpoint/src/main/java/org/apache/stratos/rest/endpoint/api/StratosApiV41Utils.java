@@ -832,8 +832,10 @@ public class StratosApiV41Utils {
         }
 
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
+        ApplicationPolicyBean applicationPolicyBean;
         try {
-            serviceClient.removeApplicationPolicy(applicationPolicyId);
+            applicationPolicyBean = getApplicationPolicy(applicationPolicyId);
+            serviceClient.removeApplicationPolicy(applicationPolicyBean.getUuid());
         } catch (RemoteException e) {
             String msg = "Could not remove application policy. " + e.getLocalizedMessage();
             log.error(msg, e);

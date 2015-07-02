@@ -640,13 +640,13 @@ public class RegistryManager {
         }
     }
 
-    public void removeDeploymentPolicy(String deploymentPolicyID) {
+    public void removeDeploymentPolicy(String deploymentPolicyId) {
         String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" +
-                deploymentPolicyID;
+                deploymentPolicyId;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy deleted from registry: [id] %s",
-                    deploymentPolicyID));
+                    deploymentPolicyId));
         }
     }
 
