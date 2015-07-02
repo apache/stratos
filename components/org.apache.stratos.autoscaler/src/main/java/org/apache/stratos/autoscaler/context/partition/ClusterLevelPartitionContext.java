@@ -671,7 +671,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                             if(cluster != null) {
                                 ClusterInstance instance = cluster.
                                         getInstanceContexts(clusterInstanceId);
-                                status = instance.getStatus();
+                                if(instance!= null) {
+                                    status = instance.getStatus();
+                                }
                             }
                         }
 
