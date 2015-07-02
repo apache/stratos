@@ -307,7 +307,8 @@ public class ApplicationBuilder {
                     // stopping application thread
                     applicationMonitor.destroy();
                     AutoscalerContext.getInstance().removeAppMonitor(applicationId);
-
+                    // Remove network partition algorithm context
+                    AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
                     // update application status in application context
                     applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                     AutoscalerContext.getInstance().updateApplicationContext(applicationContext);

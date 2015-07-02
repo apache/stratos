@@ -288,6 +288,9 @@ public class AutoscalerTopologyEventReceiver {
                     //Terminating the pending members
                     monitor.terminatePendingMembers(clusterInstanceId,
                             clusterInstance.getNetworkPartitionId());
+                    //Move all members to terminating pending list
+                    monitor.moveMembersToTerminatingPending(clusterInstanceId,
+                            clusterInstance.getNetworkPartitionId());
                 } else {
                     monitor.notifyParentMonitor(ClusterStatus.Terminating, clusterInstanceId);
                     monitor.terminateAllMembers(clusterInstanceId, clusterInstance.getNetworkPartitionId());

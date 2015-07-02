@@ -569,11 +569,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         getInstanceByNetworkPartitionId(context.getId());
                 if (appInstance != null) {
                     //use the existing instance in the Topology to create the data
+                    if(!isRestarting) {
+                        this.setRestarting(true);
+                    }
                     instanceId = handleApplicationInstanceCreation(application, context, appInstance);
                     initialStartup = false;
                 } else {
                     //create new app instance as it doesn't exist in the Topology
-                    this.setRestarting(true);
                     instanceId = handleApplicationInstanceCreation(application, context, null);
 
                 }

@@ -170,6 +170,16 @@ public class ClusterInstanceContext extends InstanceContext {
         return activeMemberCount;
     }
 
+    public int getPendingMemberCount() {
+
+        int activeMemberCount = 0;
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts.values()) {
+
+            activeMemberCount += partitionContext.getPendingMembers().size();
+        }
+        return activeMemberCount;
+    }
+
     public int getNonTerminatedMemberCount() {
 
         int nonTerminatedMemberCount = 0;

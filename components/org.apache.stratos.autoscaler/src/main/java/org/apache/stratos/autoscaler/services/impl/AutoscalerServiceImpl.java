@@ -532,9 +532,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // Remove application signup(s) in stratos manager
             removeApplicationSignUp(applicationContext);
 
-            // Remove network partition algorithm context
-            AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
-
             ApplicationBuilder.handleApplicationUnDeployedEvent(applicationId);
 
             if (log.isInfoEnabled()) {
