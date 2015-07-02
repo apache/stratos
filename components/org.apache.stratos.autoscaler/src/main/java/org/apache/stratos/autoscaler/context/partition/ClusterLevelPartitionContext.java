@@ -29,6 +29,7 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -668,7 +669,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                         if(service != null) {
                             Cluster cluster = service.getCluster(clusterId);
                             if(cluster != null) {
-                                status = cluster. getInstanceContexts(clusterInstanceId).getStatus();
+                                ClusterInstance instance = cluster.
+                                        getInstanceContexts(clusterInstanceId);
+                                status = instance.getStatus();
                             }
                         }
 
