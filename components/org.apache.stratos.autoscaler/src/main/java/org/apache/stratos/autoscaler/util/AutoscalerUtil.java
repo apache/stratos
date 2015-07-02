@@ -727,7 +727,7 @@ public class AutoscalerUtil {
     public static void validateApplicationPolicyAgainstApplication(String applicationId, String applicationPolicyId)
             throws ApplicatioinPolicyNotExistsException, InvalidApplicationPolicyException {
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyById(applicationPolicyId);
         if (applicationPolicy == null) {
             String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyId);
             log.error(msg);
@@ -766,7 +766,7 @@ public class AutoscalerUtil {
         int referencesOfNetworkPartition = 0;
         for (String deploymentPolicyIDReferredInApp : deploymentPolicyIdsReferredInApplication) {
             try {
-                DeploymentPolicy deploymentPolicyInApp = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyIDReferredInApp);
+                DeploymentPolicy deploymentPolicyInApp = PolicyManager.getInstance().getDeploymentPolicyById(deploymentPolicyIDReferredInApp);
                 if (deploymentPolicyInApp != null) {
                     for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
                         if (networkPartitionOfDeploymentPolicy != null) {

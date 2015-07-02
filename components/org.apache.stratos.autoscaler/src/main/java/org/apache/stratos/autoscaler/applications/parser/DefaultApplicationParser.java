@@ -167,7 +167,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
         }
 
-        AutoscalePolicy autoscalingPolicy = PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
+        AutoscalePolicy autoscalingPolicy = PolicyManager.getInstance().getAutoscalePolicyById(autoscalingPolicyId);
         if (autoscalingPolicy == null) {
             handleError(String.format("Autoscaling policy is not found: [application-id] %s " +
                             "[cartridge-type] %s [alias] %s [autoscaling-policy] %s", applicationId, cartridgeType,
