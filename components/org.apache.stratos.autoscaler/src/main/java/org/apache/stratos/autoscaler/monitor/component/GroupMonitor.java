@@ -185,12 +185,10 @@ public class GroupMonitor extends ParentComponentMonitor {
                                                 getActiveInstancesCount();
                                         if (activeAppInstances > 0) {
                                             //Creating new group instance based on the existing parent instances
-                                            if (log.isDebugEnabled()) {
-                                                log.debug("Creating a group instance of [application] "
+                                            log.info("Creating a group instance of [application] "
                                                         + appId + " [group] " + id +
                                                         " as the the minimum required instances are not met");
 
-                                            }
                                             createInstanceOnDemand(parentInstanceContext.getId());
                                         }
                                     }
@@ -208,12 +206,10 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 for (int i = 0; i < instancesToBeTerminated; i++) {
                                     InstanceContext instanceContext = contextList.get(i);
                                     //scale down only when extra instances found
-                                    if (log.isDebugEnabled()) {
-                                        log.debug("Terminating a group instance of [application] "
+                                    log.info("Terminating a group instance of [application] "
                                                 + appId + " [group] " + id + " as it exceeded the " +
                                                 "maximum no of instances by " + instancesToBeTerminated);
 
-                                    }
                                     handleScalingDownBeyondMin(instanceContext,
                                             networkPartitionContext, true);
 
@@ -978,6 +974,11 @@ public class GroupMonitor extends ParentComponentMonitor {
         String parentPartitionId = parentInstanceContext.getPartitionId();
         int groupMax = group.getGroupMaxInstances();
         int groupMin = group.getGroupMinInstances();
+
+        //Setting the network-partition minimum instances as group min instances
+        parentLevelNetworkPartitionContext.setMinInstanceCount(groupMin);
+        parentLevelNetworkPartitionContext.setMaxInstanceCount(groupMax);
+
         List<Instance> instances = group.getInstanceContextsWithParentId(parentInstanceId);
         if (instances.isEmpty()) {
             //Need to create totally new group instance
