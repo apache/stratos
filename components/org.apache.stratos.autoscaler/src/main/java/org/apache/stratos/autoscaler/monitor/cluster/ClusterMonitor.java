@@ -565,17 +565,26 @@ public class ClusterMonitor extends Monitor {
     }
 
     @Override
-    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
-        String instanceId = statusEvent.getInstanceId();
-        // send the ClusterTerminating event
-        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-                ApplicationStatus.Terminating) {
-            if (log.isInfoEnabled()) {
-                log.info("Publishing Cluster terminating event for [application] " + appId +
-                        " [cluster] " + this.getClusterId() + " [instance] " + instanceId);
+    public void onParentStatusEvent(final MonitorStatusEvent statusEvent) {
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String instanceId = statusEvent.getInstanceId();
+                // send the ClusterTerminating event
+                if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                        ApplicationStatus.Terminating) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster terminating event for [application] " + appId +
+                                " [cluster] " + getClusterId() + " [instance] " + instanceId);
+                    }
+                    ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(getAppId(),
+                            getServiceId(), getClusterId(), instanceId);
+                }
             }
-            ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
-        }
+
+        };
+        executorService.execute(monitoringRunnable);
+
     }
 
     @Override
