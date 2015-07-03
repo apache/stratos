@@ -1,5 +1,4 @@
 {
-    "uuid": "",
     "id": "application-policy-1",
     "algorithm":"one-after-another",
     "networkPartitions":[

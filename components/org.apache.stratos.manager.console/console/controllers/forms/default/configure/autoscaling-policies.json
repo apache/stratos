@@ -1,5 +1,4 @@
 {
-    "uuid": "",
     "id": "economy",
     "description":"autoscale policy description",
     "loadThresholds": {

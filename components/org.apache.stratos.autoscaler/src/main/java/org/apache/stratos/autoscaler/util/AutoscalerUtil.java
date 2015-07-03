@@ -766,7 +766,7 @@ public class AutoscalerUtil {
         int referencesOfNetworkPartition = 0;
         for (String deploymentPolicyIDReferredInApp : deploymentPolicyIdsReferredInApplication) {
             try {
-                DeploymentPolicy deploymentPolicyInApp = PolicyManager.getInstance().getDeploymentPolicyById(deploymentPolicyIDReferredInApp);
+                DeploymentPolicy deploymentPolicyInApp = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyIDReferredInApp);
                 if (deploymentPolicyInApp != null) {
                     for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
                         if (networkPartitionOfDeploymentPolicy != null) {
