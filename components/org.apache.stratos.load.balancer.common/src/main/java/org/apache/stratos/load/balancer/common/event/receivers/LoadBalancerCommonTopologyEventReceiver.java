@@ -388,11 +388,6 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private org.apache.stratos.load.balancer.common.domain.Service transformService(Service messagingService) {
         org.apache.stratos.load.balancer.common.domain.Service service =
                 new org.apache.stratos.load.balancer.common.domain.Service(messagingService.getServiceName());
-        if (messagingService.getPorts().size() > 0) {
-            for (Port messagingPort : messagingService.getPorts()) {
-                service.addPort(transformPort(messagingPort));
-            }
-        }
         return service;
     }
 
