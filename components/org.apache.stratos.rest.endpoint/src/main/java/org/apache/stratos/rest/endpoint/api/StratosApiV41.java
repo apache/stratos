@@ -646,7 +646,7 @@ public class StratosApiV41 extends AbstractApi {
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Network partition added successfully: [network-partition-uuid] %s " +
-                        "[network-partition-uuid] %s", networkPartitionBean.getUuid(), networkPartitionId))).build();
+                        "[network-partition-id] %s", networkPartitionBean.getUuid(), networkPartitionId))).build();
     }
 
     /**
