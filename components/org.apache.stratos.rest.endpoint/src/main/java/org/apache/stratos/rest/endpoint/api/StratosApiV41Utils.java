@@ -108,13 +108,12 @@ public class StratosApiV41Utils {
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
     /**
-     * Add New Cartridge
+     * Add new cartridge util method
      *
      * @param cartridgeBean Cartridge definition
      * @throws RestAPIException
      */
-    // Util methods for cartridges
-    public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
+      public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
 
         try {
             if (log.isDebugEnabled()) {
