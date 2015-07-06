@@ -107,63 +107,63 @@ public class StratosApiV41Utils {
 
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
-    /**
-     * Add new cartridge util method
-     *
-     * @param cartridgeBean Cartridge definition
-     * @throws RestAPIException
-     */
-      public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
+	/**
+	 * Add new cartridge util method
+	 *
+	 * @param cartridgeBean Cartridge definition
+	 * @throws RestAPIException
+	 */
+	public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
 
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeBean.getType()));
-            }
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeBean.getType()));
+			}
 
-            List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
-            if ((iaasProviders == null) || iaasProviders.size() == 0) {
-                throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
-                        cartridgeBean.getType()));
-            }
+			List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
+			if ((iaasProviders == null) || iaasProviders.size() == 0) {
+				throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
+				                                         cartridgeBean.getType()));
+			}
 
-            for(PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
-                if(StringUtils.isBlank(portMapping.getName())) {
-                    portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Port mapping name not found, default value generated: " +
-                                        "[cartridge-type] %s [port-mapping-name] %s",
-                                cartridgeBean.getType(), portMapping.getName()));
-                    }
-                }
-            }
+			for (PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
+				if (StringUtils.isBlank(portMapping.getName())) {
+					portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
+					if (log.isInfoEnabled()) {
+						log.info(String.format("Port mapping name not found, default value generated: " +
+						                       "[cartridge-type] %s [port-mapping-name] %s",
+						                       cartridgeBean.getType(), portMapping.getName()));
+					}
+				}
+			}
 
-            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
-            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-            cloudControllerServiceClient.addCartridge(cartridgeConfig);
+			Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
+			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+			cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Successfully added cartridge: [cartridge-type] %s ",
-                        cartridgeBean.getType()));
-            }
-        } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
-            String msg = "Could not add cartridge";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-            String msg = "Could not add cartridge";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        } catch (RemoteException e) {
-            String msg = "Could not add cartridge";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-            String msg = "Could not add cartridge";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        }
-    }
+			if (log.isDebugEnabled()) {
+				log.debug(String.format(
+						"Successfully added cartridge: [cartridge-type] %s ",
+						cartridgeBean.getType()));
+			}
+		} catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
+			String msg = "Could not add cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		} catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
+			String msg = "Could not add cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		} catch (RemoteException e) {
+			String msg = "Could not add cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+			String msg = "Could not add cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
+	}
 
     /**
      * Update Cartridge
