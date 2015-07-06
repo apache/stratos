@@ -656,6 +656,13 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
 
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Calculating the group instances status for [application] " +
+                    "%s [group] %s [group-instance] %s [required-status] %s [no-of-instances] %s",
+                    appId, childId, instanceId, requiredStatus.toString(),
+                    noOfInstancesOfRequiredStatus));
+        }
+
         if (!groupInstances.isEmpty()) {
             ParentLevelNetworkPartitionContext networkPartitionContext =
                     (ParentLevelNetworkPartitionContext) ((GroupMonitor) monitor).
@@ -664,12 +671,27 @@ public abstract class ParentComponentMonitor extends Monitor {
             //if terminated all the instances in this instances map should be in terminated state
             if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
                     requiredStatus == GroupStatus.Terminated) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Group instances in required status for [application] " +
+                                    "%s [group] %s [group-instance] %s [required-status] %s",
+                            appId, childId, instanceId, GroupStatus.Terminated.toString()));
+                }
                 return true;
             } else if (noOfInstancesOfRequiredStatus >= minInstances) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Group instances in required status for [application] " +
+                                    "%s [group] %s [group-instance] %s [required-status] %s",
+                            appId, childId, instanceId, requiredStatus.toString()));
+                }
                 return true;
             } else {
                 //of only one is inActive implies that the whole group is Inactive
                 if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Group instances in required status for [application] " +
+                                        "%s [group] %s [group-instance] %s [required-status] %s",
+                                appId, childId, instanceId, GroupStatus.Inactive.toString()));
+                    }
                     return true;
                 }
             }

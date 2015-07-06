@@ -87,10 +87,10 @@ pub_properties = [pub_entry_1, pub_entry_2]
 pub_req.properties = pub_properties
 
 # App level
-mdsclient.put(publish_data, app=True)
+mdsclient.put(pub_req, app=True)
 
 # Alias level
-mdsclient.put(publish_data)
+mdsclient.put(pub_req)
 ```
 
 ### Retrieving values from Metadata service

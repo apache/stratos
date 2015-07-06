@@ -410,6 +410,8 @@ public class ObjectConverter {
                 org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy();
 
         autoscalePolicy.setId(autoscalePolicyBean.getId());
+        autoscalePolicy.setUuid(autoscalePolicyBean.getUuid());
+        autoscalePolicy.setTenantId(autoscalePolicyBean.getTenantId());
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
         autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
 
@@ -452,7 +454,9 @@ public class ObjectConverter {
 
         NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
+        networkPartition.setUuid(stubNetworkPartition.getUuid());
         networkPartition.setProvider(stubNetworkPartition.getProvider());
+        networkPartition.setTenantId(stubNetworkPartition.getTenantId());
         if (stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for (org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition : stubNetworkPartition.getPartitions()) {
@@ -490,6 +494,8 @@ public class ObjectConverter {
 
         ApplicationPolicyBean applicationPolicyBean = new ApplicationPolicyBean();
         applicationPolicyBean.setId(applicationPolicy.getId());
+        applicationPolicyBean.setUuid(applicationPolicy.getUuid());
+        applicationPolicyBean.setTenantId(applicationPolicy.getTenantId());
         applicationPolicyBean.setAlgorithm(applicationPolicy.getAlgorithm());
         applicationPolicyBean.setNetworkPartitions(applicationPolicy.getNetworkPartitions());
 
@@ -585,6 +591,8 @@ public class ObjectConverter {
                 = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
         networkPartition.setProvider(networkPartitionBean.getProvider());
+        networkPartition.setUuid(networkPartitionBean.getUuid());
+        networkPartition.setTenantId(networkPartitionBean.getTenantId());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertToStubPartitions(networkPartitionBean.getPartitions()));
         }
@@ -693,6 +701,7 @@ public class ObjectConverter {
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
                 memberBean.setPartitionId(member.getPartitionId());
                 memberBean.setMemberId(member.getMemberId());
+                memberBean.setClusterInstanceId(member.getClusterInstanceId());
                 memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
                 memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
                 memberBean.setMemberPrivateIPs(member.getMemberPrivateIPs());
@@ -853,9 +862,10 @@ public class ObjectConverter {
 
         AutoscalePolicyBean autoscalePolicyBean = new AutoscalePolicyBean();
         autoscalePolicyBean.setId(autoscalePolicy.getId());
+        autoscalePolicyBean.setUuid(autoscalePolicy.getUuid());
+        autoscalePolicyBean.setTenantId(autoscalePolicy.getTenantId());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
-        autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         if (autoscalePolicy.getLoadThresholds() != null) {
             autoscalePolicyBean.setLoadThresholds(convertStubLoadThresholdsToLoadThresholds(autoscalePolicy.getLoadThresholds()));
         }
@@ -1974,7 +1984,9 @@ public class ObjectConverter {
         }
 
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
-        deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
+        deploymentPolicyBean.setId(deploymentPolicy.getId());
+        deploymentPolicyBean.setUuid(deploymentPolicy.getUuid());
+        deploymentPolicyBean.setTenantId(deploymentPolicy.getTenantId());
         deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionsToNetworkPartitionReferences(
                 deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
@@ -1991,6 +2003,8 @@ public class ObjectConverter {
         applicationPolicy.setId(applicationPolicyBean.getId());
         applicationPolicy.setAlgorithm(applicationPolicyBean.getAlgorithm());
         applicationPolicy.setNetworkPartitions(applicationPolicyBean.getNetworkPartitions());
+        applicationPolicy.setUuid(applicationPolicyBean.getUuid());
+        applicationPolicy.setTenantId(applicationPolicyBean.getTenantId());
         if (applicationPolicyBean.getProperties() != null) {
             if (!applicationPolicyBean.getProperties().isEmpty()) {
                 applicationPolicy.setProperties(getASPropertiesFromCommonProperties(applicationPolicyBean.getProperties()));
@@ -2008,7 +2022,9 @@ public class ObjectConverter {
         }
 
         DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
-        deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
+        deploymentPolicy.setId(deploymentPolicyBean.getId());
+        deploymentPolicy.setUuid(deploymentPolicyBean.getUuid());
+        deploymentPolicy.setTenantId(deploymentPolicyBean.getTenantId());
         if (deploymentPolicyBean.getNetworkPartitions() != null) {
             deploymentPolicy.setNetworkPartitionRefs(convertNetworkPartitionToASStubNetworkPartition(
                     deploymentPolicyBean.getNetworkPartitions()));
@@ -2041,7 +2057,9 @@ public class ObjectConverter {
         }
 
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
-        deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
+        deploymentPolicyBean.setId(deploymentPolicy.getId());
+        deploymentPolicyBean.setUuid(deploymentPolicy.getUuid());
+        deploymentPolicyBean.setTenantId(deploymentPolicy.getTenantId());
         deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionRefsToNetworkPartitions(
                 deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
@@ -2111,6 +2129,7 @@ public class ObjectConverter {
         for (NetworkPartitionReferenceBean networkPartitionReferenceBean : networkPartitionReferenceBeans) {
             NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
             networkPartitionRef.setId(networkPartitionReferenceBean.getId());
+            networkPartitionRef.setUuid(networkPartitionReferenceBean.getUuid());
             networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
             if (networkPartitionReferenceBean.getPartitions() != null) {
                 networkPartitionRef.setPartitionRefs(convertToASStubPartitions(

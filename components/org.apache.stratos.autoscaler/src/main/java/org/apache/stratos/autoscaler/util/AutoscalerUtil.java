@@ -50,6 +50,7 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -401,8 +402,8 @@ public class AutoscalerUtil {
                 if (deploymentPolicy != null) {
                     for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                         if (networkPartition != null) {
-                            if (!networkPartitionIds.contains(networkPartition.getId())) {
-                                networkPartitionIds.add(networkPartition.getId());
+                            if (!networkPartitionIds.contains(networkPartition.getUuid())) {
+                                networkPartitionIds.add(networkPartition.getUuid());
                             }
                         }
                     }
@@ -422,7 +423,7 @@ public class AutoscalerUtil {
      * @param applicationId the application id
      * @return list of deployment policy ids
      */
-    private static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
+    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
 
         if (applicationId == null || StringUtils.isBlank(applicationId)) {
             return null;
@@ -610,7 +611,7 @@ public class AutoscalerUtil {
         }
 
         // application policy id can't be null
-        if (applicationPolicy.getId() == null || StringUtils.isBlank(applicationPolicy.getId())) {
+        if (applicationPolicy.getUuid() == null || StringUtils.isBlank(applicationPolicy.getUuid())) {
             String msg = "Invalid Application Policy: Application policy id null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
@@ -658,10 +659,11 @@ public class AutoscalerUtil {
             }
 
             // network partitions should be added already
-            if (null == CloudControllerServiceClient.getInstance().
-                    getNetworkPartition(networkPartitionId)) {
+            NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
+                    .getNetworkPartition(networkPartitionId);
+            if (null == networkPartition || (applicationPolicy.getTenantId() != networkPartition.getTenantId())) {
                 String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
-                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getId());
+                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getUuid());
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -725,7 +727,7 @@ public class AutoscalerUtil {
     public static void validateApplicationPolicyAgainstApplication(String applicationId, String applicationPolicyId)
             throws ApplicatioinPolicyNotExistsException, InvalidApplicationPolicyException {
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyById(applicationPolicyId);
         if (applicationPolicy == null) {
             String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyId);
             log.error(msg);
@@ -768,7 +770,7 @@ public class AutoscalerUtil {
                 if (deploymentPolicyInApp != null) {
                     for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
                         if (networkPartitionOfDeploymentPolicy != null) {
-                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getId().
+                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getUuid().
                                     equals(networkPartitionId)) {
                                 referencesOfNetworkPartition++;
                             }

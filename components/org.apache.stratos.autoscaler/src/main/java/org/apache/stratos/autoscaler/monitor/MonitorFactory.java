@@ -42,8 +42,6 @@ import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -266,11 +264,11 @@ public class MonitorFactory {
 
                         CloudControllerServiceClient.getInstance().
                                 validateNetworkPartitionOfDeploymentPolicy(serviceName,
-                                        networkPartitionRef.getId());
+                                        networkPartitionRef.getUuid());
                     } catch (Exception e) {
                         String msg = String.format("Error while validating deployment policy " +
                                         "from cloud controller [network-partition-id] %s",
-                                networkPartitionRef.getId());
+                                networkPartitionRef.getUuid());
                         log.error(msg, e);
                         throw new RuntimeException(msg, e);
                     }

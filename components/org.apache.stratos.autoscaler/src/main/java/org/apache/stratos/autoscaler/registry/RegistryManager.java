@@ -162,7 +162,7 @@ public class RegistryManager {
     }
 
     public void persistDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getDeploymentPolicyID();
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getUuid();
         persist(deploymentPolicy, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy written to registry: %s", deploymentPolicy.toString()));
@@ -173,14 +173,14 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
+                    AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getUuid();
             persist(autoscalePolicy, resourcePath);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
-                        autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
+                        autoscalePolicy.getUuid(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
             }
         } catch (AutoScalerException e) {
-            String message = "Unable to persist autoscaler policy [autoscaler-policy-id] " + autoscalePolicy.getId();
+            String message = "Unable to persist autoscaler policy [autoscaler-policy-id] " + autoscalePolicy.getUuid();
             log.error(message, e);
             throw e;
         } finally {
@@ -400,7 +400,7 @@ public class RegistryManager {
                                 asPolicy = (AutoscalePolicy) dataObj;
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Autoscaler policy read from registry: [id] %s [name] %s [description] %s",
-                                            asPolicy.getId(), asPolicy.getDisplayName(), asPolicy.getDescription()));
+                                            asPolicy.getUuid(), asPolicy.getDisplayName(), asPolicy.getDescription()));
                                 }
                                 asPolicyList.add(asPolicy);
                             } else {
@@ -640,13 +640,13 @@ public class RegistryManager {
         }
     }
 
-    public void removeDeploymentPolicy(String deploymentPolicyID) {
+    public void removeDeploymentPolicy(String deploymentPolicyId) {
         String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" +
-                deploymentPolicyID;
+                deploymentPolicyId;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy deleted from registry: [id] %s",
-                    deploymentPolicyID));
+                    deploymentPolicyId));
         }
     }
 
@@ -682,10 +682,10 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getId();
+                    AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getUuid();
             persist(applicationPolicy, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getId()));
+                log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getUuid()));
             }
         } finally {
             endTenantFlow();

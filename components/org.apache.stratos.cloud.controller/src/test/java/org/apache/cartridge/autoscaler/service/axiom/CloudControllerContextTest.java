@@ -42,6 +42,7 @@ public class CloudControllerContextTest extends TestCase {
         ServiceReferenceHolder.getInstance().setDistributedObjectProvider(new HazelcastDistributedObjectProvider());
         ServiceReferenceHolder.getInstance().setAxisConfiguration(axisConfiguration);
 
+        CloudControllerContext.unitTest = true;
         CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
 
         Thread t1 = new Thread(new MemberAdder(cloudControllerContext));
@@ -53,7 +54,6 @@ public class CloudControllerContextTest extends TestCase {
         t2.start();
         t2.join();
         assertEquals(1, cloudControllerContext.getMemberContextsOfClusterId("cluster-1").size());
-
     }
 
     class MemberAdder implements Runnable {

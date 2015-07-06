@@ -32,12 +32,36 @@ public class NetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
 
+    private String uuid;
     private String id;
+    private int tenantId;
     private String provider;
     private boolean activeByDefault;
     private Partition[] partitions;
     private String partitionAlgo;
     private Properties properties;
+
+    /**
+     * Gets the local Id of the network partition.
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the local Id of the network partition.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public void setPartitions(Partition[] partitions) {
         if (partitions == null) {
@@ -58,17 +82,17 @@ public class NetworkPartition implements Serializable {
     }
 
     /**
-     * Gets the value of the id.
+     * Gets the global Id network partition
      */
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
     /**
-     * sets the value of the id.
+     * Sets the global Id network partition
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public boolean isActiveByDefault() {

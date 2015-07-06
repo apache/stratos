@@ -514,6 +514,16 @@ public class GroupMonitor extends ParentComponentMonitor {
         if (instance != null) {
             // If this parent instance is terminating, then based on child notification,
             // it has to decide its state rather than starting a the children recovery
+
+            ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
+                    getAppMonitor(appId);
+            //In case if the group instance is not in terminating while application is
+            // terminating, changing the status to terminating
+            if(applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
+                //Sending group instance terminating event
+                ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
+            }
+
             if (instance.getStatus() == GroupStatus.Terminating ||
                     instance.getStatus() == GroupStatus.Terminated) {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
@@ -554,7 +564,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                     GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
                     if (instance != null) {
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Publishing Group terminating event for [application] " +
+                            log.info(String.format("Publishing group terminating event for [application] " +
                                     "%s [group] %s [instance] %s", appId, id, instanceId));
                         }
                         ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
@@ -565,7 +575,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                         if (!instanceIds.isEmpty()) {
                             for (String instanceId1 : instanceIds) {
                                 if (log.isInfoEnabled()) {
-                                    log.info(String.format("Publishing Group terminating event for" +
+                                    log.info(String.format("Publishing group terminating event for" +
                                                     " [application] %s [group] %s [instance] %s",
                                             appId, id, instanceId1));
                                 }
@@ -693,7 +703,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
                 NetworkPartitionRef networkPartition = null;
                 for (NetworkPartitionRef networkPartition1 : networkPartitions) {
-                    if (networkPartition1.getId().equals(networkPartitionId)) {
+                    if (networkPartition1.getUuid().equals(networkPartitionId)) {
                         networkPartition = networkPartition1;
                     }
                 }
@@ -753,7 +763,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             NetworkPartitionRef networkPartitionRef = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
                 for (NetworkPartitionRef i : networkPartitions) {
-                    if (i.getId().equals(networkPartitionId)) {
+                    if (i.getUuid().equals(networkPartitionId)) {
                         networkPartitionRef = i;
                     }
                 }

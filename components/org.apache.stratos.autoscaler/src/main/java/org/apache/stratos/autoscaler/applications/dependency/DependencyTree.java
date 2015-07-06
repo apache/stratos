@@ -213,13 +213,21 @@ public class DependencyTree {
      * @param childContexts       contains the children of the node
      * @return all the children of the given node
      */
-    public List<ApplicationChildContext> findAllChildrenOfAppContext(List<ApplicationChildContext> applicationContexts,
-                                                                     List<ApplicationChildContext> childContexts) {
+    private List<ApplicationChildContext> findAllChildrenOfAppContext(
+            List<ApplicationChildContext> applicationContexts,
+            List<ApplicationChildContext> childContexts) {
         for (ApplicationChildContext context : applicationContexts) {
             childContexts.add(context);
             findAllChildrenOfAppContext(context.getApplicationChildContextList(), childContexts);
         }
         return childContexts;
+    }
+
+    public List<ApplicationChildContext> findAllChildrenOfAppContext() {
+        List<ApplicationChildContext> allChildrenOfAppContext =
+                new ArrayList<ApplicationChildContext>();
+        return findAllChildrenOfAppContext(this.primaryApplicationContextList,
+                allChildrenOfAppContext);
     }
 
     public void setTerminationBehavior(TerminationBehavior terminationBehavior) {

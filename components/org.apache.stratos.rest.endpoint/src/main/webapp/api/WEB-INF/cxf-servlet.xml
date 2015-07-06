@@ -149,6 +149,8 @@
                 <value>networkInterfaces</value>
                 <value>iaasProvider</value>
                 <value>floatingNetworks</value>
+                <value>scalingDependents</value>
+                <value>aliases</value>
             </list>
         </property>
     </bean>

@@ -25,7 +25,9 @@ import java.io.Serializable;
 public class ApplicationPolicy implements Serializable {
 
     private static final long serialVersionUID = -2851334419121310395L;
+    private String uuid;
     private String id;
+    private int tenantId;
     private String algorithm;
     private String[] networkPartitions;
     private Properties properties;
@@ -38,6 +40,22 @@ public class ApplicationPolicy implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getAlgorithm() {

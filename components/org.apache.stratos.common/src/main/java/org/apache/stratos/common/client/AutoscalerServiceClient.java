@@ -220,14 +220,14 @@ public class AutoscalerServiceClient {
         stub.updateDeploymentPolicy(deploymentPolicy);
     }
 
-    public void removeDeploymentPolicy(String deploymentPolicyID) throws RemoteException,
+    public void removeDeploymentPolicy(String deploymentPolicyId) throws RemoteException,
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
             AutoscalerServiceUnremovablePolicyExceptionException {
-        stub.removeDeployementPolicy(deploymentPolicyID);
+        stub.removeDeployementPolicy(deploymentPolicyId);
     }
 
-    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) throws RemoteException {
-        return stub.getDeploymentPolicy(deploymentPolicyID);
+    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
+        return stub.getDeploymentPolicy(deploymentPolicyId);
     }
 
     public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException {

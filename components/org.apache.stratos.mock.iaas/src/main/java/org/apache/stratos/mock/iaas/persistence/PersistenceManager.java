@@ -21,16 +21,31 @@ package org.apache.stratos.mock.iaas.persistence;
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.io.Serializable;
-
 /**
  * Persistence manager interface.
  */
 public interface PersistenceManager {
 
-    void persist(String resourcePath, Serializable serializableObject) throws RegistryException;
+    /**
+     * Persist an object in persistence manager with the given resource path.
+     * @param resourcePath
+     * @param object
+     * @throws RegistryException
+     */
+    void persist(String resourcePath, Object object) throws RegistryException;
 
+    /**
+     * Read an object from persistence manager using the given resource path.
+     * @param resourcePath
+     * @return
+     * @throws RegistryException
+     */
     Object read(String resourcePath) throws RegistryException;
 
+    /**
+     * Remove an object in persistence manager with the given resource path.
+     * @param resourcePath
+     * @throws RegistryException
+     */
     void remove(String resourcePath) throws RegistryException;
 }

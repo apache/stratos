@@ -27,10 +27,28 @@ import java.util.List;
 @XmlRootElement
 public class NetworkPartitionBean {
 
+    private String uuid;
+    private int tenantId;
     private String id;
     private String provider;
     private List<PartitionBean> partitions;
     private List<PropertyBean> properties;
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getId() {
         return id;
