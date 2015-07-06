@@ -287,7 +287,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addNetworkPartition(NetworkPartition networkPartition) {
-        networkPartitionIDToNetworkPartitionMap.put(networkPartition.getId(), networkPartition);
+        networkPartitionIDToNetworkPartitionMap.put(networkPartition.getUuid(), networkPartition);
     }
 
     public NetworkPartition getNetworkPartition(String networkPartitionID) {

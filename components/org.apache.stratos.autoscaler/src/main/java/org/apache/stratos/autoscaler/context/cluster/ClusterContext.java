@@ -129,7 +129,7 @@ public class ClusterContext extends AbstractClusterContext {
             NetworkPartitionRef networkPartition = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
                 for (NetworkPartitionRef i : networkPartitions) {
-                    if (i.getId().equals(clusterInstance.getNetworkPartitionId())) {
+                    if (i.getUuid().equals(clusterInstance.getNetworkPartitionId())) {
                         networkPartition = i;
                     }
                 }
@@ -140,7 +140,7 @@ public class ClusterContext extends AbstractClusterContext {
                 networkPartitionContext = new ClusterLevelNetworkPartitionContext(
                         clusterInstance.getNetworkPartitionId());
             } else {
-                networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getId(),
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getUuid(),
                         networkPartition.getPartitionAlgo(), 0);
             }
         }
@@ -185,7 +185,7 @@ public class ClusterContext extends AbstractClusterContext {
         PartitionRef[] partitions = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
             for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
-                if (networkPartitionRef.getId().equals(
+                if (networkPartitionRef.getUuid().equals(
                         clusterLevelNetworkPartitionContext.getId())) {
                     partitions = networkPartitionRef.getPartitionRefs();
                 }
@@ -204,7 +204,7 @@ public class ClusterContext extends AbstractClusterContext {
         NetworkPartitionRef networkPartitionRef = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
             for (NetworkPartitionRef networkPartition2 : networkPartitions) {
-                if (networkPartition2.getId().equals(
+                if (networkPartition2.getUuid().equals(
                         clusterInstance.getNetworkPartitionId())) {
                     networkPartitionRef = networkPartition2;
                 }

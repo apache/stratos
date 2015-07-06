@@ -402,8 +402,8 @@ public class AutoscalerUtil {
                 if (deploymentPolicy != null) {
                     for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                         if (networkPartition != null) {
-                            if (!networkPartitionIds.contains(networkPartition.getId())) {
-                                networkPartitionIds.add(networkPartition.getId());
+                            if (!networkPartitionIds.contains(networkPartition.getUuid())) {
+                                networkPartitionIds.add(networkPartition.getUuid());
                             }
                         }
                     }
@@ -770,7 +770,7 @@ public class AutoscalerUtil {
                 if (deploymentPolicyInApp != null) {
                     for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
                         if (networkPartitionOfDeploymentPolicy != null) {
-                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getId().
+                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getUuid().
                                     equals(networkPartitionId)) {
                                 referencesOfNetworkPartition++;
                             }

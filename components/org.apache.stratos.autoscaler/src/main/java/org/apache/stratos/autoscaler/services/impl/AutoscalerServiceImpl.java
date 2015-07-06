@@ -1124,12 +1124,19 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             // network partitions should be already added
-            NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
-                    .getNetworkPartition(networkPartitionId);
+            NetworkPartition[] networkPartitions = CloudControllerServiceClient.getInstance().getNetworkPartitions();
+            NetworkPartition networkPartitionForTenant = null;
+            if (networkPartitions != null) {
+                for (NetworkPartition networkPartition : networkPartitions) {
+                    if (deploymentPolicy.getTenantId() == networkPartition.getTenantId()) {
+                        networkPartitionForTenant = networkPartition;
+                    }
+                }
+            }
 
-            if (networkPartition == null || (deploymentPolicy.getTenantId() != networkPartition.getTenantId())) {
+            if (networkPartitionForTenant == null) {
                 String msg = String.format("Network partition is not found: [deployment-policy-uuid] %s " +
-                        "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyUuid,
+                                "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyUuid,
                         deploymentPolicyId, networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
@@ -1140,7 +1147,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 String partitionId = partitionRef.getId();
                 boolean isPartitionFound = false;
 
-                for (Partition partition : networkPartition.getPartitions()) {
+                for (Partition partition : networkPartitionForTenant.getPartitions()) {
                     if (partition.getId().equals(partitionId)) {
                         isPartitionFound = true;
                     }
@@ -1223,7 +1230,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (deploymentPolicy.getUuid().equals(clusterMonitor.getDeploymentPolicyId())) {
                 for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                     ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext
-                            = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
+                            = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getUuid());
 
                     try {
                         addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
@@ -1303,7 +1310,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                     //It has found that this partition which is in deployment policy/network partition is new
                     ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
-                            partition, networkPartitionRef.getId(), deploymentPolicyID);
+                            partition, networkPartitionRef.getUuid(), deploymentPolicyID);
                     validationOfNetworkPartitionRequired = true;
                     clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
                 }

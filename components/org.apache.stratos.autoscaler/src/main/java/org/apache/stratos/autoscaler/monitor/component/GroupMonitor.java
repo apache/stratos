@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
@@ -704,7 +703,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
                 NetworkPartitionRef networkPartition = null;
                 for (NetworkPartitionRef networkPartition1 : networkPartitions) {
-                    if (networkPartition1.getId().equals(networkPartitionId)) {
+                    if (networkPartition1.getUuid().equals(networkPartitionId)) {
                         networkPartition = networkPartition1;
                     }
                 }
@@ -764,7 +763,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             NetworkPartitionRef networkPartitionRef = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
                 for (NetworkPartitionRef i : networkPartitions) {
-                    if (i.getId().equals(networkPartitionId)) {
+                    if (i.getUuid().equals(networkPartitionId)) {
                         networkPartitionRef = i;
                     }
                 }

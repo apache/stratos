@@ -30,6 +30,7 @@ public class NetworkPartitionRef implements Serializable {
     private static final long serialVersionUID = -8043298009352097370L;
 
     private String id;
+    private String uuid;
     private PartitionRef[] partitionRefs;
     private String partitionAlgo;
 
@@ -63,6 +64,14 @@ public class NetworkPartitionRef implements Serializable {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public PartitionRef getPartitionRef(String partitionId) {

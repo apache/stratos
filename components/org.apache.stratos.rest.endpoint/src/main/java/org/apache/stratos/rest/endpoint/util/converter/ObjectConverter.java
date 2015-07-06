@@ -2129,6 +2129,7 @@ public class ObjectConverter {
         for (NetworkPartitionReferenceBean networkPartitionReferenceBean : networkPartitionReferenceBeans) {
             NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
             networkPartitionRef.setId(networkPartitionReferenceBean.getId());
+            networkPartitionRef.setUuid(networkPartitionReferenceBean.getUuid());
             networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
             if (networkPartitionReferenceBean.getPartitions() != null) {
                 networkPartitionRef.setPartitionRefs(convertToASStubPartitions(
