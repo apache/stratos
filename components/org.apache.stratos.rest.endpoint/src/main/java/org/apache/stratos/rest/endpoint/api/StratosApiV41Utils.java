@@ -491,13 +491,18 @@ public class StratosApiV41Utils {
      * @return Cartridge details
      * @throws RestAPIException
      */
-    public static CartridgeBean getCartridge(String cartridgeType) throws RestAPIException {
+    public static CartridgeBean getCartridge(String cartridgeType,int tenantId) throws RestAPIException {
         try {
             Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
             if (cartridgeInfo == null) {
                 return null;
             }
-            return ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+	        if(cartridgeInfo.getTenantId()==tenantId) {
+		        return ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+	        }
+	        else{
+		        return null;
+	        }
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);

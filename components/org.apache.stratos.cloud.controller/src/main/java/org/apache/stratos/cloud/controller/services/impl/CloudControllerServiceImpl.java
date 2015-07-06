@@ -69,47 +69,57 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-    public boolean addCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
-            InvalidIaasProviderException, CartridgeAlreadyExistsException {
+	public boolean addCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
+	                                                              InvalidIaasProviderException,
+	                                                              CartridgeAlreadyExistsException {
 
-        handleNullObject(cartridgeConfig, "Cartridge definition is null");
+		handleNullObject(cartridgeConfig, "Cartridge definition is null");
+		handleNullObject(cartridgeConfig.getUuid(), "Cartridge definition UUID is null");
 
-        if (log.isInfoEnabled()) {
-            log.info("Adding cartridge: [cartridge-type] " + cartridgeConfig.getType());
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Cartridge definition: " + cartridgeConfig.toString());
-        }
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Adding cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ",
+			                       cartridgeConfig.getUuid(), cartridgeConfig.getType(),
+			                       cartridgeConfig.getTenantId()));
+		}
+		if (log.isDebugEnabled()) {
+			log.debug("Cartridge definition: " + cartridgeConfig.toString());
+		}
 
-        try {
-            CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
-        } catch (Exception e) {
-            String message = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
-            log.error(message, e);
-            throw new InvalidCartridgeDefinitionException(message, e);
-        }
+		try {
+			CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
+		} catch (Exception e) {
+			String message = String.format("Invalid cartridge definition: [cartridge-uuid] %s [cartridge-type] %s",
+			                               " [tenant-id] ", cartridgeConfig.getUuid(), cartridgeConfig.getType(),
+			                               cartridgeConfig.getTenantId());
+			log.error(message, e);
+			throw new InvalidCartridgeDefinitionException(message, e);
+		}
 
-        String cartridgeType = cartridgeConfig.getType();
-        if (cloudControllerContext.getCartridge(cartridgeType) != null) {
-            String message = "Cartridge already exists: [cartridge-type] " + cartridgeType;
-            log.error(message);
-            throw new CartridgeAlreadyExistsException(message);
-        }
+		String cartridgeUuid = cartridgeConfig.getUuid();
+		Cartridge existingCartridge = cloudControllerContext.getCartridge(cartridgeUuid);
+		if (existingCartridge != null) {
+			String message = String.format(
+					"Cartridge already exists: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ", cartridgeUuid,
+					existingCartridge.getType(), existingCartridge.getTenantId());
+			log.error(message);
+			throw new CartridgeAlreadyExistsException(message);
+		}
 
-        // Add cartridge to the cloud controller context and persist
-        CloudControllerContext.getInstance().addCartridge(cartridgeConfig);
-        CloudControllerContext.getInstance().persist();
+		// Add cartridge to the cloud controller context and persist
+		CloudControllerContext.getInstance().addCartridge(cartridgeConfig);
+		CloudControllerContext.getInstance().persist();
 
-        List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
-        cartridgeList.add(cartridgeConfig);
+		List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+		cartridgeList.add(cartridgeConfig);
 
-        TopologyBuilder.handleServiceCreated(cartridgeList);
+		TopologyBuilder.handleServiceCreated(cartridgeList);
 
-        if (log.isInfoEnabled()) {
-            log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
-        }
-        return true;
-    }
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Successfully added cartridge: [cartridge-type] %s [tenant-id] %d ",
+			                       cartridgeConfig.getType(), cartridgeConfig.getTenantId()));
+		}
+		return true;
+	}
 
     @Override
     public boolean updateCartridge(Cartridge cartridge) throws InvalidCartridgeDefinitionException,

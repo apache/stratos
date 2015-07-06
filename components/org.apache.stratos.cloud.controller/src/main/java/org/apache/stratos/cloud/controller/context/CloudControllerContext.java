@@ -283,7 +283,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addCartridge(Cartridge cartridge) {
-        cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
+        cartridgeTypeToCartridgeMap.put(cartridge.getUuid(), cartridge);
     }
 
     public void addNetworkPartition(NetworkPartition networkPartition) {

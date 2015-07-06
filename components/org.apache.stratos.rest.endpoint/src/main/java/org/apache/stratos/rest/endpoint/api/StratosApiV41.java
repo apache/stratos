@@ -283,6 +283,11 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
+	    cartridgeDefinitionBean.setUuid(UUID.randomUUID().toString());
+
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+	    cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
+
         CartridgeBean cartridgeBean = null;
         try {
             cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
@@ -363,8 +368,9 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         CartridgeBean cartridge;
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
-            cartridge = StratosApiV41Utils.getCartridge(cartridgeType);
+            cartridge = StratosApiV41Utils.getCartridge(cartridgeType,carbonContext.getTenantId());
             return Response.ok().entity(cartridge).build();
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
