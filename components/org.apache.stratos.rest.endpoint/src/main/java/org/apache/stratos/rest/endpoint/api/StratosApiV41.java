@@ -343,8 +343,10 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridges()
             throws RestAPIException {
 
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         //We pass null to searching string and multi-tenant parameter since we do not need to do any filtering
-        List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
+        List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext(),
+                                                                                   carbonContext.getTenantId());
         if (cartridges == null || cartridges.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "No cartridges found")).build();
@@ -384,7 +386,7 @@ public class StratosApiV41 extends AbstractApi {
      * @param filter   Filter
      * @param criteria Criteria
      * @return 200 if cartridges are found for specified filter, 404 if none found
-     * @throws RestAPIException
+     * @throws RestAPIExcept
      */
     @GET
     @Path("/cartridges/filter/{filter}")
@@ -394,8 +396,9 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridgesByFilter(
             @DefaultValue("") @PathParam("filter") String filter, @QueryParam("criteria") String criteria)
             throws RestAPIException {
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         List<CartridgeBean> cartridges = StratosApiV41Utils.
-                getCartridgesByFilter(filter, criteria, getConfigContext());
+                getCartridgesByFilter(filter, criteria, getConfigContext(),carbonContext.getTenantId());
         if (cartridges == null || cartridges.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "No cartridges found")).build();
@@ -422,8 +425,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("cartridgeType") String cartridgeType, @DefaultValue("") @PathParam("filter") String filter)
             throws RestAPIException {
         CartridgeBean cartridge;
-
-        cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext(),carbonContext.getTenantId());
         if (cartridge == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "No cartridges found for this filter")).build();
