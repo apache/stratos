@@ -31,7 +31,7 @@ export DOMAIN=example.com
 export IP_ADDR=192.168.56.5
 
 # Set the version of Stratos docker images
-export STRATOS_VERSION=4.1.0-SNAPSHOT
+export STRATOS_VERSION=4.1.0
 
 ########
 # Bind

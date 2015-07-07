@@ -26,7 +26,7 @@ pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent
 
 pushd ${pca_distribution_path}
 mvn clean install -Dmaven.test.skip=true
-cp -vf target/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip ${script_path}/base-image/packs/
+cp -vf target/apache-stratos-python-cartridge-agent-4.1.0.zip ${script_path}/base-image/packs/
 popd
 
 pushd ${script_path}/base-image/
