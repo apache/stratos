@@ -2786,7 +2786,7 @@ public class StratosApiV41Utils {
      *
      * @param networkPartitionId networkPartitionId
      */
-    public static void removeNetworkPartition(String networkPartitionId) throws RestAPIException,
+    public static void removeNetworkPartition(String networkPartitionId, int tenantId) throws RestAPIException,
             CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         try {
 
@@ -2862,7 +2862,7 @@ public class StratosApiV41Utils {
             }
 
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
-            serviceClient.removeNetworkPartition(networkPartitionId);
+            serviceClient.removeNetworkPartition(networkPartitionId, tenantId);
         } catch (AutoscalerServiceAutoScalerExceptionException e) {
             String message = e.getMessage();
             log.error(message);

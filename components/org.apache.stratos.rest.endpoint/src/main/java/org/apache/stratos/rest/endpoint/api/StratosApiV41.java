@@ -734,7 +734,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
 
         try {
-            StratosApiV41Utils.removeNetworkPartition(networkPartitionId);
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            StratosApiV41Utils.removeNetworkPartition(networkPartitionId, carbonContext.getTenantId());
         } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Network partition is not found")).build();
