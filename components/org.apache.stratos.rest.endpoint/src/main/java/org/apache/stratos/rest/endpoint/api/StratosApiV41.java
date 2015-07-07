@@ -290,7 +290,7 @@ public class StratosApiV41 extends AbstractApi {
 
         CartridgeBean cartridgeBean = null;
         try {
-            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
+            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType,carbonContext.getTenantId());
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException ignore) {
             //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
         }
@@ -386,7 +386,7 @@ public class StratosApiV41 extends AbstractApi {
      * @param filter   Filter
      * @param criteria Criteria
      * @return 200 if cartridges are found for specified filter, 404 if none found
-     * @throws RestAPIExcept
+     * @throws RestAPIException
      */
     @GET
     @Path("/cartridges/filter/{filter}")
@@ -449,10 +449,11 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/cartridges/manage")
     public Response removeCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
-            StratosApiV41Utils.removeCartridge(cartridgeType);
+            StratosApiV41Utils.removeCartridge(cartridgeType,carbonContext.getTenantId());
             return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();
+                    String.format("Cartridge deleted successfully: [cartridge-type] %s [tenantId]", cartridgeType,carbonContext.getTenantId()))).build();
         } catch (RemoteException e) {
             throw new RestAPIException(e.getMessage());
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
@@ -482,6 +483,10 @@ public class StratosApiV41 extends AbstractApi {
     @SuperTenantService(true)
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
+
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+	    cartridgeGroupBean.setUuid(UUID.randomUUID().toString());
+	    cartridgeGroupBean.setTenantId(carbonContext.getTenantId());
         try {
             StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();

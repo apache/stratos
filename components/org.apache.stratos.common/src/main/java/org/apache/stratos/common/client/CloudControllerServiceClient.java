@@ -92,8 +92,8 @@ public class CloudControllerServiceClient {
         stub.updateCartridge(cartridgeConfig);
     }
 
-    public void removeCartridge(String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
-        stub.removeCartridge(cartridgeType);
+    public void removeCartridge(String cartridgeTypeUuid) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
+        stub.removeCartridge(cartridgeTypeUuid);
     }
 
     public String[] getServiceGroupSubGroups(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
@@ -116,7 +116,7 @@ public class CloudControllerServiceClient {
         return stub.getCartridges();
     }
 
-    public Cartridge getCartridge(String cartridgeType) throws RemoteException,
+    public Cartridge getCartridge(String cartridgeType,int tenantId) throws RemoteException,
             CloudControllerServiceCartridgeNotFoundExceptionException {
         return stub.getCartridge(cartridgeType);
     }

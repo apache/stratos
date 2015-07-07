@@ -243,29 +243,30 @@ public class StratosApiV41Utils {
      * @param cartridgeType Cartridge Type
      * @throws RestAPIException
      */
-    public static void removeCartridge(String cartridgeType) throws RestAPIException, RemoteException,
+    public static void removeCartridge(String cartridgeType,int tenantId) throws RestAPIException, RemoteException,
             CloudControllerServiceCartridgeNotFoundExceptionException,
             CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Removing cartridge: [cartridge-type] %s ", cartridgeType));
+            log.debug(String.format("Removing cartridge: [cartridge-type] %s [tenant-id] %d", cartridgeType,tenantId));
         }
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-        if (cloudControllerServiceClient.getCartridge(cartridgeType) == null) {
-            throw new RuntimeException("Cartridge not found: [cartridge-type] " + cartridgeType);
+	    Cartridge cartridge= cloudControllerServiceClient.getCartridge(cartridgeType,tenantId);
+	    if (cartridge== null) {
+            throw new RuntimeException("Cartridge not found: [cartridge-type] [tenant-id]" + cartridgeType + tenantId);
         }
 
         StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
         // Validate whether cartridge can be removed
-        if (!smServiceClient.canCartridgeBeRemoved(cartridgeType)) {
+        if (!smServiceClient.canCartridgeBeRemoved(cartridge.getUuid())) {
             String message = "Cannot remove cartridge : [cartridge-type] " + cartridgeType +
                     " since it is used in another cartridge group or an application";
             log.error(message);
             throw new RestAPIException(message);
         }
-        cloudControllerServiceClient.removeCartridge(cartridgeType);
+        cloudControllerServiceClient.removeCartridge(cartridge.getUuid());
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Successfully removed cartridge: [cartridge-type] %s ", cartridgeType));
@@ -292,7 +293,7 @@ public class StratosApiV41Utils {
         } else if (Constants.FILTER_LOAD_BALANCER.equals(filter)) {
             cartridges = getAvailableLbCartridges(false, configurationContext,tenantId);
         } else if (Constants.FILTER_PROVIDER.equals(filter)) {
-            cartridges = getAvailableCartridgesByProvider(criteria);
+            cartridges = getAvailableCartridgesByProvider(criteria,tenantId);
         }
 
 
@@ -348,7 +349,7 @@ public class StratosApiV41Utils {
      * @return List of the cartridge definitions
      * @throws RestAPIException
      */
-    private static List<CartridgeBean> getAvailableCartridgesByProvider(String provider) throws RestAPIException {
+    private static List<CartridgeBean> getAvailableCartridgesByProvider(String provider,int tenantId) throws RestAPIException {
         List<CartridgeBean> cartridges = new ArrayList<CartridgeBean>();
 
         if (log.isDebugEnabled()) {
@@ -362,7 +363,7 @@ public class StratosApiV41Utils {
                 for (String cartridgeType : availableCartridges) {
                     Cartridge cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
+                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType,tenantId);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
                             log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
@@ -431,7 +432,7 @@ public class StratosApiV41Utils {
                 for (String cartridgeType : availableCartridges) {
                     Cartridge cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
+                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType,tenantId);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
                             log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
@@ -493,7 +494,7 @@ public class StratosApiV41Utils {
      */
     public static CartridgeBean getCartridge(String cartridgeType,int tenantId) throws RestAPIException {
         try {
-            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
+            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType,tenantId);
             if (cartridgeInfo == null) {
                 return null;
             }
@@ -521,10 +522,10 @@ public class StratosApiV41Utils {
      * @return CartridgeBean
      * @throws RestAPIException
      */
-    public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException,
+    public static CartridgeBean getCartridgeForValidate(String cartridgeType,int tenantId) throws RestAPIException,
             CloudControllerServiceCartridgeNotFoundExceptionException {
         try {
-            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
+            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType,tenantId);
             if (cartridgeInfo == null) {
                 return null;
             }
@@ -1033,7 +1034,7 @@ public class StratosApiV41Utils {
         int j = 0;
         for (String cartridgeType : cartridgeTypes) {
             try {
-                if (ccServiceClient.getCartridge(cartridgeType) == null) {
+                if (ccServiceClient.getCartridge(cartridgeType,serviceGroupDefinition.getTenantId()) == null) {
                     // cartridge is not deployed, can't continue
                     log.error("Invalid cartridge found in cartridge group " + cartridgeType);
                     throw new InvalidCartridgeException();

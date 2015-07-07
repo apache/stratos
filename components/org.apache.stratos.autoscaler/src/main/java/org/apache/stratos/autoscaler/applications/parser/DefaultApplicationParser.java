@@ -354,7 +354,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
         Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
-        createClusterDataMap(appId, cartridgeContextList, clusterDataMap, clusterDataMapByType);
+        createClusterDataMap(appId, cartridgeContextList, clusterDataMap, clusterDataMapByType,tenantId);
 
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
             List<String> dependencyClusterIDs = new ArrayList<String>();
@@ -364,7 +364,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
-            Cartridge cartridge = getCartridge(cartridgeType);
+            Cartridge cartridge = getCartridge(cartridgeType,tenantId);
             if (cartridge == null) {
                 throw new CartridgeNotFoundException("Cartridge not found " + cartridgeType);
             }
@@ -410,7 +410,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                         String.format("Could not find dependent cartridge for " +
                                                 "application: %s cartridge-alias: %s", appId, cartridgeAlias));
                             }
-                            Cartridge dependencyCartridge = getCartridge(dependentCartridgeType);
+                            Cartridge dependencyCartridge = getCartridge(dependentCartridgeType,tenantId);
                             ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
 
                             if (dataHolder != null) {
@@ -489,7 +489,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     private void createClusterDataMap(String applicationId,
                                       List<CartridgeContext> cartridgeContextList,
-                                      Map<String, ClusterDataHolder> clusterDataMap, Map<String, ClusterDataHolder> clusterDataMapByType)
+                                      Map<String, ClusterDataHolder> clusterDataMap, Map<String, ClusterDataHolder> clusterDataMapByType,int tenantId)
             throws ApplicationDefinitionException {
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
 
@@ -498,7 +498,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
             // check if a cartridge with relevant type is already deployed. else, can't continue
-            Cartridge cartridge = getCartridge(cartridgeType);
+            Cartridge cartridge = getCartridge(cartridgeType,tenantId);
             if (cartridge == null) {
                 handleError("No deployed Cartridge found with type [ " + cartridgeType +
                         " ] for Composite Application");
@@ -991,10 +991,10 @@ public class DefaultApplicationParser implements ApplicationParser {
         return token;
     }
 
-    private Cartridge getCartridge(String cartridgeType) throws ApplicationDefinitionException {
+    private Cartridge getCartridge(String cartridgeType,int tenantId) throws ApplicationDefinitionException {
 
         try {
-            return CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
+            return CloudControllerServiceClient.getInstance().getCartridge(cartridgeType,tenantId);
         } catch (Exception e) {
             log.error("Unable to get the cartridge: " + cartridgeType, e);
             throw new ApplicationDefinitionException(e);
