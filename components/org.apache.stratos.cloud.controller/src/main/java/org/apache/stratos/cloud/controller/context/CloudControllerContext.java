@@ -148,7 +148,7 @@ public class CloudControllerContext implements Serializable {
 
     /**
      * Map of network partitions
-     * Key - network partition id
+     * Key - network partition uuid
      * Value network partition
      */
     private Map<String, NetworkPartition> networkPartitionIDToNetworkPartitionMap;
@@ -300,6 +300,16 @@ public class CloudControllerContext implements Serializable {
 
     public void removeNetworkPartition(String networkPartitionID) {
         networkPartitionIDToNetworkPartitionMap.remove(networkPartitionID);
+    }
+
+    public NetworkPartition getNetworkPartitionForTenant(String networkPartitionId, int tenantId) {
+        NetworkPartition networkPartitionForTenant = null;
+        for (NetworkPartition networkPartition : getNetworkPartitions()) {
+            if (networkPartition.getTenantId() == tenantId && networkPartition.getId().equals(networkPartitionId)) {
+                networkPartitionForTenant = networkPartition;
+            }
+        }
+        return networkPartitionForTenant;
     }
 
     public void removeCartridge(Cartridge cartridge) {

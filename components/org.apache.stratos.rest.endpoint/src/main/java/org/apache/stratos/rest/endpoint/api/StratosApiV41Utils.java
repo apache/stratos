@@ -48,6 +48,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -2737,8 +2738,8 @@ public class StratosApiV41Utils {
             CloudControllerServiceInvalidNetworkPartitionExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
-            serviceClient.addNetworkPartition(
-                    ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition(networkPartitionBean));
+            serviceClient.addNetworkPartition(ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition
+                    (networkPartitionBean));
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
@@ -2812,16 +2813,28 @@ public class StratosApiV41Utils {
                 }
             }
 
+            String networkPartitionUuid = null;
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            for (NetworkPartitionBean networkPartitionBean : getNetworkPartitions()) {
+                if (networkPartitionBean.getTenantId() == carbonContext.getTenantId() &&
+                        networkPartitionBean.getId().equals(networkPartitionId)) {
+                    networkPartitionUuid = networkPartitionBean.getUuid();
+                }
+            }
+
+
             DeploymentPolicy[] deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
 
             if (deploymentPolicies != null) {
                 for (DeploymentPolicy deploymentPolicy : deploymentPolicies) {
                     for (org.apache.stratos.autoscaler.stub.partition.NetworkPartitionRef networkPartitionRef :
                             deploymentPolicy.getNetworkPartitionRefs()) {
-                        if (networkPartitionRef.getId().equals(networkPartitionId)) {
-                            String message = String.format("Cannot remove the network partition %s, since" +
-                                            " it is used in deployment policy %s", networkPartitionId,
-                                    deploymentPolicy.getId());
+                        if (networkPartitionRef.getUuid().equals(networkPartitionUuid)) {
+                            String message = String.format("Cannot remove the network partition: " +
+                                            "[network-partition-uuid] %s [network-partition-id] %s since" +
+                                            " it is used in deployment policy: [deployment-policy-uuid] %s " +
+                                            "[deployment-policy-id] %s", networkPartitionUuid, networkPartitionId,
+                                    deploymentPolicy.getUuid(), deploymentPolicy.getId());
                             log.error(message);
                             throw new RestAPIException(message);
                         }
@@ -2925,6 +2938,17 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Adding deployment policy: [deployment-policy-uuid] %s [deployment-policy-id]" +
                                 " %s ", deploymentPolicyDefinitionBean.getUuid(),
                         deploymentPolicyDefinitionBean.getId()));
+            }
+
+            NetworkPartitionBean[] networkPartitions = getNetworkPartitions();
+            for (NetworkPartitionReferenceBean networkPartitionReferenceBean : deploymentPolicyDefinitionBean
+                    .getNetworkPartitions()) {
+                for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
+                    if (networkPartitionBean.getTenantId() == deploymentPolicyDefinitionBean.getTenantId() &&
+                            networkPartitionBean.getId().equals(networkPartitionReferenceBean.getId())) {
+                        networkPartitionReferenceBean.setUuid(networkPartitionBean.getUuid());
+                    }
+                }
             }
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = ObjectConverter
