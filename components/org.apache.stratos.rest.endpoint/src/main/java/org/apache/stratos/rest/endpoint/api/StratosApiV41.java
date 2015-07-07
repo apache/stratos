@@ -142,7 +142,7 @@ public class StratosApiV41 extends AbstractApi {
 
         List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans = deploymentPolicyDefinitionBean
                 .getNetworkPartitions();
-        for (NetworkPartitionReferenceBean networkPartitionReferenceBeans1 : networkPartitionReferenceBeans) {\
+        for (NetworkPartitionReferenceBean networkPartitionReferenceBeans1 : networkPartitionReferenceBeans) {
             networkPartitionReferenceBeans1.setTenantId(deploymentPolicyDefinitionBean.getTenantId());
         }
 
