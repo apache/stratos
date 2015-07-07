@@ -41,6 +41,7 @@ public class SubscribableInfo implements Serializable {
     private ArtifactRepositoryBean artifactRepository;
     private List<PropertyBean> property;
     private PersistenceBean persistence;
+	private int tenantId;
 
     public String getAlias() {
         return alias;
@@ -113,4 +114,12 @@ public class SubscribableInfo implements Serializable {
     public void setPersistence(PersistenceBean persistence) {
         this.persistence = persistence;
     }
+
+	public int getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(int tenantId) {
+		this.tenantId = tenantId;
+	}
 }

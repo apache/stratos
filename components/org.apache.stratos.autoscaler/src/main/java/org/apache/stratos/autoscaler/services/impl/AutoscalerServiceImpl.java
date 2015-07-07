@@ -132,7 +132,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 for(CartridgeContext cartridgeContext : applicationContext.getComponents().
                         getCartridgeContexts()) {
                     if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
-                            getAutoscalingPolicy())) {
+		                    getAutoscalingPolicyUuid())) {
                         return false;
                     }
                 }
@@ -153,7 +153,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if(groupContext.getCartridgeContexts() != null) {
                 for(CartridgeContext cartridgeContext : groupContext.getCartridgeContexts()) {
                     if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
-                            getAutoscalingPolicy())) {
+		                    getAutoscalingPolicyUuid())) {
                         return false;
                     }
                 }
@@ -193,7 +193,19 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
     }
 
-    @Override
+	@Override
+	public AutoscalePolicy getAutoscalingPolicyForTenant(String autoscalingPolicyId, int tenantId) {
+		AutoscalePolicy[] autoscalePolicies=getAutoScalingPolicies();
+		for(AutoscalePolicy autoscalePolicy:autoscalePolicies){
+			if(autoscalePolicy.getId().equals(autoscalingPolicyId)&&(autoscalePolicy.getTenantId()==tenantId)){
+				return autoscalePolicy;
+			}
+		}
+		return null;
+	}
+
+
+	@Override
     public boolean addApplication(ApplicationContext applicationContext)
             throws ApplicationDefinitionException, CartridgeGroupNotFoundException,
             CartridgeNotFoundException {
@@ -1357,7 +1369,18 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
     }
 
-    @Override
+	@Override
+	public DeploymentPolicy getDeploymentPolicyForTenant(String deploymentPolicyID, int tenantId) {
+		DeploymentPolicy[] deploymentPolicies=getDeploymentPolicies();
+		for(DeploymentPolicy deploymentPolicy:deploymentPolicies){
+			if(deploymentPolicy.getId().equals(deploymentPolicyID)&&(deploymentPolicy.getTenantId()==tenantId)){
+				return  deploymentPolicy;
+			}
+		}
+		return null;
+	}
+
+	@Override
     public DeploymentPolicy[] getDeploymentPolicies() {
         try {
             Collection<DeploymentPolicy> deploymentPolicies = PolicyManager.getInstance().getDeploymentPolicies();

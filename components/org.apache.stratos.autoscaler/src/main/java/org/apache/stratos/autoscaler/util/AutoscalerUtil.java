@@ -521,7 +521,7 @@ public class AutoscalerUtil {
                 if (cartridgeContext != null) {
                     aliasToDeploymentPolicyIdMap.put(
                             cartridgeContext.getSubscribableInfoContext().getAlias(),
-                            cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy());
+                            cartridgeContext.getSubscribableInfoContext().getDeploymentPolicyUuid());
                 }
             }
         }

@@ -144,7 +144,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         String alias = subscribableInfoContext.getAlias();
-        String autoscalingPolicyId = subscribableInfoContext.getAutoscalingPolicy();
+        String autoscalingPolicyId = subscribableInfoContext.getAutoscalingPolicyUuid();
 
         if (StringUtils.isEmpty(alias)) {
             handleError(String.format("An alias is not defined for cartridge: [application-id] %s" +
@@ -452,12 +452,12 @@ public class DefaultApplicationParser implements ApplicationParser {
             // create and collect this cluster's information
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
-                    subscribableInfoContext.getDeploymentPolicy(), isLB,
+                    subscribableInfoContext.getDeploymentPolicyUuid(), isLB,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
                     subscribableInfoContext.getProperties(), arrDependencyClusterIDs, arrExportMetadata,
                     arrImportMetadata);
 
-            appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
+            appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicyUuid());
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
             if (subscribableInfoContext.getPersistenceContext() != null) {
                 appClusterCtxt.setPersistenceContext(subscribableInfoContext.getPersistenceContext());

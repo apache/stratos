@@ -50,10 +50,18 @@ public interface AutoscalerService {
     /**
      * Get an autoscaling policy
      *
-     * @param autoscalingPolicyId
+     * @param autoscalingPolicyUuid
      * @return
      */
-    public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId);
+    public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyUuid);
+
+	/**
+	 * Get an autoscaling policy
+	 *
+	 * @param autoscalingPolicyId
+	 * @return
+	 */
+	public AutoscalePolicy getAutoscalingPolicyForTenant(String autoscalingPolicyId,int tenantId);
 
     /**
      * Get autoscaling policies
@@ -273,10 +281,19 @@ public interface AutoscalerService {
     /**
      * Get deployment policy definition
      *
-     * @param deploymentPolicyID
+     * @param deploymentPolicyUuid
      * @return
      */
-    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID);
+    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyUuid);
+
+	/**
+	 * Get deployment policy definition
+	 *
+	 * @param deploymentPolicyID
+	 * @param tenantId
+	 * @return
+	 */
+	public DeploymentPolicy getDeploymentPolicyForTenant(String deploymentPolicyID,int tenantId);
 
     /**
      * Get deployment policies

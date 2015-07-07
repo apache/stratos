@@ -38,6 +38,7 @@ public class ApplicationBean implements Serializable {
     private String status;
     private ComponentBean components;
     private List<PropertyBean> property;
+	private int tenantId;
 
     public String getApplicationId() {
         return applicationId;
@@ -102,4 +103,12 @@ public class ApplicationBean implements Serializable {
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
     }
+
+	public int getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(int tenantId) {
+		this.tenantId = tenantId;
+	}
 }

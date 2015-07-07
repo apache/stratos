@@ -90,6 +90,11 @@ public class AutoscalerServiceClient {
         return stub.getAutoscalingPolicy(autoscalingPolicyId);
     }
 
+	public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy getAutoScalePolicyForTenant(
+			String autoscalingPolicyId,int tenantId) throws RemoteException {
+		return stub.getAutoscalingPolicyForTenant(autoscalingPolicyId,tenantId);
+	}
+
     public void addApplication(ApplicationContext applicationContext)
             throws AutoscalerServiceApplicationDefinitionExceptionException,
             RemoteException, AutoscalerServiceCartridgeNotFoundExceptionException,
@@ -229,6 +234,10 @@ public class AutoscalerServiceClient {
     public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
         return stub.getDeploymentPolicy(deploymentPolicyId);
     }
+
+	public DeploymentPolicy getDeploymentPolicyForTenant(String deploymentPolicyId,int tenantId) throws RemoteException {
+		return stub.getDeploymentPolicyForTenant(deploymentPolicyId,tenantId);
+	}
 
     public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException {
         return stub.getDeploymentPolicies();

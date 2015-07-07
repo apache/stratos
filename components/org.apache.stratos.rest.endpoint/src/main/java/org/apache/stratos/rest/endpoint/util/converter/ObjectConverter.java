@@ -43,6 +43,7 @@ import org.apache.stratos.common.beans.policy.autoscale.*;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.*;
+import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
@@ -55,9 +56,11 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class ObjectConverter {
@@ -1103,7 +1106,7 @@ public class ObjectConverter {
     }
 
     public static ApplicationContext convertApplicationDefinitionToStubApplicationContext(
-            ApplicationBean applicationDefinition) {
+            ApplicationBean applicationDefinition) throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
@@ -1132,7 +1135,7 @@ public class ObjectConverter {
             // top level cartridge context information
             if (applicationDefinition.getComponents().getCartridges() != null) {
                 componentContext.setCartridgeContexts(
-                        convertCartridgeReferenceBeansToStubCartridgeContexts(applicationDefinition.getComponents().getCartridges()));
+                        convertCartridgeReferenceBeansToStubCartridgeContexts(applicationDefinition.getComponents().getCartridges(),applicationDefinition.getTenantId()));
             }
             applicationContext.setComponents(componentContext);
         }
@@ -1364,7 +1367,7 @@ public class ObjectConverter {
     }
 
     private static CartridgeContext[] convertCartridgeReferenceBeansToStubCartridgeContexts(
-            List<CartridgeReferenceBean> cartridges) {
+            List<CartridgeReferenceBean> cartridges,int tenantId) throws RestAPIException {
 
         if (cartridges == null) {
             return null;
@@ -1377,14 +1380,15 @@ public class ObjectConverter {
             context.setCartridgeMax(cartridgeDefinition.getCartridgeMax());
             context.setCartridgeMin(cartridgeDefinition.getCartridgeMin());
             context.setType(cartridgeDefinition.getType());
-            context.setSubscribableInfoContext(convertSubscribableInfo(cartridgeDefinition.getSubscribableInfo()));
+            context.setSubscribableInfoContext(convertSubscribableInfo(cartridgeDefinition.getSubscribableInfo(),tenantId));
             cartridgeContextArray[i++] = context;
         }
 
         return cartridgeContextArray;
     }
 
-    private static SubscribableInfoContext convertSubscribableInfo(SubscribableInfo subscribableInfo) {
+    private static SubscribableInfoContext convertSubscribableInfo(SubscribableInfo subscribableInfo, int tenantId)
+		    throws RestAPIException {
 
         if (subscribableInfo == null) {
             return null;
@@ -1392,8 +1396,24 @@ public class ObjectConverter {
 
         SubscribableInfoContext infoContext = new SubscribableInfoContext();
         infoContext.setAlias(subscribableInfo.getAlias());
-        infoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
+	    try {
+		    String autoScalerUuid= AutoscalerServiceClient.getInstance().getAutoScalePolicyForTenant(subscribableInfo.getAutoscalingPolicy(),
+				                                 subscribableInfo.getTenantId()).getUuid();
+		    infoContext.setAutoscalingPolicy(autoScalerUuid);
+	    } catch (RemoteException e) {
+		    throw new RestAPIException(e);
+	    }
+
         infoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
+
+	    try {
+		    String deploymentPolicyUuid = AutoscalerServiceClient.getInstance().getDeploymentPolicyForTenant(
+				    subscribableInfo.getAutoscalingPolicy(),
+				    subscribableInfo.getTenantId()).getUuid();
+		    infoContext.setAutoscalingPolicy(deploymentPolicyUuid);
+	    } catch (RemoteException e) {
+		    throw new RestAPIException(e);
+	    }
         infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
         infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
         infoContext.setMinMembers(subscribableInfo.getMinMembers());
@@ -1503,7 +1523,8 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.autoscaler.stub.pojo.GroupContext[]
-    convertGroupDefinitionsToStubGroupContexts(List<CartridgeGroupReferenceBean> groupDefinitions) {
+    convertGroupDefinitionsToStubGroupContexts(List<CartridgeGroupReferenceBean> groupDefinitions)
+		    throws RestAPIException {
 
         if (groupDefinitions == null) {
             return null;
@@ -1526,7 +1547,7 @@ public class ObjectConverter {
 
             // Cartridges
             if (groupDefinition.getCartridges() != null) {
-                groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges()));
+                groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges(),-1234));
             }
             groupContexts[i++] = groupContext;
         }

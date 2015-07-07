@@ -775,6 +775,8 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/manage")
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         try {
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+	        applicationDefinition.setTenantId(carbonContext.getTenantId());
             StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
                     getUsername(), getTenantDomain());
 
