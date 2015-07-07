@@ -32,6 +32,7 @@ public class ApplicationPolicyBean {
     private int tenantId;
     private String algorithm;
     String[] networkPartitions;
+	private String[] networkPartitionsUuid;
     List<PropertyBean> properties;
 
     public String getUuid() {
@@ -81,4 +82,12 @@ public class ApplicationPolicyBean {
     public void setProperties(List<PropertyBean> properties) {
         this.properties = properties;
     }
+
+	public String[] getNetworkPartitionsUuid() {
+		return networkPartitionsUuid;
+	}
+
+	public void setNetworkPartitionsUuid(String[] networkPartitionsUuid) {
+		this.networkPartitionsUuid = networkPartitionsUuid;
+	}
 }

@@ -639,7 +639,7 @@ public class AutoscalerUtil {
         }
 
         // application policy should contain at least one network partition reference
-        String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
+        String[] networkPartitionIds = applicationPolicy.getNetworkPartitionsUuid();
         if (null == networkPartitionIds || networkPartitionIds.length == 0) {
             String msg = "Invalid Application Policy: "
                     + "Application Policy is not containing any network partition reference";
@@ -661,7 +661,7 @@ public class AutoscalerUtil {
             // network partitions should be added already
             NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
                     .getNetworkPartition(networkPartitionId);
-            if (null == networkPartition || (applicationPolicy.getTenantId() != networkPartition.getTenantId())) {
+            if (null == networkPartition) {
                 String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
                         "[application-policy-id] %s", networkPartitionId, applicationPolicy.getUuid());
                 log.error(msg);

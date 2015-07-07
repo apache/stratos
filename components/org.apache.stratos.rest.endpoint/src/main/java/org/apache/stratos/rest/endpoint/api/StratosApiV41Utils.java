@@ -681,7 +681,7 @@ public class StratosApiV41Utils {
             log.error(msg);
             throw new ApplicationPolicyIsEmptyException(msg);
         }
-
+        CloudControllerServiceClient cloudServiceClient=getCloudControllerServiceClient();
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
         try {
             ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(
@@ -691,7 +691,23 @@ public class StratosApiV41Utils {
                 log.error(msg);
                 throw new ApplicationPolicyIsEmptyException(msg);
             }
-            serviceClient.addApplicationPolicy(applicationPolicy);
+
+
+	        NetworkPartition[] existingNetworkPartitions=cloudServiceClient.getNetworkPartitions();
+	        String[] networkPartitions= applicationPolicy.getNetworkPartitions();
+			String[] networkPartitionsUuid=new String[applicationPolicy.getNetworkPartitions().length];
+	        for(int i=0;i< networkPartitions.length;i++) {
+		        for (NetworkPartition networkPartition : existingNetworkPartitions) {
+			        if (existingNetworkPartitions[i].getId().equals(networkPartition.getId())&&(existingNetworkPartitions[i].getTenantId()==networkPartition.getTenantId()))
+			        {
+				        networkPartitionsUuid[i] = networkPartition.getUuid();
+			        }
+		        }
+	        }
+			applicationPolicy.setNetworkPartitionsUuid(networkPartitionsUuid);
+	        serviceClient.addApplicationPolicy(applicationPolicy);
+
+
         } catch (RemoteException e) {
             String msg = "Could not add application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
