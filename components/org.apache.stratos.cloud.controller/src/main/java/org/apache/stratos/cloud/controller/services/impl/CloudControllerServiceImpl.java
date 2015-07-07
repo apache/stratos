@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -1492,8 +1493,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         String networkPartitionId = networkPartition.getId();
-        if (cloudControllerContext.getNetworkPartition(networkPartitionId) != null && cloudControllerContext
-                .getNetworkPartition(networkPartitionId).getTenantId() == networkPartition.getTenantId()) {
+
+        if (cloudControllerContext.getNetworkPartitionForTenant(networkPartitionId,
+                networkPartition.getTenantId()) != null) {
             String message = "Network partition already exists: [network-partition-id] " + networkPartitionId;
             log.error(message);
             throw new NetworkPartitionAlreadyExistsException(message);
@@ -1547,28 +1549,51 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException {
 
         try {
-            String networkPartitionUuid = cloudControllerContext.getNetworkPartition(networkPartitionId).getUuid();
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Removing network partition: [network-partition-uuid] %s " +
-                        "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions =
+                    CloudControllerServiceClient.getInstance().getNetworkPartitions();
+            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartitionForTenant = null;
+            if (networkPartitions != null) {
+                for (org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition :
+                        networkPartitions) {
+                    if (networkPartition.getId().equals(networkPartitionId) && networkPartition.getTenantId() == this
+                            .tenantId) {
+                        networkPartitionForTenant = networkPartition;
+                    }
+                }
             }
-            handleNullObject(networkPartitionId, "Network Partition Id is null");
 
-            if (cloudControllerContext.getNetworkPartition(networkPartitionId) == null) {
-                String message = String.format("Network partition not found: [network-partition-uuid] %s " +
-                        "[network-partition-id] %s", networkPartitionUuid, networkPartitionId);
+            if (networkPartitionForTenant != null) {
+                String networkPartitionUuid = networkPartitionForTenant.getUuid();
+
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Removing network partition: [network-partition-uuid] %s " +
+                            "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+                }
+                handleNullObject(networkPartitionId, "Network Partition Id is null");
+
+                if (networkPartitionUuid == null) {
+                    String message = String.format("Network partition not found:[network-partition-id] %s", networkPartitionId);
+                    log.error(message);
+                    throw new NetworkPartitionNotExistsException(message);
+                }
+                // removing from CC-Context
+                CloudControllerContext.getInstance().removeNetworkPartition(networkPartitionUuid);
+                // persisting CC-Context
+                CloudControllerContext.getInstance().persist();
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Network partition removed successfully: [network-partition-uuid] %s " +
+                            "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+                }
+            } else {
+                String message = String.format("Network partition not found: [network-partition-id] %s",
+                        networkPartitionId);
                 log.error(message);
                 throw new NetworkPartitionNotExistsException(message);
             }
-            // removing from CC-Context
-            CloudControllerContext.getInstance().removeNetworkPartition(networkPartitionId);
-            // persisting CC-Context
-            CloudControllerContext.getInstance().persist();
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Network partition removed successfully: [network-partition-uuid] %s " +
-                        "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
-            }
+
+
+
+
         } catch (Exception e) {
             String message = e.getMessage();
             log.error(message);

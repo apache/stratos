@@ -1,213 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:ax27="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://common.stratos.apache.org/xsd" xmlns:ax21="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax212="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://domain.common.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:ax27="http://domain.common.stratos.apache.org/xsd" xmlns:ax25="http://common.stratos.apache.org/xsd" xmlns:ax23="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax21="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax211="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
     <wsdl:types>
-        <xs:schema xmlns:ax29="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax213="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax26="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax22="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
+        <xs:schema xmlns:ax213="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax210="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax24="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax22="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
             <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://domain.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://topology.domain.messaging.stratos.apache.org/xsd"/>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax21:NonExistingKubernetesClusterException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getKubernetesCluster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getKubernetesClusterResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:KubernetesCluster"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidPartitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax21:InvalidPartitionException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validatePartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax29:Partition"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validatePartitionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridges">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeNotFoundException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax21:CartridgeNotFoundException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax21:InvalidIaasProviderException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCloudControllerException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax21:CloudControllerException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax29:InstanceContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstanceResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:MemberContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidMemberException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax21:InvalidMemberException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:import namespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd"/>
             <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstanceResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getIaasProviders">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getIaasProvidersResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgeResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:Cartridge"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getClusterContext">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getClusterContextResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ClusterContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax21:InvalidCartridgeDefinitionException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeAlreadyExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax21:CartridgeAlreadyExistsException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax29:Cartridge"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addCartridgeResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeDefinitionNotExistsException" nillable="true" type="ax21:CartridgeDefinitionNotExistsException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridge" nillable="true" type="ax29:Cartridge"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateCartridgeResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -235,7 +36,7 @@
             <xs:element name="addServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax29:ServiceGroup"/>
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax23:ServiceGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -270,7 +71,7 @@
             <xs:element name="getServiceGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ServiceGroup"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ServiceGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -312,21 +113,42 @@
             <xs:element name="getServiceGroupDependenciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:Dependencies"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:Dependencies"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeNotFoundException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax21:CartridgeNotFoundException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax21:InvalidIaasProviderException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCloudControllerException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax21:CloudControllerException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="startInstances">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax29:InstanceContext"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax23:InstanceContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="startInstancesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:MemberContext"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -341,6 +163,91 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidPartitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax21:InvalidPartitionException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validatePartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax23:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validatePartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax23:InstanceContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstanceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:MemberContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidMemberException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax21:InvalidMemberException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstanceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:Cartridge"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getClusterContext">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getClusterContextResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ClusterContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -368,7 +275,7 @@
             <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax29:Registrant"/>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax23:Registrant"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -421,7 +328,7 @@
                         <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="status" nillable="true" type="ax212:ClusterStatus"/>
+                        <xs:element minOccurs="0" name="status" nillable="true" type="ax29:ClusterStatus"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -443,7 +350,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="appId" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax29:ApplicationClusterContext"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax23:ApplicationClusterContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -488,7 +395,14 @@
             <xs:element name="getKubernetesClustersResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:KubernetesCluster"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax213:KubernetesCluster"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax21:NonExistingKubernetesClusterException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -502,7 +416,7 @@
             <xs:element name="getMasterForKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:KubernetesMaster"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax213:KubernetesMaster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -516,7 +430,7 @@
             <xs:element name="getHostsForKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:KubernetesHost"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax213:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -537,7 +451,7 @@
             <xs:element name="addKubernetesCluster">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax26:KubernetesCluster"/>
+                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax213:KubernetesCluster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -551,7 +465,7 @@
             <xs:element name="updateKubernetesCluster">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax26:KubernetesCluster"/>
+                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax213:KubernetesCluster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -573,7 +487,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax26:KubernetesHost"/>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax213:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -636,7 +550,7 @@
             <xs:element name="updateKubernetesMaster">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax26:KubernetesMaster"/>
+                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax213:KubernetesMaster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -650,7 +564,7 @@
             <xs:element name="updateKubernetesHost">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax26:KubernetesHost"/>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax213:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -678,7 +592,7 @@
             <xs:element name="addNetworkPartition">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax29:NetworkPartition"/>
+                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax23:NetworkPartition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -713,7 +627,7 @@
             <xs:element name="updateNetworkPartition">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax29:NetworkPartition"/>
+                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax23:NetworkPartition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -732,7 +646,7 @@
             <xs:element name="getNetworkPartitionsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:NetworkPartition"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:NetworkPartition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -746,7 +660,94 @@
             <xs:element name="getNetworkPartitionResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:NetworkPartition"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:NetworkPartition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getKubernetesCluster">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getKubernetesClusterResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax213:KubernetesCluster"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getIaasProviders">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getIaasProvidersResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax21:InvalidCartridgeDefinitionException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeAlreadyExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax21:CartridgeAlreadyExistsException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax23:Cartridge"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCartridgeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeDefinitionNotExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeDefinitionNotExistsException" nillable="true" type="ax21:CartridgeDefinitionNotExistsException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridge" nillable="true" type="ax23:Cartridge"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateCartridgeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridges">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -765,7 +766,7 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax24:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
@@ -776,12 +777,12 @@
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="NonExistingKubernetesClusterException">
+            <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="InvalidPartitionException">
+            <xs:complexType name="InvalidServiceGroupException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -803,30 +804,12 @@
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
+            <xs:complexType name="InvalidPartitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="InvalidMemberException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeTypeException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeDefinitionException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="CartridgeAlreadyExistsException">
-                <xs:sequence/>
-            </xs:complexType>
-            <xs:complexType name="CartridgeDefinitionNotExistsException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidServiceGroupException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -847,6 +830,11 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ClusterInstanceCreationException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NonExistingKubernetesClusterException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -894,6 +882,54 @@
             <xs:complexType name="NetworkPartitionNotExistsException">
                 <xs:sequence/>
             </xs:complexType>
+            <xs:complexType name="InvalidCartridgeDefinitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CartridgeAlreadyExistsException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="CartridgeDefinitionNotExistsException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax212="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://common.stratos.apache.org/xsd"/>
+            <xs:complexType name="KubernetesCluster">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax211:KubernetesHost"/>
+                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax211:KubernetesMaster"/>
+                    <xs:element minOccurs="0" name="portRange" nillable="true" type="ax211:PortRange"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax212:Properties"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="KubernetesHost">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostname" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="privateIPAddress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax212:Properties"/>
+                    <xs:element minOccurs="0" name="publicIPAddress" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="KubernetesMaster">
+                <xs:complexContent>
+                    <xs:extension base="ax211:KubernetesHost">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="PortRange">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lower" type="xs:int"/>
+                    <xs:element minOccurs="0" name="upper" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.common.stratos.apache.org/xsd">
             <xs:complexType name="NameValuePair">
@@ -910,53 +946,21 @@
                 </xs:complexContent>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax25="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://common.stratos.apache.org/xsd"/>
-            <xs:complexType name="KubernetesCluster">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax23:KubernetesHost"/>
-                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax23:KubernetesMaster"/>
-                    <xs:element minOccurs="0" name="portRange" nillable="true" type="ax23:PortRange"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="KubernetesHost">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostname" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="privateIPAddress" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                    <xs:element minOccurs="0" name="publicIPAddress" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="KubernetesMaster">
-                <xs:complexContent>
-                    <xs:extension base="ax23:KubernetesHost">
-                        <xs:sequence/>
-                    </xs:extension>
-                </xs:complexContent>
-            </xs:complexType>
-            <xs:complexType name="PortRange">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lower" type="xs:int"/>
-                    <xs:element minOccurs="0" name="upper" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax28="http://common.stratos.apache.org/xsd" xmlns:ax211="http://domain.common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax28="http://domain.common.stratos.apache.org/xsd" xmlns:ax26="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
             <xs:import namespace="http://domain.common.stratos.apache.org/xsd"/>
-            <xs:complexType name="Partition">
+            <xs:complexType name="ServiceGroup">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax23:Dependencies"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InstanceContext">
@@ -967,10 +971,21 @@
                     <xs:element minOccurs="0" name="initTime" type="xs:long"/>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="obsoleteExpiryTime" type="xs:long"/>
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax27:Partition"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax23:Partition"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax27:Volume"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Partition">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Volume">
@@ -994,21 +1009,21 @@
                     <xs:element minOccurs="0" name="clusterInstanceId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="defaultPrivateIP" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="defaultPublicIP" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="dynamicPayload" nillable="true" type="ax210:NameValuePair"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="dynamicPayload" nillable="true" type="ax27:NameValuePair"/>
                     <xs:element minOccurs="0" name="initTime" type="xs:long"/>
                     <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="instanceMetadata" nillable="true" type="ax27:InstanceMetadata"/>
+                    <xs:element minOccurs="0" name="instanceMetadata" nillable="true" type="ax23:InstanceMetadata"/>
                     <xs:element minOccurs="0" name="kubernetesPodId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="kubernetesPodLabel" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="loadBalancingIPType" nillable="true" type="ax210:LoadBalancingIPType"/>
+                    <xs:element minOccurs="0" name="loadBalancingIPType" nillable="true" type="ax27:LoadBalancingIPType"/>
                     <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="obsoleteExpiryTime" type="xs:long"/>
                     <xs:element minOccurs="0" name="obsoleteInitTime" type="xs:long"/>
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax27:Partition"/>
+                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax23:Partition"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="privateIPs" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="publicIPs" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
@@ -1028,7 +1043,7 @@
             </xs:complexType>
             <xs:complexType name="Cartridge">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypeMappings" nillable="true" type="ax27:AppType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypeMappings" nillable="true" type="ax23:AppType"/>
                     <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="category" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"/>
@@ -1036,14 +1051,14 @@
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="exportingProperties" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax27:IaasConfig"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax23:IaasConfig"/>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="loadBalancingIPType" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="metadataKeys" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax27:Persistence"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax27:PortMapping"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax23:PortMapping"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                     <xs:element minOccurs="0" name="tenantPartitions" nillable="true" type="xs:string"/>
@@ -1065,29 +1080,29 @@
                     <xs:element minOccurs="0" name="identity" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="imageId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax27:NetworkInterfaces"/>
+                    <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax23:NetworkInterfaces"/>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkInterfaces">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax27:NetworkInterface"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax23:NetworkInterface"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkInterface">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="fixedIp" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="floatingNetworks" nillable="true" type="ax27:FloatingNetworks"/>
+                    <xs:element minOccurs="0" name="floatingNetworks" nillable="true" type="ax23:FloatingNetworks"/>
                     <xs:element minOccurs="0" name="networkUuid" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="portUuid" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="FloatingNetworks">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="floatingNetworks" nillable="true" type="ax27:FloatingNetwork"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="floatingNetworks" nillable="true" type="ax23:FloatingNetwork"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="FloatingNetwork">
@@ -1100,7 +1115,7 @@
             <xs:complexType name="Persistence">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="persistenceRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax27:Volume"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PortMapping">
@@ -1121,24 +1136,10 @@
                     <xs:element minOccurs="0" name="kubernetesServices" nillable="true" type="xs:anyType"/>
                     <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"/>
                     <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax27:Volume"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ServiceGroup">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax27:Dependencies"/>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Dependencies">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Registrant">
@@ -1149,8 +1150,8 @@
                     <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax27:Persistence"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
@@ -1163,11 +1164,11 @@
                     <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax27:Volume"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkPartition">
@@ -1175,8 +1176,8 @@
                     <xs:element minOccurs="0" name="activeByDefault" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax27:Partition"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax23:Partition"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                     <xs:element minOccurs="0" name="uuid" nillable="true" type="xs:string"/>
@@ -1397,15 +1398,6 @@
     <wsdl:message name="validateDeploymentPolicyNetworkPartitionResponse">
         <wsdl:part name="parameters" element="ns:validateDeploymentPolicyNetworkPartitionResponse"/>
     </wsdl:message>
-    <wsdl:message name="startInstancesRequest">
-        <wsdl:part name="parameters" element="ns:startInstances"/>
-    </wsdl:message>
-    <wsdl:message name="startInstancesResponse">
-        <wsdl:part name="parameters" element="ns:startInstancesResponse"/>
-    </wsdl:message>
-    <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"/>
-    </wsdl:message>
     <wsdl:message name="updateCartridgeRequest">
         <wsdl:part name="parameters" element="ns:updateCartridge"/>
     </wsdl:message>
@@ -1415,8 +1407,17 @@
     <wsdl:message name="CloudControllerServiceInvalidCartridgeDefinitionException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeDefinitionException"/>
     </wsdl:message>
+    <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"/>
+    </wsdl:message>
     <wsdl:message name="CloudControllerServiceCartridgeDefinitionNotExistsException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeDefinitionNotExistsException"/>
+    </wsdl:message>
+    <wsdl:message name="startInstancesRequest">
+        <wsdl:part name="parameters" element="ns:startInstances"/>
+    </wsdl:message>
+    <wsdl:message name="startInstancesResponse">
+        <wsdl:part name="parameters" element="ns:startInstancesResponse"/>
     </wsdl:message>
     <wsdl:message name="startInstanceRequest">
         <wsdl:part name="parameters" element="ns:startInstance"/>
@@ -1487,12 +1488,6 @@
     <wsdl:message name="removeCartridgeResponse">
         <wsdl:part name="parameters" element="ns:removeCartridgeResponse"/>
     </wsdl:message>
-    <wsdl:message name="getNetworkPartitionsRequest">
-        <wsdl:part name="parameters" element="ns:getNetworkPartitions"/>
-    </wsdl:message>
-    <wsdl:message name="getNetworkPartitionsResponse">
-        <wsdl:part name="parameters" element="ns:getNetworkPartitionsResponse"/>
-    </wsdl:message>
     <wsdl:message name="addCartridgeRequest">
         <wsdl:part name="parameters" element="ns:addCartridge"/>
     </wsdl:message>
@@ -1501,6 +1496,12 @@
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceCartridgeAlreadyExistsException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeAlreadyExistsException"/>
+    </wsdl:message>
+    <wsdl:message name="getNetworkPartitionsRequest">
+        <wsdl:part name="parameters" element="ns:getNetworkPartitions"/>
+    </wsdl:message>
+    <wsdl:message name="getNetworkPartitionsResponse">
+        <wsdl:part name="parameters" element="ns:getNetworkPartitionsResponse"/>
     </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="getCartridges">
@@ -1640,19 +1641,19 @@
             <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validateDeploymentPolicyNetworkPartitionCloudControllerServiceInvalidPartitionException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:validateDeploymentPolicyNetworkPartitionCloudControllerServiceInvalidCartridgeTypeException"/>
         </wsdl:operation>
-        <wsdl:operation name="startInstances">
-            <wsdl:input message="ns:startInstancesRequest" wsaw:Action="urn:startInstances"/>
-            <wsdl:output message="ns:startInstancesResponse" wsaw:Action="urn:startInstancesResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceCartridgeNotFoundException" name="CloudControllerServiceCartridgeNotFoundException" wsaw:Action="urn:startInstancesCloudControllerServiceCartridgeNotFoundException"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstancesCloudControllerServiceInvalidIaasProviderException"/>
-            <wsdl:fault message="ns:CloudControllerServiceCloudControllerException" name="CloudControllerServiceCloudControllerException" wsaw:Action="urn:startInstancesCloudControllerServiceCloudControllerException"/>
-        </wsdl:operation>
         <wsdl:operation name="updateCartridge">
             <wsdl:input message="ns:updateCartridgeRequest" wsaw:Action="urn:updateCartridge"/>
             <wsdl:output message="ns:updateCartridgeResponse" wsaw:Action="urn:updateCartridgeResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:updateCartridgeCloudControllerServiceInvalidCartridgeDefinitionException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:updateCartridgeCloudControllerServiceInvalidIaasProviderException"/>
             <wsdl:fault message="ns:CloudControllerServiceCartridgeDefinitionNotExistsException" name="CloudControllerServiceCartridgeDefinitionNotExistsException" wsaw:Action="urn:updateCartridgeCloudControllerServiceCartridgeDefinitionNotExistsException"/>
+        </wsdl:operation>
+        <wsdl:operation name="startInstances">
+            <wsdl:input message="ns:startInstancesRequest" wsaw:Action="urn:startInstances"/>
+            <wsdl:output message="ns:startInstancesResponse" wsaw:Action="urn:startInstancesResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceCartridgeNotFoundException" name="CloudControllerServiceCartridgeNotFoundException" wsaw:Action="urn:startInstancesCloudControllerServiceCartridgeNotFoundException"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstancesCloudControllerServiceInvalidIaasProviderException"/>
+            <wsdl:fault message="ns:CloudControllerServiceCloudControllerException" name="CloudControllerServiceCloudControllerException" wsaw:Action="urn:startInstancesCloudControllerServiceCloudControllerException"/>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <wsdl:input message="ns:startInstanceRequest" wsaw:Action="urn:startInstance"/>
@@ -1705,16 +1706,16 @@
             <wsdl:output message="ns:removeCartridgeResponse" wsaw:Action="urn:removeCartridgeResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:removeCartridgeCloudControllerServiceInvalidCartridgeTypeException"/>
         </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <wsdl:input message="ns:getNetworkPartitionsRequest" wsaw:Action="urn:getNetworkPartitions"/>
-            <wsdl:output message="ns:getNetworkPartitionsResponse" wsaw:Action="urn:getNetworkPartitionsResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <wsdl:input message="ns:addCartridgeRequest" wsaw:Action="urn:addCartridge"/>
             <wsdl:output message="ns:addCartridgeResponse" wsaw:Action="urn:addCartridgeResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:addCartridgeCloudControllerServiceInvalidCartridgeDefinitionException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:addCartridgeCloudControllerServiceInvalidIaasProviderException"/>
             <wsdl:fault message="ns:CloudControllerServiceCartridgeAlreadyExistsException" name="CloudControllerServiceCartridgeAlreadyExistsException" wsaw:Action="urn:addCartridgeCloudControllerServiceCartridgeAlreadyExistsException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <wsdl:input message="ns:getNetworkPartitionsRequest" wsaw:Action="urn:getNetworkPartitions"/>
+            <wsdl:output message="ns:getNetworkPartitionsResponse" wsaw:Action="urn:getNetworkPartitionsResponse"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
@@ -2049,24 +2050,6 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <soap:operation soapAction="urn:updateCartridge" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <soap:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
-            </wsdl:fault>
-        </wsdl:operation>
         <wsdl:operation name="startInstances">
             <soap:operation soapAction="urn:startInstances" style="document"/>
             <wsdl:input>
@@ -2080,6 +2063,24 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceCartridgeNotFoundException">
                 <soap:fault use="literal" name="CloudControllerServiceCartridgeNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateCartridge">
+            <soap:operation soapAction="urn:updateCartridge" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
+                <soap:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
                 <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
@@ -2208,6 +2209,15 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <soap:operation soapAction="urn:getNetworkPartitions" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <soap:operation soapAction="urn:addCartridge" style="document"/>
             <wsdl:input>
@@ -2225,15 +2235,6 @@
             <wsdl:fault name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <soap:fault use="literal" name="CloudControllerServiceCartridgeAlreadyExistsException"/>
             </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <soap:operation soapAction="urn:getNetworkPartitions" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
@@ -2568,24 +2569,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <soap12:operation soapAction="urn:updateCartridge" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <soap12:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
-            </wsdl:fault>
-        </wsdl:operation>
         <wsdl:operation name="startInstances">
             <soap12:operation soapAction="urn:startInstances" style="document"/>
             <wsdl:input>
@@ -2599,6 +2582,24 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceCartridgeNotFoundException">
                 <soap12:fault use="literal" name="CloudControllerServiceCartridgeNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateCartridge">
+            <soap12:operation soapAction="urn:updateCartridge" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
+                <soap12:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
@@ -2727,6 +2728,15 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <soap12:operation soapAction="urn:getNetworkPartitions" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <soap12:operation soapAction="urn:addCartridge" style="document"/>
             <wsdl:input>
@@ -2744,15 +2754,6 @@
             <wsdl:fault name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <soap12:fault use="literal" name="CloudControllerServiceCartridgeAlreadyExistsException"/>
             </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <soap12:operation soapAction="urn:getNetworkPartitions" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
@@ -3000,8 +3001,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <http:operation location="updateCartridge"/>
+        <wsdl:operation name="startInstances">
+            <http:operation location="startInstances"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -3009,8 +3010,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="startInstances">
-            <http:operation location="startInstances"/>
+        <wsdl:operation name="updateCartridge">
+            <http:operation location="updateCartridge"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -3108,8 +3109,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="addCartridge">
-            <http:operation location="addCartridge"/>
+        <wsdl:operation name="getNetworkPartitions">
+            <http:operation location="getNetworkPartitions"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -3117,8 +3118,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <http:operation location="getNetworkPartitions"/>
+        <wsdl:operation name="addCartridge">
+            <http:operation location="addCartridge"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

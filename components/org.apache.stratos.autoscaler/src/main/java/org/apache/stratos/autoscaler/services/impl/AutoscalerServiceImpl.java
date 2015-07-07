@@ -1115,6 +1115,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         // validate each network partition references
         for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionRefs()) {
             // network partition id can't be null or empty
+            //String networkPartitionUuid = networkPartitionRef.getUuid();
             String networkPartitionId = networkPartitionRef.getId();
             if (StringUtils.isBlank(networkPartitionId)) {
                 String msg = String.format("Network partition id is blank: [deployment-policy-uuid] %s " +
@@ -1128,12 +1129,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             NetworkPartition networkPartitionForTenant = null;
             if (networkPartitions != null) {
                 for (NetworkPartition networkPartition : networkPartitions) {
-                    if (deploymentPolicy.getTenantId() == networkPartition.getTenantId()) {
+                    if (deploymentPolicy.getTenantId() == networkPartition.getTenantId() && networkPartition.getId()
+                            .equals(networkPartitionRef.getId())) {
                         networkPartitionForTenant = networkPartition;
                     }
                 }
             }
-
             if (networkPartitionForTenant == null) {
                 String msg = String.format("Network partition is not found: [deployment-policy-uuid] %s " +
                                 "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyUuid,
@@ -1184,8 +1185,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // a network partition reference should contain at least one partition reference
             PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
             if (null == partitions || partitions.length == 0) {
-                String msg = String.format("Network partition does not have any partition references: "
-                        + "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId, networkPartitionId);
+                String msg = String.format("Network partition does not have any partition references: " +
+                                "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId,
+                        networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
