@@ -35,7 +35,6 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -1546,24 +1545,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException {
+    public boolean removeNetworkPartition(String networkPartitionId,
+                                          int tenantId) throws NetworkPartitionNotExistsException {
 
         try {
-            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions =
-                    CloudControllerServiceClient.getInstance().getNetworkPartitions();
-            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartitionForTenant = null;
-            if (networkPartitions != null) {
-                for (org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition :
-                        networkPartitions) {
-                    if (networkPartition.getId().equals(networkPartitionId) && networkPartition.getTenantId() == this
-                            .tenantId) {
-                        networkPartitionForTenant = networkPartition;
-                    }
-                }
-            }
+            NetworkPartition networkPartition = cloudControllerContext.getNetworkPartitionForTenant
+                    (networkPartitionId, tenantId);
 
-            if (networkPartitionForTenant != null) {
-                String networkPartitionUuid = networkPartitionForTenant.getUuid();
+            if (networkPartition != null) {
+                String networkPartitionUuid = networkPartition.getUuid();
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Removing network partition: [network-partition-uuid] %s " +

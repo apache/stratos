@@ -199,9 +199,9 @@ public class CloudControllerServiceClient {
         stub.addNetworkPartition(networkPartition);
     }
 
-    public void removeNetworkPartition(String networkPartitionId) throws RemoteException,
+    public void removeNetworkPartition(String networkPartitionId, int tenantId) throws RemoteException,
             CloudControllerServiceNetworkPartitionNotExistsExceptionException {
-        stub.removeNetworkPartition(networkPartitionId);
+        stub.removeNetworkPartition(networkPartitionId, tenantId);
     }
 
     public void updateNetworkPartition(NetworkPartition networkPartition) throws RemoteException,
