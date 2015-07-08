@@ -75,6 +75,8 @@ public class StratosTestServerManager extends TestServerManager {
             long time1 = System.currentTimeMillis();
             log.info("Starting ActiveMQ...");
             BrokerService broker = new BrokerService();
+            broker.setDataDirectory(StratosTestServerManager.class.getResource("/").getPath() +
+                    File.separator + ".." + File.separator + "activemq-data");
             broker.setBrokerName("testBroker");
             broker.addConnector(ACTIVEMQ_BIND_ADDRESS);
             broker.start();

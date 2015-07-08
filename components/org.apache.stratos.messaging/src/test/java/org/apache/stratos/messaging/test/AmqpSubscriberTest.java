@@ -63,6 +63,8 @@ public class AmqpSubscriberTest {
         try {
             log.info("Initializing ActiveMQ...");
             broker = new BrokerService();
+            broker.setDataDirectory(AmqpSubscriberTest.class.getResource("/").getPath() +
+                    File.separator + ".." + File.separator + "activemq-data");
             broker.setBrokerName("testBroker");
             broker.addConnector("tcp://localhost:61617");
         } catch (Exception e) {
