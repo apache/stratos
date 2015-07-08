@@ -73,7 +73,7 @@ public class ObjectConverter {
         }
 
         Cartridge cartridge = new Cartridge();
-
+		cartridge.setUuid(cartridgeBean.getUuid());
         cartridge.setType(cartridgeBean.getType());
         cartridge.setHostName(cartridgeBean.getHost());
         cartridge.setProvider(cartridgeBean.getProvider());

@@ -151,11 +151,11 @@ public class StratosApiV41Utils {
 						cartridgeBean.getType()));
 			}
 		} catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
-			String msg = "Could not add cartridge";
+			String msg = "Could not add cartridge as it is already exits";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		} catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-			String msg = "Could not add cartridge";
+			String msg = "Could not add cartridge as invalid cartridge definition";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		} catch (RemoteException e) {
@@ -163,7 +163,7 @@ public class StratosApiV41Utils {
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-			String msg = "Could not add cartridge";
+			String msg = "Could not add cartridge as invalid iaas provider";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}
