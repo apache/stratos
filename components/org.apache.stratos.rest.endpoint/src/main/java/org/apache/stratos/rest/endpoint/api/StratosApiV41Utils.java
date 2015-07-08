@@ -692,20 +692,19 @@ public class StratosApiV41Utils {
                 throw new ApplicationPolicyIsEmptyException(msg);
             }
 
-
-	        NetworkPartition[] existingNetworkPartitions=cloudServiceClient.getNetworkPartitions();
-	        String[] networkPartitions= applicationPolicy.getNetworkPartitions();
-			String[] networkPartitionsUuid=new String[applicationPolicy.getNetworkPartitions().length];
-	        for(int i=0;i< networkPartitions.length;i++) {
-		        for (NetworkPartition networkPartition : existingNetworkPartitions) {
-			        if (existingNetworkPartitions[i].getId().equals(networkPartition.getId())&&(existingNetworkPartitions[i].getTenantId()==networkPartition.getTenantId()))
-			        {
-				        networkPartitionsUuid[i] = networkPartition.getUuid();
-			        }
-		        }
-	        }
-			applicationPolicy.setNetworkPartitionsUuid(networkPartitionsUuid);
-	        serviceClient.addApplicationPolicy(applicationPolicy);
+            NetworkPartition[] existingNetworkPartitions = cloudServiceClient.getNetworkPartitions();
+            String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+            String[] networkPartitionsUuid = new String[applicationPolicy.getNetworkPartitions().length];
+            for (int i = 0; i < networkPartitions.length; i++) {
+                for (NetworkPartition networkPartition : existingNetworkPartitions) {
+                    if (networkPartitions[i].equals(networkPartition.getId()) && (applicationPolicyBean.getTenantId()
+                            == networkPartition.getTenantId())) {
+                        networkPartitionsUuid[i] = networkPartition.getUuid();
+                    }
+                }
+            }
+            applicationPolicy.setNetworkPartitionsUuid(networkPartitionsUuid);
+            serviceClient.addApplicationPolicy(applicationPolicy);
 
 
         } catch (RemoteException e) {
@@ -859,6 +858,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
         ApplicationPolicyBean applicationPolicyBean;
         try {
+
             applicationPolicyBean = getApplicationPolicy(applicationPolicyId);
             serviceClient.removeApplicationPolicy(applicationPolicyBean.getUuid());
         } catch (RemoteException e) {
@@ -2870,12 +2870,14 @@ public class StratosApiV41Utils {
                 for (ApplicationPolicy applicationPolicy : applicationPolicies) {
 
                     for (String networkPartition :
-                            applicationPolicy.getNetworkPartitions()) {
+                            applicationPolicy.getNetworkPartitionsUuid()) {
 
-                        if (networkPartition.equals(networkPartitionId)) {
-                            String message = String.format("Cannot remove the network partition %s, since" +
-                                            " it is used in application policy %s", networkPartitionId,
-                                    applicationPolicy.getId());
+                        if (networkPartition.equals(networkPartitionUuid)) {
+                            String message = String.format("Cannot remove the network partition: " +
+                                            "[network-partition-uuid] %s [network-partition-id] %s since it is used " +
+                                            "in application policy: [application-policy-uuid] %s " +
+                                            "[application-policy-id] %s", networkPartitionUuid, networkPartitionId,
+                                    applicationPolicy.getUuid(), applicationPolicy.getId());
                             log.error(message);
                             throw new RestAPIException(message);
                         }
