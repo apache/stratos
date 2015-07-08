@@ -533,7 +533,8 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
 
         try {
-            StratosApiV41Utils.updateServiceGroup(cartridgeGroupBean);
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            StratosApiV41Utils.updateServiceGroup(cartridgeGroupBean,carbonContext.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
 
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -564,7 +565,9 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/cartridgeGroups/view")
     public Response getCartridgeGroup(
             @PathParam("name") String name) throws RestAPIException {
-        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(name);
+
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(name,carbonContext.getTenantId());
 
         if (serviceGroupDefinition != null) {
             return Response.ok().entity(serviceGroupDefinition).build();
@@ -613,7 +616,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeServiceGroup(
             @PathParam("name") String name) throws RestAPIException {
         try {
-            StratosApiV41Utils.removeServiceGroup(name);
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            StratosApiV41Utils.removeServiceGroup(name,carbonContext.getTenantId());
         } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Cartridge group not found")).build();

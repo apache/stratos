@@ -373,8 +373,8 @@ public class RegistryManager {
         }
     }
 
-    public boolean serviceGroupExist(String serviceGroupName) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + serviceGroupName;
+    public boolean serviceGroupExist(String serviceGroupUuid) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + serviceGroupUuid;
         return resourceExist(resourcePath);
     }
 
@@ -537,10 +537,10 @@ public class RegistryManager {
         }
     }
 
-    public ServiceGroup getServiceGroup(String name) throws Exception {
+    public ServiceGroup getServiceGroup(String uuid) throws Exception {
         try {
             startTenantFlow();
-            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + name;
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + uuid;
             Object serializedObj = instance.retrieve(resourcePath);
             ServiceGroup group = null;
             if (serializedObj != null) {
@@ -561,6 +561,15 @@ public class RegistryManager {
         }
     }
 
+	public ServiceGroup getServiceGroup(String name,int tenantId) throws Exception {
+		ServiceGroup[] serviceGroups=getServiceGroups();
+		for(ServiceGroup serviceGroup:serviceGroups){
+			if(serviceGroup.getName().equals(name)&&(serviceGroup.getTenantId()==tenantId)){
+				return serviceGroup;
+			}
+		}
+		return null;
+	}
     public ServiceGroup[] getServiceGroups() {
         try {
             startTenantFlow();

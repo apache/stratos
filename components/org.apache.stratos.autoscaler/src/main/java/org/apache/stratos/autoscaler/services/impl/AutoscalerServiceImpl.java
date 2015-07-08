@@ -836,17 +836,27 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return true;
     }
 
-    public ServiceGroup getServiceGroup(String name) {
-        if (StringUtils.isEmpty(name)) {
+    public ServiceGroup getServiceGroup(String uuid) {
+        if (StringUtils.isEmpty(uuid)) {
             return null;
         }
         try {
-            return RegistryManager.getInstance().getServiceGroup(name);
+            return RegistryManager.getInstance().getServiceGroup(uuid);
         } catch (Exception e) {
             throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
         }
     }
 
+	public ServiceGroup getServiceGroupByTenant(String name,int tenantId) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+		try {
+			return RegistryManager.getInstance().getServiceGroup(name,tenantId);
+		} catch (Exception e) {
+			throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
+		}
+	}
     @Override
     public String findClusterId(String applicationId, String alias) {
         try {

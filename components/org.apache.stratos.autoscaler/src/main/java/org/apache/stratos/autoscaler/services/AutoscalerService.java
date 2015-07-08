@@ -239,6 +239,14 @@ public interface AutoscalerService {
      */
     public ServiceGroup getServiceGroup(String name);
 
+	/**
+	 * Get cartridge group by tenant
+	 * @param name
+	 * @param tenantId
+	 * @return
+	 */
+	public ServiceGroup getServiceGroupByTenant(String name, int tenantId);
+
     /**
      * Find cluster id of an application by subscription alias.
      *

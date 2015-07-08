@@ -1121,12 +1121,15 @@ public class StratosApiV41Utils {
      * @param cartridgeGroup
      * @throws RestAPIException
      */
-    public static void updateServiceGroup(CartridgeGroupBean cartridgeGroup) throws RestAPIException,
+    public static void updateServiceGroup(CartridgeGroupBean cartridgeGroup,int tenantId) throws RestAPIException,
             InvalidCartridgeGroupDefinitionException {
         try {
+	        AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+	        cartridgeGroup.setUuid(autoscalerServiceClient.getServiceGroupByTenant(cartridgeGroup.getName(),tenantId).getUuid());
+			cartridgeGroup.setTenantId(tenantId);
             ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
                     cartridgeGroup);
-            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+
 
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
@@ -1249,7 +1252,7 @@ public class StratosApiV41Utils {
      * @return GroupBean
      * @throws RestAPIException
      */
-    public static CartridgeGroupBean getServiceGroupDefinition(String name) throws RestAPIException {
+    public static CartridgeGroupBean getServiceGroupDefinition(String name,int tenantId) throws RestAPIException {
 
         if (log.isDebugEnabled()) {
             log.debug("Reading cartridge group: [group-name] " + name);
@@ -1257,7 +1260,7 @@ public class StratosApiV41Utils {
 
         try {
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
-            ServiceGroup serviceGroup = asServiceClient.getServiceGroup(name);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name,tenantId);
             if (serviceGroup == null) {
                 return null;
             }
@@ -1310,7 +1313,7 @@ public class StratosApiV41Utils {
      * @param name Group Name
      * @throws RestAPIException
      */
-    public static void removeServiceGroup(String name) throws RestAPIException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
+    public static void removeServiceGroup(String name,int tenantId) throws RestAPIException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
         if (log.isDebugEnabled()) {
             log.debug("Removing cartridge group: [name] " + name);
@@ -1321,7 +1324,7 @@ public class StratosApiV41Utils {
 
         // Check whether cartridge group exists
         try {
-            if (asServiceClient.getServiceGroup(name) == null) {
+            if (asServiceClient.getServiceGroupByTenant(name,tenantId) == null) {
                 String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
                 log.error(message);
                 throw new RestAPIException(message);
@@ -1334,9 +1337,9 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            ServiceGroup serviceGroup = asServiceClient.getServiceGroup(name);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name,tenantId);
 
-            asServiceClient.undeployServiceGroupDefinition(name);
+            asServiceClient.undeployServiceGroupDefinition(serviceGroup.getUuid());
 
             // Remove the dependent cartridges and cartridge groups from Stratos Manager cache
             // - done after service group has been removed

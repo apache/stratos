@@ -76,4 +76,12 @@ public class CartridgeGroupBean implements Serializable {
 	public void setTenantId(int tenantId) {
 		this.tenantId = tenantId;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

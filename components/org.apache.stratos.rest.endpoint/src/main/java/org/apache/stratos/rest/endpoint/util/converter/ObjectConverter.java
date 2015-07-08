@@ -1800,7 +1800,7 @@ public class ObjectConverter {
         List<CartridgeGroupBean> groupsDefinitions = groupBean.getGroups();
         List<String> cartridgesDefinitions = groupBean.getCartridges();
 
-        servicegroup.setName(groupBean.getUuid());
+        servicegroup.setName(groupBean.getName());
 		servicegroup.setUuid(groupBean.getUuid());
 	    servicegroup.setTenantId(groupBean.getTenantId());
 	    
