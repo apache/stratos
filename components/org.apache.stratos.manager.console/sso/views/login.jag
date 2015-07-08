@@ -122,7 +122,7 @@ if( e == null){
     <div class="container">
         <div class="pull-left"><img src="views/stratos-resources/img/egg-logo.png" /></div>
         <div class="pull-right footer-right">
-        Copyright © 2013 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
+        Copyright © 2015 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
         Apache SIS, Apache, the Apache feather logo are trademarks of The Apache Software Foundation.
         </div>
         <div style="clear:both"></div>
