@@ -1396,10 +1396,12 @@ public class ObjectConverter {
 
         SubscribableInfoContext infoContext = new SubscribableInfoContext();
         infoContext.setAlias(subscribableInfo.getAlias());
+	    infoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
+	    infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
 	    try {
 		    String autoScalerUuid= AutoscalerServiceClient.getInstance().getAutoScalePolicyForTenant(subscribableInfo.getAutoscalingPolicy(),
-				                                 subscribableInfo.getTenantId()).getUuid();
-		    infoContext.setAutoscalingPolicy(autoScalerUuid);
+				                                 tenantId).getUuid();
+		    infoContext.setAutoscalingPolicyUuid(autoScalerUuid);
 	    } catch (RemoteException e) {
 		    throw new RestAPIException(e);
 	    }
@@ -1408,13 +1410,12 @@ public class ObjectConverter {
 
 	    try {
 		    String deploymentPolicyUuid = AutoscalerServiceClient.getInstance().getDeploymentPolicyForTenant(
-				    subscribableInfo.getAutoscalingPolicy(),
-				    subscribableInfo.getTenantId()).getUuid();
-		    infoContext.setAutoscalingPolicy(deploymentPolicyUuid);
+				    subscribableInfo.getDeploymentPolicy(),tenantId).getUuid();
+		    infoContext.setDeploymentPolicyUuid(deploymentPolicyUuid);
 	    } catch (RemoteException e) {
 		    throw new RestAPIException(e);
 	    }
-        infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
+      
         infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
         infoContext.setMinMembers(subscribableInfo.getMinMembers());
 

@@ -203,17 +203,30 @@ public interface CloudControllerService {
      */
     public boolean unregisterService(String clusterId) throws UnregisteredClusterException;
 
+	/**
+	 * This method will return the information regarding the given cartridge, if present.
+	 * Else this will return <code>null</code>.
+	 *
+	 * @param cartridgeType type of the cartridge.
+	 * @return {@link org.apache.stratos.cloud.controller.domain.Cartridge} of the given cartridge type or
+	 * <code>null</code>.
+	 * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
+	 *                                                                                  cartridge with this type.
+	 */
+	public Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException;
     /**
      * This method will return the information regarding the given cartridge, if present.
      * Else this will return <code>null</code>.
      *
      * @param cartridgeType type of the cartridge.
+     * @param tenantId tenant id.
+     *
      * @return {@link org.apache.stratos.cloud.controller.domain.Cartridge} of the given cartridge type or
      * <code>null</code>.
      * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
      *                                                                                  cartridge with this type.
      */
-    Cartridge getCartridge(String cartridgeType,int tenantId) throws CartridgeNotFoundException;
+    Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws CartridgeNotFoundException;
 
     /**
      * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.domain

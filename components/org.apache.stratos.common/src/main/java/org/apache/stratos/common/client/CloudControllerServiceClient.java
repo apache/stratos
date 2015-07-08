@@ -116,12 +116,17 @@ public class CloudControllerServiceClient {
         return stub.getCartridges();
     }
 
-    public Cartridge getCartridge(String cartridgeType,int tenantId) throws RemoteException,
+    public Cartridge getCartridge(String cartridgeType) throws RemoteException,
             CloudControllerServiceCartridgeNotFoundExceptionException {
-        return stub.getCartridge(cartridgeType,tenantId);
+        return stub.getCartridge(cartridgeType);
     }
 
-    public ClusterContext getClusterContext(String clusterId) throws RemoteException {
+	public Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws RemoteException,
+	                                                           CloudControllerServiceCartridgeNotFoundExceptionException {
+		return stub.getCartridgeByTenant(cartridgeType,tenantId);
+	}
+
+	public ClusterContext getClusterContext(String clusterId) throws RemoteException {
 
         return stub.getClusterContext(clusterId);
     }
