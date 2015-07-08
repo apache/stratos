@@ -35,8 +35,8 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.*;
 import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
@@ -659,15 +659,23 @@ public class AutoscalerUtil {
             }
 
             // network partitions should be added already
-            NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
-                    .getNetworkPartition(networkPartitionId);
-            if (null == networkPartition) {
+            NetworkPartition[] networkPartitions = CloudControllerServiceClient.getInstance().getNetworkPartitions();
+            NetworkPartition networkPartitionForTenant = null;
+            if (networkPartitions != null) {
+                for (NetworkPartition networkPartition : networkPartitions) {
+                    if (applicationPolicy.getTenantId() == networkPartition.getTenantId() && networkPartition.getUuid()
+                            .equals(networkPartitionId)) {
+                        networkPartitionForTenant = networkPartition;
+                    }
+                }
+            }
+            if (networkPartitionForTenant == null) {
                 String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
-                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getUuid());
+                        "[application-policy-uuid] %s [application-policy-id] %s", networkPartitionId,
+                        applicationPolicy.getUuid(), applicationPolicy.getId());
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
-
         }
 
         // if networkPartitionGroups property is set, we need to validate that too
