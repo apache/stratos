@@ -336,13 +336,13 @@ public class RegistryManager {
     public void persistServiceGroup(ServiceGroup servicegroup) {
         try {
             startTenantFlow();
-            if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
+            if (servicegroup == null || StringUtils.isEmpty(servicegroup.getUuid())) {
                 throw new IllegalArgumentException("Cartridge group or group name can not be null");
             }
-            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + servicegroup.getName();
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + servicegroup.getUuid();
             persist(servicegroup, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Persisted cartridge group %s at path %s", servicegroup.getName(), resourcePath));
+                log.debug(String.format("Persisted cartridge group %s at path %s", servicegroup.getUuid(), resourcePath));
             }
         } finally {
             endTenantFlow();
@@ -352,22 +352,22 @@ public class RegistryManager {
 
     public void updateServiceGroup(ServiceGroup serviceGroup) throws InvalidServiceGroupException, RegistryException {
         try {
-            if (serviceGroup == null || StringUtils.isEmpty(serviceGroup.getName())) {
+            if (serviceGroup == null || StringUtils.isEmpty(serviceGroup.getUuid())) {
                 throw new IllegalArgumentException("Cartridge group or group name cannot be null");
             }
-            if (getServiceGroup(serviceGroup.getName()) == null) {
+            if (getServiceGroup(serviceGroup.getUuid()) == null) {
                 throw new InvalidServiceGroupException(String.format("Cartridge group does not exist: " +
-                        "[cartridge-group] %s", serviceGroup.getName()));
+                        "[cartridge-group] %s", serviceGroup.getUuid()));
             }
 
             persistServiceGroup(serviceGroup);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Updated cartridge group: [group-name] %s", serviceGroup.getName()));
+                log.debug(String.format("Updated cartridge group: [group-name] %s", serviceGroup.getUuid()));
             }
         } catch (Exception e) {
             String message = (String.format("Unable to update cartridge group [group-name] %s",
-                    serviceGroup.getName()));
+                    serviceGroup.getUuid()));
             log.error(message, e);
             throw new RegistryException(message, e);
         }

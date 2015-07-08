@@ -1798,8 +1798,10 @@ public class ObjectConverter {
         List<CartridgeGroupBean> groupsDefinitions = groupBean.getGroups();
         List<String> cartridgesDefinitions = groupBean.getCartridges();
 
-        servicegroup.setName(groupBean.getName());
-
+        servicegroup.setName(groupBean.getUuid());
+		servicegroup.setUuid(groupBean.getUuid());
+	    servicegroup.setTenantId(groupBean.getTenantId());
+	    
         if (groupsDefinitions == null) {
             groupsDefinitions = new ArrayList<CartridgeGroupBean>(0);
         }
@@ -1865,7 +1867,7 @@ public class ObjectConverter {
         }
 
         CartridgeGroupBean serviceGroupDefinition = new CartridgeGroupBean();
-        serviceGroupDefinition.setName(serviceGroup.getName());
+        serviceGroupDefinition.setUuid(serviceGroup.getName());
         String[] cartridges = serviceGroup.getCartridges();
         ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies dependencies = serviceGroup.getDependencies();

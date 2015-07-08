@@ -679,23 +679,23 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     public boolean addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
-        if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
+        if (servicegroup == null || StringUtils.isEmpty(servicegroup.getUuid())) {
             String msg = "Cartridge group is null or cartridge group name is empty.";
             log.error(msg);
             throw new InvalidServiceGroupException(msg);
         }
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding cartridge group: [group-name] %s", servicegroup.getName()));
+            log.info(String.format("Adding cartridge group: [group-name] %s", servicegroup.getUuid()));
         }
 
-        String groupName = servicegroup.getName();
+        String groupName = servicegroup.getUuid();
         if (RegistryManager.getInstance().serviceGroupExist(groupName)) {
             throw new InvalidServiceGroupException("Cartridge group with the name " + groupName + " already exists.");
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Adding cartridge group %s", servicegroup.getName()));
+            log.debug(String.format("Adding cartridge group %s", servicegroup.getUuid()));
         }
 
         String[] subGroups = servicegroup.getCartridges();
@@ -743,27 +743,27 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         RegistryManager.getInstance().persistServiceGroup(servicegroup);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Cartridge group successfully added: [group-name] %s", servicegroup.getName()));
+            log.info(String.format("Cartridge group successfully added: [group-name] %s", servicegroup.getUuid()));
         }
         return true;
     }
 
     public boolean updateServiceGroup(ServiceGroup cartridgeGroup) throws InvalidServiceGroupException {
 
-        if (cartridgeGroup == null || StringUtils.isEmpty(cartridgeGroup.getName())) {
+        if (cartridgeGroup == null || StringUtils.isEmpty(cartridgeGroup.getUuid())) {
             String msg = "Cartridge group cannot be null or service name cannot be empty.";
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Updating cartridge group: [group-name] %s", cartridgeGroup.getName()));
+            log.info(String.format("Updating cartridge group: [group-name] %s", cartridgeGroup.getUuid()));
         }
 
-        String groupName = cartridgeGroup.getName();
+        String groupName = cartridgeGroup.getUuid();
         if (!RegistryManager.getInstance().serviceGroupExist(groupName)) {
             throw new InvalidServiceGroupException(String.format("Cartridge group does not exist: [cartridge-group] %s",
-                    cartridgeGroup.getName()));
+                    cartridgeGroup.getUuid()));
         }
 
         Dependencies dependencies = cartridgeGroup.getDependencies();
@@ -799,13 +799,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             RegistryManager.getInstance().updateServiceGroup(cartridgeGroup);
         } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
             String message = (String.format("Cannot update cartridge group: [group-name] %s",
-                    cartridgeGroup.getName()));
+                    cartridgeGroup.getUuid()));
             throw new RuntimeException(message, e);
         }
 
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Cartridge group successfully updated: [group-name] %s", cartridgeGroup.getName()));
+            log.info(String.format("Cartridge group successfully updated: [group-name] %s", cartridgeGroup.getUuid()));
         }
         return true;
     }

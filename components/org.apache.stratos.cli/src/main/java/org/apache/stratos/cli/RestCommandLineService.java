@@ -387,7 +387,7 @@ public class RestCommandLineService {
             RowMapper<CartridgeGroupBean> cartridgeGroupMapper = new RowMapper<CartridgeGroupBean>() {
                 public String[] getData(CartridgeGroupBean cartridgeGroup) {
                     String[] data = new String[3];
-                    data[0] = cartridgeGroup.getName();
+                    data[0] = cartridgeGroup.getUuid();
                     data[1] = cartridgeGroup.getCartridges() == null ? "" : String.valueOf(cartridgeGroup.getCartridges().size());
                     data[2] = cartridgeGroup.getGroups() == null ? "0" : String.valueOf(cartridgeGroup.getGroups().size());
                     return data;

@@ -30,19 +30,19 @@ public class CartridgeGroupBean implements Serializable {
 
     private static final long serialVersionUID = 4696832597498594267L;
 
-	private String uuid;
-    private String name;
+    private String uuid;
+	private String name;
     private List<CartridgeGroupBean> groups;
     private List<String> cartridges;
     private DependencyBean dependencies;
 	private int tenantId;
 
-    public String getName() {
-        return name;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public List<String> getCartridges() {
@@ -68,14 +68,6 @@ public class CartridgeGroupBean implements Serializable {
     public void setGroups(List<CartridgeGroupBean> groups) {
         this.groups = groups;
     }
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public int getTenantId() {
 		return tenantId;

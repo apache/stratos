@@ -1033,7 +1033,7 @@ public class StratosApiV41Utils {
         String[] cartridgeGroupNames;
 
         if (log.isDebugEnabled()) {
-            log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
+            log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getUuid());
         }
 
         findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
@@ -1060,7 +1060,7 @@ public class StratosApiV41Utils {
                     j++;
                 }
             } catch (RemoteException e) {
-                String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
+                String message = "Could not add the cartridge group: " + serviceGroupDefinition.getUuid();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1070,7 +1070,7 @@ public class StratosApiV41Utils {
         // if any sub groups are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getGroups() != null) {
             if (log.isDebugEnabled()) {
-                log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
+                log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getUuid());
             }
 
             List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
@@ -1078,8 +1078,8 @@ public class StratosApiV41Utils {
             cartridgeGroupNames = new String[groupDefinitions.size()];
             int i = 0;
             for (CartridgeGroupBean groupList : groupDefinitions) {
-                groupNames.add(groupList.getName());
-                cartridgeGroupNames[i] = groupList.getName();
+                groupNames.add(groupList.getUuid());
+                cartridgeGroupNames[i] = groupList.getUuid();
                 i++;
             }
 
@@ -1106,10 +1106,10 @@ public class StratosApiV41Utils {
             asServiceClient.addServiceGroup(serviceGroup);
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
-            smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
+            smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getUuid(), cartridgeNames);
         } catch (RemoteException e) {
 
-            String message = "Could not add the cartridge group: " + serviceGroupDefinition.getName();
+            String message = "Could not add the cartridge group: " + serviceGroupDefinition.getUuid();
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
@@ -1131,8 +1131,8 @@ public class StratosApiV41Utils {
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
             // Validate whether cartridge group can be updated
-            if (!smServiceClient.canCartirdgeGroupBeRemoved(cartridgeGroup.getName())) {
-                String message = "Cannot update cartridge group: [group-name] " + cartridgeGroup.getName() +
+            if (!smServiceClient.canCartirdgeGroupBeRemoved(cartridgeGroup.getUuid())) {
+                String message = "Cannot update cartridge group: [group-name] " + cartridgeGroup.getUuid() +
                         " since it is used in another cartridge group or an application";
                 log.error(message);
                 throw new RestAPIException(message);
@@ -1152,7 +1152,7 @@ public class StratosApiV41Utils {
                 List<String> cartridgesBeforeUpdating = new ArrayList<String>();
                 List<String> cartridgesAfterUpdating = new ArrayList<String>();
 
-                ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(cartridgeGroup.getName());
+                ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(cartridgeGroup.getUuid());
                 findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
                 findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
 
@@ -1192,7 +1192,7 @@ public class StratosApiV41Utils {
                 if (cartridgesToAdd != null) {
                     if (!cartridgesToAdd.isEmpty()) {
                         {
-                            smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                            smServiceClient.addUsedCartridgesInCartridgeGroups(cartridgeGroup.getUuid(),
                                     cartridgesToAdd.toArray(new String[cartridgesToRemove.size()]));
                         }
                     }
@@ -1201,23 +1201,23 @@ public class StratosApiV41Utils {
                 // Remove cartridge group elements from SM cache - done after cartridge group has been updated
                 if (cartridgesToRemove != null) {
                     if (!cartridgesToRemove.isEmpty()) {
-                        smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getName(),
+                        smServiceClient.removeUsedCartridgesInCartridgeGroups(cartridgeGroup.getUuid(),
                                 cartridgesToRemove.toArray(new String[cartridgesToRemove.size()]));
                     }
                 }
             }
         } catch (RemoteException e) {
             String message = String.format("Could not update cartridge group: [group-name] %s,",
-                    cartridgeGroup.getName());
+                    cartridgeGroup.getUuid());
             log.error(message);
             throw new RestAPIException(message, e);
         } catch (AutoscalerServiceInvalidServiceGroupExceptionException e) {
             String message = String.format("Autoscaler invalid cartridge group definition: [group-name] %s",
-                    cartridgeGroup.getName());
+                    cartridgeGroup.getUuid());
             log.error(message);
             throw new InvalidCartridgeGroupDefinitionException(message, e);
         } catch (ServiceGroupDefinitionException e) {
-            String message = String.format("Invalid cartridge group definition: [group-name] %s", cartridgeGroup.getName());
+            String message = String.format("Invalid cartridge group definition: [group-name] %s", cartridgeGroup.getUuid());
             log.error(message);
             throw new InvalidCartridgeGroupDefinitionException(message, e);
         }
@@ -3743,11 +3743,11 @@ public class StratosApiV41Utils {
             return;
         }
         List<String> groups = new ArrayList<String>();
-        parentGroups.add(groupBean.getName());
+        parentGroups.add(groupBean.getUuid());
         if (groupBean.getGroups() != null) {
             if (!groupBean.getGroups().isEmpty()) {
                 for (CartridgeGroupBean g : groupBean.getGroups()) {
-                    groups.add(g.getName());
+                    groups.add(g.getUuid());
                 }
                 validateGroupDuplicationInGroup(groups, parentGroups);
             }
@@ -3756,7 +3756,7 @@ public class StratosApiV41Utils {
             //Recursive because to check groups inside groups
             for (CartridgeGroupBean group : groupBean.getGroups()) {
                 validateGroupDuplicationInGroupDefinition(group, parentGroups);
-                parentGroups.remove(group.getName());
+                parentGroups.remove(group.getUuid());
             }
         }
     }
