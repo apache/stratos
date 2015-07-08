@@ -1,17 +1,25 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 // script.aculo.us controls.js v1.7.0, Fri Jan 19 19:16:36 CET 2007
 
-// Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
-//           (c) 2005, 2006 Ivan Krstic (http://blogs.law.harvard.edu/ivan)
-//           (c) 2005, 2006 Jon Tirsen (http://www.tirsen.com)
-// Contributors:
-//  Richard Livsey
-//  Rahul Bhargava
-//  Rob Wills
-// 
-// script.aculo.us is freely distributable under the terms of an MIT-style license.
-// For details, see the script.aculo.us web site: http://script.aculo.us/
-
-// Autocompleter.Base handles all the autocompletion functionality 
+// Autocompleter.Base handles all the autocompletion functionality
 // that's independent of the data source for autocompletion. This
 // includes drawing the autocompletion menu, observing keyboard
 // and mouse events, and similar.
