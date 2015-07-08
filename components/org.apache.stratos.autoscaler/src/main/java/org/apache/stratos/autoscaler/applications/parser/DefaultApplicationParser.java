@@ -364,7 +364,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
-            Cartridge cartridge = getCartridge(cartridgeType);
+            Cartridge cartridge = getCartridgeByTenant(cartridgeType,tenantId);
             if (cartridge == null) {
                 throw new CartridgeNotFoundException("Cartridge not found " + cartridgeType);
             }
@@ -410,7 +410,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                         String.format("Could not find dependent cartridge for " +
                                                 "application: %s cartridge-alias: %s", appId, cartridgeAlias));
                             }
-                            Cartridge dependencyCartridge = getCartridge(dependentCartridgeType);
+                            Cartridge dependencyCartridge = getCartridgeByTenant(dependentCartridgeType,tenantId);
                             ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
 
                             if (dataHolder != null) {
@@ -498,7 +498,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
             // check if a cartridge with relevant type is already deployed. else, can't continue
-            Cartridge cartridge = getCartridge(cartridgeType);
+            Cartridge cartridge = getCartridgeByTenant(cartridgeType,tenantId);
             if (cartridge == null) {
                 handleError("No deployed Cartridge found with type [ " + cartridgeType +
                         " ] for Composite Application");
@@ -1000,6 +1000,16 @@ public class DefaultApplicationParser implements ApplicationParser {
             throw new ApplicationDefinitionException(e);
         }
     }
+
+	private Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws ApplicationDefinitionException {
+
+		try {
+			return CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeType,tenantId);
+		} catch (Exception e) {
+			log.error(String.format("Unable to get the cartridge: %s %d " , cartridgeType , tenantId), e);
+			throw new ApplicationDefinitionException(e);
+		}
+	}
 
     private void handleError(String errorMsg) throws ApplicationDefinitionException {
         log.error(errorMsg);

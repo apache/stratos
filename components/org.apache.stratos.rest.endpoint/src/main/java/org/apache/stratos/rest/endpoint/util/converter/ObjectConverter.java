@@ -74,6 +74,7 @@ public class ObjectConverter {
 
         Cartridge cartridge = new Cartridge();
 		cartridge.setUuid(cartridgeBean.getUuid());
+	    cartridge.setTenantId(cartridgeBean.getTenantId());
         cartridge.setType(cartridgeBean.getType());
         cartridge.setHostName(cartridgeBean.getHost());
         cartridge.setProvider(cartridgeBean.getProvider());
@@ -1116,6 +1117,7 @@ public class ObjectConverter {
         applicationContext.setName(applicationDefinition.getName());
         applicationContext.setDescription(applicationDefinition.getDescription());
         applicationContext.setStatus(applicationDefinition.getStatus());
+		applicationContext.setTenantId(applicationDefinition.getTenantId());
 
         // convert and set components
         if (applicationDefinition.getComponents() != null) {

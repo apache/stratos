@@ -742,7 +742,7 @@ public class AutoscalerUtil {
             throw new ApplicatioinPolicyNotExistsException(msg);
         }
 
-        String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
+        String[] networkPartitionIds = applicationPolicy.getNetworkPartitionsUuid();
 
         for (String applicationPolicyNetworkPartitionerence : networkPartitionIds) {
             String networkPartitionId = applicationPolicyNetworkPartitionerence;
