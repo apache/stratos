@@ -1774,8 +1774,11 @@ public class StratosApiV41Utils {
                 log.info(String.format("Starting to deploy application: [application-id] %s", applicationId));
             }
 
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            int tenantId = carbonContext.getTenantId();
+
             AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-            ApplicationContext application = autoscalerServiceClient.getApplication(applicationId);
+            ApplicationContext application = autoscalerServiceClient.getApplicationByTenant(applicationId, tenantId);
 
             if (application == null) {
                 String message = String.format("Application not found: [application-id] %s", applicationId);
@@ -1804,7 +1807,7 @@ public class StratosApiV41Utils {
             }
 
             ApplicationBean applicationBean = getApplication(applicationId);
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            //int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             if (applicationBean.isMultiTenant() && (tenantId != -1234)) {
                 String message = String.format(
                         "Multi-tenant applications can only be deployed by super tenant: [application-id] %s",
@@ -1898,8 +1901,9 @@ public class StratosApiV41Utils {
      */
     public static ApplicationBean getApplication(String applicationId) throws RestAPIException {
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             return ObjectConverter.convertStubApplicationContextToApplicationDefinition(
-                    AutoscalerServiceClient.getInstance().getApplication(applicationId));
+                    AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId, carbonContext.getTenantId()));
         } catch (RemoteException e) {
             String message = "Could not read application: [application-id] " + applicationId;
             log.error(message, e);

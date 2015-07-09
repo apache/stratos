@@ -116,6 +116,14 @@ public interface AutoscalerService {
     public ApplicationContext getApplication(String applicationId);
 
     /**
+     * Get an application
+     *
+     * @param applicationId
+     * @param tenantId
+     */
+    public ApplicationContext getApplicationByTenant(String applicationId, int tenantId);
+
+    /**
      * Check if the application exists
      *
      * @param applicationId

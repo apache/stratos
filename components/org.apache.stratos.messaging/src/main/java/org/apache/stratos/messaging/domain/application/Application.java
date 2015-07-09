@@ -35,6 +35,7 @@ public class Application extends ParentComponent<ApplicationInstance> {
     private static final long serialVersionUID = -5092959597171649688L;
 
     // Unique id for the Application, defined in Application Definition
+    private String uuid;
     private String id;
     private String name;
     private String description;
@@ -49,20 +50,28 @@ public class Application extends ParentComponent<ApplicationInstance> {
     // Life cycle state manager
     //protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
 
-    // application policy id
+    // application policy uuid
     private String applicationPolicyId;
 
-    public Application(String id) {
+    public Application(String uuid) {
         super();
-        this.id = id;
+        this.uuid = uuid;
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
         //this.applicationStateManager =
         //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
 
-    public String getUniqueIdentifier() {
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUniqueIdentifier() {
+        return uuid;
     }
 
     public String getKey() {
@@ -134,11 +143,11 @@ public class Application extends ParentComponent<ApplicationInstance> {
         }
 
         Application that = (Application) other;
-        return this.id.equals(that.id);
+        return this.uuid.equals(that.uuid);
     }
 
     public int hashCode() {
-        return id.hashCode();
+        return uuid.hashCode();
     }
 
     public Instance getInstanceByNetworkPartitionId(String networkPartitionId) {

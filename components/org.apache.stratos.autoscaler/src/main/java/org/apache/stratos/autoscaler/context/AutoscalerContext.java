@@ -181,6 +181,17 @@ public class AutoscalerContext {
         return applicationContextMap.get(applicationId);
     }
 
+    public ApplicationContext getApplicationContextByTenant(String applicationId, int tenantId) {
+        ApplicationContext applicationContext = null;
+        for (ApplicationContext applicationContext1 : getApplicationContexts()) {
+            if (applicationContext1.getTenantId() == tenantId && applicationContext1.getApplicationId().equals
+                    (applicationId)) {
+                applicationContext = applicationContext1;
+            }
+        }
+        return applicationContext;
+    }
+
     public Collection<ApplicationContext> getApplicationContexts() {
         return applicationContextMap.values();
     }

@@ -1111,7 +1111,8 @@ public class ObjectConverter {
 
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
-        applicationContext.setApplicationId(applicationDefinition.getApplicationUuid());
+        applicationContext.setApplicationUuid(applicationDefinition.getApplicationUuid());
+        applicationContext.setApplicationId(applicationDefinition.getApplicationId());
         applicationContext.setAlias(applicationDefinition.getAlias());
         applicationContext.setMultiTenant(applicationDefinition.isMultiTenant());
         applicationContext.setName(applicationDefinition.getName());
@@ -1151,7 +1152,8 @@ public class ObjectConverter {
         }
 
         ApplicationBean applicationDefinition = new ApplicationBean();
-        applicationDefinition.setApplicationUuid(applicationContext.getApplicationId());
+        applicationDefinition.setApplicationUuid(applicationContext.getApplicationUuid());
+        applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setAlias(applicationContext.getAlias());
         applicationDefinition.setMultiTenant(applicationContext.getMultiTenant());
         applicationDefinition.setName(applicationContext.getName());

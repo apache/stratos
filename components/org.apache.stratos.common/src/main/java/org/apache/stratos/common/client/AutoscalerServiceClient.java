@@ -113,6 +113,10 @@ public class AutoscalerServiceClient {
         return stub.getApplication(applicationId);
     }
 
+    public ApplicationContext getApplicationByTenant(String applicationId, int tenantId) throws RemoteException {
+        return stub.getApplicationByTenant(applicationId, tenantId);
+    }
+
     public boolean existApplication(String applicationId) throws RemoteException {
         return stub.existApplication(applicationId);
     }

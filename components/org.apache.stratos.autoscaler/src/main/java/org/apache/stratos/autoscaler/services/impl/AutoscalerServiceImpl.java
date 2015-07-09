@@ -298,6 +298,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
+    public ApplicationContext getApplicationByTenant(String applicationId, int tenantId) {
+        return AutoscalerContext.getInstance().getApplicationContextByTenant(applicationId, tenantId);
+    }
+
+    @Override
     public boolean existApplication(String applicationId) {
         return AutoscalerContext.getInstance().getApplicationContext(applicationId) != null;
     }

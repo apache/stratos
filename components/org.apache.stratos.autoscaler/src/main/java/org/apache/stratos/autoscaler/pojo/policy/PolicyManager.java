@@ -434,7 +434,7 @@ public class PolicyManager {
     }
 
     /**
-     * Returns the deployment policy to which the specified id is mapped or null
+     * Returns the application policy to which the specified id is mapped or null
      *
      * @param id Id of the deployment policy
      * @return
