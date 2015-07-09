@@ -442,7 +442,7 @@ public class PolicyManager {
     public ApplicationPolicy getApplicationPolicyById(String id) {
         ApplicationPolicy applicationPolicy = null;
         for (ApplicationPolicy applicationPolicy1 : getApplicationPolicies()) {
-            if (applicationPolicy1.getId().equals(id)) {
+            if (applicationPolicy1.getUuid().equals(id)) {
                 applicationPolicy = applicationPolicy1;
             }
         }

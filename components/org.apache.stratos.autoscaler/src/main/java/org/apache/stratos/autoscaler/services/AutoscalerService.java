@@ -174,12 +174,23 @@ public interface AutoscalerService {
             InvalidApplicationPolicyException, InvalidPolicyException, ApplicationPolicyAlreadyExistsException;
 
     /**
-     * Get application policy by application id
+     * Get application policy by application uuid
      *
      * @param applicationPolicyId the application policy id
      * @return {@link ApplicationPolicy} used by the given application
      */
     public ApplicationPolicy getApplicationPolicy(String applicationPolicyId);
+
+	/**
+	 *
+	 * Get application policy by application id and tenant id
+	 *
+	 * @param applicationPolicyId
+	 * @param tenantId
+	 * @return
+	 */
+
+	public ApplicationPolicy getApplicationPolicyByTenant(String applicationPolicyId, int tenantId);
 
     /**
      * Remove application policy

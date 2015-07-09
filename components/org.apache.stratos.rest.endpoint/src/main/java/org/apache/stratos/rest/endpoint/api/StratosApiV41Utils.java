@@ -1821,8 +1821,9 @@ public class StratosApiV41Utils {
                 log.error(message);
                 throw new RestAPIException(message);
             }
-
-            autoscalerServiceClient.deployApplication(application.getApplicationUuid(), applicationPolicyId);
+			String applicationPolicyUuid=AutoscalerServiceClient.getInstance().getApplicationPolicyByTenant(
+					applicationPolicyId,application.getTenantId()).getUuid();
+            autoscalerServiceClient.deployApplication(application.getApplicationUuid(), applicationPolicyUuid);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }
