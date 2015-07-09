@@ -923,7 +923,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Creates a ApplicationClusterContext object to keep information related to a Cluster in this Application
      *
-     * @param appId                Application id
+     * @param applicationUuid      Application uuid
      * @param groupName            Group name
      * @param cartridge            Cartridge information
      * @param subscriptionKey      Generated key for the Application
@@ -932,29 +932,32 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @param alias                alias specified for this Subscribable in the Application Definition
      * @param clusterId            Cluster id
      * @param hostname             Hostname
-     * @param deploymentPolicy     Deployment policy used
+     * @param deploymentPolicyUuid     Deployment policy uuid
      * @param isLB                 if this cluster is an LB
      * @param dependencyClustorIDs
      * @return ApplicationClusterContext object with relevant information
      * @throws ApplicationDefinitionException If any error occurs
      */
-    private ApplicationClusterContext createApplicationClusterContext(String appId, String groupName, Cartridge cartridge,
+    private ApplicationClusterContext createApplicationClusterContext(String applicationUuid, String groupName,
+                                                                      Cartridge cartridge,
                                                                       String subscriptionKey, int tenantId, String repoUrl,
                                                                       String alias, String clusterId, String hostname,
-                                                                      String deploymentPolicy, boolean isLB, String tenantRange,
+                                                                      String deploymentPolicyUuid, boolean isLB,
+                                                                      String tenantRange,
                                                                       String[] dependencyAliases, Properties properties, String[] dependencyClustorIDs,
                                                                       String[] exportMetadata, String[] importMetadata)
             throws ApplicationDefinitionException {
 
         // Create text payload
-        PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
+        PayloadData payloadData = ApplicationUtils.createPayload(applicationUuid, groupName, cartridge, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs, exportMetadata, importMetadata);
 
         String textPayload = payloadData.toString();
         if (log.isDebugEnabled()) {
             log.debug("Payload :: " + textPayload);
         }
-        return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange, dependencyClustorIDs);
+        return new ApplicationClusterContext(cartridge.getUuid(), clusterId, hostname, textPayload, deploymentPolicyUuid,
+                isLB, tenantRange, dependencyClustorIDs);
     }
 
     public String createToken(String applicationId) throws AutoScalerException {

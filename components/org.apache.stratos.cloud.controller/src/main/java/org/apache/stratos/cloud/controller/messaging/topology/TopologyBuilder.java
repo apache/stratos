@@ -198,7 +198,7 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
 
-        log.debug("Creating cluster port mappings: [appication-id] " + appId);
+        log.debug("Creating cluster port mappings: [application-id] " + appId);
         for(Cluster cluster : appClusters) {
             String cartridgeType = cluster.getServiceName();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
