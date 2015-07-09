@@ -68,7 +68,7 @@ public class TopologyBuilder {
             for (Cartridge cartridge : cartridgeList) {
                 if (!topology.serviceExists(cartridge.getType())) {
                     ServiceType serviceType = cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant;
-                    service = new Service(cartridge.getType(), serviceType);
+                    service = new Service(cartridge.getType(), serviceType, cartridge.getUuid());
                     Properties properties = new Properties();
 
                     try {

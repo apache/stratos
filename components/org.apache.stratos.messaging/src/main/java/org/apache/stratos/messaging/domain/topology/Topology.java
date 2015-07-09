@@ -50,7 +50,7 @@ public class Topology implements Serializable {
     }
 
     public void addService(Service service) {
-        this.serviceMap.put(service.getServiceName(), service);
+        this.serviceMap.put(service.getServiceUuid(), service);
     }
 
     public synchronized void addServices(Collection<Service> services) {
@@ -69,8 +69,8 @@ public class Topology implements Serializable {
         TopologyLockHierarchy.getInstance().removeTopologyLockForService(serviceName);
     }
 
-    public Service getService(String serviceName) {
-        return this.serviceMap.get(serviceName);
+    public Service getService(String serviceUuid) {
+        return this.serviceMap.get(serviceUuid);
     }
 
     public boolean serviceExists(String serviceName) {

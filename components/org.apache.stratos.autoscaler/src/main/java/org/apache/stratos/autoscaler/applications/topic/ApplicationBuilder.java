@@ -241,7 +241,7 @@ public class ApplicationBuilder {
             Set<ClusterDataHolder> appClusterData = application.getClusterDataRecursively();
             for (ClusterDataHolder currClusterData : appClusterData) {
                 ClusterDataHolder newClusterData = new ClusterDataHolder(currClusterData.getServiceType(),
-                        currClusterData.getClusterId());
+                        currClusterData.getClusterId(), currClusterData.getServiceUuid());
                 appClusterDataToSend.add(newClusterData);
             }
 

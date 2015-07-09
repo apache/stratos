@@ -516,12 +516,12 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             String clusterId = clusterInfo.getClusterId(applicationId, subscriptionAlias, cartridgeType);
             // add relevant information to the map
-            ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
+            ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId, cartridge.getUuid());
             clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());
             clusterDataHolderPerType.setMaxInstances(cartridgeContext.getCartridgeMax());
             clusterDataMapByType.put(cartridgeType, clusterDataHolderPerType);
             // add relevant information to the map
-            ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+            ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId, cartridge.getUuid());
             clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
             clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
             clusterDataMap.put(subscriptionAlias, clusterDataHolder);

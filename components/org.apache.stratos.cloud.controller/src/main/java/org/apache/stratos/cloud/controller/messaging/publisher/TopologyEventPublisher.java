@@ -54,7 +54,7 @@ public class TopologyEventPublisher {
         for (Cartridge cartridge : cartridgeList) {
             serviceCreatedEvent = new ServiceCreatedEvent(cartridge.getType(),
                     (cartridge.isMultiTenant() ? ServiceType.MultiTenant
-                            : ServiceType.SingleTenant));
+                            : ServiceType.SingleTenant), cartridge.getUuid());
 
             // Add ports to the event
             if (cartridge.getPortMappings() != null) {
