@@ -25,17 +25,18 @@ public class CartridgeContext implements Serializable {
 
     private static final long serialVersionUID = 7782017881026018352L;
 
-    private String type;
+    private String uuid;
+	private String type;
     private int cartridgeMin;
     private int cartridgeMax;
     private SubscribableInfoContext subscribableInfoContext;
 
-    public String getType() {
-        return type;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public int getCartridgeMin() {
@@ -63,4 +64,11 @@ public class CartridgeContext implements Serializable {
         this.subscribableInfoContext = subscribableInfoContext;
     }
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

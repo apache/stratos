@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.stub.partition.PartitionRef;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.application.*;
@@ -44,6 +45,7 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
@@ -1382,7 +1384,14 @@ public class ObjectConverter {
             context.setCartridgeMax(cartridgeDefinition.getCartridgeMax());
             context.setCartridgeMin(cartridgeDefinition.getCartridgeMin());
             context.setType(cartridgeDefinition.getType());
-            context.setSubscribableInfoContext(convertSubscribableInfo(cartridgeDefinition.getSubscribableInfo(),tenantId));
+	        try {
+		        context.setUuid(CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeDefinition.getType(),tenantId).getUuid());
+	        } catch (RemoteException e) {
+		        throw new RestAPIException(e);
+	        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+		        throw new RestAPIException(e);
+	        }
+	        context.setSubscribableInfoContext(convertSubscribableInfo(cartridgeDefinition.getSubscribableInfo(),tenantId));
             cartridgeContextArray[i++] = context;
         }
 
