@@ -329,6 +329,9 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/cartridges/manage")
     public Response updateCartridge(
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
+
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+	    cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
         StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
         return Response.ok(url)
