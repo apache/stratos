@@ -48,7 +48,6 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -417,7 +416,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     getApplicationPolicy(application.getApplicationPolicyId());
             if (applicationPolicy == null) {
                 String msg = String.format("Application policy not found in registry or " +
-                        "in-memory [application-id] %s", appId);
+                        "in-memory [application-id] %s [application-policy-id] %s", appId,application.getApplicationPolicyId());
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
@@ -567,7 +566,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 getApplicationPolicy(application.getApplicationPolicyId());
         if (applicationPolicy == null) {
             String msg = String.format("Application policy not found in registry or in-memory " +
-                    "[application-id] %s", appId);
+                    "[application-id] %s [application-policy-id] %s ", appId, application.getApplicationPolicyId());
             log.error(msg);
             throw new RuntimeException(msg);
         }
