@@ -242,8 +242,8 @@ public class CloudControllerContext implements Serializable {
         return serviceGroupNameToServiceGroupMap.values();
     }
 
-    public Cartridge getCartridge(String cartridgeType) {
-        return cartridgeTypeToCartridgeMap.get(cartridgeType);
+    public Cartridge getCartridge(String cartridgeUuid) {
+        return cartridgeTypeToCartridgeMap.get(cartridgeUuid);
     }
 
     private Lock acquireWriteLock(String object) {

@@ -1756,7 +1756,7 @@ public class StratosApiV41Utils {
     /**
      * Deploy application with an application policy.
      *
-     * @param applicationId       Application ID
+     * @param applicationId       Application Id
      * @param applicationPolicyId Application policy Id
      * @throws RestAPIException
      */
@@ -1796,7 +1796,7 @@ public class StratosApiV41Utils {
             }
 
             // This is a redundant state since there is only CREATED,DEPLOYED state.
-            // But this will be usefull when more status are added.
+            // But this will be useful when more status are added.
             if (!application.getStatus().equalsIgnoreCase(APPLICATION_STATUS_CREATED)) {
                 String message = String.format(
                         "Application is not in CREATED state: [application-id] %s [current status] %s ",
@@ -1816,7 +1816,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            autoscalerServiceClient.deployApplication(applicationId, applicationPolicyId);
+            autoscalerServiceClient.deployApplication(application.getApplicationUuid(), applicationPolicyId);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }

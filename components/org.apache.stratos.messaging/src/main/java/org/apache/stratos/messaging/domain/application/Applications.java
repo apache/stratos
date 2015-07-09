@@ -43,8 +43,8 @@ public class Applications implements Serializable {
         this.applicationMap.put(application.getUniqueIdentifier(), application);
     }
 
-    public Application getApplication(String appId) {
-        return this.getApplications().get(appId);
+    public Application getApplication(String applicationUuid) {
+        return this.getApplications().get(applicationUuid);
     }
 
     public boolean isInitialized() {

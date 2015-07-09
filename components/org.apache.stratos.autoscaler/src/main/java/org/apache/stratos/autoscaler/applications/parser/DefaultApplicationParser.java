@@ -360,13 +360,14 @@ public class DefaultApplicationParser implements ApplicationParser {
             List<String> dependencyClusterIDs = new ArrayList<String>();
             List<String> exportMetadataKeys = new ArrayList<String>();
             List<String> importMetadataKeys = new ArrayList<String>();
-            String cartridgeType = cartridgeContext.getUuid();
+            String cartridgeType = cartridgeContext.getType();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
             Cartridge cartridge = getCartridgeByTenant(cartridgeType, tenantId);
             if (cartridge == null) {
-                throw new CartridgeNotFoundException("Cartridge not found " + cartridgeType);
+                throw new CartridgeNotFoundException(String.format("Cartridge not found [cartridge-uuid] %s " +
+                        "[cartridge-type] %s", cartridgeContext.getUuid(), cartridgeType));
             }
 
             // Add metadata keys defined in cartridges as export metadata keys
@@ -493,7 +494,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
 
-            String cartridgeType = cartridgeContext.getUuid();
+            String cartridgeType = cartridgeContext.getType();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 

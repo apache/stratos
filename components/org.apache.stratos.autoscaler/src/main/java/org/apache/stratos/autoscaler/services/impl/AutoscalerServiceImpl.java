@@ -315,22 +315,23 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean deployApplication(String applicationId, String applicationPolicyId)
+    public boolean deployApplication(String applicationUuid, String applicationPolicyId)
             throws ApplicationDefinitionException {
         try {
-            Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+            Application application = ApplicationHolder.getApplications().getApplication(applicationUuid);
             if (application == null) {
-                throw new RuntimeException("Application not found: " + applicationId);
+                throw new RuntimeException(String.format("Application not found [application-uuid] : %s ",
+                        applicationUuid));
             }
 
             ApplicationContext applicationContext = RegistryManager.getInstance().
-                    getApplicationContext(applicationId);
+                    getApplicationContext(applicationUuid);
             if (applicationContext == null) {
-                throw new RuntimeException("Application context not found: " + applicationId);
+                throw new RuntimeException("Application context not found: " + applicationUuid);
             }
 
             // validating application policy against the application
-            AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
+            AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationUuid, applicationPolicyId);
 
             // Create application clusters in cloud controller and send application created event
             ApplicationBuilder.handleApplicationDeployment(application,
@@ -339,7 +340,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // Setting application policy id in application object
             try {
                 ApplicationHolder.acquireWriteLock();
-                application = ApplicationHolder.getApplications().getApplication(applicationId);
+                application = ApplicationHolder.getApplications().getApplication(applicationUuid);
                 application.setApplicationPolicyId(applicationPolicyId);
                 ApplicationHolder.persistApplication(application);
             } finally {
@@ -348,7 +349,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // adding network partition algorithm context to registry
             NetworkPartitionAlgorithmContext algorithmContext =
-                    new NetworkPartitionAlgorithmContext(applicationId, applicationPolicyId, 0);
+                    new NetworkPartitionAlgorithmContext(applicationUuid, applicationPolicyId, 0);
             AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
 
             if (!applicationContext.isMultiTenant()) {
@@ -359,17 +360,17 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
             AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
-            log.info("Waiting for application clusters to be created: [application-id] " + applicationId);
+            log.info("Waiting for application clusters to be created: [application-uuid] " + applicationUuid);
             return true;
         } catch (Exception e) {
             ApplicationContext applicationContext = RegistryManager.getInstance().
-                    getApplicationContext(applicationId);
+                    getApplicationContext(applicationUuid);
             if (applicationContext != null) {
                 // Revert application status
                 applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
             }
-            String message = "Application deployment failed: [application-id]" + applicationId;
+            String message = "Application deployment failed: [application-uuid]" + applicationUuid;
             log.error(message, e);
             throw new RuntimeException(message, e);
         }

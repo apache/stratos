@@ -1631,6 +1631,7 @@ public class ObjectConverter {
      */
     public static CartridgeBean convertCartridgeToCartridgeDefinitionBean(Cartridge cartridgeInfo) {
         CartridgeBean cartridge = new CartridgeBean();
+        cartridge.setUuid(cartridgeInfo.getUuid());
         cartridge.setType(cartridgeInfo.getType());
         cartridge.setProvider(cartridgeInfo.getProvider());
         cartridge.setCategory(cartridgeInfo.getCategory());
