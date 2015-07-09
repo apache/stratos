@@ -144,7 +144,7 @@
                                     <artifactId>wiremock</artifactId>
                                     <version>${wiremock.version}</version>
                                     <classifier>standalone</classifier>
-                                    <uuid>jar</uuid>
+                                    <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${maven.output.build.path}</outputDirectory>
                                 </artifactItem>
