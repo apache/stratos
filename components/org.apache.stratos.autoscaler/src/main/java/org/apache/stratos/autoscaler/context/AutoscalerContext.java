@@ -95,7 +95,7 @@ public class AutoscalerContext {
         Map<String, ApplicationContext> applicationContextMap = distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP);//new ConcurrentHashMap<String, ApplicationContext>();
         for (String resourcePath : resourcePaths) {
             ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContextByResourcePath(resourcePath);
-            applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+            applicationContextMap.put(applicationContext.getApplicationUuid(), applicationContext);
         }
         return applicationContextMap;
     }
@@ -168,7 +168,7 @@ public class AutoscalerContext {
     }
 
     public void addApplicationContext(ApplicationContext applicationContext) {
-        applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        applicationContextMap.put(applicationContext.getApplicationUuid(), applicationContext);
         RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 
@@ -186,7 +186,7 @@ public class AutoscalerContext {
     }
 
     public void updateApplicationContext(ApplicationContext applicationContext) {
-        applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        applicationContextMap.put(applicationContext.getApplicationUuid(), applicationContext);
         RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 

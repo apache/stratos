@@ -990,7 +990,7 @@ public class RestCommandLineService {
             RowMapper<ApplicationBean> rowMapper = new RowMapper<ApplicationBean>() {
                 public String[] getData(ApplicationBean applicationDefinition) {
                     String[] data = new String[3];
-                    data[0] = applicationDefinition.getApplicationId();
+                    data[0] = applicationDefinition.getApplicationUuid();
                     data[1] = applicationDefinition.getAlias();
                     data[2] = applicationDefinition.getStatus();
                     return data;

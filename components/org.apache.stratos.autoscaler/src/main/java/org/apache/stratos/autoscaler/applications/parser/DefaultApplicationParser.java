@@ -87,7 +87,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             handleError("Invalid application definition, application alias is not found in application context");
         }
 
-        if (applicationContext.getApplicationId() == null || applicationContext.getApplicationId().isEmpty()) {
+        if (applicationContext.getApplicationUuid() == null || applicationContext.getApplicationUuid().isEmpty()) {
             handleError("Invalid application definition, application id is not found in application context");
         }
 
@@ -106,7 +106,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             handleError("Invalid application definition, subscribable information is not found in application context");
         }
 
-        oauthToken = createToken(applicationContext.getApplicationId());
+        oauthToken = createToken(applicationContext.getApplicationUuid());
         return buildCompositeAppStructure(applicationContext, subscribablesInfo);
     }
 
@@ -219,7 +219,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         Map<String, SubscribableInfoContext> subscribableInfoContextMap = new HashMap<String, SubscribableInfoContext>();
 
-        String applicationId = applicationContext.getApplicationId();
+        String applicationId = applicationContext.getApplicationUuid();
         ComponentContext componentContext = applicationContext.getComponents();
         if (componentContext != null) {
             CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
@@ -248,7 +248,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                    Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException {
 
-        Application application = new Application(applicationContext.getApplicationId());
+        Application application = new Application(applicationContext.getApplicationUuid());
 
         // Set tenant information
         application.setTenantId(applicationContext.getTenantId());
@@ -309,7 +309,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 Set<StartupOrder> startupOrders = application.getDependencyOrder().getStartupOrders();
                 Map<String, Map<String, ClusterDataHolder>> clusterDataMap;
 
-                clusterDataMap = parseLeafLevelSubscriptions(applicationContext.getApplicationId(),
+                clusterDataMap = parseLeafLevelSubscriptions(applicationContext.getApplicationUuid(),
                         applicationContext.getTenantId(), application.getKey(), null, cartridgeContextList, startupOrders);
                 application.setClusterData(clusterDataMap.get(ALIAS));
                 application.setClusterDataForType(clusterDataMap.get(CARTRIDGE_TYPE));
@@ -318,7 +318,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             // Set groups
             if (components.getGroupContexts() != null) {
                 application.setGroups(
-                        parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
+                        parseGroups(applicationContext.getApplicationUuid(), applicationContext.getTenantId(),
                                 application.getKey(), Arrays.asList(components.getGroupContexts()),
                                 subscribableInfoCtxts));
             }
@@ -329,7 +329,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 AutoscalerUtil.getAliasToDeploymentPolicyIdMapOfApplication(applicationContext));
 
         if (log.isDebugEnabled()) {
-            log.debug("Application parsed successfully: [application-id] " + applicationContext.getApplicationId());
+            log.debug("Application parsed successfully: [application-id] " + applicationContext.getApplicationUuid());
         }
         return application;
     }
@@ -364,7 +364,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
-            Cartridge cartridge = getCartridgeByTenant(cartridgeType,tenantId);
+            Cartridge cartridge = getCartridgeByTenant(cartridgeType, tenantId);
             if (cartridge == null) {
                 throw new CartridgeNotFoundException("Cartridge not found " + cartridgeType);
             }
@@ -410,7 +410,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                         String.format("Could not find dependent cartridge for " +
                                                 "application: %s cartridge-alias: %s", appId, cartridgeAlias));
                             }
-                            Cartridge dependencyCartridge = getCartridgeByTenant(dependentCartridgeType,tenantId);
+                            Cartridge dependencyCartridge = getCartridgeByTenant(dependentCartridgeType, tenantId);
                             ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
 
                             if (dataHolder != null) {
@@ -498,7 +498,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
             // check if a cartridge with relevant type is already deployed. else, can't continue
-            Cartridge cartridge = getCartridgeByTenant(cartridgeType,tenantId);
+            Cartridge cartridge = getCartridgeByTenant(cartridgeType, tenantId);
             if (cartridge == null) {
                 handleError("No deployed Cartridge found with type [ " + cartridgeType +
                         " ] for Composite Application");
@@ -1004,7 +1004,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 	private Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws ApplicationDefinitionException {
 
 		try {
-			return CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeType,tenantId);
+			return CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeType, tenantId);
 		} catch (Exception e) {
 			log.error(String.format("Unable to get the cartridge: %s %d " , cartridgeType , tenantId), e);
 			throw new ApplicationDefinitionException(e);

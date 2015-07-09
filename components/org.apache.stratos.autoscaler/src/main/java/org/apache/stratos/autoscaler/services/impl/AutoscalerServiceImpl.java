@@ -212,7 +212,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding application: [application-id] %s",
-                    applicationContext.getApplicationId()));
+                    applicationContext.getApplicationUuid()));
         }
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
@@ -229,7 +229,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Application added successfully: [application-id] %s",
-                    applicationContext.getApplicationId()));
+                    applicationContext.getApplicationUuid()));
         }
         return true;
     }
@@ -239,10 +239,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             throws ApplicationDefinitionException, CartridgeGroupNotFoundException,
             CartridgeNotFoundException {
 
-        String applicationId = applicationContext.getApplicationId();
+        String applicationId = applicationContext.getApplicationUuid();
         if (log.isInfoEnabled()) {
             log.info(String.format("Updating application: [application-id] %s",
-                    applicationContext.getApplicationId()));
+                    applicationContext.getApplicationUuid()));
         }
 
         if (AutoscalerContext.getInstance().getApplicationContext(applicationId) == null) {
@@ -397,13 +397,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding application signup: [application-id] %s",
-                        applicationContext.getApplicationId()));
+                        applicationContext.getApplicationUuid()));
             }
 
             ComponentContext components = applicationContext.getComponents();
             if (components != null) {
                 ApplicationSignUp applicationSignUp = new ApplicationSignUp();
-                applicationSignUp.setApplicationId(applicationContext.getApplicationId());
+                applicationSignUp.setApplicationId(applicationContext.getApplicationUuid());
                 applicationSignUp.setTenantId(applicationContext.getTenantId());
                 String[] clusterIdsArray = clusterIds.toArray(new String[clusterIds.size()]);
                 applicationSignUp.setClusterIds(clusterIdsArray);
@@ -434,11 +434,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Application signup added successfully: [application-id] %s",
-                            applicationContext.getApplicationId()));
+                            applicationContext.getApplicationUuid()));
                 }
             }
         } catch (Exception e) {
-            String message = "Could not add application signup: [application-id]" + applicationContext.getApplicationId();
+            String message = "Could not add application signup: [application-id]" + applicationContext.getApplicationUuid();
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -471,12 +471,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Removing application signup: [application-id] %s",
-                        applicationContext.getApplicationId()));
+                        applicationContext.getApplicationUuid()));
             }
 
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
 
-            ApplicationSignUp applicationSignUp[] = serviceClient.getApplicationSignUps(applicationContext.getApplicationId());
+            ApplicationSignUp applicationSignUp[] = serviceClient.getApplicationSignUps(applicationContext.getApplicationUuid());
             if (applicationSignUp != null) {
                 for (ApplicationSignUp appSignUp : applicationSignUp) {
                     if (appSignUp != null) {

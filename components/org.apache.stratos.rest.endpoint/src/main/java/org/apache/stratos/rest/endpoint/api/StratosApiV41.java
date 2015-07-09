@@ -781,14 +781,15 @@ public class StratosApiV41 extends AbstractApi {
         try {
 	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
 	        applicationDefinition.setTenantId(carbonContext.getTenantId());
+	        applicationDefinition.setApplicationUuid(UUID.randomUUID().toString());
             StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
                     getUsername(), getTenantDomain());
 
 
-            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationUuid()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application added successfully: [application] %s",
-                            applicationDefinition.getApplicationId()))).build();
+                            applicationDefinition.getApplicationUuid()))).build();
         } catch (ApplicationAlreadyExistException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application already exists")).build();
@@ -824,10 +825,10 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(),
                     getUsername(), getTenantDomain());
-            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationUuid()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application updated successfully: [application] %s",
-                            applicationDefinition.getApplicationId()))).build();
+                            applicationDefinition.getApplicationUuid()))).build();
         } catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getCartridgeNotFoundException().
                     getMessage();

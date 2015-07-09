@@ -1260,7 +1260,7 @@ public class StratosApiV41Utils {
 
         try {
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
-            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name,tenantId);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name, tenantId);
             if (serviceGroup == null) {
                 return null;
             }
@@ -1324,7 +1324,7 @@ public class StratosApiV41Utils {
 
         // Check whether cartridge group exists
         try {
-            if (asServiceClient.getServiceGroupByTenant(name,tenantId) == null) {
+            if (asServiceClient.getServiceGroupByTenant(name, tenantId) == null) {
                 String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
                 log.error(message);
                 throw new RestAPIException(message);
@@ -1337,7 +1337,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name,tenantId);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name, tenantId);
 
             asServiceClient.undeployServiceGroupDefinition(serviceGroup.getUuid());
 
@@ -1434,8 +1434,8 @@ public class StratosApiV41Utils {
         }
         // check if an application with same id already exists
         try {
-            if (AutoscalerServiceClient.getInstance().existApplication(appDefinition.getApplicationId())) {
-                String msg = "Application already exists: [application-id] " + appDefinition.getApplicationId();
+            if (AutoscalerServiceClient.getInstance().existApplication(appDefinition.getApplicationUuid())) {
+                String msg = "Application already exists: [application-id] " + appDefinition.getApplicationUuid();
                 throw new RestAPIException(msg);
             }
         } catch (RemoteException e) {
@@ -1473,11 +1473,11 @@ public class StratosApiV41Utils {
             findCartridgesAndGroupsInApplication(appDefinition, usedCartridges, usedCartridgeGroups);
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.addUsedCartridgesInApplications(
-                    appDefinition.getApplicationId(),
+                    appDefinition.getApplicationUuid(),
                     usedCartridges.toArray(new String[usedCartridges.size()]));
 
             smServiceClient.addUsedCartridgeGroupsInApplications(
-                    appDefinition.getApplicationId(),
+                    appDefinition.getApplicationUuid(),
                     usedCartridgeGroups.toArray(new String[usedCartridgeGroups.size()]));
 
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
@@ -1501,7 +1501,7 @@ public class StratosApiV41Utils {
                                          String userName, String tenantDomain)
             throws RestAPIException, AutoscalerServiceCartridgeNotFoundExceptionException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
-        if (StringUtils.isBlank(appDefinition.getApplicationId())) {
+        if (StringUtils.isBlank(appDefinition.getApplicationUuid())) {
             String message = "Please specify the application name";
             log.error(message);
             throw new RestAPIException(message);
@@ -1875,11 +1875,11 @@ public class StratosApiV41Utils {
             findCartridgesAndGroupsInApplication(application, usedCartridges, usedCartridgeGroups);
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             smServiceClient.removeUsedCartridgesInApplications(
-                    application.getApplicationId(),
+                    application.getApplicationUuid(),
                     usedCartridges.toArray(new String[usedCartridges.size()]));
 
             smServiceClient.removeUsedCartridgeGroupsInApplications(
-                    application.getApplicationId(),
+                    application.getApplicationUuid(),
                     usedCartridgeGroups.toArray(new String[usedCartridgeGroups.size()]));
 
         } catch (RemoteException e) {

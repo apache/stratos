@@ -264,10 +264,10 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationContext.getApplicationId();
+                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationContext.getApplicationUuid();
             persist(applicationContext, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug("Application context [" + applicationContext.getApplicationId() + "] " +
+                log.debug("Application context [" + applicationContext.getApplicationUuid() + "] " +
                         "persisted successfully in the autoscaler registry");
             }
         } finally {
