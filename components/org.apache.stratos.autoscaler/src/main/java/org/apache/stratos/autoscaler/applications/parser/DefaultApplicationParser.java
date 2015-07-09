@@ -132,7 +132,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
                 if (cartridgeContext != null) {
                     SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-                    addSubscribableInfo(applicationId, cartridgeContext.getType(), subscribableInfoContextMap, subscribableInfoContext);
+                    addSubscribableInfo(applicationId, cartridgeContext.getUuid(), subscribableInfoContextMap, subscribableInfoContext);
                 }
             }
         }
@@ -360,7 +360,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             List<String> dependencyClusterIDs = new ArrayList<String>();
             List<String> exportMetadataKeys = new ArrayList<String>();
             List<String> importMetadataKeys = new ArrayList<String>();
-            String cartridgeType = cartridgeContext.getType();
+            String cartridgeType = cartridgeContext.getUuid();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
@@ -481,7 +481,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     private String findCartridgeTypeFromAlias(List<CartridgeContext> cartridgeContextList, String alias) {
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
             if (alias.equals(cartridgeContext.getSubscribableInfoContext().getAlias())) {
-                return cartridgeContext.getType();
+                return cartridgeContext.getUuid();
             }
         }
         return null;
@@ -493,7 +493,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
 
-            String cartridgeType = cartridgeContext.getType();
+            String cartridgeType = cartridgeContext.getUuid();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 

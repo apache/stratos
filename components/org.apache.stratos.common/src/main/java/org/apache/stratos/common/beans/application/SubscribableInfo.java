@@ -35,6 +35,8 @@ public class SubscribableInfo implements Serializable {
     private String alias;
     private String deploymentPolicy;
     private String autoscalingPolicy;
+	private String deploymentPolicyUuid;
+	private String autoscalingPolicyUuid;
     private int maxMembers;
     private int minMembers;
     private String[] dependencyAliases;

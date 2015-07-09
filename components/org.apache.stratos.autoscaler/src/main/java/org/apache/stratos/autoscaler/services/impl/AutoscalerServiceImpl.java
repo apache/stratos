@@ -534,7 +534,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (artifactRepositoryContext != null) {
 
                 ArtifactRepository artifactRepository = new ArtifactRepository();
-                artifactRepository.setCartridgeType(cartridgeContext.getType());
+                artifactRepository.setCartridgeType(cartridgeContext.getUuid());
                 artifactRepository.setAlias(subscribableInfoContext.getAlias());
                 artifactRepository.setRepoUrl(artifactRepositoryContext.getRepoUrl());
                 artifactRepository.setPrivateRepo(artifactRepositoryContext.isPrivateRepo());

@@ -1442,7 +1442,7 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Could not read application", e);
         }
 
-        validateApplication(appDefinition);
+	    validateApplication(appDefinition);
 
         // To validate groups have unique alias in the application definition
         validateGroupsInApplicationDefinition(appDefinition);
@@ -1488,7 +1488,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    /**
+	/**
      * Update the existence of the application and update it.
      *
      * @param appDefinition Application definition

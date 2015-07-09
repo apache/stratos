@@ -247,7 +247,7 @@ public class ParserUtils {
     private static String getAliasForServiceType(String serviceType, GroupContext groupContext) {
 
         for (CartridgeContext subCtxt : groupContext.getCartridgeContexts()) {
-            if (serviceType.equals(subCtxt.getType())) {
+            if (serviceType.equals(subCtxt.getUuid())) {
                 return subCtxt.getSubscribableInfoContext().getAlias();
             }
         }
