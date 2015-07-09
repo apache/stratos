@@ -64,4 +64,4 @@ System Requirements
 
 
 Please refer below link for more information:
-https://cwiki.apache.org/confluence/display/STRATOS/4.0.0+Installation+Guide
+https://cwiki.apache.org/confluence/display/STRATOS/4.1.0+Installation+Guide

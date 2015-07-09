@@ -36,5 +36,25 @@
 	</excludes>
         </fileSet> 
     </fileSets>
+    <files>
+        <file>
+            <source>${project.basedir}/README.txt</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/notice/NOTICE</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/license/LICENSE</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+    </files>
 </assembly>
 

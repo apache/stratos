@@ -58,7 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Stratos API v4.0 for Stratos 4.0.0 release.
+ * Stratos API v4.0 for Stratos 4.1.0 release.
  * Please do not update this API, if modifications are needed use the latest API version.
  */
 @Deprecated
