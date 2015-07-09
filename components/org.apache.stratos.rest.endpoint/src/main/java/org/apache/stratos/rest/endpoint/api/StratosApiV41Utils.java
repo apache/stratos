@@ -178,7 +178,6 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void updateCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
-
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Updating cartridge: [cartridge-type] %s ", cartridgeBean.getType()));
@@ -192,7 +191,10 @@ public class StratosApiV41Utils {
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-            cloudControllerServiceClient.updateCartridge(cartridgeConfig);
+	        cartridgeConfig.setUuid(cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
+		                                                                                  cartridgeBean.getTenantId()).getUuid());
+
+	        cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Successfully updated cartridge: [cartridge-type] %s ",
@@ -214,6 +216,10 @@ public class StratosApiV41Utils {
             String msg = "Could not add cartridge";
             log.error(msg, e);
             throw new RestAPIException(msg);
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+	        String msg = "Could not find existing cartridge";
+	        log.error(msg, e);
+	        e.printStackTrace();
         }
     }
 
