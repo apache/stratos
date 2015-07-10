@@ -215,7 +215,7 @@ public class MonitorFactory {
 
         //Retrieving the Cluster from Topology
         String clusterId = context.getId();
-        String serviceName = context.getServiceName();
+        String serviceName = context.getServiceUuid();
         Cluster cluster;
         //acquire read lock for the service and cluster
         TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
