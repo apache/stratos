@@ -204,7 +204,7 @@ public class ClusterContext extends AbstractClusterContext {
         NetworkPartitionRef networkPartitionRef = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
             for (NetworkPartitionRef networkPartition2 : networkPartitions) {
-                if (networkPartition2.getUuid().equals(
+                if (networkPartition2.getId().equals(
                         clusterInstance.getNetworkPartitionId())) {
                     networkPartitionRef = networkPartition2;
                 }

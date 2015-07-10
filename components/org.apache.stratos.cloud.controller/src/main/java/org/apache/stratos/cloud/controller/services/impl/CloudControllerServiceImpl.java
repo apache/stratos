@@ -371,7 +371,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // Validate iaas provider
-            IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getType(), partitionId);
+            IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getUuid(), partitionId);
             if (iaasProvider == null) {
                 String msg = String.format("Could not start instance, " +
                                 "IaaS provider not found in cartridge %s for partition %s, " +
