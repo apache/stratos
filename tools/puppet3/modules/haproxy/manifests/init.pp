@@ -25,7 +25,7 @@ class haproxy(
   $cluster_id           = $stratos_cluster_id,
   $service_name         = $stratos_instance_data_service_name,
   $lb_service_type      = $stratos_instance_data_lb_service_type,
-  $version              = '4.0.0',
+  $version              = '4.1.0',
   $owner                = 'root',
   $group                = 'root',
   $target               = '/mnt',

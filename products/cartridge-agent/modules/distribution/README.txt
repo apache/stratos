@@ -13,7 +13,7 @@ Synchronizer and Instance Status Event Publisher.
 
 
 Please refer below link for more information:
-https://cwiki.apache.org/confluence/display/STRATOS/4.0.0+Cartridge+Agent
+https://cwiki.apache.org/confluence/display/STRATOS/4.1.0+Cartridge+Agent
 
 
 Thank you for using Apache Stratos!

@@ -7,6 +7,6 @@ This folder should have following:
 eg:
 if $mb_type = activemq, folder structure of this folder would be:
 >$ls
->activemq  apache-stratos-haproxy-extension-4.0.0.zip
+>activemq  apache-stratos-haproxy-extension-4.1.0.zip
 
 3. Under $mb_type folder, please add all the client jars, that should be copied to the haproxy-extension's lib directory.

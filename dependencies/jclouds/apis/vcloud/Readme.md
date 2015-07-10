@@ -92,7 +92,7 @@ index 4eb34f9..8357aec 100644
  
 -
 +  <scm>
-+    <tag>4.0.0-rc4</tag>
++    <tag>4.1.0-rc4</tag>
 +  </scm>
  </project>
 diff --git a/home/rajkumar/workspace/apache/jclouds/jclouds-jclouds-1.8.1/apis/vcloud/src/main/java/org/jclouds/vcloud/VCloudMediaType.java b/dependencies/jclouds/apis/vcloud/1.8.1-stratos/src/main/java/org/jclouds/vcloud/VCloudMediaType.java

@@ -291,10 +291,10 @@ neethi-2.0.4.wso2v4.jar
 not-yet-commons-ssl-0.3.9.jar
 opencsv-1.8.wso2v1.jar
 org.apache.log4j-1.2.13.v200706111418.jar
-org.apache.stratos.common-4.0.0.jar
-org.apache.stratos.load.balancer.common-4.0.0.jar
-org.apache.stratos.load.balancer.extension.api-4.0.0.jar
-org.apache.stratos.messaging-4.0.0.jar
+org.apache.stratos.common-4.1.0.jar
+org.apache.stratos.load.balancer.common-4.1.0.jar
+org.apache.stratos.load.balancer.extension.api-4.1.0.jar
+org.apache.stratos.messaging-4.1.0.jar
 poi-3.9.jar
 poi-ooxml-3.9.0.wso2v1.jar
 poi-ooxml-3.9.jar
