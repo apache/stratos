@@ -51,8 +51,7 @@ def put(put_req, app=False):
     put_request.add_header('Content-Type', 'application/json')
 
     try:
-        log.debug(
-            "Publishing metadata to Metadata service. [URL] %s, [DATA] %s" % (put_request.get_full_url(), request_data))
+        log.debug("Publishing metadata to Metadata service. [URL] %s, [DATA] %s" % (put_request.get_full_url(), request_data))
         handler = urllib2.urlopen(put_request, request_data)
         log.debug("Metadata service response: %s" % handler.getcode())
 
