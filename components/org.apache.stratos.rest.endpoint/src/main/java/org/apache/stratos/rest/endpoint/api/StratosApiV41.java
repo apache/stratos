@@ -1325,8 +1325,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplicationRuntime(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
 
-
-        ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId,carbonContext.getTenantId());
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application runtime not found")).build();

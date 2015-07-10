@@ -1984,14 +1984,16 @@ public class StratosApiV41Utils {
      * @param applicationId Application Id
      * @return ApplicationInfoBean
      */
-    public static ApplicationInfoBean getApplicationRuntime(String applicationId)
+    public static ApplicationInfoBean getApplicationRuntime(String applicationId,int tenantId)
             throws RestAPIException {
         ApplicationInfoBean applicationBean = null;
         ApplicationContext applicationContext = null;
+	    String applicationUuid=null;
         //Checking whether application is in deployed mode
         try {
+	        applicationUuid=getAutoscalerServiceClient().getApplicationByTenant(applicationId,tenantId).getApplicationUuid();
             applicationContext = getAutoscalerServiceClient().
-                    getApplication(applicationId);
+                    getApplication(applicationUuid);
         } catch (RemoteException e) {
             String message = "Could not get application definition: [application-id] " + applicationId;
             log.error(message, e);
@@ -2005,8 +2007,8 @@ public class StratosApiV41Utils {
         }
 
         try {
-            ApplicationManager.acquireReadLockForApplication(applicationId);
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
+            ApplicationManager.acquireReadLockForApplication(applicationUuid);
+            Application application = ApplicationManager.getApplications().getApplication(applicationUuid);
             if (application.getInstanceContextCount() > 0
                     || (applicationContext != null &&
                     applicationContext.getStatus().equals("Deployed"))) {
@@ -2021,7 +2023,7 @@ public class StratosApiV41Utils {
                 }
             }
         } finally {
-            ApplicationManager.releaseReadLockForApplication(applicationId);
+            ApplicationManager.releaseReadLockForApplication(applicationUuid);
         }
 
         return applicationBean;
@@ -2063,7 +2065,7 @@ public class StratosApiV41Utils {
             for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
                 ClusterDataHolder clusterDataHolder = entry.getValue();
                 String clusterId = clusterDataHolder.getClusterId();
-                String serviceType = clusterDataHolder.getServiceType();
+                String serviceType = clusterDataHolder.getServiceUuid();
                 try {
                     TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);

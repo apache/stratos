@@ -36,8 +36,11 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
+
+import java.rmi.RemoteException;
 
 /**
  * This will have utility methods that need to be executed from rule file...
@@ -181,6 +184,13 @@ public class RuleTasksDelegator {
 
         try {
             String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
+			String nwPartitionUuid=null;
+	        NetworkPartition[] networkPartitionList= CloudControllerServiceClient.getInstance().getNetworkPartitions();
+	        for(int i=0;i<networkPartitionList.length;i++){
+		        if(networkPartitionList[i].getId().equals(nwPartitionId)){
+			        nwPartitionUuid=networkPartitionList[i].getUuid();
+		        }
+	        }
 
             // Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition;
@@ -196,10 +206,11 @@ public class RuleTasksDelegator {
             MemberContext memberContext =
                     AutoscalerCloudControllerClient.getInstance()
                             .startInstance(clusterMonitorPartitionContext.getPartition(),
-                                    clusterId,
-                                    clusterInstanceId, clusterMonitorPartitionContext.getNetworkPartitionId(),
-                                    isPrimary,
-                                    minimumCountOfNetworkPartition);
+                                           clusterId,
+                                           clusterInstanceId,
+                                           nwPartitionUuid,
+                                           isPrimary,
+                                           minimumCountOfNetworkPartition);
             if (memberContext != null) {
                 ClusterLevelPartitionContext partitionContext = clusterInstanceContext.
                         getPartitionCtxt(clusterMonitorPartitionContext.getPartitionId());
@@ -251,7 +262,14 @@ public class RuleTasksDelegator {
         }
         //Notify parent for checking scaling dependencies
         ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        clusterMonitor.sendScalingDownBeyondMinEvent(networkPartitionId, instanceId);
+	    String networkPartition= null;
+	    try {
+		    networkPartition =
+				    CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId).getId();
+	    } catch (RemoteException e) {
+		    log.error("Error while retrieving the network partition");
+	    }
+	    clusterMonitor.sendScalingDownBeyondMinEvent(networkPartition, instanceId);
     }
 
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
