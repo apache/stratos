@@ -25,7 +25,6 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
@@ -36,7 +35,6 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.concurrent.ExecutorService;
 
 import static junit.framework.Assert.*;
@@ -73,18 +71,10 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     }
 
     private void runApplicationTest(String applicationFolderName, String applicationId) {
-	    String applicationUuid= null;
-	    try {
-		    applicationUuid =
-				    AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId,-1234).getApplicationUuid();
-		    log.info("Integration test application uuid"+applicationUuid);
-	    } catch (RemoteException e) {
-		    log.error(e);
-	    }
-	    executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh");
-        assertApplicationActivation(applicationUuid);
-        //executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh");
-        //assertApplicationNotExists(applicationUuid);
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh");
+        assertApplicationActivation(applicationId);
+     //   executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh");
+     //   assertApplicationNotExists(applicationId);
     }
 
     /**
@@ -124,14 +114,23 @@ public class SampleApplicationsTest extends StratosTestServerManager {
      */
     private void assertApplicationActivation(String applicationName) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+	    Application application=null;
+	    for (Application applicationExists : ApplicationManager.getApplications().getApplications().values()){
+		    if(applicationExists.getName().equals(applicationName)){
+			    application=applicationExists;
+		    }
+	    }
         while(!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplication(applicationName);
-            if((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+	        for (Application applicationExists : ApplicationManager.getApplications().getApplications().values()) {
+		        if (applicationExists.getName().equals(applicationName)) {
+			        application = applicationExists;
+		        }
+	        }
+	        if((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                 break;
             }
         }
