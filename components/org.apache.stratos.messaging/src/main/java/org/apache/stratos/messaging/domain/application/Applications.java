@@ -47,6 +47,15 @@ public class Applications implements Serializable {
         return this.getApplications().get(applicationUuid);
     }
 
+	public Application getApplicationByTenent(String applicationid) {
+		for(Application application:this.getApplications().values()){
+			if(application.getId().equals(applicationid)){
+				return application;
+			}
+		}
+		return null;
+	}
+
     public boolean isInitialized() {
         return initialized;
     }

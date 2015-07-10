@@ -72,9 +72,10 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
     private void runApplicationTest(String applicationFolderName, String applicationId) {
         executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh");
-        assertApplicationActivation(applicationId);
+	    assertApplicationActivation(applicationId);
      //   executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh");
      //   assertApplicationNotExists(applicationId);
+
     }
 
     /**
@@ -113,33 +114,24 @@ public class SampleApplicationsTest extends StratosTestServerManager {
      * @param applicationName
      */
     private void assertApplicationActivation(String applicationName) {
-        long startTime = System.currentTimeMillis();
-	    Application application=null;
-	    for (Application applicationExists : ApplicationManager.getApplications().getApplications().values()){
-		    if(applicationExists.getName().equals(applicationName)){
-			    application=applicationExists;
+	    long startTime = System.currentTimeMillis();
+	    Application application = ApplicationManager.getApplications().getApplicationByTenent(applicationName);
+	    while (!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
+		    try {
+			    Thread.sleep(1000);
+		    } catch (InterruptedException ignore) {
+		    }
+		    application = ApplicationManager.getApplications().getApplicationByTenent(applicationName);
+		    if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+			    break;
 		    }
 	    }
-        while(!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-	        for (Application applicationExists : ApplicationManager.getApplications().getApplications().values()) {
-		        if (applicationExists.getName().equals(applicationName)) {
-			        application = applicationExists;
-		        }
-	        }
-	        if((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
-                break;
-            }
-        }
 
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
-        assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
-                ApplicationStatus.Active, application.getStatus());
+	    assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+	    assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
+	                 ApplicationStatus.Active, application.getStatus());
     }
-    
+
     private void assertApplicationNotExists(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
         assertNull(String.format("Application is found in the topology : [application-id] %s", applicationName), application);

@@ -254,7 +254,8 @@ public class DefaultApplicationParser implements ApplicationParser {
         application.setTenantId(applicationContext.getTenantId());
         application.setTenantDomain(applicationContext.getTenantDomain());
         application.setTenantAdminUserName(applicationContext.getTenantAdminUsername());
-
+		application.setId(applicationContext.getApplicationId());
+	    
         Set<StartupOrder> startupOrderSet = new LinkedHashSet<StartupOrder>();
         DependencyOrder dependencyOrder = new DependencyOrder();
         dependencyOrder.setStartupOrders(startupOrderSet);
