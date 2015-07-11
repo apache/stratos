@@ -38,7 +38,7 @@
     </fileSets>
     <files>
         <file>
-            <source>${project.basedir}/README.txt</source>
+            <source>${project.basedir}/README.md</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
