@@ -144,7 +144,7 @@ public class CloudControllerUtil {
                         iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
                     }
 
-                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getType(), iaasProvider);
+                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getUuid(), iaasProvider);
                 }
             }
         }
