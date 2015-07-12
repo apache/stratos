@@ -1161,7 +1161,7 @@ public class ObjectConverter {
         applicationDefinition.setName(applicationContext.getName());
         applicationDefinition.setDescription(applicationContext.getDescription());
         applicationDefinition.setStatus(applicationContext.getStatus());
-
+		applicationDefinition.setApplicationUuid(applicationContext.getApplicationUuid());
         // convert and set components
         if (applicationContext.getComponents() != null) {
             applicationDefinition.setComponents(new ComponentBean());

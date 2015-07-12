@@ -1304,7 +1304,7 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, message)).build();
         }
-        StratosApiV41Utils.undeployApplication(applicationId, force);
+        StratosApiV41Utils.undeployApplication(applicationDefinition.getApplicationUuid(), force);
         return Response.accepted().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Application undeploy process started successfully: [application-id] %s", applicationId))).build();
     }

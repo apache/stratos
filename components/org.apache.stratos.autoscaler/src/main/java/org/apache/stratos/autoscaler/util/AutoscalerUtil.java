@@ -403,7 +403,7 @@ public class AutoscalerUtil {
                     for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                         if (networkPartition != null) {
                             if (!networkPartitionIds.contains(networkPartition.getUuid())) {
-                                networkPartitionIds.add(networkPartition.getUuid());
+                                networkPartitionIds.add(networkPartition.getId());
                             }
                         }
                     }

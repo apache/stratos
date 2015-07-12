@@ -1873,12 +1873,13 @@ public class StratosApiV41Utils {
 
             log.info(String.format("Starting to remove application [application-id %s", applicationId));
 
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
 
-            ApplicationContext asApplication = asServiceClient.getApplication(applicationId);
+            ApplicationContext asApplication = asServiceClient.getApplicationByTenant(applicationId,carbonContext.getTenantId());
             ApplicationBean application = ObjectConverter.convertStubApplicationContextToApplicationDefinition(
                     asApplication);
-            asServiceClient.deleteApplication(applicationId);
+            asServiceClient.deleteApplication(application.getApplicationUuid());
 
             List<String> usedCartridges = new ArrayList<String>();
             List<String> usedCartridgeGroups = new ArrayList<String>();
@@ -2834,7 +2835,7 @@ public class StratosApiV41Utils {
                 for (ApplicationContext applicationContext : applicationContexts) {
                     if (applicationContext != null) {
                         String[] networkPartitions = AutoscalerServiceClient.getInstance().
-                                getApplicationNetworkPartitions(applicationContext.getApplicationId());
+                                getApplicationNetworkPartitions(applicationContext.getApplicationUuid());
                         if (networkPartitions != null) {
                             for (int i = 0; i < networkPartitions.length; i++) {
                                 if (networkPartitions[i].equals(networkPartitionId)) {

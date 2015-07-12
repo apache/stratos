@@ -26,7 +26,10 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 
+import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -41,8 +44,18 @@ public class InstanceTerminator implements Runnable {
 
     public InstanceTerminator(MemberContext memberContext) {
         String provider = memberContext.getPartition().getProvider();
-        IaasProvider iaasProvider = CloudControllerContext.getInstance()
-                .getIaasProvider(memberContext.getCartridgeType(), provider);
+	    String type=null;
+	    try {
+		    type=
+				    CloudControllerServiceClient.getInstance().getCartridge(memberContext.getCartridgeType()).getType();
+	    } catch (RemoteException e) {
+			log.error("Error in retrieving the cartridge",e);
+	    } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+		    log.error("Error in retrieving the cartridge", e);
+	    }
+	    IaasProvider iaasProvider = CloudControllerContext.getInstance()
+                .getIaasProvider(type, provider);
+
         this.iaas = iaasProvider.getIaas();
         this.memberContext = memberContext;
     }
