@@ -93,11 +93,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) {
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgesCartridgeGroupsWriteLock();
-            StratosManagerContext.getInstance().addUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
+            StratosManagerContext.getInstance().addUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -107,11 +107,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) {
+    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgesCartridgeGroupsWriteLock();
-            StratosManagerContext.getInstance().removeUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
+            StratosManagerContext.getInstance().removeUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -121,11 +121,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void addUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) {
+    public void addUsedCartridgesInApplications(String applicationUuid, String[] cartridgeNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgesApplicationsWriteLock();
-            StratosManagerContext.getInstance().addUsedCartridgesInApplications(applicationName, cartridgeNames);
+            StratosManagerContext.getInstance().addUsedCartridgesInApplications(applicationUuid, cartridgeNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -135,11 +135,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void removeUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) {
+    public void removeUsedCartridgesInApplications(String applicationUuid, String[] cartridgeNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgesApplicationsWriteLock();
-            StratosManagerContext.getInstance().removeUsedCartridgesInApplications(applicationName, cartridgeNames);
+            StratosManagerContext.getInstance().removeUsedCartridgesInApplications(applicationUuid, cartridgeNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -149,20 +149,20 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public boolean canCartridgeBeRemoved(String cartridgeName) {
-        if (StratosManagerContext.getInstance().isCartridgeIncludedInCartridgeGroups(cartridgeName) ||
-                StratosManagerContext.getInstance().isCartridgeIncludedInApplications(cartridgeName)) {
+    public boolean canCartridgeBeRemoved(String cartridgeUuid) {
+        if (StratosManagerContext.getInstance().isCartridgeIncludedInCartridgeGroups(cartridgeUuid) ||
+                StratosManagerContext.getInstance().isCartridgeIncludedInApplications(cartridgeUuid)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) {
+    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupUuid, String[] cartridgeGroupNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgeGroupsCartridgeSubGroupsWriteLock();
-            StratosManagerContext.getInstance().addUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupName, cartridgeGroupNames);
+            StratosManagerContext.getInstance().addUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupUuid, cartridgeGroupNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -172,11 +172,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) {
+    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupUuid, String[] cartridgeGroupNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgeGroupsCartridgeSubGroupsWriteLock();
-            StratosManagerContext.getInstance().removeUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupName, cartridgeGroupNames);
+            StratosManagerContext.getInstance().removeUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupUuid, cartridgeGroupNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -186,11 +186,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void addUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) {
+    public void addUsedCartridgeGroupsInApplications(String applicationUuid, String[] cartridgeGroupNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgeGroupsApplicationsWriteLock();
-            StratosManagerContext.getInstance().addUsedCartridgeGroupsInApplications(applicationName, cartridgeGroupNames);
+            StratosManagerContext.getInstance().addUsedCartridgeGroupsInApplications(applicationUuid, cartridgeGroupNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -200,11 +200,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void removeUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) {
+    public void removeUsedCartridgeGroupsInApplications(String applicationUuid, String[] cartridgeGroupNames) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgeGroupsApplicationsWriteLock();
-            StratosManagerContext.getInstance().removeUsedCartridgeGroupsInApplications(applicationName, cartridgeGroupNames);
+            StratosManagerContext.getInstance().removeUsedCartridgeGroupsInApplications(applicationUuid, cartridgeGroupNames);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {
@@ -214,9 +214,9 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupName) {
-        if (StratosManagerContext.getInstance().isCartridgeGroupIncludedInCartridgeSubGroups(cartridgeGroupName) ||
-                StratosManagerContext.getInstance().isCartridgeGroupIncludedInApplications(cartridgeGroupName)) {
+    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupUuid) {
+        if (StratosManagerContext.getInstance().isCartridgeGroupIncludedInCartridgeSubGroups(cartridgeGroupUuid) ||
+                StratosManagerContext.getInstance().isCartridgeGroupIncludedInApplications(cartridgeGroupUuid)) {
             return false;
         }
         return true;
