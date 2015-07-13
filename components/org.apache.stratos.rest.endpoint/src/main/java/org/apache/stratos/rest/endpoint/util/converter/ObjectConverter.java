@@ -927,13 +927,15 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster = new
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster();
 
-        kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterId());
+	    kubernetesCluster.setClusterUuid(kubernetesClusterBean.getClusterUuid());
+	    kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterUuid());
         kubernetesCluster.setDescription(kubernetesClusterBean.getDescription());
         kubernetesCluster.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(
                 kubernetesClusterBean.getKubernetesMaster()));
         kubernetesCluster.setPortRange(convertPortRangeToStubPortRange(kubernetesClusterBean.getPortRange()));
         kubernetesCluster.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesClusterBean.getKubernetesHosts()));
         kubernetesCluster.setProperties((convertPropertyBeansToCCStubProperties(kubernetesClusterBean.getProperty())));
+	    kubernetesCluster.setTenantId(kubernetesClusterBean.getTenantId());
 
         return kubernetesCluster;
     }
@@ -1022,7 +1024,7 @@ public class ObjectConverter {
             return null;
         }
         KubernetesClusterBean kubernetesClusterBean = new KubernetesClusterBean();
-        kubernetesClusterBean.setClusterId(kubernetesCluster.getClusterId());
+        kubernetesClusterBean.setClusterUuid(kubernetesCluster.getClusterId());
         kubernetesClusterBean.setDescription(kubernetesCluster.getDescription());
         kubernetesClusterBean.setPortRange(convertStubPortRangeToPortRange(kubernetesCluster.getPortRange()));
         kubernetesClusterBean.setKubernetesHosts(convertStubKubernetesHostsToKubernetesHosts(kubernetesCluster.getKubernetesHosts()));

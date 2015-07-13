@@ -1203,7 +1203,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         try {
-            if (CloudControllerContext.getInstance().getKubernetesCluster(kubernetesCluster.getClusterId()) != null) {
+            if (CloudControllerContext.getInstance().getKubernetesCluster(kubernetesCluster.getClusterUuid()) != null) {
                 throw new KubernetesClusterAlreadyExistsException("Kubernetes cluster already exists");
             }
         } catch (NonExistingKubernetesClusterException ignore) {
@@ -1214,7 +1214,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding kubernetes cluster: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterId()));
+                        kubernetesCluster.getClusterUuid()));
             }
             CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
 
@@ -1224,7 +1224,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes cluster added successfully: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterId()));
+                        kubernetesCluster.getClusterUuid()));
             }
             return true;
         } catch (Exception e) {
@@ -1247,7 +1247,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Updating kubernetes cluster: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterId()));
+                        kubernetesCluster.getClusterUuid()));
             }
             CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
 
@@ -1257,7 +1257,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes cluster updated successfully: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterId()));
+                        kubernetesCluster.getClusterUuid()));
             }
             return true;
         } catch (Exception e) {
@@ -1310,7 +1310,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes host added successfully: [id] %s", kubernetesCluster.getClusterId()));
+                log.info(String.format("Kubernetes host added successfully: [id] %s", kubernetesCluster.getClusterUuid()));
             }
 
             return true;

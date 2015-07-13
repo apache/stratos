@@ -1146,7 +1146,7 @@ public class RestCommandLineService {
                 RowMapper<KubernetesClusterBean> partitionMapper = new RowMapper<KubernetesClusterBean>() {
                     public String[] getData(KubernetesClusterBean kubernetesCluster) {
                         String[] data = new String[2];
-                        data[0] = kubernetesCluster.getClusterId();
+                        data[0] = kubernetesCluster.getClusterUuid();
                         data[1] = kubernetesCluster.getDescription();
                         return data;
                     }

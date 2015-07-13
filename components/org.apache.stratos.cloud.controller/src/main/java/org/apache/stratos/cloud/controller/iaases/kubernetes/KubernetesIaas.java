@@ -483,7 +483,7 @@ public class KubernetesIaas extends Iaas {
         KubernetesHost[] kubernetesHosts = kubernetesCluster.getKubernetesHosts();
         if ((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
             throw new RuntimeException("Hosts not found in kubernetes cluster: [cluster] "
-                    + kubernetesCluster.getClusterId());
+                    + kubernetesCluster.getClusterUuid());
         }
         for (KubernetesHost host : kubernetesHosts) {
             if (host != null) {

@@ -1906,11 +1906,14 @@ public class StratosApiV41 extends AbstractApi {
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         try {
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+	        kubernetesCluster.setTenantId(carbonContext.getTenantId());
+	        kubernetesCluster.setClusterUuid(UUID.randomUUID().toString());
             StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
-            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Kubernetes cluster added successfully: [kub-host-cluster] %s",
-                            kubernetesCluster.getClusterId()))).build();
+                            kubernetesCluster.getClusterUuid()))).build();
         } catch (RestAPIException e) {
             throw e;
         } catch (CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException e) {
@@ -1938,11 +1941,13 @@ public class StratosApiV41 extends AbstractApi {
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         try {
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+	        kubernetesCluster.setTenantId(carbonContext.getTenantId());
             StratosApiV41Utils.updateKubernetesCluster(kubernetesCluster);
-            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Kubernetes cluster updated successfully: [kub-host-cluster] %s",
-                            kubernetesCluster.getClusterId()))).build();
+                            kubernetesCluster.getClusterUuid()))).build();
         } catch (RestAPIException e) {
             throw e;
         } catch (CloudControllerServiceInvalidKubernetesClusterExceptionException e) {
@@ -1968,6 +1973,7 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("kubernetesClusterId") String kubernetesClusterId, KubernetesHostBean kubernetesHost)
             throws RestAPIException {
 
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         StratosApiV41Utils.addKubernetesHost(kubernetesClusterId, kubernetesHost);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
