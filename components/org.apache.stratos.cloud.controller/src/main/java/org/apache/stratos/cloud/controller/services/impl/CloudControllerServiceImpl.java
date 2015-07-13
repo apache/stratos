@@ -1177,10 +1177,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterUuid) throws
             NonExistingKubernetesClusterException {
-        return CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId);
+        return CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterUuid);
     }
+
+	@Override
+	public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId,int tenantId) throws
+	                                                                            NonExistingKubernetesClusterException {
+		for(KubernetesCluster kubernetesCluster:getKubernetesClusters()){
+			if(kubernetesCluster.getClusterId().equals(kubernetesClusterId)&&kubernetesCluster.getTenantId()==tenantId){
+				return kubernetesCluster;
+			}
+		}
+		return null;
+	}
 
     @Override
     public KubernetesMaster getMasterForKubernetesCluster(String kubernetesClusterId) throws

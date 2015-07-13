@@ -240,4 +240,14 @@ public class CloudControllerServiceClient {
         return stub.getIaasProviders();
     }
 
+	public KubernetesCluster getKubernetesClusterByTenantId(String clusterId, int tenantId)
+			throws RemoteException {
+		try {
+			return stub.getKubernetesClusterByTenant(clusterId,tenantId);
+		} catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+			String msg = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
+			log.error(msg, e);
+			throw new RuntimeException(msg, e);
+		}
+	}
 }
