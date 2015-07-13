@@ -3825,7 +3825,7 @@ public class StratosApiV41Utils {
         }
     }
 
-	public static String getKubernetesClusterUuid(String clusterId,int tenantId) throws RestAPIException {
+	public static String getKubernetesClusterUuidByTenant(String clusterId,int tenantId) throws RestAPIException {
 
 		try {
 			return CloudControllerServiceClient.getInstance().getKubernetesClusterByTenantId(clusterId, tenantId)

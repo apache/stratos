@@ -290,7 +290,7 @@ public class ObjectConverter {
                     = new org.apache.stratos.cloud.controller.stub.Property();
 	        stubProperty.setName(propertyBean.getName());
 	        if(propertyBean.getName().equals("cluster")){
-		        stubProperty.setValue(StratosApiV41Utils.getKubernetesClusterUuid(propertyBean.getName(),tenantId));
+		        stubProperty.setValue(StratosApiV41Utils.getKubernetesClusterUuidByTenant(propertyBean.getValue(),tenantId));
 	        }
 	        else{
 		        stubProperty.setValue(propertyBean.getValue());
@@ -938,7 +938,7 @@ public class ObjectConverter {
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster();
 
 	    kubernetesCluster.setClusterUuid(kubernetesClusterBean.getClusterUuid());
-	    kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterUuid());
+	    kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterId());
         kubernetesCluster.setDescription(kubernetesClusterBean.getDescription());
         kubernetesCluster.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(
                 kubernetesClusterBean.getKubernetesMaster(),kubernetesClusterBean.getTenantId()));
