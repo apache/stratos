@@ -405,15 +405,15 @@ public class DefaultApplicationParser implements ApplicationParser {
                         String[] arrStartUp = startupOrderComponent.split("\\.");
                         if (arrStartUp[0].equals("cartridge")) {
                             String cartridgeAlias = arrStartUp[1];
-                            String dependentCartridgeType =
-                                    findCartridgeTypeFromAlias(cartridgeContextList, cartridgeAlias);
-                            if (StringUtils.isBlank(dependentCartridgeType)) {
+                            String dependentCartridgeUuid =
+                                    getCartridgeUuid(cartridgeContextList, cartridgeAlias);
+                            if (StringUtils.isBlank(dependentCartridgeUuid)) {
                                 throw new CartridgeNotFoundException(
                                         String.format("Could not find dependent cartridge for " +
                                                 "application: %s cartridge-alias: %s", appId, cartridgeAlias));
                             }
-                            Cartridge dependencyCartridge = getCartridgeByTenant(dependentCartridgeType, tenantId);
-                            ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
+                            Cartridge dependencyCartridge = getCartridge(dependentCartridgeUuid);
+                            ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeUuid);
 
                             if (dataHolder != null) {
                                 if (!dataHolder.getClusterId().equals(clusterId)) {
@@ -480,7 +480,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @param alias
      * @return
      */
-    private String findCartridgeTypeFromAlias(List<CartridgeContext> cartridgeContextList, String alias) {
+    private String getCartridgeUuid(List<CartridgeContext> cartridgeContextList, String alias) {
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
             if (alias.equals(cartridgeContext.getSubscribableInfoContext().getAlias())) {
                 return cartridgeContext.getUuid();
@@ -571,7 +571,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
 
         for (GroupContext groupCtxt : groupCtxts) {
-            ServiceGroup serviceGroup = getServiceGroup(groupCtxt.getName());
+            ServiceGroup serviceGroup = getServiceGroup(groupCtxt.getUuid());
             if (serviceGroup == null) {
                 log.error("Cartridge group not found group-name: " + groupCtxt.getName());
                 throw new CartridgeGroupNotFoundException("Cartridge group not found group-name: "
@@ -729,7 +729,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
-        String[] startupOrders = getStartupOrderForGroup(groupCtxt.getName(), serviceGroup);
+        String[] startupOrders = getStartupOrderForGroup(groupCtxt.getUuid(), serviceGroup);
         Set<StartupOrder> setStartUpOrder = null;
         if (startupOrders != null) {
             setStartUpOrder = ParserUtils.convertStartupOrder(startupOrders, groupCtxt);
@@ -741,7 +741,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
         }
 
-        String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
+        String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getUuid(), serviceGroup);
         if (scaleDependents != null) {
             dependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scaleDependents, groupCtxt));
         } else {
@@ -751,7 +751,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
         }
 
-        dependencyOrder.setTerminationBehaviour(getTerminationBehaviour(groupCtxt.getName(), serviceGroup));
+        dependencyOrder.setTerminationBehaviour(getTerminationBehaviour(groupCtxt.getUuid(), serviceGroup));
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, Map<String, ClusterDataHolder>> clusterDataMap;
@@ -793,19 +793,21 @@ public class DefaultApplicationParser implements ApplicationParser {
      * Find the startup order
      *
      * @param serviceGroup GroupContext with Group defintion information
+     * @param serviceGroupUuid Group Uuid
      * @return Set of Startup Orders which are defined in the Group
      * @throws ApplicationDefinitionException
      */
-    private String[] getStartupOrderForGroup(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+    private String[] getStartupOrderForGroup(String serviceGroupUuid, ServiceGroup serviceGroup) throws
+            ApplicationDefinitionException {
 
-        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);
+            handleError("Service Group Definition not found for name " + serviceGroupUuid);
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("parsing application ... getStartupOrderForGroup: " + serviceGroupName);
+            log.debug("parsing application ... getStartupOrderForGroup: " + serviceGroupUuid);
         }
 
         assert nestedServiceGroup != null;
@@ -834,16 +836,16 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return Set of Startup Orders which are defined in the Group
      * @throws ApplicationDefinitionException
      */
-    private String[] getScaleDependentForGroup(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+    private String[] getScaleDependentForGroup(String serviceGroupUuid, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);
+            handleError("Service Group Definition not found for name " + serviceGroupUuid);
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("parsing application ... getScaleDependentForGroup: " + serviceGroupName);
+            log.debug("parsing application ... getScaleDependentForGroup: " + serviceGroupUuid);
         }
 
         assert nestedServiceGroup != null;
@@ -868,16 +870,16 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Get kill behaviour related to a Group
      *
-     * @param serviceGroupName Group name
+     * @param serviceGroupUuid Group Uuid
      * @return String indicating the kill behavior
      * @throws ApplicationDefinitionException if an error occurs
      */
-    private String getTerminationBehaviour(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+    private String getTerminationBehaviour(String serviceGroupUuid, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);
+            handleError("Service Group Definition not found for name " + serviceGroupUuid);
         }
 
         assert nestedServiceGroup != null;
@@ -889,13 +891,13 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     }
 
-    private ServiceGroup getNestedServiceGroup(String serviceGroupName, ServiceGroup serviceGroup) {
-        if (serviceGroup.getUuid().equals(serviceGroupName)) {
+    private ServiceGroup getNestedServiceGroup(String serviceGroupUuid, ServiceGroup serviceGroup) {
+        if (serviceGroup.getUuid().equals(serviceGroupUuid)) {
             return serviceGroup;
         } else if (serviceGroup.getGroups() != null) {
             ServiceGroup[] groups = serviceGroup.getGroups();
             for (ServiceGroup sg : groups) {
-                return getNestedServiceGroup(serviceGroupName, sg);
+                return getNestedServiceGroup(serviceGroupUuid, sg);
             }
         }
         return null;
@@ -905,16 +907,16 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Retrieves deployed service group
      *
-     * @param serviceGroupName name of the Service Group
+     * @param serviceGroupUuid Service Group uuid
      * @return ServiceGroup instance if exists
      * @throws ApplicationDefinitionException if no Service Group found for the given serviceGroupName
      */
-    private ServiceGroup getServiceGroup(String serviceGroupName) throws ApplicationDefinitionException {
+    private ServiceGroup getServiceGroup(String serviceGroupUuid) throws ApplicationDefinitionException {
 
         try {
-            return RegistryManager.getInstance().getServiceGroup(serviceGroupName);
+            return RegistryManager.getInstance().getServiceGroup(serviceGroupUuid);
         } catch (Exception e) {
-            String errorMsg = "Could not read cartridge group: " + serviceGroupName;
+            String errorMsg = "Could not read cartridge group: " + serviceGroupUuid;
             log.error(errorMsg, e);
             throw new ApplicationDefinitionException(errorMsg, e);
         }
@@ -996,12 +998,12 @@ public class DefaultApplicationParser implements ApplicationParser {
         return token;
     }
 
-    private Cartridge getCartridge(String cartridgeType) throws ApplicationDefinitionException {
+    private Cartridge getCartridge(String cartridgeUuid) throws ApplicationDefinitionException {
 
         try {
-            return CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
+            return CloudControllerServiceClient.getInstance().getCartridge(cartridgeUuid);
         } catch (Exception e) {
-            log.error("Unable to get the cartridge: " + cartridgeType, e);
+            log.error("Unable to get the cartridge: " + cartridgeUuid, e);
             throw new ApplicationDefinitionException(e);
         }
     }

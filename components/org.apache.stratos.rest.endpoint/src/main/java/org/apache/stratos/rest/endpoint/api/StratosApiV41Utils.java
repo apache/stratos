@@ -1034,7 +1034,7 @@ public class StratosApiV41Utils {
         }
 
         List<String> cartridgeTypes = new ArrayList<String>();
-        String[] cartridgeNames = null;
+        String[] cartridgeUuids = null;
         List<String> groupNames;
         String[] cartridgeGroupNames;
 
@@ -1053,16 +1053,17 @@ public class StratosApiV41Utils {
 
         CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
 
-        cartridgeNames = new String[cartridgeTypes.size()];
+        cartridgeUuids = new String[cartridgeTypes.size()];
         int j = 0;
         for (String cartridgeType : cartridgeTypes) {
             try {
-                if (ccServiceClient.getCartridgeByTenant(cartridgeType,serviceGroupDefinition.getTenantId()) == null) {
+                Cartridge cartridge = ccServiceClient.getCartridgeByTenant(cartridgeType,serviceGroupDefinition.getTenantId());
+                if (cartridge == null) {
                     // cartridge is not deployed, can't continue
                     log.error("Invalid cartridge found in cartridge group " + cartridgeType);
                     throw new InvalidCartridgeException();
                 } else {
-                    cartridgeNames[j] = cartridgeType;
+                    cartridgeUuids[j] = cartridge.getUuid();
                     j++;
                 }
             } catch (RemoteException e) {
@@ -1112,7 +1113,7 @@ public class StratosApiV41Utils {
             asServiceClient.addServiceGroup(serviceGroup);
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
-            smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getUuid(), cartridgeNames);
+            smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getUuid(), cartridgeUuids);
         } catch (RemoteException e) {
 
             String message = "Could not add the cartridge group: " + serviceGroupDefinition.getUuid();
@@ -3824,4 +3825,22 @@ public class StratosApiV41Utils {
             throw new RestAPIException(message, e);
         }
     }
+
+    /**
+     * Get Service Group uuid by TenantId
+     *
+     * @return String Uuid
+     */
+    public static String getServiceGroupUuidByTenant(String serviceGroupName,
+                                                               int tenantId) throws RestAPIException {
+        try {
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+            return (autoscalerServiceClient.getServiceGroupByTenant(serviceGroupName, tenantId).getUuid());
+        } catch (RemoteException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
+        }
+    }
+
 }

@@ -159,12 +159,12 @@ public class StratosManagerServiceClient {
     /**
      * Adds the used cartridges in cartridge groups to cache.
      *
-     * @param cartridgeGroupUuid the cartridge group UUID
-     * @param cartridgeNames     the cartridge names
+     * @param cartridgeGroupUuid the cartridge group uuid
+     * @param cartridgeUuids     the cartridge uuids
      * @throws RemoteException the remote exception
      */
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNames) throws RemoteException {
-        stub.addUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeNames);
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeUuids) throws RemoteException {
+        stub.addUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeUuids);
     }
 
     /**

@@ -772,24 +772,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-    public Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws CartridgeNotFoundException {
-	    // get the list of cartridges registered
-	    Collection<Cartridge> cartridges = CloudControllerContext.getInstance().getCartridges();
-        if (cartridges == null) {
-		    log.info("No registered Cartridge found.");
-		    return null;
-	    }
-	    for (Cartridge cartridge : cartridges) {
-		    if (log.isDebugEnabled()) {
-			    log.debug(cartridge);
-		    }
-			if(cartridge.getType().equals(cartridgeType)&&(cartridge.getTenantId()==tenantId)){
-				return cartridge;
-			}
+    public Cartridge getCartridgeByTenant(String cartridgeType, int tenantId) throws CartridgeNotFoundException {
+        // get the list of cartridges registered
+        Collection<Cartridge> cartridges = CloudControllerContext.getInstance().getCartridges();
+        if (cartridges == null || cartridges.size() == 0) {
+            log.info("No registered Cartridge found.");
+            return null;
+        }
+        for (Cartridge cartridge : cartridges) {
+            if (log.isDebugEnabled()) {
+                log.debug(cartridge);
+            }
+            if (cartridge.getType().equals(cartridgeType) && (cartridge.getTenantId() == tenantId)) {
+                return cartridge;
+            }
+        }
 
-	    }
-
-        String msg = "Could not find cartridge: [cartridge-type] [tenant-id] " + cartridgeType +tenantId;
+        String msg = "Could not find cartridge: [cartridge-type] [tenant-id] " + cartridgeType + tenantId;
         throw new CartridgeNotFoundException(msg);
     }
 

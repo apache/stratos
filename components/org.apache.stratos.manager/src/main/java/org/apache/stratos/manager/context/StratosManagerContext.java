@@ -149,12 +149,12 @@ public class StratosManagerContext implements Serializable {
         return acquireWriteLock(SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK);
     }
 
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupNameUuid, String[] cartridgeNamesUuid) {
-        if (cartridgeNamesUuid == null) {
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeUuids) {
+        if (cartridgeUuids == null) {
             return;
         }
 
-        for (String cartridgeNameUuid : cartridgeNamesUuid) {
+        for (String cartridgeNameUuid : cartridgeUuids) {
             Set<String> cartridgeGroupNames = null;
             if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeNameUuid)) {
                 cartridgeGroupNames = cartridgeTypeToCartridgeGroupsMap.get(cartridgeNameUuid);
@@ -162,7 +162,7 @@ public class StratosManagerContext implements Serializable {
                 cartridgeGroupNames = new HashSet<String>();
                 cartridgeTypeToCartridgeGroupsMap.put(cartridgeNameUuid, cartridgeGroupNames);
             }
-            cartridgeGroupNames.add(cartridgeGroupNameUuid);
+            cartridgeGroupNames.add(cartridgeGroupUuid);
         }
     }
 
