@@ -442,7 +442,7 @@ public class AutoscalerUtil {
         List<String> deploymentPolicyIds = new ArrayList<String>();
 
         for (Map.Entry<String, String> entry : aliasToDeploymentPolicyIdMap.entrySet()) {
-            if (!deploymentPolicyIds.contains(entry.getValue())) {
+            if (!deploymentPolicyIds.contains(entry.getValue())&& entry.getValue()!=null) {
                 deploymentPolicyIds.add(entry.getValue());
             }
         }
@@ -735,8 +735,7 @@ public class AutoscalerUtil {
     public static void validateApplicationPolicyAgainstApplication(String applicationUuid, String applicationPolicyUuid)
             throws ApplicatioinPolicyNotExistsException, InvalidApplicationPolicyException {
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyByUuid
-                (applicationPolicyUuid);
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyByUuid(applicationPolicyUuid);
         if (applicationPolicy == null) {
             String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyUuid);
             log.error(msg);
