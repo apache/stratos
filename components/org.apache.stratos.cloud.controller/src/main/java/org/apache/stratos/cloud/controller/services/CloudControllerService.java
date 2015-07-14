@@ -275,12 +275,22 @@ public interface CloudControllerService {
     public KubernetesCluster[] getKubernetesClusters();
 
     /**
-     * Retrieves Kubernetes cluster for given Kubernetes cluster ID.
+     * Retrieves Kubernetes cluster for given Kubernetes cluster UUID.
      *
-     * @param kubernetesClusterId
+     * @param kubernetesClusterUuid
      */
-    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId)
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterUuid)
             throws NonExistingKubernetesClusterException;
+
+	/**
+	 * Retrieves Kubernetes cluster for given Kubernetes cluster ID and tenant id
+	 * @param kubernetesClusterId
+	 * @param tenantId
+	 * @return
+	 * @throws NonExistingKubernetesClusterException
+	 */
+	public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId, int tenantId) throws
+	                                                                                        NonExistingKubernetesClusterException;
 
     /**
      * Retrieves Kubernetes Master for given Kubernetes cluster ID.

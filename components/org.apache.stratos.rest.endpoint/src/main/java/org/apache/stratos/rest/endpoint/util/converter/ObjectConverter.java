@@ -70,7 +70,7 @@ import java.util.*;
 public class ObjectConverter {
 
     public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
-            CartridgeBean cartridgeBean) {
+            CartridgeBean cartridgeBean) throws RestAPIException {
 
         if (cartridgeBean == null) {
             return null;
@@ -112,12 +112,13 @@ public class ObjectConverter {
 
         // iaas providers
         if (cartridgeBean.getIaasProvider() != null && !cartridgeBean.getIaasProvider().isEmpty()) {
-            cartridge.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider()));
+            cartridge.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider(),cartridgeBean.getTenantId()));
         }
 
         // properties
         if (cartridgeBean.getProperty() != null && !cartridgeBean.getProperty().isEmpty()) {
-            cartridge.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty()));
+            cartridge.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty(),
+                                                                           cartridgeBean.getTenantId()));
         }
         return cartridge;
     }
@@ -204,7 +205,9 @@ public class ObjectConverter {
         return iaasProviderBeans;
     }
 
-    private static IaasConfig[] convertIaasProviderBeansToStubIaasConfig(List<IaasProviderBean> iaasProviderBeans) {
+    private static IaasConfig[] convertIaasProviderBeansToStubIaasConfig(List<IaasProviderBean> iaasProviderBeans,int tenantId)
+
+		    throws RestAPIException {
 
         if (iaasProviderBeans == null) {
             return null;
@@ -227,7 +230,7 @@ public class ObjectConverter {
 
             if (iaasProviderBeansArray[i].getProperty() != null && !iaasProviderBeansArray[i].getProperty().isEmpty()) {
                 //set the Properties instance to IaasConfig instance
-                iaasConfig.setProperties(convertPropertyBeansToCCStubProperties(iaasProviderBeansArray[i].getProperty()));
+                iaasConfig.setProperties(convertPropertyBeansToCCStubProperties(iaasProviderBeansArray[i].getProperty(),tenantId));
             }
 
             if (iaasProviderBeansArray[i].getNetworkInterfaces() != null
@@ -274,7 +277,7 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.cloud.controller.stub.Properties convertPropertyBeansToCCStubProperties(
-            List<org.apache.stratos.common.beans.PropertyBean> propertyBeans) {
+            List<org.apache.stratos.common.beans.PropertyBean> propertyBeans,int tenantId) throws RestAPIException {
 
         if (propertyBeans == null) {
             return null;
@@ -286,8 +289,14 @@ public class ObjectConverter {
         for (org.apache.stratos.common.beans.PropertyBean propertyBean : propertyBeans) {
             org.apache.stratos.cloud.controller.stub.Property stubProperty
                     = new org.apache.stratos.cloud.controller.stub.Property();
-            stubProperty.setName(propertyBean.getName());
-            stubProperty.setValue(propertyBean.getValue());
+	        stubProperty.setName(propertyBean.getName());
+	        if(propertyBean.getName().equals("cluster")){
+		        stubProperty.setValue(StratosApiV41Utils.getKubernetesClusterUuidByTenant(propertyBean.getValue(),tenantId));
+	        }
+	        else{
+		        stubProperty.setValue(propertyBean.getValue());
+	        }
+
             stubPropertiesList.add(stubProperty);
         }
 
@@ -393,7 +402,7 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.cloud.controller.stub.domain.Partition convertPartitionToStubPartition
-            (PartitionBean partition) {
+            (PartitionBean partition,int tenantId) throws RestAPIException {
 
         if (partition == null) {
             return null;
@@ -402,7 +411,7 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
         stubPartition.setId(partition.getId());
-        stubPartition.setProperties(convertPropertyBeansToCCStubProperties(partition.getProperty()));
+        stubPartition.setProperties(convertPropertyBeansToCCStubProperties(partition.getProperty(), tenantId));
 
         return stubPartition;
     }
@@ -593,7 +602,7 @@ public class ObjectConverter {
 
 
     public static org.apache.stratos.cloud.controller.stub.domain.NetworkPartition
-    convertNetworkPartitionToCCStubNetworkPartition(NetworkPartitionBean networkPartitionBean) {
+    convertNetworkPartitionToCCStubNetworkPartition(NetworkPartitionBean networkPartitionBean) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition
                 = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
@@ -602,10 +611,10 @@ public class ObjectConverter {
         networkPartition.setUuid(networkPartitionBean.getUuid());
         networkPartition.setTenantId(networkPartitionBean.getTenantId());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
-            networkPartition.setPartitions(convertToStubPartitions(networkPartitionBean.getPartitions()));
+            networkPartition.setPartitions(convertToStubPartitions(networkPartitionBean.getPartitions(),networkPartitionBean.getTenantId()));
         }
         if (networkPartitionBean.getProperties() != null && !networkPartitionBean.getProperties().isEmpty()) {
-            networkPartition.setProperties(convertPropertyBeansToCCStubProperties(networkPartitionBean.getProperties()));
+            networkPartition.setProperties(convertPropertyBeansToCCStubProperties(networkPartitionBean.getProperties(),networkPartitionBean.getTenantId()));
         }
         return networkPartition;
     }
@@ -768,12 +777,12 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.cloud.controller.stub.domain.Partition[] convertToStubPartitions
-            (List<PartitionBean> partitionList) {
+            (List<PartitionBean> partitionList,int tenantId) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions
                 = new org.apache.stratos.cloud.controller.stub.domain.Partition[partitionList.size()];
         for (int i = 0; i < partitionList.size(); i++) {
-            partitions[i] = convertPartitionToStubPartition(partitionList.get(i));
+            partitions[i] = convertPartitionToStubPartition(partitionList.get(i),tenantId);
         }
         return partitions;
     }
@@ -924,26 +933,28 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster
-    convertToCCKubernetesClusterPojo(KubernetesClusterBean kubernetesClusterBean) {
+    convertToCCKubernetesClusterPojo(KubernetesClusterBean kubernetesClusterBean) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster = new
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster();
 
 	    kubernetesCluster.setClusterUuid(kubernetesClusterBean.getClusterUuid());
-	    kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterUuid());
+	    kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterId());
         kubernetesCluster.setDescription(kubernetesClusterBean.getDescription());
         kubernetesCluster.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(
-                kubernetesClusterBean.getKubernetesMaster()));
+                kubernetesClusterBean.getKubernetesMaster(),kubernetesClusterBean.getTenantId()));
         kubernetesCluster.setPortRange(convertPortRangeToStubPortRange(kubernetesClusterBean.getPortRange()));
-        kubernetesCluster.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesClusterBean.getKubernetesHosts()));
-        kubernetesCluster.setProperties((convertPropertyBeansToCCStubProperties(kubernetesClusterBean.getProperty())));
+        kubernetesCluster.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesClusterBean.getKubernetesHosts(),
+                                                                            kubernetesClusterBean.getTenantId()));
+        kubernetesCluster.setProperties((convertPropertyBeansToCCStubProperties(kubernetesClusterBean.getProperty(),
+                                                                                kubernetesClusterBean.getTenantId())));
 	    kubernetesCluster.setTenantId(kubernetesClusterBean.getTenantId());
 
         return kubernetesCluster;
     }
 
     private static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[]
-    convertToASKubernetesHostsPojo(List<KubernetesHostBean> kubernetesHosts) {
+    convertToASKubernetesHostsPojo(List<KubernetesHostBean> kubernetesHosts,int tenantId) throws RestAPIException {
 
         if (kubernetesHosts == null || kubernetesHosts.isEmpty()) {
             return null;
@@ -953,7 +964,7 @@ public class ObjectConverter {
                 = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[kubernetesHostCount];
         for (int i = 0; i < kubernetesHostCount; i++) {
             KubernetesHostBean kubernetesHostBean = kubernetesHosts.get(i);
-            kubernetesHostsArr[i] = convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
+            kubernetesHostsArr[i] = convertKubernetesHostToStubKubernetesHost(kubernetesHostBean,tenantId);
         }
         return kubernetesHostsArr;
     }
@@ -972,7 +983,8 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost
-    convertKubernetesHostToStubKubernetesHost(KubernetesHostBean kubernetesHostBean) {
+    convertKubernetesHostToStubKubernetesHost(KubernetesHostBean kubernetesHostBean,int tenantId)
+		    throws RestAPIException {
 
         if (kubernetesHostBean == null) {
             return null;
@@ -984,13 +996,14 @@ public class ObjectConverter {
         kubernetesHost.setPrivateIPAddress(kubernetesHostBean.getPrivateIPAddress());
         kubernetesHost.setPublicIPAddress(kubernetesHostBean.getPublicIPAddress());
         kubernetesHost.setHostname(kubernetesHostBean.getHostname());
-        kubernetesHost.setProperties(convertPropertyBeansToCCStubProperties(kubernetesHostBean.getProperty()));
+        kubernetesHost.setProperties(convertPropertyBeansToCCStubProperties(kubernetesHostBean.getProperty(),tenantId));
 
         return kubernetesHost;
     }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster
-    convertStubKubernetesMasterToKubernetesMaster(KubernetesMasterBean kubernetesMasterBean) {
+    convertStubKubernetesMasterToKubernetesMaster(KubernetesMasterBean kubernetesMasterBean,int tenantId)
+		    throws RestAPIException {
 
         if (kubernetesMasterBean == null) {
             return null;
@@ -1002,7 +1015,7 @@ public class ObjectConverter {
         kubernetesMaster.setPrivateIPAddress(kubernetesMasterBean.getPrivateIPAddress());
         kubernetesMaster.setPublicIPAddress(kubernetesMasterBean.getPublicIPAddress());
         kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
-        kubernetesMaster.setProperties(convertPropertyBeansToCCStubProperties(kubernetesMasterBean.getProperty()));
+        kubernetesMaster.setProperties(convertPropertyBeansToCCStubProperties(kubernetesMasterBean.getProperty(),tenantId));
 
         return kubernetesMaster;
     }

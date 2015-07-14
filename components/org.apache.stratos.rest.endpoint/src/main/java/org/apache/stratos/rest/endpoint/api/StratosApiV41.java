@@ -1974,7 +1974,7 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
 
 	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        StratosApiV41Utils.addKubernetesHost(kubernetesClusterId, kubernetesHost);
+        StratosApiV41Utils.addKubernetesHost(kubernetesClusterId,kubernetesHost,carbonContext.getTenantId());
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Kubernetes host added successfully: [kub-host] %s", kubernetesHost.getHostId()))).build();
@@ -1995,7 +1995,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateKubernetesMaster(
             KubernetesMasterBean kubernetesMaster) throws RestAPIException {
         try {
-            StratosApiV41Utils.updateKubernetesMaster(kubernetesMaster);
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            StratosApiV41Utils.updateKubernetesMaster(kubernetesMaster,carbonContext.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Kubernetes master updated successfully: [kub-master] %s",
@@ -2014,7 +2015,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateKubernetesHost(
             KubernetesHostBean kubernetesHost) throws RestAPIException {
         try {
-            StratosApiV41Utils.updateKubernetesHost(kubernetesHost);
+	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            StratosApiV41Utils.updateKubernetesHost(kubernetesHost,carbonContext.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Kubernetes Host updated successfully: [kub-host] %s",

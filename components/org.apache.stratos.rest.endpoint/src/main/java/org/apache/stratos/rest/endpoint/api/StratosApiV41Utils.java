@@ -2197,13 +2197,13 @@ public class StratosApiV41Utils {
      * @return add status
      * @throws RestAPIException
      */
-    public static boolean addKubernetesHost(String kubernetesClusterId, KubernetesHostBean kubernetesHostBean)
+    public static boolean addKubernetesHost(String kubernetesClusterId, KubernetesHostBean kubernetesHostBean,int tenantId)
             throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost =
-                    ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
+                    ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean,tenantId);
 
             try {
                 return cloudControllerServiceClient.addKubernetesHost(kubernetesClusterId, kubernetesHost);
@@ -2230,12 +2230,12 @@ public class StratosApiV41Utils {
      * @return update status
      * @throws RestAPIException
      */
-    public static boolean updateKubernetesMaster(KubernetesMasterBean kubernetesMasterBean) throws RestAPIException {
+    public static boolean updateKubernetesMaster(KubernetesMasterBean kubernetesMasterBean,int tenantId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster kubernetesMaster =
-                    ObjectConverter.convertStubKubernetesMasterToKubernetesMaster(kubernetesMasterBean);
+                    ObjectConverter.convertStubKubernetesMasterToKubernetesMaster(kubernetesMasterBean,tenantId);
 
             try {
                 return cloudControllerServiceClient.updateKubernetesMaster(kubernetesMaster);
@@ -2431,12 +2431,12 @@ public class StratosApiV41Utils {
      * @return update status
      * @throws RestAPIException
      */
-    public static boolean updateKubernetesHost(KubernetesHostBean kubernetesHostBean) throws
+    public static boolean updateKubernetesHost(KubernetesHostBean kubernetesHostBean,int tenantId) throws
             RestAPIException {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost =
-                    ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
+                    ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean,tenantId);
             try {
                 return cloudControllerServiceClient.updateKubernetesHost(kubernetesHost);
             } catch (RemoteException e) {
@@ -3843,4 +3843,16 @@ public class StratosApiV41Utils {
         }
     }
 
+
+	public static String getKubernetesClusterUuidByTenant(String clusterId,int tenantId) throws RestAPIException {
+
+		try {
+			return CloudControllerServiceClient.getInstance().getKubernetesClusterByTenantId(clusterId, tenantId)
+			                                   .getClusterUuid();
+		} catch (RemoteException e) {
+			String message = e.getMessage();
+			log.error(message);
+			throw new RestAPIException(message, e);
+		}
+	}
 }
