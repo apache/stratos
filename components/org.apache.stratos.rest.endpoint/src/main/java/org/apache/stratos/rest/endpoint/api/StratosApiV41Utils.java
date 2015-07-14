@@ -2096,15 +2096,15 @@ public class StratosApiV41Utils {
             for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
                 ClusterDataHolder clusterDataHolder = entry.getValue();
                 String clusterId = clusterDataHolder.getClusterId();
-                String serviceType = clusterDataHolder.getServiceType();
+                String serviceTypeUuid = clusterDataHolder.getServiceUuid();
                 try {
-                    TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                    Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                    TopologyManager.acquireReadLockForCluster(serviceTypeUuid, clusterId);
+                    Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceTypeUuid).getCluster(clusterId);
                     groupInstanceBean.getClusterInstances().add(ObjectConverter.
                             convertClusterToClusterInstanceBean(groupInstanceBean.getInstanceId(),
                                     topLevelCluster, entry.getKey()));
                 } finally {
-                    TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
+                    TopologyManager.releaseReadLockForCluster(serviceTypeUuid, clusterId);
                 }
             }
         }
