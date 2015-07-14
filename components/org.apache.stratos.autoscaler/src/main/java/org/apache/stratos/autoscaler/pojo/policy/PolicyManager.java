@@ -436,13 +436,13 @@ public class PolicyManager {
     /**
      * Returns the application policy to which the specified id is mapped or null
      *
-     * @param id Id of the deployment policy
+     * @param uuid Id of the deployment policy
      * @return
      */
-    public ApplicationPolicy getApplicationPolicyById(String id) {
+    public ApplicationPolicy getApplicationPolicyByUuid(String uuid) {
         ApplicationPolicy applicationPolicy = null;
         for (ApplicationPolicy applicationPolicy1 : getApplicationPolicies()) {
-            if (applicationPolicy1.getUuid().equals(id)) {
+            if (applicationPolicy1.getUuid().equals(uuid)) {
                 applicationPolicy = applicationPolicy1;
             }
         }

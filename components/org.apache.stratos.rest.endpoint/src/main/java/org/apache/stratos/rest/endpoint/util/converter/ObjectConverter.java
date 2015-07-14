@@ -1581,7 +1581,7 @@ public class ObjectConverter {
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
-
+            groupContext.setDeploymentPolicyUuid(groupDefinition.getUuid());
             // Groups
             if (groupDefinition.getGroups() != null) {
                 groupContext.setGroupContexts(convertGroupDefinitionsToStubGroupContexts(groupDefinition.getGroups(),

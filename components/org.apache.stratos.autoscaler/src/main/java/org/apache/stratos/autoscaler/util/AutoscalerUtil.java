@@ -420,16 +420,16 @@ public class AutoscalerUtil {
     /**
      * Get deployment policy ids referred in an application.
      *
-     * @param applicationId the application id
+     * @param applicationUuid the application uuid
      * @return list of deployment policy ids
      */
-    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
+    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationUuid) {
 
-        if (applicationId == null || StringUtils.isBlank(applicationId)) {
+        if (applicationUuid == null || StringUtils.isBlank(applicationUuid)) {
             return null;
         }
 
-        Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+        Application application = ApplicationHolder.getApplications().getApplication(applicationUuid);
         if (application == null) {
             return null;
         }
@@ -539,16 +539,16 @@ public class AutoscalerUtil {
                         getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(aliasToDeploymentPolicyIdMap, groupContext.getGroupContexts());
                     } else {
                         // if group have a deployment policy, it is the same for all the children
-                        String deploymentPolicyId = groupContext.getDeploymentPolicy();
-                        aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyId);
+                        String deploymentPolicyUuid = groupContext.getDeploymentPolicyUuid();
+                        aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyUuid);
                         if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
                             setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap,
-                                    deploymentPolicyId,
+                                    deploymentPolicyUuid,
                                     groupContext.getCartridgeContexts());
                         }
                         if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
                             setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap,
-                                    deploymentPolicyId,
+                                    deploymentPolicyUuid,
                                     groupContext.getGroupContexts());
                         }
 
@@ -727,31 +727,32 @@ public class AutoscalerUtil {
     /**
      * Validates an application policy against the application
      *
-     * @param applicationId
-     * @param applicationPolicyId
+     * @param applicationUuid
+     * @param applicationPolicyUuid
      * @throws ApplicatioinPolicyNotExistsException
      * @throws InvalidApplicationPolicyException
      */
-    public static void validateApplicationPolicyAgainstApplication(String applicationId, String applicationPolicyId)
+    public static void validateApplicationPolicyAgainstApplication(String applicationUuid, String applicationPolicyUuid)
             throws ApplicatioinPolicyNotExistsException, InvalidApplicationPolicyException {
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyById(applicationPolicyId);
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyByUuid
+                (applicationPolicyUuid);
         if (applicationPolicy == null) {
-            String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyId);
+            String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyUuid);
             log.error(msg);
             throw new ApplicatioinPolicyNotExistsException(msg);
         }
 
-        String[] networkPartitionIds = applicationPolicy.getNetworkPartitionsUuid();
+        String[] networkPartitionUuids = applicationPolicy.getNetworkPartitionsUuid();
 
-        for (String applicationPolicyNetworkPartitionerence : networkPartitionIds) {
-            String networkPartitionId = applicationPolicyNetworkPartitionerence;
+        for (String applicationPolicyNetworkPartitionreference : networkPartitionUuids) {
+            String networkPartitionUuid = applicationPolicyNetworkPartitionreference;
             // validate application policy against the given application
-            if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
+            if (!isAppUsingNetworkPartitionId(applicationUuid, networkPartitionUuid)) {
                 String msg = String.format("Invalid Application Policy: "
                                 + "Network partition [network-partition-id] %s is not used in application [application-id] %s. "
                                 + "Hence application bursting will fail. Either remove %s from application policy or make all the cartridges available in %s",
-                        networkPartitionId, applicationId, networkPartitionId, networkPartitionId);
+                        networkPartitionUuid, applicationUuid, networkPartitionUuid, networkPartitionUuid);
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -761,12 +762,12 @@ public class AutoscalerUtil {
     /**
      * Validate whether all the deployment policies used in the application are using the same network partitions of Application policy
      */
-    private static boolean isAppUsingNetworkPartitionId(String applicationId, String networkPartitionId) {
-        if (applicationId == null || StringUtils.isBlank(applicationId)
-                || networkPartitionId == null || StringUtils.isBlank(networkPartitionId)) {
+    private static boolean isAppUsingNetworkPartitionId(String applicationUuid, String networkPartitionUuid) {
+        if (applicationUuid == null || StringUtils.isBlank(applicationUuid)
+                || networkPartitionUuid == null || StringUtils.isBlank(networkPartitionUuid)) {
             return false;
         }
-        List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.getDeploymentPolicyIdsReferredInApplication(applicationId);
+        List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.getDeploymentPolicyIdsReferredInApplication(applicationUuid);
         if (deploymentPolicyIdsReferredInApplication == null) {
             return false;
         }
@@ -779,7 +780,7 @@ public class AutoscalerUtil {
                     for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
                         if (networkPartitionOfDeploymentPolicy != null) {
                             if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getUuid().
-                                    equals(networkPartitionId)) {
+                                    equals(networkPartitionUuid)) {
                                 referencesOfNetworkPartition++;
                             }
                         }

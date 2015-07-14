@@ -37,6 +37,8 @@ public class GroupContext implements Serializable {
 
     private String deploymentPolicy;
 
+    private String deploymentPolicyUuid;
+
     private CartridgeContext[] cartridgeContexts;
 
     private GroupContext[] groupContexts;
@@ -111,5 +113,13 @@ public class GroupContext implements Serializable {
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public String getDeploymentPolicyUuid() {
+        return deploymentPolicyUuid;
+    }
+
+    public void setDeploymentPolicyUuid(String deploymentPolicyUuid) {
+        this.deploymentPolicyUuid = deploymentPolicyUuid;
     }
 }

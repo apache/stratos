@@ -930,10 +930,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             throw new ApplicationPolicyAlreadyExistsException(message);
         }
 
-        String applicationPolicyId = applicationPolicy.getId();
-        if (PolicyManager.getInstance().getApplicationPolicyById(applicationPolicyId) != null && PolicyManager
-                .getInstance().getApplicationPolicyById(applicationPolicyId).getTenantId() == applicationPolicy.getTenantId()) {
-            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
+        String applicationPolicyUuid1 = applicationPolicy.getUuid();
+        if (PolicyManager.getInstance().getApplicationPolicyByUuid(applicationPolicyUuid1) != null && PolicyManager
+                .getInstance().getApplicationPolicyByUuid(applicationPolicyUuid1).getTenantId() == applicationPolicy
+                .getTenantId()) {
+            String message = "Application policy already exists: [application-policy-uuid] " + applicationPolicyUuid1;
             log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);
         }
