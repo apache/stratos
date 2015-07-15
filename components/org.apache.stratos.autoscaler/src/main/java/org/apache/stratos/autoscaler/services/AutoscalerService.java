@@ -129,7 +129,7 @@ public interface AutoscalerService {
      * @param applicationId
      * @return whether application exists or not
      */
-    boolean existApplication(String applicationId);
+    boolean existApplication(String applicationId,int tenantId);
 
     /**
      * Get all applications
