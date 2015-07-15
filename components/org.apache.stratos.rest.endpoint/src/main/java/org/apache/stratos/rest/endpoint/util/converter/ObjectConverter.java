@@ -1581,7 +1581,8 @@ public class ObjectConverter {
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
-            groupContext.setDeploymentPolicyUuid(groupDefinition.getUuid());
+            groupContext.setDeploymentPolicyUuid(StratosApiV41Utils.getDeploymentPolicyUuidByTenant(groupDefinition
+                            .getDeploymentPolicy(), tenantId));
             // Groups
             if (groupDefinition.getGroups() != null) {
                 groupContext.setGroupContexts(convertGroupDefinitionsToStubGroupContexts(groupDefinition.getGroups(),

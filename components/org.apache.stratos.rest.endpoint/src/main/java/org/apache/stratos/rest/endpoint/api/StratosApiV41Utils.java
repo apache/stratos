@@ -3844,6 +3844,22 @@ public class StratosApiV41Utils {
         }
     }
 
+    /**
+     * Get deployment policy uuid by TenantId
+     *
+     * @return String Uuid
+     */
+    public static String getDeploymentPolicyUuidByTenant(String deploymentPolicyId,
+                                                     int tenantId) throws RestAPIException {
+        try {
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+            return (autoscalerServiceClient.getDeploymentPolicyByTenant(deploymentPolicyId, tenantId).getUuid());
+        } catch (RemoteException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
+        }
+    }
 
 	public static String getKubernetesClusterUuidByTenant(String clusterId,int tenantId) throws RestAPIException {
 
