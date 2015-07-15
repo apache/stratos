@@ -196,6 +196,10 @@ public class AutoscalerServiceClient {
 		return stub.getServiceGroupByTenant(serviceGroupDefinitionName,tenantId);
 	}
 
+    public DeploymentPolicy getDeploymentPolicyByTenant(String deploymentPolicyId,int tenantId) throws RemoteException {
+        return stub.getDeploymentPolicyByTenant(deploymentPolicyId, tenantId);
+    }
+
     public ServiceGroup[] getServiceGroups() throws RemoteException, AutoscalerServiceAutoScalerExceptionException {
         return stub.getServiceGroups();
     }

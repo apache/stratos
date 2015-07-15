@@ -863,6 +863,17 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
 		}
 	}
+
+    public DeploymentPolicy getDeploymentPolicyByTenant(String deploymentPolicyId, int tenantId) {
+        DeploymentPolicy[] deploymentPolicies = getDeploymentPolicies();
+        for(DeploymentPolicy deploymentPolicy : deploymentPolicies) {
+            if(deploymentPolicy.getId().equals(deploymentPolicyId ) && deploymentPolicy.getTenantId() == tenantId) {
+                return deploymentPolicy;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String findClusterId(String applicationId, String alias) {
         try {

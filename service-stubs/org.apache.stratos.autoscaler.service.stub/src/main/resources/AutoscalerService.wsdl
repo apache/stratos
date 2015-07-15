@@ -212,18 +212,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getApplications">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:ApplicationContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="getServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
@@ -238,17 +226,15 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDeploymentPolicy">
+            <xs:element name="getApplications">
                 <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
+                    <xs:sequence/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDeploymentPolicyResponse">
+            <xs:element name="getApplicationsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax215:DeploymentPolicy"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:ApplicationContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -263,6 +249,20 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax28:ApplicationContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax215:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -547,6 +547,21 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ServiceGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicyByTenant">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicyByTenantResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax215:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1172,6 +1187,12 @@
     <wsdl:message name="getAutoscalingPolicyForTenantResponse">
         <wsdl:part name="parameters" element="ns:getAutoscalingPolicyForTenantResponse"/>
     </wsdl:message>
+    <wsdl:message name="getDeploymentPolicyByTenantRequest">
+        <wsdl:part name="parameters" element="ns:getDeploymentPolicyByTenant"/>
+    </wsdl:message>
+    <wsdl:message name="getDeploymentPolicyByTenantResponse">
+        <wsdl:part name="parameters" element="ns:getDeploymentPolicyByTenantResponse"/>
+    </wsdl:message>
     <wsdl:message name="getAutoscalingPolicyRequest">
         <wsdl:part name="parameters" element="ns:getAutoscalingPolicy"/>
     </wsdl:message>
@@ -1386,6 +1407,10 @@
         <wsdl:operation name="getAutoscalingPolicyForTenant">
             <wsdl:input message="ns:getAutoscalingPolicyForTenantRequest" wsaw:Action="urn:getAutoscalingPolicyForTenant"/>
             <wsdl:output message="ns:getAutoscalingPolicyForTenantResponse" wsaw:Action="urn:getAutoscalingPolicyForTenantResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicyByTenant">
+            <wsdl:input message="ns:getDeploymentPolicyByTenantRequest" wsaw:Action="urn:getDeploymentPolicyByTenant"/>
+            <wsdl:output message="ns:getDeploymentPolicyByTenantResponse" wsaw:Action="urn:getDeploymentPolicyByTenantResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"/>
@@ -1732,6 +1757,15 @@
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicyForTenant">
             <soap:operation soapAction="urn:getDeploymentPolicyForTenant" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicyByTenant">
+            <soap:operation soapAction="urn:getDeploymentPolicyByTenant" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -2192,6 +2226,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicyByTenant">
+            <soap12:operation soapAction="urn:getDeploymentPolicyByTenant" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
             <wsdl:input>
@@ -2584,6 +2627,15 @@
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicyForTenant">
             <http:operation location="getDeploymentPolicyForTenant"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicyByTenant">
+            <http:operation location="getDeploymentPolicyByTenant"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
