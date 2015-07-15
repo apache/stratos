@@ -508,7 +508,6 @@ class EventHandler:
         try:
             if self.__extension_executor is not None:
                 self.__log.debug("Executing extension for event [%s]" % event)
-                PluginExecutor(self.__extension_executor, extension_values).start()
                 extension_thread = PluginExecutor(self.__extension_executor, extension_values)
                 extension_thread.start()
 
