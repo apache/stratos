@@ -463,7 +463,6 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/cartridgeGroups/manage")
-    @SuperTenantService(true)
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
         try {
@@ -580,7 +579,6 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/cartridgeGroups/manage")
-    @SuperTenantService(true)
     public Response removeServiceGroup(
             @PathParam("name") String name) throws RestAPIException {
         try {
@@ -1296,7 +1294,6 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/applications/manage")
-    @SuperTenantService(true)
     public Response removeApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
