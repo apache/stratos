@@ -258,11 +258,11 @@ public class StratosManagerServiceClient {
     /**
      * Validates whether a cartridge group can be removed.
      *
-     * @param cartridgeGroupName the cartridge group name
+     * @param cartridgeGroupUuid the cartridge group name
      * @return true, if successful
      * @throws RemoteException the remote exception
      */
-    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupName) throws RemoteException {
-        return stub.canCartirdgeGroupBeRemoved(cartridgeGroupName);
+    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupUuid) throws RemoteException {
+        return stub.canCartirdgeGroupBeRemoved(cartridgeGroupUuid);
     }
 }

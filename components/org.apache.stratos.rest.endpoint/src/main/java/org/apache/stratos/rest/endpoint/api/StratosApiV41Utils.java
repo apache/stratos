@@ -1331,20 +1331,21 @@ public class StratosApiV41Utils {
 
         // Check whether cartridge group exists
         try {
-            if (asServiceClient.getServiceGroupByTenant(name, tenantId) == null) {
+
+	        ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name, tenantId);
+            if (serviceGroup == null) {
                 String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
                 log.error(message);
                 throw new RestAPIException(message);
             }
             // Validate whether cartridge group can be removed
-            if (!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
+            if (!smServiceClient.canCartirdgeGroupBeRemoved(serviceGroup.getUuid())) {
                 String message = "Cannot remove cartridge group: [group-name] " + name +
                         " since it is used in another cartridge group or an application";
                 log.error(message);
                 throw new RestAPIException(message);
             }
 
-            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name, tenantId);
 
             asServiceClient.undeployServiceGroupDefinition(serviceGroup.getUuid());
 

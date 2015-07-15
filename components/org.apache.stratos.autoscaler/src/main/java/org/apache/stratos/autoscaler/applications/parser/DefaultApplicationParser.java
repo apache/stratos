@@ -339,7 +339,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Parse Subscription Information
      *
-     * @param appId                Application id
+     * @param appUuid                Application id
      * @param tenantId             Tenant id of tenant which deployed the Application
      * @param key                  Generated key for the Application
      * @param groupName            Group name (if relevant)
@@ -348,14 +348,14 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @throws ApplicationDefinitionException
      */
     private Map<String, Map<String, ClusterDataHolder>> parseLeafLevelSubscriptions(
-            String appId, int tenantId, String key, String groupName,
+            String appUuid, int tenantId, String key, String groupName,
             List<CartridgeContext> cartridgeContextList, Set<StartupOrder> dependencyOrder) throws ApplicationDefinitionException, CartridgeNotFoundException {
 
         Map<String, Map<String, ClusterDataHolder>> completeDataHolder = new HashMap<String, Map<String, ClusterDataHolder>>();
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
         Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
-        createClusterDataMap(appId, cartridgeContextList, clusterDataMap, clusterDataMapByType,tenantId);
+        createClusterDataMap(appUuid, cartridgeContextList, clusterDataMap, clusterDataMapByType,tenantId);
 
         for (CartridgeContext cartridgeContext : cartridgeContextList) {
             List<String> dependencyClusterIDs = new ArrayList<String>();
@@ -390,8 +390,8 @@ public class DefaultApplicationParser implements ApplicationParser {
                 clusterInfo = new STClusterInformation();
             }
 
-            String hostname = clusterInfo.getHostName(appId, subscriptionAlias, cartridge.getHostName());
-            String clusterId = clusterInfo.getClusterId(appId, subscriptionAlias, cartridgeType);
+            String hostname = clusterInfo.getHostName(appUuid, subscriptionAlias, cartridge.getHostName());
+            String clusterId = clusterInfo.getClusterId(appUuid, subscriptionAlias, cartridgeType);
             String repoUrl = null;
             if (subscribableInfoContext.getArtifactRepositoryContext() != null) {
                 repoUrl = subscribableInfoContext.getArtifactRepositoryContext().getRepoUrl();
@@ -410,7 +410,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                             if (StringUtils.isBlank(dependentCartridgeUuid)) {
                                 throw new CartridgeNotFoundException(
                                         String.format("Could not find dependent cartridge for " +
-                                                "application: %s cartridge-alias: %s", appId, cartridgeAlias));
+                                                "application: %s cartridge-alias: %s", appUuid, cartridgeAlias));
                             }
                             Cartridge dependencyCartridge = getCartridge(dependentCartridgeUuid);
                             ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeUuid);
@@ -452,7 +452,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 isLB = true;
             }
             // create and collect this cluster's information
-            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
+            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appUuid, groupName, cartridge,
                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
                     subscribableInfoContext.getDeploymentPolicyUuid(), isLB,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
