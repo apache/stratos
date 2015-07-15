@@ -1294,8 +1294,9 @@ public class StratosApiV41Utils {
         }
 
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
-            ServiceGroup[] serviceGroups = asServiceClient.getServiceGroups();
+            ServiceGroup[] serviceGroups = asServiceClient.getServiceGroupsByTenant(carbonContext.getTenantId());
             if (serviceGroups == null || serviceGroups.length == 0 || (serviceGroups.length == 1 && serviceGroups[0]
                     == null)) {
                 return null;
@@ -1929,8 +1930,10 @@ public class StratosApiV41Utils {
      */
     public static List<ApplicationBean> getApplications() throws RestAPIException {
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             List<ApplicationBean> applicationDefinitions = new ArrayList<ApplicationBean>();
-            ApplicationContext[] applicationContexts = AutoscalerServiceClient.getInstance().getApplications();
+            ApplicationContext[] applicationContexts = AutoscalerServiceClient.getInstance().getApplicationsByTenant
+                    (carbonContext.getTenantId());
             if (applicationContexts != null) {
                 for (ApplicationContext applicationContext : applicationContexts) {
                     if (applicationContext != null) {

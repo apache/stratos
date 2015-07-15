@@ -315,6 +315,20 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
+    public ApplicationContext[] getApplicationsByTenant(int tenantId) {
+        List<ApplicationContext> applicationContexts = new ArrayList<ApplicationContext>();
+        ApplicationContext[] allApps = getApplications();
+        if(allApps != null) {
+            for (ApplicationContext applicationContext : allApps) {
+                if (applicationContext.getTenantId() == tenantId) {
+                    applicationContexts.add(applicationContext);
+                }
+            }
+        }
+        return applicationContexts.toArray(new ApplicationContext[applicationContexts.size()]);
+    }
+
+    @Override
     public boolean deployApplication(String applicationUuid, String applicationPolicyId)
             throws ApplicationDefinitionException {
         try {
@@ -895,6 +909,19 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     public ServiceGroup[] getServiceGroups() throws AutoScalerException {
         return RegistryManager.getInstance().getServiceGroups();
+    }
+
+    public ServiceGroup[] getServiceGroupsByTenant(int tenantId) {
+        List<ServiceGroup> serviceGroups = new ArrayList<ServiceGroup>();
+        ServiceGroup[] allGroups = getServiceGroups();
+        if(allGroups != null) {
+            for (ServiceGroup serviceGroup : allGroups) {
+                if (serviceGroup.getTenantId() == tenantId) {
+                    serviceGroups.add(serviceGroup);
+                }
+            }
+        }
+        return serviceGroups.toArray(new ServiceGroup[serviceGroups.size()]);
     }
 
     public boolean serviceGroupExist(String serviceName) {

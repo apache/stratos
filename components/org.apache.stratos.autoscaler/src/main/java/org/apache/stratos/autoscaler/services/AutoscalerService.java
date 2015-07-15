@@ -329,4 +329,10 @@ public interface AutoscalerService {
      */
     public DeploymentPolicy[] getDeploymentPolicies();
 
+    /**
+     * Get applications by tenant
+     *
+     * @return array of {@link DeploymentPolicy}
+     */
+    public ApplicationContext[] getApplicationsByTenant(int tenantId);
 }

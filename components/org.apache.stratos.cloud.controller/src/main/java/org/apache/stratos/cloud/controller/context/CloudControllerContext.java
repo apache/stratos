@@ -842,8 +842,8 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToIaasProviders.put(cartridgeType, iaasProviders);
     }
 
-    public IaasProvider getIaasProvider(String cartridgeType, String iaasType) {
-        List<IaasProvider> iaasProviders = cartridgeTypeToIaasProviders.get(cartridgeType);
+    public IaasProvider getIaasProvider(String cartridgeUuid, String iaasType) {
+        List<IaasProvider> iaasProviders = cartridgeTypeToIaasProviders.get(cartridgeUuid);
 
         if (iaasProviders != null) {
             for (IaasProvider iaasProvider : iaasProviders) {

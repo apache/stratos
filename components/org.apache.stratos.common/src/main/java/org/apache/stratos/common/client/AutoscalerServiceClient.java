@@ -125,6 +125,10 @@ public class AutoscalerServiceClient {
         return stub.getApplications();
     }
 
+    public ApplicationContext[] getApplicationsByTenant(int tenantId) throws RemoteException {
+        return stub.getApplicationsByTenant(tenantId);
+    }
+
     public boolean deployApplication(String applicationId, String applicationPolicyId) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceApplicationDefinitionExceptionException {
         return stub.deployApplication(applicationId, applicationPolicyId);
@@ -202,6 +206,11 @@ public class AutoscalerServiceClient {
 
     public ServiceGroup[] getServiceGroups() throws RemoteException, AutoscalerServiceAutoScalerExceptionException {
         return stub.getServiceGroups();
+    }
+
+    public ServiceGroup[] getServiceGroupsByTenant(int tenantId) throws RemoteException,
+            AutoscalerServiceAutoScalerExceptionException {
+        return stub.getServiceGroupsByTenant(tenantId);
     }
 
     public void addServiceGroup(ServiceGroup serviceGroup) throws AutoscalerServiceInvalidServiceGroupExceptionException,
