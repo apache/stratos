@@ -946,34 +946,16 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static AutoscalePolicyBean[] getAutoScalePolicies() throws RestAPIException {
-
-        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        AutoscalePolicy[] autoscalingPoliciesForTenantArray = new AutoscalePolicy[0];
-
-        if (autoscalerServiceClient != null) {
-            try {
-                autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
-                if (autoscalePolicies != null) {
-                    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    List<AutoscalePolicy> autoscalingPoliciesForTenant = new ArrayList<AutoscalePolicy>();
-                    for (AutoscalePolicy autoscalePolicy : autoscalePolicies) {
-                        if (carbonContext.getTenantId() == autoscalePolicy.getTenantId()) {
-                            autoscalingPoliciesForTenant.add(autoscalePolicy);
-                        }
-                    }
-                    if (autoscalingPoliciesForTenant.size() != 0) {
-                        autoscalingPoliciesForTenantArray = autoscalingPoliciesForTenant.toArray(new
-                                AutoscalePolicy[autoscalingPoliciesForTenant.size()]);
-                    }
-                }
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting available autoscaling policies. Cause : " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
+        try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            AutoscalePolicy[] autoscalePolicies
+                    = AutoscalerServiceClient.getInstance().getAutoScalingPoliciesByTenant(carbonContext.getTenantId());
+            return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalePolicies);
+        } catch (RemoteException e) {
+            String message = "Could not get autoscaling policies";
+            log.error(message);
+            throw new RestAPIException(message, e);
         }
-        return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalingPoliciesForTenantArray);
     }
 
     /**
@@ -987,17 +969,10 @@ public class StratosApiV41Utils {
 
         AutoscalePolicyBean autoscalePolicyBean;
         try {
-            AutoscalePolicy[] autoscalePolicies = AutoscalerServiceClient.getInstance().getAutoScalePolicies();
-
-            AutoscalePolicy autoscalePolicy = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            for (AutoscalePolicy autoscalePolicy1 : autoscalePolicies) {
-                if (carbonContext.getTenantId() == autoscalePolicy1.getTenantId()) {
-                    if (autoscalePolicy1.getId().equals(autoscalePolicyId)) {
-                        autoscalePolicy = autoscalePolicy1;
-                    }
-                }
-            }
+            AutoscalePolicy autoscalePolicy = AutoscalerServiceClient.getInstance().getAutoScalePolicyForTenant
+                    (autoscalePolicyId, carbonContext.getTenantId());
+
             if (autoscalePolicy == null) {
                 return null;
             }
@@ -1009,6 +984,8 @@ public class StratosApiV41Utils {
             throw new RestAPIException(errorMsg, e);
         }
         return autoscalePolicyBean;
+
+
     }
 
     // Util methods for repo actions
