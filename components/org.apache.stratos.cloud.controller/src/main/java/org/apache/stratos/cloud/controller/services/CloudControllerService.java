@@ -431,4 +431,11 @@ public interface CloudControllerService {
      */
     public String[] getIaasProviders();
 
+    /**
+     * Get cartridges for tenant
+     *
+     * @param cartridgeType Type of the cartridge
+     * @param tenantId tenant id
+     */
+    public Cartridge[] getCartridgesByTenant(int tenantId);
 }
