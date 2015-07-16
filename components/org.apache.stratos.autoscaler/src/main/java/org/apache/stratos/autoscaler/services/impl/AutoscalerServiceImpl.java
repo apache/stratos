@@ -1458,4 +1458,19 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
+    @Override
+    public DeploymentPolicy[] getDeploymentPoliciesByTenant(int tenantId) {
+        DeploymentPolicy[] allDeploymentPolicies = getDeploymentPolicies();
+        List<DeploymentPolicy> deploymentPolicies = new ArrayList<DeploymentPolicy>();
+
+        if (allDeploymentPolicies != null) {
+            for (DeploymentPolicy deploymentPolicy : allDeploymentPolicies) {
+                if (deploymentPolicy.getTenantId() == tenantId) {
+                    deploymentPolicies.add(deploymentPolicy);
+                }
+            }
+        }
+        return deploymentPolicies.toArray(new DeploymentPolicy[deploymentPolicies.size()]);
+    }
+
 }

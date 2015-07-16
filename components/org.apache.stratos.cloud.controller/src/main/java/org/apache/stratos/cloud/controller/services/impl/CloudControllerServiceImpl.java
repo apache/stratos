@@ -793,6 +793,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
+    public Cartridge[] getCartridgesByTenant(int tenantId) {
+
+        Collection<Cartridge> allCartridges = CloudControllerContext.getInstance().getCartridges();
+        List<Cartridge> cartridges = new ArrayList<Cartridge>();
+        if (allCartridges == null || allCartridges.size() == 0) {
+            log.info("No registered Cartridge found.");
+            return null;
+        }
+        for (Cartridge cartridge : allCartridges) {
+            if (log.isDebugEnabled()) {
+                log.debug(cartridge);
+            }
+            if (cartridge.getTenantId() == tenantId) {
+                cartridges.add(cartridge);
+            }
+        }
+        return cartridges.toArray(new Cartridge[cartridges.size()]);
+    }
+
+    @Override
     public boolean unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
 

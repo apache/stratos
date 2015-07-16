@@ -609,7 +609,7 @@ public class TopologyBuilder {
 
                 // Set member ports
                 try {
-                    Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(service.getServiceName());
+                    Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(service.getServiceUuid());
                     if (cartridge == null) {
                         throw new RuntimeException(String.format("Cartridge not found: [cartridge-type] %s",
                                 service.getServiceName()));

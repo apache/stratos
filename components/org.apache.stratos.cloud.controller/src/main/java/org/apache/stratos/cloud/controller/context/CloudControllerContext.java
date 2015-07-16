@@ -313,13 +313,13 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void removeCartridge(Cartridge cartridge) {
-        if (cartridgeTypeToCartridgeMap.containsKey(cartridge.getType())) {
-            cartridgeTypeToCartridgeMap.remove(cartridge.getType());
+        if (cartridgeTypeToCartridgeMap.containsKey(cartridge.getUuid())) {
+            cartridgeTypeToCartridgeMap.remove(cartridge.getUuid());
         }
     }
 
     public void updateCartridge(Cartridge cartridge) {
-        cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
+        cartridgeTypeToCartridgeMap.put(cartridge.getUuid(), cartridge);
     }
 
     public ServiceGroup getServiceGroup(String name) {

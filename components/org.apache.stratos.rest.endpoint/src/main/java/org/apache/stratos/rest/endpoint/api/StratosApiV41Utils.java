@@ -433,23 +433,27 @@ public class StratosApiV41Utils {
         try {
             Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);
 
-            String[] availableCartridges = CloudControllerServiceClient.getInstance().getRegisteredCartridges();
+            //String[] availableCartridges = CloudControllerServiceClient.getInstance().getRegisteredCartridges();
+            Cartridge[] availableCartridges = CloudControllerServiceClient.getInstance().getCartridgesByTenant
+                    (tenantId);
 
             if (availableCartridges != null) {
-                for (String cartridgeType : availableCartridges) {
+                for (Cartridge cartridgeDefinition : availableCartridges) {
                     Cartridge cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeType,tenantId);
+                        //cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeByTenant
+                               // (cartridgeType,tenantId);
+                        cartridgeInfo = cartridgeDefinition;
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
-                            log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
+                            log.warn("Error when calling getCartridgeInfo for " + cartridgeDefinition.getType() + ", Error: "
                                     + e.getMessage());
                         }
                     }
                     if (cartridgeInfo == null) {
                         // This cannot happen. But continue
                         if (log.isDebugEnabled()) {
-                            log.debug("Cartridge Info not found: " + cartridgeType);
+                            log.debug("Cartridge Info not found: " + cartridgeDefinition.getType());
                         }
                         continue;
                     }
@@ -469,8 +473,6 @@ public class StratosApiV41Utils {
 						CartridgeBean cartridge = ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
 						cartridges.add(cartridge);
 					}
-
-
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -3012,18 +3014,20 @@ public class StratosApiV41Utils {
 
         DeploymentPolicyBean deploymentPolicyBean;
         try {
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
-                    = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
-
-            DeploymentPolicy deploymentPolicy = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy
+                    = AutoscalerServiceClient.getInstance().getDeploymentPolicyForTenant(deploymentPolicyId,
+                    carbonContext.getTenantId());
+
+            /*DeploymentPolicy deploymentPolicy = null;
+
             for (DeploymentPolicy deploymentPolicy1 : deploymentPolicies) {
                 if (carbonContext.getTenantId() == deploymentPolicy1.getTenantId()) {
                     if (deploymentPolicy1.getId().equals(deploymentPolicyId)) {
                         deploymentPolicy = deploymentPolicy1;
                     }
                 }
-            }
+            }*/
             if (deploymentPolicy == null) {
                 return null;
             }
@@ -3044,24 +3048,10 @@ public class StratosApiV41Utils {
      */
     public static DeploymentPolicyBean[] getDeploymentPolicies() throws RestAPIException {
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies
-                    = AutoscalerServiceClient.getInstance().getDeploymentPolicies();
-
-            DeploymentPolicy[] deploymentPoliciesForTenantArray = new DeploymentPolicy[0];
-            if (deploymentPolicies != null) {
-                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                List<DeploymentPolicy> deploymentPoliciesForTenant = new ArrayList<DeploymentPolicy>();
-                for (DeploymentPolicy deploymentPolicy : deploymentPolicies) {
-                    if (carbonContext.getTenantId() == deploymentPolicy.getTenantId()) {
-                        deploymentPoliciesForTenant.add(deploymentPolicy);
-                        }
-                }
-                if (deploymentPoliciesForTenant.size() != 0) {
-                deploymentPoliciesForTenantArray = deploymentPoliciesForTenant.toArray(new
-                        DeploymentPolicy[deploymentPoliciesForTenant.size()]);
-                }
-            }
-            return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPoliciesForTenantArray);
+                    = AutoscalerServiceClient.getInstance().getDeploymentPoliciesByTenant(carbonContext.getTenantId());
+            return ObjectConverter.convertASStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
         } catch (RemoteException e) {
             String message = "Could not get deployment policies";
             log.error(message);
