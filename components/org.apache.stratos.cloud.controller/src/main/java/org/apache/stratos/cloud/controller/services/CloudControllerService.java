@@ -406,6 +406,13 @@ public interface CloudControllerService {
     public NetworkPartition[] getNetworkPartitions();
 
     /**
+     * Get network partitions by tenant
+     *@param tenantId tenant id
+     * @return
+     */
+    public NetworkPartition[] getNetworkPartitionsByTenant(int tenantId);
+
+    /**
      * Get network partition by network partition id
      *
      * @param networkPartitionId

@@ -218,6 +218,10 @@ public class CloudControllerServiceClient {
         return stub.getNetworkPartitions();
     }
 
+    public NetworkPartition[] getNetworkPartitionsByTenant(int tenantId) throws RemoteException {
+        return stub.getNetworkPartitionsByTenant(tenantId);
+    }
+
     public NetworkPartition getNetworkPartition(String networkPartitionId) throws RemoteException {
         return stub.getNetworkPartition(networkPartitionId);
     }

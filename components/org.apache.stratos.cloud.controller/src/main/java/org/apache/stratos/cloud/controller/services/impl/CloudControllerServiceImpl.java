@@ -1680,6 +1680,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
+    public NetworkPartition[] getNetworkPartitionsByTenant(int tenantId) {
+        NetworkPartition[] allNetworkPartitions = getNetworkPartitions();
+        List<NetworkPartition> networkPartitions = new ArrayList<NetworkPartition>();
+
+        if (allNetworkPartitions != null) {
+            for (NetworkPartition networkPartition : allNetworkPartitions) {
+                if (networkPartition.getTenantId() == tenantId) {
+                    networkPartitions.add(networkPartition);
+                }
+            }
+        }
+        return networkPartitions.toArray(new NetworkPartition[networkPartitions.size()]);
+    }
+
+    @Override
     public NetworkPartition getNetworkPartition(String networkPartitionId) {
         try {
             return CloudControllerContext.getInstance().getNetworkPartition(networkPartitionId);

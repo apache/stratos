@@ -2798,26 +2798,11 @@ public class StratosApiV41Utils {
      */
     public static NetworkPartitionBean[] getNetworkPartitions() throws RestAPIException {
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions =
-                    serviceClient.getNetworkPartitions();
-
-            NetworkPartition[] networkPartitionsForTenantArray = new NetworkPartition[0];
-
-            if (networkPartitions != null) {
-                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                List<NetworkPartition> networkPartitionsForTenant = new ArrayList<NetworkPartition>();
-                for (NetworkPartition networkPartition : networkPartitions) {
-                    if (carbonContext.getTenantId() == networkPartition.getTenantId()) {
-                        networkPartitionsForTenant.add(networkPartition);
-                    }
-                }
-                if (networkPartitionsForTenant.size() != 0) {
-                    networkPartitionsForTenantArray = networkPartitionsForTenant.toArray(new
-                            NetworkPartition[networkPartitionsForTenant.size()]);
-                }
-            }
-            return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitionsForTenantArray);
+                    serviceClient.getNetworkPartitionsByTenant(carbonContext.getTenantId());
+            return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitions);
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
@@ -2835,7 +2820,7 @@ public class StratosApiV41Utils {
         try {
 
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
-            ApplicationContext[] applicationContexts = autoscalerServiceClient.getApplications();
+            ApplicationContext[] applicationContexts = autoscalerServiceClient.getApplicationsByTenant(tenantId);
             if (applicationContexts != null) {
                 for (ApplicationContext applicationContext : applicationContexts) {
                     if (applicationContext != null) {
