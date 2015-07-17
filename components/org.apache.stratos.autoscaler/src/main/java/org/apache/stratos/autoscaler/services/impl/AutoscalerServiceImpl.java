@@ -88,13 +88,29 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
+    public AutoscalePolicy[] getAutoScalingPoliciesByTenant(int tenantId) {
+        AutoscalePolicy[] allAutoscalePolicies = getAutoScalingPolicies();
+        List<AutoscalePolicy> autoscalePolicies = new ArrayList<AutoscalePolicy>();
+
+        if(allAutoscalePolicies!=null){
+            for(AutoscalePolicy autoscalePolicy: allAutoscalePolicies){
+                if(autoscalePolicy.getTenantId()==tenantId){
+                    autoscalePolicies.add(autoscalePolicy);
+                }
+            }
+        }
+        return autoscalePolicies.toArray(new AutoscalePolicy[autoscalePolicies.size()]);
+    }
+
+    @Override
     public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy)
             throws AutoScalingPolicyAlreadyExistException {
         String autoscalePolicyId = autoscalePolicy.getId();
         if (PolicyManager.getInstance().getAutoscalePolicyById(autoscalePolicyId) != null && PolicyManager
                 .getInstance().getAutoscalePolicyById(autoscalePolicyId).getTenantId() == autoscalePolicy.getTenantId
                 ()) {
-            String message = "Autoscaling policy already exists: [autoscaling-policy-id] " + autoscalePolicyId;
+            String message = String.format("Autoscaling policy already exists: [autoscaling-policy-uuid] %s " +
+                    "[autoscaling-policy-id] %s", autoscalePolicy.getUuid(), autoscalePolicyId);
             log.error(message);
             throw new AutoScalingPolicyAlreadyExistException(message);
         }
@@ -112,9 +128,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (removableAutoScalerPolicy(autoscalePolicyId)) {
             return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
         } else {
-            throw new UnremovablePolicyException("This autoscaler policy cannot be removed, " +
-                    "since it is used in " +
-                    "applications.");
+            throw new UnremovablePolicyException(String.format("This autoscaling policy:  cannot be removed, " +
+                    "since it is used in applications."));
         }
     }
 

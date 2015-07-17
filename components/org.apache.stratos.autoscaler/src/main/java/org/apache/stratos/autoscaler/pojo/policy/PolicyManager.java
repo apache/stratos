@@ -83,7 +83,8 @@ public class PolicyManager {
     // Add the policy to information model and persist.
     public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding autoscaling policy: [id] %s", policy.getUuid()));
+            log.info(String.format("Adding autoscaling policy: [autoscaling policy-uuid] %s [autoscaling policy-id] " +
+                    "%s", policy.getUuid(), policy.getId()));
         }
         if (StringUtils.isEmpty(policy.getUuid())) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
@@ -91,7 +92,9 @@ public class PolicyManager {
         this.addASPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is added successfully: [id] %s", policy.getUuid()));
+            log.info(String.format("Autoscaling policy: [autoscaling-policy-uuid] %s [autoscaling-policy-id] %s added" +
+                            " successfully",
+                    policy.getUuid(), policy.getId()));
         }
         return true;
     }
@@ -103,19 +106,20 @@ public class PolicyManager {
         this.updateASPolicyInInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is updated successfully: [id] %s", policy.getUuid()));
+            log.info(String.format("Autoscaling policy updated successfully: [autoscaling policy-uuid] %s " +
+                            "[autoscaling policy-id] %s", policy.getUuid(), policy.getId()));
         }
         return true;
     }
 
-    public boolean removeAutoscalePolicy(String policyID) {
-        if (StringUtils.isEmpty(policyID)) {
+    public boolean removeAutoscalePolicy(String policyId) {
+        if (StringUtils.isEmpty(policyId)) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
-        this.removeASPolicyInInformationModel(policyID);
-        RegistryManager.getInstance().removeAutoscalerPolicy(policyID);
+        this.removeASPolicyInInformationModel(policyId);
+        RegistryManager.getInstance().removeAutoscalerPolicy(policyId);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is removed successfully: [id] %s", policyID));
+            log.info(String.format("Autoscaling policy removed successfully: [autoscaling-policy-id] %s", policyId));
         }
         return true;
     }

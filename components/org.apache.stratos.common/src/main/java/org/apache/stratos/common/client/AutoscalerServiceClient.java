@@ -272,4 +272,8 @@ public class AutoscalerServiceClient {
         return stub.getDeploymentPolicies();
     }
 
+    public AutoscalePolicy[] getAutoScalingPoliciesByTenant(int tenantId) throws RemoteException {
+        return stub.getAutoScalingPoliciesByTenant(tenantId);
+    }
+
 }

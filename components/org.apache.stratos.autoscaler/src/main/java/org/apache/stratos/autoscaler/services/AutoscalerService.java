@@ -337,11 +337,22 @@ public interface AutoscalerService {
     public ApplicationContext[] getApplicationsByTenant(int tenantId);
 
     /**
-     * Get deployment policy definition
+     * Get deployment policy definition by tenant
      *
      * @param tenantId tenant id
      * @return Deployment policy
      */
     public DeploymentPolicy[] getDeploymentPoliciesByTenant(int tenantId);
+
+    /**
+     * Get autoscaling policy definition by tenant
+     *
+     * @param tenantId tenant id
+     * @return Autoscaling policy
+     */
+    public AutoscalePolicy[] getAutoScalingPoliciesByTenant(int tenantId);
+
+
+
 
 }
