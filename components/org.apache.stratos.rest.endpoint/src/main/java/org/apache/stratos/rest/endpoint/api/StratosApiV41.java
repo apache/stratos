@@ -491,7 +491,6 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/cartridgeGroups/manage")
-    @SuperTenantService(true)
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
 
@@ -550,6 +549,9 @@ public class StratosApiV41 extends AbstractApi {
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Cartridge group not found")).build();
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Cartridge not found")).build();
         }
     }
 
@@ -615,15 +617,17 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/cartridgeGroups/manage")
-    @SuperTenantService(true)
     public Response removeServiceGroup(
             @PathParam("name") String name) throws RestAPIException {
         try {
 	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            StratosApiV41Utils.removeServiceGroup(name,carbonContext.getTenantId());
+            StratosApiV41Utils.removeServiceGroup(name, carbonContext.getTenantId());
         } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Cartridge group not found")).build();
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "Cartridge not found")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Cartridge Group deleted successfully: [cartridge-group] %s", name)))
@@ -1348,7 +1352,6 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/applications/manage")
-    @SuperTenantService(true)
     public Response removeApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);

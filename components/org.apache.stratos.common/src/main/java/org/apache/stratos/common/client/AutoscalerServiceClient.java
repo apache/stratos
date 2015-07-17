@@ -140,16 +140,25 @@ public class AutoscalerServiceClient {
         stub.addApplicationPolicy(applicationPolicy);
     }
 
-    public ApplicationPolicy getApplicationPolicy(String applicationPolicyUuid) throws RemoteException {
-        return stub.getApplicationPolicy(applicationPolicyUuid);
+    public ApplicationPolicy getApplicationPolicyByUuid(String applicationPolicyUuid) throws RemoteException {
+        return stub.getApplicationPolicyByUuid(applicationPolicyUuid);
     }
 
-	public ApplicationPolicy getApplicationPolicyByTenant(String applicationPolicyId,int tenantId) throws RemoteException {
-		return stub.getApplicationPolicyByTenant(applicationPolicyId,tenantId);
-	}
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId, int tenantId) throws RemoteException {
+        return stub.getApplicationPolicy(applicationPolicyId, tenantId);
+    }
+
+    public ApplicationPolicy getApplicationPolicyByTenant(String applicationPolicyId,
+                                                          int tenantId) throws RemoteException {
+        return stub.getApplicationPolicyByTenant(applicationPolicyId, tenantId);
+    }
 
     public ApplicationPolicy[] getApplicationPolicies() throws RemoteException {
         return stub.getApplicationPolicies();
+    }
+
+    public ApplicationPolicy[] getApplicationPoliciesByTenant(int tenantId) throws RemoteException {
+        return stub.getApplicationPoliciesByTenant(tenantId);
     }
 
     public void updateApplicationPolicy(ApplicationPolicy applicationPolicy)

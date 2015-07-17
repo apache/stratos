@@ -174,12 +174,21 @@ public interface AutoscalerService {
             InvalidApplicationPolicyException, InvalidPolicyException, ApplicationPolicyAlreadyExistsException;
 
     /**
-     * Get application policy by application uuid
+     * Get application policy by application id
      *
      * @param applicationPolicyId the application policy id
+     * @param tenantId tenant id
      * @return {@link ApplicationPolicy} used by the given application
      */
-    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId);
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId, int tenantId);
+
+    /**
+     * Get application policy by application uuid
+     *
+     * @param applicationPolicyUuid the application policy uuid
+     * @return {@link ApplicationPolicy} used by the given application
+     */
+    public ApplicationPolicy getApplicationPolicyByUuid(String applicationPolicyUuid);
 
 	/**
 	 *
@@ -348,9 +357,17 @@ public interface AutoscalerService {
      * Get autoscaling policy definition by tenant
      *
      * @param tenantId tenant id
-     * @return Autoscaling policy
+     * @return Array of autoscaling policies for tenant
      */
     public AutoscalePolicy[] getAutoScalingPoliciesByTenant(int tenantId);
+
+    /**
+     * Returns the application policy to which the specified id is mapped or null
+     *
+     * @param tenantId Id of the deployment policy
+     * @return Array of application policies for a tenant
+     */
+    public ApplicationPolicy[] getApplicationPoliciesByTenant(int tenantId);
 
 
 

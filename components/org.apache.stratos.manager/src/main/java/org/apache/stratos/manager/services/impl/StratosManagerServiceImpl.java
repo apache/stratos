@@ -107,11 +107,11 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNames) {
+    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNamesUuid) {
         Lock lock = null;
         try {
             lock = StratosManagerContext.getInstance().acquireCartridgesCartridgeGroupsWriteLock();
-            StratosManagerContext.getInstance().removeUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeNames);
+            StratosManagerContext.getInstance().removeUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeNamesUuid);
             StratosManagerContext.getInstance().persist();
         } finally {
             if (lock != null) {

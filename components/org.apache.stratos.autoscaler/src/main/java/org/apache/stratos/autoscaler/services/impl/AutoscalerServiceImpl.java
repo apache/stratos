@@ -976,9 +976,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.debug("Application policy definition: " + applicationPolicy.toString());
         }
 
-        String applicationPolicyUuid = applicationPolicy.getUuid();
-        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyUuid) != null) {
-            String message = "Application policy already exists: [application-policy-uuid] " + applicationPolicyUuid;
+        String applicationPolicyId = applicationPolicy.getId();
+        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId) != null) {
+            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
             log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);
         }
@@ -998,8 +998,23 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public ApplicationPolicy getApplicationPolicy(String applicationPolicyUuid) {
-        return PolicyManager.getInstance().getApplicationPolicy(applicationPolicyUuid);
+    public ApplicationPolicy getApplicationPolicyByUuid(String applicationPolicyUuid) {
+        return PolicyManager.getInstance().getApplicationPolicyByUuid(applicationPolicyUuid);
+    }
+
+    @Override
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId, int tenantId) {
+        ApplicationPolicy[] applicationPolicies = getApplicationPolicies();
+        ApplicationPolicy applicationPolicy = null;
+        if (applicationPolicies != null) {
+            for (ApplicationPolicy applicationPolicy1 : applicationPolicies) {
+                if (applicationPolicy1.getTenantId() == tenantId && applicationPolicy1.getId().equals
+                        (applicationPolicyId)) {
+                    applicationPolicy = applicationPolicy1;
+                }
+            }
+        }
+        return applicationPolicy;
     }
 
 	@Override
@@ -1064,6 +1079,23 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     public ApplicationPolicy[] getApplicationPolicies() {
         return PolicyManager.getInstance().getApplicationPolicies();
     }
+
+
+    @Override
+    public ApplicationPolicy[] getApplicationPoliciesByTenant(int tenantId) {
+        ApplicationPolicy[] allApplicationPolicies = getApplicationPolicies();
+        List<ApplicationPolicy> applicationPolicies = new ArrayList<ApplicationPolicy>();
+
+        if (allApplicationPolicies != null) {
+            for (ApplicationPolicy applicationPolicy : allApplicationPolicies) {
+                if (applicationPolicy.getTenantId() == tenantId) {
+                    applicationPolicies.add(applicationPolicy);
+                }
+            }
+        }
+        return applicationPolicies.toArray(new ApplicationPolicy[applicationPolicies.size()]);
+    }
+
 
     private void terminateAllMembersAndClustersForcefully(String applicationId) {
         if (StringUtils.isEmpty(applicationId)) {
