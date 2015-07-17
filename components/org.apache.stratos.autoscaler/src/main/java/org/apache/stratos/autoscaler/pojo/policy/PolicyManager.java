@@ -474,6 +474,11 @@ public class PolicyManager {
         return true;
     }
 
+    /**
+     * Returns the application policy to which the specified id is mapped or null
+     *
+     * @return List of all application policies
+     */
     public ApplicationPolicy[] getApplicationPolicies() {
         return applicationPolicyListMap.values().toArray(new ApplicationPolicy[0]);
     }

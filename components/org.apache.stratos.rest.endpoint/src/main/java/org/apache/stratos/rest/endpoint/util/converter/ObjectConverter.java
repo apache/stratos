@@ -1211,6 +1211,7 @@ public class ObjectConverter {
                     groupDefinition.setAlias(groupContext.getAlias());
                     groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
                     groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
+                    groupDefinition.setTenantId(groupContext.getTenantId());
                     groupDefinition.setName(groupContext.getName());
                     groupDefinition.setGroups(convertStubGroupContextsToGroupDefinitions(groupContext.getGroupContexts()));
                     groupDefinition.setCartridges(convertStubCartridgeContextsToCartridgeReferenceBeans(
@@ -1284,6 +1285,8 @@ public class ObjectConverter {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
                 if (cartridgeContext != null) {
                     CartridgeReferenceBean cartridgeDefinition = new CartridgeReferenceBean();
+                    cartridgeDefinition.setUuid(cartridgeContext.getUuid());
+                    cartridgeDefinition.setTenantId(cartridgeContext.getTenantId());
                     cartridgeDefinition.setType(cartridgeContext.getType());
                     cartridgeDefinition.setCartridgeMin(cartridgeContext.getCartridgeMin());
                     cartridgeDefinition.setCartridgeMax(cartridgeContext.getCartridgeMax());
@@ -1404,8 +1407,11 @@ public class ObjectConverter {
             context.setCartridgeMax(cartridgeDefinition.getCartridgeMax());
             context.setCartridgeMin(cartridgeDefinition.getCartridgeMin());
             context.setType(cartridgeDefinition.getType());
+            context.setUuid(cartridgeDefinition.getUuid());
+            context.setTenantId(tenantId);
 	        try {
-		        context.setUuid(CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeDefinition.getType(),tenantId).getUuid());
+		        context.setUuid(CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeDefinition
+                        .getType(), tenantId).getUuid());
 	        } catch (RemoteException e) {
 		        throw new RestAPIException(e);
 	        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
@@ -1591,7 +1597,8 @@ public class ObjectConverter {
 
             // Cartridges
             if (groupDefinition.getCartridges() != null) {
-                groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges(),-1234));
+                groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts
+                        (groupDefinition.getCartridges(), tenantId));
             }
             groupContexts[i++] = groupContext;
         }
