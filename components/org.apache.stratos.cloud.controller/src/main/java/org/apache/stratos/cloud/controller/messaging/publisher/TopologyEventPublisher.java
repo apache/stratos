@@ -171,7 +171,8 @@ public class TopologyEventPublisher {
                 memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(),
                 memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId());
+                memberContext.getPartition().getId(),
+                memberContext.getInstanceId());
 
         memberInitializedEvent.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
         if (memberContext.getPrivateIPs() != null) {

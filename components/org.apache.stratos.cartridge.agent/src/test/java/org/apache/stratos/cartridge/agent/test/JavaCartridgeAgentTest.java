@@ -78,6 +78,7 @@ public class JavaCartridgeAgentTest {
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
     public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.1.0-SNAPSHOT";
+    private static final String INSTANCE_ID = "instance-1";
     private static HashMap<String, Executor> executorList;
     private static ArrayList<ServerSocket> serverSocketList;
     private final ArtifactUpdatedEvent artifactUpdatedEvent;
@@ -327,7 +328,7 @@ public class JavaCartridgeAgentTest {
                                 // Publish member initialized event
                                 log.info("Publishing member initialized event...");
                                 MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID
+                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID, INSTANCE_ID
                                 );
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
