@@ -38,10 +38,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.*;
 
-/**
- * @author swapnil
- * 
- */
 public class AWSHelper {
 	private String awsAccessKey;
 	private String awsSecretKey;
@@ -50,6 +46,8 @@ public class AWSHelper {
 
 	private BasicAWSCredentials awsCredentials;
 	private ClientConfiguration clientConfiguration;
+
+	AmazonElasticLoadBalancingClient lbClient;
 
 	private static final Log log = LogFactory.getLog(AWSHelper.class);
 
@@ -76,6 +74,15 @@ public class AWSHelper {
 			this.availabilityZone = properties
 					.getProperty(Constants.AVAILABILITY_ZONE_KEY);
 			this.region = properties.getProperty(Constants.REGION_KEY);
+
+			awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
+			clientConfiguration = new ClientConfiguration();
+
+			lbClient = new AmazonElasticLoadBalancingClient(awsCredentials,
+					clientConfiguration);
+			lbClient.setEndpoint("elasticloadbalancing." + this.region
+					+ ".amazonaws.com");
+
 		} catch (IOException e) {
 			log.error("Error reading aws configuration file.");
 			throw new LoadBalancerExtensionException(
@@ -87,9 +94,6 @@ public class AWSHelper {
 				log.warn("Failed to close input stream to aws configuration file.");
 			}
 		}
-
-		awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
-		clientConfiguration = new ClientConfiguration();
 	}
 
 	/**
@@ -101,31 +105,32 @@ public class AWSHelper {
 	 * @return DNS name of newly created load balancer
 	 */
 	public String createLoadBalancer(String name, List<Listener> listeners) {
+
+		log.info("Creating load balancer " + name);
+
+		CreateLoadBalancerRequest createLoadBalancerRequest = new CreateLoadBalancerRequest(
+				name);
+
+		createLoadBalancerRequest.setListeners(listeners);
+
+		Set<String> availabilityZones = new HashSet<String>();
+		availabilityZones.add(availabilityZone);
+
+		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
+
 		try {
-			CreateLoadBalancerRequest createLoadBalancerRequest = new CreateLoadBalancerRequest(
-					name);
-
-			createLoadBalancerRequest.setListeners(listeners);
-
-			Set<String> availabilityZones = new HashSet<String>();
-			availabilityZones.add(availabilityZone);
-
-			createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
-
-			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-					awsCredentials, clientConfiguration);
-			lbClient.setEndpoint("elasticloadbalancing." + this.region
-					+ ".amazonaws.com");
 
 			CreateLoadBalancerResult clbResult = lbClient
 					.createLoadBalancer(createLoadBalancerRequest);
 
 			return clbResult.getDNSName();
+
 		} catch (Exception e) {
 			log.error("Could not create load balancer : " + name + ".");
 			e.printStackTrace();
 			return null;
 		}
+
 	}
 
 	/**
@@ -135,16 +140,19 @@ public class AWSHelper {
 	 * @param loadBalancerName
 	 */
 	public void deleteLoadBalancer(String loadBalancerName) {
+
+		log.info("Deleting load balancer " + loadBalancerName);
+
+		DeleteLoadBalancerRequest deleteLoadBalancerRequest = new DeleteLoadBalancerRequest();
+		deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
+
 		try {
-			DeleteLoadBalancerRequest deleteLoadBalancerRequest = new DeleteLoadBalancerRequest();
-			deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
-
-			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-					awsCredentials, clientConfiguration);
-
 			lbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
+			return;
+
 		} catch (Exception e) {
 			log.error("Could not delete load balancer : " + loadBalancerName);
+			e.printStackTrace();
 		}
 	}
 
@@ -158,18 +166,23 @@ public class AWSHelper {
 	 */
 	public void registerInstancesToLoadBalancer(String loadBalancerName,
 			List<Instance> instances) {
-		try {
-			RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest = new RegisterInstancesWithLoadBalancerRequest(
-					loadBalancerName, instances);
 
-			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-					awsCredentials, clientConfiguration);
+		log.info("Attaching instance " + instances.get(0)
+				+ " to load balancer + " + loadBalancerName);
+
+		RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest = new RegisterInstancesWithLoadBalancerRequest(
+				loadBalancerName, instances);
+
+		try {
 
 			RegisterInstancesWithLoadBalancerResult result = lbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
+			return;
+
 		} catch (Exception e) {
 			log.error("Could not register instances to load balancer "
 					+ loadBalancerName);
+			e.printStackTrace();
 		}
 	}
 
@@ -183,18 +196,22 @@ public class AWSHelper {
 	 */
 	public void deregisterInstancesFromLoadBalancer(String loadBalancerName,
 			List<Instance> instances) {
+
+		log.info("Detaching instance " + instances.get(0)
+				+ " from load balancer + " + loadBalancerName);
+
+		DeregisterInstancesFromLoadBalancerRequest deregisterInstancesFromLoadBalancerRequest = new DeregisterInstancesFromLoadBalancerRequest(
+				loadBalancerName, instances);
+
 		try {
-			DeregisterInstancesFromLoadBalancerRequest deregisterInstancesFromLoadBalancerRequest = new DeregisterInstancesFromLoadBalancerRequest(
-					loadBalancerName, instances);
-
-			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-					awsCredentials, clientConfiguration);
-
 			DeregisterInstancesFromLoadBalancerResult result = lbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
+			return;
+
 		} catch (Exception e) {
 			log.error("Could not de-register instances from load balancer "
 					+ loadBalancerName);
+			e.printStackTrace();
 		}
 	}
 
@@ -207,6 +224,7 @@ public class AWSHelper {
 	 */
 	private LoadBalancerDescription getLoadBalancerDescription(
 			String loadBalancerName) {
+
 		List<String> loadBalancers = new ArrayList<String>();
 
 		loadBalancers.add(loadBalancerName);
@@ -214,17 +232,21 @@ public class AWSHelper {
 		DescribeLoadBalancersRequest describeLoadBalancersRequest = new DescribeLoadBalancersRequest(
 				loadBalancers);
 
-		AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-				awsCredentials, clientConfiguration);
+		try {
+			DescribeLoadBalancersResult result = lbClient
+					.describeLoadBalancers(describeLoadBalancersRequest);
 
-		DescribeLoadBalancersResult result = lbClient
-				.describeLoadBalancers(describeLoadBalancersRequest);
-
-		if (result.getLoadBalancerDescriptions() == null
-				|| result.getLoadBalancerDescriptions().size() == 0)
+			if (result.getLoadBalancerDescriptions() == null
+					|| result.getLoadBalancerDescriptions().size() == 0)
+				return null;
+			else
+				return result.getLoadBalancerDescriptions().get(0);
+		} catch (Exception e) {
+			log.error("Could not find description of load balancer "
+					+ loadBalancerName);
+			e.printStackTrace();
 			return null;
-		else
-			return result.getLoadBalancerDescriptions().get(0);
+		}
 	}
 
 	/**
@@ -247,8 +269,9 @@ public class AWSHelper {
 			return lbDescription.getInstances();
 
 		} catch (Exception e) {
-			log.error("Could not find description of load balancer "
+			log.error("Could not find instances attached  load balancer "
 					+ loadBalancerName);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -266,19 +289,20 @@ public class AWSHelper {
 		if (listeners.size() == 0)
 			return;
 
-		try {
-			CreateLoadBalancerListenersRequest createLoadBalancerListenersRequest = new CreateLoadBalancerListenersRequest();
-			createLoadBalancerListenersRequest.setListeners(listeners);
-			createLoadBalancerListenersRequest
-					.setLoadBalancerName(loadBalancerName);
+		CreateLoadBalancerListenersRequest createLoadBalancerListenersRequest = new CreateLoadBalancerListenersRequest();
+		createLoadBalancerListenersRequest.setListeners(listeners);
+		createLoadBalancerListenersRequest
+				.setLoadBalancerName(loadBalancerName);
 
-			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-					awsCredentials, clientConfiguration);
+		try {
 
 			lbClient.createLoadBalancerListeners(createLoadBalancerListenersRequest);
+			return;
+
 		} catch (Exception e) {
 			log.error("Could not add listeners to load balancer "
 					+ loadBalancerName);
+			e.printStackTrace();
 		}
 	}
 
@@ -294,28 +318,28 @@ public class AWSHelper {
 		if (listeners.size() == 0)
 			return;
 
+		DeleteLoadBalancerListenersRequest deleteLoadBalancerListenersRequest = new DeleteLoadBalancerListenersRequest();
+		deleteLoadBalancerListenersRequest
+				.setLoadBalancerName(loadBalancerName);
+
+		List<Integer> loadBalancerPorts = new ArrayList<Integer>();
+
+		for (Listener listener : listeners) {
+			loadBalancerPorts.add(listener.getLoadBalancerPort());
+		}
+
+		deleteLoadBalancerListenersRequest
+				.setLoadBalancerPorts(loadBalancerPorts);
+
 		try {
-			DeleteLoadBalancerListenersRequest deleteLoadBalancerListenersRequest = new DeleteLoadBalancerListenersRequest();
-			deleteLoadBalancerListenersRequest
-					.setLoadBalancerName(loadBalancerName);
-
-			List<Integer> loadBalancerPorts = new ArrayList<Integer>();
-
-			for (Listener listener : listeners) {
-				loadBalancerPorts.add(listener.getLoadBalancerPort());
-			}
-
-			deleteLoadBalancerListenersRequest
-					.setLoadBalancerPorts(loadBalancerPorts);
-
-			AmazonElasticLoadBalancingClient lbClient = new AmazonElasticLoadBalancingClient(
-					awsCredentials, clientConfiguration);
 
 			lbClient.deleteLoadBalancerListeners(deleteLoadBalancerListenersRequest);
+			return;
 
 		} catch (Exception e) {
 			log.error("Could not remove listeners from load balancer "
 					+ loadBalancerName);
+			e.printStackTrace();
 		}
 	}
 
@@ -368,9 +392,11 @@ public class AWSHelper {
 		for (Port port : service.getPorts()) {
 			int instancePort = port.getValue();
 			int proxyPort = port.getProxy();
-			String protocol = port.getProtocol();
+			String protocol = port.getProtocol().toUpperCase();
+			String instanceProtocol = protocol;
 
 			Listener listener = new Listener(protocol, proxyPort, instancePort);
+			listener.setInstanceProtocol(instanceProtocol);
 
 			listeners.add(listener);
 		}
@@ -392,5 +418,18 @@ public class AWSHelper {
 		name = name.replace('.', '-');
 
 		return name;
+	}
+
+	/**
+	 * @param memberInstanceName
+	 * @return
+	 */
+	public String getAWSInstanceName(final String memberInstanceName) {
+		if (memberInstanceName.contains("/")) {
+			return memberInstanceName
+					.substring(memberInstanceName.indexOf("/") + 1);
+		} else {
+			return memberInstanceName;
+		}
 	}
 }
