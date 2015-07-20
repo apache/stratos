@@ -1644,7 +1644,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String networkPartitionId = networkPartition.getId();
             String networkPartitionUuid = networkPartition.getUuid();
-            if (cloudControllerContext.getNetworkPartition(networkPartitionId) == null) {
+            if (cloudControllerContext.getNetworkPartition(networkPartitionUuid) == null) {
                 String message = String.format("Network partition not found: [network-partition-uuid] %s " +
                         "[network-partition-id] %s", networkPartitionUuid, networkPartitionId);
                 log.error(message);
