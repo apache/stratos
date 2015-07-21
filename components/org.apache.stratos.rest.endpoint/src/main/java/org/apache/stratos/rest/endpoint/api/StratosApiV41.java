@@ -741,7 +741,8 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Network partition not found")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network Partition updated successfully: [network-partition] %s",
+                String.format("Network Partition updated successfully: [network-partition-uuid] %s " +
+                                "[network-partition-id] %s", networkPartition.getUuid(),
                         networkPartition.getId()))).build();
     }
 
@@ -757,17 +758,16 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/networkPartitions/manage")
     public Response removeNetworkPartition(
             @PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
-
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
-            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             StratosApiV41Utils.removeNetworkPartition(networkPartitionId, carbonContext.getTenantId());
         } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Network partition is not found")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network partition deleted successfully: [network-partition] %s",
-                        networkPartitionId))).build();
+                String.format("Network partition deleted successfully: [network-partition-id] %s " +
+                                "[tenant-domain] %s", networkPartitionId, carbonContext.getTenantDomain()))).build();
     }
 
     // API methods for applications
