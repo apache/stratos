@@ -181,22 +181,22 @@ public class StratosApiV41Utils {
     public static void updateCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Updating cartridge: [cartridge-uuid] %s [cartridge-type] %s ",
+                log.debug(String.format("Updating cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d",
                         cartridgeBean.getUuid(),
-                        cartridgeBean.getType()));
+                        cartridgeBean.getType(),cartridgeBean.getTenantId()));
             }
 
             List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
             if ((iaasProviders == null) || iaasProviders.size() == 0) {
-                throw new RestAPIException(String.format("IaaS providers not found in cartridge: [cartridge-uuid] %s " +
-                                "[cartridge-type] %s", cartridgeBean.getUuid(), cartridgeBean.getType()));
+                throw new RestAPIException(String.format("IaaS providers not found in cartridge: [cartridge-uuid] %s [tenant-id] %d" +
+                                "[cartridge-type] %s", cartridgeBean.getUuid(), cartridgeBean.getType(),cartridgeBean.getTenantId()));
             }
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-	        cartridgeConfig.setUuid(cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
-		                                                                                  cartridgeBean.getTenantId()).getUuid());
-
+	        Cartridge existingCartridge=cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
+	                                                          cartridgeBean.getTenantId());
+	        cartridgeConfig.setUuid(existingCartridge.getUuid());
 	        cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
@@ -1106,7 +1106,8 @@ public class StratosApiV41Utils {
             InvalidCartridgeGroupDefinitionException, CloudControllerServiceCartridgeNotFoundExceptionException {
         try {
 	        AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
-	        cartridgeGroup.setUuid(autoscalerServiceClient.getServiceGroupByTenant(cartridgeGroup.getName(),tenantId).getUuid());
+	        ServiceGroup existingServiceGroup =autoscalerServiceClient.getServiceGroupByTenant(cartridgeGroup.getName(), tenantId);
+	        cartridgeGroup.setUuid(existingServiceGroup.getUuid());
 			cartridgeGroup.setTenantId(tenantId);
             ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
                     cartridgeGroup);
@@ -1304,7 +1305,7 @@ public class StratosApiV41Utils {
         StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
         if (log.isDebugEnabled()) {
-            log.debug("Removing cartridge group: [cartridge-group-name] " + name);
+            log.debug(String.format("Removing cartridge group: [cartridge-group-name] %s [tenant-id] %d " ,name,tenantId));
         }
         String serviceGroupUuid = null;
         // Check whether cartridge group exists
@@ -1314,15 +1315,15 @@ public class StratosApiV41Utils {
 
             if (serviceGroup == null) {
                 String message = "Cartridge group: [cartridge-group-name] " + name + " cannot be removed since it " +
-                        "does not exist";
+                        "does not exist in tenant " + tenantId;
                 log.error(message);
                 throw new RestAPIException(message);
             }
             // Validate whether cartridge group can be removed
             if (!smServiceClient.canCartirdgeGroupBeRemoved(serviceGroup.getUuid())) {
                 String message = String.format("Cannot remove cartridge group: [cartridge-group-uuid] %s [group-name]" +
-                        " %s since it is used in another cartridge group or an application", serviceGroup.getUuid(),
-                        serviceGroup.getName());
+                        " %s since it is used in another cartridge group or an application in tenant %d", serviceGroup.getUuid(),
+                        serviceGroup.getName(),tenantId);
                 log.error(message);
                 throw new RestAPIException(message);
             }

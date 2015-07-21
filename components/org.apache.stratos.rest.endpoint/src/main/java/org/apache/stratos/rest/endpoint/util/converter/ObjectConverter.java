@@ -69,7 +69,9 @@ import java.util.*;
 
 public class ObjectConverter {
 
-    public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
+	public static final String CLUSTER_PROPERTY = "cluster";
+
+	public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
             CartridgeBean cartridgeBean) throws RestAPIException {
 
         if (cartridgeBean == null) {
@@ -290,7 +292,7 @@ public class ObjectConverter {
             org.apache.stratos.cloud.controller.stub.Property stubProperty
                     = new org.apache.stratos.cloud.controller.stub.Property();
 	        stubProperty.setName(propertyBean.getName());
-	        if(propertyBean.getName().equals("cluster")){
+	        if(propertyBean.getName().equals(CLUSTER_PROPERTY)){
 		        stubProperty.setValue(StratosApiV41Utils.getKubernetesClusterUuidByTenant(propertyBean.getValue(),tenantId));
 	        }
 	        else{
