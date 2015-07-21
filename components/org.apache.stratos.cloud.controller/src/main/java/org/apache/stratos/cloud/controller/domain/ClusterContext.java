@@ -32,9 +32,9 @@ public class ClusterContext implements Serializable {
 
     private static final long serialVersionUID = 4830667953031229223L;
 
-    private final String applicationId;
+    private final String applicationUuid;
     private final String clusterId;
-    private final String cartridgeType;
+    private final String cartridgeUuid;
     private final String payload;
     private final String hostName;
     private final boolean isLbCluster;
@@ -50,8 +50,8 @@ public class ClusterContext implements Serializable {
     public ClusterContext(String applicationId, String cartridgeType, String clusterId, String payload, String hostName,
                           boolean isLbCluster, Properties properties) {
 
-        this.applicationId = applicationId;
-        this.cartridgeType = cartridgeType;
+        this.applicationUuid = applicationId;
+        this.cartridgeUuid = cartridgeType;
         this.clusterId = clusterId;
         this.payload = payload;
         this.hostName = hostName;
@@ -59,16 +59,16 @@ public class ClusterContext implements Serializable {
         this.setProperties(properties);
     }
 
-    public String getApplicationId() {
-        return applicationId;
+    public String getApplicationUuid() {
+        return applicationUuid;
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public String getCartridgeType() {
-        return cartridgeType;
+    public String getCartridgeUuid() {
+        return cartridgeUuid;
     }
 
     public String getPayload() {

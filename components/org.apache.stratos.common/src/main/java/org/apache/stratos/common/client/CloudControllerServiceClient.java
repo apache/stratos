@@ -195,11 +195,11 @@ public class CloudControllerServiceClient {
         return stub.updateKubernetesHost(kubernetesHost);
     }
 
-    public void validateNetworkPartitionOfDeploymentPolicy(String cartridgeType, String networkPartitionId)
+    public void validateNetworkPartitionOfDeploymentPolicy(String cartridgeUuid, String networkPartitionId)
             throws RemoteException,
             CloudControllerServiceInvalidPartitionExceptionException,
             CloudControllerServiceInvalidCartridgeTypeExceptionException {
-        stub.validateDeploymentPolicyNetworkPartition(cartridgeType, networkPartitionId);
+        stub.validateDeploymentPolicyNetworkPartition(cartridgeUuid, networkPartitionId);
     }
 
     public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException,

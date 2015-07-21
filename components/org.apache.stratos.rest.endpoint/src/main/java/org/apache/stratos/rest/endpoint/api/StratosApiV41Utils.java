@@ -200,8 +200,8 @@ public class StratosApiV41Utils {
 	        cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Successfully updated cartridge: [cartridge-uuid] %s [cartridge-type] %s ",
-                        cartridgeBean.getUuid() ,cartridgeBean.getType()));
+                log.debug(String.format("Successfully updated cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id]",
+                        cartridgeBean.getUuid() ,cartridgeBean.getType(), cartridgeBean.getTenantId()));
             }
         } catch (CloudControllerServiceCartridgeDefinitionNotExistsExceptionException e) {
             String msg = "Could not add cartridge";
@@ -242,7 +242,7 @@ public class StratosApiV41Utils {
         }
         if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
             throw new RestAPIException(String.format("Category is not specified in cartridge: [cartridge-uuid] %s " +
-                            "[cartridge-type] %s", cartridgeConfig.getUuid(), cartridgeConfig.getType()));
+                            "[cartridge-type] %s [tenant-id] %d", cartridgeConfig.getUuid(), cartridgeConfig.getType(),cartridgeConfig.getTenantId()));
         }
         return cartridgeConfig;
     }
@@ -275,8 +275,8 @@ public class StratosApiV41Utils {
 
         // Validate whether cartridge can be removed
         if (!smServiceClient.canCartridgeBeRemoved(cartridge.getUuid())) {
-            String message = String.format("Cannot remove cartridge : [cartridge-uuid] %s [cartridge-type] %s ",
-                    cartridge.getUuid(), cartridgeType + "since it is used in another cartridge group or an " +
+            String message = String.format("Cannot remove cartridge : [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d",
+                    cartridge.getUuid(), cartridgeType,tenantId + "since it is used in another cartridge group or an " +
                             "application");
             log.error(message);
             throw new RestAPIException(message);
