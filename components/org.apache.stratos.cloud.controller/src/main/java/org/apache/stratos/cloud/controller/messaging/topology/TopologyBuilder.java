@@ -490,8 +490,8 @@ public class TopologyBuilder {
 				//publishing data
 				BAMUsageDataPublisher.publish(memberContext.getMemberId(), memberContext.getPartition().getId(),
 				                              memberContext.getNetworkPartitionId(), memberContext.getClusterId(),
-				                              memberContext.getCartridgeType(), MemberStatus.Initialized.toString(),
-				                              timeStamp, null, null, null);
+				                              memberContext.getClusterInstanceId(), memberContext.getCartridgeType(),
+				                              MemberStatus.Initialized.toString(), timeStamp, null, null, null);
 			}
 		} finally {
 			TopologyManager.releaseWriteLock();
@@ -550,8 +550,8 @@ public class TopologyBuilder {
 					BAMUsageDataPublisher
 							.publish(instanceStartedEvent.getMemberId(), instanceStartedEvent.getPartitionId(),
 							         instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getClusterId(),
-							         instanceStartedEvent.getServiceName(), MemberStatus.Starting.toString(), null,
-							         null, null);
+							         instanceStartedEvent.getClusterInstanceId(), instanceStartedEvent.getServiceName(),
+							         MemberStatus.Starting.toString(), timeStamp, null, null, null);
 				}
 			} finally {
 				TopologyManager.releaseWriteLock();
@@ -654,8 +654,9 @@ public class TopologyBuilder {
 				BAMUsageDataPublisher.publish(memberActivatedEvent.getMemberId(), memberActivatedEvent.getPartitionId(),
 				                              memberActivatedEvent.getNetworkPartitionId(),
 				                              memberActivatedEvent.getClusterId(),
+				                              memberActivatedEvent.getClusterInstanceId(),
 				                              memberActivatedEvent.getServiceName(), MemberStatus.Active.toString(),
-				                              null, null, null);
+				                              timeStamp, null, null, null);
 			}
 		} finally {
 			TopologyManager.releaseWriteLock();
@@ -714,8 +715,10 @@ public class TopologyBuilder {
 		BAMUsageDataPublisher
 				.publish(instanceReadyToShutdownEvent.getMemberId(), instanceReadyToShutdownEvent.getPartitionId(),
 				         instanceReadyToShutdownEvent.getNetworkPartitionId(),
-				         instanceReadyToShutdownEvent.getClusterId(), instanceReadyToShutdownEvent.getServiceName(),
-				         MemberStatus.ReadyToShutDown.toString(), null, null, null);
+				         instanceReadyToShutdownEvent.getClusterId(),
+				         instanceReadyToShutdownEvent.getClusterInstanceId(),
+				         instanceReadyToShutdownEvent.getServiceName(), MemberStatus.ReadyToShutDown.toString(),
+				         timeStamp, null, null, null);
 		//termination of particular instance will be handled by autoscaler
 	}
 

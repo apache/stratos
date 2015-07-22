@@ -69,8 +69,9 @@ public class CloudControllerServiceUtil {
 		Long timeStamp = System.currentTimeMillis();
 		// Publish statistics to BAM
 		BAMUsageDataPublisher.publish(memberContext.getMemberId(), partitionId, memberContext.getNetworkPartitionId(),
-		                              memberContext.getClusterId(), memberContext.getCartridgeType(),
-		                              MemberStatus.Terminated.toString(), timeStamp, null, null, null);
+		                              memberContext.getClusterId(), memberContext.getClusterInstanceId(),
+		                              memberContext.getCartridgeType(), MemberStatus.Terminated.toString(), timeStamp,
+		                              null, null, null);
 
 		// Remove member context
 		CloudControllerContext.getInstance()
