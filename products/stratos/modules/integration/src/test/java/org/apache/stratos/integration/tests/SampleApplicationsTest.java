@@ -56,10 +56,10 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     }
 
     @Test
-    public void testSingleCartridgeApplication() {
+    public void testApplications() {
         try {
             initializeApplicationEventReceiver();
-            runApplicationTest("simple/single-cartridge-app", "single-cartridge-app");
+            runApplicationTest("simple/single-group-app", "cartridge-group-app");
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred", false);
@@ -71,11 +71,18 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     }
 
     private void runApplicationTest(String applicationFolderName, String applicationId) {
-        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh");
-	    assertApplicationActivation(applicationId);
-        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh");
-        assertApplicationNotExists(applicationId);
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh 1");
+        assertApplicationActivation(applicationId, 1);
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh 2");
+        assertApplicationActivation(applicationId, 2);
 
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh 1");
+        assertApplicationNotExists(applicationId, 1);
+        log.info("Done tenant 1: " + applicationId);
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh 2");
+        log.info("Assert tenant 2: " + applicationId);
+        assertApplicationNotExists(applicationId, 2);
+        log.info("Done tenant 2: " + applicationId);
     }
 
     /**
@@ -113,27 +120,29 @@ public class SampleApplicationsTest extends StratosTestServerManager {
      * Assert application activation
      * @param applicationName
      */
-    private void assertApplicationActivation(String applicationName) {
+    private void assertApplicationActivation(String applicationName, int tenantId) {
 	    long startTime = System.currentTimeMillis();
-	    Application application = ApplicationManager.getApplications().getApplicationByTenent(applicationName);
+	    Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,
+                tenantId);
 	    while (!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
 		    try {
 			    Thread.sleep(1000);
 		    } catch (InterruptedException ignore) {
 		    }
-		    application = ApplicationManager.getApplications().getApplicationByTenent(applicationName);
+		    application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
 		    if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
 			    break;
 		    }
 	    }
-
 	    assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
 	    assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
 	                 ApplicationStatus.Active, application.getStatus());
     }
 
-    private void assertApplicationNotExists(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenent(applicationName);
+    private void assertApplicationNotExists(String applicationName, int tenantId) {
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,
+                tenantId);
+        log.info("Application not exist [application-name]: " + applicationName + " [tenant-id]: " + tenantId);
         assertNull(String.format("Application is found in the topology : [application-id] %s", applicationName), application);
     }
 

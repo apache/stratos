@@ -78,11 +78,11 @@ public class TopologyEventPublisher {
     public static void sendServiceRemovedEvent(List<Cartridge> cartridgeList) {
         ServiceRemovedEvent serviceRemovedEvent;
         for (Cartridge cartridge : cartridgeList) {
-            serviceRemovedEvent = new ServiceRemovedEvent(cartridge.getType());
+            serviceRemovedEvent = new ServiceRemovedEvent(cartridge.getUuid());
             if (log.isInfoEnabled()) {
                 log.info(String.format(
                         "Publishing service removed event: [service-name] %s",
-                        serviceRemovedEvent.getServiceName()));
+                        serviceRemovedEvent.getServiceUuid()));
             }
             publishEvent(serviceRemovedEvent);
         }
