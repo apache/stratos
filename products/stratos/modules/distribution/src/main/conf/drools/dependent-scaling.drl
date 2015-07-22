@@ -84,7 +84,10 @@ dialect "mvel"
 
                         log.info("[dependency-scale] [scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                         log.debug("[dependency-scale] [scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                        delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                        long time = System.currentTimeMillis();
+                        String scalingReason = "Dependency scaling";
+                        delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary,scalingReason,time);
+
                         count++;
                     } else {
                         partitionsAvailable = false;

@@ -48,194 +48,205 @@ import java.util.List;
  */
 public class AutoscalerCloudControllerClient {
 
-    private static final Log log = LogFactory.getLog(AutoscalerCloudControllerClient.class);
+	private static final Log log = LogFactory.getLog(AutoscalerCloudControllerClient.class);
 
-    private static CloudControllerServiceStub stub;
+	private static CloudControllerServiceStub stub;
 
-    /* An instance of a CloudControllerClient is created when the class is loaded. 
-     * Since the class is loaded only once, it is guaranteed that an object of 
-     * CloudControllerClient is created only once. Hence it is singleton.
-     */
-    private static class InstanceHolder {
-        private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
-    }
+	/* An instance of a CloudControllerClient is created when the class is loaded.
+	 * Since the class is loaded only once, it is guaranteed that an object of
+	 * CloudControllerClient is created only once. Hence it is singleton.
+	 */
+	private static class InstanceHolder {
+		private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
+	}
 
-    public static AutoscalerCloudControllerClient getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
+	public static AutoscalerCloudControllerClient getInstance() {
+		return InstanceHolder.INSTANCE;
+	}
 
-    private AutoscalerCloudControllerClient() {
-        try {
-            XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-            int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
-            String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
-            String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.CLOUD_CONTROLLER_SERVICE_SFX;
-            int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
+	private AutoscalerCloudControllerClient() {
+		try {
+			XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+			int port =
+					conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
+			String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
+			String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.CLOUD_CONTROLLER_SERVICE_SFX;
+			int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
 
-            stub = new CloudControllerServiceStub(epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
-                    cloudControllerClientTimeout);
-        } catch (Exception e) {
-            log.error("Could not initialize cloud controller client", e);
-        }
-    }
+			stub = new CloudControllerServiceStub(epr);
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
+			stub._getServiceClient().getOptions()
+			    .setProperty(HTTPConstants.CONNECTION_TIMEOUT, cloudControllerClientTimeout);
+		} catch (Exception e) {
+			log.error("Could not initialize cloud controller client", e);
+		}
+	}
 
-    public synchronized MemberContext startInstance(PartitionRef partition,
-                                                    String clusterId, String clusterInstanceId,
-                                                    String networkPartitionId, boolean isPrimary,
-                                                    int minMemberCount) throws SpawningException {
-        try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Trying to spawn an instance via cloud controller: " +
-                                "[cluster] %s [partition] %s [network-partition-id] %s",
-                        clusterId, partition.getId(), networkPartitionId));
-            }
+	public synchronized MemberContext startInstance(PartitionRef partition, String clusterId, String clusterInstanceId,
+	                                                String networkPartitionId, boolean isPrimary, int minMemberCount,
+	                                                String autoscalingReason, long scalingTime)
+			throws SpawningException {
+		try {
+			if (log.isInfoEnabled()) {
+				log.info(String.format("Trying to spawn an instance via cloud controller: " +
+				                       "[cluster] %s [partition] %s [network-partition-id] %s", clusterId,
+				                       partition.getId(), networkPartitionId));
+			}
 
-            XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-            long expiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
-            if (log.isDebugEnabled()) {
-                log.debug("Member obsolete expiry time is set to: " + expiryTime);
-            }
+			XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+			long expiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
+			if (log.isDebugEnabled()) {
+				log.debug("Member obsolete expiry time is set to: " + expiryTime);
+			}
 
-            InstanceContext instanceContext = new InstanceContext();
-            instanceContext.setClusterId(clusterId);
-            instanceContext.setClusterInstanceId(clusterInstanceId);
-            instanceContext.setPartition(AutoscalerObjectConverter.convertPartitionToCCPartition(partition));
-            instanceContext.setInitTime(System.currentTimeMillis());
-            instanceContext.setObsoleteExpiryTime(expiryTime);
-            instanceContext.setNetworkPartitionId(networkPartitionId);
+			InstanceContext instanceContext = new InstanceContext();
+			instanceContext.setClusterId(clusterId);
+			instanceContext.setClusterInstanceId(clusterInstanceId);
+			instanceContext.setPartition(AutoscalerObjectConverter.convertPartitionToCCPartition(partition));
+			instanceContext.setInitTime(System.currentTimeMillis());
+			instanceContext.setObsoleteExpiryTime(expiryTime);
+			instanceContext.setNetworkPartitionId(networkPartitionId);
 
-            Properties memberContextProps = new Properties();
-            Property isPrimaryProp = new Property();
-            isPrimaryProp.setName("PRIMARY");
-            isPrimaryProp.setValue(String.valueOf(isPrimary));
+			Properties memberContextProps = new Properties();
+			Property isPrimaryProp = new Property();
+			isPrimaryProp.setName("PRIMARY");
+			isPrimaryProp.setValue(String.valueOf(isPrimary));
 
-            Property minCountProp = new Property();
-            minCountProp.setName(StratosConstants.MIN_COUNT);
-            minCountProp.setValue(String.valueOf(minMemberCount));
+			Property minCountProp = new Property();
+			minCountProp.setName(StratosConstants.MIN_COUNT);
+			minCountProp.setValue(String.valueOf(minMemberCount));
 
-            memberContextProps.addProperty(isPrimaryProp);
-            memberContextProps.addProperty(minCountProp);
-            instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
+			Property autoscalingReasonProp = new Property();
+			autoscalingReasonProp.setName(StratosConstants.SCALING_REASON);
+			autoscalingReasonProp.setValue(autoscalingReason);
 
-            long startTime = System.currentTimeMillis();
-            MemberContext memberContext = stub.startInstance(instanceContext);
+			Property scalingTimeProp = new Property();
+			scalingTimeProp.setName(StratosConstants.SCALING_TIME);
+			scalingTimeProp.setValue(String.valueOf(scalingTime));
 
-            if (log.isDebugEnabled()) {
-                long endTime = System.currentTimeMillis();
-                log.debug(String.format("Service call startInstance() returned in %dms", (endTime - startTime)));
-            }
-            return memberContext;
-        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-            String message = e.getFaultMessage().getCartridgeNotFoundException().getMessage();
-            log.error(message, e);
-            throw new SpawningException(message, e);
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
-        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-            String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
-            log.error(message, e);
-            throw new SpawningException(message, e);
-        } catch (CloudControllerServiceCloudControllerExceptionException e) {
-            String message = e.getMessage();
-            log.error(message, e);
-            throw new SpawningException(message, e);
-        }
-    }
+			memberContextProps.addProperty(isPrimaryProp);
+			memberContextProps.addProperty(minCountProp);
+			memberContextProps.addProperty(autoscalingReasonProp);
+			memberContextProps.addProperty(scalingTimeProp);
+			instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 
-    public synchronized void createApplicationClusters(String appId,
-                                                       ApplicationClusterContext[] applicationClusterContexts) {
-        List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
-                new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
-        if (applicationClusterContexts != null) {
-            for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
-                if (applicationClusterContext != null) {
-                    org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto =
-                            new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
-                    dto.setClusterId(applicationClusterContext.getClusterId());
-                    dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
-                    dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
-                    dto.setCartridgeType(applicationClusterContext.getCartridgeType());
-                    dto.setHostName(applicationClusterContext.getHostName());
-                    dto.setTenantRange(applicationClusterContext.getTenantRange());
-                    dto.setTextPayload(applicationClusterContext.getTextPayload());
-                    dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
-                    dto.setDependencyClusterIds(applicationClusterContext.getDependencyClusterIds());
-                    if (applicationClusterContext.getPersistenceContext() != null) {
-                        dto.setVolumeRequired(true);
-                        dto.setVolumes(convertVolumesToStubVolumes(
-                                applicationClusterContext.getPersistenceContext().getVolumes()));
-                    }
-                    contextDTOs.add(dto);
-                }
-            }
-        }
+			long startTime = System.currentTimeMillis();
+			MemberContext memberContext = stub.startInstance(instanceContext);
 
-        org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[] applicationClusterContextDTOs =
-                new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[contextDTOs.size()];
-        contextDTOs.toArray(applicationClusterContextDTOs);
-        try {
-            stub.createApplicationClusters(appId, applicationClusterContextDTOs);
-        } catch (RemoteException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-        } catch (CloudControllerServiceApplicationClusterRegistrationExceptionException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-        }
-    }
+			if (log.isDebugEnabled()) {
+				long endTime = System.currentTimeMillis();
+				log.debug(String.format("Service call startInstance() returned in %dms", (endTime - startTime)));
+			}
+			return memberContext;
+		} catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
+			String message = e.getFaultMessage().getCartridgeNotFoundException().getMessage();
+			log.error(message, e);
+			throw new SpawningException(message, e);
+		} catch (RemoteException e) {
+			log.error(e.getMessage(), e);
+			throw new SpawningException(e.getMessage(), e);
+		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+			String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
+			log.error(message, e);
+			throw new SpawningException(message, e);
+		} catch (CloudControllerServiceCloudControllerExceptionException e) {
+			String message = e.getMessage();
+			log.error(message, e);
+			throw new SpawningException(message, e);
+		}
+	}
 
+	public synchronized void createApplicationClusters(String appId,
+	                                                   ApplicationClusterContext[] applicationClusterContexts) {
+		List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
+				new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
+		if (applicationClusterContexts != null) {
+			for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
+				if (applicationClusterContext != null) {
+					org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto =
+							new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
+					dto.setClusterId(applicationClusterContext.getClusterId());
+					dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
+					dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
+					dto.setCartridgeType(applicationClusterContext.getCartridgeType());
+					dto.setHostName(applicationClusterContext.getHostName());
+					dto.setTenantRange(applicationClusterContext.getTenantRange());
+					dto.setTextPayload(applicationClusterContext.getTextPayload());
+					dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
+					dto.setDependencyClusterIds(applicationClusterContext.getDependencyClusterIds());
+					if (applicationClusterContext.getPersistenceContext() != null) {
+						dto.setVolumeRequired(true);
+						dto.setVolumes(convertVolumesToStubVolumes(
+								applicationClusterContext.getPersistenceContext().getVolumes()));
+					}
+					contextDTOs.add(dto);
+				}
+			}
+		}
 
-    private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
+		org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[] applicationClusterContextDTOs =
+				new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[contextDTOs.size()];
+		contextDTOs.toArray(applicationClusterContextDTOs);
+		try {
+			stub.createApplicationClusters(appId, applicationClusterContextDTOs);
+		} catch (RemoteException e) {
+			String msg = e.getMessage();
+			log.error(msg, e);
+		} catch (CloudControllerServiceApplicationClusterRegistrationExceptionException e) {
+			String msg = e.getMessage();
+			log.error(msg, e);
+		}
+	}
 
-        ArrayList<Volume> volumes = new ArrayList<Volume>();
-        for (VolumeContext volumeContext : volumeContexts) {
-            Volume volume = new Volume();
-            volume.setRemoveOntermination(volumeContext.isRemoveOntermination());
-            volume.setMappingPath(volumeContext.getMappingPath());
-            volume.setId(volumeContext.getId());
-            volume.setDevice(volumeContext.getDevice());
-            volume.setIaasType(volumeContext.getIaasType());
-            volume.setSnapshotId(volumeContext.getSnapshotId());
-            volume.setVolumeId(volumeContext.getVolumeId());
-            volume.setSize(volumeContext.getSize());
-            volumes.add(volume);
-        }
-        return volumes.toArray(new Volume[volumes.size()]);
-    }
+	private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
 
-    public void terminateInstance(String memberId) throws Exception {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
-        }
-        long startTime = System.currentTimeMillis();
-        stub.terminateInstance(memberId);
-        if (log.isDebugEnabled()) {
-            long endTime = System.currentTimeMillis();
-            log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
-        }
-    }
+		ArrayList<Volume> volumes = new ArrayList<Volume>();
+		for (VolumeContext volumeContext : volumeContexts) {
+			Volume volume = new Volume();
+			volume.setRemoveOntermination(volumeContext.isRemoveOntermination());
+			volume.setMappingPath(volumeContext.getMappingPath());
+			volume.setId(volumeContext.getId());
+			volume.setDevice(volumeContext.getDevice());
+			volume.setIaasType(volumeContext.getIaasType());
+			volume.setSnapshotId(volumeContext.getSnapshotId());
+			volume.setVolumeId(volumeContext.getVolumeId());
+			volume.setSize(volumeContext.getSize());
+			volumes.add(volume);
+		}
+		return volumes.toArray(new Volume[volumes.size()]);
+	}
 
-    public void terminateInstanceForcefully(String memberId) throws Exception {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Terminating instance forcefully via cloud controller: [member] %s", memberId));
-        }
-        stub.terminateInstanceForcefully(memberId);
-    }
+	public void terminateInstance(String memberId) throws Exception {
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
+		}
+		long startTime = System.currentTimeMillis();
+		stub.terminateInstance(memberId);
+		if (log.isDebugEnabled()) {
+			long endTime = System.currentTimeMillis();
+			log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
+		}
+	}
 
-    public void terminateAllInstances(String clusterId) throws RemoteException,
-            CloudControllerServiceInvalidClusterExceptionException {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
-        }
-        long startTime = System.currentTimeMillis();
-        stub.terminateInstances(clusterId);
+	public void terminateInstanceForcefully(String memberId) throws Exception {
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Terminating instance forcefully via cloud controller: [member] %s", memberId));
+		}
+		stub.terminateInstanceForcefully(memberId);
+	}
 
-        if (log.isDebugEnabled()) {
-            long endTime = System.currentTimeMillis();
-            log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
-        }
-    }
+	public void terminateAllInstances(String clusterId)
+			throws RemoteException, CloudControllerServiceInvalidClusterExceptionException {
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s",
+			                       clusterId));
+		}
+		long startTime = System.currentTimeMillis();
+		stub.terminateInstances(clusterId);
+
+		if (log.isDebugEnabled()) {
+			long endTime = System.currentTimeMillis();
+			log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
+		}
+	}
 }
