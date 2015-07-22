@@ -69,7 +69,7 @@ dialect "mvel"
         eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] "
             + clusterId + " Algorithm name: " + algorithmName))
 
-	
+
         rifThreshold : Float() from  loadThresholds.getRequestsInFlightThreshold()
 
         rifAverage : Float() from  clusterInstanceContext.getAverageRequestsInFlight()
@@ -163,6 +163,7 @@ dialect "mvel"
 
                     boolean partitionsAvailable = true;
                     int count = 0;
+                    String autoscalingReason = (numberOfRequiredInstances == numberOfInstancesReuquiredBasedOnRif)?"Scaling up due to RIF":(numberOfRequiredInstances== numberOfInstancesReuquiredBasedOnMemoryConsumption)?"Scaling up due to MC":"Scaling up due to LA";
 
                     while(count != additionalInstances && partitionsAvailable){
 
@@ -182,7 +183,8 @@ dialect "mvel"
                                 " [laPredictedValue] " + laPredictedValue + " [laThreshold] " + laThreshold);
 
                             log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                            delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                            long scalingTime = System.currentTimeMillis();
+                            delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary,autoscalingReason,scalingTime);
                             count++;
                         } else {
 
@@ -195,12 +197,9 @@ dialect "mvel"
                     }
                 }
             } else {
-                log.info("[scale-up] Trying to scale up over max, hence not scaling up cluster itself and
-                        notifying to parent for possible group scaling or app bursting.
-                        [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
+                log.info("[scale-up] Trying to scale up over max, hence not scaling up cluster itself and notifying to parent for possible group scaling or app bursting. [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
                         " [max] " + clusterMaxMembers);
-                delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(),
-                    clusterInstanceContext.getId());
+                delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(),clusterInstanceContext.getId());
             }
         } else if(scaleDown){
 
