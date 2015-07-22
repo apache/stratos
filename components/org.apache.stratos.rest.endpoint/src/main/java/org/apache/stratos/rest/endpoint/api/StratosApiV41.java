@@ -303,7 +303,8 @@ public class StratosApiV41 extends AbstractApi {
             //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
         }
         if (cartridgeBean != null) {
-            String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
+            String msg = String.format("Cartridge already exists: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
+                                       cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId());
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
@@ -312,7 +313,8 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
+                String.format("Cartridge added successfully: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
+                              cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId()))).build();
     }
 
     /**
@@ -464,7 +466,7 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.removeCartridge(cartridgeType,carbonContext.getTenantId());
             return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Cartridge deleted successfully: [cartridge-type] %s [tenantId]", cartridgeType,carbonContext.getTenantId()))).build();
+                    String.format("Cartridge deleted successfully: [cartridge-type] %s [tenantId] %d", cartridgeType,carbonContext.getTenantId()))).build();
         } catch (RemoteException e) {
             throw new RestAPIException(e.getMessage());
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
@@ -502,8 +504,8 @@ public class StratosApiV41 extends AbstractApi {
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
 
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Cartridge Group added successfully: [cartridge-group] %s",
-                            cartridgeGroupBean.getUuid()))).build();
+                    String.format("Cartridge Group added successfully: [cartridge-group-uuid] %s [cartridge-group-name] %s [tenant-id] %d",
+                            cartridgeGroupBean.getUuid(),cartridgeGroupBean.getName(),cartridgeGroupBean.getTenantId()))).build();
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
@@ -540,8 +542,8 @@ public class StratosApiV41 extends AbstractApi {
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
 
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Cartridge group updated successfully: [cartridge-group] %s",
-                            cartridgeGroupBean.getUuid()))).build();
+                    String.format("Cartridge group updated successfully: [cartridge-group-uuid] %s [cartridge-group-name] %s [tenant-id] %d",
+                            cartridgeGroupBean.getUuid(),cartridgeGroupBean.getName(),cartridgeGroupBean.getTenantId()))).build();
 
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(

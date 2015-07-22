@@ -173,7 +173,7 @@ public class KubernetesIaas extends Iaas {
                     memberContext.getMemberId()));
 
             // Validate cartridge
-            String cartridgeType = clusterContext.getCartridgeType();
+            String cartridgeType = clusterContext.getCartridgeUuid();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
             if (cartridge == null) {
                 String msg = String.format("Cartridge not found: [application] %s [cartridge] %s",
@@ -215,7 +215,7 @@ public class KubernetesIaas extends Iaas {
                     kubernetesPortRange.getLower());
 
             // Generate kubernetes service ports and update port mappings in cartridge
-            generateKubernetesServicePorts(clusterContext.getApplicationId(), clusterContext.getClusterId(),
+            generateKubernetesServicePorts(clusterContext.getApplicationUuid(), clusterContext.getClusterId(),
                     kubernetesClusterContext, cartridge);
 
             // Create kubernetes services for port mappings
@@ -456,7 +456,7 @@ public class KubernetesIaas extends Iaas {
             throws KubernetesClientException {
 
         String clusterId = clusterContext.getClusterId();
-        String cartridgeType = clusterContext.getCartridgeType();
+        String cartridgeType = clusterContext.getCartridgeUuid();
 
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
         if (cartridge == null) {
@@ -496,7 +496,7 @@ public class KubernetesIaas extends Iaas {
         }
 
         Collection<ClusterPortMapping> clusterPortMappings = CloudControllerContext.getInstance()
-                .getClusterPortMappings(clusterContext.getApplicationId(), clusterId);
+                .getClusterPortMappings(clusterContext.getApplicationUuid(), clusterId);
 
         if (clusterPortMappings != null) {
             for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {

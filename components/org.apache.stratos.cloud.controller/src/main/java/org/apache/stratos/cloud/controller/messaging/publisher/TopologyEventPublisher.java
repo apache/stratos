@@ -128,11 +128,11 @@ public class TopologyEventPublisher {
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {
         ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(
-                ctxt.getCartridgeType(), ctxt.getClusterId(), deploymentPolicy, ctxt.isLbCluster());
+                ctxt.getCartridgeUuid(), ctxt.getClusterId(), deploymentPolicy, ctxt.isLbCluster());
         if (log.isInfoEnabled()) {
             log.info(String
                     .format("Publishing cluster removed event: [service-name] %s [cluster-id] %s",
-                            ctxt.getCartridgeType(), ctxt.getClusterId()));
+                            ctxt.getCartridgeUuid(), ctxt.getClusterId()));
         }
         publishEvent(clusterRemovedEvent);
 

@@ -145,7 +145,7 @@ public class AutoscalerCloudControllerClient {
         }
     }
 
-    public synchronized void createApplicationClusters(String appId,
+    public synchronized void createApplicationClusters(String appUuid,
                                                        ApplicationClusterContext[] applicationClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
                 new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
@@ -177,7 +177,7 @@ public class AutoscalerCloudControllerClient {
                 new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[contextDTOs.size()];
         contextDTOs.toArray(applicationClusterContextDTOs);
         try {
-            stub.createApplicationClusters(appId, applicationClusterContextDTOs);
+            stub.createApplicationClusters(appUuid, applicationClusterContextDTOs);
         } catch (RemoteException e) {
             String msg = e.getMessage();
             log.error(msg, e);

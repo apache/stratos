@@ -363,18 +363,18 @@ public class TopologyBuilder {
 
     public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getTopology();
-        Service service = topology.getService(ctxt.getCartridgeType());
+        Service service = topology.getService(ctxt.getCartridgeUuid());
         String deploymentPolicy;
         if (service == null) {
             log.warn(String.format("Service %s does not exist",
-                    ctxt.getCartridgeType()));
+                    ctxt.getCartridgeUuid()));
             return;
         }
 
         if (!service.clusterExists(ctxt.getClusterId())) {
             log.warn(String.format("Cluster %s does not exist for service %s",
                     ctxt.getClusterId(),
-                    ctxt.getCartridgeType()));
+                    ctxt.getCartridgeUuid()));
             return;
         }
 

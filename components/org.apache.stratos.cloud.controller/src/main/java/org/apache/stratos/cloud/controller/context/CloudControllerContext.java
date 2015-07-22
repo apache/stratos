@@ -290,16 +290,16 @@ public class CloudControllerContext implements Serializable {
         networkPartitionIDToNetworkPartitionMap.put(networkPartition.getUuid(), networkPartition);
     }
 
-    public NetworkPartition getNetworkPartition(String networkPartitionID) {
-        return networkPartitionIDToNetworkPartitionMap.get(networkPartitionID);
+    public NetworkPartition getNetworkPartition(String networkPartitionUuid) {
+        return networkPartitionIDToNetworkPartitionMap.get(networkPartitionUuid);
     }
 
     public Collection<NetworkPartition> getNetworkPartitions() {
         return networkPartitionIDToNetworkPartitionMap.values();
     }
 
-    public void removeNetworkPartition(String networkPartitionID) {
-        networkPartitionIDToNetworkPartitionMap.remove(networkPartitionID);
+    public void removeNetworkPartition(String networkPartitionUuid) {
+        networkPartitionIDToNetworkPartitionMap.remove(networkPartitionUuid);
     }
 
     public NetworkPartition getNetworkPartitionForTenant(String networkPartitionId, int tenantId) {
@@ -821,8 +821,8 @@ public class CloudControllerContext implements Serializable {
         this.cartridgeTypeToIaasProviders = cartridgeTypeToIaasProviders;
     }
 
-    public void addIaasProvider(String cartridgeType, IaasProvider iaasProvider) {
-        List<IaasProvider> iaasProviders = cartridgeTypeToIaasProviders.get(cartridgeType);
+    public void addIaasProvider(String cartridgeUuid, IaasProvider iaasProvider) {
+        List<IaasProvider> iaasProviders = cartridgeTypeToIaasProviders.get(cartridgeUuid);
         if (iaasProviders == null) {
             iaasProviders = new ArrayList<IaasProvider>();
         }
@@ -839,7 +839,7 @@ public class CloudControllerContext implements Serializable {
 
         // Else, add iaas provider against cartridge type
         iaasProviders.add(iaasProvider);
-        cartridgeTypeToIaasProviders.put(cartridgeType, iaasProviders);
+        cartridgeTypeToIaasProviders.put(cartridgeUuid, iaasProviders);
     }
 
     public IaasProvider getIaasProvider(String cartridgeUuid, String iaasType) {
@@ -855,8 +855,8 @@ public class CloudControllerContext implements Serializable {
         return null;
     }
 
-    public List<IaasProvider> getIaasProviders(String cartridgeType) {
-        List<IaasProvider> iaasProviderList = cartridgeTypeToIaasProviders.get(cartridgeType);
+    public List<IaasProvider> getIaasProviders(String cartridgeUuid) {
+        List<IaasProvider> iaasProviderList = cartridgeTypeToIaasProviders.get(cartridgeUuid);
         return iaasProviderList;
     }
 
@@ -890,13 +890,13 @@ public class CloudControllerContext implements Serializable {
 
     /**
      * Get cluster port mappings of an application cluster.
-     * @param applicationId
+     * @param applicationUuid
      * @param clusterId
      * @return
      */
-    public List<ClusterPortMapping> getClusterPortMappings(String applicationId, String clusterId) {
+    public List<ClusterPortMapping> getClusterPortMappings(String applicationUuid, String clusterId) {
         Map<String, List<ClusterPortMapping>> clusterIdToPortMappings =
-                applicationIdToClusterIdToPortMappings.get(applicationId);
+                applicationIdToClusterIdToPortMappings.get(applicationUuid);
 
         if(clusterIdToPortMappings != null) {
             return clusterIdToPortMappings.get(clusterId);
