@@ -188,12 +188,6 @@ public final class CloudControllerConstants {
 			"/" + CLOUD_CONTROLLER_ELEMENT + "/" + BAM_SERVER_ADMIN_USERNAME_ELEMENT;
 	public static final String BAM_SERVER_ADMIN_PASSWORD_XPATH =
 			"/" + CLOUD_CONTROLLER_ELEMENT + "/" + BAM_SERVER_ADMIN_PASSWORD_ELEMENT;
-	// public static final String CASSANDRA_HOST_ADDRESS_XPATH =
-	// "/"+CLOUD_CONTROLLER_ELEMENT+
-	// "/"+CASSANDRA_HOST_ADDRESS;
-	// public static final String CASSANDRA_HOST_PORT_XPATH =
-	// "/"+CLOUD_CONTROLLER_ELEMENT+
-	// "/"+CASSANDRA_HOST_PORT;
 
 	/**
 	 * Secret Manager related aliases.

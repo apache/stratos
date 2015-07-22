@@ -287,9 +287,7 @@ public class RuleTasksDelegator {
 			if (log.isDebugEnabled()) {
 				log.debug("delegateTerminateDependency:memberId:" + memberId);
 			}
-			//InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
-			//partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
-			//CloudControllerClient.getInstance().terminate(memberId);
+			
 		} catch (Exception e) {
 			log.error("Cannot terminate instance", e);
 		}
