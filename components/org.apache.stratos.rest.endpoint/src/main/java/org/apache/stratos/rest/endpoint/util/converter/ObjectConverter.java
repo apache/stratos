@@ -1920,7 +1920,8 @@ public class ObjectConverter {
         }
 
         CartridgeGroupBean serviceGroupDefinition = new CartridgeGroupBean();
-        serviceGroupDefinition.setUuid(serviceGroup.getName());
+        serviceGroupDefinition.setUuid(serviceGroup.getUuid());
+        serviceGroupDefinition.setName(serviceGroup.getName());
         String[] cartridges = serviceGroup.getCartridges();
         ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies dependencies = serviceGroup.getDependencies();

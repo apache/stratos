@@ -563,9 +563,11 @@ public class RegistryManager {
 
     public ServiceGroup getServiceGroup(String name, int tenantId) throws Exception {
         ServiceGroup[] serviceGroups = getServiceGroups();
-        for (ServiceGroup serviceGroup : serviceGroups) {
-            if (serviceGroup.getName().equals(name) && (serviceGroup.getTenantId() == tenantId)) {
-                return serviceGroup;
+        if (serviceGroups != null) {
+            for (ServiceGroup serviceGroup : serviceGroups) {
+                if (serviceGroup.getName().equals(name) && (serviceGroup.getTenantId() == tenantId)) {
+                    return serviceGroup;
+                }
             }
         }
         return null;
