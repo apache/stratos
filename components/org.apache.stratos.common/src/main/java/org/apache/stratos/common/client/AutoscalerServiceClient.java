@@ -285,4 +285,9 @@ public class AutoscalerServiceClient {
         return stub.getAutoScalingPoliciesByTenant(tenantId);
     }
 
+	public boolean validateNetworkPartitionWithApplication(String networkPartitionId, int tenantId)
+			throws RemoteException, AutoscalerServicePartitionValidationExceptionException {
+		return stub.validateNetworkPartitionWithApplication(networkPartitionId,tenantId);
+	}
+
 }

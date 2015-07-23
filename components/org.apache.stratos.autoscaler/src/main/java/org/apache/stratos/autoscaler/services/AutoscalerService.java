@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
+import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -369,7 +370,14 @@ public interface AutoscalerService {
      */
     public ApplicationPolicy[] getApplicationPoliciesByTenant(int tenantId);
 
-
+	/**
+	 * Validate the network partition with the application
+	 * @param networkPartitionId Network partition id
+	 * @param tenantId tenant id
+	 * @return
+	 */
+	public boolean validateNetworkPartitionWithApplication(String networkPartitionId,int tenantId)
+			throws PartitionValidationException;
 
 
 }

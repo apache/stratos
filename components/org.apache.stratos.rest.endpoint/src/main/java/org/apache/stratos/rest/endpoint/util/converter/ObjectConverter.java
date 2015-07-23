@@ -1729,7 +1729,7 @@ public class ObjectConverter {
         }
 
         ApplicationInfoBean applicationBean = new ApplicationInfoBean();
-        applicationBean.setId(application.getId());
+        applicationBean.setId(application.getUniqueIdentifier());
         applicationBean.setName(application.getName());
         applicationBean.setStatus(application.getStatus().name());
         applicationBean.setDescription(application.getDescription());
@@ -1753,7 +1753,7 @@ public class ObjectConverter {
 
         for (ApplicationInstance applicationInstance : applicationInstancesInTopology) {
             ApplicationInstanceBean instance = new ApplicationInstanceBean();
-            instance.setInstanceId(applicationInstance.getAlias());
+            instance.setInstanceId(applicationInstance.getInstanceId());
             instance.setApplicationId(application.getUniqueIdentifier());
             instance.setParentInstanceId(applicationInstance.getParentId());
             instance.setStatus(applicationInstance.getStatus().toString());

@@ -2815,30 +2815,10 @@ public class StratosApiV41Utils {
         try {
 
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
-            ApplicationContext[] applicationContexts = autoscalerServiceClient.getApplicationsByTenant(tenantId);
-            if (applicationContexts != null) {
-                for (ApplicationContext applicationContext : applicationContexts) {
-                    if (applicationContext != null) {
-                        String[] networkPartitions = AutoscalerServiceClient.getInstance().
-                                getApplicationNetworkPartitions(applicationContext.getApplicationUuid());
-                        if (networkPartitions != null) {
-                            for (int i = 0; i < networkPartitions.length; i++) {
-                                if (networkPartitions[i].equals(networkPartitionId)) {
-                                    String message = String.format("Cannot remove the network partition: " +
-                                                    "[network-partition-id] %s since it is used in " +
-                                                    "application: [application-uuid] %s [application-id] %s",
-                                            networkPartitionId, applicationContext.getApplicationUuid(),
-                                            applicationContext.getApplicationId());
-                                    log.error(message);
-                                    throw new RestAPIException(message);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
 
-            String networkPartitionUuid = null;
+	        autoscalerServiceClient.validateNetworkPartitionWithApplication(networkPartitionId, tenantId);
+
+	        String networkPartitionUuid = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             for (NetworkPartitionBean networkPartitionBean : getNetworkPartitions()) {
                 if (networkPartitionBean.getTenantId() == carbonContext.getTenantId() &&
@@ -2890,11 +2870,12 @@ public class StratosApiV41Utils {
 
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId, tenantId);
-        } catch (AutoscalerServiceAutoScalerExceptionException e) {
-            String message = e.getMessage();
-            log.error(message);
-            throw new RestAPIException(message, e);
-        } catch (RemoteException e) {
+        } catch (AutoscalerServicePartitionValidationExceptionException e) {
+	        String message = e.getMessage();
+	        log.error(message);
+	        throw new RestAPIException(message, e);
+        }
+        catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
             throw new RestAPIException(message, e);

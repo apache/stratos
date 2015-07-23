@@ -38,6 +38,7 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -1096,8 +1097,38 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         return applicationPolicies.toArray(new ApplicationPolicy[applicationPolicies.size()]);
     }
 
+	@Override
+	public boolean validateNetworkPartitionWithApplication(String networkPartitionId, int tenantId)
+			throws PartitionValidationException {
 
-    private void terminateAllMembersAndClustersForcefully(String applicationId) {
+		ApplicationContext[] applicationContexts = getApplicationsByTenant(tenantId);
+		if (applicationContexts != null) {
+			for (ApplicationContext applicationContext : applicationContexts) {
+				if (applicationContext != null) {
+					String[] networkPartitions = getApplicationNetworkPartitions(
+							applicationContext.getApplicationUuid());
+					if (networkPartitions != null) {
+						for (int i = 0; i < networkPartitions.length; i++) {
+							if (networkPartitions[i].equals(networkPartitionId)) {
+								String message = String.format("Cannot remove the network partition: " +
+								                               "[network-partition-id] %s since it is used in " +
+								                               "application: [application-uuid] %s [application-id] %s",
+								                               networkPartitionId,
+								                               applicationContext.getApplicationUuid(),
+								                               applicationContext.getApplicationId());
+								log.error(message);
+								throw new PartitionValidationException(message);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private void terminateAllMembersAndClustersForcefully(String applicationId) {
         if (StringUtils.isEmpty(applicationId)) {
             throw new IllegalArgumentException("Application Id cannot be empty");
         }
