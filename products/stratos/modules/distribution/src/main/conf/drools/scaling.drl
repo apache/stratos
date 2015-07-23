@@ -165,9 +165,6 @@ dialect "mvel"
                     int count = 0;
                     String autoscalingReason = (numberOfRequiredInstances == numberOfInstancesReuquiredBasedOnRif)?"Scaling up due to RIF":(numberOfRequiredInstances== numberOfInstancesReuquiredBasedOnMemoryConsumption)?"Scaling up due to MC":"Scaling up due to LA";
 
-                    String autoscalingReason = (numberOfRequiredInstances == numberOfInstancesReuquiredBasedOnRif)?"Scaling up due to RIF":(numberOfRequiredInstances== numberOfInstancesReuquiredBasedOnMemoryConsumption)?"Scaling up due to MC":"Scaling up due to LA";
-
-
                     while(count != additionalInstances && partitionsAvailable){
 
                         ClusterLevelPartitionContext partitionContext = (ClusterLevelPartitionContext) partitionAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());

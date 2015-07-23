@@ -162,7 +162,7 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
-        #Sevent.payloadData.append(int(round(time.time() * 1000)))
+        #event.payloadData.append(int(round(time.time() * 1000)))
         event.payloadData.append(self.cartridge_agent_config.cluster_id)
         event.payloadData.append(self.cartridge_agent_config.cluster_instance_id)
         event.payloadData.append(self.cartridge_agent_config.network_partition_id)
