@@ -1,0 +1,112 @@
+{
+  "name": "org.apache.stratos.cloud.controller",
+  "version": "1.0.0",
+  "nickName": "cloud.controller",
+  "description": "Instances booted up by the Cloud Controller",
+  "payloadData": [
+    {
+      "name": "timeStamp",
+      "type": "LONG"
+    },
+    {
+      "name": "memberId",
+      "type": "STRING"
+    },
+    {
+      "name": "cartridgeType",
+      "type": "STRING"
+    },
+    {
+      "name": "clusterId",
+      "type": "STRING"
+    },
+    {
+      "name": "clusterInstanceId",
+      "type": "STRING"
+    },
+    {
+      "name": "lbclusterId",
+      "type": "STRING"
+    },
+    {
+      "name": "partitionId",
+      "type": "STRING"
+    },
+    {
+      "name": "networkId",
+      "type": "STRING"
+    },
+    {
+      "name": "instanceType",
+      "type": "STRING"
+    },
+    {
+      "name": "scalingReason",
+      "type": "STRING"
+    },
+    {
+      "name": "scalingTime",
+      "type": "LONG"
+    },
+    {
+      "name": "isMultiTenant",
+      "type": "STRING"
+    },
+    {
+      "name": "iaas",
+      "type": "STRING"
+    },
+    {
+      "name": "status",
+      "type": "STRING"
+    },
+    {
+      "name": "hostName",
+      "type": "STRING"
+    },
+    {
+      "name": "hypervisor",
+      "type": "STRING"
+    },
+    {
+      "name": "ram",
+      "type": "STRING"
+    },
+    {
+      "name": "imageId",
+      "type": "STRING"
+    },
+    {
+      "name": "loginPort",
+      "type": "INT"
+    },
+    {
+      "name": "osName",
+      "type": "STRING"
+    },
+    {
+      "name": "osVersion",
+      "type": "STRING"
+    },
+    {
+      "name": "osArch",
+      "type": "STRING"
+    },
+    {
+      "name": "is64bitOS",
+      "type": "STRING"
+    },
+    {
+      "name": "privateIPAddresses",
+      "type": "STRING"
+    },
+    {
+      "name": "publicIPAddresses",
+      "type": "STRING"
+    },
+    {
+      "name": "allocateIPAddresses",
+      "type": "STRING"
+    }
+  ]
+}
