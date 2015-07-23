@@ -2848,7 +2848,7 @@ public class StratosApiV41Utils {
             }
 
 
-            DeploymentPolicy[] deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
+            DeploymentPolicy[] deploymentPolicies = autoscalerServiceClient.getDeploymentPoliciesByTenant(carbonContext.getTenantId());
 
             if (deploymentPolicies != null) {
                 for (DeploymentPolicy deploymentPolicy : deploymentPolicies) {
