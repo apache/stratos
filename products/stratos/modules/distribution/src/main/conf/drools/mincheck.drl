@@ -84,9 +84,7 @@ dialect "mvel"
 
                 log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterId);
                 log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId);
-                long time = System.currentTimeMillis();
-                String scalingReason = "Scaling up to fulfil minimum count";
-                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary,scalingReason,time);
+                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
 
                 count++;
             } else {

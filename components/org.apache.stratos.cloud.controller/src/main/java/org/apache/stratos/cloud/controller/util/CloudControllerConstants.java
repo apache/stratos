@@ -93,7 +93,8 @@ public final class CloudControllerConstants {
     public static final String USER_NAME_ELEMENT = "userName";
     public static final String PASSWORD_ELEMENT = "password";
     public static final String CLOUD_CONTROLLER_EVENT_STREAM = "org.apache.stratos.cloud.controller";
-    public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM.replaceAll("[/.]", "_");
+    public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM
+            .replaceAll("[/.]", "_");
 
     /**
      * column names
@@ -102,7 +103,6 @@ public final class CloudControllerConstants {
     public static final String MEMBER_ID_COL = "memberId";
     public static final String CARTRIDGE_TYPE_COL = "cartridgeType";
     public static final String CLUSTER_ID_COL = "clusterId";
-    public static final String CLUSTER_INSTANCE_ID_COL = "clusterInstanceId";
     public static final String PARTITION_ID_COL = "partitionId";
     public static final String NETWORK_ID_COL = "networkId";
     public static final String ALIAS_COL = "alias";
@@ -122,9 +122,6 @@ public final class CloudControllerConstants {
     public static final String PRIV_IP_COL = "privateIPAddresses";
     public static final String PUB_IP_COL = "publicIPAddresses";
     public static final String ALLOCATE_IP_COL = "allocateIPAddresses";
-    public static final String TIME_STAMP = "timeStamp";
-    public static final String SCALING_REASON = "scalingReason";
-    public static final String SCALING_TIME = "scalingTime";
 
     /**
      * Properties
@@ -150,44 +147,66 @@ public final class CloudControllerConstants {
     /**
      * XPath expressions
      */
-    public static final String IAAS_PROVIDER_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT;
-    public static final String PARTITION_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + PARTITIONS_ELEMENT + "/" + PARTITION_ELEMENT;
-    public static final String REGION_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT + "/" +
-                    REGION_ELEMENT;
-    public static final String ZONE_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT + "/" +
-                    REGION_ELEMENT + "/" + ZONE_ELEMENT;
-    public static final String HOST_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT + "/" +
-                    REGION_ELEMENT + "/" + ZONE_ELEMENT + "/" + HOST_ELEMENT;
+    public static final String IAAS_PROVIDER_XPATH = "/"
+            + CLOUD_CONTROLLER_ELEMENT + "/" + IAAS_PROVIDERS_ELEMENT + "/"
+            + IAAS_PROVIDER_ELEMENT;
+    public static final String PARTITION_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT
+            + "/" + PARTITIONS_ELEMENT + "/" + PARTITION_ELEMENT;
+    public static final String REGION_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT
+            + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT + "/"
+            + REGION_ELEMENT;
+    public static final String ZONE_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT
+            + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT + "/"
+            + REGION_ELEMENT + "/" + ZONE_ELEMENT;
+    public static final String HOST_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT
+            + "/" + IAAS_PROVIDERS_ELEMENT + "/" + IAAS_PROVIDER_ELEMENT + "/"
+            + REGION_ELEMENT + "/" + ZONE_ELEMENT + "/" + HOST_ELEMENT;
     public static final String PROPERTY_ELEMENT_XPATH = "/" + PROPERTY_ELEMENT;
     public static final String IMAGE_ID_ELEMENT_XPATH = "/" + IMAGE_ID_ELEMENT;
-    public static final String SCALE_UP_ORDER_ELEMENT_XPATH = "/" + SCALE_UP_ORDER_ELEMENT;
-    public static final String SCALE_DOWN_ORDER_ELEMENT_XPATH = "/" + SCALE_DOWN_ORDER_ELEMENT;
+    public static final String SCALE_UP_ORDER_ELEMENT_XPATH = "/"
+            + SCALE_UP_ORDER_ELEMENT;
+    public static final String SCALE_DOWN_ORDER_ELEMENT_XPATH = "/"
+            + SCALE_DOWN_ORDER_ELEMENT;
     public static final String PROVIDER_ELEMENT_XPATH = "/" + PROPERTY_ELEMENT;
     public static final String IDENTITY_ELEMENT_XPATH = "/" + IDENTITY_ELEMENT;
-    public static final String CREDENTIAL_ELEMENT_XPATH = "/" + CREDENTIAL_ELEMENT;
-    public static final String SERVICES_ELEMENT_XPATH = "/" + SERVICES_ELEMENT + "/" + SERVICE_ELEMENT;
+    public static final String CREDENTIAL_ELEMENT_XPATH = "/"
+            + CREDENTIAL_ELEMENT;
+    public static final String SERVICES_ELEMENT_XPATH = "/" + SERVICES_ELEMENT
+            + "/" + SERVICE_ELEMENT;
     public static final String SERVICE_ELEMENT_XPATH = "/" + SERVICE_ELEMENT;
-    public static final String CARTRIDGE_ELEMENT_XPATH = "/" + CARTRIDGE_ELEMENT;
+    public static final String CARTRIDGE_ELEMENT_XPATH = "/"
+            + CARTRIDGE_ELEMENT;
     public static final String PAYLOAD_ELEMENT_XPATH = "/" + PAYLOAD_ELEMENT;
     public static final String HOST_ELEMENT_XPATH = "/" + HOST_ELEMENT;
-    public static final String CARTRIDGES_ELEMENT_XPATH = "/" + CARTRIDGES_ELEMENT + "/" + CARTRIDGE_ELEMENT;
-    public static final String IAAS_PROVIDER_ELEMENT_XPATH = "/" + IAAS_PROVIDER_ELEMENT;
-    public static final String DEPLOYMENT_ELEMENT_XPATH = "/" + DEPLOYMENT_ELEMENT;
-    public static final String PORT_MAPPING_ELEMENT_XPATH = "/" + PORT_MAPPING_ELEMENT;
-    public static final String APP_TYPES_ELEMENT_XPATH = "/" + APP_TYPES_ELEMENT;
+    public static final String CARTRIDGES_ELEMENT_XPATH = "/"
+            + CARTRIDGES_ELEMENT + "/" + CARTRIDGE_ELEMENT;
+    public static final String IAAS_PROVIDER_ELEMENT_XPATH = "/"
+            + IAAS_PROVIDER_ELEMENT;
+    public static final String DEPLOYMENT_ELEMENT_XPATH = "/"
+            + DEPLOYMENT_ELEMENT;
+    public static final String PORT_MAPPING_ELEMENT_XPATH = "/"
+            + PORT_MAPPING_ELEMENT;
+    public static final String APP_TYPES_ELEMENT_XPATH = "/"
+            + APP_TYPES_ELEMENT;
 
-    public static final String DATA_PUBLISHER_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT + "/" + DATA_PUBLISHER_ELEMENT;
-    public static final String TOPOLOGY_SYNC_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT + "/" + TOPOLOGY_SYNC_ELEMENT;
-    public static final String DATA_PUBLISHER_CRON_XPATH = "/" + CLOUD_CONTROLLER_ELEMENT + "/" + CRON_ELEMENT;
-    public static final String BAM_SERVER_ADMIN_USERNAME_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + BAM_SERVER_ADMIN_USERNAME_ELEMENT;
-    public static final String BAM_SERVER_ADMIN_PASSWORD_XPATH =
-            "/" + CLOUD_CONTROLLER_ELEMENT + "/" + BAM_SERVER_ADMIN_PASSWORD_ELEMENT;
+    public static final String DATA_PUBLISHER_XPATH = "/"
+            + CLOUD_CONTROLLER_ELEMENT + "/" + DATA_PUBLISHER_ELEMENT;
+    public static final String TOPOLOGY_SYNC_XPATH = "/"
+            + CLOUD_CONTROLLER_ELEMENT + "/" + TOPOLOGY_SYNC_ELEMENT;
+    public static final String DATA_PUBLISHER_CRON_XPATH = "/"
+            + CLOUD_CONTROLLER_ELEMENT + "/" + CRON_ELEMENT;
+    public static final String BAM_SERVER_ADMIN_USERNAME_XPATH = "/"
+            + CLOUD_CONTROLLER_ELEMENT + "/"
+            + BAM_SERVER_ADMIN_USERNAME_ELEMENT;
+    public static final String BAM_SERVER_ADMIN_PASSWORD_XPATH = "/"
+            + CLOUD_CONTROLLER_ELEMENT + "/"
+            + BAM_SERVER_ADMIN_PASSWORD_ELEMENT;
+    // public static final String CASSANDRA_HOST_ADDRESS_XPATH =
+    // "/"+CLOUD_CONTROLLER_ELEMENT+
+    // "/"+CASSANDRA_HOST_ADDRESS;
+    // public static final String CASSANDRA_HOST_PORT_XPATH =
+    // "/"+CLOUD_CONTROLLER_ELEMENT+
+    // "/"+CASSANDRA_HOST_PORT;
 
     /**
      * Secret Manager related aliases.
@@ -220,19 +239,20 @@ public final class CloudControllerConstants {
     /**
      * Directories
      */
-    public static final String SERVICES_DIR =
-            CarbonUtils.getCarbonRepository() + File.separator + "services" + File.separator;
+    public static final String SERVICES_DIR = CarbonUtils.getCarbonRepository()
+            + File.separator + "services" + File.separator;
 
     /**
      * Topology sync related constants
      */
-    public static final String TOPOLOGY_FILE_PATH =
-            CarbonUtils.getCarbonConfigDirPath() + File.separator + "service-topology.conf";
+    public static final String TOPOLOGY_FILE_PATH = CarbonUtils
+            .getCarbonConfigDirPath()
+            + File.separator
+            + "service-topology.conf";
     public static final String TOPOLOGY_SYNC_CRON = "1 * * * * ? *";
     public static final String TOPOLOGY_SYNC_TASK_NAME = "TOPOLOGY_SYNC_TASK";
     public static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK_TYPE";
-    public static final String AMQP_CONNECTION_URL =
-            "amqp://admin:admin@clientID/carbon?brokerlist='tcp://localhost:5672'";
+    public static final String AMQP_CONNECTION_URL = "amqp://admin:admin@clientID/carbon?brokerlist='tcp://localhost:5672'";
     public static final String AMQP_INITIAL_CONTEXT_FACTORY = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     public static final String AMQP_TOPIC_CONNECTION_FACTORY = "qpidConnectionfactory";
 

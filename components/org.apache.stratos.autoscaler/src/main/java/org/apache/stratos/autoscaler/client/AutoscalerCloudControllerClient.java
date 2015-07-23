@@ -52,8 +52,8 @@ public class AutoscalerCloudControllerClient {
 
     private static CloudControllerServiceStub stub;
 
-    /* An instance of a CloudControllerClient is created when the class is loaded.
-     * Since the class is loaded only once, it is guaranteed that an object of
+    /* An instance of a CloudControllerClient is created when the class is loaded. 
+     * Since the class is loaded only once, it is guaranteed that an object of 
      * CloudControllerClient is created only once. Hence it is singleton.
      */
     private static class InstanceHolder {
@@ -67,30 +67,29 @@ public class AutoscalerCloudControllerClient {
     private AutoscalerCloudControllerClient() {
         try {
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-            int port =
-                    conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
+            int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
             String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
             String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.CLOUD_CONTROLLER_SERVICE_SFX;
             int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
 
             stub = new CloudControllerServiceStub(epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
-            stub._getServiceClient().getOptions()
-                    .setProperty(HTTPConstants.CONNECTION_TIMEOUT, cloudControllerClientTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
+                    cloudControllerClientTimeout);
         } catch (Exception e) {
             log.error("Could not initialize cloud controller client", e);
         }
     }
 
-    public synchronized MemberContext startInstance(PartitionRef partition, String clusterId, String clusterInstanceId,
-                                                    String networkPartitionId, boolean isPrimary, int minMemberCount,
-                                                    String autoscalingReason, long scalingTime)
-            throws SpawningException {
+    public synchronized MemberContext startInstance(PartitionRef partition,
+                                                    String clusterId, String clusterInstanceId,
+                                                    String networkPartitionId, boolean isPrimary,
+                                                    int minMemberCount) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: " +
-                                "[cluster] %s [partition] %s [network-partition-id] %s", clusterId,
-                        partition.getId(), networkPartitionId));
+                                "[cluster] %s [partition] %s [network-partition-id] %s",
+                        clusterId, partition.getId(), networkPartitionId));
             }
 
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
@@ -116,18 +115,8 @@ public class AutoscalerCloudControllerClient {
             minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
 
-            Property autoscalingReasonProp = new Property();
-            autoscalingReasonProp.setName(StratosConstants.SCALING_REASON);
-            autoscalingReasonProp.setValue(autoscalingReason);
-
-            Property scalingTimeProp = new Property();
-            scalingTimeProp.setName(StratosConstants.SCALING_TIME);
-            scalingTimeProp.setValue(String.valueOf(scalingTime));
-
             memberContextProps.addProperty(isPrimaryProp);
             memberContextProps.addProperty(minCountProp);
-            memberContextProps.addProperty(autoscalingReasonProp);
-            memberContextProps.addProperty(scalingTimeProp);
             instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 
             long startTime = System.currentTimeMillis();
@@ -198,6 +187,7 @@ public class AutoscalerCloudControllerClient {
         }
     }
 
+
     private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
 
         ArrayList<Volume> volumes = new ArrayList<Volume>();
@@ -235,11 +225,10 @@ public class AutoscalerCloudControllerClient {
         stub.terminateInstanceForcefully(memberId);
     }
 
-    public void terminateAllInstances(String clusterId)
-            throws RemoteException, CloudControllerServiceInvalidClusterExceptionException {
+    public void terminateAllInstances(String clusterId) throws RemoteException,
+            CloudControllerServiceInvalidClusterExceptionException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s",
-                    clusterId));
+            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
         }
         long startTime = System.currentTimeMillis();
         stub.terminateInstances(clusterId);

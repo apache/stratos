@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.common.constants;
 
+
 public class StratosConstants {
 
     public static final String CLOUD_SERVICE_IS_ACTIVE_PROP_KEY = "active";
@@ -25,7 +26,8 @@ public class StratosConstants {
     public static final String CLOUD_SERVICE_INFO_STORE_PATH =
             "/repository/components/org.apache.stratos/cloud-manager/cloud-services";
 
-    public static final String TENANT_USER_VALIDATION_STORE_PATH = "/repository/components/org.wso2.carbon.validations";
+    public static final String TENANT_USER_VALIDATION_STORE_PATH =
+            "/repository/components/org.wso2.carbon.validations";
     public static final String ADMIN_EMAIL_VERIFICATION_FLAG_PATH =
             "/repository/components/org.wso2.carbon.email-confirmation-flag";
     public static final String TENANT_DOMAIN_VERIFICATION_FLAG_PATH =
@@ -37,18 +39,23 @@ public class StratosConstants {
     public static final String TENANT_CREATION_THEME_PAGE_TOKEN =
             "/repository/components/org.wso2.carbon.theme-page-token";
 
-    public static final String TENANT_PACKAGE_INFO_PATH = "/repository/components/org.wso2.carbon.package-info";
+    public static final String TENANT_PACKAGE_INFO_PATH =
+            "/repository/components/org.wso2.carbon.package-info";
 
-    public static final String ALL_THEMES_PATH = "/repository/components/org.wso2.carbon.all-themes";
+    public static final String ALL_THEMES_PATH =
+            "/repository/components/org.wso2.carbon.all-themes";
 
-    public static final String THROTTLING_RULES_PATH = "/repository/components/org.wso2.carbon.throttling-rules";
+    public static final String THROTTLING_RULES_PATH =
+            "/repository/components/org.wso2.carbon.throttling-rules";
 
-    public static final String ORIGINATED_SERVICE_PATH = "/repository/components/org.wso2.carbon.originated-service";
+    public static final String ORIGINATED_SERVICE_PATH =
+            "/repository/components/org.wso2.carbon.originated-service";
 
     public static final String PATH_SEPARATOR = "/";
 
     public static final String CLOUD_SERVICE_ICONS_STORE_PATH =
-            "/repository/components/org.wso2.carbon.cloud-manager/" + "cloud-services-icons";
+            "/repository/components/org.wso2.carbon.cloud-manager/" +
+                    "cloud-services-icons";
 
     public static final String VALIDATION_KEY_RESOURCE_NAME = "validation-key";
     public static final String INCOMING_PATH_DIR = "incoming";
@@ -84,8 +91,7 @@ public class StratosConstants {
 
     // metering constants
     public static final String THROTTLING_ALL_ACTION = "all_actions";
-    public static final String THROTTLING_IN_DATA_ACTION = "in_data_action";
-    //this covers registry capacity + registry bandwidth
+    public static final String THROTTLING_IN_DATA_ACTION = "in_data_action"; //this covers registry capacity + registry bandwidth
     public static final String THROTTLING_OUT_DATA_ACTION = "out_data_action"; //this covers registry bandwidth
     public static final String THROTTLING_ADD_USER_ACTION = "add_user_action";
     public static final String THROTTLING_SERVICE_IN_BANDWIDTH_ACTION = "service_in_bandwith_action";
@@ -123,8 +129,10 @@ public class StratosConstants {
                     " for privacy policy of WSO2 Stratos.";
 
     // Web location of Terms of Usage and privacy policy
-    public static final String STRATOS_TERMS_OF_USAGE = "http://wso2.com/cloud/services/terms-of-use/";
-    public static final String STRATOS_PRIVACY_POLICY = "http://wso2.com/cloud/services/privacy-policy/";
+    public static final String STRATOS_TERMS_OF_USAGE =
+            "http://wso2.com/cloud/services/terms-of-use/";
+    public static final String STRATOS_PRIVACY_POLICY =
+            "http://wso2.com/cloud/services/privacy-policy/";
     public static final String MULTITENANCY_FREE_PLAN = "Demo";
     public static final String MULTITENANCY_SMALL_PLAN = "SMB";
     public static final String MULTITENANCY_MEDIUM_PLAN = "Professional";
@@ -150,8 +158,6 @@ public class StratosConstants {
     public static final String MAX_CHECK_DROOL_FILE = "maxcheck.drl";
     public static final String OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
-    public static final String SCALING_REASON = "SCALING_REASON";
-    public static final String SCALING_TIME = "SCALING_TIME";
 
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;
@@ -159,8 +165,7 @@ public class StratosConstants {
     // member expiry timeout constants
     public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
     public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
-    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT =
-            "autoscaler.member.pendingTerminationMemberExpiryTimeout";
+    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
     public static final String FILTER_VALUE_SEPARATOR = ",";
     public static final String TOPOLOGY_APPLICATION_FILTER = "stratos.topology.application.filter";
