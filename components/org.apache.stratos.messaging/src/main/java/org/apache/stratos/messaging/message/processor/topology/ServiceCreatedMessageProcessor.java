@@ -91,7 +91,7 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
             topology.addService(service);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Service created: [service] %s", event.getServiceName()));
+                log.info(String.format("Service created: [service] %s [service-uuid] %s", event.getServiceName(),event.getServiceUuid()));
             }
         }
 

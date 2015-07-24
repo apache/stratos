@@ -187,7 +187,7 @@ public class RuleTasksDelegator {
 			String nwPartitionUuid=null;
 	        NetworkPartition[] networkPartitionList= CloudControllerServiceClient.getInstance().getNetworkPartitions();
 	        for(int i=0;i<networkPartitionList.length;i++){
-		        if(networkPartitionList[i].getId().equals(nwPartitionId)){
+		        if(networkPartitionList[i].getUuid().equals(nwPartitionId)){
 			        nwPartitionUuid=networkPartitionList[i].getUuid();
 		        }
 	        }

@@ -134,7 +134,7 @@ public class AutoscalerUtil {
             try {
                 Topology topology = TopologyManager.getTopology();
                 if (topology != null) {
-                    Service service = topology.getService(holder.getServiceType());
+                    Service service = topology.getService(holder.getServiceUuid());
                     if (service != null) {
                         //If one cluster of the application presents,
                         // then we can assume that all there clusters are there
