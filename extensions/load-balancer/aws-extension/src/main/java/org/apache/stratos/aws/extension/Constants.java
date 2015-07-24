@@ -32,6 +32,4 @@ public class Constants {
     public static final String AWS_CREDENTIALS_FILE="aws.credentials.file";
     public static final String AWS_ACCESS_KEY = "access-key";
     public static final String AWS_SECRET_KEY = "secret-key";
-    public static final String AVAILABILITY_ZONE_KEY = "availability-zone";
-    public static final String REGION_KEY = "region";
 }

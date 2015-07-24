@@ -41,8 +41,6 @@ import com.amazonaws.services.elasticloadbalancing.model.*;
 public class AWSHelper {
 	private String awsAccessKey;
 	private String awsSecretKey;
-	private String availabilityZone;
-	private String region;
 
 	private BasicAWSCredentials awsCredentials;
 	private ClientConfiguration clientConfiguration;
@@ -71,17 +69,12 @@ public class AWSHelper {
 					.getProperty(Constants.AWS_ACCESS_KEY);
 			this.awsSecretKey = properties
 					.getProperty(Constants.AWS_SECRET_KEY);
-			this.availabilityZone = properties
-					.getProperty(Constants.AVAILABILITY_ZONE_KEY);
-			this.region = properties.getProperty(Constants.REGION_KEY);
 
 			awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
 			clientConfiguration = new ClientConfiguration();
 
 			lbClient = new AmazonElasticLoadBalancingClient(awsCredentials,
 					clientConfiguration);
-			lbClient.setEndpoint("elasticloadbalancing." + this.region
-					+ ".amazonaws.com");
 
 		} catch (IOException e) {
 			log.error("Error reading aws configuration file.");
@@ -102,9 +95,11 @@ public class AWSHelper {
 	 * 
 	 * @param name
 	 * @param listeners
+	 * @param region
 	 * @return DNS name of newly created load balancer
 	 */
-	public String createLoadBalancer(String name, List<Listener> listeners) {
+	public String createLoadBalancer(String name, List<Listener> listeners,
+			String region) {
 
 		log.info("Creating load balancer " + name);
 
@@ -114,9 +109,12 @@ public class AWSHelper {
 		createLoadBalancerRequest.setListeners(listeners);
 
 		Set<String> availabilityZones = new HashSet<String>();
-		availabilityZones.add(availabilityZone);
+		availabilityZones.add(getAvailabilityZoneFromRegion(region));
 
 		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
+
+		lbClient.setEndpoint("elasticloadbalancing." + region
+				+ ".amazonaws.com");
 
 		try {
 
@@ -138,8 +136,9 @@ public class AWSHelper {
 	 * with which this load balancer was associated, is removed.
 	 * 
 	 * @param loadBalancerName
+	 * @param region
 	 */
-	public void deleteLoadBalancer(String loadBalancerName) {
+	public void deleteLoadBalancer(String loadBalancerName, String region) {
 
 		log.info("Deleting load balancer " + loadBalancerName);
 
@@ -147,6 +146,9 @@ public class AWSHelper {
 		deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
 
 		try {
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
+
 			lbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
 			return;
 
@@ -163,9 +165,10 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param instances
+	 * @param region
 	 */
 	public void registerInstancesToLoadBalancer(String loadBalancerName,
-			List<Instance> instances) {
+			List<Instance> instances, String region) {
 
 		log.info("Attaching instance " + instances.get(0)
 				+ " to load balancer + " + loadBalancerName);
@@ -174,7 +177,9 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
+			
 			RegisterInstancesWithLoadBalancerResult result = lbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
 			return;
@@ -193,9 +198,10 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param instances
+	 * @param region
 	 */
 	public void deregisterInstancesFromLoadBalancer(String loadBalancerName,
-			List<Instance> instances) {
+			List<Instance> instances, String region) {
 
 		log.info("Detaching instance " + instances.get(0)
 				+ " from load balancer + " + loadBalancerName);
@@ -204,6 +210,9 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
+			
 			DeregisterInstancesFromLoadBalancerResult result = lbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
 			return;
@@ -220,10 +229,11 @@ public class AWSHelper {
 	 * instances, listeners associated with load balancer
 	 * 
 	 * @param loadBalancerName
+	 * @param region
 	 * @return description of the load balancer
 	 */
 	private LoadBalancerDescription getLoadBalancerDescription(
-			String loadBalancerName) {
+			String loadBalancerName, String region) {
 
 		List<String> loadBalancers = new ArrayList<String>();
 
@@ -233,6 +243,9 @@ public class AWSHelper {
 				loadBalancers);
 
 		try {
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
+			
 			DescribeLoadBalancersResult result = lbClient
 					.describeLoadBalancers(describeLoadBalancersRequest);
 
@@ -254,11 +267,12 @@ public class AWSHelper {
 	 * all attached instances are required or some should be detached.
 	 * 
 	 * @param loadBalancerName
+	 * @param region
 	 * @return list of instances attached
 	 */
-	public List<Instance> getAttachedInstances(String loadBalancerName) {
+	public List<Instance> getAttachedInstances(String loadBalancerName, String region) {
 		try {
-			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName);
+			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName, region);
 
 			if (lbDescription == null) {
 				log.warn("Could not find description of load balancer "
@@ -283,9 +297,10 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param listeners
+	 * @param region
 	 */
 	public void addListenersToLoadBalancer(String loadBalancerName,
-			List<Listener> listeners) {
+			List<Listener> listeners, String region) {
 		if (listeners.size() == 0)
 			return;
 
@@ -295,6 +310,8 @@ public class AWSHelper {
 				.setLoadBalancerName(loadBalancerName);
 
 		try {
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
 
 			lbClient.createLoadBalancerListeners(createLoadBalancerListenersRequest);
 			return;
@@ -312,9 +329,10 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param listeners
+	 * @param region
 	 */
 	public void removeListenersFromLoadBalancer(String loadBalancerName,
-			List<Listener> listeners) {
+			List<Listener> listeners, String region) {
 		if (listeners.size() == 0)
 			return;
 
@@ -332,6 +350,8 @@ public class AWSHelper {
 				.setLoadBalancerPorts(loadBalancerPorts);
 
 		try {
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
 
 			lbClient.deleteLoadBalancerListeners(deleteLoadBalancerListenersRequest);
 			return;
@@ -348,11 +368,12 @@ public class AWSHelper {
 	 * deciding if all the listeners are necessary or some should be removed.
 	 * 
 	 * @param loadBalancerName
+	 * @param region
 	 * @return list of instances attached to load balancer
 	 */
-	public List<Listener> getAttachedListeners(String loadBalancerName) {
+	public List<Listener> getAttachedListeners(String loadBalancerName, String region) {
 		try {
-			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName);
+			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName, region);
 
 			if (lbDescription == null) {
 				log.warn("Could not find description of load balancer "
@@ -421,8 +442,10 @@ public class AWSHelper {
 	}
 
 	/**
+	 * Extract instance id in IaaS side from member instance name
+	 * 
 	 * @param memberInstanceName
-	 * @return
+	 * @return instance id in IaaS
 	 */
 	public String getAWSInstanceName(final String memberInstanceName) {
 		if (memberInstanceName.contains("/")) {
@@ -431,5 +454,33 @@ public class AWSHelper {
 		} else {
 			return memberInstanceName;
 		}
+	}
+
+	/**
+	 * Extract IaaS region from member instance name
+	 * 
+	 * @param memberInstanceName
+	 * @return IaaS region to which member belongs
+	 */
+	public String getAWSRegion(final String memberInstanceName) {
+		if (memberInstanceName.contains("/")) {
+			return memberInstanceName.substring(0,
+					memberInstanceName.indexOf("/"));
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get availability zone from region
+	 * 
+	 * @param region
+	 * @return Availability zone of IaaS
+	 */
+	public String getAvailabilityZoneFromRegion(String region) {
+		if (region != null) {
+			return region + "a";
+		} else
+			return null;
 	}
 }

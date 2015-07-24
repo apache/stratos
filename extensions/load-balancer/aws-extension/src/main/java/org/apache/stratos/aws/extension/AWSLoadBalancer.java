@@ -39,12 +39,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
 	// A map <clusterId, load balancer id>
-	private HashMap<String, String> clusterIdToLoadBalancerMap;
+	private HashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap;
 
 	private AWSHelper awsHelper;
 
 	public AWSLoadBalancer() throws LoadBalancerExtensionException {
-		clusterIdToLoadBalancerMap = new HashMap<String, String>();
+		clusterIdToLoadBalancerMap = new HashMap<String, LoadBalancerInfo>();
 		awsHelper = new AWSHelper();
 	}
 
@@ -70,14 +70,17 @@ public class AWSLoadBalancer implements LoadBalancer {
 						// A load balancer is already present for this cluster
 						// Get the load balancer and update it.
 
-						String loadBalancerName = clusterIdToLoadBalancerMap
+						LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap
 								.get(cluster.getClusterId());
+
+						String loadBalancerName = loadBalancerInfo.getName();
+						String region = loadBalancerInfo.getRegion();
 
 						// 1. Get all the instances attached
 						// Add/remove instances as necessary
 
 						List<Instance> attachedInstances = awsHelper
-								.getAttachedInstances(loadBalancerName);
+								.getAttachedInstances(loadBalancerName, region);
 
 						Collection<Member> clusterInstances = cluster
 								.getMembers();
@@ -89,6 +92,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 						}
 
 						List<Instance> instancesToAddToLoadBalancer = new ArrayList<Instance>();
+						List<Instance> awsInstancesInCluster = new ArrayList<Instance>();
 
 						for (Member member : clusterInstances) {
 							// if instance id of member is not in
@@ -105,6 +109,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 									awsHelper.getAWSInstanceName(member
 											.getInstanceId()));
 
+							awsInstancesInCluster.add(instance);
+
 							if (attachedInstances == null
 									|| !attachedInstances.contains(instance)) {
 								instancesToAddToLoadBalancer.add(instance);
@@ -115,8 +121,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 						List<Instance> instancesToRemoveFromLoadBalancer = new ArrayList<Instance>();
 
 						for (Instance instance : attachedInstances) {
-							if (!clusterInstances.contains(instance
-									.getInstanceId())) {
+							if (!awsInstancesInCluster.contains(instance)) {
 								instancesToRemoveFromLoadBalancer.add(instance);
 							}
 						}
@@ -124,12 +129,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 						if (instancesToRemoveFromLoadBalancer.size() > 0)
 							awsHelper.deregisterInstancesFromLoadBalancer(
 									loadBalancerName,
-									instancesToRemoveFromLoadBalancer);
+									instancesToRemoveFromLoadBalancer, region);
 
 						if (instancesToAddToLoadBalancer.size() > 0)
 							awsHelper.registerInstancesToLoadBalancer(
 									loadBalancerName,
-									instancesToAddToLoadBalancer);
+									instancesToAddToLoadBalancer, region);
 
 						// 2. Get all the listeners
 						// Add/Remove listeners as necessary
@@ -145,7 +150,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 						// Need to remove only if ... same for above reason
 
 						List<Listener> attachedListeners = awsHelper
-								.getAttachedListeners(loadBalancerName);
+								.getAttachedListeners(loadBalancerName, region);
 
 						List<Listener> listenersToAddToLoadBalancer = new ArrayList<Listener>();
 
@@ -167,12 +172,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 						if (listenersToRemoveFromLoadBalancer.size() > 0)
 							awsHelper.removeListenersFromLoadBalancer(
 									loadBalancerName,
-									listenersToRemoveFromLoadBalancer);
+									listenersToRemoveFromLoadBalancer, region);
 
 						if (listenersToAddToLoadBalancer.size() > 0)
 							awsHelper.addListenersToLoadBalancer(
 									loadBalancerName,
-									listenersToAddToLoadBalancer);
+									listenersToAddToLoadBalancer, region);
 
 						// Update domain mappings
 
@@ -187,9 +192,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 						String loadBalancerName = awsHelper
 								.getLoadBalancerName(cluster.getClusterId());
 
+						String region = awsHelper.getAWSRegion(clusterInstances
+								.iterator().next().getInstanceId());
+
 						String loadBalancerDNSName = awsHelper
 								.createLoadBalancer(loadBalancerName,
-										listenersForThisService);
+										listenersForThisService, region);
 
 						log.info("Load balancer '" + loadBalancerDNSName
 								+ "' created for cluster '"
@@ -213,12 +221,15 @@ public class AWSLoadBalancer implements LoadBalancer {
 						}
 
 						awsHelper.registerInstancesToLoadBalancer(
-								loadBalancerName, instances);
+								loadBalancerName, instances, region);
 
 						// Create domain mappings
 
+						LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(
+								loadBalancerName, region);
+
 						clusterIdToLoadBalancerMap.put(cluster.getClusterId(),
-								loadBalancerName);
+								loadBalancerInfo);
 						activeClusters.add(cluster.getClusterId());
 					}
 				}
@@ -231,7 +242,9 @@ public class AWSLoadBalancer implements LoadBalancer {
 				if (!activeClusters.contains(clusterId)) {
 					// Remove load balancer for that cluster.
 					awsHelper.deleteLoadBalancer(clusterIdToLoadBalancerMap
-							.get(clusterId));
+							.get(clusterId).getName(),
+							clusterIdToLoadBalancerMap.get(clusterId)
+									.getRegion());
 					clusterIdToLoadBalancerMap.remove(clusterId);
 				}
 			}
@@ -256,14 +269,32 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	public void stop() throws LoadBalancerExtensionException {
 		// Remove all load balancers
-
-		for (String loadBalancerName : clusterIdToLoadBalancerMap.values()) {
+		for (LoadBalancerInfo loadBalancerInfo : clusterIdToLoadBalancerMap
+				.values()) {
 			// remove load balancer
-			awsHelper.deleteLoadBalancer(loadBalancerName);
-
+			awsHelper.deleteLoadBalancer(loadBalancerInfo.getName(),
+					loadBalancerInfo.getRegion());
 			// Check what all needs to be done
 		}
 
 		// Remove domain mappings
+	}
+}
+
+class LoadBalancerInfo {
+	private String name;
+	private String region;
+
+	public LoadBalancerInfo(String name, String region) {
+		this.name = name;
+		this.region = region;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getRegion() {
+		return region;
 	}
 }
