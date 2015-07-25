@@ -48,6 +48,19 @@ public class Main {
 				log.info("AWS extension started");
 			}
 
+			executorService = StratosThreadPool.getExecutorService(
+					"aws.extension.thread.pool", 10);
+			// Validate runtime parameters
+			AWSExtensionContext.getInstance().validate();
+			TopologyProvider topologyProvider = new TopologyProvider();
+			AWSStatisticsReader statisticsReader = AWSExtensionContext
+					.getInstance().isCEPStatsPublisherEnabled() ? new AWSStatisticsReader(
+					topologyProvider) : null;
+			extension = new LoadBalancerExtension(new AWSLoadBalancer(),
+					statisticsReader, topologyProvider);
+			extension.setExecutorService(executorService);
+			extension.execute();
+
 			// Add shutdown hook
 			final Thread mainThread = Thread.currentThread();
 			final LoadBalancerExtension finalExtension = extension;
@@ -64,19 +77,6 @@ public class Main {
 					}
 				}
 			});
-
-			executorService = StratosThreadPool.getExecutorService(
-					"aws.extension.thread.pool", 10);
-			// Validate runtime parameters
-			AWSExtensionContext.getInstance().validate();
-			TopologyProvider topologyProvider = new TopologyProvider();
-			AWSStatisticsReader statisticsReader = AWSExtensionContext
-					.getInstance().isCEPStatsPublisherEnabled() ? new AWSStatisticsReader(
-					topologyProvider) : null;
-			extension = new LoadBalancerExtension(new AWSLoadBalancer(),
-					statisticsReader, topologyProvider);
-			extension.setExecutorService(executorService);
-			extension.execute();
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error(e);

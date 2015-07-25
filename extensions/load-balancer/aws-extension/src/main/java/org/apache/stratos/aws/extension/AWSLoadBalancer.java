@@ -82,10 +82,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 						List<Instance> attachedInstances = awsHelper
 								.getAttachedInstances(loadBalancerName, region);
 
-						Collection<Member> clusterInstances = cluster
+						Collection<Member> clusterMembers = cluster
 								.getMembers();
 
-						if (clusterInstances.size() > 0) {
+						if (clusterMembers.size() > 0) {
 							activeClusters.add(cluster.getClusterId());
 						} else {
 							break;
@@ -94,7 +94,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 						List<Instance> instancesToAddToLoadBalancer = new ArrayList<Instance>();
 						List<Instance> awsInstancesInCluster = new ArrayList<Instance>();
 
-						for (Member member : clusterInstances) {
+						for (Member member : clusterMembers) {
 							// if instance id of member is not in
 							// attachedInstances
 							// add this to instancesToAddToLoadBalancer
