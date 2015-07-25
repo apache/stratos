@@ -28,7 +28,7 @@ class PrintableTree:
                     if isinstance(v, list) or isinstance(v, dict):
                         l.extend([k, v])
                     else:
-                        l.extend([str(k) + " : " + str(v)])
+                        l.extend([str(k) + ":" + str(v)])
                 t = l
                 for element in t[:-1]:
                     print(ups + "+-", end='')
