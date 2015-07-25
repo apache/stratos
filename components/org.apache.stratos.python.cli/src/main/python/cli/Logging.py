@@ -2,7 +2,6 @@ import logging
 import os
 import Configs
 
-
 if not os.path.exists(Configs.stratos_dir_path):
     try:
         os.makedirs(Configs.stratos_dir_path)
