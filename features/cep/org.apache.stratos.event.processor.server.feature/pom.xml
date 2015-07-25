@@ -22,18 +22,16 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cep-features</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-        <version>4.1.0</version>
     <artifactId>org.apache.stratos.event.processor.server.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos  - Event Processor Server Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Back-end Event Processor functionality
     </description>
-
 
     <dependencies>
         <dependency>

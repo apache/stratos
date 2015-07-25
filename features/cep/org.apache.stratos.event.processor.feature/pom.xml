@@ -23,10 +23,9 @@
    <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cep-features</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-        <version>4.1.0</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.event.processor.feature</artifactId>
     <packaging>pom</packaging>
@@ -40,7 +39,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.event.processor.server.feature</artifactId>
-            <version>4.1.0</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>

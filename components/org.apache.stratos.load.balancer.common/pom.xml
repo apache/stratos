@@ -23,11 +23,10 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.load.balancer.common</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Stratos - Load Balancer - Common</name>

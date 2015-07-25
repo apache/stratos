@@ -24,11 +24,10 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-features-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-manager-features</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Manager Features Aggregator Module</name>

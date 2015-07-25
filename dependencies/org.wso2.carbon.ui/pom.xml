@@ -23,12 +23,11 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.stratos</groupId>
     <artifactId>org.wso2.carbon.ui</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - UI</name>

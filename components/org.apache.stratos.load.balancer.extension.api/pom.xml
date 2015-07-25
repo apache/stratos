@@ -25,10 +25,9 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.load.balancer.extension.api</artifactId>
     <name>Apache Stratos - Load Balancer - Extension API</name>
     <description>An extension API for integrating third party load balancers with Apache Stratos.</description>

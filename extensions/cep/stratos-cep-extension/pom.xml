@@ -23,11 +23,10 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-extensions</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
-    
-    <groupId>org.apache.stratos</groupId>
+
     <artifactId>org.apache.stratos.cep.extension</artifactId>
     <name>Apache Stratos - CEP Extensions</name>
     <description>Apache Stratos CEP Extensions</description>
@@ -49,7 +48,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>4.1.0</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
