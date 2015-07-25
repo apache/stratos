@@ -18,3 +18,4 @@
 build/
 dist/
 stratos.egg-info/
+.tox/
