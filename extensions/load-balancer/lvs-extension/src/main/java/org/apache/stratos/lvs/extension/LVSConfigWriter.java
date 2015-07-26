@@ -208,8 +208,8 @@ public class LVSConfigWriter {
 						    text.append(TAB).append(TAB).append("}").append(NEW_LINE);
 						    text.append(TAB).append("}").append(NEW_LINE);
 						    String commandMember =
-								    "ipvsadm -a -t " + virtualIpForService[1] + ":" + port.getValue() + " -r " +
-								    member.getHostName() + " -m";
+								    "ipvsadm -a -t " + virtualIpForService[1] + ":" + port.getProxy() + " -r " +
+								    member.getHostName() + ":" + port.getValue() + " -m";
 
 						    try {
 							    CommandUtils.executeCommand(commandMember);
