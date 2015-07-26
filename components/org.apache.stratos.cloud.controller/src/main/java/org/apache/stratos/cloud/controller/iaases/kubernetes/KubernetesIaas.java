@@ -546,7 +546,7 @@ public class KubernetesIaas extends Iaas {
                 String[] minionPublicIPArray = minionPublicIPList.toArray(new String[minionPublicIPList.size()]);
                 kubernetesService.setPublicIPs(minionPublicIPArray);
                 kubernetesService.setProtocol(clusterPortMapping.getProtocol());
-                kubernetesService.setPort(service.getSpec().getPorts().get(0).getPort());
+                kubernetesService.setPort(service.getSpec().getPorts().get(0).getNodePort());
                 kubernetesService.setContainerPort(containerPort);
                 kubernetesServices.add(kubernetesService);
 
