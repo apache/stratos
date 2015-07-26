@@ -96,8 +96,10 @@ public class LVS implements LoadBalancer {
 
         // Start nginx and write pid to processIdFilePath
         try {
-            String command = keepAlivedStartCommand;
-            CommandUtils.executeCommand(command);
+	        if(isKeepAlivedUsed) {
+		        String command = keepAlivedStartCommand;
+		        CommandUtils.executeCommand(command);
+	        }
             log.info("lvs instance started");
         } catch (Exception e) {
             log.error("Could not start lvs instance");
@@ -113,9 +115,11 @@ public class LVS implements LoadBalancer {
         try {
             log.info("Reloading configuration...");
 
-            // Execute hot configuration deployment
-            String command = "service keepalived restart";
-            CommandUtils.executeCommand(command);
+            if(isKeepAlivedUsed) {
+	            // Execute hot configuration deployment
+		        String command = "service keepalived restart";
+		        CommandUtils.executeCommand(command);
+	        }
             if (log.isInfoEnabled()) {
                 log.info("Configuration done");
             }
@@ -136,9 +140,11 @@ public class LVS implements LoadBalancer {
         try {
             log.info("Stopping lvs...");
 
-            // Execute hot configuration deployment
-            String command = "service keepalived stop";
-	        CommandUtils.executeCommand(command);
+	        if(isKeepAlivedUsed) {
+		        // Execute hot configuration deployment
+		        String command = "service keepalived stop";
+		        CommandUtils.executeCommand(command);
+	        }
             if (log.isInfoEnabled()) {
                 log.info("LVS stopped");
             }
