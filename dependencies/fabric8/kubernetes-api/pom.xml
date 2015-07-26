@@ -46,7 +46,7 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>cxf-utils</artifactId>
-      <version>${fabric8-version}</version>
+      <version>${kubernetes.api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.fabric8</groupId>
@@ -125,7 +125,7 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-codegen</artifactId>
-      <version>${fabric8-version}</version>
+      <version>${kubernetes.api.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -177,8 +177,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <properties>
-    <fabric8-version>2.2.16</fabric8-version>
-  </properties>
 </project>
