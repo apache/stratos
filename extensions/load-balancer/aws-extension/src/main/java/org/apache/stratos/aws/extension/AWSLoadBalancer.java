@@ -59,10 +59,6 @@ public class AWSLoadBalancer implements LoadBalancer {
 			HashSet<String> activeClusters = new HashSet<String>();
 
 			for (Service service : topology.getServices()) {
-
-				List<Listener> listenersForThisService = awsHelper
-						.getRequiredListeners(service);
-
 				for (Cluster cluster : service.getClusters()) {
 					// Check if a load balancer is created for this cluster
 					if (clusterIdToLoadBalancerMap.containsKey(cluster
@@ -154,7 +150,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 						List<Listener> listenersToAddToLoadBalancer = new ArrayList<Listener>();
 
-						for (Listener listener : listenersForThisService) {
+						List<Listener> listenersForThisCluster = awsHelper
+								.getRequiredListeners(clusterMembers.iterator().next());
+
+						for (Listener listener : listenersForThisCluster) {
 							if (attachedListeners == null
 									|| !attachedListeners.contains(listener)) {
 								listenersToAddToLoadBalancer.add(listener);
@@ -164,7 +163,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 						List<Listener> listenersToRemoveFromLoadBalancer = new ArrayList<Listener>();
 
 						for (Listener listener : attachedListeners) {
-							if (!listenersForThisService.contains(listener)) {
+							if (!listenersForThisCluster.contains(listener)) {
 								listenersToRemoveFromLoadBalancer.add(listener);
 							}
 						}
@@ -183,21 +182,24 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 					} else {
 						// Create a new load balancer for this cluster
-						Collection<Member> clusterInstances = cluster
+						Collection<Member> clusterMembers = cluster
 								.getMembers();
 
-						if (clusterInstances.size() == 0)
+						if (clusterMembers.size() == 0)
 							break;
 
 						String loadBalancerName = awsHelper
-								.getLoadBalancerName(cluster.getClusterId());
+								.generateLoadBalancerName();
 
-						String region = awsHelper.getAWSRegion(clusterInstances
+						String region = awsHelper.getAWSRegion(clusterMembers
 								.iterator().next().getInstanceId());
+
+						List<Listener> listenersForThisCluster = awsHelper
+								.getRequiredListeners(clusterMembers.iterator().next());
 
 						String loadBalancerDNSName = awsHelper
 								.createLoadBalancer(loadBalancerName,
-										listenersForThisService, region);
+										listenersForThisCluster, region);
 
 						log.info("Load balancer '" + loadBalancerDNSName
 								+ "' created for cluster '"
@@ -206,7 +208,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 						// register instances to LB
 						List<Instance> instances = new ArrayList<Instance>();
 
-						for (Member member : clusterInstances) {
+						for (Member member : clusterMembers) {
 							String instanceId = member.getInstanceId();
 
 							System.out.println("Instance id : " + instanceId);

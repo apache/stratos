@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -41,6 +42,9 @@ import com.amazonaws.services.elasticloadbalancing.model.*;
 public class AWSHelper {
 	private String awsAccessKey;
 	private String awsSecretKey;
+	private String lbPrefix;
+	private int lbSequence;
+	private Object lbSequenceMutex;
 
 	private BasicAWSCredentials awsCredentials;
 	private ClientConfiguration clientConfiguration;
@@ -70,6 +74,21 @@ public class AWSHelper {
 			this.awsSecretKey = properties
 					.getProperty(Constants.AWS_SECRET_KEY);
 
+			if(this.awsAccessKey.isEmpty() || this.awsSecretKey.isEmpty())
+			{
+				throw new LoadBalancerExtensionException("Invalid AWS credentials.");
+			}
+
+			this.lbPrefix = properties.getProperty(Constants.LB_PREFIX);
+
+			if(this.lbPrefix.isEmpty() || this.lbPrefix.length() > 25)
+			{
+				throw new LoadBalancerExtensionException("Invalid load balancer prefix.");
+			}
+
+			lbSequence = 0;
+			lbSequenceMutex = new Object();
+
 			awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
 			clientConfiguration = new ClientConfiguration();
 
@@ -86,6 +105,14 @@ public class AWSHelper {
 			} catch (Exception e) {
 				log.warn("Failed to close input stream to aws configuration file.");
 			}
+		}
+	}
+
+	public int getNextLBSequence()
+	{
+		synchronized (lbSequenceMutex) {
+			lbSequence++;
+			return lbSequence;
 		}
 	}
 
@@ -407,10 +434,12 @@ public class AWSHelper {
 	 * @param service
 	 * @return list of listeners required for the service
 	 */
-	public List<Listener> getRequiredListeners(Service service) {
+	public List<Listener> getRequiredListeners(Member member) {
 		List<Listener> listeners = new ArrayList<Listener>();
 
-		for (Port port : service.getPorts()) {
+		Collection<Port> ports = member.getPorts();
+
+		for (Port port : ports) {
 			int instancePort = port.getValue();
 			int proxyPort = port.getProxy();
 			String protocol = port.getProtocol().toUpperCase();
@@ -430,13 +459,15 @@ public class AWSHelper {
 	 * 
 	 * @param clusterId
 	 * @return name of the load balancer
+	 * @throws LoadBalancerExtensionException
 	 */
-	public String getLoadBalancerName(String clusterId) {
+	public String generateLoadBalancerName() throws LoadBalancerExtensionException {
 		String name = null;
-		int length = clusterId.length();
-		int endIndex = length > 31 ? 31 : length;
-		name = clusterId.substring(0, endIndex);
-		name = name.replace('.', '-');
+
+		name = lbPrefix + getNextLBSequence();
+
+		if(name.length() > 32)
+			throw new LoadBalancerExtensionException("Load balanacer name length exceeded");
 
 		return name;
 	}
