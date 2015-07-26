@@ -196,4 +196,8 @@ public class LVSContext {
 	public void setLvsScheduleAlgo(String lvsScheduleAlgo) {
 		this.lvsScheduleAlgo = lvsScheduleAlgo;
 	}
+
+	public boolean getIsKeepAlivedUsed() {
+		return false;
+	}
 }
