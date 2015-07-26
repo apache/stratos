@@ -72,6 +72,7 @@
                         </Export-Package>
                         <Import-Package>
                             io.fabric8.kubernetes.api.*;version=${kubernetes.api.stratos.version},
+                            io.fabric8.kubernetes.api.model.*;version=${kubernetes.api.stratos.version},
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

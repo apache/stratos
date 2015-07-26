@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.event.processor.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos  - Event Processor Server Feature</name>
+    <name>Apache Stratos - Event Processor Server Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Back-end Event Processor functionality
     </description>
