@@ -34,7 +34,6 @@
     <description>Fabric8 fork</description>
 
     <modules>
-        <module>kubernetes-model</module>
         <module>kubernetes-api</module>
     </modules>
 

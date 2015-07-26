@@ -520,13 +520,13 @@ public class KubernetesIaas extends Iaas {
                 }
 
                 // Create kubernetes service for port mapping
-                int servicePort = clusterPortMapping.getKubernetesServicePort();
+                int nodePort = clusterPortMapping.getKubernetesServicePort();
                 String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(clusterPortMapping);
 
                 try {
                     // Services need to use minions private IP addresses for creating iptable rules
-                    kubernetesApi.createService(serviceId, serviceLabel, servicePort, containerPortName,
-                            containerPort, minionPrivateIPList, sessionAffinity);
+                    kubernetesApi.createService(serviceId, serviceLabel, nodePort, containerPortName,
+                            containerPort, sessionAffinity);
                 } finally {
                     // Persist kubernetes service sequence no
                     CloudControllerContext.getInstance().persist();
@@ -541,7 +541,7 @@ public class KubernetesIaas extends Iaas {
 
                 KubernetesService kubernetesService = new KubernetesService();
                 kubernetesService.setId(service.getMetadata().getName());
-                kubernetesService.setPortalIP(service.getSpec().getPortalIP());
+                kubernetesService.setPortalIP(service.getSpec().getClusterIP());
                 // Expose minions public IP addresses as they need to be accessed by external networks
                 String[] minionPublicIPArray = minionPublicIPList.toArray(new String[minionPublicIPList.size()]);
                 kubernetesService.setPublicIPs(minionPublicIPArray);
@@ -552,8 +552,8 @@ public class KubernetesIaas extends Iaas {
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Kubernetes service successfully created: [cluster] %s [service] %s " +
-                                    "[protocol] %s [service-port] %d [container-port] %s", clusterId,
-                            serviceId, clusterPortMapping.getProtocol(), servicePort, containerPort));
+                                    "[protocol] %s [node-port] %d [container-port] %s", clusterId,
+                            serviceId, clusterPortMapping.getProtocol(), nodePort, containerPort));
                 }
             }
         }

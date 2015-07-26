@@ -19,11 +19,7 @@
 
 package org.apache.stratos.kubernetes.client.live;
 
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.ContainerPort;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.resource.Quantity;
+import io.fabric8.kubernetes.api.model.*;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -53,7 +49,7 @@ public class AbstractLiveTest extends TestCase {
 
     protected static final String DEFAULT_DOCKER_IMAGE = "fnichol/uhttpd";
     protected static final int DEFAULT_CONTAINER_PORT = 80;
-    protected static final int SERVICE_PORT = 4500;
+    protected static final int SERVICE_PORT = 30001;
     protected static final int POD_ACTIVATION_WAIT_TIME = 10000; // 10 seconds
 
     protected static final String KUBERNETES_API_ENDPOINT = "kubernetes.api.endpoint";
@@ -62,6 +58,7 @@ public class AbstractLiveTest extends TestCase {
     protected static final String CONTAINER_PORT = "container.port";
     protected static final String TEST_SERVICE_SOCKET = "test.service.socket";
     protected static final String TEST_POD_ACTIVATION = "test.pod.activation";
+    protected static final String PROTOCOL_TCP = "TCP";
 
     protected KubernetesApiClient client;
     protected String dockerImage;
@@ -199,10 +196,10 @@ public class AbstractLiveTest extends TestCase {
         }
     }
 
-    protected void createService(String serviceId, String serviceName, int servicePort, String containerPortName,
+    protected void createService(String serviceId, String serviceName, int nodePort, String containerPortName,
                                  int containerPort, List<String> publicIPs) throws KubernetesClientException, InterruptedException, IOException {
         log.info("Creating service...");
-        client.createService(serviceId, serviceName, servicePort, containerPortName, containerPort, publicIPs,
+        client.createService(serviceId, serviceName, nodePort, containerPortName, containerPort,
                 KubernetesConstants.SESSION_AFFINITY_CLIENT_IP);
         serviceIdList.add(serviceId);
 
@@ -248,7 +245,7 @@ public class AbstractLiveTest extends TestCase {
         ContainerPort port = new ContainerPort();
         port.setName(containerPortName);
         port.setContainerPort(containerPort);
-        port.setProtocol("tcp");
+        port.setProtocol(PROTOCOL_TCP);
         ports.add(port);
         return ports;
     }

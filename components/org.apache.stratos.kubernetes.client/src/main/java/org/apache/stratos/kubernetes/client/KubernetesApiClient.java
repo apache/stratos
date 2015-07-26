@@ -22,8 +22,6 @@ package org.apache.stratos.kubernetes.client;
 
 import io.fabric8.kubernetes.api.KubernetesClient;
 import io.fabric8.kubernetes.api.model.*;
-import io.fabric8.kubernetes.api.model.resource.Quantity;
-import io.fabric8.kubernetes.api.model.util.IntOrString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
@@ -71,7 +69,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
             // Create pod definition
             Pod pod = new Pod();
-            pod.setApiVersion(Pod.ApiVersion.V_1_BETA_3);
+            pod.setApiVersion(Pod.ApiVersion.V_1);
             pod.setKind(KubernetesConstants.KIND_POD);
 
             pod.setSpec(new PodSpec());
@@ -157,23 +155,21 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      *
      * @param serviceId         Service id
      * @param serviceLabel      Service name to be used by the label name
-     * @param servicePort       Port to be exposed by the service
+     * @param nodePort          Port to be exposed by the kubernetes node
      * @param containerPortName Container port name defined in the port label
      * @param containerPort     Container port
-     * @param publicIPs         Public IP addresses of the minions
      * @param sessionAffinity   Session affinity configuration
      * @throws KubernetesClientException
      */
     @Override
-    public void createService(String serviceId, String serviceLabel, int servicePort,
-                              String containerPortName, int containerPort, List<String> publicIPs,
-                              String sessionAffinity)
+    public void createService(String serviceId, String serviceLabel, int nodePort,
+                              String containerPortName, int containerPort, String sessionAffinity)
             throws KubernetesClientException {
 
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Creating kubernetes service: [service-id] %s [service-name] %s [service-port] %d " +
-                                "[container-port-name] %s", serviceId, serviceLabel, servicePort,
+                                "[container-port-name] %s", serviceId, serviceLabel, nodePort,
                         containerPortName));
             }
 
@@ -182,19 +178,20 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             service.setSpec(new ServiceSpec());
             service.setMetadata(new ObjectMeta());
 
-            service.setApiVersion(Service.ApiVersion.V_1_BETA_3);
+            service.setApiVersion(Service.ApiVersion.V_1);
             service.setKind(KubernetesConstants.KIND_SERVICE);
 
             service.getMetadata().setName(serviceId);
-            service.getSpec().setPublicIPs(publicIPs);
             service.getSpec().setSessionAffinity(sessionAffinity);
+            service.getSpec().setType(KubernetesConstants.NODE_PORT);
 
             // Set port
             List<ServicePort> ports = new ArrayList<ServicePort>();
             ServicePort port = new ServicePort();
             port.setName(containerPortName);
-            port.setPort(servicePort);
+            port.setPort(containerPort);
             port.setTargetPort(new IntOrString(containerPort));
+            port.setNodePort(nodePort);
             ports.add(port);
             service.getSpec().setPorts(ports);
 
@@ -212,12 +209,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             kubernetesClient.createService(service);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes service created successfully: [service-id] %s [service-name] %s [service-port] %d " +
-                        "[container-port-name] %s", serviceId, serviceLabel, servicePort, containerPortName));
+                log.debug(String.format("Kubernetes service created successfully: [service-id] %s [service-name] %s " +
+                                "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceLabel,
+                        nodePort, containerPortName, containerPort));
             }
         } catch (Exception e) {
-            String message = String.format("Could not create kubernetes service: [service-id] %s [service-name] %s [service-port] %d " +
-                    "[container-port-name] %s", serviceId, serviceLabel, servicePort, containerPortName);
+            String message = String.format("Could not create kubernetes service: [service-id] %s [service-name] %s " +
+                            "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceLabel,
+                    nodePort, containerPortName, containerPort);
             log.error(message, e);
             throw new KubernetesClientException(message, e);
         }
