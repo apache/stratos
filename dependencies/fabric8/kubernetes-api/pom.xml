@@ -142,6 +142,8 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Export-Package>
               io.fabric8.kubernetes.api.*;version=${kubernetes.api.stratos.version},
+              io.fabric8.kubernetes.api.model.*;version=${kubernetes.api.stratos.version},
+              io.fabric8.kubernetes.internal.*,
             </Export-Package>
             <Import-Package>
               !javax.xml.bind.annotation.adapters,

@@ -10,8 +10,8 @@
         ]
     },
     "portRange": {
-        "upper": "5000",
-        "lower": "4500"
+        "upper": "32767",
+        "lower": "30000"
     },
     "kubernetesHosts": [
         {
