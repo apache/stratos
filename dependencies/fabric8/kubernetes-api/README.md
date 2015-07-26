@@ -1,7 +1,5 @@
-## Fabric8 Kubernetes Client API
+## Fabric8 Kubernetes API
 
-Fabric8 Kubernetes Client API 2.1.11 has been forked to fix issue [1]. The fix has been merged to master branch,
-once the next Fabric8 release is published to Nexus this fork can be removed.
-
-[1] [origin-schema-generator/pull/50] (https://github.com/fabric8io/origin-schema-generator/pull/50)
-
+This is a wrapper bundle for Fabric8 Kubernetes API for exposing proper bundle import
+& export statements and packaging apache cxf dependencies which cannot be imported into 
+carbon runtime as separate bundles at the moment.

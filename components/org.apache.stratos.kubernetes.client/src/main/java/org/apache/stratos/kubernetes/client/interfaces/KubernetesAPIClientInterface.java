@@ -76,16 +76,14 @@ public interface KubernetesAPIClientInterface {
      *
      * @param serviceId
      * @param serviceLabel
-     * @param servicePort
+     * @param nodePort
      * @param containerPortName
      * @param containerPort
-     * @param publicIPs
      * @param sessionAffinity
      * @throws KubernetesClientException
      */
-    public void createService(String serviceId, String serviceLabel, int servicePort,
-                              String containerPortName, int containerPort, List<String> publicIPs,
-                              String sessionAffinity)
+    public void createService(String serviceId, String serviceLabel, int nodePort,
+                              String containerPortName, int containerPort, String sessionAffinity)
             throws KubernetesClientException;
 
     /**
