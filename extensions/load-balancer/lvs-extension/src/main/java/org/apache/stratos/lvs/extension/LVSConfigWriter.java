@@ -50,6 +50,7 @@ public class LVSConfigWriter {
 	private String virtualIPsForServices;
 	private String serverState;
 	private String scheduleAlgo;
+	private boolean isKeepAlived=false;
 
 	public LVSConfigWriter(String templatePath, String templateName, String confFilePath,
 	                       String statsSocketFilePath, String virtualIPsForServices, String serverState,
@@ -76,7 +77,7 @@ public class LVSConfigWriter {
 							String.format("No ports found in service: %s", service.getServiceName()));
 				}
 				generateConfigurationForCluster(cluster, service.getPorts(), configurationBuilder, virtualIPBuilder,
-				                                virtualIPsForServices, scheduleAlgo);
+				                                virtualIPsForServices, scheduleAlgo,isKeepAlived);
 			}
 		}
 
@@ -148,7 +149,7 @@ public class LVSConfigWriter {
 	 */
 	private void generateConfigurationForCluster(Cluster cluster, Collection<Port> ports, StringBuilder text,
 	                                             StringBuilder virtualIPs, String virtualIPsForServices,
-	                                             String scheduleAlgo) {
+	                                             String scheduleAlgo,boolean isKeepAlived) {
 		String commandClear = "ipvsadm --clear";
 		try {
 			CommandUtils.executeCommand(commandClear);
@@ -180,49 +181,53 @@ public class LVSConfigWriter {
 				    }
 				    throw new RuntimeException(e);
 			    }
-				for (String hostname : cluster.getHostNames()) {
-					if (virtualIpForService[0].equals(cluster.getServiceName())) {
 
-						text.append("virtual_server ").append(virtualIpForService[1]).append(" ")
-						    .append(port.getProxy()).append(
-								" {").append(
-								NEW_LINE);
-						text.append(TAB).append("delay_loop 10").append(NEW_LINE);
-						text.append(TAB).append("lvs_sched ").append(scheduleAlgo).append(NEW_LINE);
-						text.append(TAB).append("lvs_method DR").append(NEW_LINE);
-						text.append(TAB).append("persistence_timeout 5").append(NEW_LINE);
-						text.append(TAB).append("protocol TCP").append(NEW_LINE).append(NEW_LINE);
+			    for (String hostname : cluster.getHostNames()) {
+				    if (virtualIpForService[0].equals(cluster.getServiceName())) {
 
-						//Start real servers block
+					    text.append("virtual_server ").append(virtualIpForService[1]).append(" ")
+					        .append(port.getProxy()).append(
+							    " {").append(
+							    NEW_LINE);
+					    text.append(TAB).append("delay_loop 10").append(NEW_LINE);
+					    text.append(TAB).append("lvs_sched ").append(scheduleAlgo).append(NEW_LINE);
+					    text.append(TAB).append("lvs_method DR").append(NEW_LINE);
+					    text.append(TAB).append("persistence_timeout 5").append(NEW_LINE);
+					    text.append(TAB).append("protocol TCP").append(NEW_LINE).append(NEW_LINE);
 
-						for (Member member : cluster.getMembers()) {
-							// Start upstream server block
-							text.append(TAB).append("real_server ").append(member.getHostName()).append(" ")
-							    .append(port.getValue()).append(" {")
-							    .append(NEW_LINE);
-							text.append(TAB).append(TAB).append("weight 50").append(NEW_LINE);
-							text.append(TAB).append(TAB).append("TCP_CHECK {").append(NEW_LINE);
-							text.append(TAB).append(TAB).append(TAB).append("connect_timeout 3").append(NEW_LINE);
-							text.append(TAB).append(TAB).append("}").append(NEW_LINE);
-							text.append(TAB).append("}").append(NEW_LINE);
-							String commandMember = "ipvsadm -a -t " + virtualIpForService[1] + ":" + port.getProxy()+" -r " + member.getHostName() + " -m";
+					    //Start real servers block
 
-							try {
-								CommandUtils.executeCommand(commandMember);
-							} catch (IOException e) {
-								if (log.isErrorEnabled()) {
-									log.error(String.format("Could not run the command: %s", commandMember));
-								}
-								throw new RuntimeException(e);
-							}
-						}
-						text.append("}").append(NEW_LINE);
-						isServiceAvailable = true;
-						virtualIPs.append(TAB).append(TAB).append(virtualIpForService[1]).append(NEW_LINE);
+					    for (Member member : cluster.getMembers()) {
+						    // Start upstream server block
+						    text.append(TAB).append("real_server ").append(member.getHostName()).append(" ")
+						        .append(port.getValue()).append(" {")
+						        .append(NEW_LINE);
+						    text.append(TAB).append(TAB).append("weight 50").append(NEW_LINE);
+						    text.append(TAB).append(TAB).append("TCP_CHECK {").append(NEW_LINE);
+						    text.append(TAB).append(TAB).append(TAB).append("connect_timeout 3").append(NEW_LINE);
+						    text.append(TAB).append(TAB).append("}").append(NEW_LINE);
+						    text.append(TAB).append("}").append(NEW_LINE);
+						    String commandMember =
+								    "ipvsadm -a -t " + virtualIpForService[1] + ":" + port.getValue() + " -r " +
+								    member.getHostName() + " -m";
 
-					}
-				}
-			}
+						    try {
+							    CommandUtils.executeCommand(commandMember);
+						    } catch (IOException e) {
+							    if (log.isErrorEnabled()) {
+								    log.error(String.format("Could not run the command: %s", commandMember));
+							    }
+							    throw new RuntimeException(e);
+						    }
+					    }
+					    text.append("}").append(NEW_LINE);
+					    isServiceAvailable = true;
+					    virtualIPs.append(TAB).append(TAB).append(virtualIpForService[1]).append(NEW_LINE);
+
+				    }
+
+			    }
+		    }
 			if (!isServiceAvailable) {
 				log.warn(String.format("Given service is not available in the topology %s", virtualIpForService[0]));
 			}

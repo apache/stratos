@@ -45,6 +45,7 @@ public class LVS implements LoadBalancer {
 	private String keepAlivedStartCommand;
 	private String serverState;
 	private String scheduleAlgo;
+	private boolean isKeepAlivedUsed;
 
     public LVS() {
         this.executableFilePath = LVSContext.getInstance().getExecutableFilePath();
@@ -57,6 +58,8 @@ public class LVS implements LoadBalancer {
 	    this.keepAlivedStartCommand=LVSContext.getInstance().getKeepAlivedStartCommand();
 	    this.serverState=LVSContext.getInstance().getServerState();
 	    this.scheduleAlgo=LVSContext.getInstance().getLvsScheduleAlgo();
+	    this.isKeepAlivedUsed=LVSContext.getInstance().getIsKeepAlivedUsed();
+
     }
 
     /**
