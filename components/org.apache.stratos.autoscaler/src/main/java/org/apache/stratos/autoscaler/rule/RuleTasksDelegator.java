@@ -40,8 +40,6 @@ import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 
-import java.rmi.RemoteException;
-
 /**
  * This will have utility methods that need to be executed from rule file...
  */
@@ -187,7 +185,7 @@ public class RuleTasksDelegator {
 			String nwPartitionUuid=null;
 	        NetworkPartition[] networkPartitionList= CloudControllerServiceClient.getInstance().getNetworkPartitions();
 	        for(int i=0;i<networkPartitionList.length;i++){
-		        if(networkPartitionList[i].getId().equals(nwPartitionId)){
+		        if(networkPartitionList[i].getUuid().equals(nwPartitionId)){
 			        nwPartitionUuid=networkPartitionList[i].getUuid();
 		        }
 	        }
@@ -262,14 +260,7 @@ public class RuleTasksDelegator {
         }
         //Notify parent for checking scaling dependencies
         ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-	    String networkPartition= null;
-	    try {
-		    networkPartition =
-				    CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId).getId();
-	    } catch (RemoteException e) {
-		    log.error("Error while retrieving the network partition");
-	    }
-	    clusterMonitor.sendScalingDownBeyondMinEvent(networkPartition, instanceId);
+	    clusterMonitor.sendScalingDownBeyondMinEvent(networkPartitionId, instanceId);
     }
 
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {

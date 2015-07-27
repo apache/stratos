@@ -86,7 +86,7 @@ public class AutoscalerServiceComponent {
     private ExecutorService executorService;
     private ScheduledExecutorService scheduler;
 
-    protected void activate(ComponentContext componentContext) throws Exception {
+	protected void activate(ComponentContext componentContext) throws Exception {
         try {
             XMLConfiguration conf = ConfUtil.getInstance(AutoscalerConstants.COMPONENTS_CONFIG).getConfiguration();
             int threadPoolSize = conf.getInt(AutoscalerConstants.THREAD_POOL_SIZE_KEY,

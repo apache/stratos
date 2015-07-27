@@ -1715,13 +1715,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public NetworkPartition getNetworkPartition(String networkPartitionId) {
+    public NetworkPartition getNetworkPartition(String networkPartitionUuid) {
         try {
-            return CloudControllerContext.getInstance().getNetworkPartition(networkPartitionId);
+            return CloudControllerContext.getInstance().getNetworkPartition(networkPartitionUuid);
         } catch (Exception e) {
             String message = String.format("Could not get network partition: [network-partition-uuid] %s " +
-                            "[network-partition-id] %s", getNetworkPartition(networkPartitionId).getUuid(),
-                    networkPartitionId);
+                            "[network-partition-id] %s", getNetworkPartition(networkPartitionUuid).getUuid(),
+                    networkPartitionUuid);
             log.error(message);
             throw new CloudControllerException(message, e);
         }

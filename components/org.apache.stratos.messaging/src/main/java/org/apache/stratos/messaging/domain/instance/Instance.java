@@ -38,7 +38,7 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
     //Parent instance id
     private String parentId;
     //Network partition id
-    private String networkPartitionId;
+    private String networkPartitionId; //refactor to uuid
     //partition id
     protected String partitionId;
 

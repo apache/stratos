@@ -30,7 +30,7 @@ set -e
 echo "Undeploying application..."
 curl -X POST -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/applications/cartridge-group-app/undeploy
 
-sleep 10
+sleep 20
 
 echo "Deleting application..."
 curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/applications/cartridge-group-app

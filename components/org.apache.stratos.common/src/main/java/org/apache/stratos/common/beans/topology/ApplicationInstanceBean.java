@@ -29,7 +29,8 @@ public class ApplicationInstanceBean implements Serializable {
     private String status;
     private String instanceId;
     private String parentInstanceId;
-    private String applicationId;
+    private String applicationUuid;
+	private String applicationId;
     private List<GroupInstanceBean> groupInstances;
     private List<ClusterInstanceBean> clusterInstances;
 
@@ -62,12 +63,12 @@ public class ApplicationInstanceBean implements Serializable {
         this.parentInstanceId = parentInstanceId;
     }
 
-    public String getApplicationId() {
-        return applicationId;
+    public String getApplicationUuid() {
+        return applicationUuid;
     }
 
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
+    public void setApplicationUuid(String applicationUuid) {
+        this.applicationUuid = applicationUuid;
     }
 
     public List<GroupInstanceBean> getGroupInstances() {
@@ -85,4 +86,12 @@ public class ApplicationInstanceBean implements Serializable {
     public void setClusterInstances(List<ClusterInstanceBean> clusterInstances) {
         this.clusterInstances = clusterInstances;
     }
+
+	public String getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(String applicationId) {
+		this.applicationId = applicationId;
+	}
 }

@@ -1356,13 +1356,9 @@ public class ClusterMonitor extends Monitor {
         }
 	    ClusterLevelNetworkPartitionContext networkPartitionContext =
 			    null;
-	    try {
-		    networkPartitionContext =
-				    clusterLevelNetworkPartitionContextMap.get(
-						    CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId).getId());
-	    } catch (RemoteException e) {
-		    log.error("Error while retrieving network partition", e);
-	    }
+
+		networkPartitionContext = clusterLevelNetworkPartitionContextMap.get(networkPartitionId);
+
 	    if (networkPartitionContext == null) {
             throw new RuntimeException("Network partition context not found: [network-partition-id] " +
                     networkPartitionId);

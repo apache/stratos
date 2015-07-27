@@ -131,7 +131,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
             return selectedNetworkPartitions;
         }
 
-        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+        String[] networkPartitions = applicationPolicy.getNetworkPartitionsUuid();
         if (networkPartitions == null || networkPartitions.length == 0) {
             if (log.isWarnEnabled()) {
                 String msg = String.format("Network partitions found in application policy " +
@@ -248,7 +248,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
 
         } else {
             //Returning the very first network-partition as the default one
-            String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+            String[] networkPartitions = applicationPolicy.getNetworkPartitionsUuid();
             selectedNetworkPartitions.add(networkPartitions[0]);
         }
 
