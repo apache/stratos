@@ -35,10 +35,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Holds information about a partition.
  */
 
-public class GroupLevelPartitionContext extends PartitionContext implements Serializable {
+public class ParentLevelPartitionContext extends PartitionContext implements Serializable {
 
     private static final long serialVersionUID = -2920388667345980487L;
-    private static final Log log = LogFactory.getLog(GroupLevelPartitionContext.class);
+    private static final Log log = LogFactory.getLog(ParentLevelPartitionContext.class);
     private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
     private String serviceName;
     private int minimumInstanceCount = 0;
@@ -73,7 +73,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
     private Map<String, MemberStatsContext> instanceStatsContexts;
 
     // for the use of tests
-    public GroupLevelPartitionContext(long instanceExpiryTime) {
+    public ParentLevelPartitionContext(long instanceExpiryTime) {
 
         super(instanceExpiryTime);
         this.activeInstances = new ArrayList<Instance>();
@@ -81,7 +81,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
-    public GroupLevelPartitionContext(String partitionId, String networkPartitionIid, String deploymentPolicyId) {
+    public ParentLevelPartitionContext(String partitionId, String networkPartitionIid, String deploymentPolicyId) {
         super(partitionId, networkPartitionIid, deploymentPolicyId);
         this.pendingInstances = new ArrayList<Instance>();
         this.activeInstances = new ArrayList<Instance>();
@@ -110,7 +110,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         th3.start();*/
     }
 
-    public GroupLevelPartitionContext(String partitionId, String networkPartitionIid) {
+    public ParentLevelPartitionContext(String partitionId, String networkPartitionIid) {
         super(partitionId, networkPartitionIid);
         this.pendingInstances = new ArrayList<Instance>();
         this.activeInstances = new ArrayList<Instance>();
@@ -700,9 +700,9 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
      * This thread is responsible for moving instance to obsolete list if pending termination timeout happens
      */
     private class TerminationPendingInstanceWatcher implements Runnable {
-        private GroupLevelPartitionContext ctxt;
+        private ParentLevelPartitionContext ctxt;
 
-        public TerminationPendingInstanceWatcher(GroupLevelPartitionContext ctxt) {
+        public TerminationPendingInstanceWatcher(ParentLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
         }
 

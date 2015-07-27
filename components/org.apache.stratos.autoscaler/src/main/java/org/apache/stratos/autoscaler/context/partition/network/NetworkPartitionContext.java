@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.context.partition.network;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.InstanceContext;
-import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.ParentLevelPartitionContext;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,12 +49,13 @@ public class NetworkPartitionContext {
     private int min;
 
     //Group level partition contexts
-    private List<GroupLevelPartitionContext> partitionContexts;
+    private List<ParentLevelPartitionContext> partitionContexts;
 
     public NetworkPartitionContext(String id, String partitionAlgo) {
         this.id = id;
+        instanceIdToInstanceContextMap = new ConcurrentHashMap<String, InstanceContext>();
         this.partitionAlgorithm = partitionAlgo;
-        partitionContexts = new ArrayList<GroupLevelPartitionContext>();
+        partitionContexts = new ArrayList<ParentLevelPartitionContext>();
         pendingInstances = new ArrayList<InstanceContext>();
         activeInstances = new ArrayList<InstanceContext>();
         terminatingPending = new ArrayList<InstanceContext>();
@@ -63,7 +64,8 @@ public class NetworkPartitionContext {
 
     public NetworkPartitionContext(String id) {
         this.id = id;
-        partitionContexts = new ArrayList<GroupLevelPartitionContext>();
+        instanceIdToInstanceContextMap = new ConcurrentHashMap<String, InstanceContext>();
+        partitionContexts = new ArrayList<ParentLevelPartitionContext>();
         pendingInstances = new ArrayList<InstanceContext>();
         activeInstances = new ArrayList<InstanceContext>();
         terminatingPending = new ArrayList<InstanceContext>();
@@ -127,14 +129,14 @@ public class NetworkPartitionContext {
         return instanceContexts;
     }
 
-    public List<GroupLevelPartitionContext> getPartitionCtxts() {
+    public List<ParentLevelPartitionContext> getPartitionCtxts() {
 
         return partitionContexts;
     }
 
-    public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
+    public ParentLevelPartitionContext getPartitionCtxt(String partitionId) {
 
-        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
+        for (ParentLevelPartitionContext partitionContext : partitionContexts) {
             if (partitionContext.getPartitionId().equals(partitionId)) {
                 return partitionContext;
             }
@@ -142,13 +144,13 @@ public class NetworkPartitionContext {
         return null;
     }
 
-    public void addPartitionContext(GroupLevelPartitionContext partitionContext) {
+    public void addPartitionContext(ParentLevelPartitionContext partitionContext) {
         partitionContexts.add(partitionContext);
     }
 
 
-    public GroupLevelPartitionContext getPartitionContextById(String partitionId) {
-        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
+    public ParentLevelPartitionContext getPartitionContextById(String partitionId) {
+        for (ParentLevelPartitionContext partitionContext : partitionContexts) {
             if (partitionContext.getPartitionId().equals(partitionId)) {
                 return partitionContext;
             }

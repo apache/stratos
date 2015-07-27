@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.InstanceContext;
+import org.apache.stratos.autoscaler.context.application.ParentInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
@@ -274,12 +275,13 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (networkPartitionContext != null) {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
+            ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
             if (instanceContext != null) {
-                if (instanceContext.containsScalingEvent(id)) {
-                    instanceContext.removeScalingEvent(id);
-                    instanceContext.addScalingEvent(scalingEvent);
+                if (parentInstanceContext.containsScalingEvent(id)) {
+                    parentInstanceContext.removeScalingEvent(id);
+                    parentInstanceContext.addScalingEvent(scalingEvent);
                 } else {
-                    instanceContext.addScalingEvent(scalingEvent);
+                    parentInstanceContext.addScalingEvent(scalingEvent);
                 }
             }
         }
@@ -298,8 +300,9 @@ public abstract class ParentComponentMonitor extends Monitor {
 
         String networkPartitionId = scalingDownBeyondMinEvent.getNetworkPartitionId();
         String instanceId = scalingDownBeyondMinEvent.getInstanceId();
-        getNetworkPartitionContext(networkPartitionId).getInstanceContext(instanceId).
-                addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
+        InstanceContext instanceContext = getNetworkPartitionContext(networkPartitionId).
+                getInstanceContext(instanceId);
+        ((ParentInstanceContext)instanceContext).addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
     }
 
     @Override
@@ -320,11 +323,12 @@ public abstract class ParentComponentMonitor extends Monitor {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
             if (instanceContext != null) {
-                if (instanceContext.containsScalingEvent(id)) {
-                    instanceContext.removeScalingOverMaxEvent(id);
-                    instanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
+                ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
+                if (parentInstanceContext.containsScalingEvent(id)) {
+                    parentInstanceContext.removeScalingOverMaxEvent(id);
+                    parentInstanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
                 } else {
-                    instanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
+                    parentInstanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
                 }
             }
         }
@@ -713,7 +717,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      *                                the scale notification from the child
      * @param networkPartitionContext network-partition-context which belongs to the instance
      */
-    protected void handleDependentScaling(InstanceContext instanceContext,
+    protected void handleDependentScaling(ParentInstanceContext instanceContext,
                                           NetworkPartitionContext networkPartitionContext) {
         /**
          * Dependency scaling handling

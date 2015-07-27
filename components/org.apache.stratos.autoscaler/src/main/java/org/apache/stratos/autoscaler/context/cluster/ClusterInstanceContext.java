@@ -40,9 +40,8 @@ import java.util.Map;
  * It holds the runtime data of a VM cluster
  */
 public class ClusterInstanceContext extends InstanceContext {
-
     private static final Log log = LogFactory.getLog(ClusterInstanceContext.class);
-
+    //partition algorithm
     private final String partitionAlgorithm;
     // Map<PartitionId, Partition Context>
     protected Map<String, ClusterLevelPartitionContext> partitionCtxts;

@@ -28,7 +28,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
-import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
+import org.apache.stratos.autoscaler.context.application.ParentInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
@@ -120,29 +120,30 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             getInstanceIdToInstanceContextMap().values()) {
                         ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.
                                 get(instanceContext.getId());
+                        ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
                         if (instance.getStatus().getCode() <= ApplicationStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
-                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
+                            if (!parentInstanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
                                 //handling the scaling max out of the children
-                                handleScalingMaxOut(instanceContext, networkPartitionContext);
+                                handleScalingMaxOut(parentInstanceContext, networkPartitionContext);
 
-                            } else if (!instanceContext.getIdToScalingEvent().isEmpty()) {
+                            } else if (!parentInstanceContext.getIdToScalingEvent().isEmpty()) {
                                 //handling the dependent scaling for application
-                                handleDependentScaling(instanceContext, networkPartitionContext);
+                                handleDependentScaling(parentInstanceContext, networkPartitionContext);
 
-                            } else if (!instanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()) {
+                            } else if (!parentInstanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()) {
                                 //handling the scale down of the application
-                                handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
+                                handleScalingDownBeyondMin(parentInstanceContext, networkPartitionContext);
                             }
                         }
 
                         //Resetting the events events
-                        instanceContext.setIdToScalingDownBeyondMinEvent(
+                        parentInstanceContext.setIdToScalingDownBeyondMinEvent(
                                 new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
-                        instanceContext.setIdToScalingEvent(
+                        parentInstanceContext.setIdToScalingEvent(
                                 new ConcurrentHashMap<String, ScalingEvent>());
-                        instanceContext.setIdToScalingOverMaxEvent(
+                        parentInstanceContext.setIdToScalingOverMaxEvent(
                                 new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                     }
                 }
@@ -165,7 +166,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         executorService.execute(monitoringRunnable);
     }
 
-    private void handleScalingMaxOut(InstanceContext instanceContext,
+    private void handleScalingMaxOut(ParentInstanceContext instanceContext,
                                      NetworkPartitionContext networkPartitionContext) {
         if (((NetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
             //handling the application bursting only when there are no pending instances found
@@ -198,7 +199,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param instanceContext    instance-context which can be scaled-down
      * @param nwPartitionContext the network-partition-context of the instance
      */
-    private void handleScalingDownBeyondMin(InstanceContext instanceContext,
+    private void handleScalingDownBeyondMin(ParentInstanceContext instanceContext,
                                             NetworkPartitionContext nwPartitionContext) {
         //Traverse through all the children to see whether all have sent the scale down
         boolean allChildrenScaleDown = false;
@@ -611,7 +612,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                                      NetworkPartitionContext context,
                                                      ApplicationInstance instanceExist) {
         ApplicationInstance instance;
-        ApplicationInstanceContext instanceContext;
+        ParentInstanceContext instanceContext;
         if (instanceExist != null) {
             //using the existing instance
             instance = instanceExist;
@@ -623,7 +624,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         String instanceId = instance.getInstanceId();
 
         //Creating appInstanceContext
-        instanceContext = new ApplicationInstanceContext(instanceId);
+        instanceContext = new ParentInstanceContext(instanceId);
         //adding the created App InstanceContext to ApplicationLevelNetworkPartitionContext
         context.addInstanceContext(instanceContext);
         context.addPendingInstance(instanceContext);
