@@ -83,7 +83,7 @@ public class AutoscalerCloudControllerClient {
 
     public synchronized MemberContext startInstance(PartitionRef partition,
                                                     String clusterId, String clusterInstanceId,
-                                                    String networkPartitionId, boolean isPrimary,
+                                                    String networkPartitionId,
                                                     int minMemberCount) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
@@ -107,15 +107,10 @@ public class AutoscalerCloudControllerClient {
             instanceContext.setNetworkPartitionId(networkPartitionId);
 
             Properties memberContextProps = new Properties();
-            Property isPrimaryProp = new Property();
-            isPrimaryProp.setName("PRIMARY");
-            isPrimaryProp.setValue(String.valueOf(isPrimary));
-
             Property minCountProp = new Property();
             minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
 
-            memberContextProps.addProperty(isPrimaryProp);
             memberContextProps.addProperty(minCountProp);
             instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 

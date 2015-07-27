@@ -47,15 +47,15 @@ public class ClusterInstanceContext extends InstanceContext {
     // Map<PartitionId, Partition Context>
     protected Map<String, ClusterLevelPartitionContext> partitionCtxts;
     //boolean values to keep whether the requests in flight parameters are reset or not
-    private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
+    private boolean rifReset, averageRifReset, gradientRifReset, secondDerivativeRifRest;
     //boolean values to keep whether the memory consumption parameters are reset or not
-    private boolean memoryConsumptionReset = false, averageMemoryConsumptionReset = false,
-            gradientMemoryConsumptionReset = false, secondDerivativeMemoryConsumptionRest = false;
+    private boolean memoryConsumptionReset, averageMemoryConsumptionReset,
+            gradientMemoryConsumptionReset, secondDerivativeMemoryConsumptionRest;
     //boolean values to keep whether the load average parameters are reset or not
-    private boolean loadAverageReset = false, averageLoadAverageReset = false, gradientLoadAverageReset = false,
-            secondDerivativeLoadAverageRest = false;
+    private boolean loadAverageReset, averageLoadAverageReset, gradientLoadAverageReset,
+            secondDerivativeLoadAverageRest;
     //boolean values to keep whether average requests served per instance parameters are reset or not
-    private boolean averageRequestServedPerInstanceReset = false;
+    private boolean averageRequestServedPerInstanceReset;
     //Following information will keep events details
     private RequestsInFlight requestsInFlight;
     private MemoryConsumption memoryConsumption;
