@@ -22,7 +22,6 @@ package org.apache.stratos.lvs.extension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.util.CommandUtils;
-import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 
@@ -38,9 +37,14 @@ public class LVSStatisticsReader implements LoadBalancerStatisticsReader {
 			//"ipvsadm -l --stats | grep TCP"
 
 	private TopologyProvider topologyProvider;
+	private String clusterInstanceId;
 
 	public LVSStatisticsReader(TopologyProvider topologyProvider) {
 		this.topologyProvider = topologyProvider;
+	}
+
+	@Override public String getClusterInstanceId() {
+		return clusterInstanceId;
 	}
 
 	@Override
@@ -73,13 +77,4 @@ public class LVSStatisticsReader implements LoadBalancerStatisticsReader {
 		return totalWeight;
 	}
 
-	@Override
-	public int getServedRequestCount(String clusterId) {
-		return 0;
-	}
-
-	@Override
-	public int getActiveInstancesCount(Cluster cluster) {
-		return 0;
-	}
 }

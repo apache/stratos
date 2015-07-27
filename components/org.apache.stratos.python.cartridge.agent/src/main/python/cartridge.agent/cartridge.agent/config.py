@@ -142,7 +142,7 @@ class CartridgeAgentConfiguration:
                 self.dependant_cluster_id = self.read_property(constants.DEPENDENCY_CLUSTER_IDS, False)
                 self.export_metadata_keys = self.read_property(constants.EXPORT_METADATA_KEYS, False)
                 self.import_metadata_keys = self.read_property(constants.IMPORT_METADATA_KEYS, False)
-                self.lvs_virtual_ip = self.read_property(constants.LVS_VIRTUAL_IP)
+                self.lvs_virtual_ip = self.read_property(constants.LVS_VIRTUAL_IP,False)
 
                 try:
                     self.log_file_paths = str(

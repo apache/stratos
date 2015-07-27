@@ -130,7 +130,7 @@ public class BasicPayloadData implements Serializable {
             payloadBuilder.append("IMPORT_METADATA_KEYS=" + getImportMetadataKeys());
         }
 	    payloadBuilder.append(",");
-	    if(!getLvsVirtualIP().equals("")){
+	    if(getLvsVirtualIP()!=null && !getLvsVirtualIP().equals("")){
 		    payloadBuilder.append("LVS_VIRTUAL_IP=" +getLvsVirtualIP());
 	    }
     }

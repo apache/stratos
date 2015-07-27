@@ -1387,6 +1387,7 @@ public class ObjectConverter {
         infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
         infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
         infoContext.setMinMembers(subscribableInfo.getMinMembers());
+	    infoContext.setLvsVirtualIP(subscribableInfo.getLvsVirtualIP());
 
         if (subscribableInfo.getArtifactRepository() != null) {
             ArtifactRepositoryBean artifactRepository = subscribableInfo.getArtifactRepository();
