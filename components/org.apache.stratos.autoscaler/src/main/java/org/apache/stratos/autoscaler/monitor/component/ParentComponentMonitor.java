@@ -29,7 +29,6 @@ import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.InstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
@@ -671,8 +670,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
 
         if (!groupInstances.isEmpty()) {
-            ParentLevelNetworkPartitionContext networkPartitionContext =
-                    (ParentLevelNetworkPartitionContext) ((GroupMonitor) monitor).
+            NetworkPartitionContext networkPartitionContext =
+                    (NetworkPartitionContext) ((GroupMonitor) monitor).
                             getNetworkPartitionContextsMap().get(networkPartitionId);
             int minInstances = networkPartitionContext.getMinInstanceCount();
             //if terminated all the instances in this instances map should be in terminated state

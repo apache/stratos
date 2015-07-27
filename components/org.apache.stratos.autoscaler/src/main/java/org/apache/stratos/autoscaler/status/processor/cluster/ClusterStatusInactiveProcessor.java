@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
@@ -85,7 +85,7 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
 
     private boolean getClusterInactive(String instanceId, ClusterMonitor monitor) {
         boolean clusterInactive = false;
-        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
+        for (NetworkPartitionContext clusterLevelNetworkPartitionContext :
                 monitor.getAllNetworkPartitionCtxts().values()) {
             ClusterInstanceContext instanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.

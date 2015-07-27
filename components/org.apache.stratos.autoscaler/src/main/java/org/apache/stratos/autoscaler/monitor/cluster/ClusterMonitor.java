@@ -29,7 +29,6 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
@@ -332,7 +331,7 @@ public class ClusterMonitor extends Monitor {
     public synchronized void monitor() {
 
         try {
-            for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
+            for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
 
                 final Collection<InstanceContext> clusterInstanceContexts = networkPartitionContext.
                         getInstanceIdToInstanceContextMap().values();
@@ -825,7 +824,7 @@ public class ClusterMonitor extends Monitor {
                     clusterId, clusterInstanceId, networkPartitionId, value));
         }
         if (clusterInstanceId.equals(StratosConstants.NOT_DEFINED)) {
-            ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
+            NetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
             if (null != networkPartitionContext) {
                 int totalActiveMemberCount = 0;
                 for (InstanceContext clusterInstanceContext :
@@ -880,7 +879,7 @@ public class ClusterMonitor extends Monitor {
         }
 
         if (clusterInstanceId.equals(StratosConstants.NOT_DEFINED)) {
-            ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
+            NetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
             if (null != networkPartitionContext) {
                 int totalActiveMemberCount = 0;
                 for (InstanceContext clusterInstanceContext : networkPartitionContext
@@ -933,7 +932,7 @@ public class ClusterMonitor extends Monitor {
         }
 
         if (clusterInstanceId.equals(StratosConstants.NOT_DEFINED)) {
-            ClusterLevelNetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
+            NetworkPartitionContext networkPartitionContext = getNetworkPartitionContext(networkPartitionId);
             if (null != networkPartitionContext) {
                 int totalActiveMemberCount = 0;
                 for (InstanceContext clusterInstanceContext : networkPartitionContext
@@ -1482,18 +1481,18 @@ public class ClusterMonitor extends Monitor {
     }
 
 
-    public Map<String, ClusterLevelNetworkPartitionContext> getAllNetworkPartitionCtxts() {
+    public Map<String, NetworkPartitionContext> getAllNetworkPartitionCtxts() {
         return (this.clusterContext).getNetworkPartitionCtxts();
     }
 
     public ClusterInstanceContext getClusterInstanceContext(String networkPartitionId, String instanceId) {
         Map<String,
-                ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
+                NetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
                 (this.clusterContext).getNetworkPartitionCtxts();
         if (StringUtils.isBlank(networkPartitionId)) {
             throw new RuntimeException("Network partition id is null");
         }
-        ClusterLevelNetworkPartitionContext networkPartitionContext =
+        NetworkPartitionContext networkPartitionContext =
                 clusterLevelNetworkPartitionContextMap.get(networkPartitionId);
         if (networkPartitionContext == null) {
             throw new RuntimeException("Network partition context not found: [network-partition-id] " +
@@ -1503,14 +1502,14 @@ public class ClusterMonitor extends Monitor {
         return (ClusterInstanceContext) networkPartitionContext.getInstanceContext(instanceId);
     }
 
-    public ClusterLevelNetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
+    public NetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
         Map<String,
-                ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
+                NetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
                 (this.clusterContext).getNetworkPartitionCtxts();
         if (StringUtils.isBlank(networkPartitionId)) {
             throw new RuntimeException("Network partition id is null");
         }
-        ClusterLevelNetworkPartitionContext networkPartitionContext =
+        NetworkPartitionContext networkPartitionContext =
                 clusterLevelNetworkPartitionContextMap.get(networkPartitionId);
         if (networkPartitionContext == null) {
             throw new RuntimeException("Network partition context not found: [network-partition-id] " +
@@ -1520,7 +1519,7 @@ public class ClusterMonitor extends Monitor {
         return networkPartitionContext;
     }
 
-    public Collection<ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
+    public Collection<NetworkPartitionContext> getNetworkPartitionCtxts() {
         return (this.clusterContext).getNetworkPartitionCtxts().values();
     }
 
