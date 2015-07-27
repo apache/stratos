@@ -164,6 +164,7 @@ public class StratosConstants {
 
     // member expiry timeout constants
     public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
+    public static final String SPIN_TERMINATE_PARALLEL = "autoscaler.member.pendingMemberExpiryTimeout";
     public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
     public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
