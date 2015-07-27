@@ -489,20 +489,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     /**
-     * This will start the minimum dependencies
-     *
-     * @param application the application which used to create monitors
-     * @return whether monitor created or not
-     * @throws TopologyInConsistentException
-     * @throws PolicyValidationException
-     */
-    public boolean startMinimumDependencies(Application application)
-            throws TopologyInConsistentException, PolicyValidationException {
-
-        return createInstanceAndStartDependency(application);
-    }
-
-    /**
      * Utility to create application instance by parsing the deployment policy for a monitor
      *
      * @param application the application
@@ -510,7 +496,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @throws TopologyInConsistentException
      * @throws PolicyValidationException
      */
-    private boolean createInstanceAndStartDependency(Application application)
+    public boolean createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
 
         boolean initialStartup = true;

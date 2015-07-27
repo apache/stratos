@@ -196,7 +196,7 @@ public class MonitorFactory {
             ApplicationHolder.releaseReadLock();
         }
         //Creating the immediate dependencies
-        applicationMonitor.startMinimumDependencies(application);
+        applicationMonitor.createInstanceAndStartDependency(application);
         // Starting the scheduler of the application monitor
         applicationMonitor.startScheduler();
 
