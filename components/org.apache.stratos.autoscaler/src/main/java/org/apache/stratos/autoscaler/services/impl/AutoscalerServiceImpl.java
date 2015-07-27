@@ -184,11 +184,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         ApplicationContext existingApplicationContext = AutoscalerContext.getInstance().
                 getApplicationContext(applicationId);
 
+        //Need to update the application
+        AutoscalerUtil.getInstance().updateApplicationsTopology(application);
+
         if (existingApplicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-
-            //Need to update the application
-            AutoscalerUtil.getInstance().updateApplicationsTopology(application);
-
             //Update the clusterMonitors
             AutoscalerUtil.getInstance().updateClusterMonitor(application);
 
