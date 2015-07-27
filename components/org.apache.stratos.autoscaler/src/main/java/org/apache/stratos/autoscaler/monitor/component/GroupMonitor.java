@@ -155,32 +155,30 @@ public class GroupMonitor extends ParentComponentMonitor {
                         }
                     }
 
-                    NetworkPartitionContext parentNetworkPartitionContext
-                            = (NetworkPartitionContext) networkPartitionContext;
                     Collection<Instance> parentInstances = parent.getInstances();
 
                     for (Instance parentInstance : parentInstances) {
-                        if(parentInstance.getNetworkPartitionId().equals(parentNetworkPartitionContext.getId())) {
-                            int nonTerminatedInstancesCount = parentNetworkPartitionContext.
+                        if(parentInstance.getNetworkPartitionId().equals(networkPartitionContext.getId())) {
+                            int nonTerminatedInstancesCount = networkPartitionContext.
                                     getNonTerminatedInstancesCount(parentInstance.getInstanceId());
-                            int minInstances = parentNetworkPartitionContext.
+                            int minInstances = networkPartitionContext.
                                     getMinInstanceCount();
-                            int maxInstances = parentNetworkPartitionContext.
+                            int maxInstances = networkPartitionContext.
                                     getMaxInstanceCount();
-                            int activeInstances = parentNetworkPartitionContext.
+                            int activeInstances = networkPartitionContext.
                                     getActiveInstancesCount(parentInstance.getInstanceId());
 
                             if (nonTerminatedInstancesCount < minInstances) {
                                 int instancesToBeCreated = minInstances - nonTerminatedInstancesCount;
                                 for (int i = 0; i < instancesToBeCreated; i++) {
                                     for (InstanceContext parentInstanceContext : parent.
-                                            getNetworkPartitionContext(parentNetworkPartitionContext.getId()).
+                                            getNetworkPartitionContext(networkPartitionContext.getId()).
                                             getInstanceIdToInstanceContextMap().values()) {
                                         //keep on scale-up/scale-down only if the application is active
                                         ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
                                                 getAppMonitor(appId);
-                                        int activeAppInstances = ((NetworkPartitionContext) appMonitor.
-                                                getNetworkPartitionContext(parentNetworkPartitionContext.getId())).
+                                        int activeAppInstances = appMonitor.
+                                                getNetworkPartitionContext(networkPartitionContext.getId()).
                                                 getActiveInstancesCount();
                                         if (activeAppInstances > 0) {
                                             //Creating new group instance based on the existing parent instances
@@ -199,8 +197,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                             if (activeInstances > maxInstances) {
                                 int instancesToBeTerminated = activeInstances - maxInstances;
                                 List<InstanceContext> contexts =
-                                        ((NetworkPartitionContext) networkPartitionContext).
-                                                getInstanceIdToInstanceContextMap(parentInstance.getInstanceId());
+                                        networkPartitionContext.getInstanceIdToInstanceContextMap(
+                                                parentInstance.getInstanceId());
                                 List<InstanceContext> contextList = new ArrayList<InstanceContext>(contexts);
                                 for (int i = 0; i < instancesToBeTerminated; i++) {
                                     InstanceContext instanceContext = contextList.get(i);
@@ -264,31 +262,27 @@ public class GroupMonitor extends ParentComponentMonitor {
         // if it is a force scale-down
         if (allChildrenScaleDown || forceScaleDown) {
             if (hasScalingDependents) {
-                NetworkPartitionContext parentLevelNetworkPartitionContext
-                        = (NetworkPartitionContext) nwPartitionContext;
-                if (parentLevelNetworkPartitionContext.getNonTerminatedInstancesCount() >
-                        parentLevelNetworkPartitionContext.getMinInstanceCount()) {
+                if (nwPartitionContext.getNonTerminatedInstancesCount() >
+                        nwPartitionContext.getMinInstanceCount()) {
                     //Will scale down based on dependent manner
-                    float minInstances = parentLevelNetworkPartitionContext.getMinInstanceCount();
+                    float minInstances = nwPartitionContext.getMinInstanceCount();
                     float factor =
-                            (parentLevelNetworkPartitionContext.getNonTerminatedInstancesCount() - 1) / minInstances;
-                    ScalingEvent scalingEvent = new ScalingEvent(this.id, parentLevelNetworkPartitionContext.getId(),
+                            (nwPartitionContext.getNonTerminatedInstancesCount() - 1) / minInstances;
+                    ScalingEvent scalingEvent = new ScalingEvent(this.id, nwPartitionContext.getId(),
                             instanceContext.getId(), factor);
                     this.parent.onChildScalingEvent(scalingEvent);
                 } else {
                     //Parent has to handle this scale down as by dependent scale down
                     ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent =
                             new ScalingDownBeyondMinEvent(this.id,
-                                    parentLevelNetworkPartitionContext.getId(), instanceContext.getParentInstanceId());
+                                    nwPartitionContext.getId(), instanceContext.getParentInstanceId());
                     this.parent.onChildScalingDownBeyondMinEvent(newScalingDownBeyondMinEvent);
                 }
 
             } else {
                 if (groupScalingEnabled) {
-                    NetworkPartitionContext parentLevelNetworkPartitionContext
-                            = (NetworkPartitionContext) nwPartitionContext;
-                    if (parentLevelNetworkPartitionContext.getNonTerminatedInstancesCount() >
-                            parentLevelNetworkPartitionContext.getMinInstanceCount()) {
+                    if (nwPartitionContext.getNonTerminatedInstancesCount() >
+                                            nwPartitionContext.getMinInstanceCount()) {
                         //send terminating to the specific group instance in the scale down
                         ApplicationBuilder.handleGroupTerminatingEvent(this.appId, this.id,
                                 instanceContext.getId());
@@ -315,8 +309,7 @@ public class GroupMonitor extends ParentComponentMonitor {
     private void createGroupInstanceOnScaling(final NetworkPartitionContext networkPartitionContext,
                                               final String parentInstanceId) {
         if (groupScalingEnabled) {
-            if (((NetworkPartitionContext) networkPartitionContext).
-                    getPendingInstancesCount(parentInstanceId) == 0) {
+            if (networkPartitionContext.getPendingInstancesCount(parentInstanceId) == 0) {
                 //one of the child is loaded and max out.
                 // Hence creating new group instance
                 if (log.isDebugEnabled()) {
@@ -372,16 +365,13 @@ public class GroupMonitor extends ParentComponentMonitor {
             log.debug("This [Group] " + id + " [scale-up] dependencies. " +
                     "Hence notifying the [parent] " + parent.getId());
         }
-        NetworkPartitionContext parentLevelNetworkPartitionContext
-                = (NetworkPartitionContext) networkPartitionContext;
         //notifying the parent when scale dependents found
-        int maxInstances = parentLevelNetworkPartitionContext.getMaxInstanceCount();
-        if (groupScalingEnabled && maxInstances > parentLevelNetworkPartitionContext.
+        int maxInstances = networkPartitionContext.getMaxInstanceCount();
+        if (groupScalingEnabled && maxInstances > networkPartitionContext.
                 getNonTerminatedInstancesCount()) {
             //increase group by one more instance and calculate the factor for the group scaling
             // and notify parent to scale all the dependent in parallel with this factor
-            float minInstances = ((NetworkPartitionContext)
-                    networkPartitionContext).getMinInstanceCount();
+            float minInstances = networkPartitionContext.getMinInstanceCount();
 
             float factor = (minInstances + 1) / minInstances;
             MonitorStatusEventBuilder.
@@ -610,11 +600,9 @@ public class GroupMonitor extends ParentComponentMonitor {
                 get(networkPartitionId);
 
         float factor = scalingEvent.getFactor();
-        NetworkPartitionContext parentLevelNetworkPartitionContext
-                = (NetworkPartitionContext) networkPartitionContext;
-        int currentInstances = parentLevelNetworkPartitionContext.
+        int currentInstances = networkPartitionContext.
                 getNonTerminatedInstancesCount(parentInstanceId);
-        float requiredInstances = factor * parentLevelNetworkPartitionContext.getMinInstanceCount();
+        float requiredInstances = factor * networkPartitionContext.getMinInstanceCount();
         int ceilingRequiredInstances = (int) Math.ceil(requiredInstances);
         if (ceilingRequiredInstances > currentInstances) {
 
@@ -629,14 +617,14 @@ public class GroupMonitor extends ParentComponentMonitor {
             for (int count = 0; count < instancesToBeTerminated; count++) {
 
                 //have to scale down
-                if (parentLevelNetworkPartitionContext.getPendingInstancesCount() != 0) {
+                if (networkPartitionContext.getPendingInstancesCount() != 0) {
                     ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
-                            parentLevelNetworkPartitionContext.getPendingInstances(parentInstanceId).
+                            networkPartitionContext.getPendingInstances(parentInstanceId).
                                     get(0).getId());
 
                 } else {
                     List<InstanceContext> activeInstances =
-                            parentLevelNetworkPartitionContext.getActiveInstances(parentInstanceId);
+                            networkPartitionContext.getActiveInstances(parentInstanceId);
                     ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
                             activeInstances.get(activeInstances.size() - 1).toString());
                 }
@@ -692,7 +680,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
         if (this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
-            parentLevelNetworkPartitionContext = (NetworkPartitionContext) this.getNetworkPartitionContextsMap().
+            parentLevelNetworkPartitionContext = this.getNetworkPartitionContextsMap().
                     get(networkPartitionId);
         } else {
             if (deploymentPolicy != null) {
