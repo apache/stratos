@@ -146,7 +146,7 @@ public class TopologyEventPublisher {
                 memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(),
                 memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId(),
+                memberContext.getPartition().getUuid(),
                 memberContext.getLoadBalancingIPType(),
                 memberContext.getInitTime());
 
@@ -158,7 +158,7 @@ public class TopologyEventPublisher {
                         "[partition-id] %s [lb-cluster-id] %s",
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(), memberContext.getClusterInstanceId(), memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId(), memberContext.getLbClusterId()));
+                memberContext.getPartition().getUuid(), memberContext.getLbClusterId()));
         publishEvent(memberCreatedEvent);
     }
 
@@ -171,7 +171,7 @@ public class TopologyEventPublisher {
                 memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(),
                 memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId());
+                memberContext.getPartition().getUuid());
 
         memberInitializedEvent.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
         if (memberContext.getPrivateIPs() != null) {
@@ -189,7 +189,7 @@ public class TopologyEventPublisher {
                         "[partition-id] %s [lb-cluster-id] %s",
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId(), memberContext.getLbClusterId()));
+                memberContext.getPartition().getUuid(), memberContext.getLbClusterId()));
         publishEvent(memberInitializedEvent);
     }
 

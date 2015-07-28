@@ -403,7 +403,7 @@ public class TopologyBuilder {
         String memberId = memberContext.getMemberId();
         String clusterInstanceId = memberContext.getClusterInstanceId();
         String networkPartitionId = memberContext.getNetworkPartitionId();
-        String partitionId = memberContext.getPartition().getId();
+        String partitionId = memberContext.getPartition().getUuid();
         String lbClusterId = memberContext.getLbClusterId();
         long initTime = memberContext.getInitTime();
 
@@ -483,7 +483,7 @@ public class TopologyBuilder {
                 TopologyEventPublisher.sendMemberInitializedEvent(memberContext);
                 //publishing data
                 BAMUsageDataPublisher.publish(memberContext.getMemberId(),
-                        memberContext.getPartition().getId(),
+                        memberContext.getPartition().getUuid(),
                         memberContext.getNetworkPartitionId(),
                         memberContext.getClusterId(),
                         memberContext.getCartridgeType(),

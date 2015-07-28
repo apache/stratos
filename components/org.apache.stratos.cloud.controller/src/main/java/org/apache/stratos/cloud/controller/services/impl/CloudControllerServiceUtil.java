@@ -59,7 +59,7 @@ public class CloudControllerServiceUtil {
             return;
         }
 
-        String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
+        String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getUuid();
 
         // Update the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
@@ -98,7 +98,7 @@ public class CloudControllerServiceUtil {
             return iaasProvider;
 
         } else {
-            String msg = "Partition is not valid: [partition-id] " + partition.getId();
+            String msg = "Partition is not valid: [partition-id] " + partition.getUuid();
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }

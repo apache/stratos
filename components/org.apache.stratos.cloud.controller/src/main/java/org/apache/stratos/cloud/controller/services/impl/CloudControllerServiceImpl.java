@@ -358,7 +358,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             handleNullObject(partition, "Could not start instance, partition is null");
 
             // Validate cluster
-            String partitionId = partition.getId();
+            String partitionId = partition.getUuid();
             String clusterId = instanceContext.getClusterId();
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             handleNullObject(clusterContext, "Could not start instance, cluster context not found: [cluster-id] " + clusterId);
@@ -492,7 +492,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         memberContext.setClusterInstanceId(instanceContext.getClusterInstanceId());
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
         memberContext.setPartition(cloudControllerContext.getNetworkPartition(instanceContext.getNetworkPartitionId()).
-                getPartition(instanceContext.getPartition().getId()));
+                getPartition(instanceContext.getPartition().getUuid()));
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
         memberContext.setLoadBalancingIPType(loadBalancingIPType);
@@ -989,19 +989,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
             for (Partition partition : networkPartition.getPartitions()) {
-                if (validatedPartitions != null && validatedPartitions.contains(partition.getId())) {
+                if (validatedPartitions != null && validatedPartitions.contains(partition.getUuid())) {
                     // partition cache hit
                     String provider = partition.getProvider();
                     IaasProvider iaasProvider = CloudControllerContext.getInstance()
                             .getIaasProvider(cartridge.getUuid(), provider);
-                    partitionToIaasProviders.put(partition.getId(), iaasProvider);
+                    partitionToIaasProviders.put(partition.getUuid(), iaasProvider);
                     continue;
                 }
 
                 Callable<IaasProvider> worker = new PartitionValidatorCallable(partition, cartridge);
                 Future<IaasProvider> job = CloudControllerContext.getInstance()
                         .getExecutorService().submit(worker);
-                jobList.put(partition.getId(), job);
+                jobList.put(partition.getUuid(), job);
             }
 
             // Retrieve the results of the concurrently performed sanity checks.
@@ -1063,7 +1063,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(partition, "Partition validation failed. Partition is null.");
 
         String provider = partition.getProvider();
-        String partitionId = partition.getId();
+        String partitionId = partition.getUuid();
 
         handleNullObject(provider, "Partition [" + partitionId + "] validation failed. Partition provider is null.");
         IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
@@ -1551,7 +1551,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Validating partition: [network-partition-uuid] %s " +
                                         "[network-partition-id] %s [partition-id] %s", networkPartitionUuid,
-                                networkPartition.getId(), partition.getId()));
+                                networkPartition.getId(), partition.getUuid()));
                     }
                     // Overwrites partition provider with network partition provider
                     partition.setProvider(networkPartition.getProvider());
@@ -1562,12 +1562,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         throw new InvalidNetworkPartitionException(String.format("Network partition " +
                                         "[network-partition-uuid] %s [network-partition-id] %s , " +
                                         "is invalid since the partition %s is invalid",
-                                networkPartition.getUuid(), networkPartition.getId(), partition.getId()), e);
+                                networkPartition.getUuid(), networkPartition.getId(), partition.getUuid()), e);
                     }
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Partition validated successfully: [network-partition-uuid] %s " +
                                 "[network-partition-id] %s [partition-id] %s", networkPartition.getUuid(),
-                                networkPartition.getId(), partition.getId()));
+                                networkPartition.getId(), partition.getUuid()));
                     }
                 }
             }
@@ -1662,7 +1662,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Validating partition: [network-partition-uuid] %s " +
                                             "[network-partition-id] %s [partition-id] %s", networkPartitionUuid,
-                                    networkPartitionId, partition.getId()));
+                                    networkPartitionId, partition.getUuid()));
                         }
                         // Overwrites partition provider with network partition provider
                         partition.setProvider(networkPartition.getProvider());
@@ -1670,7 +1670,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-uuid] %s " +
                                     "[network-partition-uuid] %s [partition-id] %s", networkPartitionUuid,
-                                    networkPartitionId, partition.getId()));
+                                    networkPartitionId, partition.getUuid()));
                         }
                     }
                 }

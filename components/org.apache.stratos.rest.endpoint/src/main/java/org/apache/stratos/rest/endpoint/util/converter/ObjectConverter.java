@@ -413,6 +413,8 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
         stubPartition.setId(partition.getId());
+	    stubPartition.setUuid(UUID.randomUUID().toString());
+	    stubPartition.setTenantId(tenantId);
         stubPartition.setProperties(convertPropertyBeansToCCStubProperties(partition.getProperty(), tenantId));
 
         return stubPartition;

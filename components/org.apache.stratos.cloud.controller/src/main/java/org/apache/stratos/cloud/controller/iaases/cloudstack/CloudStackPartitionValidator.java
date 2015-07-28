@@ -63,7 +63,7 @@ public class CloudStackPartitionValidator implements PartitionValidator {
             }
 
         } catch (Exception e) {
-            String msg = "Invalid partition detected: [partition-id] " + partition.getId() + e.getMessage();
+            String msg = "Invalid partition detected: [partition-id] " + partition.getUuid() + e.getMessage();
             log.error(msg, e);
             throw new InvalidPartitionException(msg, e);
         }

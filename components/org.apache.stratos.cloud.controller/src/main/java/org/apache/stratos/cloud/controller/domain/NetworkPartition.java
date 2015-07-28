@@ -105,7 +105,7 @@ public class NetworkPartition implements Serializable {
 
     public Partition getPartition(String partitionId) {
         for (Partition partition : partitions) {
-            if (partition.getId().equals(partitionId)) {
+            if (partition.getUuid().equals(partitionId)) {
                 return partition;
             }
         }

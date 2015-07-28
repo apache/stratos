@@ -257,7 +257,7 @@ public class CloudControllerUtil {
     public static String getPartitionIds(Partition[] partitions) {
         StringBuilder str = new StringBuilder("");
         for (Partition partition : partitions) {
-            str.append(partition.getId() + ", ");
+            str.append(partition.getUuid() + ", ");
         }
 
         String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length() - 2);

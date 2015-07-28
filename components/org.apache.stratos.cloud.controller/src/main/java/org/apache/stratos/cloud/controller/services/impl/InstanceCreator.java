@@ -88,7 +88,7 @@ public class InstanceCreator implements Runnable {
             // Publish instance creation statistics to BAM
             BAMUsageDataPublisher.publish(
                     memberContext.getMemberId(),
-                    memberContext.getPartition().getId(),
+                    memberContext.getPartition().getUuid(),
                     memberContext.getNetworkPartitionId(),
                     memberContext.getClusterId(),
                     memberContext.getCartridgeType(),
