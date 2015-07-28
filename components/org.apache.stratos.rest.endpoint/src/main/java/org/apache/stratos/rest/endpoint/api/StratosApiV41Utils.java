@@ -3128,22 +3128,14 @@ public class StratosApiV41Utils {
 
         // filling the first and last name values
         if (StringUtils.isBlank(tenantInfoBean.getFirstName())) {
-            try {
-                CommonUtil.validateName(tenantInfoBean.getFirstName(), "First Name");
-            } catch (Exception e) {
-                String msg = "Invalid first name is provided.";
-                log.error(msg, e);
-                throw new RestAPIException(msg, e);
-            }
+            String msg = "Invalid first name is provided.";
+            log.error(msg);
+            throw new RestAPIException(msg);
         }
         if (StringUtils.isBlank(tenantInfoBean.getLastName())) {
-            try {
-                CommonUtil.validateName(tenantInfoBean.getLastName(), "Last Name");
-            } catch (Exception e) {
-                String msg = "Invalid last name is provided.";
-                log.error(msg, e);
-                throw new RestAPIException(msg, e);
-            }
+            String msg = "Invalid last name is provided.";
+            log.error(msg);
+            throw new RestAPIException(msg);
         }
 
         tenant.setAdminFirstName(tenantInfoBean.getFirstName());
@@ -3157,7 +3149,7 @@ public class StratosApiV41Utils {
         }
 
         // filling the email value
-        if (StringUtils.isBlank(tenantInfoBean.getEmail())) {
+        if (StringUtils.isNotBlank(tenantInfoBean.getEmail())) {
             // validate the email
             try {
                 CommonUtil.validateEmail(tenantInfoBean.getEmail());
