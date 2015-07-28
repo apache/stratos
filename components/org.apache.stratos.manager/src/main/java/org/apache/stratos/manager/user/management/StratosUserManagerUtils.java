@@ -166,8 +166,7 @@ public class StratosUserManagerUtils {
             //TODO : Should support multiple roles for user
             if (refinedListOfRolesOfUser.length != 0) {
                 userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, user)[0]);
-            }
-            else{
+            } else {
                 userInfoBean.setRole(INTERNAL_EVERYONE_ROLE);
             }
             userList.add(userInfoBean);

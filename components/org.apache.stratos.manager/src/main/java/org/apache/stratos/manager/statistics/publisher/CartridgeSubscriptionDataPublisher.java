@@ -44,9 +44,9 @@ public class CartridgeSubscriptionDataPublisher {
 
     private static final Log log = LogFactory
             .getLog(CartridgeSubscriptionDataPublisher.class);
+    private static final String stratosManagerEventStreamVersion = "1.0.0";
     private static AsyncDataPublisher dataPublisher;
     private static StreamDefinition streamDefinition;
-    private static final String stratosManagerEventStreamVersion = "1.0.0";
 
     @SuppressWarnings("deprecation")
     public static void publish(int tenantID, String adminUser,
