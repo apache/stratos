@@ -278,7 +278,7 @@ public class ClusterContext extends AbstractClusterContext {
         String partitionId;
         if (partition != null) {
             //use it own defined partition
-            partitionId = partition.getId();
+            partitionId = partition.getUuid();
             maxInstances = partition.getPartitionMax();
         } else {
             //handling the partition given by the parent
@@ -302,7 +302,7 @@ public class ClusterContext extends AbstractClusterContext {
         PartitionRef partition3 = null;
         if (partitions != null && partitions.length != 0) {
             for (PartitionRef partition2 : partitions) {
-                if (partition2.getId().equals(partitionId)) {
+                if (partition2.getUuid().equals(partitionId)) {
                     partition3 = partition2;
                 }
             }
@@ -346,7 +346,7 @@ public class ClusterContext extends AbstractClusterContext {
                                         String ClusterInstanceId) {
         for (Member member : cluster.getMembers()) {
             String memberId = member.getMemberId();
-            if (member.getPartitionId().equalsIgnoreCase(partition.getId()) &&
+            if (member.getPartitionId().equalsIgnoreCase(partition.getUuid()) &&
                     member.getClusterInstanceId().equals(ClusterInstanceId)) {
                 MemberContext memberContext = new MemberContext();
                 memberContext.setClusterId(member.getClusterId());

@@ -169,9 +169,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private void copyIaasProviders(Cartridge destCartridge,
                                    Cartridge sourceCartridge) {
 
-        List<IaasProvider> newIaasProviders = CloudControllerContext.getInstance().getIaasProviders(destCartridge.getType());
+        List<IaasProvider> newIaasProviders = CloudControllerContext.getInstance().getIaasProviders(destCartridge.getUuid());
 
-        Map<String, IaasProvider> iaasProviderMap = CloudControllerContext.getInstance().getPartitionToIaasProvider(sourceCartridge.getType());
+        Map<String, IaasProvider> iaasProviderMap = CloudControllerContext.getInstance().getPartitionToIaasProvider(sourceCartridge.getUuid());
 
         if (iaasProviderMap != null) {
             for (Entry<String, IaasProvider> entry : iaasProviderMap.entrySet()) {
@@ -358,7 +358,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             handleNullObject(partition, "Could not start instance, partition is null");
 
             // Validate cluster
-            String partitionId = partition.getUuid();
+            String partitionId = partition.getId();
             String clusterId = instanceContext.getClusterId();
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             handleNullObject(clusterContext, "Could not start instance, cluster context not found: [cluster-id] " + clusterId);
@@ -492,7 +492,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         memberContext.setClusterInstanceId(instanceContext.getClusterInstanceId());
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
         memberContext.setPartition(cloudControllerContext.getNetworkPartition(instanceContext.getNetworkPartitionId()).
-                getPartition(instanceContext.getPartition().getUuid()));
+                getPartition(instanceContext.getPartition().getId()));
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
         memberContext.setLoadBalancingIPType(loadBalancingIPType);

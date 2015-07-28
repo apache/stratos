@@ -775,14 +775,14 @@ public class GroupMonitor extends ParentComponentMonitor {
                     if (partitions != null && partitions.length != 0) {
                         for (PartitionRef partition : partitions) {
 
-                            if (networkPartitionContext.getPartitionCtxt(partition.getId()) == null) {
+                            if (networkPartitionContext.getPartitionCtxt(partition.getUuid()) == null) {
 
                                 GroupLevelPartitionContext groupLevelPartitionContext = new GroupLevelPartitionContext(
-                                        partition.getId(), networkPartitionId, deploymentPolicyId);
+                                        partition.getUuid(), networkPartitionId, deploymentPolicyId);
                                 networkPartitionContext.addPartitionContext(groupLevelPartitionContext);
                                 if (log.isInfoEnabled()) {
                                     log.info(String.format("[Partition] %s has been added for the [Group] %s",
-                                            partition.getId(), this.id));
+                                            partition.getUuid(), this.id));
                                 }
                             }
                         }

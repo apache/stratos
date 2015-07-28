@@ -76,7 +76,7 @@ public class NetworkPartitionRef implements Serializable {
 
     public PartitionRef getPartitionRef(String partitionId) {
         for (PartitionRef partitionRef : partitionRefs) {
-            if (partitionRef.getId().equals(partitionId)) {
+            if (partitionRef.getUuid().equals(partitionId)) {
                 return partitionRef;
             }
         }

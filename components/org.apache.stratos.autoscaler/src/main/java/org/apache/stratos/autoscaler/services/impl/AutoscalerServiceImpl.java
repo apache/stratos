@@ -1301,11 +1301,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // network partition - partition id should be already added
             for (PartitionRef partitionRef : networkPartitionRef.getPartitionRefs()) {
-                String partitionId = partitionRef.getId();
+                String partitionId = partitionRef.getUuid();
                 boolean isPartitionFound = false;
 
                 for (Partition partition : networkPartitionForTenant.getPartitions()) {
-                    if (partition.getId().equals(partitionId)) {
+                    if (partition.getUuid().equals(partitionId)) {
                         isPartitionFound = true;
                     }
                 }
@@ -1464,7 +1464,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
 
                 ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) instanceContext;
-                if (null == clusterInstanceContext.getPartitionCtxt(partition.getId())) {
+                if (null == clusterInstanceContext.getPartitionCtxt(partition.getUuid())) {
 
                     //It has found that this partition which is in deployment policy/network partition is new
                     ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(

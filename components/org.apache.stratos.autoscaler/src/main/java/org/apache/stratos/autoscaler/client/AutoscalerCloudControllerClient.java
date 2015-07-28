@@ -89,7 +89,7 @@ public class AutoscalerCloudControllerClient {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: " +
                                 "[cluster] %s [partition] %s [network-partition-id] %s",
-                        clusterId, partition.getId(), networkPartitionId));
+                        clusterId, partition.getUuid(), networkPartitionId));
             }
 
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();

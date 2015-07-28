@@ -479,7 +479,7 @@ public class ClusterMonitor extends Monitor {
                                         && partitionContext.getTerminationPendingMembers().size() == 0
                                         && partitionContext.getObsoletedMembers().size() == 0) {
 
-                                    instanceContext.removePartitionCtxt(partitionContext.getPartition().getId());
+                                    instanceContext.removePartitionCtxt(partitionContext.getPartition().getUuid());
                                 }
                             }
                         };

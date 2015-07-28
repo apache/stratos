@@ -586,7 +586,10 @@ public class ObjectConverter {
             return null;
         }
         PartitionBean partition = new PartitionBean();
-        partition.setId(stubPartition.getId());
+
+	    partition.setUuid(stubPartition.getUuid());
+	    partition.setId(stubPartition.getId());
+	    partition.setTenantId(stubPartition.getTenantId());
         partition.setDescription(stubPartition.getDescription());
         if (stubPartition.getProperties() != null) {
             List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
@@ -798,7 +801,7 @@ public class ObjectConverter {
         List<PartitionReferenceBean> partitionBeans = new ArrayList<PartitionReferenceBean>();
         for (PartitionRef partition : partitions) {
             PartitionReferenceBean partitionBean = new PartitionReferenceBean();
-            partitionBean.setId(partition.getId());
+            partitionBean.setUuid(partition.getId());
             partitionBean.setPartitionMax(partition.getPartitionMax());
             partitionBeans.add(partitionBean);
         }
@@ -828,7 +831,7 @@ public class ObjectConverter {
             return partitionBeans;
         }
 
-        partitionBeans.setId(partition.getId());
+        partitionBeans.setUuid(partition.getId());
         partitionBeans.setDescription(partition.getDescription());
         //properties
         if (partition.getProperties() != null) {
@@ -2171,7 +2174,7 @@ public class ObjectConverter {
         List<PartitionReferenceBean> partitionRefBeans = new ArrayList<PartitionReferenceBean>();
         for (PartitionRef partition : partitions) {
             PartitionReferenceBean partitionRefBean = new PartitionReferenceBean();
-            partitionRefBean.setId(partition.getId());
+            partitionRefBean.setUuid(partition.getId());
             partitionRefBean.setPartitionMax(partition.getPartitionMax());
             partitionRefBeans.add(partitionRefBean);
         }
@@ -2186,7 +2189,9 @@ public class ObjectConverter {
         }
 
         PartitionRef stubPartition = new PartitionRef();
-        stubPartition.setId(partitionReferenceBean.getId());
+	    stubPartition.setUuid(partitionReferenceBean.getUuid());
+	    stubPartition.setId(partitionReferenceBean.getId());
+	    stubPartition.setTenantId(partitionReferenceBean.getTenantId());
         stubPartition.setPartitionMax(partitionReferenceBean.getPartitionMax());
         return stubPartition;
     }

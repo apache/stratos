@@ -49,6 +49,8 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
+import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -2955,6 +2957,14 @@ public class StratosApiV41Utils {
                     if (networkPartitionBean.getTenantId() == deploymentPolicyDefinitionBean.getTenantId() &&
                             networkPartitionBean.getId().equals(networkPartitionReferenceBean.getId())) {
                         networkPartitionReferenceBean.setUuid(networkPartitionBean.getUuid());
+	                    for(PartitionReferenceBean partition: networkPartitionReferenceBean.getPartitions()){
+		                    for(PartitionBean existingPartition: networkPartitionBean.getPartitions()){
+			                    if(existingPartition.getTenantId()== deploymentPolicyDefinitionBean.getTenantId() && partition.getId().equals(existingPartition.getId())){
+				                    partition.setUuid(existingPartition.getUuid());
+				                    partition.setTenantId(deploymentPolicyDefinitionBean.getTenantId());
+			                    }
+		                    }
+	                    }
                     }
                 }
             }

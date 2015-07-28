@@ -358,7 +358,7 @@ public class MockContext {
             partitionMap.put(tenantId, partitions);
         }
 
-        partitions.put(partition.getId(), partition);
+        partitions.put(partition.getUuid(), partition);
         ResponseMessageBean stratosApiResponse = new ResponseMessageBean();
         stratosApiResponse.setMessage("Successfully deployed partition");
         return stratosApiResponse;
