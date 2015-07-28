@@ -44,6 +44,9 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -869,9 +872,31 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
             cluster.setKubernetesServices(kubernetesServices);
-            clusterInstanceActivatedEvent.setKubernetesServices(kubernetesServices);
+
+            if (kubernetesServices != null) {
+                // Set kubernetes services
+                cluster.setKubernetesServices(kubernetesServices);
+                try {
+                    // Generate access URLs for kubernetes services
+                    for (KubernetesService kubernetesService : kubernetesServices) {
+                        // Public IP = Kubernetes minion public IP
+                        String[] publicIPs = kubernetesService.getPublicIPs();
+                        if ((publicIPs != null) && (publicIPs.length > 0)) {
+                            for (String publicIP : publicIPs) {
+                                URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
+                                        kubernetesService.getPort(), null, null, null);
+                                cluster.addAccessUrl(accessURL.toString());
+                                clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
+                            }
+                        }
+                    }
+                } catch (URISyntaxException e) {
+                    log.error("Could not create access URLs for Kubernetes services", e);
+                }
+            }
 
             ClusterInstance context = cluster.getInstanceContexts(clusterStatusClusterActivatedEvent.getInstanceId());
+
             if (context == null) {
                 log.warn("Cluster instance context is not found for [cluster] " +
                         clusterStatusClusterActivatedEvent.getClusterId() + " [instance-id] " +
