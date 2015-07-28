@@ -3180,7 +3180,7 @@ public class StratosApiV41Utils {
         }
 
         boolean updatePassword = false;
-        if (tenantInfoBean.getAdminPassword() != null && StringUtils.isNotEmpty(tenantInfoBean.getAdminPassword())) {
+        if (StringUtils.isBlank(tenantInfoBean.getAdminPassword())) {
             updatePassword = true;
         }
         try {
