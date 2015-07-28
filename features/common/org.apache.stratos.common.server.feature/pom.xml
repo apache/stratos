@@ -115,11 +115,6 @@
             <version>${kaptcha.patch.version.230-wso2v1}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.keystore.mgt</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.captcha.mgt</artifactId>
             <version>${wso2carbon.version}</version>
@@ -205,7 +200,6 @@
                                 <!-- Tenant Mgmt -->
                                 <bundleDef>org.json.wso2:json</bundleDef>
                                 <bundleDef>kaptcha.wso2:kaptcha</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.captcha.mgt</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.theme.mgt:2.2.0</bundleDef>
                                 <!-- End Tenant Mgmt -->

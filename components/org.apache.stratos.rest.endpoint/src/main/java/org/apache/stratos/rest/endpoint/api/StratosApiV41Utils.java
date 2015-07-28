@@ -3053,15 +3053,6 @@ public class StratosApiV41Utils {
             throw new RestAPIException(msg);
         }
 
-        try {
-            TenantUserRoleManager tenantUserRoleManager = new TenantUserRoleManager();
-            tenantUserRoleManager.onTenantCreate(tenantInfoBean);
-        } catch (ApacheStratosException e) {
-            String message = "Could create Internal/user role for tenant";
-            log.error(message, e);
-            throw new RestAPIException(message);
-        }
-
         // For the super tenant tenant creation, tenants are always activated as they are created.
         try {
             TenantMgtUtil.activateTenantInitially(

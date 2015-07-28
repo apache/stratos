@@ -21,15 +21,14 @@ package org.apache.stratos.manager.messaging.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.ApacheStratosException;
-import org.apache.stratos.common.listeners.TenantMgtListener;
+import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
+import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.carbon.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -49,7 +48,7 @@ public class TenantEventPublisher implements TenantMgtListener {
     }
 
     @Override
-    public void onTenantCreate(TenantInfoBean tenantInfo) throws ApacheStratosException {
+    public void onTenantCreate(TenantInfoBean tenantInfo) throws StratosException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Publishing tenant created event: [tenant-id] %d [tenant-domain] %s",
@@ -66,7 +65,7 @@ public class TenantEventPublisher implements TenantMgtListener {
     }
 
     @Override
-    public void onTenantUpdate(TenantInfoBean tenantInfo) throws ApacheStratosException {
+    public void onTenantUpdate(TenantInfoBean tenantInfo) throws StratosException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Publishing tenant updated event: [tenant-id] %d [tenant-domain] %s",
@@ -83,36 +82,23 @@ public class TenantEventPublisher implements TenantMgtListener {
     }
 
     @Override
-    public void onTenantDelete(int tenantId) {
-        try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Publishing tenant removed event: [tenant-id] %d", tenantId));
-            }
-            TenantRemovedEvent event = new TenantRemovedEvent(tenantId);
-            publish(event);
-        } catch (Exception e) {
-            log.error(String.format("Could not publish tenant removed event [tenant-id] %d", tenantId), e);
-        }
+    public void onTenantRename(int tenantId, String oldDomainName, String newDomainName) throws StratosException {
     }
 
     @Override
-    public void onTenantRename(int tenantId, String oldDomainName, String newDomainName) throws ApacheStratosException {
+    public void onTenantInitialActivation(int tenantId) throws StratosException {
     }
 
     @Override
-    public void onTenantInitialActivation(int tenantId) throws ApacheStratosException {
+    public void onTenantActivation(int tenantId) throws StratosException {
     }
 
     @Override
-    public void onTenantActivation(int tenantId) throws ApacheStratosException {
+    public void onTenantDeactivation(int tenantId) throws StratosException {
     }
 
     @Override
-    public void onTenantDeactivation(int tenantId) throws ApacheStratosException {
-    }
-
-    @Override
-    public void onSubscriptionPlanChange(int tenantId, String oldPlan, String newPlan) throws ApacheStratosException {
+    public void onSubscriptionPlanChange(int tenantId, String oldPlan, String newPlan) throws StratosException {
     }
 
     @Override
