@@ -883,6 +883,7 @@ public class TopologyBuilder {
                         String[] publicIPs = kubernetesService.getPublicIPs();
                         if ((publicIPs != null) && (publicIPs.length > 0)) {
                             for (String publicIP : publicIPs) {
+                                // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
                                 URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
                                         kubernetesService.getPort(), null, null, null);
                                 cluster.addAccessUrl(accessURL.toString());
