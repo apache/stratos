@@ -148,11 +148,11 @@ public class StratosApiV41Utils {
                         cartridgeBean.getType()));
             }
         } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
-            String msg = "Could not add cartridge";
+            String msg = "Could not add cartridge. Cartridge already exists.";
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-            String msg = "Could not add cartridge";
+            String msg = "Could not add cartridge. Invalid cartridge definition";
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (RemoteException e) {
@@ -160,7 +160,7 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-            String msg = "Could not add cartridge";
+            String msg = "Could not add cartridge. Invalid IaaS provider ";
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -1912,7 +1912,7 @@ public class StratosApiV41Utils {
             ApplicationManager.acquireReadLockForApplication(applicationId);
             Application application = ApplicationManager.getApplications().
                     getApplication(applicationId);
-            if(application != null) {
+            if (application != null) {
                 if (application.getInstanceContextCount() > 0
                         || (applicationContext != null &&
                         applicationContext.getStatus().equals("Deployed"))) {
@@ -2993,6 +2993,7 @@ public class StratosApiV41Utils {
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
+            // validate Email methods throws exception therefore we catch and throw InvalidEmailException
             throw new InvalidEmailException(e.getMessage());
         }
 
@@ -3179,7 +3180,7 @@ public class StratosApiV41Utils {
         }
 
         boolean updatePassword = false;
-        if (tenantInfoBean.getAdminPassword() != null && !tenantInfoBean.getAdminPassword().equals("")) {
+        if (tenantInfoBean.getAdminPassword() != null && StringUtils.isNotEmpty(tenantInfoBean.getAdminPassword())) {
             updatePassword = true;
         }
         try {
@@ -3197,7 +3198,7 @@ public class StratosApiV41Utils {
                 }
             } else {
                 //Password should be empty since no password update done
-                tenantInfoBean.setAdminPassword("");
+                tenantInfoBean.setAdminPassword(null);
             }
         } catch (UserStoreException e) {
             String msg = "Error in getting the user store manager is read only " + e.getLocalizedMessage();
