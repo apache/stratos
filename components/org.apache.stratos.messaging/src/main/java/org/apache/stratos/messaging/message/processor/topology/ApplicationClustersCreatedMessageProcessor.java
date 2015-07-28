@@ -73,13 +73,13 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
         List<Cluster> clusters = event.getClusterList();
 
         for (Cluster cluster : clusters) {
-            String serviceName = cluster.getServiceName();
+            String serviceUuid = cluster.getServiceUuid();
             String clusterId = cluster.getClusterId();
-            TopologyUpdater.acquireWriteLockForService(serviceName);
+            TopologyUpdater.acquireWriteLockForService(serviceUuid);
             try {
 
                 // Apply service filter
-                if (TopologyServiceFilter.apply(serviceName)) {
+                if (TopologyServiceFilter.apply(serviceUuid)) {
                     continue;
                 }
 
@@ -89,18 +89,18 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
                 }
 
                 // Validate event against the existing topology
-                Service service = topology.getService(serviceName);
+                Service service = topology.getService(serviceUuid);
                 if (service == null) {
                     if (log.isWarnEnabled()) {
                         log.warn(String.format("Service does not exist: [service] %s",
-                                serviceName));
+                                serviceUuid));
                     }
                     return false;
                 }
                 if (service.clusterExists(clusterId)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Cluster already exists in service: [service] %s " +
-                                        "[cluster] %s", serviceName,
+                                        "[cluster] %s", serviceUuid,
                                 clusterId));
                     }
                 } else {
@@ -115,7 +115,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
                 }
 
             } finally {
-                TopologyUpdater.releaseWriteLockForService(serviceName);
+                TopologyUpdater.releaseWriteLockForService(serviceUuid);
             }
         }
 

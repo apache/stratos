@@ -287,7 +287,7 @@ public class AutoscalerTopologyEventReceiver {
                             sendInstanceCleanupEventForCluster(clusterId, clusterInstanceId);
                 } else {
                     monitor.notifyParentMonitor(ClusterStatus.Terminating, clusterInstanceId);
-                    monitor.terminateAllMembers(clusterInstanceId, clusterInstance.getNetworkPartitionId());
+                    monitor.terminateAllMembers(clusterInstanceId, clusterInstance.getNetworkPartitionUuid());
                 }
                 ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
                         process("", clusterId, clusterInstanceId);
@@ -327,7 +327,7 @@ public class AutoscalerTopologyEventReceiver {
                 //Removing the instance and instanceContext
                 ClusterInstance instance = (ClusterInstance) monitor.getInstance(instanceId);
                 monitor.getClusterContext().
-                        getNetworkPartitionCtxt(instance.getNetworkPartitionId()).
+                        getNetworkPartitionCtxt(instance.getNetworkPartitionUuid()).
                         removeInstanceContext(instanceId);
                 monitor.removeInstance(instanceId);
                 if (!monitor.hasInstance() && appMonitor.isTerminating()) {
@@ -458,12 +458,12 @@ public class AutoscalerTopologyEventReceiver {
                                                        String instanceId = clusterInstance.getInstanceId();
                                                        //FIXME to take lock when clusterMonitor is running
                                                        if (clusterMonitor != null) {
-                                                           TopologyManager.acquireReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
+                                                           TopologyManager.acquireReadLockForCluster(clusterInstanceCreatedEvent.getServiceUuid(),
                                                                    clusterInstanceCreatedEvent.getClusterId());
 
                                                            try {
                                                                Service service = TopologyManager.getTopology().
-                                                                       getService(clusterInstanceCreatedEvent.getServiceName());
+                                                                       getService(clusterInstanceCreatedEvent.getServiceUuid());
 
                                                                if (service != null) {
                                                                    Cluster cluster = service.getCluster(clusterInstanceCreatedEvent.getClusterId());
@@ -503,13 +503,13 @@ public class AutoscalerTopologyEventReceiver {
                                                                    }
 
                                                                } else {
-                                                                   log.error("Service " + clusterInstanceCreatedEvent.getServiceName() +
+                                                                   log.error("Service " + clusterInstanceCreatedEvent.getServiceUuid() +
                                                                            " not found, no cluster instance added to ClusterMonitor " +
                                                                            clusterInstanceCreatedEvent.getClusterId());
                                                                }
 
                                                            } finally {
-                                                               TopologyManager.releaseReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
+                                                               TopologyManager.releaseReadLockForCluster(clusterInstanceCreatedEvent.getServiceUuid(),
                                                                        clusterInstanceCreatedEvent.getClusterId());
                                                            }
 

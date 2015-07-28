@@ -38,10 +38,10 @@ public class Cluster implements Serializable {
 
     private static final long serialVersionUID = -361960242360176077L;
 
-    private final String serviceName;
+    private final String serviceUuid;
     private final String clusterId;
-    private final String autoscalePolicyName;
-    private final String deploymentPolicyName;
+    private final String autoscalePolicyUuid;
+    private final String deploymentPolicyUuid;
 
     private List<String> hostNames;
     private String tenantRange;
@@ -64,10 +64,10 @@ public class Cluster implements Serializable {
     private List<KubernetesService> kubernetesServices;
 
     public Cluster(Cluster cluster) {
-        this.serviceName = cluster.getServiceName();
+        this.serviceUuid = cluster.getServiceUuid();
         this.clusterId = cluster.getClusterId();
-        this.deploymentPolicyName = cluster.getDeploymentPolicyName();
-        this.autoscalePolicyName = cluster.getAutoscalePolicyName();
+        this.deploymentPolicyUuid = cluster.getDeploymentPolicyUuid();
+        this.autoscalePolicyUuid = cluster.getAutoscalePolicyUuid();
         this.appId = cluster.getAppId();
         this.setHostNames(cluster.getHostNames());
         this.memberMap = cluster.getMemberMap();
@@ -84,10 +84,10 @@ public class Cluster implements Serializable {
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
                    String autoscalePolicyName, String appId) {
-        this.serviceName = serviceName;
+        this.serviceUuid = serviceName;
         this.clusterId = clusterId;
-        this.deploymentPolicyName = deploymentPolicyName;
-        this.autoscalePolicyName = autoscalePolicyName;
+        this.deploymentPolicyUuid = deploymentPolicyName;
+        this.autoscalePolicyUuid = autoscalePolicyName;
         this.setHostNames(new ArrayList<String>());
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
@@ -96,8 +96,8 @@ public class Cluster implements Serializable {
         this.kubernetesServices = new ArrayList<KubernetesService>();
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getServiceUuid() {
+        return serviceUuid;
     }
 
     public String getClusterId() {
@@ -154,12 +154,12 @@ public class Cluster implements Serializable {
         this.properties = properties;
     }
 
-    public String getAutoscalePolicyName() {
-        return autoscalePolicyName;
+    public String getAutoscalePolicyUuid() {
+        return autoscalePolicyUuid;
     }
 
-    public String getDeploymentPolicyName() {
-        return deploymentPolicyName;
+    public String getDeploymentPolicyUuid() {
+        return deploymentPolicyUuid;
     }
 
     public String getLoadBalanceAlgorithmName() {
@@ -363,8 +363,8 @@ public class Cluster implements Serializable {
     public String toString() {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
                         "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
-                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyName,
-                deploymentPolicyName, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
+                        "accessUrls=%s, kubernetesServices=%s]", serviceUuid, clusterId, autoscalePolicyUuid,
+                deploymentPolicyUuid, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
                 accessUrls, kubernetesServices);
     }
 }

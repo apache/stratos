@@ -230,12 +230,12 @@ public class CloudControllerServiceClient {
         return stub.getNetworkPartition(networkPartitionId);
     }
 
-    public void createClusterInstance(String serviceType, String clusterId,
+    public void createClusterInstance(String serviceUuid, String clusterId,
                                       String alias, String instanceId, String partitionId,
-                                      String networkPartitionId) throws RemoteException {
+                                      String networkPartitionUuid) throws RemoteException {
         try {
-            stub.createClusterInstance(serviceType, clusterId, alias,
-                    instanceId, partitionId, networkPartitionId);
+            stub.createClusterInstance(serviceUuid, clusterId, alias,
+                    instanceId, partitionId, networkPartitionUuid);
 
         } catch (CloudControllerServiceClusterInstanceCreationExceptionException e) {
             String msg = e.getFaultMessage().getClusterInstanceCreationException().getMessage();

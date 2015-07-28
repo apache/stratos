@@ -312,10 +312,12 @@ public class CloudControllerContext implements Serializable {
         return networkPartitionForTenant;
     }
 
-    public void removeCartridge(Cartridge cartridge) {
-        if (cartridgeTypeToCartridgeMap.containsKey(cartridge.getUuid())) {
-            cartridgeTypeToCartridgeMap.remove(cartridge.getUuid());
+    public boolean removeCartridge(String cartridgeUuid) {
+        if (cartridgeTypeToCartridgeMap.containsKey(cartridgeUuid)) {
+            cartridgeTypeToCartridgeMap.remove(cartridgeUuid);
+            return true;
         }
+        return false;
     }
 
     public void updateCartridge(Cartridge cartridge) {
@@ -491,21 +493,21 @@ public class CloudControllerContext implements Serializable {
         return executorService;
     }
 
-    public List<String> getPartitionIds(String cartridgeType) {
-        return cartridgeTypeToPartitionIdsMap.get(cartridgeType);
+    public List<String> getPartitionIds(String cartridgeUuid) {
+        return cartridgeTypeToPartitionIdsMap.get(cartridgeUuid);
     }
 
-    public void addToCartridgeTypeToPartitionIdMap(String cartridgeType, String partitionId) {
-        List<String> list = this.cartridgeTypeToPartitionIdsMap.get(cartridgeType);
+    public void addToCartridgeTypeToPartitionIdMap(String cartridgeUuid, String partitionId) {
+        List<String> list = this.cartridgeTypeToPartitionIdsMap.get(cartridgeUuid);
         if (list == null) {
             list = new ArrayList<String>();
         }
         list.add(partitionId);
-        cartridgeTypeToPartitionIdsMap.put(cartridgeType, list);
+        cartridgeTypeToPartitionIdsMap.put(cartridgeUuid, list);
     }
 
-    public void removeFromCartridgeTypeToPartitionIds(String cartridgeType) {
-        cartridgeTypeToPartitionIdsMap.remove(cartridgeType);
+    public void removeFromCartridgeTypeToPartitionIds(String cartridgeUuid) {
+        cartridgeTypeToPartitionIdsMap.remove(cartridgeUuid);
     }
 
     public KubernetesClusterContext getKubernetesClusterContext(String kubernetesClusterId) {

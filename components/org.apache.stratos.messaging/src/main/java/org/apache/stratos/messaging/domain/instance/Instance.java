@@ -38,7 +38,7 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
     //Parent instance id
     private String parentId;
     //Network partition id
-    private String networkPartitionId; //refactor to uuid
+    private String networkPartitionUuid;
     //partition id
     protected String partitionId;
 
@@ -91,12 +91,12 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
         this.parentId = parentId;
     }
 
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
+    public String getNetworkPartitionUuid() {
+        return networkPartitionUuid;
     }
 
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
+    public void setNetworkPartitionUuid(String networkPartitionUuid) {
+        this.networkPartitionUuid = networkPartitionUuid;
     }
 
     public String getPartitionId() {

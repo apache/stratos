@@ -157,7 +157,7 @@ public class Application extends ParentComponent<ApplicationInstance> {
         }
 
         for (Instance instance : getInstanceIdToInstanceContextMap().values()) {
-            if (instance.getNetworkPartitionId().equals(networkPartitionId)) {
+            if (instance.getNetworkPartitionUuid().equals(networkPartitionId)) {
                 return instance;
             }
         }

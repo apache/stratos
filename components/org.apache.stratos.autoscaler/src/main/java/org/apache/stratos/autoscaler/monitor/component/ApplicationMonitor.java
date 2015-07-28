@@ -481,7 +481,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             for(ApplicationInstance instance : instanceMap.values()) {
                 if(!instanceIds.contains(instance.getInstanceId())) {
                     ParentLevelNetworkPartitionContext context =
-                            new ParentLevelNetworkPartitionContext(instance.getNetworkPartitionId());
+                            new ParentLevelNetworkPartitionContext(instance.getNetworkPartitionUuid());
                     //If application instances found in the ApplicationsTopology,
                     // then have to add them first before creating new one
                     ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -490,7 +490,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     handleApplicationInstanceCreation(application, context, appInstance);
                     instanceIds.add(instance.getInstanceId());
                     log.info("Burst Application instance has been added in the restart for " +
-                            "the [network partition] " + instance.getNetworkPartitionId() +
+                            "the [network partition] " + instance.getNetworkPartitionUuid() +
                             " [appInstanceId] " + instance.getInstanceId());
                 }
             }

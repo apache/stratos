@@ -91,7 +91,7 @@ public class ClusterMonitor extends Monitor {
     protected ClusterContext clusterContext;
     // future to cancel it when destroying monitors
     private ScheduledFuture<?> schedulerFuture;
-    protected String serviceType;
+    protected String serviceUuid;
     private AtomicBoolean monitoringStarted;
     protected String clusterId;
     private Cluster cluster;
@@ -116,7 +116,7 @@ public class ClusterMonitor extends Monitor {
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
-        this.serviceType = cluster.getServiceName();
+        this.serviceUuid = cluster.getServiceUuid();
         this.monitoringStarted = new AtomicBoolean(false);
         this.hasScalingDependents = hasScalingDependents;
         this.deploymentPolicyId = deploymentPolicyId;
@@ -209,7 +209,7 @@ public class ClusterMonitor extends Monitor {
     }
 
     public String getServiceId() {
-        return serviceType;
+        return serviceUuid;
     }
 
     protected int getRoundedInstanceCount(float requiredInstances, float fraction) {
@@ -247,17 +247,17 @@ public class ClusterMonitor extends Monitor {
         return groupScalingEnabledSubtree;
     }
 
-    private static void createClusterInstance(String serviceType,
+    private static void createClusterInstance(String serviceUuid,
                                               String clusterId, String alias, String instanceId,
                                               String partitionId, String networkPartitionId) {
 
         try {
             CloudControllerServiceClient.getInstance().createClusterInstance(
-                    serviceType, clusterId, alias, instanceId, partitionId,
+                    serviceUuid, clusterId, alias, instanceId, partitionId,
                     networkPartitionId);
         } catch (RemoteException e) {
             String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId
-                    + "] instance-id [" + instanceId + "] service-type [" + serviceType + "]"
+                    + "] instance-id [" + instanceId + "] service-type [" + serviceUuid + "]"
                     + "] alias [" + alias + "] partition-id [" + partitionId + "]"
                     + "] network-parition-id [" + networkPartitionId + "]"
                     + " .Reason [" + e.getMessage() + "]";
@@ -1396,7 +1396,7 @@ public class ClusterMonitor extends Monitor {
     }
 
     public boolean createInstanceOnDemand(String instanceId) {
-        Cluster cluster = TopologyManager.getTopology().getService(this.serviceType).
+        Cluster cluster = TopologyManager.getTopology().getService(this.serviceUuid).
                 getCluster(this.clusterId);
         try {
             return createInstance(instanceId, cluster);
@@ -1450,11 +1450,11 @@ public class ClusterMonitor extends Monitor {
                             cluster.getClusterId()));
                 }
             } else {
-                createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
-                        parentMonitorInstance.getNetworkPartitionId());
+                createClusterInstance(cluster.getServiceUuid(), cluster.getClusterId(), null, parentInstanceId, partitionId,
+                        parentMonitorInstance.getNetworkPartitionUuid());
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
-                            "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
+                            "[cluster-id] %s", appId, cluster.getServiceUuid(), cluster.getClusterId()));
                 }
             }
             return true;

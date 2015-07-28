@@ -405,7 +405,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
     private org.apache.stratos.load.balancer.common.domain.Cluster transformCluster(Cluster messagingCluster) {
         org.apache.stratos.load.balancer.common.domain.Cluster cluster =
-                new org.apache.stratos.load.balancer.common.domain.Cluster(messagingCluster.getServiceName(),
+                new org.apache.stratos.load.balancer.common.domain.Cluster(messagingCluster.getServiceUuid(),
                         messagingCluster.getClusterId());
         cluster.setTenantRange(messagingCluster.getTenantRange());
         if (messagingCluster.getHostNames() != null) {

@@ -119,26 +119,26 @@ public class TopologyBuilder {
         Topology topology = TopologyManager.getTopology();
 
         for (Cartridge cartridge : cartridgeList) {
-            Service service = topology.getService(cartridge.getType());
+            Service service = topology.getService(cartridge.getUuid());
             if (service == null) {
-                log.warn("Cartridge does not exist [cartidge] " + cartridge);
+                log.warn("Cartridge does not exist [cartridge] " + cartridge);
                 return;
             }
             if (service.getClusters().size() == 0) {
-                if (topology.serviceExists(cartridge.getType())) {
+                if (topology.serviceExists(cartridge.getUuid())) {
                     try {
                         TopologyManager.acquireWriteLock();
-                        topology.removeService(cartridge.getType());
+                        topology.removeService(cartridge.getUuid());
                         TopologyManager.updateTopology(topology);
                     } finally {
                         TopologyManager.releaseWriteLock();
                     }
                     TopologyEventPublisher.sendServiceRemovedEvent(cartridgeList);
                 } else {
-                    log.warn(String.format("Service %s does not exist..", cartridge.getType()));
+                    log.warn(String.format("Service %s does not exist..", cartridge.getUuid()));
                 }
             } else {
-                log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
+                log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getUuid()
                         + " from the topology");
             }
         }
@@ -184,9 +184,9 @@ public class TopologyBuilder {
         try {
             Topology topology = TopologyManager.getTopology();
             for (Cluster cluster : appClusters) {
-                Service service = topology.getService(cluster.getServiceName());
+                Service service = topology.getService(cluster.getServiceUuid());
                 if (service == null) {
-                    log.error("Service " + cluster.getServiceName()
+                    log.error("Service " + cluster.getServiceUuid()
                             + " not found in Topology, unable to create Application cluster");
                 } else {
                     service.addCluster(cluster);
@@ -200,7 +200,7 @@ public class TopologyBuilder {
 
         log.debug("Creating cluster port mappings: [application-id] " + appId);
         for(Cluster cluster : appClusters) {
-            String cartridgeType = cluster.getServiceName();
+            String cartridgeType = cluster.getServiceUuid();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
             if(cartridge == null) {
                 throw new CloudControllerException("Cartridge not found: [cartridge-type] " + cartridgeType);
@@ -234,7 +234,7 @@ public class TopologyBuilder {
             if (clusterData != null) {
                 // remove clusters from CC topology model and remove runtime information
                 for (ClusterDataHolder aClusterData : clusterData) {
-                    Service aService = topology.getService(aClusterData.getServiceType());
+                    Service aService = topology.getService(aClusterData.getServiceUuid());
                     if (aService != null) {
                         removedClusters.add(aService.removeCluster(aClusterData.getClusterId()));
                     } else {
@@ -315,17 +315,17 @@ public class TopologyBuilder {
 
     }
 
-    public static void handleClusterInstanceCreated(String serviceType, String clusterId,
+    public static void handleClusterInstanceCreated(String serviceUuid, String clusterId,
                                                     String alias, String instanceId, String partitionId,
-                                                    String networkPartitionId) {
+                                                    String networkPartitionUuid) {
 
         TopologyManager.acquireWriteLock();
 
         try {
             Topology topology = TopologyManager.getTopology();
-            Service service = topology.getService(serviceType);
+            Service service = topology.getService(serviceUuid);
             if (service == null) {
-                log.error("Service " + serviceType +
+                log.error("Service " + serviceUuid +
                         " not found in Topology, unable to update the cluster status to Created");
                 return;
             }
@@ -344,13 +344,13 @@ public class TopologyBuilder {
             }
 
             ClusterInstance clusterInstance = new ClusterInstance(alias, clusterId, instanceId);
-            clusterInstance.setNetworkPartitionId(networkPartitionId);
+            clusterInstance.setNetworkPartitionUuid(networkPartitionUuid);
             clusterInstance.setPartitionId(partitionId);
             cluster.addInstanceContext(instanceId, clusterInstance);
             TopologyManager.updateTopology(topology);
 
             ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
-                    new ClusterInstanceCreatedEvent(serviceType, clusterId,
+                    new ClusterInstanceCreatedEvent(serviceUuid, clusterId,
                             clusterInstance);
             clusterInstanceCreatedEvent.setPartitionId(partitionId);
             TopologyEventPublisher.sendClusterInstanceCreatedEvent(clusterInstanceCreatedEvent);
@@ -381,7 +381,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             Cluster cluster = service.removeCluster(ctxt.getClusterId());
-            deploymentPolicy = cluster.getDeploymentPolicyName();
+            deploymentPolicy = cluster.getDeploymentPolicyUuid();
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();

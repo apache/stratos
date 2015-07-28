@@ -694,7 +694,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, groupAlias);
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
 
-        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionUuid();
         if (this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
             parentLevelNetworkPartitionContext = (ParentLevelNetworkPartitionContext) this.getNetworkPartitionContextsMap().
                     get(networkPartitionId);
@@ -741,7 +741,7 @@ public class GroupMonitor extends ParentComponentMonitor {
     private void addPartitionContext(Instance parentInstanceContext,
                                      ParentLevelNetworkPartitionContext networkPartitionContext, String groupAlias) {
 
-        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionUuid();
 
         String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, groupAlias);
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
@@ -812,7 +812,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 partitionId = partitionContext.getPartitionId();
             }
 
-            groupInstance = createGroupInstance(group, parentInstanceContext.getNetworkPartitionId(),
+            groupInstance = createGroupInstance(group, parentInstanceContext.getNetworkPartitionUuid(),
                     parentInstanceContext.getInstanceId(), partitionId);
         }
 

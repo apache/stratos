@@ -115,8 +115,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		TopologyBuilder.handleServiceCreated(cartridgeList);
 
 		if (log.isInfoEnabled()) {
-			log.info(String.format("Successfully added cartridge: [cartridge-type] %s [tenant-id] %d ",
-			                       cartridgeConfig.getType(), cartridgeConfig.getTenantId()));
+			log.info(String.format("Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d ",
+                    cartridgeUuid, cartridgeConfig.getType(), cartridgeConfig.getTenantId()));
 		}
 		return true;
 	}
@@ -143,11 +143,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
 
-        String cartridgeType = cartridge.getType();
-        if (cloudControllerContext.getCartridge(cartridgeType) != null) {
-            Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
+        String cartridgeUuid = cartridge.getUuid();
+        if (cloudControllerContext.getCartridge(cartridgeUuid) != null) {
+            Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeUuid);
             try {
-                removeCartridgeFromCC(cartridgeToBeRemoved.getType());
+                removeCartridgeFromCC(cartridgeToBeRemoved.getUuid());
             } catch (InvalidCartridgeTypeException ignore) {
             }
             copyIaasProviders(cartridge, cartridgeToBeRemoved);
@@ -161,7 +161,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // transaction ends
 
         if (log.isInfoEnabled()) {
-            log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeType);
+            log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeUuid);
         }
         return true;
     }
@@ -193,38 +193,40 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-    public boolean removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException {
+    public boolean removeCartridge(String cartridgeUuid) throws InvalidCartridgeTypeException {
         //Removing the cartridge from CC
-        Cartridge cartridge = removeCartridgeFromCC(cartridgeType);
+        Cartridge cartridge = removeCartridgeFromCC(cartridgeUuid);
         //removing the cartridge from Topology
         removeCartridgeFromTopology(cartridge);
 
         if (log.isInfoEnabled()) {
-            log.info("Successfully removed cartridge: [cartridge-type] " + cartridgeType);
+            log.info(String.format("Successfully removed cartridge: [cartridge-uuid] %s [cartridge-type] %s " +
+                    "[tenant-id] %d", cartridge.getUuid(), cartridge.getType(), cartridge.getTenantId()));
         }
         return true;
     }
 
-    private Cartridge removeCartridgeFromCC(String cartridgeType) throws InvalidCartridgeTypeException {
+    private Cartridge removeCartridgeFromCC(String cartridgeUuid) throws InvalidCartridgeTypeException {
         Cartridge cartridge = null;
-        if ((cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType)) != null) {
-            if (CloudControllerContext.getInstance().getCartridges().remove(cartridge)) {
+        if ((cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeUuid)) != null) {
+            if (CloudControllerContext.getInstance().removeCartridge(cartridgeUuid)) {
                 // invalidate partition validation cache
-                CloudControllerContext.getInstance().removeFromCartridgeTypeToPartitionIds(cartridgeType);
+                CloudControllerContext.getInstance().removeFromCartridgeTypeToPartitionIds(cartridgeUuid);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Partition cache invalidated for cartridge " + cartridgeType);
+                    log.debug("Partition cache invalidated for cartridge " + cartridgeUuid);
                 }
 
                 CloudControllerContext.getInstance().persist();
 
                 if (log.isInfoEnabled()) {
-                    log.info("Successfully removed cartridge: [cartridge-type] " + cartridgeType);
+                    log.info(String.format("Successfully removed cartridge: [cartridge-uuid] %s [cartridge-type] %s " +
+                            "[tenant-id] %d", cartridge.getUuid(), cartridge.getType(), cartridge.getTenantId()));
                 }
                 return cartridge;
             }
         }
-        String msg = "Cartridge not found: [cartridge-type] " + cartridgeType;
+        String msg = "Cartridge not found: [cartridge-type] " + cartridgeUuid;
         log.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
@@ -796,6 +798,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public Cartridge[] getCartridgesByTenant(int tenantId) {
 
         Collection<Cartridge> allCartridges = CloudControllerContext.getInstance().getCartridges();
+        log.info("---------------------------- All cartridges: "+ allCartridges);
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
         if (allCartridges == null || allCartridges.size() == 0) {
             log.info("No registered Cartridge found for [tenant-id]" + tenantId);
@@ -809,6 +812,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 cartridges.add(cartridge);
             }
         }
+
+        log.info("---------------------------- Cartridges for tenant: "+ cartridges);
         return cartridges.toArray(new Cartridge[cartridges.size()]);
     }
 
@@ -988,7 +993,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     // partition cache hit
                     String provider = partition.getProvider();
                     IaasProvider iaasProvider = CloudControllerContext.getInstance()
-                            .getIaasProvider(cartridge.getType(), provider);
+                            .getIaasProvider(cartridge.getUuid(), provider);
                     partitionToIaasProviders.put(partition.getId(), iaasProvider);
                     continue;
                 }
@@ -1172,14 +1177,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return true;
     }
 
-    public boolean createClusterInstance(String serviceType, String clusterId,
+    public boolean createClusterInstance(String serviceUuid, String clusterId,
                                          String alias, String instanceId, String partitionId,
-                                         String networkPartitionId) throws ClusterInstanceCreationException {
+                                         String networkPartitionUuid) throws ClusterInstanceCreationException {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
-            TopologyBuilder.handleClusterInstanceCreated(serviceType, clusterId, alias,
-                    instanceId, partitionId, networkPartitionId);
+            TopologyBuilder.handleClusterInstanceCreated(serviceUuid, clusterId, alias,
+                    instanceId, partitionId, networkPartitionUuid);
 
             CloudControllerContext.getInstance().persist();
         } finally {

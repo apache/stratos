@@ -34,52 +34,6 @@
         <xs:schema xmlns:ax24="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax22="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
             <xs:import namespace="http://exception.manager.stratos.apache.org/xsd"/>
             <xs:import namespace="http://signup.application.domain.messaging.stratos.apache.org/xsd"/>
-            <xs:element name="addUsedCartridgeGroupsInCartridgeSubGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeSubGroupUuid" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeSubGroupUuid" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addUsedCartridgeGroupsInApplications">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeUsedCartridgeGroupsInApplications">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="canCartirdgeGroupBeRemoved">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupUuid" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="canCartirdgeGroupBeRemovedResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="StratosManagerServiceApplicationSignUpException">
                 <xs:complexType>
                     <xs:sequence>
@@ -237,6 +191,52 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="addUsedCartridgeGroupsInCartridgeSubGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeSubGroupUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeUsedCartridgeGroupsInCartridgeSubGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeSubGroupUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addUsedCartridgeGroupsInApplications">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeUsedCartridgeGroupsInApplications">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartirdgeGroupBeRemoved">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeGroupUuid" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartirdgeGroupBeRemovedResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.manager.stratos.apache.org/xsd">
             <xs:complexType name="ApplicationSignUpException">
@@ -250,14 +250,14 @@
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
+    <wsdl:message name="addUsedCartridgeGroupsInApplicationsRequest">
+        <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInApplications"/>
+    </wsdl:message>
     <wsdl:message name="canCartridgeBeRemovedRequest">
         <wsdl:part name="parameters" element="ns:canCartridgeBeRemoved"/>
     </wsdl:message>
     <wsdl:message name="canCartridgeBeRemovedResponse">
         <wsdl:part name="parameters" element="ns:canCartridgeBeRemovedResponse"/>
-    </wsdl:message>
-    <wsdl:message name="addUsedCartridgeGroupsInApplicationsRequest">
-        <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInApplications"/>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpsRequest">
         <wsdl:part name="parameters" element="ns:getApplicationSignUps"/>
@@ -286,11 +286,11 @@
     <wsdl:message name="removeUsedCartridgesInApplicationsRequest">
         <wsdl:part name="parameters" element="ns:removeUsedCartridgesInApplications"/>
     </wsdl:message>
-    <wsdl:message name="addUsedCartridgesInCartridgeGroupsRequest">
-        <wsdl:part name="parameters" element="ns:addUsedCartridgesInCartridgeGroups"/>
-    </wsdl:message>
     <wsdl:message name="removeUsedCartridgeGroupsInCartridgeSubGroupsRequest">
         <wsdl:part name="parameters" element="ns:removeUsedCartridgeGroupsInCartridgeSubGroups"/>
+    </wsdl:message>
+    <wsdl:message name="addUsedCartridgesInCartridgeGroupsRequest">
+        <wsdl:part name="parameters" element="ns:addUsedCartridgesInCartridgeGroups"/>
     </wsdl:message>
     <wsdl:message name="removeUsedCartridgeGroupsInApplicationsRequest">
         <wsdl:part name="parameters" element="ns:removeUsedCartridgeGroupsInApplications"/>
@@ -332,12 +332,12 @@
         <wsdl:part name="parameters" element="ns:addApplicationSignUp"/>
     </wsdl:message>
     <wsdl:portType name="StratosManagerServicePortType">
+        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
+            <wsdl:input message="ns:addUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInApplications"/>
+        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <wsdl:input message="ns:canCartridgeBeRemovedRequest" wsaw:Action="urn:canCartridgeBeRemoved"/>
             <wsdl:output message="ns:canCartridgeBeRemovedResponse" wsaw:Action="urn:canCartridgeBeRemovedResponse"/>
-        </wsdl:operation>
-        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <wsdl:input message="ns:addUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInApplications"/>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <wsdl:input message="ns:getApplicationSignUpsRequest" wsaw:Action="urn:getApplicationSignUps"/>
@@ -356,11 +356,11 @@
         <wsdl:operation name="removeUsedCartridgesInApplications">
             <wsdl:input message="ns:removeUsedCartridgesInApplicationsRequest" wsaw:Action="urn:removeUsedCartridgesInApplications"/>
         </wsdl:operation>
-        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <wsdl:input message="ns:addUsedCartridgesInCartridgeGroupsRequest" wsaw:Action="urn:addUsedCartridgesInCartridgeGroups"/>
-        </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
             <wsdl:input message="ns:removeUsedCartridgeGroupsInCartridgeSubGroupsRequest" wsaw:Action="urn:removeUsedCartridgeGroupsInCartridgeSubGroups"/>
+        </wsdl:operation>
+        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
+            <wsdl:input message="ns:addUsedCartridgesInCartridgeGroupsRequest" wsaw:Action="urn:addUsedCartridgesInCartridgeGroups"/>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInApplications">
             <wsdl:input message="ns:removeUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:removeUsedCartridgeGroupsInApplications"/>
@@ -406,12 +406,6 @@
     </wsdl:portType>
     <wsdl:binding name="StratosManagerServiceSoap11Binding" type="ns:StratosManagerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <soap:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <soap:operation soapAction="urn:canCartridgeBeRemoved" style="document"/>
             <wsdl:input>
@@ -420,6 +414,12 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
+            <soap:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <soap:operation soapAction="urn:getApplicationSignUps" style="document"/>
@@ -460,14 +460,14 @@
                 <soap:body use="literal"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <soap:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
+        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
+            <soap:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <soap:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"/>
+        <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
+            <soap:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -565,12 +565,6 @@
     </wsdl:binding>
     <wsdl:binding name="StratosManagerServiceSoap12Binding" type="ns:StratosManagerServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <soap12:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <soap12:operation soapAction="urn:canCartridgeBeRemoved" style="document"/>
             <wsdl:input>
@@ -579,6 +573,12 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
+            <soap12:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <soap12:operation soapAction="urn:getApplicationSignUps" style="document"/>
@@ -619,14 +619,14 @@
                 <soap12:body use="literal"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <soap12:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
+        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
+            <soap12:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <soap12:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"/>
+        <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
+            <soap12:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -724,12 +724,6 @@
     </wsdl:binding>
     <wsdl:binding name="StratosManagerServiceHttpBinding" type="ns:StratosManagerServicePortType">
         <http:binding verb="POST"/>
-        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <http:operation location="addUsedCartridgeGroupsInApplications"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <http:operation location="canCartridgeBeRemoved"/>
             <wsdl:input>
@@ -738,6 +732,12 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addUsedCartridgeGroupsInApplications">
+            <http:operation location="addUsedCartridgeGroupsInApplications"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <http:operation location="getApplicationSignUps"/>
@@ -769,14 +769,14 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <http:operation location="removeUsedCartridgeGroupsInCartridgeSubGroups"/>
+        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
+            <http:operation location="addUsedCartridgesInCartridgeGroups"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <http:operation location="addUsedCartridgesInCartridgeGroups"/>
+        <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
+            <http:operation location="removeUsedCartridgeGroupsInCartridgeSubGroups"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

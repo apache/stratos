@@ -61,14 +61,14 @@ public class TopologyLockHierarchy {
         return topologyLockHierarchy;
     }
 
-    public synchronized TopologyLock getTopologyLockForService(String serviceName, boolean forceCreationIfNotFound) {
-        TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceName);
+    public synchronized TopologyLock getTopologyLockForService(String serviceUuid, boolean forceCreationIfNotFound) {
+        TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceUuid);
         if (topologyLock == null && forceCreationIfNotFound) {
             topologyLock = new TopologyLock();
             if (log.isDebugEnabled()) {
-                log.debug("Lock created for topology service: [service-id] " + serviceName);
+                log.debug("Lock created for topology service: [service-uuid] " + serviceUuid);
             }
-            serviceNameToTopologyLockMap.put(serviceName, topologyLock);
+            serviceNameToTopologyLockMap.put(serviceUuid, topologyLock);
 
         }
         return topologyLock;

@@ -258,7 +258,7 @@ public class StratosApiV41Utils {
             CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-        Cartridge cartridge= cloudControllerServiceClient.getCartridgeByTenant(cartridgeType,tenantId);
+        Cartridge cartridge= cloudControllerServiceClient.getCartridgeByTenant(cartridgeType, tenantId);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Removing cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d",
@@ -275,9 +275,9 @@ public class StratosApiV41Utils {
 
         // Validate whether cartridge can be removed
         if (!smServiceClient.canCartridgeBeRemoved(cartridge.getUuid())) {
-            String message = String.format("Cannot remove cartridge : [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d",
-                    cartridge.getUuid(), cartridgeType,tenantId + "since it is used in another cartridge group or an " +
-                            "application");
+            String message = String.format("Cannot remove cartridge : [cartridge-uuid] %s [cartridge-type] %s " +
+                            "[tenant-id] %d since it is used in another cartridge group or an application",
+                    cartridge.getUuid(), cartridgeType, tenantId);
             log.error(message);
             throw new RestAPIException(message);
         }
@@ -294,7 +294,7 @@ public class StratosApiV41Utils {
      *
      * @param filter               filter
      * @param criteria             criteria
-     * @param configurationContext Configuration Contex
+     * @param configurationContext Configuration Context
      * @return List of cartridges matches filter
      * @throws RestAPIException
      */

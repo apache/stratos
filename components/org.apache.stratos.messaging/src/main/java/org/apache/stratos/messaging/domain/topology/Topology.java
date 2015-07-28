@@ -60,21 +60,21 @@ public class Topology implements Serializable {
     }
 
     public void removeService(Service service) {
-        this.serviceMap.remove(service.getServiceName());
-        TopologyLockHierarchy.getInstance().removeTopologyLockForService(service.getServiceName());
+        this.serviceMap.remove(service.getServiceUuid());
+        TopologyLockHierarchy.getInstance().removeTopologyLockForService(service.getServiceUuid());
     }
 
-    public void removeService(String serviceName) {
-        this.serviceMap.remove(serviceName);
-        TopologyLockHierarchy.getInstance().removeTopologyLockForService(serviceName);
+    public void removeService(String serviceUuid) {
+        this.serviceMap.remove(serviceUuid);
+        TopologyLockHierarchy.getInstance().removeTopologyLockForService(serviceUuid);
     }
 
     public Service getService(String serviceUuid) {
         return this.serviceMap.get(serviceUuid);
     }
 
-    public boolean serviceExists(String serviceName) {
-        return this.serviceMap.containsKey(serviceName);
+    public boolean serviceExists(String serviceUuid) {
+        return this.serviceMap.containsKey(serviceUuid);
     }
 
     public void addToCluterMap(Cluster cluster) {
