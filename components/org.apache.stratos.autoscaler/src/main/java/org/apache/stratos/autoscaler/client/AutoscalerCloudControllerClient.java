@@ -84,7 +84,8 @@ public class AutoscalerCloudControllerClient {
     public synchronized MemberContext startInstance(PartitionRef partition,
                                                     String clusterId, String clusterInstanceId,
                                                     String networkPartitionId, boolean isPrimary,
-                                                    int minMemberCount) throws SpawningException {
+                                                    int minMemberCount, String autoscalingReason,
+                                                    long scalingTime) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: " +
@@ -115,8 +116,18 @@ public class AutoscalerCloudControllerClient {
             minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
 
+            Property autoscalingReasonProp = new Property();
+            autoscalingReasonProp.setName(StratosConstants.SCALING_REASON);
+            autoscalingReasonProp.setValue(autoscalingReason);
+
+            Property scalingTimeProp = new Property();
+            scalingTimeProp.setName(StratosConstants.SCALING_TIME);
+            scalingTimeProp.setValue(String.valueOf(scalingTime));
+
             memberContextProps.addProperty(isPrimaryProp);
             memberContextProps.addProperty(minCountProp);
+            memberContextProps.addProperty(autoscalingReasonProp);
+            memberContextProps.addProperty(scalingTimeProp);
             instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 
             long startTime = System.currentTimeMillis();
@@ -228,7 +239,8 @@ public class AutoscalerCloudControllerClient {
     public void terminateAllInstances(String clusterId) throws RemoteException,
             CloudControllerServiceInvalidClusterExceptionException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
+            log.info(String.format("Terminating all instances of cluster via cloud controller: " +
+                    "[cluster] %s", clusterId));
         }
         long startTime = System.currentTimeMillis();
         stub.terminateInstances(clusterId);

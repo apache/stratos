@@ -27,10 +27,12 @@ public interface InFlightRequestPublisher extends StatisticsPublisher {
     /**
      * Publish in-flight request count.
      *
+     * @param timeStamp            time
      * @param clusterId            Cluster id
      * @param clusterInstanceId    Cluster instance id
      * @param networkPartitionId   Network partition id of the cluster
      * @param inFlightRequestCount In-flight request count of the cluster
      */
-    void publish(String clusterId, String clusterInstanceId, String networkPartitionId, int inFlightRequestCount);
+    void publish(Long timeStamp, String clusterId, String clusterInstanceId, String networkPartitionId,
+                 int inFlightRequestCount);
 }

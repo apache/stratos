@@ -103,6 +103,7 @@ public final class CloudControllerConstants {
     public static final String MEMBER_ID_COL = "memberId";
     public static final String CARTRIDGE_TYPE_COL = "cartridgeType";
     public static final String CLUSTER_ID_COL = "clusterId";
+    public static final String CLUSTER_INSTANCE_ID_COL = "clusterInstanceId";
     public static final String PARTITION_ID_COL = "partitionId";
     public static final String NETWORK_ID_COL = "networkId";
     public static final String ALIAS_COL = "alias";
@@ -122,6 +123,9 @@ public final class CloudControllerConstants {
     public static final String PRIV_IP_COL = "privateIPAddresses";
     public static final String PUB_IP_COL = "publicIPAddresses";
     public static final String ALLOCATE_IP_COL = "allocateIPAddresses";
+    public static final String TIME_STAMP = "timeStamp";
+    public static final String SCALING_REASON = "scalingReason";
+    public static final String SCALING_TIME = "scalingTime";
 
     /**
      * Properties

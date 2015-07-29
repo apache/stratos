@@ -23,287 +23,289 @@
 <streamManagerConfiguration xmlns="http://wso2.org/carbon/streammanager">
     <!-- in-flight requests stream definitions start -->
     <streamDefinition name="in_flight_requests" version="1.0.0">
-         <description>in-flight request count</description>
-         <nickName>in-flight requests</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="in_flight_request_count" type="double"/>
-         </payloadData>
-     </streamDefinition> 
+        <description>in-flight request count</description>
+        <nickName>in-flight requests</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="time_stamp" type="long"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="in_flight_request_count" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="gradient_in_flight_requests" version="1.0.0">
-         <description>gradient of in flight request count</description>
-         <nickName>gradient in flight requests</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="count" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>gradient of in flight request count</description>
+        <nickName>gradient in flight requests</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="count" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="average_in_flight_requests" version="1.0.0">
-         <description>average of in-flight request count</description>
-         <nickName>average in-flight requests</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="count" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>average of in-flight request count</description>
+        <nickName>average in-flight requests</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="count" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="second_derivative_in_flight_requests" version="1.0.0">
-         <description>second derivative of in-flight request count</description>
-         <nickName>second derivative in-flight requests</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="count" type="double"/>
-         </payloadData>
+        <description>second derivative of in-flight request count</description>
+        <nickName>second derivative in-flight requests</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="count" type="double"/>
+        </payloadData>
     </streamDefinition>
     <!-- in-flight requests stream definitions end -->
 
     <!-- cartridge agent health stats stream definitions start -->
     <streamDefinition name="cartridge_agent_health_stats" version="1.0.0">
-         <description>agent health stats</description>
-         <nickName>agent health stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-	         <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_id" type="String" />
-             <property name="partition_id" type="String" />
-             <property name="health_description" type="String"/>
-             <property name="value" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>agent health stats</description>
+        <nickName>agent health stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="time_stamp" type="long"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_id" type="String"/>
+            <property name="partition_id" type="String"/>
+            <property name="health_description" type="String"/>
+            <property name="value" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="average_load_average_stats" version="1.0.0">
-         <description>average load average stats</description>
-         <nickName>average load average stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-	     <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="average_load_average" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>average load average stats</description>
+        <nickName>average load average stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="average_load_average" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="average_memory_consumption_stats" version="1.0.0">
-         <description>average memory consumption stats</description>
-         <nickName>average memory consumption stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="average_memory_consumption" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>average memory consumption stats</description>
+        <nickName>average memory consumption stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="average_memory_consumption" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="gradient_load_average_stats" version="1.0.0">
-         <description>gradient load average stats</description>
-         <nickName>gradient load average stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-	     <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="gradient_load_average" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>gradient load average stats</description>
+        <nickName>gradient load average stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="gradient_load_average" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="gradient_memory_consumption_stats" version="1.0.0">
-         <description>gradient memoryconsumption stats</description>
-         <nickName>gradient memoryconsumption stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-	     <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="gradient_memory_consumption" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>gradient memoryconsumption stats</description>
+        <nickName>gradient memoryconsumption stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="gradient_memory_consumption" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="second_derivative_memory_consumption_stats" version="1.0.0">
-         <description>second derivative memory consumption stats</description>
-         <nickName>second derivative memory consumption stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-	     <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="second_derivative_memory_consumption" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>second derivative memory consumption stats</description>
+        <nickName>second derivative memory consumption stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="second_derivative_memory_consumption" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="second_derivative_load_average_stats" version="1.0.0">
-         <description>second derivative load average stats</description>
-         <nickName>second derivative load average stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-	     <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="second_derivative_load_average" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>second derivative load average stats</description>
+        <nickName>second derivative load average stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="second_derivative_load_average" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="fault_message" version="1.0.0">
-         <description>fault message</description>
-         <nickName>fault message</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_id" type="String"/>
-             <property name="partition_id" type="String"/>
-         </payloadData>
+        <description>fault message</description>
+        <nickName>fault message</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_id" type="String"/>
+            <property name="partition_id" type="String"/>
+        </payloadData>
     </streamDefinition>
     <!-- cartridge agent health stats stream definitions end -->
 
     <!-- This is for member_id wise grouping-->
     <streamDefinition name="member_average_load_average_stats" version="1.0.0">
-         <description>average load average stats</description>
-         <nickName>average load average stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="member_id" type="String" />
-             <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_average_load_average" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>average load average stats</description>
+        <nickName>average load average stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="member_id" type="String"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_average_load_average" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="member_average_memory_consumption_stats" version="1.0.0">
-         <description>average memory consumption stats</description>
-         <nickName>average memory consumption stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="member_id" type="String"/>
-             <property name="cluster_id" type="String"/>
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_average_memory_consumption" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>average memory consumption stats</description>
+        <nickName>average memory consumption stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="member_id" type="String"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_average_memory_consumption" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="member_gradient_load_average_stats" version="1.0.0">
-         <description>gradient load average stats</description>
-         <nickName>gradient load average stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="member_id" type="String" />
-             <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_gradient_load_average" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>gradient load average stats</description>
+        <nickName>gradient load average stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="member_id" type="String"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_gradient_load_average" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="member_gradient_memory_consumption_stats" version="1.0.0">
-         <description>gradient memoryconsumption stats</description>
-         <nickName>gradient memoryconsumption stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="member_id" type="String" />
-             <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_gradient_memory_consumption" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>gradient memoryconsumption stats</description>
+        <nickName>gradient memoryconsumption stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="member_id" type="String"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_gradient_memory_consumption" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="member_second_derivative_memory_consumption_stats" version="1.0.0">
-         <description>second derivative memory consumption stats</description>
-         <nickName>second derivative memory consumption stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="member_id" type="String" />
-             <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_second_derivative_memory_consumption" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>second derivative memory consumption stats</description>
+        <nickName>second derivative memory consumption stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="member_id" type="String"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_second_derivative_memory_consumption" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="member_second_derivative_load_average_stats" version="1.0.0">
-         <description>second derivative load average stats</description>
-         <nickName>second derivative load average stats</nickName>
-         <metaData>
-         </metaData>
-         <correlationData>
-         </correlationData>
-         <payloadData>
-             <property name="member_id" type="String" />
-             <property name="cluster_id" type="String" />
-             <property name="cluster_instance_id" type="String"/>
-             <property name="network_partition_id" type="String"/>
-             <property name="member_second_derivative_load_average" type="double"/>
-         </payloadData>
-     </streamDefinition>
+        <description>second derivative load average stats</description>
+        <nickName>second derivative load average stats</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="member_id" type="String"/>
+            <property name="cluster_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="member_second_derivative_load_average" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
 </streamManagerConfiguration>
