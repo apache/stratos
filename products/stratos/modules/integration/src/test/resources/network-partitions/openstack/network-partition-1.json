@@ -1,0 +1,15 @@
+{
+    "id": "network-partition-1",
+    "provider": "openstack",
+    "partitions": [
+        {
+            "id": "partition-1",
+            "property": [
+                {
+                    "name": "region",
+                    "value": "RegionOne"
+                }
+            ]
+        }
+    ]
+}

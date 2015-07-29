@@ -1,0 +1,17 @@
+{
+    "id": "application-policy-1",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-1"
+    ],
+    "properties": [
+        {
+            "name": "key-1",
+            "value": "value-1"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

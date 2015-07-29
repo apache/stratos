@@ -1,0 +1,21 @@
+{
+	"id": "openstack-nw-partition",
+	"provider": "openstack",
+	"partitions": [
+		{
+			"id": "partition-1",
+			"property": [
+				{
+					"name": "region",
+					"value": "RegionOne"
+				}
+			]
+		}
+	],
+     "properties": [
+		{
+			"name": "payload_parameter.PUPPET_IP",
+			"value": "192.168.60.16"
+		}
+	]
+}

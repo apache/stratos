@@ -1,0 +1,19 @@
+{
+    "id": "network-partition-2",
+    "partitions": [
+        {
+            "id": "partition-2",
+            "provider": "ec2",
+            "property": [
+                {
+                    "name": "region",
+                    "value": "ap-southeast-2"
+                },
+                {
+                    "name": "region",
+                    "value": "ap-southeast-2b"
+                }
+            ]
+        }
+    ]
+}
