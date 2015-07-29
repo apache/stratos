@@ -1,0 +1,36 @@
+{
+    "name": "G1",
+    "dependencies": {
+        "terminationBehaviour": "terminate-none",
+        "startupOrders": ["group.group2,cartridge.c1-1x0"]
+    },
+    "cartridges": [
+        "c1"
+    ],
+    "groups": [
+        {
+            "name": "G2",
+            "dependencies": {
+                "terminationBehaviour": "terminate-dependents",
+                "startupOrders": ["group.group3,cartridge.c2-1x0"]
+            },
+            "cartridges": [
+                "c2"
+            ],
+            "groups": [
+                {
+                    "name": "G3",
+                    "dependencies": {
+                        "terminationBehaviour": "terminate-all",
+                        "startupOrders": []
+                    },
+                    "cartridges": [
+                        "c3"
+                    ],
+                    "groups": []
+                }
+            ]
+        }
+    ]
+}
+

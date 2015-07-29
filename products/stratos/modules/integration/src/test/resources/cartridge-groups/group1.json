@@ -1,0 +1,38 @@
+{
+    "name": "group1",
+    "groups": [
+        {
+            "name": "group2",
+            "cartridges": [
+                "c3",
+                "c2"
+            ],
+            "dependencies": {
+                "startupOrders": [
+                    {
+                        "aliases": [
+                            "cartridge.my-c3-group2",
+                            "cartridge.my-c2-group2"
+                        ]
+                    }
+                ],
+                "terminationBehaviour": "terminate-all"
+            }
+        }
+    ],
+    "cartridges": [
+        "c1"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            {
+                "aliases": [
+                    "cartridge.my-c1-group1",
+                    "group.my-group2"
+                ]
+            }
+        ],
+        "terminationBehaviour": "terminate-dependents"
+    }
+}
+

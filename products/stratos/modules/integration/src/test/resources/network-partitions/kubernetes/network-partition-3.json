@@ -1,0 +1,15 @@
+{
+    "id": "network-partition-3",
+    "provider": "kubernetes",
+    "partitions": [
+        {
+            "id": "partition-1",
+            "property": [
+                {
+                    "name": "cluster",
+                    "value": "kubernetes-cluster-1"
+                }
+            ]
+        }
+    ]
+}
