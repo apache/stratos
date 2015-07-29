@@ -889,7 +889,8 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/view")
     public Response getApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
-        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,carbonContext.getTenantId());
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application not found")).build();
@@ -1295,8 +1296,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response undeployApplication(
             @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force)
             throws RestAPIException {
-
-        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,carbonContext.getTenantId());
         if (applicationDefinition == null) {
             String message = String.format("Application does not exist [application-id] %s", applicationId);
             log.error(message);
@@ -1356,7 +1357,8 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/manage")
     public Response removeApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
-        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,carbonContext.getTenantId());
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application not found")).build();

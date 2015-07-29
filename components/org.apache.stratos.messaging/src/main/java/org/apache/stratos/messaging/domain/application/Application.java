@@ -53,9 +53,10 @@ public class Application extends ParentComponent<ApplicationInstance> {
     // application policy uuid
     private String applicationPolicyId;
 
-    public Application(String uuid) {
+    public Application(String uuid,int tenantId) {
         super();
         this.uuid = uuid;
+	    this.tenantId=tenantId;
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
         //this.applicationStateManager =

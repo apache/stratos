@@ -74,7 +74,6 @@ public class DependencyBuilder {
 
             log.info(String.format("Termination behaviour set: [component] %s [termination-behaviour] %s",
                     identifier, dependencyTree.getTerminationBehavior()));
-
             Set<StartupOrder> startupOrders = dependencyOrder.getStartupOrders();
             ApplicationChildContext parentContext;
 

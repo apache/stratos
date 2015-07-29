@@ -1805,7 +1805,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            ApplicationBean applicationBean = getApplication(applicationId);
+            ApplicationBean applicationBean = getApplication(applicationId,tenantId);
             //int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             if (applicationBean.isMultiTenant() && (tenantId != -1234)) {
                 String message = String.format(
@@ -1903,11 +1903,10 @@ public class StratosApiV41Utils {
      * @return ApplicationBean
      * @throws RestAPIException
      */
-    public static ApplicationBean getApplication(String applicationId) throws RestAPIException {
+    public static ApplicationBean getApplication(String applicationId,int tenantId) throws RestAPIException {
         try {
-            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             return ObjectConverter.convertStubApplicationContextToApplicationDefinition(
-                    AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId, carbonContext.getTenantId()));
+                    AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId,tenantId));
         } catch (RemoteException e) {
             String message = "Could not read application: [application-id] " + applicationId;
             log.error(message, e);
@@ -2466,8 +2465,10 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application id is null");
         }
 
-        ApplicationBean applicationBean = getApplication(applicationId);
-        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+	    //multi tenant application can be added by only the super tenant.Hence passing the super tenant id to retrieve
+	    // the application
+        ApplicationBean applicationBean = getApplication(applicationId,-1234);
+	    Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationId, -1234);
 
         if ((applicationBean == null) || (application == null)) {
             throw new RestAPIException("Application not found: [application-id] " + applicationId);
@@ -2581,7 +2582,7 @@ public class StratosApiV41Utils {
             throw new ApplicationSignUpRestAPIException("Application id is null");
         }
 
-        ApplicationBean application = getApplication(applicationId);
+        ApplicationBean application = getApplication(applicationId,-1234);
         if (application == null) {
             throw new ApplicationSignUpRestAPIException("Application does not exist: [application-id] " + applicationId);
         }
@@ -2618,7 +2619,7 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application id is null");
         }
 
-        ApplicationBean application = getApplication(applicationId);
+        ApplicationBean application = getApplication(applicationId,-1234);
         if (application == null) {
             throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
         }

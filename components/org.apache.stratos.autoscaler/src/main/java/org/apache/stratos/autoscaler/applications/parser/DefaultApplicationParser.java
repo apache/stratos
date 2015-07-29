@@ -248,7 +248,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                    Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException {
 
-        Application application = new Application(applicationContext.getApplicationUuid());
+        Application application = new Application(applicationContext.getApplicationUuid(),applicationContext.getTenantId());
 
         // Set tenant information
         application.setTenantId(applicationContext.getTenantId());
