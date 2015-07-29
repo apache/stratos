@@ -1,4 +1,5 @@
 import sys
+import readline
 import getpass
 from CLI import CLI
 import Configs
@@ -22,6 +23,9 @@ def prompt_for_credentials():
 
 
 def main():
+    # resolving the '-' issue
+    readline.set_completer_delims(readline.get_completer_delims().replace('-', ''))
+
     cli = CLI()
 
     if len(sys.argv) > 1:
