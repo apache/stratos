@@ -145,7 +145,8 @@ public class CarbonRegistry implements DataStore {
             for (String value : property.getValues()) {
                 if (!propertyValueExist(nodeResource, property.getKey(), value)) {
                     updated = true;
-                    log.info(String.format("Registry property is added: [resource-path] %s [Property Name] %s [Property Value] %s",
+                    log.info(String.format("Registry property is added: [resource-path] %s " +
+                                    "[Property Name] %s [Property Value] %s",
                             resourcePath, property.getKey(), value));
                     nodeResource.addProperty(property.getKey(), value);
                 } else {
@@ -175,7 +176,8 @@ public class CarbonRegistry implements DataStore {
 
     }
 
-    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException {
+    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove)
+            throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
 
@@ -196,7 +198,8 @@ public class CarbonRegistry implements DataStore {
         registry.put(resourcePath, nodeResource);
         registry.commitTransaction();
 
-        log.info(String.format("Application %s property %s value %s is removed from metadata ", applicationId, propertyName, valueToRemove));
+        log.info(String.format("Application %s property %s value %s is removed from metadata ",
+                applicationId, propertyName, valueToRemove));
 
         return true;
     }
@@ -236,7 +239,8 @@ public class CarbonRegistry implements DataStore {
     }
 
     private UserRegistry getRegistry() throws RegistryException {
-        return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
+        return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().
+                getRegistryService().getGovernanceSystemRegistry();
     }
 
     /**
@@ -270,7 +274,8 @@ public class CarbonRegistry implements DataStore {
         return false;
     }
 
-    public boolean removePropertyFromApplication(String applicationId, String propertyName) throws org.wso2.carbon.registry.api.RegistryException {
+    public boolean removePropertyFromApplication(String applicationId, String propertyName)
+            throws org.wso2.carbon.registry.api.RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
         // We are using only super tenant registry to persist
@@ -282,7 +287,8 @@ public class CarbonRegistry implements DataStore {
         if (registry.resourceExists(resourcePath)) {
             nodeResource = registry.get(resourcePath);
             if (nodeResource.getProperty(propertyName) == null) {
-                log.info(String.format("[application-id] %s does not have a property [property-name] %s ", applicationId, propertyName));
+                log.info(String.format("[application-id] %s does not have a property [property-name] %s ", applicationId,
+                        propertyName));
                 return false;
             } else {
                 nodeResource.removeProperty(propertyName);
@@ -293,7 +299,8 @@ public class CarbonRegistry implements DataStore {
             return false;
         }
 
-        log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ", applicationId, propertyName));
+        log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ",
+                applicationId, propertyName));
         return true;
     }
 
