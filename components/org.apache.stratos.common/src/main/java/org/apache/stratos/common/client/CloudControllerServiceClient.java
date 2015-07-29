@@ -125,12 +125,12 @@ public class CloudControllerServiceClient {
         return stub.getCartridge(cartridgeType);
     }
 
-	public Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws RemoteException,
-	                                                           CloudControllerServiceCartridgeNotFoundExceptionException {
-		return stub.getCartridgeByTenant(cartridgeType,tenantId);
-	}
+    public Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws RemoteException,
+            CloudControllerServiceCartridgeNotFoundExceptionException {
+        return stub.getCartridgeByTenant(cartridgeType,tenantId);
+    }
 
-	public ClusterContext getClusterContext(String clusterId) throws RemoteException {
+    public ClusterContext getClusterContext(String clusterId) throws RemoteException {
 
         return stub.getClusterContext(clusterId);
     }
@@ -226,6 +226,11 @@ public class CloudControllerServiceClient {
         return stub.getNetworkPartitionsByTenant(tenantId);
     }
 
+    public NetworkPartition getNetworkPartitionByTenant(String networkPartitionId, int tenantId) throws
+            RemoteException {
+        return stub.getNetworkPartitionByTenant(networkPartitionId, tenantId);
+    }
+
     public NetworkPartition getNetworkPartition(String networkPartitionId) throws RemoteException {
         return stub.getNetworkPartition(networkPartitionId);
     }
@@ -248,14 +253,14 @@ public class CloudControllerServiceClient {
         return stub.getIaasProviders();
     }
 
-	public KubernetesCluster getKubernetesClusterByTenantId(String clusterId, int tenantId)
-			throws RemoteException {
-		try {
-			return stub.getKubernetesClusterByTenant(clusterId,tenantId);
-		} catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
-			String msg = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
-			log.error(msg, e);
-			throw new RuntimeException(msg, e);
-		}
-	}
+    public KubernetesCluster getKubernetesClusterByTenantId(String clusterId, int tenantId)
+            throws RemoteException {
+        try {
+            return stub.getKubernetesClusterByTenant(clusterId,tenantId);
+        } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+            String msg = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
 }
