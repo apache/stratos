@@ -76,14 +76,14 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     public void testSingleCartridgeApplication() {
         try {
             initializeApplicationEventReceiver();
-            //runApplicationTest("simple/single-cartridge-app", "single-cartridge-app");
+            runApplicationTest("simple/single-cartridge-app", "single-cartridge-app");
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred", false);
         }
     }
 
-    /*@Test
+    @Test
     public void testAutoscalingPolicy() {
         try {
             initializeApplicationEventReceiver();
@@ -343,7 +343,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             log.error(e);
             assertTrue("An error occurred while handling cartridges", false);
         }
-    }*/
+    }
 
 
     private void runApplicationTest(String applicationId) {
