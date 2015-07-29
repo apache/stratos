@@ -82,7 +82,8 @@ public class MetadataApi {
     @Path("/applications/{application_id}/clusters/{cluster_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId) throws RestAPIException {
+    public Response getClusterProperties(@PathParam("application_id") String applicationId,
+                                         @PathParam("cluster_id") String clusterId) throws RestAPIException {
 
         List<Property> properties;
         Property[] propertiesArr = null;
@@ -149,7 +150,9 @@ public class MetadataApi {
     @Path("/applications/{application_id}/cluster/{cluster_id}/properties/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName) throws RestAPIException {
+    public Response getClusterProperty(@PathParam("application_id") String applicationId,
+                                       @PathParam("cluster_id") String clusterId,
+                                       @PathParam("property_name") String propertyName) throws RestAPIException {
         List<Property> properties;
 
         Property property = null;
@@ -243,7 +246,8 @@ public class MetadataApi {
     @Path("applications/{application_id}/properties/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response deleteApplicationProperty(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName)
+    public Response deleteApplicationProperty(@PathParam("application_id") String applicationId,
+                                              @PathParam("property_name") String propertyName)
             throws RestAPIException {
 
         try {
@@ -265,7 +269,8 @@ public class MetadataApi {
     @Path("applications/{application_id}/properties/{property_name}/value/{value}")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response deleteApplicationPropertyValue(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName,
+    public Response deleteApplicationPropertyValue(@PathParam("application_id") String applicationId,
+                                                   @PathParam("property_name") String propertyName,
                                                    @PathParam("value") String propertyValue)
             throws RestAPIException {
 
@@ -277,7 +282,8 @@ public class MetadataApi {
                         applicationId));
             }
         } catch (RegistryException e) {
-            String msg = String.format("[application-id] %s [property-name] %s [value] %s deletion failed" + applicationId, propertyName, propertyValue);
+            String msg = String.format("[application-id] %s [property-name] %s [value] %s deletion failed" +
+                    applicationId, propertyName, propertyValue);
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
