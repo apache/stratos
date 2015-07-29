@@ -255,15 +255,15 @@ class AgentGitHandler:
                         return repo_info.repo_url
                     else:
                         # credentials wrong, need to replace
-                        return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password + "@" +
+                        return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
                                    at_split[1])
                 else:
                     # only username is provided, need to include password
-                    return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password + "@" +
+                    return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
                                at_split[1])
             else:
                 # no credentials in the url, need to include username and password
-                return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password + "@" +
+                return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
                            url_split[1])
         # no credentials specified, return as is
         return repo_info.repo_url
