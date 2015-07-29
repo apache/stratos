@@ -134,17 +134,15 @@ public class StratosApiV41 extends AbstractApi {
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
         String deploymentPolicyId = deploymentPolicyDefinitionBean.getId();
-        deploymentPolicyDefinitionBean.setUuid(UUID.randomUUID().toString());
-        String deploymentPolicyUuid = deploymentPolicyDefinitionBean.getUuid();
+        String deploymentPolicyUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        deploymentPolicyDefinitionBean.setTenantId(carbonContext.getTenantId());
         int tenantId = carbonContext.getTenantId();
 
         List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans = deploymentPolicyDefinitionBean
                 .getNetworkPartitions();
         for (NetworkPartitionReferenceBean networkPartitionReferenceBeans1 : networkPartitionReferenceBeans) {
-            networkPartitionReferenceBeans1.setTenantId(deploymentPolicyDefinitionBean.getTenantId());
+            networkPartitionReferenceBeans1.setTenantId(tenantId);
         }
 
         try {
@@ -222,7 +220,6 @@ public class StratosApiV41 extends AbstractApi {
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
         String deploymentPolicyId = deploymentPolicyDefinitionBean.getId();
-        String deploymentPolicyUuid = deploymentPolicyDefinitionBean.getUuid();
         // TODO :: Deployment policy validation
 
         try {
@@ -243,8 +240,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Deployment policy updated successfully: [deployment-policy-uuid] %s " +
-                        "[deployment-policy-id] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
+                String.format("Deployment policy updated successfully: [deployment-policy-id] %s",
+                        deploymentPolicyId))).build();
     }
 
     /**

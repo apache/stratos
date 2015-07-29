@@ -2070,8 +2070,6 @@ public class ObjectConverter {
 
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
         deploymentPolicyBean.setId(deploymentPolicy.getId());
-        deploymentPolicyBean.setUuid(deploymentPolicy.getUuid());
-        deploymentPolicyBean.setTenantId(deploymentPolicy.getTenantId());
         deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionsToNetworkPartitionReferences(
                 deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
@@ -2100,7 +2098,7 @@ public class ObjectConverter {
 
 
     public static DeploymentPolicy convertDeploymentPolicyBeanToASDeploymentPolicy(
-            DeploymentPolicyBean deploymentPolicyBean) {
+            DeploymentPolicyBean deploymentPolicyBean, String deploymentPolicyUuid, int tenantId) {
 
         if (deploymentPolicyBean == null) {
             return null;
@@ -2108,8 +2106,8 @@ public class ObjectConverter {
 
         DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
         deploymentPolicy.setId(deploymentPolicyBean.getId());
-        deploymentPolicy.setUuid(deploymentPolicyBean.getUuid());
-        deploymentPolicy.setTenantId(deploymentPolicyBean.getTenantId());
+        deploymentPolicy.setUuid(deploymentPolicyUuid);
+        deploymentPolicy.setTenantId(tenantId);
         if (deploymentPolicyBean.getNetworkPartitions() != null) {
             deploymentPolicy.setNetworkPartitionRefs(convertNetworkPartitionToASStubNetworkPartition(
                     deploymentPolicyBean.getNetworkPartitions()));
@@ -2143,8 +2141,6 @@ public class ObjectConverter {
 
         DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
         deploymentPolicyBean.setId(deploymentPolicy.getId());
-        deploymentPolicyBean.setUuid(deploymentPolicy.getUuid());
-        deploymentPolicyBean.setTenantId(deploymentPolicy.getTenantId());
         deploymentPolicyBean.setNetworkPartitions(convertASStubNetworkPartitionRefsToNetworkPartitions(
                 deploymentPolicy.getNetworkPartitionRefs()));
         return deploymentPolicyBean;
