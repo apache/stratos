@@ -29,8 +29,10 @@ public class Constants {
     public static final String NETWORK_PARTITION_ID = "network.partition.id";
     public static final String CLUSTER_ID = "cluster.id";
     public static final String SERVICE_NAME = "service.name";
-    public static final String AWS_CREDENTIALS_FILE="aws.credentials.file";
+    public static final String AWS_PROPERTIES_FILE="aws.properties.file";
     public static final String AWS_ACCESS_KEY = "access-key";
     public static final String AWS_SECRET_KEY = "secret-key";
     public static final String LB_PREFIX = "load-balancer-prefix";
+    public static final String LOAD_BALANCER_SECURITY_GROUP_NAME = "load-balancer-security-group-name";
+    public static final String LOAD_BALANCER_SECURITY_GROUP_DESCRIPTION = "Security group for load balancers created for Apache Stratos.";
 }

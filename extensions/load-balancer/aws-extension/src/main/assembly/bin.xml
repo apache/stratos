@@ -41,7 +41,7 @@
                 <include>jndi.properties</include>
                 <include>log4j.properties</include>
                 <include>thrift-client-config.xml</include>
-                <include>aws-credentials.conf</include>
+                <include>aws.properties</include>
             </includes>
         </fileSet>
         <fileSet>

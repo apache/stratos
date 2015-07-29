@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +37,11 @@ import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExte
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
+import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.*;
 
@@ -45,11 +51,16 @@ public class AWSHelper {
 	private String lbPrefix;
 	private int lbSequence;
 	private Object lbSequenceMutex;
+	private String lbSecurityGroupName;
+	private String lbSecurityGroupDescription;
+
+	private ConcurrentHashMap<String, String> regionToSecurityGroupIdMap;
 
 	private BasicAWSCredentials awsCredentials;
 	private ClientConfiguration clientConfiguration;
 
 	AmazonElasticLoadBalancingClient lbClient;
+	AmazonEC2Client ec2Client;
 
 	private static final Log log = LogFactory.getLog(AWSHelper.class);
 
@@ -57,15 +68,15 @@ public class AWSHelper {
 		// Read values for awsAccessKey, awsSecretKey etc. from config file
 		// Throw a proper exception / log warning if cant read credentials ?
 
-		String awsCredentialsFile = System
-				.getProperty(Constants.AWS_CREDENTIALS_FILE);
+		String awsPropertiesFile = System
+				.getProperty(Constants.AWS_PROPERTIES_FILE);
 
 		Properties properties = new Properties();
 
 		InputStream inputStream = null;
 
 		try {
-			inputStream = new FileInputStream(awsCredentialsFile);
+			inputStream = new FileInputStream(awsPropertiesFile);
 
 			properties.load(inputStream);
 
@@ -74,26 +85,41 @@ public class AWSHelper {
 			this.awsSecretKey = properties
 					.getProperty(Constants.AWS_SECRET_KEY);
 
-			if(this.awsAccessKey.isEmpty() || this.awsSecretKey.isEmpty())
-			{
-				throw new LoadBalancerExtensionException("Invalid AWS credentials.");
+			if (this.awsAccessKey.isEmpty() || this.awsSecretKey.isEmpty()) {
+				throw new LoadBalancerExtensionException(
+						"Invalid AWS credentials.");
 			}
 
 			this.lbPrefix = properties.getProperty(Constants.LB_PREFIX);
 
-			if(this.lbPrefix.isEmpty() || this.lbPrefix.length() > 25)
-			{
-				throw new LoadBalancerExtensionException("Invalid load balancer prefix.");
+			if (this.lbPrefix.isEmpty() || this.lbPrefix.length() > 25) {
+				throw new LoadBalancerExtensionException(
+						"Invalid load balancer prefix.");
 			}
 
 			lbSequence = 0;
 			lbSequenceMutex = new Object();
+
+			this.lbSecurityGroupName = properties
+					.getProperty(Constants.LOAD_BALANCER_SECURITY_GROUP_NAME);
+
+			if (this.lbSecurityGroupName.isEmpty()
+					|| this.lbSecurityGroupName.length() > 255) {
+				throw new LoadBalancerExtensionException(
+						"Invalid load balancer security group name.");
+			}
+
+			this.lbSecurityGroupDescription = Constants.LOAD_BALANCER_SECURITY_GROUP_DESCRIPTION;
+
+			regionToSecurityGroupIdMap = new ConcurrentHashMap<String, String>();
 
 			awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
 			clientConfiguration = new ClientConfiguration();
 
 			lbClient = new AmazonElasticLoadBalancingClient(awsCredentials,
 					clientConfiguration);
+
+			ec2Client = new AmazonEC2Client(awsCredentials, clientConfiguration);
 
 		} catch (IOException e) {
 			log.error("Error reading aws configuration file.");
@@ -108,8 +134,7 @@ public class AWSHelper {
 		}
 	}
 
-	public int getNextLBSequence()
-	{
+	public int getNextLBSequence() {
 		synchronized (lbSequenceMutex) {
 			lbSequence++;
 			return lbSequence;
@@ -140,10 +165,16 @@ public class AWSHelper {
 
 		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
 
-		lbClient.setEndpoint("elasticloadbalancing." + region
-				+ ".amazonaws.com");
-
 		try {
+			String securityGroupId = getSecurityGroupIdForRegion(region);
+
+			List<String> securityGroups = new ArrayList<String>();
+			securityGroups.add(securityGroupId);
+
+			createLoadBalancerRequest.setSecurityGroups(securityGroups);
+
+			lbClient.setEndpoint("elasticloadbalancing." + region
+					+ ".amazonaws.com");
 
 			CreateLoadBalancerResult clbResult = lbClient
 					.createLoadBalancer(createLoadBalancerRequest);
@@ -206,7 +237,7 @@ public class AWSHelper {
 		try {
 			lbClient.setEndpoint("elasticloadbalancing." + region
 					+ ".amazonaws.com");
-			
+
 			RegisterInstancesWithLoadBalancerResult result = lbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
 			return;
@@ -239,7 +270,7 @@ public class AWSHelper {
 		try {
 			lbClient.setEndpoint("elasticloadbalancing." + region
 					+ ".amazonaws.com");
-			
+
 			DeregisterInstancesFromLoadBalancerResult result = lbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
 			return;
@@ -272,7 +303,7 @@ public class AWSHelper {
 		try {
 			lbClient.setEndpoint("elasticloadbalancing." + region
 					+ ".amazonaws.com");
-			
+
 			DescribeLoadBalancersResult result = lbClient
 					.describeLoadBalancers(describeLoadBalancersRequest);
 
@@ -297,9 +328,11 @@ public class AWSHelper {
 	 * @param region
 	 * @return list of instances attached
 	 */
-	public List<Instance> getAttachedInstances(String loadBalancerName, String region) {
+	public List<Instance> getAttachedInstances(String loadBalancerName,
+			String region) {
 		try {
-			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName, region);
+			LoadBalancerDescription lbDescription = getLoadBalancerDescription(
+					loadBalancerName, region);
 
 			if (lbDescription == null) {
 				log.warn("Could not find description of load balancer "
@@ -398,9 +431,11 @@ public class AWSHelper {
 	 * @param region
 	 * @return list of instances attached to load balancer
 	 */
-	public List<Listener> getAttachedListeners(String loadBalancerName, String region) {
+	public List<Listener> getAttachedListeners(String loadBalancerName,
+			String region) {
 		try {
-			LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName, region);
+			LoadBalancerDescription lbDescription = getLoadBalancerDescription(
+					loadBalancerName, region);
 
 			if (lbDescription == null) {
 				log.warn("Could not find description of load balancer "
@@ -425,6 +460,80 @@ public class AWSHelper {
 			return null;
 		}
 
+	}
+
+	public String createSecurityGroup(String groupName, String description,
+			String region) throws LoadBalancerExtensionException {
+		if (groupName == null || groupName.isEmpty()) {
+			throw new LoadBalancerExtensionException(
+					"Invalid Security Group Name.");
+		}
+
+		CreateSecurityGroupRequest createSecurityGroupRequest = new CreateSecurityGroupRequest();
+		createSecurityGroupRequest.setGroupName(groupName);
+		createSecurityGroupRequest.setDescription(description);
+
+		try {
+			ec2Client.setEndpoint("ec2." + region + ".amazonaws.com");
+
+			CreateSecurityGroupResult createSecurityGroupResult = ec2Client
+					.createSecurityGroup(createSecurityGroupRequest);
+
+			return createSecurityGroupResult.getGroupId();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoadBalancerExtensionException(
+					"Could not create security group.");
+		}
+
+	}
+
+	public void addInboundRuleToSecurityGroup(String groupId, String region)
+			throws LoadBalancerExtensionException {
+		if (groupId == null || groupId.isEmpty()) {
+			throw new LoadBalancerExtensionException(
+					"Invalid security group Id for addInboundRuleToSecurityGroup.");
+		}
+
+		AuthorizeSecurityGroupIngressRequest authorizeSecurityGroupIngressRequest = new AuthorizeSecurityGroupIngressRequest();
+		authorizeSecurityGroupIngressRequest.setGroupId(groupId);
+		authorizeSecurityGroupIngressRequest.setCidrIp("0.0.0.0/0");
+		authorizeSecurityGroupIngressRequest.setFromPort(0);
+		authorizeSecurityGroupIngressRequest.setToPort(65535);
+		authorizeSecurityGroupIngressRequest.setIpProtocol("tcp");
+
+		try {
+			ec2Client.setEndpoint("ec2." + region + ".amazonaws.com");
+
+			ec2Client
+					.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
+
+		} catch (Exception e) {
+			throw new LoadBalancerExtensionException(
+					"Could not add inbound rule to security group " + groupId
+							+ ".");
+		}
+	}
+
+	public String getSecurityGroupIdForRegion(String region)
+			throws LoadBalancerExtensionException {
+		if (region == null)
+			return null;
+
+		if (this.regionToSecurityGroupIdMap.contains(region)) {
+			return this.regionToSecurityGroupIdMap.get(region);
+		} else {
+			String securityGroupId = createSecurityGroup(
+					this.lbSecurityGroupName, this.lbSecurityGroupDescription,
+					region);
+			this.regionToSecurityGroupIdMap.put(region, securityGroupId);
+
+			// Also add the inbound rule
+			addInboundRuleToSecurityGroup(securityGroupId, region);
+
+			return securityGroupId;
+		}
 	}
 
 	/**
@@ -461,13 +570,15 @@ public class AWSHelper {
 	 * @return name of the load balancer
 	 * @throws LoadBalancerExtensionException
 	 */
-	public String generateLoadBalancerName() throws LoadBalancerExtensionException {
+	public String generateLoadBalancerName()
+			throws LoadBalancerExtensionException {
 		String name = null;
 
 		name = lbPrefix + getNextLBSequence();
 
-		if(name.length() > 32)
-			throw new LoadBalancerExtensionException("Load balanacer name length exceeded");
+		if (name.length() > 32)
+			throw new LoadBalancerExtensionException(
+					"Load balanacer name length exceeded");
 
 		return name;
 	}

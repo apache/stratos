@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,12 +40,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
 	// A map <clusterId, load balancer id>
-	private HashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap;
+	private ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap;
 
 	private AWSHelper awsHelper;
 
 	public AWSLoadBalancer() throws LoadBalancerExtensionException {
-		clusterIdToLoadBalancerMap = new HashMap<String, LoadBalancerInfo>();
+		clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LoadBalancerInfo>();
 		awsHelper = new AWSHelper();
 	}
 
@@ -151,7 +152,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 						List<Listener> listenersToAddToLoadBalancer = new ArrayList<Listener>();
 
 						List<Listener> listenersForThisCluster = awsHelper
-								.getRequiredListeners(clusterMembers.iterator().next());
+								.getRequiredListeners(clusterMembers.iterator()
+										.next());
 
 						for (Listener listener : listenersForThisCluster) {
 							if (attachedListeners == null
@@ -195,7 +197,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 								.iterator().next().getInstanceId());
 
 						List<Listener> listenersForThisCluster = awsHelper
-								.getRequiredListeners(clusterMembers.iterator().next());
+								.getRequiredListeners(clusterMembers.iterator()
+										.next());
 
 						String loadBalancerDNSName = awsHelper
 								.createLoadBalancer(loadBalancerName,
