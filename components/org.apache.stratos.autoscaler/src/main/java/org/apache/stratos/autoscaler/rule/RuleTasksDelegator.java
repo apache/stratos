@@ -62,8 +62,7 @@ public class RuleTasksDelegator {
 
     public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float rifThreshold) {
 
-        if (rifThreshold != 0) {
-
+        if (rifThreshold > 0) {
             float requiredNumberOfInstances = rifPredictedValue / rifThreshold;
             return (int) Math.ceil(requiredNumberOfInstances);
         } else {

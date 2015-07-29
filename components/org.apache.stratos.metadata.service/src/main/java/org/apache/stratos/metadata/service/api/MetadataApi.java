@@ -248,7 +248,11 @@ public class MetadataApi {
 
         try {
             boolean deleted = registry.removePropertyFromApplication(applicationId, propertyName);
-
+            if (!deleted) {
+                log.warn(String.format(
+                        "No metadata is associated with given appId %s",
+                        applicationId));
+            }
         } catch (RegistryException e) {
             String msg = String.format("[application-id] %s [property-name] deletion failed ", applicationId, propertyName);
             log.error(msg, e);

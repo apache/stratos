@@ -1075,7 +1075,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if ((!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm))
                     && (!StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm))) {
                 String msg = String.format("Partition algorithm is not valid: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s [partition-algorithm] %s",
+                                "[network-partition-id] %s [partition-algorithm] %s. : " +
+                                "Partition algorithm should be either one-after-another or round-robin ",
                         deploymentPolicyId, networkPartitionId, partitionAlgorithm);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);

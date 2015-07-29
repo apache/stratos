@@ -227,9 +227,7 @@ public class ClusterStatusEventPublisher {
 
                     publishEvent(appStatusClusterTerminatedEvent);
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.warn("Cluster is already terminated, [cluster] " + clusterId);
-                    }
+                    log.warn("Cluster is already terminated, [cluster] " + clusterId);
                 }
             } else {
                 log.warn("Terminated is not in the possible state list for [ClusterInstance] " +
