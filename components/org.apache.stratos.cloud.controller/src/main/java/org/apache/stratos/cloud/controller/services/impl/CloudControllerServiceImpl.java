@@ -447,12 +447,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 clusterContext.setVolumes(volumes);
             }
 
-            // Handle member created event
-            TopologyBuilder.handleMemberCreatedEvent(memberContext);
-
             // Persist member context
             CloudControllerContext.getInstance().addMemberContext(memberContext);
             CloudControllerContext.getInstance().persist();
+
+            // Handle member created event
+            TopologyBuilder.handleMemberCreatedEvent(memberContext);
 
             // Start instance in a new thread
             if (log.isDebugEnabled()) {

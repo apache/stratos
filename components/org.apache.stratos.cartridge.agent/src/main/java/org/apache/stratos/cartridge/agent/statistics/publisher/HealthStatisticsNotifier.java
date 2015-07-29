@@ -51,7 +51,8 @@ public class HealthStatisticsNotifier implements Runnable {
             File pluginFile = new File(pluginFileName);
             if ((pluginFile != null)
                     && (pluginFile.exists())) {
-                List<Class> pluginClass = PluginLoader.loadPluginClassesFromJar(pluginFile, IHealthStatisticsReader.class);
+                List<Class> pluginClass = PluginLoader.loadPluginClassesFromJar(pluginFile,
+                        IHealthStatisticsReader.class);
                 if (!pluginClass.isEmpty()) {
                     try {
                         log.trace("Instantiating new instance of plugin type " + pluginClass);
@@ -63,7 +64,8 @@ public class HealthStatisticsNotifier implements Runnable {
                     }
                 }
             } else {
-                log.error("Plugin not found or malformed: " + pluginFileName + ((pluginFile == null) ? " NULL" : "Doesn't exist"));
+                log.error("Plugin not found or malformed: " + pluginFileName + ((pluginFile == null) ? " NULL" :
+                        "Doesn't exist"));
             }
         }
         if (this.statsReader == null) {
@@ -95,7 +97,7 @@ public class HealthStatisticsNotifier implements Runnable {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Publishing memory consumption: %f", stats.getMemoryUsage()));
                         }
-                        statsPublisher.publish(
+                        statsPublisher.publish(System.currentTimeMillis(),
                                 CartridgeAgentConfiguration.getInstance().getClusterId(),
                                 CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
                                 CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
@@ -108,7 +110,7 @@ public class HealthStatisticsNotifier implements Runnable {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Publishing load average: %f", stats.getProcessorUsage()));
                         }
-                        statsPublisher.publish(
+                        statsPublisher.publish(System.currentTimeMillis(),
                                 CartridgeAgentConfiguration.getInstance().getClusterId(),
                                 CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
                                 CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),

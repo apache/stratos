@@ -52,6 +52,7 @@ public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher
 
             // Set payload definition
             List<Attribute> payloadData = new ArrayList<Attribute>();
+            payloadData.add(new Attribute("time_stamp", AttributeType.LONG));
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("cluster_instance_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
@@ -70,6 +71,7 @@ public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher
     /**
      * Publish health statistics to cep.
      *
+     * @param timeStamp
      * @param clusterId
      * @param clusterInstanceId
      * @param networkPartitionId
@@ -79,13 +81,16 @@ public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher
      * @param value
      */
     @Override
-    public void publish(String clusterId, String clusterInstanceId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
+    public void publish(Long timeStamp, String clusterId, String clusterInstanceId, String networkPartitionId,
+                        String memberId, String partitionId, String health, double value) {
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",
+            log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s " +
+                            "[partition] %s [member] %s [health] %s [value] %f",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
         }
         // Set payload values
         List<Object> payload = new ArrayList<Object>();
+        payload.add(timeStamp);
         payload.add(clusterId);
         payload.add(clusterInstanceId);
         payload.add(networkPartitionId);

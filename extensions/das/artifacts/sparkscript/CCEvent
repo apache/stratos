@@ -1,0 +1,18 @@
+CREATE TEMPORARY TABLE memberstatus
+USING CarbonAnalytics
+OPTIONS (tableName "ORG_APACHE_STRATOS_CLOUD_CONTROLLER");
+
+CREATE TEMPORARY TABLE memberstatusnew
+USING CarbonAnalytics
+OPTIONS (tableName "CLUSTER_MEMBER_NEW",
+         schema "startTime String, endTime String, clusterId STRING, activatedInstanceCount INT, terminatedInstanceCount INT, activeInstanceCount INT");
+
+;WITH InstanceCount as
+(select clusterId, count(case when status='Active' and timeStamp > current_time(null)-60000 and timeStamp <= current_time(null) then 1 else NULL end) as activatedInstanceCount, count(case when status='Terminated' and timeStamp > current_time(null)-60000 and timeStamp <= current_time(null) then 1 else NULL end) as terminatedInstanceCount, (sum(case when status='Active' then 1 else 0 end) - sum(case when status='Terminated' then 1 else 0 end))as activeInstanceCount from memberstatus group by clusterId)
+INSERT INTO table memberstatusnew select time(current_time(null)-60000),time(current_time(null)),clusterId, activatedInstanceCount, terminatedInstanceCount,activeInstanceCount from InstanceCount;
+
+CREATE TEMPORARY TABLE membersnew
+USING CarbonAnalytics
+OPTIONS (tableName "MEMBER_NEW",schema "clusterId STRING, clusterInstanceId STRING, networkId STRING, partitionId STRING, cartridgeType STRING, instanceType STRING, memberId STRING, scalingTime LONG,scalingReason STRING, timeStamp STRING");
+
+INSERT INTO TABLE membersnew select clusterId,clusterInstanceId,networkId,partitionId,cartridgeType,instanceType, memberId,scalingTime,scalingReason,time(timeStamp)as timeStamp FROM memberstatus where status='Created';

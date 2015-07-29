@@ -91,7 +91,8 @@ public class StratosConstants {
 
     // metering constants
     public static final String THROTTLING_ALL_ACTION = "all_actions";
-    public static final String THROTTLING_IN_DATA_ACTION = "in_data_action"; //this covers registry capacity + registry bandwidth
+    public static final String THROTTLING_IN_DATA_ACTION =
+            "in_data_action"; //this covers registry capacity + registry bandwidth
     public static final String THROTTLING_OUT_DATA_ACTION = "out_data_action"; //this covers registry bandwidth
     public static final String THROTTLING_ADD_USER_ACTION = "add_user_action";
     public static final String THROTTLING_SERVICE_IN_BANDWIDTH_ACTION = "service_in_bandwith_action";
@@ -158,6 +159,8 @@ public class StratosConstants {
     public static final String MAX_CHECK_DROOL_FILE = "maxcheck.drl";
     public static final String OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
+    public static final String SCALING_REASON = "SCALING_REASON";
+    public static final String SCALING_TIME = "SCALING_TIME";
 
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;
@@ -165,7 +168,8 @@ public class StratosConstants {
     // member expiry timeout constants
     public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
     public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
-    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
+    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT =
+            "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
     public static final String FILTER_VALUE_SEPARATOR = ",";
     public static final String TOPOLOGY_APPLICATION_FILTER = "stratos.topology.application.filter";

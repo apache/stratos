@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPubl
 import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -67,7 +68,8 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             for (Cartridge cartridge : cartridgeList) {
                 if (!topology.serviceExists(cartridge.getType())) {
-                    ServiceType serviceType = cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant;
+                    ServiceType serviceType = cartridge.isMultiTenant() ? ServiceType.MultiTenant :
+                            ServiceType.SingleTenant;
                     service = new Service(cartridge.getType(), serviceType);
                     Properties properties = new Properties();
 
@@ -199,14 +201,14 @@ public class TopologyBuilder {
         }
 
         log.debug("Creating cluster port mappings: [appication-id] " + appId);
-        for(Cluster cluster : appClusters) {
+        for (Cluster cluster : appClusters) {
             String cartridgeType = cluster.getServiceName();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
-            if(cartridge == null) {
+            if (cartridge == null) {
                 throw new CloudControllerException("Cartridge not found: [cartridge-type] " + cartridgeType);
             }
 
-            for(PortMapping portMapping : cartridge.getPortMappings()) {
+            for (PortMapping portMapping : cartridge.getPortMappings()) {
                 ClusterPortMapping clusterPortMapping = new ClusterPortMapping(appId,
                         cluster.getClusterId(), portMapping.getName(), portMapping.getProtocol(), portMapping.getPort(),
                         portMapping.getProxyPort());
@@ -406,6 +408,11 @@ public class TopologyBuilder {
         String partitionId = memberContext.getPartition().getId();
         String lbClusterId = memberContext.getLbClusterId();
         long initTime = memberContext.getInitTime();
+        String autoscalingReason = memberContext.getProperties().getProperty(
+                StratosConstants.SCALING_REASON).getValue();
+        long scalingTime = Long.parseLong(memberContext.getProperties().getProperty(
+                StratosConstants.SCALING_TIME).getValue());
+
 
         if (cluster.memberExists(memberId)) {
             log.warn(String.format("Member %s already exists", memberId));
@@ -421,6 +428,19 @@ public class TopologyBuilder {
             member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));
             cluster.addMember(member);
             TopologyManager.updateTopology(topology);
+            //member created time
+            Long timeStamp = System.currentTimeMillis();
+            //publishing to BAM
+            BAMUsageDataPublisher
+                    .publish(memberContext.getMemberId(),
+                            memberContext.getPartition().getId(),
+                            memberContext.getNetworkPartitionId(),
+                            memberContext.getClusterId(),
+                            memberContext.getClusterInstanceId(),
+                            memberContext.getCartridgeType(),
+                            MemberStatus.Created.toString(),
+                            timeStamp, autoscalingReason,
+                            scalingTime, null);
         } finally {
             TopologyManager.releaseWriteLock();
         }
@@ -479,16 +499,18 @@ public class TopologyBuilder {
                 log.info("Member status updated to initialized");
 
                 TopologyManager.updateTopology(topology);
-
+                //member intialized time
+                Long timeStamp = System.currentTimeMillis();
                 TopologyEventPublisher.sendMemberInitializedEvent(memberContext);
                 //publishing data
                 BAMUsageDataPublisher.publish(memberContext.getMemberId(),
                         memberContext.getPartition().getId(),
                         memberContext.getNetworkPartitionId(),
+                        memberContext.getClusterInstanceId(),
                         memberContext.getClusterId(),
                         memberContext.getCartridgeType(),
                         MemberStatus.Initialized.toString(),
-                        null);
+                        timeStamp, null, null, null);
             }
         } finally {
             TopologyManager.releaseWriteLock();
@@ -542,16 +564,19 @@ public class TopologyBuilder {
                     log.info("member started event adding status started");
 
                     TopologyManager.updateTopology(topology);
+                    //member started time
+                    Long timeStamp = System.currentTimeMillis();
                     //memberStartedEvent.
                     TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
                     //publishing data
                     BAMUsageDataPublisher.publish(instanceStartedEvent.getMemberId(),
                             instanceStartedEvent.getPartitionId(),
                             instanceStartedEvent.getNetworkPartitionId(),
+                            instanceStartedEvent.getClusterInstanceId(),
                             instanceStartedEvent.getClusterId(),
                             instanceStartedEvent.getServiceName(),
                             MemberStatus.Starting.toString(),
-                            null);
+                            timeStamp, null, null, null);
                 }
             } finally {
                 TopologyManager.releaseWriteLock();
@@ -602,7 +627,8 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.Active)) {
-                log.error("Invalid state transition from [" + member.getStatus() + "] to [" + MemberStatus.Active + "]");
+                log.error("Invalid state transition from [" + member.getStatus() + "] to [" +
+                        MemberStatus.Active + "]");
                 return;
             } else {
                 member.setStatus(MemberStatus.Active);
@@ -644,7 +670,8 @@ public class TopologyBuilder {
                 memberActivatedEvent.setDefaultPublicIP(member.getDefaultPublicIP());
                 memberActivatedEvent.setMemberPublicIPs(member.getMemberPublicIPs());
                 TopologyManager.updateTopology(topology);
-
+                //member activated time
+                Long timeStamp = System.currentTimeMillis();
                 // Publish member activated event
                 TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
 
@@ -652,10 +679,11 @@ public class TopologyBuilder {
                 BAMUsageDataPublisher.publish(memberActivatedEvent.getMemberId(),
                         memberActivatedEvent.getPartitionId(),
                         memberActivatedEvent.getNetworkPartitionId(),
+                        memberActivatedEvent.getClusterInstanceId(),
                         memberActivatedEvent.getClusterId(),
                         memberActivatedEvent.getServiceName(),
                         MemberStatus.Active.toString(),
-                        null);
+                        timeStamp, null, null, null);
             }
         } finally {
             TopologyManager.releaseWriteLock();
@@ -694,6 +722,8 @@ public class TopologyBuilder {
                 instanceReadyToShutdownEvent.getMemberId(),
                 instanceReadyToShutdownEvent.getNetworkPartitionId(),
                 instanceReadyToShutdownEvent.getPartitionId());
+        //member ReadyToShutDown state change time
+        Long timeStamp = null;
         try {
             TopologyManager.acquireWriteLock();
 
@@ -706,6 +736,7 @@ public class TopologyBuilder {
             log.info("Member Ready to shut down event adding status started");
 
             TopologyManager.updateTopology(topology);
+            timeStamp = System.currentTimeMillis();
         } finally {
             TopologyManager.releaseWriteLock();
         }
@@ -714,10 +745,11 @@ public class TopologyBuilder {
         BAMUsageDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
                 instanceReadyToShutdownEvent.getPartitionId(),
                 instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                instanceReadyToShutdownEvent.getClusterInstanceId(),
                 instanceReadyToShutdownEvent.getClusterId(),
                 instanceReadyToShutdownEvent.getServiceName(),
                 MemberStatus.ReadyToShutDown.toString(),
-                null);
+                timeStamp, null, null, null);
         //termination of particular instance will be handled by autoscaler
     }
 
@@ -834,7 +866,8 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterActivatedEvent(ClusterStatusClusterActivatedEvent clusterStatusClusterActivatedEvent) {
+    public static void handleClusterActivatedEvent(ClusterStatusClusterActivatedEvent
+                                                           clusterStatusClusterActivatedEvent) {
 
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(clusterStatusClusterActivatedEvent.getServiceName());
@@ -888,7 +921,8 @@ public class TopologyBuilder {
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
-                        clusterStatusClusterActivatedEvent.getClusterId(), clusterStatusClusterActivatedEvent.getInstanceId(),
+                        clusterStatusClusterActivatedEvent.getClusterId(),
+                        clusterStatusClusterActivatedEvent.getInstanceId(),
                         context.getStatus(), status));
                 return;
             }
@@ -997,8 +1031,8 @@ public class TopologyBuilder {
                 cluster.removeInstanceContext(event.getInstanceId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
-                ClusterInstanceTerminatedEvent clusterTerminatedEvent = new ClusterInstanceTerminatedEvent(event.getAppId(),
-                        event.getServiceName(), event.getClusterId(), event.getInstanceId());
+                ClusterInstanceTerminatedEvent clusterTerminatedEvent = new ClusterInstanceTerminatedEvent(
+                        event.getAppId(), event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
             } else {
@@ -1041,15 +1075,15 @@ public class TopologyBuilder {
                 log.info("Cluster Terminating started for " + cluster.getClusterId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
-                ClusterInstanceTerminatingEvent clusterTerminaingEvent = new ClusterInstanceTerminatingEvent(event.getAppId(),
-                        event.getServiceName(), event.getClusterId(), event.getInstanceId());
+                ClusterInstanceTerminatingEvent clusterTerminaingEvent = new ClusterInstanceTerminatingEvent(
+                        event.getAppId(), event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
 
                 // Remove kubernetes services if available
                 ClusterContext clusterContext =
                         CloudControllerContext.getInstance().getClusterContext(event.getClusterId());
-                if(StringUtils.isNotBlank(clusterContext.getKubernetesClusterId())) {
+                if (StringUtils.isNotBlank(clusterContext.getKubernetesClusterId())) {
                     KubernetesIaas.removeKubernetesServices(event.getAppId(), event.getClusterId());
                 }
             } else {
