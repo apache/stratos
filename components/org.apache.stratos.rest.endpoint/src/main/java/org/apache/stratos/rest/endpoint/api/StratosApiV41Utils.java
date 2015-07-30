@@ -113,64 +113,64 @@ public class StratosApiV41Utils {
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
 
-	/**
-	 * Add new cartridge util method
-	 *
-	 * @param cartridgeBean Cartridge definition
-	 * @throws RestAPIException
-	 */
-	public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
+    /**
+     * Add new cartridge util method
+     *
+     * @param cartridgeBean Cartridge definition
+     * @throws RestAPIException
+     */
+    public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
 
-		try {
-			if (log.isDebugEnabled()) {
-				log.debug(String.format("Adding cartridge: [cartridge-uuid] %s[cartridge-type] %s ",
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Adding cartridge: [cartridge-uuid] %s[cartridge-type] %s ",
                         cartridgeBean.getUuid(), cartridgeBean.getType()));
-			}
+            }
 
-			List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
-			if ((iaasProviders == null) || iaasProviders.size() == 0) {
-				throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
-				                                         cartridgeBean.getType()));
-			}
+            List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
+            if ((iaasProviders == null) || iaasProviders.size() == 0) {
+                throw new RestAPIException(String.format("IaaS providers not found in cartridge: %s",
+                        cartridgeBean.getType()));
+            }
 
-			for (PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
-				if (StringUtils.isBlank(portMapping.getName())) {
-					portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
-					if (log.isInfoEnabled()) {
-						log.info(String.format("Port mapping name not found, default value generated: " +
+            for (PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
+                if (StringUtils.isBlank(portMapping.getName())) {
+                    portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Port mapping name not found, default value generated: " +
                                         "[cartridge-uuid] %s [cartridge-type] %s [port-mapping-name] %s",
                                 cartridgeBean.getUuid(), cartridgeBean.getType(), portMapping.getName()));
-					}
-				}
-			}
+                    }
+                }
+            }
 
-			Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
-			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-			cloudControllerServiceClient.addCartridge(cartridgeConfig);
+            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
+            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+            cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
-			if (log.isDebugEnabled()) {
-				log.debug(String.format(
-						"Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s ",
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s ",
                         cartridgeBean.getUuid(), cartridgeBean.getType()));
-			}
-		} catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
-			String msg = "Could not add cartridge as it is already exits";
-			log.error(msg, e);
-			throw new RestAPIException(msg);
-		} catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-			String msg = "Could not add cartridge as invalid cartridge definition";
-			log.error(msg, e);
-			throw new RestAPIException(msg);
-		} catch (RemoteException e) {
-			String msg = "Could not add cartridge";
-			log.error(msg, e);
-			throw new RestAPIException(msg);
-		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-			String msg = "Could not add cartridge as invalid iaas provider";
-			log.error(msg, e);
-			throw new RestAPIException(msg);
-		}
-	}
+            }
+        } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
+            String msg = "Could not add cartridge as it is already exits";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
+            String msg = "Could not add cartridge as invalid cartridge definition";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        } catch (RemoteException e) {
+            String msg = "Could not add cartridge";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+            String msg = "Could not add cartridge as invalid iaas provider";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+    }
 
 
 
@@ -191,15 +191,15 @@ public class StratosApiV41Utils {
             List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
             if ((iaasProviders == null) || iaasProviders.size() == 0) {
                 throw new RestAPIException(String.format("IaaS providers not found in cartridge: [cartridge-uuid] %s [tenant-id] %d" +
-                                "[cartridge-type] %s", cartridgeBean.getUuid(), cartridgeBean.getType(),cartridgeBean.getTenantId()));
+                        "[cartridge-type] %s", cartridgeBean.getUuid(), cartridgeBean.getType(),cartridgeBean.getTenantId()));
             }
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-	        Cartridge existingCartridge=cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
-	                                                          cartridgeBean.getTenantId());
-	        cartridgeConfig.setUuid(existingCartridge.getUuid());
-	        cloudControllerServiceClient.updateCartridge(cartridgeConfig);
+            Cartridge existingCartridge=cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
+                    cartridgeBean.getTenantId());
+            cartridgeConfig.setUuid(existingCartridge.getUuid());
+            cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Successfully updated cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id]",
@@ -222,9 +222,9 @@ public class StratosApiV41Utils {
             log.error(msg, e);
             throw new RestAPIException(msg);
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-	        String msg = "Could not find existing cartridge";
-	        log.error(msg, e);
-	        e.printStackTrace();
+            String msg = "Could not find existing cartridge";
+            log.error(msg, e);
+            e.printStackTrace();
         }
     }
 
@@ -244,7 +244,7 @@ public class StratosApiV41Utils {
         }
         if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
             throw new RestAPIException(String.format("Category is not specified in cartridge: [cartridge-uuid] %s " +
-                            "[cartridge-type] %s [tenant-id] %d", cartridgeConfig.getUuid(), cartridgeConfig.getType(),cartridgeConfig.getTenantId()));
+                    "[cartridge-type] %s [tenant-id] %d", cartridgeConfig.getUuid(), cartridgeConfig.getType(),cartridgeConfig.getTenantId()));
         }
         return cartridgeConfig;
     }
@@ -268,7 +268,7 @@ public class StratosApiV41Utils {
         }
 
 
-	    if (cartridge== null) {
+        if (cartridge== null) {
             throw new RuntimeException(String.format("Cartridge not found: [cartridge-type] %s in tenant: " +
                     "[tenant-id] %s", cartridgeType, tenantId));
         }
@@ -454,7 +454,7 @@ public class StratosApiV41Utils {
                     Cartridge cartridgeInfo = null;
                     try {
                         //cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeByTenant
-                               // (cartridgeType,tenantId);
+                        // (cartridgeType,tenantId);
                         cartridgeInfo = cartridgeDefinition;
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
@@ -481,10 +481,10 @@ public class StratosApiV41Utils {
                     if (!StratosApiV41Utils.cartridgeMatches(cartridgeInfo, searchPattern)) {
                         continue;
                     }
-					if(cartridgeInfo.getTenantId() == tenantId) {
-						CartridgeBean cartridge = ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
-						cartridges.add(cartridge);
-					}
+                    if(cartridgeInfo.getTenantId() == tenantId) {
+                        CartridgeBean cartridge = ObjectConverter.convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+                        cartridges.add(cartridge);
+                    }
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -694,8 +694,10 @@ public class StratosApiV41Utils {
      * @param applicationPolicyBean applicationPolicyBean
      * @throws RestAPIException
      */
-    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
-            AutoscalerServiceInvalidApplicationPolicyExceptionException, AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
+    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean, String applicationPolicyUuid,
+                                            int tenantId) throws RestAPIException,
+            AutoscalerServiceInvalidApplicationPolicyExceptionException,
+            AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
 
         if (applicationPolicyBean == null) {
             String msg = "Application policy bean is null";
@@ -706,7 +708,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
         try {
             ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(
-                    applicationPolicyBean);
+                    applicationPolicyBean, applicationPolicyUuid, tenantId);
             if (applicationPolicy == null) {
                 String msg = "Application policy is null";
                 log.error(msg);
@@ -719,8 +721,8 @@ public class StratosApiV41Utils {
             String[] networkPartitionsUuid = new String[applicationPolicy.getNetworkPartitions().length];
             for (int i = 0; i < networkPartitions.length; i++) {
                 for (NetworkPartition networkPartition : existingNetworkPartitions) {
-                    if (networkPartitions[i].equals(networkPartition.getId()) && (applicationPolicyBean.getTenantId()
-                            == networkPartition.getTenantId())) {
+                    if (networkPartitions[i].equals(networkPartition.getId()) && (tenantId == networkPartition
+                            .getTenantId())) {
                         networkPartitionsUuid[i] = networkPartition.getUuid();
                     }
                 }
@@ -750,17 +752,18 @@ public class StratosApiV41Utils {
             AutoscalerServiceInvalidApplicationPolicyExceptionException,
             AutoscalerServiceApplicatioinPolicyNotExistsExceptionException {
 
-        log.info(String.format("Updating application policy: [application-policy-uuid] %s [application-policy-id] " +
-                "%s", applicationPolicyBean.getUuid(), applicationPolicyBean.getId()));
+        log.info(String.format("Updating application policy: [application-policy-id] %s", applicationPolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-
-            ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(
-                    applicationPolicyBean);
-
             try {
-                autoscalerServiceClient.updateApplicationPolicy(applicationPolicy);
+                AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicyByTenant
+                        (applicationPolicyBean.getId(), carbonContext.getTenantId());
+                autoscalerServiceClient.updateApplicationPolicy(ObjectConverter
+                        .convertApplicationPolicyBeanToStubAppPolicy(applicationPolicyBean,
+                                applicationPolicy.getUuid(), applicationPolicy.getTenantId()));
             } catch (RemoteException e) {
                 String msg = "Could not update application policy" + e.getLocalizedMessage();
                 log.error(msg, e);
@@ -857,12 +860,12 @@ public class StratosApiV41Utils {
             throw new ApplicationPolicyIdIsEmptyException(msg);
         }
 
-        AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
-        ApplicationPolicyBean applicationPolicyBean;
         try {
-
-            applicationPolicyBean = getApplicationPolicy(applicationPolicyId);
-            serviceClient.removeApplicationPolicy(applicationPolicyBean.getUuid());
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicyByTenant
+                    (applicationPolicyId, carbonContext.getTenantId());
+            serviceClient.removeApplicationPolicy(applicationPolicy.getUuid());
         } catch (RemoteException e) {
             String msg = "Could not remove application policy. " + e.getLocalizedMessage();
             log.error(msg, e);
@@ -962,7 +965,7 @@ public class StratosApiV41Utils {
             autoscalePolicyBean = ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
         } catch (RemoteException e) {
             String errorMsg = "Error while getting information for autoscaling policy: [autoscaing-policy-id]" +
-            autoscalePolicyId + ".  Cause: " + e.getMessage();
+                    autoscalePolicyId + ".  Cause: " + e.getMessage();
             log.error(errorMsg, e);
             throw new RestAPIException(errorMsg, e);
         }
@@ -1107,10 +1110,10 @@ public class StratosApiV41Utils {
     public static void updateServiceGroup(CartridgeGroupBean cartridgeGroup,int tenantId) throws RestAPIException,
             InvalidCartridgeGroupDefinitionException, CloudControllerServiceCartridgeNotFoundExceptionException {
         try {
-	        AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
-	        ServiceGroup existingServiceGroup =autoscalerServiceClient.getServiceGroupByTenant(cartridgeGroup.getName(), tenantId);
-	        cartridgeGroup.setUuid(existingServiceGroup.getUuid());
-			cartridgeGroup.setTenantId(tenantId);
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+            ServiceGroup existingServiceGroup =autoscalerServiceClient.getServiceGroupByTenant(cartridgeGroup.getName(), tenantId);
+            cartridgeGroup.setUuid(existingServiceGroup.getUuid());
+            cartridgeGroup.setTenantId(tenantId);
             ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
                     cartridgeGroup);
 
@@ -1120,7 +1123,7 @@ public class StratosApiV41Utils {
             // Validate whether cartridge group can be updated
             if (!smServiceClient.canCartirdgeGroupBeRemoved(cartridgeGroup.getUuid())) {
                 String message = String.format("Cannot update cartridge group: [cartridge-group-uuid] %s " +
-                        "[cartridge-group-name] %s since it is used in another cartridge group or an application",
+                                "[cartridge-group-name] %s since it is used in another cartridge group or an application",
                         cartridgeGroup.getUuid(), cartridgeGroup.getName());
 
                 log.error(message);
@@ -1313,7 +1316,7 @@ public class StratosApiV41Utils {
         // Check whether cartridge group exists
         try {
 
-	        ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name, tenantId);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroupByTenant(name, tenantId);
 
             if (serviceGroup == null) {
                 String message = "Cartridge group: [cartridge-group-name] " + name + " cannot be removed since it " +
@@ -1324,7 +1327,7 @@ public class StratosApiV41Utils {
             // Validate whether cartridge group can be removed
             if (!smServiceClient.canCartirdgeGroupBeRemoved(serviceGroup.getUuid())) {
                 String message = String.format("Cannot remove cartridge group: [cartridge-group-uuid] %s [group-name]" +
-                        " %s since it is used in another cartridge group or an application in tenant %d", serviceGroup.getUuid(),
+                                " %s since it is used in another cartridge group or an application in tenant %d", serviceGroup.getUuid(),
                         serviceGroup.getName(),tenantId);
                 log.error(message);
                 throw new RestAPIException(message);
@@ -1441,7 +1444,7 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Could not read application", e);
         }
 
-	    validateApplication(appDefinition);
+        validateApplication(appDefinition);
 
         // To validate groups have unique alias in the application definition
         validateGroupsInApplicationDefinition(appDefinition);
@@ -1487,7 +1490,7 @@ public class StratosApiV41Utils {
         }
     }
 
-	/**
+    /**
      * Update the existence of the application and update it.
      *
      * @param appDefinition Application definition
@@ -1814,8 +1817,8 @@ public class StratosApiV41Utils {
                 log.error(message);
                 throw new RestAPIException(message);
             }
-			String applicationPolicyUuid=AutoscalerServiceClient.getInstance().getApplicationPolicyByTenant(
-					applicationPolicyId,application.getTenantId()).getUuid();
+            String applicationPolicyUuid=AutoscalerServiceClient.getInstance().getApplicationPolicyByTenant(
+                    applicationPolicyId,application.getTenantId()).getUuid();
             autoscalerServiceClient.deployApplication(application.getApplicationUuid(), applicationPolicyUuid);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-uuid] %s [application-id] %s",
@@ -1986,10 +1989,10 @@ public class StratosApiV41Utils {
             throws RestAPIException {
         ApplicationInfoBean applicationBean = null;
         ApplicationContext applicationContext = null;
-	    String applicationUuid=null;
+        String applicationUuid=null;
         //Checking whether application is in deployed mode
         try {
-	        applicationUuid=getAutoscalerServiceClient().getApplicationByTenant(applicationId,tenantId).getApplicationUuid();
+            applicationUuid=getAutoscalerServiceClient().getApplicationByTenant(applicationId,tenantId).getApplicationUuid();
             applicationContext = getAutoscalerServiceClient().
                     getApplication(applicationUuid);
         } catch (RemoteException e) {
@@ -2518,7 +2521,7 @@ public class StratosApiV41Utils {
             serviceClient.notifyArtifactUpdatedEventForSignUp(applicationId, tenantId);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Artifact updated event sent: [application-uuid] %s [application-id] %s " +
-                                "[tenant-id] %d", applicationBean.getApplicationUuid(), applicationId, tenantId));
+                        "[tenant-id] %d", applicationBean.getApplicationUuid(), applicationId, tenantId));
             }
         } catch (Exception e) {
             String message = String.format("Error in applicationBean signup: [application-uuid] %s [application-id] " +
@@ -2775,13 +2778,14 @@ public class StratosApiV41Utils {
      *
      * @param networkPartitionBean NetworkPartitionBean
      */
-    public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean) throws RestAPIException,
+    public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean, String networkPartitionUuid,
+                                           int tenantId) throws RestAPIException,
             CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException,
             CloudControllerServiceInvalidNetworkPartitionExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.addNetworkPartition(ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition
-                    (networkPartitionBean));
+                    (networkPartitionBean, networkPartitionUuid, tenantId));
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
@@ -2819,17 +2823,14 @@ public class StratosApiV41Utils {
 
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
 
-	        autoscalerServiceClient.validateNetworkPartitionWithApplication(networkPartitionId, tenantId);
+            autoscalerServiceClient.validateNetworkPartitionWithApplication(networkPartitionId, tenantId);
 
-	        String networkPartitionUuid = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            for (NetworkPartitionBean networkPartitionBean : getNetworkPartitions()) {
-                if (networkPartitionBean.getTenantId() == carbonContext.getTenantId() &&
-                        networkPartitionBean.getId().equals(networkPartitionId)) {
-                    networkPartitionUuid = networkPartitionBean.getUuid();
-                }
-            }
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
 
+            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition =
+                    serviceClient.getNetworkPartitionByTenant(networkPartitionId, tenantId);
+            String networkPartitionUuid = networkPartition.getUuid();
 
             DeploymentPolicy[] deploymentPolicies = autoscalerServiceClient.getDeploymentPoliciesByTenant(carbonContext.getTenantId());
 
@@ -2854,11 +2855,8 @@ public class StratosApiV41Utils {
 
             if (applicationPolicies != null) {
                 for (ApplicationPolicy applicationPolicy : applicationPolicies) {
-
-                    for (String networkPartition :
-                            applicationPolicy.getNetworkPartitionsUuid()) {
-
-                        if (networkPartition.equals(networkPartitionUuid)) {
+                    for (String networkPartitionUuid1 : applicationPolicy.getNetworkPartitionsUuid()) {
+                        if (networkPartitionUuid1.equals(networkPartitionUuid)) {
                             String message = String.format("Cannot remove the network partition: " +
                                             "[network-partition-uuid] %s [network-partition-id] %s since it is used " +
                                             "in application policy: [application-policy-uuid] %s " +
@@ -2871,12 +2869,11 @@ public class StratosApiV41Utils {
                 }
             }
 
-            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId, tenantId);
         } catch (AutoscalerServicePartitionValidationExceptionException e) {
-	        String message = e.getMessage();
-	        log.error(message);
-	        throw new RestAPIException(message, e);
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
         }
         catch (RemoteException e) {
             String message = e.getMessage();
@@ -2920,14 +2917,21 @@ public class StratosApiV41Utils {
     /**
      * Update Network Partition
      *
-     * @param networkPartition NetworkPartitionBean
+     * @param networkPartitionBean NetworkPartitionBean
      */
-    public static void updateNetworkPartition(NetworkPartitionBean networkPartition) throws RestAPIException,
+    public static void updateNetworkPartition(NetworkPartitionBean networkPartitionBean) throws RestAPIException,
             CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            NetworkPartition networkPartition = serviceClient.getNetworkPartitionByTenant(networkPartitionBean.getId(),
+                    carbonContext.getTenantId());
             serviceClient.updateNetworkPartition(ObjectConverter.
-                    convertNetworkPartitionToCCStubNetworkPartition(networkPartition));
+                    convertNetworkPartitionToCCStubNetworkPartition(networkPartitionBean, networkPartition.getUuid(),
+                            networkPartition.getTenantId()));
+            log.debug(String.format("Updating network partition: [network-partition-uuid] %s, " +
+                            "[network-partition-id] %s, [tenant-id] %d", networkPartition.getUuid(), networkPartition.getId(),
+                    networkPartition.getTenantId()));
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);
@@ -2940,43 +2944,44 @@ public class StratosApiV41Utils {
      *
      * @param deploymentPolicyDefinitionBean DeploymentPolicyBean
      */
-    public static void addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
-            throws RestAPIException,
-            AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException,
+    public static void addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean,
+                                           String deploymentPolicyUuid, int tenantId)
+            throws RestAPIException, AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException,
             AutoscalerServiceInvalidDeploymentPolicyExceptionException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Adding deployment policy: [deployment-policy-uuid] %s [deployment-policy-id]" +
-                                " %s ", deploymentPolicyDefinitionBean.getUuid(), deploymentPolicyDefinitionBean.getId
-                        ()));
+                        " %s ", deploymentPolicyUuid, deploymentPolicyDefinitionBean.getId()));
             }
 
             NetworkPartitionBean[] networkPartitions = getNetworkPartitions();
             for (NetworkPartitionReferenceBean networkPartitionReferenceBean : deploymentPolicyDefinitionBean
                     .getNetworkPartitions()) {
+                NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
+                        .getNetworkPartitionByTenant(networkPartitionReferenceBean.getId(), tenantId);
                 for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
-                    if (networkPartitionBean.getTenantId() == deploymentPolicyDefinitionBean.getTenantId() &&
-                            networkPartitionBean.getId().equals(networkPartitionReferenceBean.getId())) {
-                        networkPartitionReferenceBean.setUuid(networkPartitionBean.getUuid());
-	                    for(PartitionReferenceBean partition: networkPartitionReferenceBean.getPartitions()){
-		                    for(PartitionBean existingPartition: networkPartitionBean.getPartitions()){
-			                    if(existingPartition.getTenantId()== deploymentPolicyDefinitionBean.getTenantId() && partition.getId().equals(existingPartition.getId())){
-				                    partition.setUuid(existingPartition.getUuid());
-				                    partition.setTenantId(deploymentPolicyDefinitionBean.getTenantId());
-			                    }
-		                    }
-	                    }
+                    if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
+                            (networkPartitionReferenceBean.getId())) {
+                        networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
+                        for (PartitionReferenceBean partition : networkPartitionReferenceBean.getPartitions()) {
+                            for (PartitionBean existingPartition : networkPartitionBean.getPartitions()) {
+                                if (existingPartition.getTenantId() == tenantId &&
+                                        partition.getId().equals(existingPartition.getId())) {
+                                    partition.setUuid(existingPartition.getUuid());
+                                    partition.setTenantId(tenantId);
+                                }
+                            }
+                        }
                     }
                 }
             }
-
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = ObjectConverter
-                    .convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
-            AutoscalerServiceClient.getInstance().addDeploymentPolicy(deploymentPolicy);
+            AutoscalerServiceClient.getInstance().addDeploymentPolicy(ObjectConverter
+                    .convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean,
+                            deploymentPolicyUuid, tenantId));
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-uuid] %s " +
-                                "[deployment-policy-id] %s", deploymentPolicyDefinitionBean.getUuid(),
+                                "[deployment-policy-id] %s", deploymentPolicyUuid,
                         deploymentPolicyDefinitionBean.getId()));
             }
         } catch (RemoteException e) {
@@ -3046,20 +3051,22 @@ public class StratosApiV41Utils {
             AutoscalerServiceInvalidDeploymentPolicyExceptionException,
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
         try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            DeploymentPolicy deploymentPolicy = serviceClient.getDeploymentPolicyByTenant
+                    (deploymentPolicyDefinitionBean.getId(), carbonContext.getTenantId());
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Updating deployment policy: [deployment-policy-uuid] %s " +
-                                "[deployment-policy-id] %s ", deploymentPolicyDefinitionBean.getUuid(),
+                                "[deployment-policy-id] %s ", deploymentPolicy.getUuid(),
                         deploymentPolicyDefinitionBean.getId()));
             }
-
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    ObjectConverter.convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean);
-
-            AutoscalerServiceClient.getInstance().updateDeploymentPolicy(deploymentPolicy);
+            AutoscalerServiceClient.getInstance().updateDeploymentPolicy(ObjectConverter
+                    .convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean,
+                            deploymentPolicy.getUuid(), deploymentPolicy.getTenantId()));
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("DeploymentPolicy updated successfully : [deployment-policy-uuid] %s " +
-                                "[deployment-policy-id] %s ", deploymentPolicyDefinitionBean.getUuid(),
+                                "[deployment-policy-id] %s ", deploymentPolicy.getUuid(),
                         deploymentPolicyDefinitionBean.getId()));
             }
         } catch (RemoteException e) {
@@ -3090,10 +3097,12 @@ public class StratosApiV41Utils {
             throws RestAPIException, AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
             AutoscalerServiceUnremovablePolicyExceptionException {
 
-        DeploymentPolicyBean deploymentPolicyBean;
         try {
-            deploymentPolicyBean = getDeploymentPolicy(deploymentPolicyId);
-            AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicyBean.getUuid());
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            DeploymentPolicy deploymentPolicy = serviceClient.getDeploymentPolicyByTenant
+                    (deploymentPolicyId, carbonContext.getTenantId());
+            AutoscalerServiceClient.getInstance().removeDeploymentPolicy(deploymentPolicy.getUuid());
 
         } catch (RemoteException e) {
             String msg = "Could not remove deployment policy: [deployment-policy-id] " + deploymentPolicyId + e
@@ -3788,7 +3797,7 @@ public class StratosApiV41Utils {
      * @return String Uuid
      */
     public static String getServiceGroupUuidByTenant(String serviceGroupName,
-                                                               int tenantId) throws RestAPIException {
+                                                     int tenantId) throws RestAPIException {
         try {
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
             return (autoscalerServiceClient.getServiceGroupByTenant(serviceGroupName, tenantId).getUuid());
@@ -3805,7 +3814,7 @@ public class StratosApiV41Utils {
      * @return String Uuid
      */
     public static String getDeploymentPolicyUuidByTenant(String deploymentPolicyId,
-                                                     int tenantId) throws RestAPIException {
+                                                         int tenantId) throws RestAPIException {
         try {
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
             return (autoscalerServiceClient.getDeploymentPolicyByTenant(deploymentPolicyId, tenantId).getUuid());
@@ -3816,15 +3825,15 @@ public class StratosApiV41Utils {
         }
     }
 
-	public static String getKubernetesClusterUuidByTenant(String clusterId,int tenantId) throws RestAPIException {
+    public static String getKubernetesClusterUuidByTenant(String clusterId,int tenantId) throws RestAPIException {
 
-		try {
-			return CloudControllerServiceClient.getInstance().getKubernetesClusterByTenantId(clusterId, tenantId)
-			                                   .getClusterUuid();
-		} catch (RemoteException e) {
-			String message = e.getMessage();
-			log.error(message);
-			throw new RestAPIException(message, e);
-		}
-	}
+        try {
+            return CloudControllerServiceClient.getInstance().getKubernetesClusterByTenantId(clusterId, tenantId)
+                    .getClusterUuid();
+        } catch (RemoteException e) {
+            String message = e.getMessage();
+            log.error(message);
+            throw new RestAPIException(message, e);
+        }
+    }
 }

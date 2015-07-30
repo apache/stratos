@@ -203,17 +203,17 @@ public interface CloudControllerService {
      */
     public boolean unregisterService(String clusterId) throws UnregisteredClusterException;
 
-	/**
-	 * This method will return the information regarding the given cartridge, if present.
-	 * Else this will return <code>null</code>.
-	 *
-	 * @param cartridgeType type of the cartridge.
-	 * @return {@link org.apache.stratos.cloud.controller.domain.Cartridge} of the given cartridge type or
-	 * <code>null</code>.
-	 * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
-	 *                                                                                  cartridge with this type.
-	 */
-	public Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException;
+    /**
+     * This method will return the information regarding the given cartridge, if present.
+     * Else this will return <code>null</code>.
+     *
+     * @param cartridgeType type of the cartridge.
+     * @return {@link org.apache.stratos.cloud.controller.domain.Cartridge} of the given cartridge type or
+     * <code>null</code>.
+     * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
+     *                                                                                  cartridge with this type.
+     */
+    public Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException;
     /**
      * This method will return the information regarding the given cartridge, if present.
      * Else this will return <code>null</code>.
@@ -282,15 +282,15 @@ public interface CloudControllerService {
     public KubernetesCluster getKubernetesCluster(String kubernetesClusterUuid)
             throws NonExistingKubernetesClusterException;
 
-	/**
-	 * Retrieves Kubernetes cluster for given Kubernetes cluster ID and tenant id
-	 * @param kubernetesClusterId
-	 * @param tenantId
-	 * @return
-	 * @throws NonExistingKubernetesClusterException
-	 */
-	public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId, int tenantId) throws
-	                                                                                        NonExistingKubernetesClusterException;
+    /**
+     * Retrieves Kubernetes cluster for given Kubernetes cluster ID and tenant id
+     * @param kubernetesClusterId
+     * @param tenantId
+     * @return
+     * @throws NonExistingKubernetesClusterException
+     */
+    public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId, int tenantId) throws
+            NonExistingKubernetesClusterException;
 
     /**
      * Retrieves Kubernetes Master for given Kubernetes cluster ID.
@@ -434,8 +434,16 @@ public interface CloudControllerService {
     /**
      * Get cartridges for tenant
      *
-     * @param cartridgeType Type of the cartridge
      * @param tenantId tenant id
      */
     public Cartridge[] getCartridgesByTenant(int tenantId);
+
+    /**
+     * Get cartridges for tenant
+     *
+     * @param networkPartitionUuid network partition uuid
+     * @param tenantId tenant id
+     */
+    public NetworkPartition getNetworkPartitionByTenant(String networkPartitionUuid, int tenantId);
+
 }

@@ -978,7 +978,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         String applicationPolicyId = applicationPolicy.getId();
-        if (PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId) != null) {
+        boolean isExist = PolicyManager.getInstance().checkApplicationPolicyInTenant
+                (applicationPolicy.getId(), applicationPolicy.getTenantId());
+        if (isExist) {
             String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
             log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);

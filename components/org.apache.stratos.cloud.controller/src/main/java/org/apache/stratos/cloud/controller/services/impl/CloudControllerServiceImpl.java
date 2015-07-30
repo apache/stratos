@@ -69,57 +69,57 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-	public boolean addCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
-	                                                              InvalidIaasProviderException,
-	                                                              CartridgeAlreadyExistsException {
+    public boolean addCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
+            InvalidIaasProviderException,
+            CartridgeAlreadyExistsException {
 
-		handleNullObject(cartridgeConfig, "Cartridge definition is null");
-		handleNullObject(cartridgeConfig.getUuid(), "Cartridge definition UUID is null");
+        handleNullObject(cartridgeConfig, "Cartridge definition is null");
+        handleNullObject(cartridgeConfig.getUuid(), "Cartridge definition UUID is null");
 
-		if (log.isInfoEnabled()) {
-			log.info(String.format("Adding cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ",
-			                       cartridgeConfig.getUuid(), cartridgeConfig.getType(),
-			                       cartridgeConfig.getTenantId()));
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("Cartridge definition: " + cartridgeConfig.toString());
-		}
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Adding cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ",
+                    cartridgeConfig.getUuid(), cartridgeConfig.getType(),
+                    cartridgeConfig.getTenantId()));
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Cartridge definition: " + cartridgeConfig.toString());
+        }
 
-		try {
-			CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
-		} catch (Exception e) {
-			String message = String.format("Invalid cartridge definition: [cartridge-uuid] %s [cartridge-type] %s",
-			                               " [tenant-id] ", cartridgeConfig.getUuid(), cartridgeConfig.getType(),
-			                               cartridgeConfig.getTenantId());
-			log.error(message, e);
-			throw new InvalidCartridgeDefinitionException(message, e);
-		}
+        try {
+            CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
+        } catch (Exception e) {
+            String message = String.format("Invalid cartridge definition: [cartridge-uuid] %s [cartridge-type] %s",
+                    " [tenant-id] ", cartridgeConfig.getUuid(), cartridgeConfig.getType(),
+                    cartridgeConfig.getTenantId());
+            log.error(message, e);
+            throw new InvalidCartridgeDefinitionException(message, e);
+        }
 
-		String cartridgeUuid = cartridgeConfig.getUuid();
-		Cartridge existingCartridge = cloudControllerContext.getCartridge(cartridgeUuid);
-		if (existingCartridge != null) {
-			String message = String.format(
-					"Cartridge already exists: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ", cartridgeUuid,
-					existingCartridge.getType(), existingCartridge.getTenantId());
-			log.error(message);
-			throw new CartridgeAlreadyExistsException(message);
-		}
+        String cartridgeUuid = cartridgeConfig.getUuid();
+        Cartridge existingCartridge = cloudControllerContext.getCartridge(cartridgeUuid);
+        if (existingCartridge != null) {
+            String message = String.format(
+                    "Cartridge already exists: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ", cartridgeUuid,
+                    existingCartridge.getType(), existingCartridge.getTenantId());
+            log.error(message);
+            throw new CartridgeAlreadyExistsException(message);
+        }
 
-		// Add cartridge to the cloud controller context and persist
-		CloudControllerContext.getInstance().addCartridge(cartridgeConfig);
-		CloudControllerContext.getInstance().persist();
+        // Add cartridge to the cloud controller context and persist
+        CloudControllerContext.getInstance().addCartridge(cartridgeConfig);
+        CloudControllerContext.getInstance().persist();
 
-		List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
-		cartridgeList.add(cartridgeConfig);
+        List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+        cartridgeList.add(cartridgeConfig);
 
-		TopologyBuilder.handleServiceCreated(cartridgeList);
+        TopologyBuilder.handleServiceCreated(cartridgeList);
 
-		if (log.isInfoEnabled()) {
-			log.info(String.format("Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d ",
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d ",
                     cartridgeUuid, cartridgeConfig.getType(), cartridgeConfig.getTenantId()));
-		}
-		return true;
-	}
+        }
+        return true;
+    }
 
     @Override
     public boolean updateCartridge(Cartridge cartridge) throws InvalidCartridgeDefinitionException,
@@ -762,16 +762,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return cartridgeTypes;
     }
 
-	@Override
-	public Cartridge getCartridge(String cartridgeUuid) throws CartridgeNotFoundException {
-		Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeUuid);
-		if (cartridge != null) {
-			return cartridge;
-		}
+    @Override
+    public Cartridge getCartridge(String cartridgeUuid) throws CartridgeNotFoundException {
+        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeUuid);
+        if (cartridge != null) {
+            return cartridge;
+        }
 
-		String msg = "Could not find cartridge: [cartridge-uuid] " + cartridgeUuid;
-		throw new CartridgeNotFoundException(msg);
-	}
+        String msg = "Could not find cartridge: [cartridge-uuid] " + cartridgeUuid;
+        throw new CartridgeNotFoundException(msg);
+    }
 
     @Override
     public Cartridge getCartridgeByTenant(String cartridgeType, int tenantId) throws CartridgeNotFoundException {
@@ -1142,7 +1142,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
                 ClusterContext clusterContext = new ClusterContext(
-		                appUuid, appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
+                        appUuid, appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getTextPayload(), appClusterCtxt.getHostName(),
                         appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties());
 
@@ -1206,16 +1206,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterUuid);
     }
 
-	@Override
-	public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId,int tenantId) throws
-	                                                                            NonExistingKubernetesClusterException {
-		for(KubernetesCluster kubernetesCluster:getKubernetesClusters()){
-			if(kubernetesCluster.getClusterId().equals(kubernetesClusterId)&&kubernetesCluster.getTenantId()==tenantId){
-				return kubernetesCluster;
-			}
-		}
-		return null;
-	}
+    @Override
+    public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId,int tenantId) throws
+            NonExistingKubernetesClusterException {
+        for(KubernetesCluster kubernetesCluster:getKubernetesClusters()){
+            if(kubernetesCluster.getClusterId().equals(kubernetesClusterId)&&kubernetesCluster.getTenantId()==tenantId){
+                return kubernetesCluster;
+            }
+        }
+        return null;
+    }
 
     @Override
     public KubernetesMaster getMasterForKubernetesCluster(String kubernetesClusterId) throws
@@ -1566,7 +1566,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Partition validated successfully: [network-partition-uuid] %s " +
-                                "[network-partition-id] %s [partition-id] %s", networkPartition.getUuid(),
+                                        "[network-partition-id] %s [partition-id] %s", networkPartition.getUuid(),
                                 networkPartition.getId(), partition.getUuid()));
                     }
                 }
@@ -1574,7 +1574,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         } else {
             //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
             throw new InvalidNetworkPartitionException(String.format("Network partition [network-partition-uuid] %s " +
-                    "[network-partition-id] %s, doesn't not have any partitions ", networkPartition.getUuid(),
+                            "[network-partition-id] %s, doesn't not have any partitions ", networkPartition.getUuid(),
                     networkPartition.getId()));
         }
 
@@ -1584,7 +1584,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         CloudControllerContext.getInstance().persist();
         if (log.isInfoEnabled()) {
             log.info(String.format("Network partition added successfully: [network-partition-uuid] %s " +
-                            "[network-partition-id] %s", networkPartition.getUuid(),networkPartition.getId()));
+                    "[network-partition-id] %s", networkPartition.getUuid(),networkPartition.getId()));
         }
         return true;
     }
@@ -1669,7 +1669,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         validatePartition(partition);
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-uuid] %s " +
-                                    "[network-partition-uuid] %s [partition-id] %s", networkPartitionUuid,
+                                            "[network-partition-uuid] %s [partition-id] %s", networkPartitionUuid,
                                     networkPartitionId, partition.getUuid()));
                         }
                     }
@@ -1682,7 +1682,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
             if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition updated successfully: [network-partition-uuid] %s " +
-                                "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+                        "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
             }
             return true;
         } catch (Exception e) {
@@ -1717,6 +1717,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
         return networkPartitions.toArray(new NetworkPartition[networkPartitions.size()]);
+    }
+
+    @Override
+    public NetworkPartition getNetworkPartitionByTenant(String networkPartitionId, int tenantId) {
+        NetworkPartition[] allNetworkPartitions = getNetworkPartitions();
+        NetworkPartition networkPartition = null;
+
+        if (allNetworkPartitions != null) {
+            for (NetworkPartition networkPartition1 : allNetworkPartitions) {
+                if (networkPartition1.getTenantId() == tenantId && networkPartition1.getId().equals
+                        (networkPartitionId)) {
+                    networkPartition = networkPartition1;
+                }
+            }
+        }
+        return networkPartition;
     }
 
     @Override

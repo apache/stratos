@@ -134,20 +134,19 @@ public class StratosApiV41 extends AbstractApi {
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
         String deploymentPolicyId = deploymentPolicyDefinitionBean.getId();
-        deploymentPolicyDefinitionBean.setUuid(UUID.randomUUID().toString());
-        String deploymentPolicyUuid = deploymentPolicyDefinitionBean.getUuid();
+        String deploymentPolicyUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        deploymentPolicyDefinitionBean.setTenantId(carbonContext.getTenantId());
+        int tenantId = carbonContext.getTenantId();
 
         List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans = deploymentPolicyDefinitionBean
                 .getNetworkPartitions();
         for (NetworkPartitionReferenceBean networkPartitionReferenceBeans1 : networkPartitionReferenceBeans) {
-            networkPartitionReferenceBeans1.setTenantId(deploymentPolicyDefinitionBean.getTenantId());
+            networkPartitionReferenceBeans1.setTenantId(tenantId);
         }
 
         try {
-            StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
+            StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean, deploymentPolicyUuid, tenantId);
         } catch (AutoscalerServiceInvalidDeploymentPolicyExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getInvalidDeploymentPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
@@ -159,7 +158,7 @@ public class StratosApiV41 extends AbstractApi {
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Deployment policy added successfully: [deployment-policy-uuid] %s " +
-                                "[deployment-policy-uuid] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
+                        "[deployment-policy-uuid] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
     }
 
     /**
@@ -221,7 +220,6 @@ public class StratosApiV41 extends AbstractApi {
             DeploymentPolicyBean deploymentPolicyDefinitionBean) throws RestAPIException {
 
         String deploymentPolicyId = deploymentPolicyDefinitionBean.getId();
-        String deploymentPolicyUuid = deploymentPolicyDefinitionBean.getUuid();
         // TODO :: Deployment policy validation
 
         try {
@@ -242,8 +240,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Deployment policy updated successfully: [deployment-policy-uuid] %s " +
-                                "[deployment-policy-id] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
+                String.format("Deployment policy updated successfully: [deployment-policy-id] %s",
+                        deploymentPolicyId))).build();
     }
 
     /**
@@ -291,10 +289,10 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-	    cartridgeDefinitionBean.setUuid(UUID.randomUUID().toString());
+        cartridgeDefinitionBean.setUuid(UUID.randomUUID().toString());
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-	    cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
 
         CartridgeBean cartridgeBean = null;
         try {
@@ -304,7 +302,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         if (cartridgeBean != null) {
             String msg = String.format("Cartridge already exists: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
-                                       cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId());
+                    cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId());
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
@@ -314,7 +312,7 @@ public class StratosApiV41 extends AbstractApi {
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Cartridge added successfully: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
-                              cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId()))).build();
+                        cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId()))).build();
     }
 
     /**
@@ -332,8 +330,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateCartridge(
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-	    cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
         StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
         return Response.ok(url)
@@ -356,10 +354,10 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridges()
             throws RestAPIException {
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         //We pass null to searching string and multi-tenant parameter since we do not need to do any filtering
         List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext(),
-                                                                                   carbonContext.getTenantId());
+                carbonContext.getTenantId());
         if (cartridges == null || cartridges.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "No cartridges found")).build();
@@ -383,7 +381,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         CartridgeBean cartridge;
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             cartridge = StratosApiV41Utils.getCartridge(cartridgeType,carbonContext.getTenantId());
             return Response.ok().entity(cartridge).build();
@@ -409,7 +407,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridgesByFilter(
             @DefaultValue("") @PathParam("filter") String filter, @QueryParam("criteria") String criteria)
             throws RestAPIException {
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         List<CartridgeBean> cartridges = StratosApiV41Utils.
                 getCartridgesByFilter(filter, criteria, getConfigContext(),carbonContext.getTenantId());
         if (cartridges == null || cartridges.isEmpty()) {
@@ -438,7 +436,7 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("cartridgeType") String cartridgeType, @DefaultValue("") @PathParam("filter") String filter)
             throws RestAPIException {
         CartridgeBean cartridge;
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext(),carbonContext.getTenantId());
         if (cartridge == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
@@ -462,7 +460,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/cartridges/manage")
     public Response removeCartridge(
             @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             StratosApiV41Utils.removeCartridge(cartridgeType,carbonContext.getTenantId());
             return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -496,9 +494,9 @@ public class StratosApiV41 extends AbstractApi {
     public Response addCartridgeGroup(
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-	    cartridgeGroupBean.setUuid(UUID.randomUUID().toString());
-	    cartridgeGroupBean.setTenantId(carbonContext.getTenantId());
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        cartridgeGroupBean.setUuid(UUID.randomUUID().toString());
+        cartridgeGroupBean.setTenantId(carbonContext.getTenantId());
         try {
             StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
@@ -537,7 +535,7 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
 
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             StratosApiV41Utils.updateServiceGroup(cartridgeGroupBean,carbonContext.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
 
@@ -573,7 +571,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridgeGroup(
             @PathParam("name") String name) throws RestAPIException {
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(name,carbonContext.getTenantId());
 
         if (serviceGroupDefinition != null) {
@@ -622,7 +620,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeServiceGroup(
             @PathParam("name") String name) throws RestAPIException {
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             StratosApiV41Utils.removeServiceGroup(name, carbonContext.getTenantId());
         } catch (AutoscalerServiceCartridgeGroupNotFoundExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
@@ -653,18 +651,17 @@ public class StratosApiV41 extends AbstractApi {
     public Response addNetworkPartition(
             NetworkPartitionBean networkPartitionBean) throws RestAPIException {
         String networkPartitionId = networkPartitionBean.getId();
-        networkPartitionBean.setUuid(UUID.randomUUID().toString());
+        String networkPartitionUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        networkPartitionBean.setTenantId(carbonContext.getTenantId());
+        int tenantId = carbonContext.getTenantId();
 
         try {
-            StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
+            StratosApiV41Utils.addNetworkPartition(networkPartitionBean, networkPartitionUuid, tenantId);
         } catch (CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getNetworkPartitionAlreadyExistsException().getMessage();
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, backendErrorMessage))
-                    .build();
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, backendErrorMessage)).build();
 
         } catch (CloudControllerServiceInvalidNetworkPartitionExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getInvalidNetworkPartitionException().getMessage();
@@ -674,8 +671,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network partition added successfully: [network-partition-uuid] %s " +
-                        "[network-partition-id] %s", networkPartitionBean.getUuid(), networkPartitionId))).build();
+                String.format("Network partition added successfully: [network-partition-id] %s",
+                        networkPartitionId))).build();
     }
 
     /**
@@ -733,9 +730,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/networkPartitions/manage")
-    public Response updateNetworkPartition(
-            NetworkPartitionBean networkPartition) throws RestAPIException {
-
+    public Response updateNetworkPartition(NetworkPartitionBean networkPartition) throws RestAPIException {
         try {
             StratosApiV41Utils.updateNetworkPartition(networkPartition);
         } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
@@ -743,8 +738,7 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Network partition not found")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Network Partition updated successfully: [network-partition-uuid] %s " +
-                                "[network-partition-id] %s", networkPartition.getUuid(),
+                String.format("Network Partition updated successfully: [network-partition-id] %s",
                         networkPartition.getId()))).build();
     }
 
@@ -769,7 +763,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Network partition deleted successfully: [network-partition-id] %s " +
-                                "[tenant-domain] %s", networkPartitionId, carbonContext.getTenantDomain()))).build();
+                        "[tenant-domain] %s", networkPartitionId, carbonContext.getTenantDomain()))).build();
     }
 
     // API methods for applications
@@ -788,9 +782,9 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/manage")
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-	        applicationDefinition.setTenantId(carbonContext.getTenantId());
-	        applicationDefinition.setApplicationUuid(UUID.randomUUID().toString());
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            applicationDefinition.setTenantId(carbonContext.getTenantId());
+            applicationDefinition.setApplicationUuid(UUID.randomUUID().toString());
             StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
                     getUsername(), getTenantDomain());
 
@@ -947,17 +941,16 @@ public class StratosApiV41 extends AbstractApi {
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
 
         String applicationPolicyId = applicationPolicy.getId();
-        applicationPolicy.setUuid(UUID.randomUUID().toString());
-        String applicationPolicyUuid = applicationPolicy.getUuid();
+        String applicationPolicyUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        applicationPolicy.setTenantId(carbonContext.getTenantId());
+        int tenantId = carbonContext.getTenantId();
         try {
-            StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
+            StratosApiV41Utils.addApplicationPolicy(applicationPolicy, applicationPolicyUuid, tenantId);
             URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application policy added successfully: [application-policy-uuid] %s " +
-                                    "[application-policy-id] %s", applicationPolicyUuid, applicationPolicyId))).build();
+                            "[application-policy-id] %s", applicationPolicyUuid, applicationPolicyId))).build();
         } catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getInvalidApplicationPolicyException().getMessage();
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
@@ -1332,7 +1325,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplicationRuntime(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId,carbonContext.getTenantId());
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
@@ -1445,7 +1438,7 @@ public class StratosApiV41 extends AbstractApi {
             URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Autoscaling policy added successfully: [autoscale-policy-uuid] %s " +
-                                    "[autoscale-policy-id] %s", autoscalingPolicyUuid, autoscalingPolicyId))).build();
+                            "[autoscale-policy-id] %s", autoscalingPolicyUuid, autoscalingPolicyId))).build();
         } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Provided Autoscaling policy is invalid")).build();
@@ -1913,9 +1906,9 @@ public class StratosApiV41 extends AbstractApi {
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-	        kubernetesCluster.setTenantId(carbonContext.getTenantId());
-	        kubernetesCluster.setClusterUuid(UUID.randomUUID().toString());
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            kubernetesCluster.setTenantId(carbonContext.getTenantId());
+            kubernetesCluster.setClusterUuid(UUID.randomUUID().toString());
             StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -1948,8 +1941,8 @@ public class StratosApiV41 extends AbstractApi {
             KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-	        kubernetesCluster.setTenantId(carbonContext.getTenantId());
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            kubernetesCluster.setTenantId(carbonContext.getTenantId());
             StratosApiV41Utils.updateKubernetesCluster(kubernetesCluster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -1980,7 +1973,7 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("kubernetesClusterId") String kubernetesClusterId, KubernetesHostBean kubernetesHost)
             throws RestAPIException {
 
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         StratosApiV41Utils.addKubernetesHost(kubernetesClusterId,kubernetesHost,carbonContext.getTenantId());
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -2002,7 +1995,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateKubernetesMaster(
             KubernetesMasterBean kubernetesMaster) throws RestAPIException {
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             StratosApiV41Utils.updateKubernetesMaster(kubernetesMaster,carbonContext.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
@@ -2022,7 +2015,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateKubernetesHost(
             KubernetesHostBean kubernetesHost) throws RestAPIException {
         try {
-	        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             StratosApiV41Utils.updateKubernetesHost(kubernetesHost,carbonContext.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
