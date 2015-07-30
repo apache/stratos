@@ -19,6 +19,8 @@ from Queue import Queue
 import threading
 import paho.mqtt.client as mqtt
 
+from modules.util.log import LogFactory
+
 
 class EventSubscriber(threading.Thread):
     """
@@ -112,6 +114,3 @@ class EventExecutor(threading.Thread):
 
     def terminate(self):
         self.terminate()
-
-
-from modules.util.log import LogFactory

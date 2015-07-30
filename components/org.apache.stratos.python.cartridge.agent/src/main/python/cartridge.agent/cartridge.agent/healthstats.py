@@ -44,14 +44,10 @@ class HealthStatisticsPublisherManager(Thread):
         :return: void
         """
         Thread.__init__(self)
-
         self.log = LogFactory().get_log(__name__)
-
         self.publish_interval = publish_interval
         """:type : int"""
-
         self.terminated = False
-
         self.publisher = HealthStatisticsPublisher()
         """:type : HealthStatisticsPublisher"""
         # If there are no health stat reader plugins, create the default reader instance

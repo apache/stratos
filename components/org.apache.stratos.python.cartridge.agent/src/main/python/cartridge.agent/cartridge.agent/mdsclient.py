@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import urllib2, urllib
+import urllib2
 from urllib2 import URLError, HTTPError
 import json
 from modules.util.log import LogFactory
@@ -108,13 +108,14 @@ def update(data):
 def delete_property_value(property_name, value):
     log.info("Removing property %s value %s " % (property_name, value))
     opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(mds_url + "/metadata/api/applications/" + app_id + "/properties/" + property_name + "/value/" + value)
+    request = urllib2.Request(
+        mds_url + "/metadata/api/applications/" + app_id + "/properties/" + property_name + "/value/" + value)
     request.add_header("Authorization", "Bearer %s" % token)
     request.add_header('Content-Type', 'application/json')
     request.get_method = lambda: 'DELETE'
     url = opener.open(request)
 
-    log.info("Property value removed %s " % (url))
+    log.info("Property value removed %s " % url)
 
 
 class MDSPutRequest:
