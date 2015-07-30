@@ -58,7 +58,7 @@ class CartridgeAgent(threading.Thread):
         # Start topology event receiver thread
         self.register_topology_event_listeners()
 
-        if self.__config.lvs_virtual_ip is None or str(self.__config.lvs_virtual_ip).strip() == "":
+        if Config.lvs_virtual_ip is None or str(Config.lvs_virtual_ip).strip() == "":
             self.__log.debug("LVS Virtual IP is not defined")
         else:
             self.__event_handler.create_dummy_interface()

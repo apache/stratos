@@ -47,7 +47,7 @@ class EventHandler:
 
     def create_dummy_interface(self):
         self.__log.debug("Processing lvs dummy interface creation...")
-        lvs_vip = self.__config.lvs_virtual_ip.split("|")
+        lvs_vip = Config.lvs_virtual_ip.split("|")
         self.__log.debug("LVS dummy interface creation values %s %s " %(lvs_vip[0], lvs_vip[1]) )
         self.execute_event_extendables(constants.CREATE_LVS_DUMMY_INTERFACE,
                                        {"EVENT": constants.CREATE_LVS_DUMMY_INTERFACE, "LVS_DUMMY_VIRTUAL_IP": lvs_vip[0],
@@ -344,7 +344,7 @@ class EventHandler:
             " [application ID] " + str(application_signup_removal_event.applicationId)
         )
 
-        if self.__config.application_id == application_signup_removal_event.applicationId:
+        if Config.application_id == application_signup_removal_event.applicationId:
             AgentGitHandler.remove_repo(application_signup_removal_event.tenantId)
 
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
