@@ -482,4 +482,21 @@ public class PolicyManager {
     public ApplicationPolicy[] getApplicationPolicies() {
         return applicationPolicyListMap.values().toArray(new ApplicationPolicy[0]);
     }
+
+    /**
+     * Checks whether application policy exists in the tenant
+     * @param applicationPolicyId application policy id
+     * @param tenantId tenant id
+     * @return boolean value
+     */
+    public Boolean checkApplicationPolicyInTenant(String applicationPolicyId, int tenantId) {
+        ApplicationPolicy[] applicationPolicies = getApplicationPolicies();
+        for (ApplicationPolicy applicationPolicy1 : applicationPolicies) {
+            if (applicationPolicy1.getId().equals(applicationPolicyId) && applicationPolicy1.getTenantId() ==
+                    tenantId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

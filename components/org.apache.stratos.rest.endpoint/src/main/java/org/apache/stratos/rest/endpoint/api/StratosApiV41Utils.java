@@ -694,8 +694,10 @@ public class StratosApiV41Utils {
      * @param applicationPolicyBean applicationPolicyBean
      * @throws RestAPIException
      */
-    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException,
-            AutoscalerServiceInvalidApplicationPolicyExceptionException, AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
+    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean, String applicationPolicyUuid,
+                                            int tenantId) throws RestAPIException,
+            AutoscalerServiceInvalidApplicationPolicyExceptionException,
+            AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
 
         if (applicationPolicyBean == null) {
             String msg = "Application policy bean is null";
@@ -706,7 +708,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
         try {
             ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(
-                    applicationPolicyBean);
+                    applicationPolicyBean, applicationPolicyUuid, tenantId);
             if (applicationPolicy == null) {
                 String msg = "Application policy is null";
                 log.error(msg);
@@ -719,8 +721,8 @@ public class StratosApiV41Utils {
             String[] networkPartitionsUuid = new String[applicationPolicy.getNetworkPartitions().length];
             for (int i = 0; i < networkPartitions.length; i++) {
                 for (NetworkPartition networkPartition : existingNetworkPartitions) {
-                    if (networkPartitions[i].equals(networkPartition.getId()) && (applicationPolicyBean.getTenantId()
-                            == networkPartition.getTenantId())) {
+                    if (networkPartitions[i].equals(networkPartition.getId()) && (tenantId == networkPartition
+                            .getTenantId())) {
                         networkPartitionsUuid[i] = networkPartition.getUuid();
                     }
                 }
@@ -750,17 +752,18 @@ public class StratosApiV41Utils {
             AutoscalerServiceInvalidApplicationPolicyExceptionException,
             AutoscalerServiceApplicatioinPolicyNotExistsExceptionException {
 
-        log.info(String.format("Updating application policy: [application-policy-uuid] %s [application-policy-id] " +
-                "%s", applicationPolicyBean.getUuid(), applicationPolicyBean.getId()));
+        log.info(String.format("Updating application policy: [application-policy-id] %s", applicationPolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-
-            ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(
-                    applicationPolicyBean);
-
             try {
-                autoscalerServiceClient.updateApplicationPolicy(applicationPolicy);
+                AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicyByTenant
+                        (applicationPolicyBean.getId(), carbonContext.getTenantId());
+                autoscalerServiceClient.updateApplicationPolicy(ObjectConverter
+                        .convertApplicationPolicyBeanToStubAppPolicy(applicationPolicyBean,
+                                applicationPolicy.getUuid(), applicationPolicy.getTenantId()));
             } catch (RemoteException e) {
                 String msg = "Could not update application policy" + e.getLocalizedMessage();
                 log.error(msg, e);
@@ -857,12 +860,12 @@ public class StratosApiV41Utils {
             throw new ApplicationPolicyIdIsEmptyException(msg);
         }
 
-        AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
-        ApplicationPolicyBean applicationPolicyBean;
         try {
-
-            applicationPolicyBean = getApplicationPolicy(applicationPolicyId);
-            serviceClient.removeApplicationPolicy(applicationPolicyBean.getUuid());
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicyByTenant
+                    (applicationPolicyId, carbonContext.getTenantId());
+            serviceClient.removeApplicationPolicy(applicationPolicy.getUuid());
         } catch (RemoteException e) {
             String msg = "Could not remove application policy. " + e.getLocalizedMessage();
             log.error(msg, e);

@@ -730,9 +730,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/networkPartitions/manage")
-    public Response updateNetworkPartition(
-            NetworkPartitionBean networkPartition) throws RestAPIException {
-
+    public Response updateNetworkPartition(NetworkPartitionBean networkPartition) throws RestAPIException {
         try {
             StratosApiV41Utils.updateNetworkPartition(networkPartition);
         } catch (CloudControllerServiceNetworkPartitionNotExistsExceptionException e) {
@@ -942,13 +940,12 @@ public class StratosApiV41 extends AbstractApi {
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
 
         String applicationPolicyId = applicationPolicy.getId();
-        applicationPolicy.setUuid(UUID.randomUUID().toString());
-        String applicationPolicyUuid = applicationPolicy.getUuid();
+        String applicationPolicyUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        applicationPolicy.setTenantId(carbonContext.getTenantId());
+        int tenantId = carbonContext.getTenantId();
         try {
-            StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
+            StratosApiV41Utils.addApplicationPolicy(applicationPolicy, applicationPolicyUuid, tenantId);
             URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application policy added successfully: [application-policy-uuid] %s " +

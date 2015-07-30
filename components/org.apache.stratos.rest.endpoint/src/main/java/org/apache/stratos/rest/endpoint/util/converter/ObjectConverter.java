@@ -513,8 +513,6 @@ public class ObjectConverter {
 
         ApplicationPolicyBean applicationPolicyBean = new ApplicationPolicyBean();
         applicationPolicyBean.setId(applicationPolicy.getId());
-        applicationPolicyBean.setUuid(applicationPolicy.getUuid());
-        applicationPolicyBean.setTenantId(applicationPolicy.getTenantId());
         applicationPolicyBean.setAlgorithm(applicationPolicy.getAlgorithm());
         applicationPolicyBean.setNetworkPartitions(applicationPolicy.getNetworkPartitions());
 
@@ -2076,7 +2074,7 @@ public class ObjectConverter {
     }
 
     public static ApplicationPolicy convertApplicationPolicyBeanToStubAppPolicy(
-            ApplicationPolicyBean applicationPolicyBean) {
+            ApplicationPolicyBean applicationPolicyBean, String applicationPolicyUuid, int tenantId) {
 
         if (applicationPolicyBean == null) {
             return null;
@@ -2086,8 +2084,8 @@ public class ObjectConverter {
         applicationPolicy.setId(applicationPolicyBean.getId());
         applicationPolicy.setAlgorithm(applicationPolicyBean.getAlgorithm());
         applicationPolicy.setNetworkPartitions(applicationPolicyBean.getNetworkPartitions());
-        applicationPolicy.setUuid(applicationPolicyBean.getUuid());
-        applicationPolicy.setTenantId(applicationPolicyBean.getTenantId());
+        applicationPolicy.setUuid(applicationPolicyUuid);
+        applicationPolicy.setTenantId(tenantId);
         if (applicationPolicyBean.getProperties() != null) {
             if (!applicationPolicyBean.getProperties().isEmpty()) {
                 applicationPolicy.setProperties(getASPropertiesFromCommonProperties(applicationPolicyBean.getProperties()));
