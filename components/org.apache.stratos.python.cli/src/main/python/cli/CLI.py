@@ -83,7 +83,7 @@ class CLI(Cmd):
     def do_list_users(self, line , opts=None):
         """Illustrate the base class method use."""
         try:
-            users = Stratos.add_user()
+            users = Stratos.list_users()
             table = PrintableTable()
             rows = [["Name", "language"]]
             table.set_cols_align(["l", "r"])
