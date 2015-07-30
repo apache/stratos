@@ -74,9 +74,6 @@ CLUSTERING_PRIMARY_KEY = "PRIMARY"
 
 SUPERTENANT_TEMP_PATH = "/tmp/-1234/"
 
-# DEPLOYMENT_MANAGER = "manager"
-# DEPLOYMENT_WORKER = "worker"
-# DEPLOYMENT_DEFAULT = "default"
 SUPER_TENANT_REPO_PATH = "super.tenant.repository.path"
 TENANT_REPO_PATH = "tenant.repository.path"
 

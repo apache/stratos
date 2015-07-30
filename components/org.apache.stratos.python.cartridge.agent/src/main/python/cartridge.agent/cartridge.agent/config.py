@@ -323,33 +323,6 @@ class Config:
             Config.lb_public_ip = Config.read_property(constants.LB_PUBLIC_IP, False)
             Config.tenant_repository_path = Config.read_property(constants.TENANT_REPO_PATH, False)
             Config.super_tenant_repository_path = Config.read_property(constants.SUPER_TENANT_REPO_PATH, False)
-            # Config.deployment = Config.read_property(constants.DEPLOYMENT, False)
-            #
-            # # Setting worker-manager setup - manager service name
-            # if Config.deployment is None:
-            #     Config.manager_service_name = None
-            #
-            # if str(Config.deployment).lower() == constants.DEPLOYMENT_MANAGER.lower():
-            #     Config.manager_service_name = Config.service_name
-            # elif str(Config.deployment).lower() == constants.DEPLOYMENT_WORKER.lower():
-            #     Config.deployment = Config.read_property(constants.MANAGER_SERVICE_TYPE)
-            # elif str(Config.deployment).lower() == constants.DEPLOYMENT_DEFAULT.lower():
-            #     Config.deployment = None
-            # else:
-            #     Config.deployment = None
-            #
-            # # Setting worker-manager setup - worker service name
-            # if Config.deployment is None:
-            #     Config.worker_service_name = None
-            #
-            # if str(Config.deployment).lower() == constants.DEPLOYMENT_WORKER.lower():
-            #     Config.manager_service_name = Config.service_name
-            # elif str(Config.deployment).lower() == constants.DEPLOYMENT_MANAGER.lower():
-            #     Config.deployment = Config.read_property(constants.WORKER_SERVICE_TYPE)
-            # elif str(Config.deployment).lower() == constants.DEPLOYMENT_DEFAULT.lower():
-            #     Config.deployment = None
-            # else:
-            #     Config.deployment = None
 
             Config.is_primary = Config.read_property(constants.CLUSTERING_PRIMARY_KEY, False)
 
