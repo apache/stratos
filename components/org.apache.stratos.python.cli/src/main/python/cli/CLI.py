@@ -48,7 +48,32 @@ class CLI(Cmd):
         table.add_rows(rows)
         table.print_table()
 
+    """
+    # User Entity
 
+    """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-r', '--role_name', type="str", help="Role name of the user"),
+        make_option('-f', '--first_name', type="str", help="First name of the user"),
+        make_option('-l', '--last_name', type="str", help="Last name of the user"),
+        make_option('-e', '--email', type="str", help="Email of the user"),
+        make_option('-x', '--profile_name', type="str", help="Profile name of the user")
+    ])
+    @auth
+    def do_add_user(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            user = Stratos.list_users(opts.username, opts.password, opts.role_name, opts.first_name, opts.last_name,
+                                       opts.email, opts.profile_name)
+            if user:
+                print("User successfully created")
+            else:
+                print("Error creating the user")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -58,7 +83,7 @@ class CLI(Cmd):
     def do_list_users(self, line , opts=None):
         """Illustrate the base class method use."""
         try:
-            users = Stratos.list_users()
+            users = Stratos.add_user()
             table = PrintableTable()
             rows = [["Name", "language"]]
             table.set_cols_align(["l", "r"])
@@ -68,7 +93,8 @@ class CLI(Cmd):
             table.add_rows(rows)
             table.print_table()
         except AuthenticationError as e:
-            self.perror("sdc")
+            self.perror("Authentication Error")
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -77,9 +103,13 @@ class CLI(Cmd):
     @auth
     def do_list_network_partitions(self, line , opts=None):
         """Illustrate the base class method use."""
-        repositories = Stratos.list_network_partitions()
-        tree = PrintableTree(repositories)
-        tree.print_tree()
+        network_partitions = Stratos.list_network_partitions()
+        table = PrintableTable()
+        rows = [["Network Partition ID", "Number of Partitions"]]
+        for network_partition in network_partitions:
+            rows.append([network_partition['id'], len(network_partition['partitions'])])
+        table.add_rows(rows)
+        table.print_table()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -126,6 +156,27 @@ class CLI(Cmd):
             rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
             for application in applications:
                 rows.append([application['type'], application['category'], application['displayName'], application['description'], application['version'], application['multiTenant']])
+            table.add_rows(rows)
+            table.print_table()
+    """
+    # Kubernetes Cluster/Host
+
+    """
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_kubernetes_clusters(self, line , opts=None):
+        """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
+        kubernetes_clusters = Stratos.list_kubernetes_clusters()
+        if not kubernetes_clusters:
+            print("No Kubernetes-CoreOS clusters found")
+        else:
+            table = PrintableTable()
+            rows = [["Group ID", "Description"]]
+            for kubernetes_cluster in kubernetes_clusters:
+                rows.append([kubernetes_cluster['clusterId'], kubernetes_cluster['description']])
             table.add_rows(rows)
             table.print_table()
 
