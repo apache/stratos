@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +50,8 @@ public class AWSHelper {
 	private String awsAccessKey;
 	private String awsSecretKey;
 	private String lbPrefix;
-	private int lbSequence;
-	private Object lbSequenceMutex;
+	private AtomicInteger lbSequence;
+
 	private String lbSecurityGroupName;
 	private String lbSecurityGroupDescription;
 
@@ -92,13 +93,13 @@ public class AWSHelper {
 
 			this.lbPrefix = properties.getProperty(Constants.LB_PREFIX);
 
-			if (this.lbPrefix.isEmpty() || this.lbPrefix.length() > Constants.LOAD_BALANCER_PREFIX_MAX_LENGTH) {
+			if (this.lbPrefix.isEmpty()
+					|| this.lbPrefix.length() > Constants.LOAD_BALANCER_PREFIX_MAX_LENGTH) {
 				throw new LoadBalancerExtensionException(
 						"Invalid load balancer prefix.");
 			}
 
-			lbSequence = 0;
-			lbSequenceMutex = new Object();
+			lbSequence = new AtomicInteger(1);
 
 			this.lbSecurityGroupName = properties
 					.getProperty(Constants.LOAD_BALANCER_SECURITY_GROUP_NAME);
@@ -135,10 +136,7 @@ public class AWSHelper {
 	}
 
 	public int getNextLBSequence() {
-		synchronized (lbSequenceMutex) {
-			lbSequence++;
-			return lbSequence;
-		}
+		return lbSequence.getAndIncrement();
 	}
 
 	/**
@@ -173,7 +171,8 @@ public class AWSHelper {
 
 			createLoadBalancerRequest.setSecurityGroups(securityGroups);
 
-			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+			lbClient.setEndpoint(String.format(
+					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			CreateLoadBalancerResult clbResult = lbClient
 					.createLoadBalancer(createLoadBalancerRequest);
@@ -203,7 +202,8 @@ public class AWSHelper {
 		deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
 
 		try {
-			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+			lbClient.setEndpoint(String.format(
+					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			lbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
 			return;
@@ -233,7 +233,8 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+			lbClient.setEndpoint(String.format(
+					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			RegisterInstancesWithLoadBalancerResult result = lbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
@@ -264,7 +265,8 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+			lbClient.setEndpoint(String.format(
+					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			DeregisterInstancesFromLoadBalancerResult result = lbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
@@ -295,7 +297,8 @@ public class AWSHelper {
 				loadBalancers);
 
 		try {
-			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+			lbClient.setEndpoint(String.format(
+					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			DescribeLoadBalancersResult result = lbClient
 					.describeLoadBalancers(describeLoadBalancersRequest);
