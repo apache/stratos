@@ -188,12 +188,34 @@ class CLI(Cmd):
         """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
         kubernetes_clusters = Stratos.list_kubernetes_clusters()
         if not kubernetes_clusters:
-            print("No Kubernetes-CoreOS clusters found")
+            print("No Kubernetes clusters found")
         else:
             table = PrintableTable()
             rows = [["Group ID", "Description"]]
             for kubernetes_cluster in kubernetes_clusters:
                 rows.append([kubernetes_cluster['clusterId'], kubernetes_cluster['description']])
+            table.add_rows(rows)
+            table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-c', '--cluster_id', type="str", help="Cluster ID")
+    ])
+    @auth
+    def do_list_kubernetes_hosts(self, line , opts=None):
+        """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
+        if not opts.cluster_id:
+            print("usage: list-kubernetes-hosts [-c <cluster id>]")
+            return
+        kubernetes_cluster_hosts = Stratos.list_kubernetes_hosts(opts.cluster_id)
+        if not kubernetes_cluster_hosts:
+            print("No kubernetes hosts found")
+        else:
+            table = PrintableTable()
+            rows = [["Host ID", "Hostname", "Private IP Address", "Public IP Address"]]
+            for kubernetes_cluster_host in kubernetes_cluster_hosts:
+                rows.append([kubernetes_cluster_host['hostId'], kubernetes_cluster_host['hostname'], kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
             table.add_rows(rows)
             table.print_table()
 

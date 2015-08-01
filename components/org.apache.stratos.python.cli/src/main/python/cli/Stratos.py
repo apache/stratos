@@ -20,7 +20,6 @@ import Configs
 from cli.exceptions.AuthenticationError import AuthenticationError
 
 
-
 class Stratos:
     """Apache Stratos Python API"""
 
@@ -103,6 +102,10 @@ class Stratos:
     def list_kubernetes_clusters():
         return Stratos.get('kubernetesClusters', errorMessage='Kubernetes cluster not found')
 
+    @staticmethod
+    def list_kubernetes_hosts(kubernetes_cluster_id):
+        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts', errorMessage='Kubernetes cluster not found')
+
 
     """
     # Utils
@@ -112,7 +115,6 @@ class Stratos:
     def get(resource, errorMessage):
         r = requests.get(Configs.stratos_api_url + resource,
                          auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        print(r.text)
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 400:
