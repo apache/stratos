@@ -127,6 +127,3 @@ class Stratos:
             else:
                 raise requests.HTTPError()
 
-
-
-

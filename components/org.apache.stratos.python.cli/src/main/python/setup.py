@@ -44,4 +44,3 @@ setup(
         stratos-cli=cli.Main:main
     ''',
 )
-

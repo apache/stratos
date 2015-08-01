@@ -83,4 +83,3 @@ def auth(func):
         else:
             return func(self, *args, **kwargs)
     return auth_inner
-
