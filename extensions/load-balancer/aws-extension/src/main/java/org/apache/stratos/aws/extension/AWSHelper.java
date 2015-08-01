@@ -240,7 +240,6 @@ public class AWSHelper {
 
 			RegisterInstancesWithLoadBalancerResult result = lbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
-			return;
 
 		} catch (Exception e) {
 			log.error("Could not register instances to load balancer "
@@ -273,7 +272,6 @@ public class AWSHelper {
 
 			DeregisterInstancesFromLoadBalancerResult result = lbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
-			return;
 
 		} catch (Exception e) {
 			log.error("Could not de-register instances from load balancer "
@@ -347,79 +345,6 @@ public class AWSHelper {
 					+ loadBalancerName);
 			e.printStackTrace();
 			return null;
-		}
-	}
-
-	/**
-	 * Adds listeners provided to the load balancer. Useful when service
-	 * definition is changed, in particular port mappings. So new listeners need
-	 * to be added.
-	 * 
-	 * @param loadBalancerName
-	 * @param listeners
-	 * @param region
-	 */
-	public void addListenersToLoadBalancer(String loadBalancerName,
-			List<Listener> listeners, String region) {
-		if (listeners.size() == 0)
-			return;
-
-		CreateLoadBalancerListenersRequest createLoadBalancerListenersRequest = new CreateLoadBalancerListenersRequest();
-		createLoadBalancerListenersRequest.setListeners(listeners);
-		createLoadBalancerListenersRequest
-				.setLoadBalancerName(loadBalancerName);
-
-		try {
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
-
-			lbClient.createLoadBalancerListeners(createLoadBalancerListenersRequest);
-			return;
-
-		} catch (Exception e) {
-			log.error("Could not add listeners to load balancer "
-					+ loadBalancerName);
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Remove listeners provided from the load balancer. Useful when attached
-	 * listeners are no longer required.
-	 * 
-	 * @param loadBalancerName
-	 * @param listeners
-	 * @param region
-	 */
-	public void removeListenersFromLoadBalancer(String loadBalancerName,
-			List<Listener> listeners, String region) {
-		if (listeners.size() == 0)
-			return;
-
-		DeleteLoadBalancerListenersRequest deleteLoadBalancerListenersRequest = new DeleteLoadBalancerListenersRequest();
-		deleteLoadBalancerListenersRequest
-				.setLoadBalancerName(loadBalancerName);
-
-		List<Integer> loadBalancerPorts = new ArrayList<Integer>();
-
-		for (Listener listener : listeners) {
-			loadBalancerPorts.add(listener.getLoadBalancerPort());
-		}
-
-		deleteLoadBalancerListenersRequest
-				.setLoadBalancerPorts(loadBalancerPorts);
-
-		try {
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
-
-			lbClient.deleteLoadBalancerListeners(deleteLoadBalancerListenersRequest);
-			return;
-
-		} catch (Exception e) {
-			log.error("Could not remove listeners from load balancer "
-					+ loadBalancerName);
-			e.printStackTrace();
 		}
 	}
 

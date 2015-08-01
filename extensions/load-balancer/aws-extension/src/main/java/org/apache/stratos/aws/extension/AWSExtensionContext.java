@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * HAProxy context to read and store system properties.
+ * AWS Load Balancer context to read and store system properties.
  */
 public class AWSExtensionContext {
     private static final Log log = LogFactory.getLog(AWSExtensionContext.class);
