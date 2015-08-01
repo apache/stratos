@@ -84,7 +84,6 @@ public class AWSLoadBalancer implements LoadBalancer {
 							activeClusters.add(cluster.getClusterId());
 
 							List<Instance> instancesToAddToLoadBalancer = new ArrayList<Instance>();
-							List<Instance> awsInstancesInCluster = new ArrayList<Instance>();
 
 							for (Member member : clusterMembers) {
 								// if instance id of member is not in
@@ -101,26 +100,11 @@ public class AWSLoadBalancer implements LoadBalancer {
 										awsHelper.getAWSInstanceName(member
 												.getInstanceId()));
 
-								awsInstancesInCluster.add(instance);
-
 								if (attachedInstances == null
 										|| !attachedInstances.contains(instance)) {
 									instancesToAddToLoadBalancer.add(instance);
 								}
 							}
-
-							List<Instance> instancesToRemoveFromLoadBalancer = new ArrayList<Instance>();
-
-							for (Instance instance : attachedInstances) {
-								if (!awsInstancesInCluster.contains(instance)) {
-									instancesToRemoveFromLoadBalancer.add(instance);
-								}
-							}
-
-							if (instancesToRemoveFromLoadBalancer.size() > 0)
-								awsHelper.deregisterInstancesFromLoadBalancer(
-										loadBalancerName,
-										instancesToRemoveFromLoadBalancer, region);
 
 							if (instancesToAddToLoadBalancer.size() > 0)
 								awsHelper.registerInstancesToLoadBalancer(

@@ -92,7 +92,7 @@ public class AWSHelper {
 
 			this.lbPrefix = properties.getProperty(Constants.LB_PREFIX);
 
-			if (this.lbPrefix.isEmpty() || this.lbPrefix.length() > 25) {
+			if (this.lbPrefix.isEmpty() || this.lbPrefix.length() > Constants.LOAD_BALANCER_PREFIX_MAX_LENGTH) {
 				throw new LoadBalancerExtensionException(
 						"Invalid load balancer prefix.");
 			}
@@ -104,7 +104,7 @@ public class AWSHelper {
 					.getProperty(Constants.LOAD_BALANCER_SECURITY_GROUP_NAME);
 
 			if (this.lbSecurityGroupName.isEmpty()
-					|| this.lbSecurityGroupName.length() > 255) {
+					|| this.lbSecurityGroupName.length() > Constants.SECURITY_GROUP_NAME_MAX_LENGTH) {
 				throw new LoadBalancerExtensionException(
 						"Invalid load balancer security group name.");
 			}
@@ -173,8 +173,7 @@ public class AWSHelper {
 
 			createLoadBalancerRequest.setSecurityGroups(securityGroups);
 
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
+			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			CreateLoadBalancerResult clbResult = lbClient
 					.createLoadBalancer(createLoadBalancerRequest);
@@ -204,8 +203,7 @@ public class AWSHelper {
 		deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
 
 		try {
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
+			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			lbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
 			return;
@@ -235,8 +233,7 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
+			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			RegisterInstancesWithLoadBalancerResult result = lbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
@@ -267,8 +264,7 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
+			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			DeregisterInstancesFromLoadBalancerResult result = lbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
@@ -299,23 +295,21 @@ public class AWSHelper {
 				loadBalancers);
 
 		try {
-			lbClient.setEndpoint("elasticloadbalancing." + region
-					+ ".amazonaws.com");
+			lbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			DescribeLoadBalancersResult result = lbClient
 					.describeLoadBalancers(describeLoadBalancersRequest);
 
-			if (result.getLoadBalancerDescriptions() == null
-					|| result.getLoadBalancerDescriptions().size() == 0)
-				return null;
-			else
+			if (result.getLoadBalancerDescriptions() != null
+					&& result.getLoadBalancerDescriptions().size() > 0)
 				return result.getLoadBalancerDescriptions().get(0);
 		} catch (Exception e) {
 			log.error("Could not find description of load balancer "
 					+ loadBalancerName);
 			e.printStackTrace();
-			return null;
 		}
+
+		return null;
 	}
 
 	/**
@@ -399,7 +393,7 @@ public class AWSHelper {
 		createSecurityGroupRequest.setDescription(description);
 
 		try {
-			ec2Client.setEndpoint("ec2." + region + ".amazonaws.com");
+			ec2Client.setEndpoint(Constants.EC2_ENDPOINT_URL_FORMAT);
 
 			CreateSecurityGroupResult createSecurityGroupResult = ec2Client
 					.createSecurityGroup(createSecurityGroupRequest);
@@ -429,7 +423,7 @@ public class AWSHelper {
 		authorizeSecurityGroupIngressRequest.setIpProtocol("tcp");
 
 		try {
-			ec2Client.setEndpoint("ec2." + region + ".amazonaws.com");
+			ec2Client.setEndpoint(Constants.EC2_ENDPOINT_URL_FORMAT);
 
 			ec2Client
 					.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
@@ -501,9 +495,9 @@ public class AWSHelper {
 
 		name = lbPrefix + getNextLBSequence();
 
-		if (name.length() > 32)
+		if (name.length() > Constants.LOAD_BALANCER_NAME_MAX_LENGTH)
 			throw new LoadBalancerExtensionException(
-					"Load balanacer name length exceeded");
+					"Load balanacer name length (32 characters) exceeded");
 
 		return name;
 	}
