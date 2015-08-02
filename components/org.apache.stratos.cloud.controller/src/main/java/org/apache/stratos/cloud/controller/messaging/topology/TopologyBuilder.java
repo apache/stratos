@@ -883,11 +883,17 @@ public class TopologyBuilder {
                         String[] publicIPs = kubernetesService.getPublicIPs();
                         if ((publicIPs != null) && (publicIPs.length > 0)) {
                             for (String publicIP : publicIPs) {
-                                // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
-                                URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
-                                        kubernetesService.getPort(), null, null, null);
-                                cluster.addAccessUrl(accessURL.toString());
-                                clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
+                                // There can be a String array with null values
+                                if (publicIP != null) {
+                                    // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
+                                    URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
+                                            kubernetesService.getPort(), null, null, null);
+                                    cluster.addAccessUrl(accessURL.toString());
+                                    clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
+                                } else {
+                                    log.error(String.format("Could not create access URL for [Kubernetes-service] %s , " +
+                                            "since Public IP is not available", kubernetesService.getId()));
+                                }
                             }
                         }
                     }
