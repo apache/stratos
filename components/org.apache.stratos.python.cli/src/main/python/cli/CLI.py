@@ -83,7 +83,7 @@ class CLI(Cmd):
     def do_add_user(self, line , opts=None):
         """Add a new user to the system"""
         try:
-            user = Stratos.list_users(opts.username, opts.password, opts.role_name, opts.first_name, opts.last_name,
+            user = Stratos.add_users(opts.username, opts.password, opts.role_name, opts.first_name, opts.last_name,
                                        opts.email, opts.profile_name)
             if user:
                 print("User successfully created")
@@ -139,7 +139,8 @@ class CLI(Cmd):
         table = PrintableTable()
         rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
         for cartridge in cartridges:
-            rows.append([cartridge['type'], cartridge['category'], cartridge['displayName'], cartridge['description'], cartridge['version'], cartridge['multiTenant']])
+            rows.append([cartridge['type'], cartridge['category'], cartridge['displayName'], cartridge['description'],
+                         cartridge['version'], cartridge['multiTenant']])
         table.add_rows(rows)
         table.print_table()
 
@@ -172,7 +173,8 @@ class CLI(Cmd):
             table = PrintableTable()
             rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
             for application in applications:
-                rows.append([application['type'], application['category'], application['displayName'], application['description'], application['version'], application['multiTenant']])
+                rows.append([application['type'], application['category'], application['displayName'],
+                             application['description'], application['version'], application['multiTenant']])
             table.add_rows(rows)
             table.print_table()
     """
@@ -215,7 +217,8 @@ class CLI(Cmd):
             table = PrintableTable()
             rows = [["Host ID", "Hostname", "Private IP Address", "Public IP Address"]]
             for kubernetes_cluster_host in kubernetes_cluster_hosts:
-                rows.append([kubernetes_cluster_host['hostId'], kubernetes_cluster_host['hostname'], kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
+                rows.append([kubernetes_cluster_host['hostId'], kubernetes_cluster_host['hostname'],
+                             kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
             table.add_rows(rows)
             table.print_table()
 

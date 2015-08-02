@@ -104,7 +104,8 @@ class Stratos:
 
     @staticmethod
     def list_kubernetes_hosts(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts', errorMessage='Kubernetes cluster not found')
+        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts',
+                           errorMessage='Kubernetes cluster not found')
 
 
     """
