@@ -79,20 +79,8 @@ class Stratos:
         return r.json()
 
     @staticmethod
-    def list_cartridges_groups():
-        r = requests.get(Configs.stratos_api_url + 'cartridgeGroups',
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 400:
-            raise requests.HTTPError()
-        elif r.status_code == 401:
-            raise AuthenticationError()
-        elif r.status_code == 404:
-            if r.json() and r.json()['errorMessage'] == "No cartridges found":
-                return []
-            else:
-                raise requests.HTTPError()
+    def list_cartridge_groups():
+        return Stratos.get('cartridgeGroups', errorMessage='No cartridge groups found')
 
     """
     # Kubernetes Clusters

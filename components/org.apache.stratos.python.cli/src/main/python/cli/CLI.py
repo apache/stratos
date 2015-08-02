@@ -149,13 +149,14 @@ class CLI(Cmd):
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
-    def do_list_cartridges_group(self, line , opts=None):
+    def do_list_cartridge_groups(self, line , opts=None):
         """Illustrate the base class method use."""
-        cartridges_groups = Stratos.list_cartridges_group()
+        cartridge_groups = Stratos.list_cartridge_groups()
         table = PrintableTable()
         rows = [["Name", "No. of cartridges", "No of groups", "Dependency scaling"]]
-        for cartridges_group in cartridges_groups:
-            rows.append([cartridges_group['name'], cartridges_group['category'], cartridges_group['displayName'], cartridge['description'], cartridge['version'], cartridge['multiTenant']])
+        for cartridge_group in cartridge_groups:
+            rows.append([cartridge_group['name'], len(cartridge_group['cartridges']),
+                         len(cartridge_group['cartridges']), cartridge_group['groupScalingEnabled']])
         table.add_rows(rows)
         table.print_table()
 
