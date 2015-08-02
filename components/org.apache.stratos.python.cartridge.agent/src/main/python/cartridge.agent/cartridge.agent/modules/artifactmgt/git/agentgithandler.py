@@ -19,8 +19,11 @@ from threading import current_thread
 import os
 import subprocess
 import shutil
+import constants
+import time
 from git import *
 
+from config import Config
 from ... util.log import LogFactory
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ... artifactmgt.repository import Repository
@@ -86,9 +89,14 @@ class AgentGitHandler:
             subscribe_run = True
             AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
                                       git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
-            git_repo = AgentGitHandler.clone(git_repo)
-            AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                      git_repo.tenant_id, git_repo.repo_url)
+            try:
+                git_repo = AgentGitHandler.clone(git_repo)
+                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
+                                          git_repo.tenant_id, git_repo.repo_url)
+            except GitRepositorySynchronizationException as e:
+                AgentGitHandler.log.warn("Warning: Git clone operation failed. Retrying...")
+                # If first git clone is failed, execute retry_clone operation
+                AgentGitHandler.retry_clone(git_repo)
 
         return subscribe_run, updated
 
@@ -195,6 +203,40 @@ class AgentGitHandler:
             return git_repo
         except GitCommandError as e:
             raise GitRepositorySynchronizationException("Error while cloning repository: %s" % e)
+
+    @staticmethod
+    def retry_clone(git_repo):
+        """Retry 'git clone' operation for defined number of attempts with defined intervals
+        """
+        if os.path.isdir(git_repo.local_repo_path) and os.listdir(git_repo.local_repo_path) != []:
+            # delete and recreate local repo path if not empty dir
+            AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
+            GitUtils.delete_folder_tree(git_repo.local_repo_path)
+            GitUtils.create_dir(git_repo.local_repo_path)
+
+        git_clone_successful = False
+        # Read properties from agent.conf
+        max_retry_attempts = int(Config.read_property(constants.ARTIFACT_CLONE_RETRIES, 5))
+        retry_interval = int(Config.read_property(constants.ARTIFACT_CLONE_INTERVAL, 10))
+        retry_attempts = 0
+
+        # Iterate until git clone is successful or reaches max retry attempts
+        while git_clone_successful is False and retry_attempts < max_retry_attempts:
+            try:
+                retry_attempts += 1
+                Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)
+                AgentGitHandler.add_repo(git_repo)
+                AgentGitHandler.log.info(
+                    "Retrying attempt to git clone operation for tenant %s successful" % git_repo.tenant_id)
+                git_clone_successful = True
+
+            except GitCommandError as e:
+                AgentGitHandler.log.warn("Retrying git clone attempt %s failed" % retry_attempts)
+                if retry_attempts < max_retry_attempts:
+                    time.sleep(retry_interval)
+                    pass
+                else:
+                    raise GitRepositorySynchronizationException("Error while retrying git clone: %s" % e)
 
     @staticmethod
     def add_repo(git_repo):
