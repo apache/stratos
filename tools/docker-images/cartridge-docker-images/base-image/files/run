@@ -114,6 +114,18 @@ else
 	sed -i "s/ARTFCT_UPDATE_INT/${ARTFCT_UPDATE_INT}/g" ${PCA_HOME}/agent.conf
 fi
 
+if [ -z "${ARTFCT_CLONE_RETRIES}" ]; then
+	sed -i "s/ARTFCT_CLONE_RETRIES/5/g" ${PCA_HOME}/agent.conf
+else
+	sed -i "s/ARTFCT_CLONE_RETRIES/${ARTFCT_CLONE_RETRIES}/g" ${PCA_HOME}/agent.conf
+fi
+
+if [ -z "${ARTFCT_CLONE_INT}" ]; then
+	sed -i "s/ARTFCT_CLONE_INT/10/g" ${PCA_HOME}/agent.conf
+else
+	sed -i "s/ARTFCT_CLONE_INT/${ARTFCT_CLONE_INT}/g" ${PCA_HOME}/agent.conf
+fi
+
 if [ -z "${PORT_CHECK_TIMEOUT}" ]; then
 	sed -i "s/PORT_CHECK_TIMEOUT/600000/g" ${PCA_HOME}/agent.conf
 else
