@@ -36,6 +36,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2Client;
@@ -60,14 +62,13 @@ public class AWSHelper {
 	private BasicAWSCredentials awsCredentials;
 	private ClientConfiguration clientConfiguration;
 
-	AmazonElasticLoadBalancingClient lbClient;
+	AmazonElasticLoadBalancingClient elbClient;
 	AmazonEC2Client ec2Client;
 
 	private static final Log log = LogFactory.getLog(AWSHelper.class);
 
 	public AWSHelper() throws LoadBalancerExtensionException {
 		// Read values for awsAccessKey, awsSecretKey etc. from config file
-		// Throw a proper exception / log warning if cant read credentials ?
 
 		String awsPropertiesFile = System
 				.getProperty(Constants.AWS_PROPERTIES_FILE);
@@ -117,7 +118,7 @@ public class AWSHelper {
 			awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
 			clientConfiguration = new ClientConfiguration();
 
-			lbClient = new AmazonElasticLoadBalancingClient(awsCredentials,
+			elbClient = new AmazonElasticLoadBalancingClient(awsCredentials,
 					clientConfiguration);
 
 			ec2Client = new AmazonEC2Client(awsCredentials, clientConfiguration);
@@ -171,17 +172,16 @@ public class AWSHelper {
 
 			createLoadBalancerRequest.setSecurityGroups(securityGroups);
 
-			lbClient.setEndpoint(String.format(
+			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			CreateLoadBalancerResult clbResult = lbClient
+			CreateLoadBalancerResult clbResult = elbClient
 					.createLoadBalancer(createLoadBalancerRequest);
 
 			return clbResult.getDNSName();
 
-		} catch (Exception e) {
-			log.error("Could not create load balancer : " + name + ".");
-			e.printStackTrace();
+		} catch (LoadBalancerExtensionException e) {
+			log.error("Could not create load balancer : " + name + ".", e);
 			return null;
 		}
 
@@ -202,15 +202,12 @@ public class AWSHelper {
 		deleteLoadBalancerRequest.setLoadBalancerName(loadBalancerName);
 
 		try {
-			lbClient.setEndpoint(String.format(
+			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			lbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
-			return;
-
-		} catch (Exception e) {
-			log.error("Could not delete load balancer : " + loadBalancerName);
-			e.printStackTrace();
+			elbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
+		} catch (AmazonClientException e) {
+			log.error("Could not delete load balancer : " + loadBalancerName, e);
 		}
 	}
 
@@ -233,16 +230,15 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-			lbClient.setEndpoint(String.format(
+			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			RegisterInstancesWithLoadBalancerResult result = lbClient
+			RegisterInstancesWithLoadBalancerResult result = elbClient
 					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
 
-		} catch (Exception e) {
+		} catch (AmazonClientException e) {
 			log.error("Could not register instances to load balancer "
-					+ loadBalancerName);
-			e.printStackTrace();
+					+ loadBalancerName, e);
 		}
 	}
 
@@ -265,16 +261,15 @@ public class AWSHelper {
 				loadBalancerName, instances);
 
 		try {
-			lbClient.setEndpoint(String.format(
+			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			DeregisterInstancesFromLoadBalancerResult result = lbClient
+			DeregisterInstancesFromLoadBalancerResult result = elbClient
 					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
 
-		} catch (Exception e) {
+		} catch (AmazonClientException e) {
 			log.error("Could not de-register instances from load balancer "
-					+ loadBalancerName);
-			e.printStackTrace();
+					+ loadBalancerName, e);
 		}
 	}
 
@@ -297,19 +292,18 @@ public class AWSHelper {
 				loadBalancers);
 
 		try {
-			lbClient.setEndpoint(String.format(
+			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			DescribeLoadBalancersResult result = lbClient
+			DescribeLoadBalancersResult result = elbClient
 					.describeLoadBalancers(describeLoadBalancersRequest);
 
 			if (result.getLoadBalancerDescriptions() != null
 					&& result.getLoadBalancerDescriptions().size() > 0)
 				return result.getLoadBalancerDescriptions().get(0);
-		} catch (Exception e) {
+		} catch (AmazonClientException e) {
 			log.error("Could not find description of load balancer "
-					+ loadBalancerName);
-			e.printStackTrace();
+					+ loadBalancerName, e);
 		}
 
 		return null;
@@ -337,10 +331,9 @@ public class AWSHelper {
 
 			return lbDescription.getInstances();
 
-		} catch (Exception e) {
+		} catch (AmazonClientException e) {
 			log.error("Could not find instances attached  load balancer "
-					+ loadBalancerName);
-			e.printStackTrace();
+					+ loadBalancerName, e);
 			return null;
 		}
 	}
@@ -376,7 +369,7 @@ public class AWSHelper {
 
 			return listeners;
 
-		} catch (Exception e) {
+		} catch (AmazonClientException e) {
 			log.error("Could not find description of load balancer "
 					+ loadBalancerName);
 			return null;
@@ -403,10 +396,9 @@ public class AWSHelper {
 
 			return createSecurityGroupResult.getGroupId();
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (AmazonClientException e) {
 			throw new LoadBalancerExtensionException(
-					"Could not create security group.");
+					"Could not create security group.", e);
 		}
 
 	}
@@ -431,7 +423,7 @@ public class AWSHelper {
 			ec2Client
 					.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
 
-		} catch (Exception e) {
+		} catch (AmazonClientException e) {
 			throw new LoadBalancerExtensionException(
 					"Could not add inbound rule to security group " + groupId
 							+ ".");
@@ -511,7 +503,7 @@ public class AWSHelper {
 	 * @param memberInstanceName
 	 * @return instance id in IaaS
 	 */
-	public String getAWSInstanceName(final String memberInstanceName) {
+	public String getAWSInstanceName(String memberInstanceName) {
 		if (memberInstanceName.contains("/")) {
 			return memberInstanceName
 					.substring(memberInstanceName.indexOf("/") + 1);
@@ -526,7 +518,7 @@ public class AWSHelper {
 	 * @param memberInstanceName
 	 * @return IaaS region to which member belongs
 	 */
-	public String getAWSRegion(final String memberInstanceName) {
+	public String getAWSRegion(String memberInstanceName) {
 		if (memberInstanceName.contains("/")) {
 			return memberInstanceName.substring(0,
 					memberInstanceName.indexOf("/"));

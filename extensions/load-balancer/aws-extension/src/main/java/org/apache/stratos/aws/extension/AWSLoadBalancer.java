@@ -19,6 +19,7 @@
 
 package org.apache.stratos.aws.extension;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import com.amazonaws.services.elasticloadbalancing.model.Listener;
 
@@ -49,6 +51,11 @@ public class AWSLoadBalancer implements LoadBalancer {
 		awsHelper = new AWSHelper();
 	}
 
+	/* 
+	 * configure method iterates over topology and configures the AWS load balancers needed.
+	 * Configuration may involve creating a new load balancer for a cluster, updating existing load balancers
+	 * or deleting unwanted load balancers.
+	 */
 	public boolean configure(Topology topology)
 			throws LoadBalancerExtensionException {
 
@@ -74,9 +81,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 						// 1. Get all the instances attached
 						// Add/remove instances as necessary
 
+						// attachedInstances list is useful in finding out what all new instances
+						// should be attached to this load balancer.
 						List<Instance> attachedInstances = awsHelper
 								.getAttachedInstances(loadBalancerName, region);
 
+						// clusterMembers stores all the members of a cluster.
 						Collection<Member> clusterMembers = cluster
 								.getMembers();
 
@@ -90,9 +100,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 								// attachedInstances
 								// add this to instancesToAddToLoadBalancer
 
-								System.out.println("Instance Id : "
-										+ member.getInstanceId());
-								System.out.println("New instance id : "
+								log.debug("Instance id : "
 										+ awsHelper.getAWSInstanceName(member
 												.getInstanceId()));
 
@@ -121,16 +129,20 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 						if (clusterMembers.size() > 0){
 
+							// a unique load balancer name with user-defined prefix and a sequence number.
 							String loadBalancerName = awsHelper
 									.generateLoadBalancerName();
 
 							String region = awsHelper.getAWSRegion(clusterMembers
 									.iterator().next().getInstanceId());
 
+							// list of AWS listeners obtained using port mappings of one of the members of the cluster.
 							List<Listener> listenersForThisCluster = awsHelper
 									.getRequiredListeners(clusterMembers.iterator()
 											.next());
 
+							// DNS name of load balancer which was created.
+							// This is used in the domain mapping of this cluster.
 							String loadBalancerDNSName = awsHelper
 									.createLoadBalancer(loadBalancerName,
 											listenersForThisCluster, region);
@@ -145,8 +157,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 							for (Member member : clusterMembers) {
 								String instanceId = member.getInstanceId();
 
-								System.out.println("Instance id : " + instanceId);
-								System.out.println("New instance id : "
+								log.debug("Instance id : "
 										+ awsHelper.getAWSInstanceName(instanceId));
 
 								Instance instance = new Instance();
@@ -187,23 +198,34 @@ public class AWSLoadBalancer implements LoadBalancer {
 			}
 
 			activeClusters.clear();
-		} catch (Exception e) {
+		} catch (LoadBalancerExtensionException e) {
 			throw new LoadBalancerExtensionException(e);
 		}
 
 		return true;
 	}
 
+	/*
+	 * start method is called after extension if configured first time.
+	 * Does nothing but logs the message.
+	 */
 	public void start() throws LoadBalancerExtensionException {
 
 		log.info("AWS load balancer extension started.");
 	}
 
+	/*
+	 * reload method is called every time after extension if configured.
+	 * Does nothing but logs the message.
+	 */
 	public void reload() throws LoadBalancerExtensionException {
 		// Check what is appropriate to do here.
 		log.info("AWS load balancer extension reloaded.");
 	}
 
+	/*
+	 * stop method deletes load balancers for all clusters in the topology.
+	 */
 	public void stop() throws LoadBalancerExtensionException {
 		// Remove all load balancers
 		for (LoadBalancerInfo loadBalancerInfo : clusterIdToLoadBalancerMap
@@ -211,13 +233,16 @@ public class AWSLoadBalancer implements LoadBalancer {
 			// remove load balancer
 			awsHelper.deleteLoadBalancer(loadBalancerInfo.getName(),
 					loadBalancerInfo.getRegion());
-			// Check what all needs to be done
 		}
 
 		// Remove domain mappings
 	}
 }
 
+/**
+ * Used to store load balancer name and the region in which it is created.
+ * This helps in finding region while calling API methods to modify/delete a load balancer.
+ */
 class LoadBalancerInfo {
 	private String name;
 	private String region;
