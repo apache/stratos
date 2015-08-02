@@ -74,9 +74,7 @@ class Stratos:
     """
     @staticmethod
     def list_cartridges():
-        r = requests.get(Configs.stratos_api_url + 'cartridges',
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        return r.json()
+        return Stratos.get('cartridges', errorMessage='No cartridges found')
 
     @staticmethod
     def list_cartridge_groups():
@@ -104,6 +102,7 @@ class Stratos:
     def get(resource, errorMessage):
         r = requests.get(Configs.stratos_api_url + resource,
                          auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        print(r.text)
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 400:
