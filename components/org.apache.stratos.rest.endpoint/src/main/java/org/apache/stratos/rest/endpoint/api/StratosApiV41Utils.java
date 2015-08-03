@@ -2665,15 +2665,17 @@ public class StratosApiV41Utils {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             if (domainMappingsBean.getDomainMappings() != null) {
                 StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
-
-                for (DomainMappingBean domainMappingBean : domainMappingsBean.getDomainMappings()) {
+	            String applicationUuid =
+			            AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId, tenantId)
+			                                   .getApplicationUuid();
+	            for (DomainMappingBean domainMappingBean : domainMappingsBean.getDomainMappings()) {
                     ClusterDataHolder clusterDataHolder = findClusterDataHolder(
-                            applicationId,
+                            applicationUuid,
                             domainMappingBean.getCartridgeAlias());
 
                     DomainMapping domainMapping = ObjectConverter.convertDomainMappingBeanToStubDomainMapping(
                             domainMappingBean);
-                    domainMapping.setApplicationId(applicationId);
+                    domainMapping.setApplicationId(applicationUuid);
                     domainMapping.setTenantId(tenantId);
                     domainMapping.setServiceName(clusterDataHolder.getServiceType());
                     domainMapping.setClusterId(clusterDataHolder.getClusterId());
@@ -2701,7 +2703,8 @@ public class StratosApiV41Utils {
      * @return ClusterDataHolder
      */
     private static ClusterDataHolder findClusterDataHolder(String applicationId, String cartridgeAlias) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+	    int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationId,tenantId);
         if (application == null) {
             throw new RuntimeException(String.format("Application not found: [application-id] %s", applicationId));
         }
@@ -2726,9 +2729,13 @@ public class StratosApiV41Utils {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+	        String applicationUuid =
+			        AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId, tenantId)
+			                               .getApplicationUuid();
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+
             if (domainName != null) {
-                serviceClient.removeDomainMapping(applicationId, tenantId, domainName);
+                serviceClient.removeDomainMapping(applicationUuid, tenantId, domainName);
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Domain mapping removed: [application-id] %s [tenant-id] %d " +
