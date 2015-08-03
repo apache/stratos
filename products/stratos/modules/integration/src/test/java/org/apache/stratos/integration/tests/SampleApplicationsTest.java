@@ -112,15 +112,16 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     @Test
     public void testAutoscalingPolicy() {
         try {
-            boolean added = autoscalingPolicyTest.addAutoscalingPolicy("autoscaling-policy-c0.json",
+            String policyId = "autoscaling-policy-c0";
+            boolean added = autoscalingPolicyTest.addAutoscalingPolicy(policyId + ".json",
                     endpoint, restClient);
-            assertEquals(added, true);
-            AutoscalePolicyBean bean = autoscalingPolicyTest.getAutoscalingPolicy("autoscaling-policy-c0", endpoint,
+            assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), added, true);
+            AutoscalePolicyBean bean = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
                     restClient);
-            assertEquals(bean.getId(), "autoscaling-policy-c0");
-            assertEquals(bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 35.0, 0.0);
-            assertEquals(bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
-            assertEquals(bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", bean.getId()),bean.getId(), policyId);
+            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId), bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 35.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
             boolean updated = autoscalingPolicyTest.updateAutoscalingPolicy("autoscaling-policy-c0.json",
                     endpoint, restClient);
@@ -450,6 +451,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updated, true);
 
             assertGroupInstanceCount(bean.getApplicationId(), "group3", 2);
+
+            assertClusterMinMemberCount(bean.getApplicationId(), 2);
+
             ApplicationBean updatedBean = applicationTest.getApplication("g-sc-G123-1", endpoint,
                     restClient);
             assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1");
@@ -849,7 +853,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                 applicationName), application);
 
         Collection<Group> groups = application.getAllGroupsRecursively();
-        for(Group group : groups) {
+        for (Group group : groups) {
             assertEquals(group.getInstanceContextCount() >= group.getGroupMinInstances(), true);
         }
     }
@@ -865,7 +869,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                 applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
-        for(ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+        for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
             String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
@@ -890,6 +894,70 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
                 if (!clusterActive) {
                     break;
+                }
+            }
+            assertEquals(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
+                    clusterActive, true);
+        }
+
+    }
+
+    private void assertClusterMinMemberCount(String applicationName, int minMembers) {
+        long startTime = System.currentTimeMillis();
+
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        assertNotNull(String.format("Application is not found: [application-id] %s",
+                applicationName), application);
+
+        Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
+        for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+            String serviceName = clusterDataHolder.getServiceType();
+            String clusterId = clusterDataHolder.getClusterId();
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                    applicationName, serviceName), service);
+
+            Cluster cluster = service.getCluster(clusterId);
+            assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                    applicationName, serviceName, clusterId), cluster);
+            boolean clusterActive = false;
+
+            for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                int activeInstances = 0;
+                for (Member member : cluster.getMembers()) {
+                    if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
+                        if (member.getStatus().equals(MemberStatus.Active)) {
+                            activeInstances++;
+                        }
+                    }
+                }
+                clusterActive = activeInstances >= minMembers;
+
+                while (!clusterActive) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {
+                    }
+                    service = TopologyManager.getTopology().getService(serviceName);
+                    assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                            applicationName, serviceName), service);
+
+                    cluster = service.getCluster(clusterId);
+                    activeInstances = 0;
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
+                            if (member.getStatus().equals(MemberStatus.Active)) {
+                                activeInstances++;
+                            }
+                        }
+                    }
+                    clusterActive = activeInstances >= minMembers;
+                    assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                            applicationName, serviceName, clusterId), cluster);
+
+                    if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                        break;
+                    }
                 }
             }
             assertEquals(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
