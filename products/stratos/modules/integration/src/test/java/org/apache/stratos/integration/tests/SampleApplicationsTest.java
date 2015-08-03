@@ -25,11 +25,6 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.PropertyBean;
-import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.integration.tests.rest.RestClient;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -44,7 +39,6 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 
 import static junit.framework.Assert.*;
-import static junit.framework.Assert.assertEquals;
 
 /**
  * Sample application tests.
