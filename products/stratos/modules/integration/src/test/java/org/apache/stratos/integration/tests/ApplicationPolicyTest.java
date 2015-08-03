@@ -124,6 +124,8 @@ public class ApplicationPolicyTest extends StratosArtifactsUtils {
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
+                } else if(response.getContent().contains("it is used")) {
+                    return false;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.integration.tests;
 
 import com.google.gson.Gson;
@@ -23,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.integration.tests.rest.ErrorResponse;
 import org.apache.stratos.integration.tests.rest.HttpResponse;
@@ -33,16 +35,16 @@ import java.net.URI;
 /**
  * Test to handle autoscaling policy CRUD operations
  */
-public class AutoscalingPolicyTest extends StratosArtifactsUtils {
+public class ApplicationTest extends StratosArtifactsUtils {
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String autoscalingPolicy = "/autoscaling-policies/";
-    String autoscalingPolicyUpdate = "/autoscaling-policies/update/";
+    String applications = "/applications/simple/single-cartridge-app/";
+    String applicationsUpdate = "/applications/simple/single-cartridge-app/update/";
 
 
-    public boolean addAutoscalingPolicy(String autoscalingPolicyName, String endpoint, RestClient restClient) {
+    public boolean addApplication(String applicationId, String endpoint, RestClient restClient) {
         try {
-            String content = getJsonStringFromFile(autoscalingPolicy + autoscalingPolicyName);
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES).build();
+            String content = getJsonStringFromFile(applications + applicationId);
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS).build();
 
             HttpResponse response = restClient.doPost(uri, content);
             if (response != null) {
@@ -64,17 +66,95 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
         }
     }
 
-    public AutoscalePolicyBean getAutoscalingPolicy(String autoscalingPolicyName, String endpoint,
+    public boolean deployApplication(String applicationId, String applicationPolicyId,
+                                     String endpoint, RestClient restClient) {
+        try {
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
+            RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId).build();
+
+            HttpResponse response = restClient.doPost(uri, "");
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                    return true;
+                } else {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                    if (errorResponse != null) {
+                        throw new RuntimeException(errorResponse.getErrorMessage());
+                    }
+                }
+            }
+            throw new RuntimeException("An unknown error occurred");
+        } catch (Exception e) {
+            String message = "Could not start mock instance";
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public boolean undeployApplication(String applicationId,
+                                     String endpoint, RestClient restClient) {
+        try {
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
+                    RestConstants.APPLICATIONS_UNDEPLOY).build();
+
+            HttpResponse response = restClient.doPost(uri, "");
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                    return true;
+                } else {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                    if (errorResponse != null) {
+                        throw new RuntimeException(errorResponse.getErrorMessage());
+                    }
+                }
+            }
+            throw new RuntimeException("An unknown error occurred");
+        } catch (Exception e) {
+            String message = "Could not start mock instance";
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public boolean forceUndeployApplication(String applicationId,
+                                       String endpoint, RestClient restClient) {
+        try {
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
+                    RestConstants.APPLICATIONS_UNDEPLOY + "?force=true").build();
+
+            HttpResponse response = restClient.doPost(uri, "");
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                    return true;
+                } else {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                    if (errorResponse != null) {
+                        throw new RuntimeException(errorResponse.getErrorMessage());
+                    }
+                }
+            }
+            throw new RuntimeException("An unknown error occurred");
+        } catch (Exception e) {
+            String message = "Could not start mock instance";
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public ApplicationBean getApplication(String applicationId, String endpoint,
                                                     RestClient restClient) {
         try {
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES + "/" +
-                    autoscalingPolicyName).build();
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" +
+                    applicationId).build();
             HttpResponse response = restClient.doGet(uri);
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), AutoscalePolicyBean.class);
+                    return gson.fromJson(response.getContent(), ApplicationBean.class);
                 } else if (response.getStatusCode() == 404) {
                     return null;
                 } else {
@@ -91,10 +171,10 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
         }
     }
 
-    public boolean updateAutoscalingPolicy(String autoscalingPolicyName, String endpoint, RestClient restClient) {
+    public boolean updateApplication(String applicationId, String endpoint, RestClient restClient) {
         try {
-            String content = getJsonStringFromFile(autoscalingPolicyUpdate + autoscalingPolicyName);
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES).build();
+            String content = getJsonStringFromFile(applicationsUpdate + applicationId);
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS).build();
             HttpResponse response = restClient.doPut(uri, content);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -115,16 +195,14 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
         }
     }
 
-    public boolean removeAutoscalingPolicy(String autoscalingPolicyName, String endpoint, RestClient restClient) {
+    public boolean removeApplication(String applicationId, String endpoint, RestClient restClient) {
         try {
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES + "/" +
-                    autoscalingPolicyName).build();
+            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" +
+                    applicationId).build();
             HttpResponse response = restClient.doDelete(uri);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
-                } else if(response.getContent().contains("is in use")) {
-                    return false;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
