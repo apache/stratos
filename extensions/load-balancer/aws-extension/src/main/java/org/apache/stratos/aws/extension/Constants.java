@@ -35,9 +35,9 @@ public class Constants {
     public static final String LB_PREFIX = "load-balancer-prefix";
     public static final String LOAD_BALANCER_SECURITY_GROUP_NAME = "load-balancer-security-group-name";
     public static final String LOAD_BALANCER_SECURITY_GROUP_DESCRIPTION = "Security group for load balancers created for Apache Stratos.";
+    public static final String ELB_ENDPOINT_URL_FORMAT = "elasticloadbalancing.%s.amazonaws.com";
+    public static final String EC2_ENDPOINT_URL_FORMAT = "ec2.%s.amazonaws.com";
     public static final int LOAD_BALANCER_NAME_MAX_LENGTH = 32;
     public static final int LOAD_BALANCER_PREFIX_MAX_LENGTH = 25;
     public static final int SECURITY_GROUP_NAME_MAX_LENGTH = 255;
-    public static final String ELB_ENDPOINT_URL_FORMAT = "elasticloadbalancing.%s.amazonaws.com";
-    public static final String EC2_ENDPOINT_URL_FORMAT = "ec2.%s.amazonaws.com";
 }

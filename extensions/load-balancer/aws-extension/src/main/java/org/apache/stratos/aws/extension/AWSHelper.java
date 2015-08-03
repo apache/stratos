@@ -44,7 +44,10 @@ import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.IpPermission;
+import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.*;
 
@@ -148,9 +151,10 @@ public class AWSHelper {
 	 * @param listeners
 	 * @param region
 	 * @return DNS name of newly created load balancer
+	 * @throws LoadBalancerExtensionException 
 	 */
 	public String createLoadBalancer(String name, List<Listener> listeners,
-			String region) {
+			String region) throws LoadBalancerExtensionException {
 
 		log.info("Creating load balancer " + name);
 
@@ -180,9 +184,8 @@ public class AWSHelper {
 
 			return clbResult.getDNSName();
 
-		} catch (LoadBalancerExtensionException e) {
-			log.error("Could not create load balancer : " + name + ".", e);
-			return null;
+		} catch (AmazonClientException e) {
+			throw new LoadBalancerExtensionException("Could not create load balancer " + name, e);
 		}
 
 	}
@@ -377,6 +380,39 @@ public class AWSHelper {
 
 	}
 
+	public String getSecurityGroupId(String groupName, String region)
+	{
+		if(groupName == null || groupName.isEmpty())
+		{
+			return null;
+		}
+
+		DescribeSecurityGroupsRequest describeSecurityGroupsRequest = new DescribeSecurityGroupsRequest();
+
+		List<String> groupNames = new ArrayList<String>();
+		groupNames.add(groupName);
+
+		describeSecurityGroupsRequest.setGroupNames(groupNames);
+
+		try {
+			ec2Client.setEndpoint(String.format(Constants.EC2_ENDPOINT_URL_FORMAT, region));
+
+			DescribeSecurityGroupsResult describeSecurityGroupsResult = ec2Client
+					.describeSecurityGroups(describeSecurityGroupsRequest);
+
+			List<SecurityGroup> securityGroups = describeSecurityGroupsResult.getSecurityGroups();
+
+			if( securityGroups != null && securityGroups.size() > 0)
+			{
+				return securityGroups.get(0).getGroupId();
+			}
+		} catch (AmazonClientException e) {
+			log.debug("Could not describe security groups.", e);
+		}
+
+		return null;
+	}
+
 	public String createSecurityGroup(String groupName, String description,
 			String region) throws LoadBalancerExtensionException {
 		if (groupName == null || groupName.isEmpty()) {
@@ -389,7 +425,7 @@ public class AWSHelper {
 		createSecurityGroupRequest.setDescription(description);
 
 		try {
-			ec2Client.setEndpoint(Constants.EC2_ENDPOINT_URL_FORMAT);
+			ec2Client.setEndpoint(String.format(Constants.EC2_ENDPOINT_URL_FORMAT, region));
 
 			CreateSecurityGroupResult createSecurityGroupResult = ec2Client
 					.createSecurityGroup(createSecurityGroupRequest);
@@ -397,6 +433,7 @@ public class AWSHelper {
 			return createSecurityGroupResult.getGroupId();
 
 		} catch (AmazonClientException e) {
+			log.debug("Could not create security group.", e);
 			throw new LoadBalancerExtensionException(
 					"Could not create security group.", e);
 		}
@@ -418,7 +455,7 @@ public class AWSHelper {
 		authorizeSecurityGroupIngressRequest.setIpProtocol("tcp");
 
 		try {
-			ec2Client.setEndpoint(Constants.EC2_ENDPOINT_URL_FORMAT);
+			ec2Client.setEndpoint(String.format(Constants.EC2_ENDPOINT_URL_FORMAT, region));
 
 			ec2Client
 					.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
@@ -438,9 +475,16 @@ public class AWSHelper {
 		if (this.regionToSecurityGroupIdMap.contains(region)) {
 			return this.regionToSecurityGroupIdMap.get(region);
 		} else {
-			String securityGroupId = createSecurityGroup(
+			// Get the the security group id if it is already present.
+			String securityGroupId = getSecurityGroupId(this.lbSecurityGroupName, region);
+
+			if(securityGroupId == null)
+			{
+				securityGroupId = createSecurityGroup(
 					this.lbSecurityGroupName, this.lbSecurityGroupDescription,
 					region);
+			}
+
 			this.regionToSecurityGroupIdMap.put(region, securityGroupId);
 
 			// Also add the inbound rule

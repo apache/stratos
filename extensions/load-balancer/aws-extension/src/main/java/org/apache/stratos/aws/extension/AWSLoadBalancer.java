@@ -127,57 +127,64 @@ public class AWSLoadBalancer implements LoadBalancer {
 						Collection<Member> clusterMembers = cluster
 								.getMembers();
 
-						if (clusterMembers.size() > 0){
+						if (clusterMembers.size() > 0) {
 
-							// a unique load balancer name with user-defined prefix and a sequence number.
-							String loadBalancerName = awsHelper
-									.generateLoadBalancerName();
+//							try
+//							{
+								// a unique load balancer name with user-defined prefix and a sequence number.
+								String loadBalancerName = awsHelper
+										.generateLoadBalancerName();
 
-							String region = awsHelper.getAWSRegion(clusterMembers
-									.iterator().next().getInstanceId());
+								String region = awsHelper.getAWSRegion(clusterMembers
+										.iterator().next().getInstanceId());
 
-							// list of AWS listeners obtained using port mappings of one of the members of the cluster.
-							List<Listener> listenersForThisCluster = awsHelper
-									.getRequiredListeners(clusterMembers.iterator()
-											.next());
+								// list of AWS listeners obtained using port mappings of one of the members of the cluster.
+								List<Listener> listenersForThisCluster = awsHelper
+										.getRequiredListeners(clusterMembers.iterator()
+												.next());
 
-							// DNS name of load balancer which was created.
-							// This is used in the domain mapping of this cluster.
-							String loadBalancerDNSName = awsHelper
-									.createLoadBalancer(loadBalancerName,
-											listenersForThisCluster, region);
+								// DNS name of load balancer which was created.
+								// This is used in the domain mapping of this cluster.
+								String loadBalancerDNSName = awsHelper
+										.createLoadBalancer(loadBalancerName,
+												listenersForThisCluster, region);
 
-							log.info("Load balancer '" + loadBalancerDNSName
-									+ "' created for cluster '"
-									+ cluster.getClusterId());
+								log.info("Load balancer '" + loadBalancerDNSName
+										+ "' created for cluster '"
+										+ cluster.getClusterId());
 
-							// register instances to LB
-							List<Instance> instances = new ArrayList<Instance>();
+								// register instances to LB
+								List<Instance> instances = new ArrayList<Instance>();
 
-							for (Member member : clusterMembers) {
-								String instanceId = member.getInstanceId();
+								for (Member member : clusterMembers) {
+									String instanceId = member.getInstanceId();
 
-								log.debug("Instance id : "
-										+ awsHelper.getAWSInstanceName(instanceId));
+									log.debug("Instance id : "
+											+ awsHelper.getAWSInstanceName(instanceId));
 
-								Instance instance = new Instance();
-								instance.setInstanceId(awsHelper
-										.getAWSInstanceName(instanceId));
+									Instance instance = new Instance();
+									instance.setInstanceId(awsHelper
+											.getAWSInstanceName(instanceId));
 
-								instances.add(instance);
-							}
+									instances.add(instance);
+								}
 
-							awsHelper.registerInstancesToLoadBalancer(
-									loadBalancerName, instances, region);
+								awsHelper.registerInstancesToLoadBalancer(
+										loadBalancerName, instances, region);
 
-							// Create domain mappings
+								// Create domain mappings
 
-							LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(
-									loadBalancerName, region);
+								LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(
+										loadBalancerName, region);
 
-							clusterIdToLoadBalancerMap.put(cluster.getClusterId(),
-									loadBalancerInfo);
-							activeClusters.add(cluster.getClusterId());
+								clusterIdToLoadBalancerMap.put(cluster.getClusterId(),
+										loadBalancerInfo);
+								activeClusters.add(cluster.getClusterId());
+//							}
+//							catch(LoadBalancerExtensionException e)
+//							{
+//								log.debug(e);
+//							}
 						}
 					}
 				}
