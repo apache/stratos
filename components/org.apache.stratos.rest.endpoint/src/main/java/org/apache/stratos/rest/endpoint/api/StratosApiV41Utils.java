@@ -677,7 +677,7 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
 
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-                    convertToCCAutoscalerPojo(autoscalePolicyBean);
+                    convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalePolicyBean.getUuid());
 
             try {
                 autoscalerServiceClient.addAutoscalingPolicy(autoscalePolicy);
@@ -887,15 +887,18 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-
-            org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-                    convertToCCAutoscalerPojo(autoscalePolicyBean);
-            try {
-                autoscalerServiceClient.updateAutoscalingPolicy(autoscalePolicy);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            }
+	        try {
+		        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+		        String autoscalerUuid = autoscalerServiceClient
+				        .getAutoScalePolicyForTenant(autoscalePolicyBean.getId(), carbonContext.getTenantId())
+				        .getUuid();
+		        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy =
+				        ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalerUuid);
+		        autoscalerServiceClient.updateAutoscalingPolicy(autoscalePolicy);
+	        } catch (RemoteException e) {
+		        log.error(e.getMessage(), e);
+		        throw new RestAPIException(e.getMessage(), e);
+	        }
         }
     }
 
@@ -914,9 +917,10 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            AutoscalePolicyBean autoscalePolicyBean;
+            AutoscalePolicy autoscalePolicyBean;
             try {
-                autoscalePolicyBean = getAutoScalePolicy(autoscalePolicyId);
+	            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                autoscalePolicyBean =autoscalerServiceClient.getAutoScalePolicyForTenant(autoscalePolicyId,carbonContext.getTenantId());
                 autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicyBean.getUuid());
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
@@ -2903,13 +2907,15 @@ public class StratosApiV41Utils {
 
             NetworkPartition networkPartition = null;
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            for (NetworkPartition networkPartition1 : networkPartitions) {
-                if (carbonContext.getTenantId() == networkPartition1.getTenantId()) {
-                    if (networkPartition1.getId().equals(networkPartitionId)) {
-                        networkPartition = networkPartition1;
-                    }
-                }
-            }
+	        if(networkPartitions!=null && (networkPartitions.length>0)) {
+		        for (NetworkPartition networkPartition1 : networkPartitions) {
+			        if (carbonContext.getTenantId() == networkPartition1.getTenantId()) {
+				        if (networkPartition1.getId().equals(networkPartitionId)) {
+					        networkPartition = networkPartition1;
+				        }
+			        }
+		        }
+	        }
             if (networkPartition == null) {
                 return null;
             }

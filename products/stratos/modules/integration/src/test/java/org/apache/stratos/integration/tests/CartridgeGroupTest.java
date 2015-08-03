@@ -58,6 +58,7 @@ public class CartridgeGroupTest extends StratosArtifactsUtils {
                     }
                 }
             }
+	        log.info(response.getReason());
             throw new RuntimeException("An unknown error occurred");
         } catch (Exception e) {
             String message = "Could not start mock instance";
