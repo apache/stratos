@@ -24,7 +24,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.integration.tests.rest.ErrorResponse;
 import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
@@ -34,16 +34,16 @@ import java.net.URI;
 /**
  * Test to handle Network partition CRUD operations
  */
-public class CartridgeTest extends StratosArtifactsUtils {
+public class CartridgeGroupTest extends StratosArtifactsUtils {
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String cartridges = "/cartridges/mock/";
-    String cartridgesUpdate = "/cartridges/mock/update/";
+    String cartridgeGroups = "/cartridges-groups/";
+    String cartridgeGroupsUpdate = "/cartridges-groups/update/";
 
 
-    public boolean addCartridge(String cartridgeType, String endpoint, RestClient restClient) {
+    public boolean addCartridgeGroup(String groupName, String endpoint, RestClient restClient) {
         try {
-            String content = getJsonStringFromFile(cartridges + cartridgeType);
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES).build();
+            String content = getJsonStringFromFile(cartridgeGroups + groupName);
+            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGE_GROUPS).build();
 
             HttpResponse response = restClient.doPost(uri, content);
             if (response != null) {
@@ -65,17 +65,17 @@ public class CartridgeTest extends StratosArtifactsUtils {
         }
     }
 
-    public CartridgeBean getCartridge(String cartridgeType, String endpoint,
+    public CartridgeGroupBean getCartridgeGroup(String groupName, String endpoint,
                                                     RestClient restClient) {
         try {
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES + "/" +
-                    cartridgeType).build();
+            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGE_GROUPS + "/" +
+                    groupName).build();
             HttpResponse response = restClient.doGet(uri);
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), CartridgeBean.class);
+                    return gson.fromJson(response.getContent(), CartridgeGroupBean.class);
                 } else if (response.getStatusCode() == 404) {
                     return null;
                 } else {
@@ -92,10 +92,10 @@ public class CartridgeTest extends StratosArtifactsUtils {
         }
     }
 
-    public boolean updateCartridge(String cartridgeType, String endpoint, RestClient restClient) {
+    public boolean updateCartridgeGroup(String groupName, String endpoint, RestClient restClient) {
         try {
-            String content = getJsonStringFromFile(cartridgesUpdate + cartridgeType);
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES).build();
+            String content = getJsonStringFromFile(cartridgeGroupsUpdate + groupName);
+            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGE_GROUPS).build();
             HttpResponse response = restClient.doPut(uri, content);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -116,15 +116,15 @@ public class CartridgeTest extends StratosArtifactsUtils {
         }
     }
 
-    public boolean removeCartridge(String cartridgeType, String endpoint, RestClient restClient) {
+    public boolean removeCartridgeGroup(String groupName, String endpoint, RestClient restClient) {
         try {
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES + "/" +
-                    cartridgeType).build();
+            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGE_GROUPS + "/" +
+                    groupName).build();
             HttpResponse response = restClient.doDelete(uri);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
-                } else if (response.getContent().contains("it is used")) {
+                } else if(response.getContent().contains("it is used")) {
                     return false;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();

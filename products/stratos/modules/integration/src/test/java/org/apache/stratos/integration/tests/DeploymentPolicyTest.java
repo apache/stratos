@@ -100,15 +100,17 @@ public class DeploymentPolicyTest extends StratosArtifactsUtils {
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
+                } else if(response.getContent().contains("it is used")) {
+                    return false;
                 } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
+                        GsonBuilder gsonBuilder = new GsonBuilder();
+                        Gson gson = gsonBuilder.create();
+                        ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                        if (errorResponse != null) {
+                            throw new RuntimeException(errorResponse.getErrorMessage());
+                        }
                     }
                 }
-            }
             throw new RuntimeException("An unknown error occurred");
         } catch (Exception e) {
             String message = "Could not start mock instance";
@@ -124,6 +126,8 @@ public class DeploymentPolicyTest extends StratosArtifactsUtils {
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
+                } else if(response.getContent().contains("is in use")) {
+                    return false;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
