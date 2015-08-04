@@ -58,9 +58,12 @@ public class DeploymentPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while adding the deployment policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not add deployment policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -85,9 +88,12 @@ public class DeploymentPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while getting the deployment policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not get deployment policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -111,9 +117,12 @@ public class DeploymentPolicyTest extends StratosArtifactsUtils {
                         }
                     }
                 }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while updating the deployment policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not update deployment policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -137,9 +146,12 @@ public class DeploymentPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while removing the deployment policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not remove deployment policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }

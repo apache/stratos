@@ -59,9 +59,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while adding the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not add application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -85,9 +88,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while deploying the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not deploy application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -111,9 +117,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while undeploying the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not undeploy application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -137,9 +146,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while force undeploying the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not forcefully undeploy application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -164,9 +176,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while getting the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not get application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -188,9 +203,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while updating the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not update application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -212,9 +230,12 @@ public class ApplicationTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while removing the application";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not remove application";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }

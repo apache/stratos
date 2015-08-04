@@ -496,6 +496,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(removedDep, false);
 
+            //Un-deploying the application
             boolean unDeployed = applicationTest.undeployApplication("g-sc-G123-1", endpoint,
                     restClient);
             assertEquals(unDeployed, true);

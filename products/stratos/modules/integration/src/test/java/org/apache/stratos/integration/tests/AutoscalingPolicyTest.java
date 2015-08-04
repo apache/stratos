@@ -57,9 +57,11 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            log.error("An unknown error occurred while trying to add autoscaling policy....");
+            throw new RuntimeException("An unknown error occurred while trying to add autoscaling policy");
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not add Autoscaling policy....";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -84,9 +86,12 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while getting the autosclaing policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not get autoscaling policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -108,9 +113,12 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while updating the autosclaing policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not updating autoscaling policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -134,9 +142,12 @@ public class AutoscalingPolicyTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while removing the autosclaing policy";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not remove autoscaling policy";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }

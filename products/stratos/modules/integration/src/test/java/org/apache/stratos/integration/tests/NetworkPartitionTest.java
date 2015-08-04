@@ -58,9 +58,12 @@ public class NetworkPartitionTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while adding the networkpartition";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not add networkpartition";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -85,9 +88,12 @@ public class NetworkPartitionTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while getting the networkpartition";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not get networkpartition";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -109,9 +115,12 @@ public class NetworkPartitionTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while updating the networkpartition";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not update networkpartition";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -135,9 +144,12 @@ public class NetworkPartitionTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while removing the networkpartition";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not remove networkpartition";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }

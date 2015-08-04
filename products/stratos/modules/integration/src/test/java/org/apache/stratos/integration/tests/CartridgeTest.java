@@ -58,9 +58,12 @@ public class CartridgeTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while adding the cartridge";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not add cartridge";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -85,9 +88,12 @@ public class CartridgeTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while getting the cartridge";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not get cartridge";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -109,9 +115,12 @@ public class CartridgeTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while updating the cartridge";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not update cartridge";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -135,9 +144,12 @@ public class CartridgeTest extends StratosArtifactsUtils {
                     }
                 }
             }
-            throw new RuntimeException("An unknown error occurred");
+            String msg = "An unknown error occurred while removing the cartridge";
+            log.error(msg);
+            throw new RuntimeException(msg);
         } catch (Exception e) {
-            String message = "Could not start mock instance";
+            String message = "Could not remove cartridge";
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
