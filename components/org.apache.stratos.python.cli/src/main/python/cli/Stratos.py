@@ -98,6 +98,10 @@ class Stratos:
         return Stratos.get('deploymentPolicies',
                            errorMessage='Deployment policies not found')
 
+    @staticmethod
+    def list_cartridge_groups():
+        return Stratos.get('cartridgeGroups',
+                           errorMessage='cartridge groups not found')
     """
     # Utils
 
