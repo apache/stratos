@@ -223,6 +223,28 @@ class CLI(Cmd):
             table.add_rows(rows)
             table.print_table()
 
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-t', '--tenant_domain', type="str", help="Cluster ID")
+    ])
+    @auth
+    def do_activate_tenant(self, line , opts=None):
+        """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
+        if not opts.tenant_domain:
+            print("usage: list-kubernetes-hosts [-c <tenant domain>]")
+            return
+        kubernetes_cluster_hosts = Stratos.list_kubernetes_hosts(opts.cluster_id)
+        if not kubernetes_cluster_hosts:
+            print("No kubernetes hosts found")
+        else:
+            table = PrintableTable()
+            rows = [["Host ID", "Hostname", "Private IP Address", "Public IP Address"]]
+            for kubernetes_cluster_host in kubernetes_cluster_hosts:
+                rows.append([kubernetes_cluster_host['hostId'], kubernetes_cluster_host['hostname'],
+                             kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
+            table.add_rows(rows)
+            table.print_table()
     @options([])
     def do_deploy_user(self, line , opts=None):
         """Illustrate the base class method use."""
