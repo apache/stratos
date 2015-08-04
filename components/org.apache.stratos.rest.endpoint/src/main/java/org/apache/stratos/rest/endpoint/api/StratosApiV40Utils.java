@@ -156,7 +156,7 @@ public class StratosApiV40Utils {
         if (autoscalerServiceClient != null) {
 
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-                    convertToCCAutoscalerPojo(autoscalePolicyBean,null);
+                    convertToCCAutoscalerPojo(autoscalePolicyBean,null,-1234);
 
             try {
                 autoscalerServiceClient

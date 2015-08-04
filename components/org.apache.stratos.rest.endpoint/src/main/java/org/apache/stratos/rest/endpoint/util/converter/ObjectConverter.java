@@ -421,7 +421,7 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy convertToCCAutoscalerPojo(
-            AutoscalePolicyBean autoscalePolicyBean,String uuid) {
+            AutoscalePolicyBean autoscalePolicyBean,String uuid,int tenantId) {
 
         if (autoscalePolicyBean == null) {
             return null;
@@ -435,6 +435,7 @@ public class ObjectConverter {
         autoscalePolicy.setTenantId(autoscalePolicyBean.getTenantId());
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
         autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
+        autoscalePolicy.setTenantId(tenantId);
 
         if (autoscalePolicyBean.getLoadThresholds() != null) {
 

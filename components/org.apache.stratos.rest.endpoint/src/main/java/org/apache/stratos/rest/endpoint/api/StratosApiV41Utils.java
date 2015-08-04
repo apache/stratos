@@ -677,7 +677,7 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
 
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-                    convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalePolicyBean.getUuid());
+                    convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalePolicyBean.getUuid(),autoscalePolicyBean.getTenantId());
 
             try {
                 autoscalerServiceClient.addAutoscalingPolicy(autoscalePolicy);
@@ -893,7 +893,7 @@ public class StratosApiV41Utils {
 				        .getAutoScalePolicyForTenant(autoscalePolicyBean.getId(), carbonContext.getTenantId())
 				        .getUuid();
 		        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy =
-				        ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalerUuid);
+				        ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalerUuid,carbonContext.getTenantId());
 		        autoscalerServiceClient.updateAutoscalingPolicy(autoscalePolicy);
 	        } catch (RemoteException e) {
 		        log.error(e.getMessage(), e);

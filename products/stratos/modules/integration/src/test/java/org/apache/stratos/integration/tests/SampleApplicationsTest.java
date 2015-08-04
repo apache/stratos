@@ -120,14 +120,14 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
             assertEquals(bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
-        /*    boolean updated = autoscalingPolicyTest.updateAutoscalingPolicy("autoscaling-policy-c0.json",
-                    endpoint, restClient);
+            boolean updated = autoscalingPolicyTest.updateAutoscalingPolicy("autoscaling-policy-c0.json",
+                    endpoint, restClient,"admin","admin");
             assertEquals(updated, true);
             AutoscalePolicyBean updatedBean = autoscalingPolicyTest.getAutoscalingPolicy("autoscaling-policy-c0", endpoint,
-                    restClient);
+                    restClient,"admin","admin");
             assertEquals(updatedBean.getLoadThresholds().getRequestsInFlight().getThreshold(), 30.0, 0.0);
             assertEquals(updatedBean.getLoadThresholds().getMemoryConsumption().getThreshold(), 40.0, 0.0);
-            assertEquals(updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);         */
+            assertEquals(updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
 
             boolean removed = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-c0", endpoint,
                     restClient, "admin", "admin");
