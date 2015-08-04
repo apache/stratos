@@ -147,38 +147,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated(ClusterStatusClusterCreatedEvent event) {
-        TopologyManager.acquireWriteLock();
-        Cluster cluster;
 
-        try {
-            Topology topology = TopologyManager.getTopology();
-            Service service = topology.getService(event.getServiceName());
-            if (service == null) {
-                log.error("Service " + event.getServiceName() +
-                        " not found in Topology, unable to update the cluster status to Created");
-                return;
-            }
-
-            if (service.clusterExists(event.getClusterId())) {
-                log.warn("Cluster " + event.getClusterId() + " is already in the Topology ");
-                return;
-            } else {
-                cluster = new Cluster(event.getServiceName(),
-                        event.getClusterId(), event.getDeploymentPolicyName(),
-                        event.getAutosScalePolicyName(), event.getAppId());
-                //cluster.setStatus(Status.Created);
-                cluster.setHostNames(event.getHostNames());
-                cluster.setTenantRange(event.getTenantRange());
-                service.addCluster(cluster);
-                TopologyManager.updateTopology(topology);
-            }
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-
-        TopologyEventPublisher.sendClusterCreatedEvent(cluster);
-    }
 
     public static void handleApplicationClustersCreated(String appId, List<Cluster> appClusters) {
 

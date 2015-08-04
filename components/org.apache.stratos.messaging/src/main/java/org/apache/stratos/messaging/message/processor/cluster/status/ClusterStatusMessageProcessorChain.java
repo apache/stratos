@@ -30,7 +30,6 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(ClusterStatusMessageProcessorChain.class);
 
-    private ClusterStatusClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
     private ClusterStatusClusterResetMessageProcessor clusterResetMessageProcessor;
     private ClusterStatusClusterInactivateMessageProcessor clusterInactivateMessageProcessor;
@@ -40,9 +39,6 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
 
     @Override
     protected void initialize() {
-        clusterCreatedMessageProcessor = new ClusterStatusClusterCreatedMessageProcessor();
-        add(clusterCreatedMessageProcessor);
-
         clusterResetMessageProcessor = new ClusterStatusClusterResetMessageProcessor();
         add(clusterResetMessageProcessor);
 
@@ -68,9 +64,7 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
 
     @Override
     public void addEventListener(EventListener eventListener) {
-        if (eventListener instanceof ClusterStatusClusterCreatedEventListener) {
-            clusterCreatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ClusterStatusClusterResetEventListener) {
+        if (eventListener instanceof ClusterStatusClusterResetEventListener) {
             clusterResetMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterStatusClusterInactivateEventListener) {
             clusterInactivateMessageProcessor.addEventListener(eventListener);

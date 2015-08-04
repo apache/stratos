@@ -43,8 +43,6 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 
@@ -520,47 +518,6 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     @Override
     public void onCopyArtifactsExtension(String src, String des) {
         ExtensionUtils.executeCopyArtifactsExtension(src, des);
-    }
-
-    @Override
-    public void onTenantSubscribedEvent(TenantSubscribedEvent tenantSubscribedEvent) {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Tenant subscribed event received: [tenant] %s [service] %s [cluster] %s",
-                            tenantSubscribedEvent.getTenantId(), tenantSubscribedEvent.getServiceName(),
-                            tenantSubscribedEvent.getClusterIds())
-            );
-        }
-
-        if (log.isDebugEnabled()) {
-            String msg = gson.toJson(tenantSubscribedEvent);
-            log.debug("Tenant subscribed event msg:" + msg);
-        }
-        Map<String, String> env = new HashMap<String, String>();
-        ExtensionUtils.executeTenantSubscribedExtension(env);
-    }
-
-    @Override
-    public void onTenantUnSubscribedEvent(TenantUnSubscribedEvent tenantUnSubscribedEvent) {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Tenant unsubscribed event received: [tenant] %s [service] %s [cluster] %s",
-                    tenantUnSubscribedEvent.getTenantId(), tenantUnSubscribedEvent.getServiceName(),
-                    tenantUnSubscribedEvent.getClusterIds()));
-        }
-
-        if (log.isDebugEnabled()) {
-            String msg = gson.toJson(tenantUnSubscribedEvent);
-            log.debug("Tenant unsubscribed event msg:" + msg);
-        }
-
-        try {
-            if (CartridgeAgentConfiguration.getInstance().getServiceName().equals(tenantUnSubscribedEvent.getServiceName())) {
-                GitBasedArtifactRepository.getInstance().removeRepo(tenantUnSubscribedEvent.getTenantId());
-            }
-        } catch (Exception e) {
-            log.error(e);
-        }
-        Map<String, String> env = new HashMap<String, String>();
-        ExtensionUtils.executeTenantUnSubscribedExtension(env);
     }
 
     //ApplicationSignUpRemovedEvent

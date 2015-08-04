@@ -66,13 +66,6 @@ public class ClusterStatusTopicReceiver {
             }
         });
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
-            }
-        });
-
         statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
