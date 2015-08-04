@@ -28,6 +28,15 @@ public class PortMapping implements Serializable {
     private String protocol;
     private int port;
     private int proxyPort;
+    private String kubernetesPortType;
+
+    public String getKubernetesPortType() {
+        return kubernetesPortType;
+    }
+
+    public void setKubernetesPortType(String kubernetesPortType) {
+        this.kubernetesPortType = kubernetesPortType;
+    }
 
     public PortMapping() {
     }

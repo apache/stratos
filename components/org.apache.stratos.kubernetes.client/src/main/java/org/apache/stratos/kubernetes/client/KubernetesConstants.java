@@ -33,4 +33,5 @@ public class KubernetesConstants {
     public static final String RESOURCE_CPU = "cpu";
     public static final String RESOURCE_MEMORY = "memory";
     public static final String NODE_PORT = "NodePort";
+    public static final String CLUSTER_IP = "ClusterIP";
 }

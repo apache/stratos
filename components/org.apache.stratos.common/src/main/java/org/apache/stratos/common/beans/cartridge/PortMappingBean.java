@@ -28,6 +28,15 @@ public class PortMappingBean {
     private String protocol;
     private int port;
     private int proxyPort;
+    private String kubernetesPortType;
+
+    public String getKubernetesPortType() {
+        return kubernetesPortType;
+    }
+
+    public void setKubernetesPortType(String kubernetesPortType) {
+        this.kubernetesPortType = kubernetesPortType;
+    }
 
     public String getName() {
         return name;
@@ -63,8 +72,9 @@ public class PortMappingBean {
 
     public String toString() {
         return " [ Name: " + getName() + ", " +
-                  "Protocol: " + getProtocol() + ", " +
-                  "Port: " + getPort() + ", " +
-                  "Proxy port: " + getProxyPort() + "] ";
+                "Protocol: " + getProtocol() + ", " +
+                "Port: " + getPort() + ", " +
+                "Proxy port: " + getProxyPort() + ", " +
+                "Type: " + getKubernetesPortType() + "] ";
     }
 }

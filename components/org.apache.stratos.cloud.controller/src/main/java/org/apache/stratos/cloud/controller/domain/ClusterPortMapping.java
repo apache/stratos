@@ -32,6 +32,7 @@ public class ClusterPortMapping extends PortMapping implements Serializable {
     private String clusterId;
     private boolean kubernetes;
     private int kubernetesServicePort;
+    private String kubernetesServiceType;
 
     public ClusterPortMapping() {
     }
@@ -61,6 +62,14 @@ public class ClusterPortMapping extends PortMapping implements Serializable {
         kubernetes = true;
     }
 
+    public void setKubernetesServiceType(String kubernetesServiceType) {
+        this.kubernetesServiceType = kubernetesServiceType;
+    }
+
+    public String getKubernetesServiceType() {
+        return kubernetesServiceType;
+    }
+
     public boolean isKubernetes() {
         return kubernetes;
     }
@@ -73,6 +82,6 @@ public class ClusterPortMapping extends PortMapping implements Serializable {
 
     public String toString() {
         return "[application-id] " + getApplicationId() + " [cluster-id] " + getClusterId() + ", " +
-                super.toString() + " [kubernetes-service-port] "+ getKubernetesServicePort();
+                super.toString() + " [kubernetes-service-port] " + getKubernetesServicePort();
     }
 }

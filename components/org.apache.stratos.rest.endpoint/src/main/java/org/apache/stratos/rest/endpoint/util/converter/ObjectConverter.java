@@ -131,6 +131,7 @@ public class ObjectConverter {
             portMapping.setProtocol(portMappingBeanArray[i].getProtocol());
             portMapping.setPort(portMappingBeanArray[i].getPort());
             portMapping.setProxyPort(portMappingBeanArray[i].getProxyPort());
+            portMapping.setKubernetesPortType(portMappingBeanArray[i].getKubernetesPortType());
             portMappingArray[i] = portMapping;
         }
 
@@ -151,6 +152,7 @@ public class ObjectConverter {
             portMappingBean.setProtocol(portMapping.getProtocol());
             portMappingBean.setPort(portMapping.getPort());
             portMappingBean.setProxyPort(portMapping.getProxyPort());
+            portMappingBean.setKubernetesPortType(portMapping.getKubernetesPortType());
             portMappingBeans.add(portMappingBean);
         }
         return portMappingBeans;
@@ -1387,7 +1389,7 @@ public class ObjectConverter {
         infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
         infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
         infoContext.setMinMembers(subscribableInfo.getMinMembers());
-        infoContext.setLvsVirtualIP(subscribableInfo.getLvsVirtualIP());
+	    infoContext.setLvsVirtualIP(subscribableInfo.getLvsVirtualIP());
 
         if (subscribableInfo.getArtifactRepository() != null) {
             ArtifactRepositoryBean artifactRepository = subscribableInfo.getArtifactRepository();

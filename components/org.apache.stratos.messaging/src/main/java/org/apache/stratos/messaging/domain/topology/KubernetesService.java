@@ -34,6 +34,15 @@ public class KubernetesService implements Serializable {
     private String protocol;
     private int port;
     private int containerPort;
+    private String serviceType;
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
+    }
 
     public String getId() {
         return id;

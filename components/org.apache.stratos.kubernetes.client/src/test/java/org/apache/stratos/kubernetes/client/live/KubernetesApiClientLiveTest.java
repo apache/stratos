@@ -71,8 +71,9 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
         String serviceId = "tomcat-domain-1";
         String serviceName = "stratos-test-pod";
         String containerPortName = "http-1";
+        String serviceType = "NodePort";
 
-        createService(serviceId, serviceName, SERVICE_PORT, containerPortName, containerPort, minionPublicIPs);
+        createService(serviceId, serviceName, SERVICE_PORT, serviceType, containerPortName, containerPort, minionPublicIPs);
 
         createPod("stratos-test-pod-3", serviceName, containerPortName, 1, 512);
         createPod("stratos-test-pod-4", serviceName, containerPortName, 2, 512);

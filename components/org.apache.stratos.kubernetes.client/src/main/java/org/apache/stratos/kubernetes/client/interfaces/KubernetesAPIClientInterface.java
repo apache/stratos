@@ -33,12 +33,12 @@ public interface KubernetesAPIClientInterface {
     /**
      * Create pod.
      *
-     * @param podId id of the pod
-     * @param podLabel pod label
-     * @param dockerImage docker image name
-     * @param cpu number of cpu cores
-     * @param memory memory allocation in mega bytes
-     * @param ports ports to be opened
+     * @param podId                id of the pod
+     * @param podLabel             pod label
+     * @param dockerImage          docker image name
+     * @param cpu                  number of cpu cores
+     * @param memory               memory allocation in mega bytes
+     * @param ports                ports to be opened
      * @param environmentVariables environment variables
      * @throws KubernetesClientException
      */
@@ -76,13 +76,14 @@ public interface KubernetesAPIClientInterface {
      *
      * @param serviceId
      * @param serviceLabel
-     * @param nodePort
+     * @param servicePort
+     * @param serviceType
      * @param containerPortName
      * @param containerPort
      * @param sessionAffinity
      * @throws KubernetesClientException
      */
-    public void createService(String serviceId, String serviceLabel, int nodePort,
+    public void createService(String serviceId, String serviceLabel, int servicePort, String serviceType,
                               String containerPortName, int containerPort, String sessionAffinity)
             throws KubernetesClientException;
 
