@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.integration.tests.rest.ErrorResponse;
 import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
@@ -46,7 +45,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
             String content = getJsonStringFromFile(applications + applicationId);
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS).build();
 
-            HttpResponse response = restClient.doPost(uri, content);
+            HttpResponse response = restClient.doPost(uri, content, "admin", "admin");
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
@@ -72,7 +71,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
             RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId).build();
 
-            HttpResponse response = restClient.doPost(uri, "");
+            HttpResponse response = restClient.doPost(uri, "", "admin", "admin");
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
@@ -98,7 +97,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY).build();
 
-            HttpResponse response = restClient.doPost(uri, "");
+            HttpResponse response = restClient.doPost(uri, "", "admin", "admin");
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
@@ -124,7 +123,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true").build();
 
-            HttpResponse response = restClient.doPost(uri, "");
+            HttpResponse response = restClient.doPost(uri, "", "admin", "admin");
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
@@ -149,7 +148,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
         try {
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" +
                     applicationId).build();
-            HttpResponse response = restClient.doGet(uri);
+            HttpResponse response = restClient.doGet(uri, "admin", "admin");
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             if (response != null) {
@@ -175,7 +174,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
         try {
             String content = getJsonStringFromFile(applicationsUpdate + applicationId);
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS).build();
-            HttpResponse response = restClient.doPut(uri, content);
+            HttpResponse response = restClient.doPut(uri, content, "admin", "admin");
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
@@ -199,7 +198,7 @@ public class ApplicationTest extends StratosArtifactsUtils {
         try {
             URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" +
                     applicationId).build();
-            HttpResponse response = restClient.doDelete(uri);
+            HttpResponse response = restClient.doDelete(uri, "admin", "admin");
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;

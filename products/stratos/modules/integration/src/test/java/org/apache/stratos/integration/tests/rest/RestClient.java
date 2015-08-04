@@ -49,10 +49,12 @@ public class RestClient {
      *
      * @param resourcePath    This should be REST endpoint
      * @param jsonParamString The json string which should be executed from the post request
+     * @param userName
+     * @param password
      * @return The HttpResponse
      * @throws Exception if any errors occur when executing the request
      */
-    public HttpResponse doPost(URI resourcePath, String jsonParamString) throws Exception {
+    public HttpResponse doPost(URI resourcePath, String jsonParamString, String userName, String password) throws Exception {
         HttpPost postRequest = null;
         try {
             postRequest = new HttpPost(resourcePath);
@@ -60,7 +62,7 @@ public class RestClient {
             input.setContentType("application/json");
             postRequest.setEntity(input);
 
-            String userPass = "admin" + ":" + "admin";
+            String userPass = userName + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             postRequest.addHeader("Authorization", basicAuth);
 
@@ -74,16 +76,18 @@ public class RestClient {
      * Handle http get request. Return String
      *
      * @param resourcePath This should be REST endpoint
+     * @param userName
+     * @param password
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *                                                        if any errors occur when executing the request
      */
-    public HttpResponse doGet(URI resourcePath) throws Exception {
+    public HttpResponse doGet(URI resourcePath, String userName, String password) throws Exception {
         HttpGet getRequest = null;
         try {
             getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
-            String userPass = "admin" + ":" + "admin";
+            String userPass = userName + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             getRequest.addHeader("Authorization", basicAuth);
 
@@ -93,12 +97,12 @@ public class RestClient {
         }
     }
 
-    public HttpResponse doDelete(URI resourcePath) throws Exception {
+    public HttpResponse doDelete(URI resourcePath, String userName, String password) throws Exception {
         HttpDelete httpDelete = null;
         try {
             httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
-            String userPass = "admin" + ":" + "admin";
+            String userPass = userName + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             httpDelete.addHeader("Authorization", basicAuth);
             return httpClient.execute(httpDelete, new HttpResponseHandler());
@@ -107,7 +111,7 @@ public class RestClient {
         }
     }
 
-    public HttpResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
+    public HttpResponse doPut(URI resourcePath, String jsonParamString, String userName, String password) throws Exception {
 
         HttpPut putRequest = null;
         try {
@@ -116,7 +120,7 @@ public class RestClient {
             StringEntity input = new StringEntity(jsonParamString);
             input.setContentType("application/json");
             putRequest.setEntity(input);
-            String userPass = "admin" + ":" + "admin";
+            String userPass = userName + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             putRequest.addHeader("Authorization", basicAuth);
             return httpClient.execute(putRequest, new HttpResponseHandler());

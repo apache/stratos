@@ -799,7 +799,7 @@ public class ObjectConverter {
         List<PartitionReferenceBean> partitionBeans = new ArrayList<PartitionReferenceBean>();
         for (PartitionRef partition : partitions) {
             PartitionReferenceBean partitionBean = new PartitionReferenceBean();
-            partitionBean.setUuid(partition.getId());
+            partitionBean.setId(partition.getId());
             partitionBean.setPartitionMax(partition.getPartitionMax());
             partitionBeans.add(partitionBean);
         }
