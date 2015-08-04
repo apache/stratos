@@ -272,3 +272,21 @@ class CLI(Cmd):
                 rows.append([deployment_policy['id'], len(deployment_policy['networkPartitions'])])
             table.add_rows(rows)
             table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_autoscaling_policies(self, line , opts=None):
+        """Retrieve details of all the cartridge groups that have been added."""
+        autoscaling_policies = Stratos.list_autoscaling_policies()
+        if not autoscaling_policies:
+            print("No autoscaling policies found")
+        else:
+            table = PrintableTable()
+            rows = [["Id", "Accessibility"]]
+            for autoscaling_policy in autoscaling_policies:
+                rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
+            table.add_rows(rows)
+            table.print_table()

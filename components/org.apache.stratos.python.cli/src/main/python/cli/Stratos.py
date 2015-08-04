@@ -102,6 +102,11 @@ class Stratos:
     def list_cartridge_groups():
         return Stratos.get('cartridgeGroups',
                            errorMessage='cartridge groups not found')
+    @staticmethod
+    def list_autoscaling_policies():
+        return Stratos.get('autoscalingPolicies',
+                           errorMessage='No Autoscaling policies found')
+
     """
     # Utils
 
