@@ -111,6 +111,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
     @Test
     public void testAutoscalingPolicy() {
+        log.info("Started autoscaling policy test case**************************************");
         String policyId = "autoscaling-policy-c0";
         try {
             boolean added = autoscalingPolicyTest.addAutoscalingPolicy(policyId + ".json",
@@ -148,9 +149,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
                     policyId), beanRemoved, null);
-
+            log.info("Ended autoscaling policy test case**************************************");
         } catch (Exception e) {
-            log.error(e);
+            log.error("An error occurred while handling [autoscaling policy] " + policyId, e);
             assertTrue("An error occurred while handling [autoscaling policy] " + policyId, false);
         }
     }
@@ -158,6 +159,8 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     @Test
     public void testCartridgeGroup() {
         try {
+            log.info("Started Cartridge group test case**************************************");
+
             boolean addedC1 = cartridgeTest.addCartridge("c1.json", endpoint, restClient);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c1"), addedC1, true);
 
@@ -225,14 +228,18 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c3"), removedC3, true);
 
+            log.info("Ended Cartridge group test case**************************************");
+
         } catch (Exception e) {
-            log.error(e);
-            assertTrue("An error occurred while handling autoscaling policy", false);
+            log.error("An error occurred while handling Cartridge group test case", e);
+            assertTrue("An error occurred while handling Cartridge group test case", false);
         }
     }
 
     @Test
     public void testApplication() {
+        log.info("Started application test case**************************************");
+
         try {
             boolean addedScalingPolicy = autoscalingPolicyTest.addAutoscalingPolicy("autoscaling-policy-1.json",
                     endpoint, restClient);
@@ -393,15 +400,19 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(removedN2, true);
 
+            log.info("Ended application test case**************************************");
+
         } catch (Exception e) {
-            log.error(e);
-            assertTrue("An error occurred while handling application", false);
+            log.error("An error occurred while handling application test case", e);
+            assertTrue("An error occurred while handling application test case", false);
         }
     }
 
     @Test
     public void testDeployApplication() {
         try {
+            log.info("Started application deploy/undeploy test case**************************************");
+
             //Initializing event Receivers
             initializeApplicationEventReceiver();
             initializeTopologyEventReceiver();
@@ -556,15 +567,19 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(removedN2, true);
 
+            log.info("Ended application deploy/undeploy test case**************************************");
+
         } catch (Exception e) {
-            log.error(e);
-            assertTrue("An error occurred while handling autoscaling policy", false);
+            log.error("An error occurred while handling application deployment/undeployment", e);
+            assertTrue("An error occurred while handling application deployment/undeployment", false);
         }
     }
 
     @Test
     public void testNetworkPartition() {
         try {
+            log.info("Started network partition test case**************************************");
+
             boolean added = networkPartitionTest.addNetworkPartition("network-partition-1.json",
                     endpoint, restClient);
             assertEquals(added, true);
@@ -597,8 +612,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemoved, null);
 
+            log.info("Ended network partition test case**************************************");
         } catch (Exception e) {
-            log.error(e);
+            log.error("An error occurred while handling network partitions",e);
             assertTrue("An error occurred while handling network partitions", false);
         }
     }
@@ -606,6 +622,8 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     @Test
     public void testDeploymentPolicy() {
         try {
+            log.info("Started deployment policy test case**************************************");
+
             boolean addedN1 = networkPartitionTest.addNetworkPartition("network-partition-1.json",
                     endpoint, restClient);
             assertEquals(addedN1, true);
@@ -699,14 +717,18 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemovedN2, null);
 
+            log.info("Ended deployment policy test case**************************************");
+
         } catch (Exception e) {
-            log.error(e);
-            assertTrue("An error occurred while handling autoscaling policy", false);
+            log.error("An error occurred while handling deployment policy", e);
+            assertTrue("An error occurred while handling deployment policy", false);
         }
     }
 
     @Test
     public void testCartridge() {
+        log.info("Started Cartridge test case**************************************");
+
         try {
             boolean added = cartridgeTest.addCartridge("c0.json", endpoint, restClient);
             assertEquals(added, true);
@@ -779,8 +801,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemoved, null);
 
+            log.info("Ended Cartridge test case**************************************");
         } catch (Exception e) {
-            log.error(e);
+            log.error("An error occurred while handling cartridges", e);
             assertTrue("An error occurred while handling cartridges", false);
         }
     }
