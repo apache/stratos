@@ -82,6 +82,7 @@ public class ClusterPortMapping extends PortMapping implements Serializable {
 
     public String toString() {
         return "[application-id] " + getApplicationId() + " [cluster-id] " + getClusterId() + ", " +
-                super.toString() + " [kubernetes-service-port] " + getKubernetesServicePort();
+                super.toString() + " [kubernetes-service-port] " + getKubernetesServicePort() + ", " +
+                "[kubernetes-service-type] " + getKubernetesServiceType();
     }
 }

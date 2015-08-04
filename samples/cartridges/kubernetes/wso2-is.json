@@ -12,7 +12,8 @@
 			"name": "mgt-console",
             "protocol": "https",
             "port": "9443",
-            "proxyPort": "8443"
+            "proxyPort": "8443",
+            "kubernetesPortType":"NodePort"
         }
     ],
     "iaasProvider": [
