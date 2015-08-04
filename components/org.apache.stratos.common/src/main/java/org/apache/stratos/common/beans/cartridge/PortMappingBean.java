@@ -74,7 +74,6 @@ public class PortMappingBean {
         return " [ Name: " + getName() + ", " +
                 "Protocol: " + getProtocol() + ", " +
                 "Port: " + getPort() + ", " +
-                "Proxy port: " + getProxyPort() + ", " +
-                "Type: " + getKubernetesPortType() + "] ";
+                "Proxy port: " + getProxyPort() + "] ";
     }
 }
