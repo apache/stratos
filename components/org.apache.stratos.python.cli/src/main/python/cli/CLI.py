@@ -253,3 +253,22 @@ class CLI(Cmd):
             Stratos.deploy_user()
         except ValueError as e:
             self.perror("sdc")
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_deployment_policies(self, line , opts=None):
+        """Illustrate the base class method use."""
+        deployment_policies = Stratos.list_deployment_policies()
+        if not deployment_policies:
+            print("No deployment policies found")
+        else:
+            table = PrintableTable()
+            rows = [["Id", "Accessibility"]]
+            for deployment_policy in deployment_policies:
+                rows.append([deployment_policy['id'], len(deployment_policy['networkPartitions'])])
+            table.add_rows(rows)
+            table.print_table()

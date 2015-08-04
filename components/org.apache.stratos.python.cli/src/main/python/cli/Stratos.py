@@ -93,6 +93,10 @@ class Stratos:
         return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts',
                            errorMessage='Kubernetes cluster not found')
 
+    @staticmethod
+    def list_deployment_policies():
+        return Stratos.get('deploymentPolicies',
+                           errorMessage='Deployment policies not found')
 
     """
     # Utils
