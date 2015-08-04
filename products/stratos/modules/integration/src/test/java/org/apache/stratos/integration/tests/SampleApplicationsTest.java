@@ -111,38 +111,47 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
     @Test
     public void testAutoscalingPolicy() {
+        String policyId = "autoscaling-policy-c0";
         try {
-            String policyId = "autoscaling-policy-c0";
             boolean added = autoscalingPolicyTest.addAutoscalingPolicy(policyId + ".json",
                     endpoint, restClient);
             assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), added, true);
             AutoscalePolicyBean bean = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
                     restClient);
-            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", bean.getId()),bean.getId(), policyId);
-            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId), bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 35.0, 0.0);
-            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
-            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s is not correct", bean.getId()),
+                    bean.getId(), policyId);
+            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
+                    bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 35.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
+                    bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
+                    bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
-            boolean updated = autoscalingPolicyTest.updateAutoscalingPolicy("autoscaling-policy-c0.json",
+            boolean updated = autoscalingPolicyTest.updateAutoscalingPolicy(policyId + ".json",
                     endpoint, restClient);
-            assertEquals(updated, true);
-            AutoscalePolicyBean updatedBean = autoscalingPolicyTest.getAutoscalingPolicy("autoscaling-policy-c0", endpoint,
+            assertEquals(String.format("[autoscaling-policy-id] %s update failed", policyId), updated, true);
+            AutoscalePolicyBean updatedBean = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
                     restClient);
-            assertEquals(updatedBean.getLoadThresholds().getRequestsInFlight().getThreshold(), 30.0, 0.0);
-            assertEquals(updatedBean.getLoadThresholds().getMemoryConsumption().getThreshold(), 40.0, 0.0);
-            assertEquals(updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
+                    updatedBean.getLoadThresholds().getRequestsInFlight().getThreshold(), 30.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
+                    updatedBean.getLoadThresholds().getMemoryConsumption().getThreshold(), 40.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
+                    updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
 
-            boolean removed = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-c0", endpoint,
+            boolean removed = autoscalingPolicyTest.removeAutoscalingPolicy(policyId, endpoint,
                     restClient);
-            assertEquals(removed, true);
+            assertEquals(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId),
+                    removed, true);
 
-            AutoscalePolicyBean beanRemoved = autoscalingPolicyTest.getAutoscalingPolicy("autoscaling-policy-c0", endpoint,
+            AutoscalePolicyBean beanRemoved = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
                     restClient);
-            assertEquals(beanRemoved, null);
+            assertEquals(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
+                    policyId), beanRemoved, null);
 
         } catch (Exception e) {
             log.error(e);
-            assertTrue("An error occurred while handling autoscaling policy", false);
+            assertTrue("An error occurred while handling [autoscaling policy] " + policyId, false);
         }
     }
 
@@ -150,59 +159,71 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     public void testCartridgeGroup() {
         try {
             boolean addedC1 = cartridgeTest.addCartridge("c1.json", endpoint, restClient);
-            assertEquals(addedC1, true);
+            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c1"), addedC1, true);
 
             boolean addedC2 = cartridgeTest.addCartridge("c2.json", endpoint, restClient);
-            assertEquals(addedC2, true);
+            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c2"), addedC2, true);
 
             boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
-            assertEquals(addedC3, true);
+            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c3"), addedC3, true);
 
             boolean added = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
-            assertEquals(added, true);
+            assertEquals(String.format("Cartridge Group did not added: [cartridge-group-name] %s",
+                    "cartrdige-nested"), added, true);
             CartridgeGroupBean bean = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(bean.getName(), "G1");
+            assertEquals(String.format("Cartridge Group name did not match: [cartridge-group-name] %s",
+                    "cartrdige-nested"), bean.getName(), "G1");
 
             boolean updated = cartridgeGroupTest.updateCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
-            assertEquals(updated, true);
+            assertEquals(String.format("Cartridge Group did not updated: [cartridge-group-name] %s",
+                    "cartrdige-nested"), updated, true);
             CartridgeGroupBean updatedBean = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(updatedBean.getName(), "G1");
+            assertEquals(String.format("Updated Cartridge Group didn't match: [cartridge-group-name] %s",
+                    "cartrdige-nested"), updatedBean.getName(), "G1");
 
             boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
                     restClient);
-            assertEquals(removedC1, false);
+            assertEquals(String.format("Cartridge can be removed while it is used in cartridge group: [cartridge-name] %s",
+                    "c1"), removedC1, false);
 
             boolean removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
                     restClient);
-            assertEquals(removedC2, false);
+            assertEquals(String.format("Cartridge can be removed while it is used in cartridge group: [cartridge-name] %s",
+                    "c2"), removedC2, false);
 
             boolean removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
                     restClient);
-            assertEquals(removedC3, false);
+            assertEquals(String.format("Cartridge can be removed while it is used in cartridge group: [cartridge-name] %s",
+                    "c2"), removedC3, false);
 
             boolean removed = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(removed, true);
+            assertEquals(String.format("Cartridge Group did not removed: [cartridge-group-name] %s",
+                    "cartrdige-nested"), removed, true);
 
             CartridgeGroupBean beanRemoved = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(beanRemoved, null);
+            assertEquals(String.format("Cartridge Group did not removed completely: [cartridge-group-name] %s",
+                    "cartrdige-nested"), beanRemoved, null);
 
             removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
                     restClient);
-            assertEquals(removedC1, true);
+            assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
+                    "c1"), removedC1, true);
 
             removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
                     restClient);
-            assertEquals(removedC2, true);
+            assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
+                    "c2"), removedC2, true);
 
             removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
                     restClient);
-            assertEquals(removedC3, true);
+            assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
+                    "c3"), removedC3, true);
 
         } catch (Exception e) {
             log.error(e);
