@@ -39,10 +39,9 @@ public class CartridgeGroupTest {
     }
 
     public CartridgeGroupBean getCartridgeGroup(String groupName, RestClient restClient) {
-        CartridgeGroupBean bean = (CartridgeGroupBean) restClient.
+        return (CartridgeGroupBean) restClient.
                 getEntity(RestConstants.CARTRIDGE_GROUPS, groupName,
                         CartridgeGroupBean.class, entityName);
-        return bean;
     }
 
     public boolean updateCartridgeGroup(String groupName, RestClient restClient) {

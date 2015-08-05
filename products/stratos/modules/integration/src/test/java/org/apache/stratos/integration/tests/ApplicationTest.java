@@ -40,10 +40,9 @@ public class ApplicationTest {
 
     public ApplicationBean getApplication(String applicationId,
                                           RestClient restClient) {
-        ApplicationBean bean = (ApplicationBean) restClient.
+        return (ApplicationBean) restClient.
                 getEntity(RestConstants.APPLICATIONS, applicationId,
                         ApplicationBean.class, entityName);
-        return bean;
     }
 
     public boolean updateApplication(String applicationId, RestClient restClient) {

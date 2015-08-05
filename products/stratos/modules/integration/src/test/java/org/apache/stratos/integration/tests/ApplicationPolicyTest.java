@@ -41,10 +41,9 @@ public class ApplicationPolicyTest {
 
     public ApplicationPolicyBean getApplicationPolicy(String applicationPolicyId, RestClient restClient) {
 
-        ApplicationPolicyBean bean = (ApplicationPolicyBean) restClient.
+        return (ApplicationPolicyBean) restClient.
                 getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
                         ApplicationPolicyBean.class, entityName);
-        return bean;
     }
 
     public boolean updateApplicationPolicy(String applicationPolicyId, RestClient restClient) {

@@ -80,7 +80,7 @@ public class RestClient {
             input.setContentType("application/json");
             postRequest.setEntity(input);
 
-            String userPass = "admin" + ":" + "admin";
+            String userPass = getUsernamePassword();
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             postRequest.addHeader("Authorization", basicAuth);
 
@@ -103,7 +103,7 @@ public class RestClient {
         try {
             getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
-            String userPass = "admin" + ":" + "admin";
+            String userPass = getUsernamePassword();
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             getRequest.addHeader("Authorization", basicAuth);
 
@@ -118,7 +118,7 @@ public class RestClient {
         try {
             httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
-            String userPass = "admin" + ":" + "admin";
+            String userPass = getUsernamePassword();
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             httpDelete.addHeader("Authorization", basicAuth);
             return httpClient.execute(httpDelete, new HttpResponseHandler());
@@ -136,7 +136,7 @@ public class RestClient {
             StringEntity input = new StringEntity(jsonParamString);
             input.setContentType("application/json");
             putRequest.setEntity(input);
-            String userPass = "admin" + ":" + "admin";
+            String userPass = getUsernamePassword();
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             putRequest.addHeader("Authorization", basicAuth);
             return httpClient.execute(putRequest, new HttpResponseHandler());
@@ -169,8 +169,9 @@ public class RestClient {
                     }
                 }
             }
-            log.error("An unknown error occurred while trying to add " + entityName);
-            throw new RuntimeException("An unknown error occurred while trying to add" + entityName);
+            String msg = "An unknown error occurred while trying to add ";
+            log.error(msg + entityName);
+            throw new RuntimeException(msg + entityName);
         } catch (Exception e) {
             String message = "Could not add " + entityName;
             log.error(message, e);
@@ -195,8 +196,9 @@ public class RestClient {
                     }
                 }
             }
-            log.error("An unknown error occurred while trying to deploy " + entityName);
-            throw new RuntimeException("An unknown error occurred while trying to deploy " + entityName);
+            String msg = "An unknown error occurred while trying to deploy ";
+            log.error(msg + entityName);
+            throw new RuntimeException(msg + entityName);
         } catch (Exception e) {
             String message = "Could not deploy  " + entityName;
             log.error(message, e);
@@ -221,8 +223,9 @@ public class RestClient {
                     }
                 }
             }
-            log.error("An unknown error occurred while trying to deploy " + entityName);
-            throw new RuntimeException("An unknown error occurred while trying to deploy " + entityName);
+            String msg = "An unknown error occurred while trying to undeploy ";
+            log.error(msg + entityName);
+            throw new RuntimeException(msg + entityName);
         } catch (Exception e) {
             String message = "Could not deploy  " + entityName;
             log.error(message, e);
@@ -308,8 +311,9 @@ public class RestClient {
                     }
                 }
             }
-            log.error("An unknown error occurred while trying to update " + entityName);
-            throw new RuntimeException("An unknown error occurred while trying to update" + entityName);
+            String msg = "An unknown error occurred while trying to update ";
+            log.error(msg + entityName);
+            throw new RuntimeException(msg + entityName);
         } catch (Exception e) {
             String message = "Could not add " + entityName;
             log.error(message, e);
@@ -317,23 +321,37 @@ public class RestClient {
         }
     }
 
+    /**
+     * Get the json string from the artifacts directory
+     *
+     * @param filePath path of the artifacts
+     * @return json string of the relevant artifact
+     * @throws FileNotFoundException
+     */
     public String getJsonStringFromFile(String filePath) throws FileNotFoundException {
         JsonParser parser = new JsonParser();
         Object object = parser.parse(new FileReader(getResourcesFolderPath() + filePath));
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        String content = gson.toJson(object);
-        return content;
-
+        return gson.toJson(object);
     }
 
     /**
      * Get resources folder path
      *
-     * @return
+     * @return the resource path
      */
     private String getResourcesFolderPath() {
         String path = getClass().getResource("/").getPath();
         return StringUtils.removeEnd(path, File.separator);
+    }
+
+    /**
+     * Get the username and password
+     *
+     * @return username:password
+     */
+    private String getUsernamePassword() {
+        return this.userName + ":" + this.password;
     }
 }

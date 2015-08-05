@@ -42,10 +42,9 @@ public class CartridgeTest {
 
     public CartridgeBean getCartridge(String cartridgeType,
                                       RestClient restClient) {
-        CartridgeBean bean = (CartridgeBean) restClient.
+        return (CartridgeBean) restClient.
                 getEntity(RestConstants.CARTRIDGES, cartridgeType,
                         CartridgeBean.class, entityName);
-        return bean;
     }
 
     public boolean updateCartridge(String cartridgeType, RestClient restClient) {

@@ -40,10 +40,9 @@ public class NetworkPartitionTest {
 
     public NetworkPartitionBean getNetworkPartition(String networkPartitionId,
                                                     RestClient restClient) {
-        NetworkPartitionBean bean = (NetworkPartitionBean) restClient.
+        return (NetworkPartitionBean) restClient.
                 getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                         NetworkPartitionBean.class, entityName);
-        return bean;
     }
 
     public boolean updateNetworkPartition(String networkPartitionId, RestClient restClient) {

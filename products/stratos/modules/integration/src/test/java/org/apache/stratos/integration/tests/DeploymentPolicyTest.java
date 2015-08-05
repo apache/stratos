@@ -40,10 +40,9 @@ public class DeploymentPolicyTest {
 
     public DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId,
                                                     RestClient restClient) {
-        DeploymentPolicyBean bean = (DeploymentPolicyBean) restClient.
+        return (DeploymentPolicyBean) restClient.
                 getEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
                         DeploymentPolicyBean.class, entityName);
-        return bean;
     }
 
     public boolean updateDeploymentPolicy(String deploymentPolicyId, RestClient restClient) {

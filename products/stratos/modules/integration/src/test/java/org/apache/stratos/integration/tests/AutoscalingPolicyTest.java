@@ -39,10 +39,9 @@ public class AutoscalingPolicyTest {
     }
 
     public AutoscalePolicyBean getAutoscalingPolicy(String autoscalingPolicyName, RestClient restClient) {
-        AutoscalePolicyBean bean = (AutoscalePolicyBean) restClient.
+        return (AutoscalePolicyBean) restClient.
                 getEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyName,
                         AutoscalePolicyBean.class, entityName);
-        return bean;
     }
 
     public boolean updateAutoscalingPolicy(String autoscalingPolicyName, RestClient restClient) {
