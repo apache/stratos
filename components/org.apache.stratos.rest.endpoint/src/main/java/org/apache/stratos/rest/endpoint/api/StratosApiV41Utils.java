@@ -1584,7 +1584,7 @@ public class StratosApiV41Utils {
         }
 
         if (!cartridgeGroups.contains(groupReferenceBean.getName())) {
-            cartridgeGroups.add(groupReferenceBean.getName());
+            cartridgeGroups.add(groupReferenceBean.getUuid());
         }
 
         if (groupReferenceBean.getGroups() != null) {

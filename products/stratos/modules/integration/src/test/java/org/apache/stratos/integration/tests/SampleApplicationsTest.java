@@ -32,6 +32,7 @@ import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -398,7 +399,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
             assertEquals(addedC3, true);
 
-			/*
+
             boolean addedG1 = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
             assertEquals(addedG1, true);
@@ -450,7 +451,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertClusterActivation(bean.getApplicationId());
 
             //Updating application
-            boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
+          /*  boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
                     endpoint, restClient);
             assertEquals(updated, true);
 
@@ -464,7 +465,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(removedGroup, false);
 
             boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
-                    restClient);
+                    restClient,"admin","admin");
             assertEquals(removedAuto, false);
 
             boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
@@ -474,7 +475,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
                     restClient);
-            assertEquals(removedDep, false);
+            assertEquals(removedDep, false);   */
 
             boolean unDeployed = applicationTest.undeployApplication("g-sc-G123-1", endpoint,
                     restClient);
@@ -490,7 +491,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemoved, null);
 
-            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
             assertEquals(removedGroup, true);
 
@@ -506,16 +507,16 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(removedC3, true);
 
-            removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
-                    restClient);
+            boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
+                    restClient,"admin","admin");
             assertEquals(removedAuto, true);
 
-            removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
                     restClient);
             assertEquals(removedDep, true);
 
             //Remove network partition used by application policy
-            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
                     restClient);
             assertEquals(removedNet, false);
 
@@ -534,7 +535,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2", endpoint,
                     restClient);
             assertEquals(removedN2, true);
-*/
+
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred while handling autoscaling policy", false);
