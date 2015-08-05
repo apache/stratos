@@ -210,7 +210,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         }
     }
 
-
+    @Test
     public void testApplication() {
         try {
             boolean addedScalingPolicy = autoscalingPolicyTest.addAutoscalingPolicy("autoscaling-policy-1.json",

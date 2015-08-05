@@ -1095,7 +1095,7 @@ public class StratosApiV41Utils {
             asServiceClient.addServiceGroup(serviceGroup);
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
-            smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getUuid(), cartridgeUuids);
+            smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroup.getUuid(), cartridgeUuids);
         } catch (RemoteException e) {
 
             String message = String.format("Could not add the cartridge group: [cartridge-group-id] %s " +
