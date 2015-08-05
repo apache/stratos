@@ -159,7 +159,7 @@
                         "id": "root/portMapping/0/kubernetesPortType",
                         "title": "Kubernetes Port Type",
                         "default": "NodePort",
-                        "enum": ["NodePort","ClusterIP"]
+                        "enum": ["","NodePort","ClusterIP"]
                     }
                 }
             }

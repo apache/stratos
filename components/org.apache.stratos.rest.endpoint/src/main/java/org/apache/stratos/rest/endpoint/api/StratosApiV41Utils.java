@@ -151,7 +151,7 @@ public class StratosApiV41Utils {
                 String type = portMapping.getKubernetesPortType();
 
                 if (isKubernetesIaasProviderAvailable) {
-                    if (type == null) {
+                    if (type == null || type.equals("")) {
                         portMapping.setKubernetesPortType(KubernetesConstants.NODE_PORT);
                     } else if (!type.equals(KubernetesConstants.NODE_PORT) && !type.equals
                             (KubernetesConstants.CLUSTER_IP)) {
