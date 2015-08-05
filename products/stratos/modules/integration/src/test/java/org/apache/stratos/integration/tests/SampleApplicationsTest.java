@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -155,7 +156,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
             assertEquals(addedC3, true);
 
-	        /*
+
             boolean added = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
             assertEquals(added, true);
@@ -163,12 +164,12 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(bean.getName(), "G1");
 
-            boolean updated = cartridgeGroupTest.updateCartridgeGroup("cartrdige-nested.json",
+        /*    boolean updated = cartridgeGroupTest.updateCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
             assertEquals(updated, true);
             CartridgeGroupBean updatedBean = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(updatedBean.getName(), "G1");
+            assertEquals(updatedBean.getName(), "G1");    */
 
             boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
                     restClient);
@@ -201,14 +202,13 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
                     restClient);
-            assertEquals(removedC3, true);*/
+            assertEquals(removedC3, true);
 
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred while handling autoscaling policy", false);
         }
     }
-
 
     public void testApplication() {
         try {
@@ -225,12 +225,12 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
             assertEquals(addedC3, true);
 
-         /*   boolean addedG1 = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
+            boolean addedG1 = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
             assertEquals(addedG1, true);
             CartridgeGroupBean beanG1 = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(beanG1.getName(), "G1");          */
+            assertEquals(beanG1.getName(), "G1");
 
             boolean addedN1 = networkPartitionTest.addNetworkPartition("network-partition-1.json",
                     endpoint, restClient);
@@ -314,9 +314,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 3);
 
 
-        /*    boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(removedGroup, false);  */
+            assertEquals(removedGroup, false);
 
             boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
                     restClient, "admin", "admin");
@@ -339,9 +339,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemoved, null);
 
-            /*removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(removedGroup, true);   */
+            assertEquals(removedGroup, true);
 
             boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
                     restClient);
