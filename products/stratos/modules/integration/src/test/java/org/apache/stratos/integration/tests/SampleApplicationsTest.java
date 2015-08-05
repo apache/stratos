@@ -622,7 +622,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updated, true);
 
             //update deployment policy with new partition and max values
-            /*
+
             boolean updatedDep = deploymentPolicyTest.updateDeploymentPolicy("deployment-policy-1.json",
                     endpoint, restClient);
             assertEquals(updatedDep, true);
@@ -648,7 +648,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updatedBean.getNetworkPartitions().get(1).getPartitions().get(1).getId(),
                     "network-partition-2-partition-2");
             assertEquals(updatedBean.getNetworkPartitions().get(1).getPartitions().get(1).getPartitionMax(), 5);
-             */
+
             boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
                     restClient);
             //Trying to remove the used network partition

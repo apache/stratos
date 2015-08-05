@@ -3064,8 +3064,31 @@ public class StratosApiV41Utils {
             AutoscalerServiceInvalidDeploymentPolicyExceptionException,
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException {
         try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            int tenantId=carbonContext.getTenantId();
+            NetworkPartitionBean[] networkPartitions = getNetworkPartitions();
+            for (NetworkPartitionReferenceBean networkPartitionReferenceBean : deploymentPolicyDefinitionBean
+                    .getNetworkPartitions()) {
+                NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
+                        .getNetworkPartitionByTenant(networkPartitionReferenceBean.getId(), tenantId);
+                for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
+                    if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
+                            (networkPartitionReferenceBean.getId())) {
+                        networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
+                        for (PartitionReferenceBean partition : networkPartitionReferenceBean.getPartitions()) {
+                            for (PartitionBean existingPartition : networkPartitionBean.getPartitions()) {
+                                if (existingPartition.getTenantId() == tenantId &&
+                                        partition.getId().equals(existingPartition.getId())) {
+                                    partition.setUuid(existingPartition.getUuid());
+                                    partition.setTenantId(tenantId);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+
             DeploymentPolicy deploymentPolicy = serviceClient.getDeploymentPolicyByTenant
                     (deploymentPolicyDefinitionBean.getId(), carbonContext.getTenantId());
             if (log.isDebugEnabled()) {
@@ -3075,7 +3098,7 @@ public class StratosApiV41Utils {
             }
             AutoscalerServiceClient.getInstance().updateDeploymentPolicy(ObjectConverter
                     .convertDeploymentPolicyBeanToASDeploymentPolicy(deploymentPolicyDefinitionBean,
-                            deploymentPolicy.getUuid(), deploymentPolicy.getTenantId()));
+                            deploymentPolicy.getUuid(), carbonContext.getTenantId()));
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("DeploymentPolicy updated successfully : [deployment-policy-uuid] %s " +
