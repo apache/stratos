@@ -74,7 +74,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
     private ApplicationsEventReceiver applicationsEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
-    private RestClient restClient = new RestClient();
+    private RestClient restClient;
     private AutoscalingPolicyTest autoscalingPolicyTest;
     private NetworkPartitionTest networkPartitionTest;
     private CartridgeTest cartridgeTest;
@@ -89,6 +89,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         // Set jndi.properties.dir system property for initializing event receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
         System.setProperty("autoscaler.service.url", "https://localhost:9443/services/AutoscalerService");
+        restClient = new RestClient(endpoint, "admin", "admin");
         autoscalingPolicyTest = new AutoscalingPolicyTest();
         networkPartitionTest = new NetworkPartitionTest();
         cartridgeTest = new CartridgeTest();
@@ -115,9 +116,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         String policyId = "autoscaling-policy-c0";
         try {
             boolean added = autoscalingPolicyTest.addAutoscalingPolicy(policyId + ".json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), added, true);
-            AutoscalePolicyBean bean = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
+            AutoscalePolicyBean bean = autoscalingPolicyTest.getAutoscalingPolicy(policyId,
                     restClient);
             assertEquals(String.format("[autoscaling-policy-id] %s is not correct", bean.getId()),
                     bean.getId(), policyId);
@@ -129,9 +130,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
             boolean updated = autoscalingPolicyTest.updateAutoscalingPolicy(policyId + ".json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(String.format("[autoscaling-policy-id] %s update failed", policyId), updated, true);
-            AutoscalePolicyBean updatedBean = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
+            AutoscalePolicyBean updatedBean = autoscalingPolicyTest.getAutoscalingPolicy(policyId,
                     restClient);
             assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
                     updatedBean.getLoadThresholds().getRequestsInFlight().getThreshold(), 30.0, 0.0);
@@ -140,12 +141,12 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
                     updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
 
-            boolean removed = autoscalingPolicyTest.removeAutoscalingPolicy(policyId, endpoint,
+            boolean removed = autoscalingPolicyTest.removeAutoscalingPolicy(policyId,
                     restClient);
             assertEquals(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId),
                     removed, true);
 
-            AutoscalePolicyBean beanRemoved = autoscalingPolicyTest.getAutoscalingPolicy(policyId, endpoint,
+            AutoscalePolicyBean beanRemoved = autoscalingPolicyTest.getAutoscalingPolicy(policyId,
                     restClient);
             assertEquals(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
                     policyId), beanRemoved, null);
@@ -161,69 +162,69 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         try {
             log.info("Started Cartridge group test case**************************************");
 
-            boolean addedC1 = cartridgeTest.addCartridge("c1.json", endpoint, restClient);
+            boolean addedC1 = cartridgeTest.addCartridge("c1.json", restClient);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c1"), addedC1, true);
 
-            boolean addedC2 = cartridgeTest.addCartridge("c2.json", endpoint, restClient);
+            boolean addedC2 = cartridgeTest.addCartridge("c2.json", restClient);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c2"), addedC2, true);
 
-            boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
+            boolean addedC3 = cartridgeTest.addCartridge("c3.json", restClient);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c3"), addedC3, true);
 
             boolean added = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(String.format("Cartridge Group did not added: [cartridge-group-name] %s",
                     "cartrdige-nested"), added, true);
-            CartridgeGroupBean bean = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
+            CartridgeGroupBean bean = cartridgeGroupTest.getCartridgeGroup("G1",
                     restClient);
             assertEquals(String.format("Cartridge Group name did not match: [cartridge-group-name] %s",
                     "cartrdige-nested"), bean.getName(), "G1");
 
             boolean updated = cartridgeGroupTest.updateCartridgeGroup("cartrdige-nested.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(String.format("Cartridge Group did not updated: [cartridge-group-name] %s",
                     "cartrdige-nested"), updated, true);
-            CartridgeGroupBean updatedBean = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
+            CartridgeGroupBean updatedBean = cartridgeGroupTest.getCartridgeGroup("G1",
                     restClient);
             assertEquals(String.format("Updated Cartridge Group didn't match: [cartridge-group-name] %s",
                     "cartrdige-nested"), updatedBean.getName(), "G1");
 
-            boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
+            boolean removedC1 = cartridgeTest.removeCartridge("c1",
                     restClient);
             assertEquals(String.format("Cartridge can be removed while it is used in cartridge group: [cartridge-name] %s",
                     "c1"), removedC1, false);
 
-            boolean removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
+            boolean removedC2 = cartridgeTest.removeCartridge("c2",
                     restClient);
             assertEquals(String.format("Cartridge can be removed while it is used in cartridge group: [cartridge-name] %s",
                     "c2"), removedC2, false);
 
-            boolean removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
+            boolean removedC3 = cartridgeTest.removeCartridge("c3",
                     restClient);
             assertEquals(String.format("Cartridge can be removed while it is used in cartridge group: [cartridge-name] %s",
                     "c2"), removedC3, false);
 
-            boolean removed = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            boolean removed = cartridgeGroupTest.removeCartridgeGroup("G1",
                     restClient);
             assertEquals(String.format("Cartridge Group did not removed: [cartridge-group-name] %s",
                     "cartrdige-nested"), removed, true);
 
-            CartridgeGroupBean beanRemoved = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
+            CartridgeGroupBean beanRemoved = cartridgeGroupTest.getCartridgeGroup("G1",
                     restClient);
             assertEquals(String.format("Cartridge Group did not removed completely: [cartridge-group-name] %s",
                     "cartrdige-nested"), beanRemoved, null);
 
-            removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
+            removedC1 = cartridgeTest.removeCartridge("c1",
                     restClient);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c1"), removedC1, true);
 
-            removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
+            removedC2 = cartridgeTest.removeCartridge("c2",
                     restClient);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c2"), removedC2, true);
 
-            removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
+            removedC3 = cartridgeTest.removeCartridge("c3",
                     restClient);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c3"), removedC3, true);
@@ -242,41 +243,41 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
         try {
             boolean addedScalingPolicy = autoscalingPolicyTest.addAutoscalingPolicy("autoscaling-policy-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = cartridgeTest.addCartridge("c1.json", endpoint, restClient);
+            boolean addedC1 = cartridgeTest.addCartridge("c1.json", restClient);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = cartridgeTest.addCartridge("c2.json", endpoint, restClient);
+            boolean addedC2 = cartridgeTest.addCartridge("c2.json", restClient);
             assertEquals(addedC2, true);
 
-            boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
+            boolean addedC3 = cartridgeTest.addCartridge("c3.json", restClient);
             assertEquals(addedC3, true);
 
             boolean addedG1 = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedG1, true);
-            CartridgeGroupBean beanG1 = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
+            CartridgeGroupBean beanG1 = cartridgeGroupTest.getCartridgeGroup("G1",
                     restClient);
             assertEquals(beanG1.getName(), "G1");
 
             boolean addedN1 = networkPartitionTest.addNetworkPartition("network-partition-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedN1, true);
 
             boolean addedN2 = networkPartitionTest.addNetworkPartition("network-partition-2.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedN2, true);
 
             boolean addedDep = deploymentPolicyTest.addDeploymentPolicy("deployment-policy-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedDep, true);
 
             boolean added = applicationTest.addApplication("g-sc-G123-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(added, true);
-            ApplicationBean bean = applicationTest.getApplication("g-sc-G123-1", endpoint,
+            ApplicationBean bean = applicationTest.getApplication("g-sc-G123-1",
                     restClient);
             assertEquals(bean.getApplicationId(), "g-sc-G123-1");
 
@@ -308,10 +309,10 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 2);
 
             boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(updated, true);
 
-            ApplicationBean updatedBean = applicationTest.getApplication("g-sc-G123-1", endpoint,
+            ApplicationBean updatedBean = applicationTest.getApplication("g-sc-G123-1",
                     restClient);
 
             assertEquals(bean.getApplicationId(), "g-sc-G123-1");
@@ -343,60 +344,60 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 3);
 
 
-            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1",
                     restClient);
             assertEquals(removedGroup, false);
 
-            boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
+            boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1",
                     restClient);
             assertEquals(removedAuto, false);
 
-            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
-            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1",
                     restClient);
             assertEquals(removedDep, false);
 
-            boolean removed = applicationTest.removeApplication("g-sc-G123-1", endpoint,
+            boolean removed = applicationTest.removeApplication("g-sc-G123-1",
                     restClient);
             assertEquals(removed, true);
 
-            ApplicationBean beanRemoved = applicationTest.getApplication("g-sc-G123-1", endpoint,
+            ApplicationBean beanRemoved = applicationTest.getApplication("g-sc-G123-1",
                     restClient);
             assertEquals(beanRemoved, null);
 
-            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1",
                     restClient);
             assertEquals(removedGroup, true);
 
-            boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
+            boolean removedC1 = cartridgeTest.removeCartridge("c1",
                     restClient);
             assertEquals(removedC1, true);
 
-            boolean removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
+            boolean removedC2 = cartridgeTest.removeCartridge("c2",
                     restClient);
             assertEquals(removedC2, true);
 
-            boolean removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
+            boolean removedC3 = cartridgeTest.removeCartridge("c3",
                     restClient);
             assertEquals(removedC3, true);
 
-            removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
+            removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1",
                     restClient);
             assertEquals(removedAuto, true);
 
-            removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1",
                     restClient);
             assertEquals(removedDep, true);
 
-            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(removedNet, true);
 
-            boolean removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2", endpoint,
+            boolean removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2",
                     restClient);
             assertEquals(removedN2, true);
 
@@ -417,55 +418,59 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             initializeApplicationEventReceiver();
             initializeTopologyEventReceiver();
 
+            //Verifying whether the relevant Topologies are initialized
+            assertApplicationTopologyInitialized();
+            assertTopologyInitialized();
+
             boolean addedScalingPolicy = autoscalingPolicyTest.addAutoscalingPolicy("autoscaling-policy-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = cartridgeTest.addCartridge("c1.json", endpoint, restClient);
+            boolean addedC1 = cartridgeTest.addCartridge("c1.json", restClient);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = cartridgeTest.addCartridge("c2.json", endpoint, restClient);
+            boolean addedC2 = cartridgeTest.addCartridge("c2.json", restClient);
             assertEquals(addedC2, true);
 
-            boolean addedC3 = cartridgeTest.addCartridge("c3.json", endpoint, restClient);
+            boolean addedC3 = cartridgeTest.addCartridge("c3.json", restClient);
             assertEquals(addedC3, true);
 
             boolean addedG1 = cartridgeGroupTest.addCartridgeGroup("cartrdige-nested.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedG1, true);
-            CartridgeGroupBean beanG1 = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
+            CartridgeGroupBean beanG1 = cartridgeGroupTest.getCartridgeGroup("G1",
                     restClient);
             assertEquals(beanG1.getName(), "G1");
 
             boolean addedN1 = networkPartitionTest.addNetworkPartition("network-partition-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedN1, true);
 
             boolean addedN2 = networkPartitionTest.addNetworkPartition("network-partition-2.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedN2, true);
 
             boolean addedDep = deploymentPolicyTest.addDeploymentPolicy("deployment-policy-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedDep, true);
 
             boolean added = applicationTest.addApplication("g-sc-G123-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(added, true);
-            ApplicationBean bean = applicationTest.getApplication("g-sc-G123-1", endpoint,
+            ApplicationBean bean = applicationTest.getApplication("g-sc-G123-1",
                     restClient);
             assertEquals(bean.getApplicationId(), "g-sc-G123-1");
 
             boolean addAppPolicy = applicationPolicyTest.addApplicationPolicy(
-                    "application-policy-1.json", endpoint, restClient);
+                    "application-policy-1.json", restClient);
             assertEquals(addAppPolicy, true);
 
             ApplicationPolicyBean policyBean = applicationPolicyTest.getApplicationPolicy(
-                    "application-policy-1", endpoint, restClient);
+                    "application-policy-1", restClient);
 
             //deploy the application
             boolean deployed = applicationTest.deployApplication(bean.getApplicationId(),
-                    policyBean.getId(), endpoint, restClient);
+                    policyBean.getId(), restClient);
             assertEquals(deployed, true);
 
             //Application active handling
@@ -479,91 +484,91 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             //Updating application
             boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(updated, true);
 
             assertGroupInstanceCount(bean.getApplicationId(), "group3", 2);
 
             assertClusterMinMemberCount(bean.getApplicationId(), 2);
 
-            ApplicationBean updatedBean = applicationTest.getApplication("g-sc-G123-1", endpoint,
+            ApplicationBean updatedBean = applicationTest.getApplication("g-sc-G123-1",
                     restClient);
             assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1");
 
-            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1",
                     restClient);
             assertEquals(removedGroup, false);
 
-            boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
+            boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1",
                     restClient);
             assertEquals(removedAuto, false);
 
-            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
-            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1",
                     restClient);
             assertEquals(removedDep, false);
 
             //Un-deploying the application
-            boolean unDeployed = applicationTest.undeployApplication("g-sc-G123-1", endpoint,
+            boolean unDeployed = applicationTest.undeployApplication("g-sc-G123-1",
                     restClient);
             assertEquals(unDeployed, true);
 
             assertApplicationUndeploy("g-sc-G123-1");
 
-            boolean removed = applicationTest.removeApplication("g-sc-G123-1", endpoint,
+            boolean removed = applicationTest.removeApplication("g-sc-G123-1",
                     restClient);
             assertEquals(removed, true);
 
-            ApplicationBean beanRemoved = applicationTest.getApplication("g-sc-G123-1", endpoint,
+            ApplicationBean beanRemoved = applicationTest.getApplication("g-sc-G123-1",
                     restClient);
             assertEquals(beanRemoved, null);
 
-            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1",
                     restClient);
             assertEquals(removedGroup, true);
 
-            boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
+            boolean removedC1 = cartridgeTest.removeCartridge("c1",
                     restClient);
             assertEquals(removedC1, true);
 
-            boolean removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
+            boolean removedC2 = cartridgeTest.removeCartridge("c2",
                     restClient);
             assertEquals(removedC2, true);
 
-            boolean removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
+            boolean removedC3 = cartridgeTest.removeCartridge("c3",
                     restClient);
             assertEquals(removedC3, true);
 
-            removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
+            removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1",
                     restClient);
             assertEquals(removedAuto, true);
 
-            removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1",
                     restClient);
             assertEquals(removedDep, true);
 
             //Remove network partition used by application policy
-            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(removedNet, false);
 
-            boolean removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2", endpoint,
+            boolean removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2",
                     restClient);
             assertEquals(removedN2, false);
 
-            boolean removeAppPolicy = applicationPolicyTest.removeApplicationPolicy("application-policy-1", endpoint,
+            boolean removeAppPolicy = applicationPolicyTest.removeApplicationPolicy("application-policy-1",
                     restClient);
             assertEquals(removeAppPolicy, true);
 
-            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(removedNet, true);
 
-            removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2", endpoint,
+            removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2",
                     restClient);
             assertEquals(removedN2, true);
 
@@ -581,9 +586,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             log.info("Started network partition test case**************************************");
 
             boolean added = networkPartitionTest.addNetworkPartition("network-partition-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(added, true);
-            NetworkPartitionBean bean = networkPartitionTest.getNetworkPartition("network-partition-1", endpoint,
+            NetworkPartitionBean bean = networkPartitionTest.getNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(bean.getId(), "network-partition-1");
             assertEquals(bean.getPartitions().size(), 1);
@@ -592,9 +597,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(bean.getPartitions().get(0).getProperty().get(0).getValue(), "default");
 
             boolean updated = networkPartitionTest.updateNetworkPartition("network-partition-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(updated, true);
-            NetworkPartitionBean updatedBean = networkPartitionTest.getNetworkPartition("network-partition-1", endpoint,
+            NetworkPartitionBean updatedBean = networkPartitionTest.getNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(updatedBean.getId(), "network-partition-1");
             assertEquals(updatedBean.getPartitions().size(), 2);
@@ -604,11 +609,11 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updatedBean.getPartitions().get(1).getProperty().get(1).getName(), "zone");
             assertEquals(updatedBean.getPartitions().get(1).getProperty().get(1).getValue(), "z1");
 
-            boolean removed = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removed = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(removed, true);
 
-            NetworkPartitionBean beanRemoved = networkPartitionTest.getNetworkPartition("network-partition-1", endpoint,
+            NetworkPartitionBean beanRemoved = networkPartitionTest.getNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(beanRemoved, null);
 
@@ -625,19 +630,19 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             log.info("Started deployment policy test case**************************************");
 
             boolean addedN1 = networkPartitionTest.addNetworkPartition("network-partition-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedN1, true);
 
             boolean addedN2 = networkPartitionTest.addNetworkPartition("network-partition-2.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedN2, true);
 
             boolean addedDep = deploymentPolicyTest.addDeploymentPolicy("deployment-policy-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(addedDep, true);
 
             DeploymentPolicyBean bean = deploymentPolicyTest.getDeploymentPolicy(
-                    "deployment-policy-1", endpoint, restClient);
+                    "deployment-policy-1", restClient);
             assertEquals(bean.getId(), "deployment-policy-1");
             assertEquals(bean.getNetworkPartitions().size(), 2);
             assertEquals(bean.getNetworkPartitions().get(0).getId(), "network-partition-1");
@@ -658,16 +663,16 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             //update network partition
             boolean updated = networkPartitionTest.updateNetworkPartition("network-partition-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(updated, true);
 
             //update deployment policy with new partition and max values
             boolean updatedDep = deploymentPolicyTest.updateDeploymentPolicy("deployment-policy-1.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(updatedDep, true);
 
             DeploymentPolicyBean updatedBean = deploymentPolicyTest.getDeploymentPolicy(
-                    "deployment-policy-1", endpoint, restClient);
+                    "deployment-policy-1", restClient);
             assertEquals(updatedBean.getId(), "deployment-policy-1");
             assertEquals(updatedBean.getNetworkPartitions().size(), 2);
             assertEquals(updatedBean.getNetworkPartitions().get(0).getId(), "network-partition-1");
@@ -688,32 +693,32 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     "network-partition-2-partition-2");
             assertEquals(updatedBean.getNetworkPartitions().get(1).getPartitions().get(1).getPartitionMax(), 5);
 
-            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
-            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1",
                     restClient);
             assertEquals(removedDep, true);
 
-            DeploymentPolicyBean beanRemovedDep = deploymentPolicyTest.getDeploymentPolicy("deployment-policy-1", endpoint,
+            DeploymentPolicyBean beanRemovedDep = deploymentPolicyTest.getDeploymentPolicy("deployment-policy-1",
                     restClient);
             assertEquals(beanRemovedDep, null);
 
-            boolean removedN1 = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removedN1 = networkPartitionTest.removeNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(removedN1, true);
 
-            NetworkPartitionBean beanRemovedN1 = networkPartitionTest.getNetworkPartition("network-partition-1", endpoint,
+            NetworkPartitionBean beanRemovedN1 = networkPartitionTest.getNetworkPartition("network-partition-1",
                     restClient);
             assertEquals(beanRemovedN1, null);
 
-            boolean removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2", endpoint,
+            boolean removedN2 = networkPartitionTest.removeNetworkPartition("network-partition-2",
                     restClient);
             assertEquals(removedN2, true);
 
-            NetworkPartitionBean beanRemovedN2 = networkPartitionTest.getNetworkPartition("network-partition-2", endpoint,
+            NetworkPartitionBean beanRemovedN2 = networkPartitionTest.getNetworkPartition("network-partition-2",
                     restClient);
             assertEquals(beanRemovedN2, null);
 
@@ -730,9 +735,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         log.info("Started Cartridge test case**************************************");
 
         try {
-            boolean added = cartridgeTest.addCartridge("c0.json", endpoint, restClient);
+            boolean added = cartridgeTest.addCartridge("c0.json", restClient);
             assertEquals(added, true);
-            CartridgeBean bean = cartridgeTest.getCartridge("c0", endpoint, restClient);
+            CartridgeBean bean = cartridgeTest.getCartridge("c0", restClient);
             assertEquals(bean.getType(), "c0");
             assertEquals(bean.getCategory(), "Application");
             assertEquals(bean.getHost(), "qmog.cisco.com");
@@ -762,9 +767,9 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
 
             boolean updated = cartridgeTest.updateCartridge("c0.json",
-                    endpoint, restClient);
+                    restClient);
             assertEquals(updated, true);
-            CartridgeBean updatedBean = cartridgeTest.getCartridge("c0", endpoint,
+            CartridgeBean updatedBean = cartridgeTest.getCartridge("c0",
                     restClient);
             assertEquals(updatedBean.getType(), "c0");
             assertEquals(updatedBean.getCategory(), "Data");
@@ -793,11 +798,11 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                 }
             }
 
-            boolean removed = cartridgeTest.removeCartridge("c0", endpoint,
+            boolean removed = cartridgeTest.removeCartridge("c0",
                     restClient);
             assertEquals(removed, true);
 
-            CartridgeBean beanRemoved = cartridgeTest.getCartridge("c0", endpoint,
+            CartridgeBean beanRemoved = cartridgeTest.getCartridge("c0",
                     restClient);
             assertEquals(beanRemoved, null);
 
@@ -862,6 +867,46 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             log.error(outputStream.toString(), e);
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Assert application Topology initialization
+     *
+     */
+    private void assertApplicationTopologyInitialized() {
+        long startTime = System.currentTimeMillis();
+        boolean applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
+        while (!applicationTopologyInitialized) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                break;
+            }
+        }
+        assertEquals(String.format("Application Topology didn't get initialized "), applicationTopologyInitialized, true);
+    }
+
+    /**
+     * Assert Topology initialization
+     *
+     */
+    private void assertTopologyInitialized() {
+        long startTime = System.currentTimeMillis();
+        boolean topologyInitialized = TopologyManager.getTopology().isInitialized();
+        while (!topologyInitialized) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            topologyInitialized = TopologyManager.getTopology().isInitialized();
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                break;
+            }
+        }
+        assertEquals(String.format("Topology didn't get initialized "), topologyInitialized, true);
     }
 
     /**
@@ -1053,7 +1098,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                 applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING)) {
             log.info("Force undeployment is going to start for the [application] " + applicationName);
 
-            applicationTest.forceUndeployApplication(applicationName, endpoint, restClient);
+            applicationTest.forceUndeployApplication(applicationName, restClient);
             while (application.getInstanceContextCount() > 0 ||
                     applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING)) {
                 try {

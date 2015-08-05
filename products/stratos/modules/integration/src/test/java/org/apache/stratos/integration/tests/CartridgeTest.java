@@ -19,138 +19,41 @@
 
 package org.apache.stratos.integration.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.integration.tests.rest.ErrorResponse;
-import org.apache.stratos.integration.tests.rest.HttpResponse;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.integration.tests.rest.RestClient;
 
-import java.net.URI;
-
 /**
- * Test to handle Network partition CRUD operations
+ * Test to handle Cartridge CRUD operations
  */
-public class CartridgeTest extends StratosArtifactsUtils {
-    private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String cartridges = "/cartridges/mock/";
-    String cartridgesUpdate = "/cartridges/mock/update/";
+public class CartridgeTest {
+    private static final Log log = LogFactory.getLog(CartridgeTest.class);
+    private static final String cartridges = "/cartridges/mock/";
+    private static final String cartridgesUpdate = "/cartridges/mock/update/";
+    private static final String entityName = "cartridge";
+    
 
-
-    public boolean addCartridge(String cartridgeType, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(cartridges + cartridgeType);
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES).build();
-
-            HttpResponse response = restClient.doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while adding the cartridge";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not add cartridge";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean addCartridge(String cartridgeType, RestClient restClient) {
+        return restClient.addEntity(cartridges + "/" + cartridgeType,
+                RestConstants.CARTRIDGES, entityName);
     }
 
-    public CartridgeBean getCartridge(String cartridgeType, String endpoint,
-                                                    RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES + "/" +
-                    cartridgeType).build();
-            HttpResponse response = restClient.doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), CartridgeBean.class);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while getting the cartridge";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not get cartridge";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public CartridgeBean getCartridge(String cartridgeType,
+                                      RestClient restClient) {
+        CartridgeBean bean = (CartridgeBean) restClient.
+                getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                        CartridgeBean.class, entityName);
+        return bean;
     }
 
-    public boolean updateCartridge(String cartridgeType, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(cartridgesUpdate + cartridgeType);
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES).build();
-            HttpResponse response = restClient.doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while updating the cartridge";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not update cartridge";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean updateCartridge(String cartridgeType, RestClient restClient) {
+        return restClient.updateEntity(cartridgesUpdate + "/" + cartridgeType,
+                RestConstants.CARTRIDGES, entityName);
     }
 
-    public boolean removeCartridge(String cartridgeType, String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.CARTRIDGES + "/" +
-                    cartridgeType).build();
-            HttpResponse response = restClient.doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if (response.getContent().contains("it is used")) {
-                    return false;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while removing the cartridge";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove cartridge";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean removeCartridge(String cartridgeType, RestClient restClient) {
+        return restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType, entityName);
     }
 }

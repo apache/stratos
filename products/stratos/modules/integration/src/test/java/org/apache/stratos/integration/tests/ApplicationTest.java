@@ -19,224 +19,59 @@
 
 package org.apache.stratos.integration.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.integration.tests.rest.ErrorResponse;
-import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
 
-import java.net.URI;
-
 /**
- * Test to handle autoscaling policy CRUD operations
+ * Test to handle application CRUD operations, deploy and undeploy
  */
-public class ApplicationTest extends StratosArtifactsUtils {
-    private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
+public class ApplicationTest {
+    private static final Log log = LogFactory.getLog(ApplicationTest.class);
     String applications = "/applications/simple/single-cartridge-app/";
     String applicationsUpdate = "/applications/simple/single-cartridge-app/update/";
+    private static final String entityName = "application";
 
+    public boolean addApplication(String applicationId, RestClient restClient) {
+        return restClient.addEntity(applications + "/" + applicationId,
+                RestConstants.APPLICATIONS, entityName);
+    }
 
-    public boolean addApplication(String applicationId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(applications + applicationId);
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS).build();
+    public ApplicationBean getApplication(String applicationId,
+                                          RestClient restClient) {
+        ApplicationBean bean = (ApplicationBean) restClient.
+                getEntity(RestConstants.APPLICATIONS, applicationId,
+                        ApplicationBean.class, entityName);
+        return bean;
+    }
 
-            HttpResponse response = restClient.doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while adding the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not add application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean updateApplication(String applicationId, RestClient restClient) {
+        return restClient.updateEntity(applicationsUpdate + "/" + applicationId,
+                RestConstants.APPLICATIONS, entityName);
+    }
+
+    public boolean removeApplication(String applicationId, RestClient restClient) {
+        return restClient.removeEntity(RestConstants.APPLICATIONS, applicationId, entityName);
+
     }
 
     public boolean deployApplication(String applicationId, String applicationPolicyId,
-                                     String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
-            RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId).build();
-
-            HttpResponse response = restClient.doPost(uri, "");
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while deploying the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not deploy application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+                                     RestClient restClient) {
+        return restClient.deployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId, entityName);
     }
 
     public boolean undeployApplication(String applicationId,
-                                     String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
-                    RestConstants.APPLICATIONS_UNDEPLOY).build();
-
-            HttpResponse response = restClient.doPost(uri, "");
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while undeploying the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not undeploy application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+                                       RestClient restClient) {
+        return restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_UNDEPLOY, entityName);
     }
 
     public boolean forceUndeployApplication(String applicationId,
-                                       String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" + applicationId +
-                    RestConstants.APPLICATIONS_UNDEPLOY + "?force=true").build();
-
-            HttpResponse response = restClient.doPost(uri, "");
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while force undeploying the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not forcefully undeploy application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+                                            RestClient restClient) {
+        return restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", entityName);
     }
 
-    public ApplicationBean getApplication(String applicationId, String endpoint,
-                                                    RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" +
-                    applicationId).build();
-            HttpResponse response = restClient.doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), ApplicationBean.class);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while getting the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not get application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
-    }
-
-    public boolean updateApplication(String applicationId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(applicationsUpdate + applicationId);
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS).build();
-            HttpResponse response = restClient.doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while updating the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not update application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
-    }
-
-    public boolean removeApplication(String applicationId, String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATIONS + "/" +
-                    applicationId).build();
-            HttpResponse response = restClient.doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while removing the application";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove application";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
-    }
 }

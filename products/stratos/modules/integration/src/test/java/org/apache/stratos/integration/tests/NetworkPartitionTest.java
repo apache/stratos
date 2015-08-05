@@ -19,138 +19,39 @@
 
 package org.apache.stratos.integration.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
-import org.apache.stratos.integration.tests.rest.ErrorResponse;
-import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
-
-import java.net.URI;
 
 /**
  * Test to handle Network partition CRUD operations
  */
-public class NetworkPartitionTest extends StratosArtifactsUtils {
-    private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String networkPartitions = "/network-partitions/mock/";
-    String networkPartitionsUpdate = "/network-partitions/mock/update/";
+public class NetworkPartitionTest {
+    private static final Log log = LogFactory.getLog(NetworkPartitionTest.class);
+    private static final String networkPartitions = "/network-partitions/mock/";
+    private static final String networkPartitionsUpdate = "/network-partitions/mock/update/";
+    private static final String entityName = "networkPartition";
 
-
-    public boolean addNetworkPartition(String networkPartitionId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(networkPartitions + networkPartitionId);
-            URI uri = new URIBuilder(endpoint + RestConstants.NETWORK_PARTITIONS).build();
-
-            HttpResponse response = restClient.doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while adding the networkpartition";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not add networkpartition";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean addNetworkPartition(String networkPartitionId, RestClient restClient) {
+        return restClient.addEntity(networkPartitions + "/" + networkPartitionId,
+                RestConstants.NETWORK_PARTITIONS, entityName);
     }
 
-    public NetworkPartitionBean getNetworkPartition(String networkPartitionId, String endpoint,
+    public NetworkPartitionBean getNetworkPartition(String networkPartitionId,
                                                     RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.NETWORK_PARTITIONS + "/" +
-                    networkPartitionId).build();
-            HttpResponse response = restClient.doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), NetworkPartitionBean.class);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while getting the networkpartition";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not get networkpartition";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        NetworkPartitionBean bean = (NetworkPartitionBean) restClient.
+                getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                        NetworkPartitionBean.class, entityName);
+        return bean;
     }
 
-    public boolean updateNetworkPartition(String networkPartitionId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(networkPartitionsUpdate + networkPartitionId);
-            URI uri = new URIBuilder(endpoint + RestConstants.NETWORK_PARTITIONS).build();
-            HttpResponse response = restClient.doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while updating the networkpartition";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not update networkpartition";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean updateNetworkPartition(String networkPartitionId, RestClient restClient) {
+        return restClient.updateEntity(networkPartitionsUpdate + "/" + networkPartitionId,
+                RestConstants.NETWORK_PARTITIONS, entityName);
     }
 
-    public boolean removeNetworkPartition(String networkPartitionId, String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.NETWORK_PARTITIONS + "/" +
-                    networkPartitionId).build();
-            HttpResponse response = restClient.doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if(response.getContent().contains("it is used")) {
-                    return false;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while removing the networkpartition";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove networkpartition";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean removeNetworkPartition(String networkPartitionId, RestClient restClient) {
+        return restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId, entityName);
     }
 }

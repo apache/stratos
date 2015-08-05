@@ -18,137 +18,41 @@
  */
 package org.apache.stratos.integration.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.integration.tests.rest.ErrorResponse;
-import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
-
-import java.net.URI;
 
 /**
  * Test to handle autoscaling policy CRUD operations
  */
-public class AutoscalingPolicyTest extends StratosArtifactsUtils {
-    private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String autoscalingPolicy = "/autoscaling-policies/";
-    String autoscalingPolicyUpdate = "/autoscaling-policies/update/";
+public class AutoscalingPolicyTest {
+    private static final Log log = LogFactory.getLog(AutoscalingPolicyTest.class);
+    private static final String autoscalingPolicy = "/autoscaling-policies/";
+    private static final String autoscalingPolicyUpdate = "/autoscaling-policies/update/";
+    private static final String entityName = "autoscalingPolicy";
 
+    public boolean addAutoscalingPolicy(String autoscalingPolicyName, RestClient restClient) {
+        return restClient.addEntity(autoscalingPolicy + "/" + autoscalingPolicyName,
+                RestConstants.AUTOSCALING_POLICIES, entityName);
 
-    public boolean addAutoscalingPolicy(String autoscalingPolicyName, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(autoscalingPolicy + autoscalingPolicyName);
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES).build();
-
-            HttpResponse response = restClient.doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            log.error("An unknown error occurred while trying to add autoscaling policy....");
-            throw new RuntimeException("An unknown error occurred while trying to add autoscaling policy");
-        } catch (Exception e) {
-            String message = "Could not add Autoscaling policy....";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
     }
 
-    public AutoscalePolicyBean getAutoscalingPolicy(String autoscalingPolicyName, String endpoint,
-                                                    RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES + "/" +
-                    autoscalingPolicyName).build();
-            HttpResponse response = restClient.doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), AutoscalePolicyBean.class);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while getting the autosclaing policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not get autoscaling policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public AutoscalePolicyBean getAutoscalingPolicy(String autoscalingPolicyName, RestClient restClient) {
+        AutoscalePolicyBean bean = (AutoscalePolicyBean) restClient.
+                getEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyName,
+                        AutoscalePolicyBean.class, entityName);
+        return bean;
     }
 
-    public boolean updateAutoscalingPolicy(String autoscalingPolicyName, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(autoscalingPolicyUpdate + autoscalingPolicyName);
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES).build();
-            HttpResponse response = restClient.doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while updating the autosclaing policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not updating autoscaling policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean updateAutoscalingPolicy(String autoscalingPolicyName, RestClient restClient) {
+        return restClient.updateEntity(autoscalingPolicyUpdate + "/" + autoscalingPolicyName,
+                RestConstants.AUTOSCALING_POLICIES, entityName);
+
     }
 
-    public boolean removeAutoscalingPolicy(String autoscalingPolicyName, String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.AUTOSCALING_POLICIES + "/" +
-                    autoscalingPolicyName).build();
-            HttpResponse response = restClient.doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if(response.getContent().contains("is in use")) {
-                    return false;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while removing the autosclaing policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove autoscaling policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean removeAutoscalingPolicy(String autoscalingPolicyName, RestClient restClient) {
+        return restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyName, entityName);
+
     }
 }

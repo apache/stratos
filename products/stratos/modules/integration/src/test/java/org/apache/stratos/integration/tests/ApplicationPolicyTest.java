@@ -19,138 +19,41 @@
 
 package org.apache.stratos.integration.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
-import org.apache.stratos.integration.tests.rest.ErrorResponse;
-import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
-
-import java.net.URI;
 
 /**
  * Test to handle Network partition CRUD operations
  */
-public class ApplicationPolicyTest extends StratosArtifactsUtils {
-    private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String applicationPolicies = "/application-policies/";
-    String applicationPoliciesUpdate = "/application-policies/update/";
+public class ApplicationPolicyTest {
+    private static final Log log = LogFactory.getLog(ApplicationPolicyTest.class);
+    private static final String applicationPolicies = "/application-policies/";
+    private static final String applicationPoliciesUpdate = "/application-policies/update/";
+    private static final String entityName = "applicationPolicy";
 
 
-    public boolean addApplicationPolicy(String networkPartitionId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(applicationPolicies + networkPartitionId);
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATION_POLICIES).build();
-
-            HttpResponse response = restClient.doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while adding the application policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not add application policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean addApplicationPolicy(String applicationPolicyId, RestClient restClient) {
+        return restClient.addEntity(applicationPolicies + "/" + applicationPolicyId,
+                RestConstants.APPLICATION_POLICIES, entityName);
     }
 
-    public ApplicationPolicyBean getApplicationPolicy(String networkPartitionId, String endpoint,
-                                                    RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATION_POLICIES + "/" +
-                    networkPartitionId).build();
-            HttpResponse response = restClient.doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), ApplicationPolicyBean.class);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while getting the application policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not get application policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public ApplicationPolicyBean getApplicationPolicy(String applicationPolicyId, RestClient restClient) {
+
+        ApplicationPolicyBean bean = (ApplicationPolicyBean) restClient.
+                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
+                        ApplicationPolicyBean.class, entityName);
+        return bean;
     }
 
-    public boolean updateApplicationPolicy(String networkPartitionId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(applicationPoliciesUpdate + networkPartitionId);
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATION_POLICIES).build();
-            HttpResponse response = restClient.doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while updating the application policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not update application policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean updateApplicationPolicy(String applicationPolicyId, RestClient restClient) {
+        return restClient.updateEntity(applicationPoliciesUpdate + "/" + applicationPolicyId,
+                RestConstants.APPLICATION_POLICIES, entityName);
+
     }
 
-    public boolean removeApplicationPolicy(String networkPartitionId, String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.APPLICATION_POLICIES + "/" +
-                    networkPartitionId).build();
-            HttpResponse response = restClient.doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if(response.getContent().contains("it is used")) {
-                    return false;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while removing the application policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove application policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean removeApplicationPolicy(String applicationPolicyId, RestClient restClient) {
+        return restClient.removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId, entityName);
     }
 }

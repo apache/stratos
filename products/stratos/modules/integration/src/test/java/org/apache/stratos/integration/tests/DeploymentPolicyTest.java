@@ -19,140 +19,39 @@
 
 package org.apache.stratos.integration.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
-import org.apache.stratos.integration.tests.rest.ErrorResponse;
-import org.apache.stratos.integration.tests.rest.HttpResponse;
 import org.apache.stratos.integration.tests.rest.RestClient;
 
-import java.net.URI;
-
 /**
- * Test to handle Network partition CRUD operations
+ * Test to handle Deployment policy CRUD operations
  */
-public class DeploymentPolicyTest extends StratosArtifactsUtils {
-    private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    String deploymentPolicies = "/deployment-policies/";
-    String deploymentPoliciesUpdate = "/deployment-policies/update/";
+public class DeploymentPolicyTest {
+    private static final Log log = LogFactory.getLog(DeploymentPolicyTest.class);
+    private static final String deploymentPolicies = "/deployment-policies/";
+    private static final String deploymentPoliciesUpdate = "/deployment-policies/update/";
+    private static final String entityName = "deploymentPolicy";
 
-
-    public boolean addDeploymentPolicy(String deploymentPolicyId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(deploymentPolicies + deploymentPolicyId);
-            URI uri = new URIBuilder(endpoint + RestConstants.DEPLOYMENT_POLICIES).build();
-
-            HttpResponse response = restClient.doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while adding the deployment policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not add deployment policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean addDeploymentPolicy(String deploymentPolicyId, RestClient restClient) {
+        return restClient.addEntity(deploymentPolicies + "/" + deploymentPolicyId,
+                RestConstants.DEPLOYMENT_POLICIES, entityName);
     }
 
-    public DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId, String endpoint,
+    public DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId,
                                                     RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.DEPLOYMENT_POLICIES + "/" +
-                    deploymentPolicyId).build();
-            HttpResponse response = restClient.doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), DeploymentPolicyBean.class);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while getting the deployment policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not get deployment policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        DeploymentPolicyBean bean = (DeploymentPolicyBean) restClient.
+                getEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
+                        DeploymentPolicyBean.class, entityName);
+        return bean;
     }
 
-    public boolean updateDeploymentPolicy(String deploymentPolicyId, String endpoint, RestClient restClient) {
-        try {
-            String content = getJsonStringFromFile(deploymentPoliciesUpdate + deploymentPolicyId);
-            URI uri = new URIBuilder(endpoint + RestConstants.DEPLOYMENT_POLICIES).build();
-            HttpResponse response = restClient.doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if(response.getContent().contains("it is used")) {
-                    return false;
-                } else {
-                        GsonBuilder gsonBuilder = new GsonBuilder();
-                        Gson gson = gsonBuilder.create();
-                        ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                        if (errorResponse != null) {
-                            throw new RuntimeException(errorResponse.getErrorMessage());
-                        }
-                    }
-                }
-            String msg = "An unknown error occurred while updating the deployment policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not update deployment policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean updateDeploymentPolicy(String deploymentPolicyId, RestClient restClient) {
+        return restClient.updateEntity(deploymentPoliciesUpdate + "/" + deploymentPolicyId,
+                RestConstants.DEPLOYMENT_POLICIES, entityName);
     }
 
-    public boolean removeDeploymentPolicy(String deploymentPolicyId, String endpoint, RestClient restClient) {
-        try {
-            URI uri = new URIBuilder(endpoint + RestConstants.DEPLOYMENT_POLICIES + "/" +
-                    deploymentPolicyId).build();
-            HttpResponse response = restClient.doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if(response.getContent().contains("is in use")) {
-                    return false;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }
-            }
-            String msg = "An unknown error occurred while removing the deployment policy";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove deployment policy";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+    public boolean removeDeploymentPolicy(String deploymentPolicyId, RestClient restClient) {
+        return restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId, entityName);
     }
 }
