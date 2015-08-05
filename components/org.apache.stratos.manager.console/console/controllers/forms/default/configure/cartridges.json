@@ -11,14 +11,18 @@
     "metadataKeys" : [],
     "portMapping":[
         {
+            "name":"http-80",
             "protocol":"http",
             "port":"80",
-            "proxyPort":"8280"
+            "proxyPort":"8280",
+            "kubernetesPortType":""
         },
         {
+            "name":"http-80",
             "protocol":"https",
             "port":"443",
-            "proxyPort":"8243"
+            "proxyPort":"8243",
+            "kubernetesPortType":""
         }
     ],
     "iaasProvider":[

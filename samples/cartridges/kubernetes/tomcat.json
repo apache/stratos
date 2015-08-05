@@ -13,7 +13,8 @@
             "name": "http-8080",
             "protocol": "http",
             "port": "8080",
-            "proxyPort": "8281"
+            "proxyPort": "8281",
+            "kubernetesPortType":"NodePort"
         }
     ],
     "deployment": {

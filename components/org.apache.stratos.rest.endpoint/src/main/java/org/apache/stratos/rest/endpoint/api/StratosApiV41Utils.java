@@ -93,6 +93,7 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -104,8 +105,6 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
-    public static final String KUBERNETES_SERVICE_TYPE_NODEPORT = "NodePort";
-    public static final String KUBERNETES_SERVICE_TYPE_CLUSTERIP = "ClusterIP";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
 
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
@@ -135,6 +134,7 @@ public class StratosApiV41Utils {
             for (IaasProviderBean providers : iaasProviders) {
                 if (providers.getType().equals(KUBERNETES_IAAS_PROVIDER)) {
                     isKubernetesIaasProviderAvailable = true;
+                    break;
                 }
             }
 
@@ -151,14 +151,13 @@ public class StratosApiV41Utils {
                 String type = portMapping.getKubernetesPortType();
 
                 if (isKubernetesIaasProviderAvailable) {
-                    if (type == null) {
-                        throw new RestAPIException((String.format("Type is not found in portmapping: %s - Possible " +
-                                        "values - %s and %s", portMapping.getName(), KUBERNETES_SERVICE_TYPE_NODEPORT,
-                                KUBERNETES_SERVICE_TYPE_CLUSTERIP)));
-                    } else if (!type.equals(KUBERNETES_SERVICE_TYPE_NODEPORT) && !type.equals(KUBERNETES_SERVICE_TYPE_CLUSTERIP)) {
-                        throw new RestAPIException((String.format("Type is not found in portmapping: %s - Possible " +
-                                        "values - %s and %s", portMapping.getName(), KUBERNETES_SERVICE_TYPE_NODEPORT,
-                                KUBERNETES_SERVICE_TYPE_CLUSTERIP)));
+                    if (type == null || type.equals("")) {
+                        portMapping.setKubernetesPortType(KubernetesConstants.NODE_PORT);
+                    } else if (!type.equals(KubernetesConstants.NODE_PORT) && !type.equals
+                            (KubernetesConstants.CLUSTER_IP)) {
+                        throw new RestAPIException((String.format("Kubernetes" +
+                                        "PortType is invalid : %s - Possible values - %s and %s", portMapping.getName(),
+                                KubernetesConstants.NODE_PORT, KubernetesConstants.CLUSTER_IP)));
                     }
                 }
 
