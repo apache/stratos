@@ -23,8 +23,4 @@
 # event is received.
 # --------------------------------------------------------------
 #
-
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Complete Tenant Event: " | tee -a $log
-echo "Member List: ${STRATOS_MEMBER_LIST_JSON}" | tee -a $log
-echo "Tenant List: ${STRATOS_TENANT_LIST_JSON}" | tee -a $log
+echo `date`": Complete tenant event shell extension executed"

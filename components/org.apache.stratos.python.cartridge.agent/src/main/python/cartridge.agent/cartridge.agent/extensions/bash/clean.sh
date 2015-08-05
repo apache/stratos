@@ -23,6 +23,4 @@
 # to clean up the instance before terminating it.
 # --------------------------------------------------------------
 #
-
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Cleaning the cartridge" | tee -a $log
+echo `date`": Cleaning the cartridge"

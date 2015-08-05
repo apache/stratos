@@ -19,10 +19,8 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed once the instance is
-# activated and ready to serve incoming requests.
+# This extension script will be executed when a subscription domain added
+# event is received by the cartridge agent.
 # --------------------------------------------------------------
 #
-
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Instance activated" | tee -a $log
+echo `date`": Instance activated event shell extension executed"
