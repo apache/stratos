@@ -210,7 +210,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         }
     }
 
-    @Test
+
     public void testApplication() {
         try {
             boolean addedScalingPolicy = autoscalingPolicyTest.addAutoscalingPolicy("autoscaling-policy-1.json",
@@ -278,7 +278,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getType(), "c3");
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 1);
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 2);
-
+            /*
             boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
                     endpoint, restClient);
             assertEquals(updated, true);
@@ -330,7 +330,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
                     restClient);
-            assertEquals(removedDep, false);
+            assertEquals(removedDep, false);    */
 
             boolean removed = applicationTest.removeApplication("g-sc-G123-1", endpoint,
                     restClient);
@@ -340,7 +340,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemoved, null);
 
-            removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
+            boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
             assertEquals(removedGroup, true);
 
@@ -356,15 +356,15 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(removedC3, true);
 
-            removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
+            boolean removedAuto = autoscalingPolicyTest.removeAutoscalingPolicy("autoscaling-policy-1", endpoint,
                     restClient, "admin", "admin");
             assertEquals(removedAuto, true);
 
-            removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
+            boolean removedDep = deploymentPolicyTest.removeDeploymentPolicy("deployment-policy-1", endpoint,
                     restClient);
             assertEquals(removedDep, true);
 
-            removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
+            boolean removedNet = networkPartitionTest.removeNetworkPartition("network-partition-1", endpoint,
                     restClient);
             assertEquals(removedNet, true);
 

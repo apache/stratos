@@ -773,7 +773,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 // get the complete Group Definition
                 if (subGroupCtxt != null) {
                     for (ServiceGroup nestedServiceGroup : serviceGroup.getGroups()) {
-                        if (nestedServiceGroup.getUuid().equals(subGroupCtxt.getName())) {
+                        if (nestedServiceGroup.getName().equals(subGroupCtxt.getName())) {
                             Group nestedGroup = parseGroup(appId, tenantId, key,
                                     subGroupCtxt, subscribableInfoCtxts,
                                     nestedServiceGroup);

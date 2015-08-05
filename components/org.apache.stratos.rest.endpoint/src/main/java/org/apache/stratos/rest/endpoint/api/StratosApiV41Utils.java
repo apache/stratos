@@ -3766,7 +3766,7 @@ public class StratosApiV41Utils {
         if (groupBean.getGroups() != null) {
             if (!groupBean.getGroups().isEmpty()) {
                 for (CartridgeGroupBean g : groupBean.getGroups()) {
-                    groups.add(g.getUuid());
+                    groups.add(g.getName());
                 }
                 validateGroupDuplicationInGroup(groups, parentGroups);
             }
@@ -3775,7 +3775,7 @@ public class StratosApiV41Utils {
             //Recursive because to check groups inside groups
             for (CartridgeGroupBean group : groupBean.getGroups()) {
                 validateGroupDuplicationInGroupDefinition(group, parentGroups);
-                parentGroups.remove(group.getUuid());
+                parentGroups.remove(group.getName());
             }
         }
     }
@@ -3836,7 +3836,12 @@ public class StratosApiV41Utils {
                                                      int tenantId) throws RestAPIException {
         try {
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
-            return (autoscalerServiceClient.getServiceGroupByTenant(serviceGroupName, tenantId).getUuid());
+            if(autoscalerServiceClient.getServiceGroupByTenant(serviceGroupName, tenantId)!=null) {
+                return (autoscalerServiceClient.getServiceGroupByTenant(serviceGroupName, tenantId).getUuid());
+            }
+            else{
+                return null;
+            }
         } catch (RemoteException e) {
             String message = e.getMessage();
             log.error(message);

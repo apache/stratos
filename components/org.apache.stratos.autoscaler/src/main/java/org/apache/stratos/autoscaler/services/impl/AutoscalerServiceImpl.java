@@ -884,11 +884,31 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
 	public ServiceGroup getServiceGroupByTenant(String name,int tenantId) {
+        ServiceGroup selectedGroup=null;
 		if (StringUtils.isEmpty(name)) {
 			return null;
 		}
 		try {
-			return RegistryManager.getInstance().getServiceGroup(name,tenantId);
+            ServiceGroup[] serviceGroups=getServiceGroupsByTenant(tenantId);
+            for(ServiceGroup serviceGroup:serviceGroups){
+               if(serviceGroup.getName().equals(name)){
+                   selectedGroup=serviceGroup;
+               }
+                else{
+                   ServiceGroup[] innerGroups=serviceGroup.getGroups();
+                   while(innerGroups!=null){
+                       for(ServiceGroup nestedGroup:innerGroups) {
+                           if(nestedGroup.getName().equals(name)){
+                               return nestedGroup;
+                           }
+                           else {
+                               innerGroups = nestedGroup.getGroups();
+                           }
+                       }
+                   }
+               }
+            }
+            return selectedGroup;
 		} catch (Exception e) {
 			throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
 		}

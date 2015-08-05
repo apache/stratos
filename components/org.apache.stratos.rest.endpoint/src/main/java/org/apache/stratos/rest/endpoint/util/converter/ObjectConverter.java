@@ -1593,8 +1593,10 @@ public class ObjectConverter {
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
-            groupContext.setDeploymentPolicyUuid(StratosApiV41Utils.getDeploymentPolicyUuidByTenant(groupDefinition
-                    .getDeploymentPolicy(), tenantId));
+            if(groupDefinition.getDeploymentPolicy()!=null) {
+                groupContext.setDeploymentPolicyUuid(StratosApiV41Utils.getDeploymentPolicyUuidByTenant(groupDefinition
+                        .getDeploymentPolicy(), tenantId));
+            }
             // Groups
             if (groupDefinition.getGroups() != null) {
                 groupContext.setGroupContexts(convertGroupDefinitionsToStubGroupContexts(groupDefinition.getGroups(),
@@ -1857,7 +1859,7 @@ public class ObjectConverter {
         List<String> cartridgesDefinitions = groupBean.getCartridges();
 
         servicegroup.setName(groupBean.getName());
-        servicegroup.setUuid(groupBean.getUuid());
+        servicegroup.setUuid(UUID.randomUUID().toString());
         servicegroup.setTenantId(groupBean.getTenantId());
 
         if (groupsDefinitions == null) {
