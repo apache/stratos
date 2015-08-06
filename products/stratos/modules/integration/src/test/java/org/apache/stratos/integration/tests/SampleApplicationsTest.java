@@ -379,7 +379,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         }
     }
 
-
+    @Test
     public void testDeployApplication() {
         try {
             //Initializing event Receivers
@@ -442,13 +442,13 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(deployed, true);
 
             //Application active handling
-            assertApplicationActivation(bean.getApplicationId());
+            assertApplicationActivation(bean.getApplicationUuid());
 
             //Group active handling
-            assertGroupActivation(bean.getApplicationId());
+            assertGroupActivation(bean.getApplicationUuid());
 
             //Cluster active handling
-            assertClusterActivation(bean.getApplicationId());
+            assertClusterActivation(bean.getApplicationUuid());
 
             //Updating application
           /*  boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
@@ -825,35 +825,35 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationUuid
      */
-    private void assertApplicationActivation(String applicationName) {
+    private void assertApplicationActivation(String applicationUuid) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        Application application = ApplicationManager.getApplications().getApplication(applicationUuid);
         while (!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplication(applicationName);
+            application = ApplicationManager.getApplications().getApplication(applicationUuid);
             if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                 break;
             }
         }
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
-        assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationUuid), application);
+        assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationUuid),
                 ApplicationStatus.Active, application.getStatus());
     }
 
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationUuid
      */
-    private void assertGroupActivation(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+    private void assertGroupActivation(String applicationUuid) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationUuid);
         assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+                applicationUuid), application);
 
         Collection<Group> groups = application.getAllGroupsRecursively();
         for(Group group : groups) {
@@ -864,24 +864,24 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationUuid
      */
-    private void assertClusterActivation(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+    private void assertClusterActivation(String applicationUuid) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationUuid);
         assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+                applicationUuid), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for(ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-            String serviceName = clusterDataHolder.getServiceType();
+            String serviceUuid = clusterDataHolder.getServiceUuid();
             String clusterId = clusterDataHolder.getClusterId();
-            Service service = TopologyManager.getTopology().getService(serviceName);
+            Service service = TopologyManager.getTopology().getService(serviceUuid);
             assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                    applicationName, serviceName), service);
+                    applicationUuid, serviceUuid), service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                    applicationName, serviceName, clusterId), cluster);
+                    applicationUuid, serviceUuid, clusterId), cluster);
             boolean clusterActive = false;
 
             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
@@ -894,6 +894,8 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     }
                 }
                 clusterActive = activeInstances >= clusterDataHolder.getMinInstances();
+                log.info(String.format("Active instance count: %s, Min instance count: %s", activeInstances,
+                        clusterDataHolder.getMinInstances()));
 
                 if (!clusterActive) {
                     break;

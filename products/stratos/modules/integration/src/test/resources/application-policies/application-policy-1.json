@@ -3,11 +3,11 @@
     "algorithm": "one-after-another",
     "networkPartitions": [
         "network-partition-1",
-        "network-partition-2"
+	 "network-partition-2"
     ],
     "properties": [
         {
-            "name": "networkPartitionGroups",
+            "name": "key-1",
             "value": "network-partition-1,network-partition-2"
         },
         {
