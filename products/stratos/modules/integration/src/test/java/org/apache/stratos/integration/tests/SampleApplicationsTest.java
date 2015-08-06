@@ -481,7 +481,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(unDeployed, true);
 
-            assertApplicationUndeploy("g-sc-G123-1");
+            assertApplicationUndeploy(bean.getApplicationUuid());
 
             boolean removed = applicationTest.removeApplication("g-sc-G123-1", endpoint,
                     restClient);
@@ -911,16 +911,16 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationUuid
      */
-    private void assertApplicationUndeploy(String applicationName) {
+    private void assertApplicationUndeploy(String applicationUuid) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        Application application = ApplicationManager.getApplications().getApplication(applicationUuid);
         ApplicationContext applicationContext = null;
         try {
-            applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
+            applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationUuid);
         } catch (RemoteException e) {
-            log.error("Error while getting the application context for [application] " + applicationName);
+            log.error("Error while getting the application context for [application] " + applicationUuid);
         }
         while (((application != null) && application.getInstanceContextCount() > 0) ||
                 (applicationContext == null || applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING))) {
@@ -928,11 +928,11 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplication(applicationName);
+            application = ApplicationManager.getApplications().getApplication(applicationUuid);
             try {
-                applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
+                applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationUuid);
             } catch (RemoteException e) {
-                log.error("Error while getting the application context for [application] " + applicationName);
+                log.error("Error while getting the application context for [application] " + applicationUuid);
             }
             if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                 break;
@@ -940,29 +940,29 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         }
 
         assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+                applicationUuid), application);
         assertNotNull(String.format("Application Context is not found: [application-id] %s",
-                applicationName), applicationContext);
+                applicationUuid), applicationContext);
 
         //Force undeployment after the graceful deployment
         if (application.getInstanceContextCount() > 0 ||
                 applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING)) {
-            log.info("Force undeployment is going to start for the [application] " + applicationName);
+            log.info("Force undeployment is going to start for the [application] " + applicationUuid);
 
-            applicationTest.forceUndeployApplication(applicationName, endpoint, restClient);
+            applicationTest.forceUndeployApplication(applicationUuid, endpoint, restClient);
             while (application.getInstanceContextCount() > 0 ||
                     applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING)) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignore) {
                 }
-                application = ApplicationManager.getApplications().getApplication(applicationName);
+                application = ApplicationManager.getApplications().getApplication(applicationUuid);
                 if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                     break;
                 }
             }
         }
-        assertEquals(String.format("Application status did not change to Created: [application-id] %s", applicationName),
+        assertEquals(String.format("Application status did not change to Created: [application-id] %s", applicationUuid),
                 APPLICATION_STATUS_CREATED, applicationContext.getStatus());
 
     }
