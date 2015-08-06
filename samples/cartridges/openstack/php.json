@@ -1,17 +1,17 @@
 {
-    "type": "php",
-    "provider": "apache",
+    "type": "esb",
+    "provider": "wso2",
     "category": "framework",
-    "host": "php.stratos.org",
-    "displayName": "php",
-    "description": "php Cartridge",
+    "host": "esb.stratos.org",
+    "displayName": "esb",
+    "description": "esb Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
         {
-            "name": "http-80",
+            "name": "http-22",
             "protocol": "http",
-            "port": "8080",
+            "port": "22",
             "proxyPort": "8280"
         }
     ],
@@ -20,25 +20,20 @@
     "iaasProvider": [
         {
             "type": "openstack",
-            "imageId": "RegionOne/b4ca55e3-58ab-4937-82ce-817ebd10240e",
+            "imageId": "RegionOne/a63609be-61df-436f-80bc-d2b6068a4c3a",
             "networkInterfaces": [
                 {
-<<<<<<< HEAD
                     "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
-=======
-                    "name": "network-routable",
-                    "networkUuid": "512e1f54-1e85-4dac-b2e6-f0b30fc552cf"
->>>>>>> f5bb41e... Update the INSTALL.md file and samples
                 }
             ],
             "property": [
                 {
                     "name": "instanceType",
-                    "value": "RegionOne/15c3065c-462c-4977-9143-094d63d1c2c7"
+                    "value": "RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
                 },
                 {
                     "name": "keyPair",
-                    "value": "gayan-os"
+                    "value": "vishanth-key"
                 },
                 {
                     "name": "securityGroups",
