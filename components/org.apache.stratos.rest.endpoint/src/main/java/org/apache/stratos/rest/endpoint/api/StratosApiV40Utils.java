@@ -69,7 +69,8 @@ public class StratosApiV40Utils {
 
         if (cloudControllerServiceClient != null) {
 
-            Cartridge cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinitionBean);
+            Cartridge cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig
+                    (cartridgeDefinitionBean, null, -1);
 
             if (cartridgeConfig == null) {
                 throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");

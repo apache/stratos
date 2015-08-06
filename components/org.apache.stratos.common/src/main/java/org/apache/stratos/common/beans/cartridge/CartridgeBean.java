@@ -27,7 +27,6 @@ import java.util.List;
 @XmlRootElement(name = "cartridgeBean")
 public class CartridgeBean {
 
-	private String uuid;
     private String type;
     private String provider;
     /**
@@ -49,7 +48,6 @@ public class CartridgeBean {
      */
     private String loadBalancingIPType;
     private List<PropertyBean> property;
-	private int tenantId;
 
     private String getDeploymentDetails() {
         if (getDeployment() != null) {
@@ -228,20 +226,4 @@ public class CartridgeBean {
     public void setMetadataKeys(List<String> metadataKeys) {
         this.metadataKeys = metadataKeys;
     }
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
-	}
 }

@@ -289,10 +289,10 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-        cartridgeDefinitionBean.setUuid(UUID.randomUUID().toString());
+        String cartridgeUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
+        int tenantId = carbonContext.getTenantId();
 
         CartridgeBean cartridgeBean = null;
         try {
@@ -302,17 +302,17 @@ public class StratosApiV41 extends AbstractApi {
         }
         if (cartridgeBean != null) {
             String msg = String.format("Cartridge already exists: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
-                    cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId());
+                    cartridgeType, cartridgeUuid, tenantId);
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
         }
 
-        StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
+        StratosApiV41Utils.addCartridge(cartridgeDefinitionBean, cartridgeUuid, tenantId);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Cartridge added successfully: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
-                        cartridgeType,cartridgeDefinitionBean.getUuid(),cartridgeDefinitionBean.getTenantId()))).build();
+                        cartridgeType,cartridgeUuid, tenantId))).build();
     }
 
     /**
@@ -329,9 +329,6 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/cartridges/manage")
     public Response updateCartridge(
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
-
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        cartridgeDefinitionBean.setTenantId(carbonContext.getTenantId());
         StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
         return Response.ok(url)

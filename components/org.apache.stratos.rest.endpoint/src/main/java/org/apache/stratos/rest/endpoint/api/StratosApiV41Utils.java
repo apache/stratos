@@ -119,12 +119,13 @@ public class StratosApiV41Utils {
      * @param cartridgeBean Cartridge definition
      * @throws RestAPIException
      */
-    public static void addCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
+    public static void addCartridge(CartridgeBean cartridgeBean, String cartridgeUuid,
+                                    int tenantId) throws RestAPIException {
 
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Adding cartridge: [cartridge-uuid] %s[cartridge-type] %s ",
-                        cartridgeBean.getUuid(), cartridgeBean.getType()));
+                        cartridgeUuid, cartridgeBean.getType()));
             }
 
             List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
@@ -139,19 +140,19 @@ public class StratosApiV41Utils {
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Port mapping name not found, default value generated: " +
                                         "[cartridge-uuid] %s [cartridge-type] %s [port-mapping-name] %s",
-                                cartridgeBean.getUuid(), cartridgeBean.getType(), portMapping.getName()));
+                                cartridgeUuid, cartridgeBean.getType(), portMapping.getName()));
                     }
                 }
             }
 
-            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
+            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean, cartridgeUuid, tenantId);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s ",
-                        cartridgeBean.getUuid(), cartridgeBean.getType()));
+                        cartridgeUuid, cartridgeBean.getType()));
             }
         } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
             String msg = "Could not add cartridge as it is already exits";
@@ -182,28 +183,34 @@ public class StratosApiV41Utils {
      */
     public static void updateCartridge(CartridgeBean cartridgeBean) throws RestAPIException {
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+
+            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+            Cartridge existingCartridge = cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
+                    carbonContext.getTenantId());
+            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean, existingCartridge.getUuid(),
+                    existingCartridge.getTenantId());
+            cartridgeConfig.setUuid(existingCartridge.getUuid());
+
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Updating cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d",
-                        cartridgeBean.getUuid(),
-                        cartridgeBean.getType(),cartridgeBean.getTenantId()));
+                        existingCartridge.getUuid(), cartridgeBean.getType(), existingCartridge.getTenantId()));
             }
 
             List<IaasProviderBean> iaasProviders = cartridgeBean.getIaasProvider();
             if ((iaasProviders == null) || iaasProviders.size() == 0) {
-                throw new RestAPIException(String.format("IaaS providers not found in cartridge: [cartridge-uuid] %s [tenant-id] %d" +
-                        "[cartridge-type] %s", cartridgeBean.getUuid(), cartridgeBean.getType(),cartridgeBean.getTenantId()));
+                throw new RestAPIException(String.format("IaaS providers not found in cartridge: [cartridge-uuid] %s " +
+                                "[cartridge-type] %s [tenant-id] %d", existingCartridge.getUuid(), cartridgeBean.getType(),
+                        existingCartridge.getTenantId()));
             }
 
-            Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean);
-            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-            Cartridge existingCartridge=cloudControllerServiceClient.getCartridgeByTenant(cartridgeBean.getType(),
-                    cartridgeBean.getTenantId());
-            cartridgeConfig.setUuid(existingCartridge.getUuid());
+
             cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Successfully updated cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id]",
-                        cartridgeBean.getUuid() ,cartridgeBean.getType(), cartridgeBean.getTenantId()));
+                log.debug(String.format("Successfully updated cartridge: [cartridge-uuid] %s [cartridge-type] %s " +
+                                "[tenant-id] %d", existingCartridge.getUuid(), cartridgeBean.getType(),
+                        existingCartridge.getTenantId()));
             }
         } catch (CloudControllerServiceCartridgeDefinitionNotExistsExceptionException e) {
             String msg = "Could not add cartridge";
@@ -235,10 +242,10 @@ public class StratosApiV41Utils {
      * @return Created cartridge
      * @throws RestAPIException
      */
-    private static Cartridge createCartridgeConfig(CartridgeBean cartridgeDefinition)
-            throws RestAPIException {
+    private static Cartridge createCartridgeConfig(CartridgeBean cartridgeDefinition, String cartridgeUuid,
+                                                   int tenantId) throws RestAPIException {
         Cartridge cartridgeConfig =
-                ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
+                ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition, cartridgeUuid, tenantId);
         if (cartridgeConfig == null) {
             throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
         }

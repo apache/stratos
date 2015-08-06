@@ -72,15 +72,15 @@ public class ObjectConverter {
     public static final String CLUSTER_PROPERTY = "cluster";
 
     public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
-            CartridgeBean cartridgeBean) throws RestAPIException {
+            CartridgeBean cartridgeBean, String cartridgeUuid, int tenantId) throws RestAPIException {
 
         if (cartridgeBean == null) {
             return null;
         }
 
         Cartridge cartridge = new Cartridge();
-        cartridge.setUuid(cartridgeBean.getUuid());
-        cartridge.setTenantId(cartridgeBean.getTenantId());
+        cartridge.setUuid(cartridgeUuid);
+        cartridge.setTenantId(tenantId);
         cartridge.setType(cartridgeBean.getType());
         cartridge.setHostName(cartridgeBean.getHost());
         cartridge.setProvider(cartridgeBean.getProvider());
@@ -114,13 +114,13 @@ public class ObjectConverter {
 
         // iaas providers
         if (cartridgeBean.getIaasProvider() != null && !cartridgeBean.getIaasProvider().isEmpty()) {
-            cartridge.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider(),cartridgeBean.getTenantId()));
+            cartridge.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider(),
+                    tenantId));
         }
 
         // properties
         if (cartridgeBean.getProperty() != null && !cartridgeBean.getProperty().isEmpty()) {
-            cartridge.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty(),
-                    cartridgeBean.getTenantId()));
+            cartridge.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty(), tenantId));
         }
         return cartridge;
     }
@@ -1675,42 +1675,41 @@ public class ObjectConverter {
      * @return CartridgeBean
      */
     public static CartridgeBean convertCartridgeToCartridgeDefinitionBean(Cartridge cartridgeInfo) {
-        CartridgeBean cartridge = new CartridgeBean();
-        cartridge.setUuid(cartridgeInfo.getUuid());
-        cartridge.setType(cartridgeInfo.getType());
-        cartridge.setProvider(cartridgeInfo.getProvider());
-        cartridge.setCategory(cartridgeInfo.getCategory());
-        cartridge.setHost(cartridgeInfo.getHostName());
-        cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-        cartridge.setDescription(cartridgeInfo.getDescription());
-        cartridge.setVersion(cartridgeInfo.getVersion());
-        cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-        cartridge.setDescription(cartridgeInfo.getDescription());
-        cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
+        CartridgeBean cartridgeBean = new CartridgeBean();
+        cartridgeBean.setType(cartridgeInfo.getType());
+        cartridgeBean.setProvider(cartridgeInfo.getProvider());
+        cartridgeBean.setCategory(cartridgeInfo.getCategory());
+        cartridgeBean.setHost(cartridgeInfo.getHostName());
+        cartridgeBean.setDisplayName(cartridgeInfo.getDisplayName());
+        cartridgeBean.setDescription(cartridgeInfo.getDescription());
+        cartridgeBean.setVersion(cartridgeInfo.getVersion());
+        cartridgeBean.setMultiTenant(cartridgeInfo.getMultiTenant());
+        cartridgeBean.setDescription(cartridgeInfo.getDescription());
+        cartridgeBean.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
 
         if (cartridgeInfo.getMetadataKeys() != null && cartridgeInfo.getMetadataKeys()[0] != null) {
-            cartridge.setMetadataKeys(Arrays.asList(cartridgeInfo.getMetadataKeys()));
+            cartridgeBean.setMetadataKeys(Arrays.asList(cartridgeInfo.getMetadataKeys()));
         }
 
         //convert persistence
-        cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
+        cartridgeBean.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
 
         //convert deployment
-        cartridge.setDeployment(convertDeploymentToDeploymentBean(cartridgeInfo.getDeploymentDirs(),
+        cartridgeBean.setDeployment(convertDeploymentToDeploymentBean(cartridgeInfo.getDeploymentDirs(),
                 cartridgeInfo.getBaseDir()));
 
         //convert IaaSProvider
-        cartridge.setIaasProvider(convertIaaSProviderToIaaSProviderBean(
+        cartridgeBean.setIaasProvider(convertIaaSProviderToIaaSProviderBean(
                 cartridgeInfo.getIaasConfigs()));
 
         //Convert Port-mappings
-        cartridge.setPortMapping(convertPortMappingsToStubPortMappingBeans(
+        cartridgeBean.setPortMapping(convertPortMappingsToStubPortMappingBeans(
                 cartridgeInfo.getPortMappings()));
 
         //convert properties
-        cartridge.setProperty(convertCCStubPropertiesToPropertyBeans(cartridgeInfo.getProperties()));
+        cartridgeBean.setProperty(convertCCStubPropertiesToPropertyBeans(cartridgeInfo.getProperties()));
 
-        return cartridge;
+        return cartridgeBean;
     }
 
     public static ApplicationInfoBean convertApplicationToApplicationBean(Application application) {
