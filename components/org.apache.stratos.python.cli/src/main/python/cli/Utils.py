@@ -18,6 +18,7 @@
 from __future__ import print_function
 import sys
 from texttable import *
+import json
 import Configs
 from Logging import logging
 
@@ -67,6 +68,15 @@ class PrintableTable(Texttable):
 
     def print_table(self):
         print(self.draw())
+
+class PrintableJSON(Texttable):
+
+    def __init__(self, json):
+        self.json = json
+
+    def pprint(self):
+
+        print(json.dumps(self.json, indent=4, separators=(',', ': ')))
 
 def auth(func):
     """Authenticate"""
