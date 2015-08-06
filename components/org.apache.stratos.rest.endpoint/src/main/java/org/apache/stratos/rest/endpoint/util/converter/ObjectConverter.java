@@ -1847,7 +1847,8 @@ public class ObjectConverter {
         return carbonTenantInfoBean;
     }
 
-    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(CartridgeGroupBean groupBean)
+    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(CartridgeGroupBean groupBean,
+                                                                                 int tenantId)
             throws ServiceGroupDefinitionException {
 
         if (groupBean == null) {
@@ -1860,7 +1861,7 @@ public class ObjectConverter {
 
         servicegroup.setName(groupBean.getName());
         servicegroup.setUuid(UUID.randomUUID().toString());
-        servicegroup.setTenantId(groupBean.getTenantId());
+        servicegroup.setTenantId(tenantId);
 
         if (groupsDefinitions == null) {
             groupsDefinitions = new ArrayList<CartridgeGroupBean>(0);
@@ -1875,7 +1876,7 @@ public class ObjectConverter {
 
         int i = 0;
         for (CartridgeGroupBean groupDefinition : groupsDefinitions) {
-            subGroups[i] = convertServiceGroupDefinitionToASStubServiceGroup(groupDefinition);
+            subGroups[i] = convertServiceGroupDefinitionToASStubServiceGroup(groupDefinition, tenantId);
             ++i;
         }
 
@@ -1927,7 +1928,6 @@ public class ObjectConverter {
         }
 
         CartridgeGroupBean serviceGroupDefinition = new CartridgeGroupBean();
-        serviceGroupDefinition.setUuid(serviceGroup.getUuid());
         serviceGroupDefinition.setName(serviceGroup.getName());
         String[] cartridges = serviceGroup.getCartridges();
         ServiceGroup[] groups = serviceGroup.getGroups();

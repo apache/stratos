@@ -495,15 +495,15 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeGroupBean cartridgeGroupBean) throws RestAPIException {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        cartridgeGroupBean.setUuid(UUID.randomUUID().toString());
-        cartridgeGroupBean.setTenantId(carbonContext.getTenantId());
+        String cartrideGroupUuid= UUID.randomUUID().toString();
+        int tenantId = carbonContext.getTenantId();
         try {
-            StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean);
-            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
-
+            StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean, cartrideGroupUuid, tenantId);
+            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Cartridge Group added successfully: [cartridge-group-uuid] %s [cartridge-group-name] %s [tenant-id] %d",
-                            cartridgeGroupBean.getUuid(),cartridgeGroupBean.getName(),cartridgeGroupBean.getTenantId()))).build();
+                    String.format("Cartridge Group added successfully: [cartridge-group-uuid] %s " +
+                                    "[cartridge-group-name] %s [tenant-id] %d", cartrideGroupUuid,
+                            cartridgeGroupBean.getName(), tenantId))).build();
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, e.getMessage())).build();
@@ -536,12 +536,12 @@ public class StratosApiV41 extends AbstractApi {
 
         try {
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            StratosApiV41Utils.updateServiceGroup(cartridgeGroupBean,carbonContext.getTenantId());
-            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getUuid()).build();
+            StratosApiV41Utils.updateServiceGroup(cartridgeGroupBean, carbonContext.getTenantId());
+            URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
 
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Cartridge group updated successfully: [cartridge-group-uuid] %s [cartridge-group-name] %s [tenant-id] %d",
-                            cartridgeGroupBean.getUuid(),cartridgeGroupBean.getName(),cartridgeGroupBean.getTenantId()))).build();
+                    String.format("Cartridge group updated successfully: [cartridge-group-uuid] %s",
+                            cartridgeGroupBean.getName()))).build();
 
         } catch (InvalidCartridgeGroupDefinitionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(

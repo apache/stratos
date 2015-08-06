@@ -645,7 +645,7 @@ public class RegistryManager {
                     policyID;
             delete(resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Autoscaler policy deleted from registry: [id]", policyID));
+                log.debug(String.format("Autoscaler policy deleted from registry: %s [id]", policyID));
             }
         } finally {
             endTenantFlow();
