@@ -66,9 +66,31 @@ class CLI(Cmd):
         table.print_table()
 
     """
-    # User Entity
+    User
+     * list-users
+     * add-user
 
     """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_users(self, line , opts=None):
+        """Illustrate the base class method use."""
+        try:
+            users = Stratos.list_users()
+            table = PrintableTable()
+            rows = [["Name", "language"]]
+            table.set_cols_align(["l", "r"])
+            table.set_cols_valign(["t", "m"])
+            for user in users:
+                rows.append([user['role'], user['userName']])
+            table.add_rows(rows)
+            table.print_table()
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -91,27 +113,6 @@ class CLI(Cmd):
                 print("Error creating the user")
         except AuthenticationError as e:
             self.perror("Authentication Error")
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_list_users(self, line , opts=None):
-        """Illustrate the base class method use."""
-        try:
-            users = Stratos.list_users()
-            table = PrintableTable()
-            rows = [["Name", "language"]]
-            table.set_cols_align(["l", "r"])
-            table.set_cols_valign(["t", "m"])
-            for user in users:
-                rows.append([user['role'], user['userName']])
-            table.add_rows(rows)
-            table.print_table()
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
