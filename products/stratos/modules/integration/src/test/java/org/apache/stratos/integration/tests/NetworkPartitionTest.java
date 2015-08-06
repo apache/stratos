@@ -32,6 +32,8 @@ import static junit.framework.Assert.assertTrue;
  */
 public class NetworkPartitionTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(NetworkPartitionTest.class);
+    private static final String TEST_PATH = "/network-partition-test";
+
 
     @Test
     public void testNetworkPartition() {
@@ -39,7 +41,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             String networkPartitionId = "network-partition-3";
             log.info("Started network partition test case**************************************");
 
-            boolean added = restClient.addEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean added = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             networkPartitionId + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
 
@@ -54,7 +56,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             assertEquals(bean.getPartitions().get(0).getProperty().get(0).getName(), "region");
             assertEquals(bean.getPartitions().get(0).getProperty().get(0).getValue(), "default");
 
-            boolean updated = restClient.updateEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             networkPartitionId + "-v1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
 

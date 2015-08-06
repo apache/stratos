@@ -1,27 +1,27 @@
 {
-    "id": "deployment-policy-1",
+    "id": "deployment-policy-4",
     "networkPartitions": [
         {
-            "id": "network-partition-3",
+            "id": "network-partition-9",
             "partitionAlgo": "one-after-another",
             "partitions": [
                 {
                     "id": "partition-1",
-                    "partitionMax": 20
+                    "partitionMax": 4
                 }
             ]
         },
         {
-            "id": "network-partition-4",
+            "id": "network-partition-10",
             "partitionAlgo": "round-robin",
             "partitions": [
                 {
-                    "id": "network-partition-2-partition-1",
-                    "partitionMax": 10
+                    "id": "network-partition-10-partition-1",
+                    "partitionMax": 4
                 },
                 {
-                    "id": "network-partition-2-partition-2",
-                    "partitionMax": 9
+                    "id": "network-partition-10-partition-2",
+                    "partitionMax": 4
                 }
             ]
         }

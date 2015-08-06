@@ -44,7 +44,7 @@ public class RestConstants {
     public static final String NETWORK_PARTITIONS_NAME = "networkPartition";
     public static final String DEPLOYMENT_POLICIES_PATH = "/deployment-policies/";
     public static final String DEPLOYMENT_POLICIES_NAME = "deploymentPolicy";
-    public static final String APPLICATIONS_PATH = "/applications/simple/single-cartridge-app/";
+    public static final String APPLICATIONS_PATH = "/applications/";
     public static final String APPLICATIONS_NAME = "application";
     public static final String APPLICATION_POLICIES_PATH = "/application-policies/";
     public static final String APPLICATION_POLICIES_NAME = "applicationPolicy";

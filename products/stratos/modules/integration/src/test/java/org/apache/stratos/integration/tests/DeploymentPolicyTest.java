@@ -33,6 +33,8 @@ import static junit.framework.Assert.assertTrue;
  */
 public class DeploymentPolicyTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(DeploymentPolicyTest.class);
+    private static final String TEST_PATH = "/deployment-policy-test";
+
 
     @Test
     public void testDeploymentPolicy() {
@@ -40,17 +42,17 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
             String deploymentPolicyId = "deployment-policy-2";
             log.info("Started deployment policy test case**************************************");
 
-            boolean addedN1 = restClient.addEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-5" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-6" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             deploymentPolicyId + ".json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
@@ -77,13 +79,13 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
             assertEquals(bean.getNetworkPartitions().get(1).getPartitions().get(1).getPartitionMax(), 9);
 
             //update network partition
-            boolean updated = restClient.updateEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-5-v1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(updated, true);
 
             //update deployment policy with new partition and max values
-            boolean updatedDep = restClient.updateEntity(RestConstants.DEPLOYMENT_POLICIES_PATH +
+            boolean updatedDep = restClient.updateEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH +
                             "/" + deploymentPolicyId + "-v1.json", RestConstants.DEPLOYMENT_POLICIES,
                     RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(updatedDep, true);

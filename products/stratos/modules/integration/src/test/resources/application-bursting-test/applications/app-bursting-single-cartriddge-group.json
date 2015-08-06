@@ -1,0 +1,70 @@
+{
+    "applicationId": "cartridge-group-app",
+    "alias": "my-cartridge-group-app",
+    "components": {
+        "groups": [
+            {
+                "name": "esb-php-group",
+                "alias": "my-esb-php-group",
+                "deploymentPolicy": "deployment-policy-4",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 2,
+                "cartridges": [
+                    {
+                        "type": "esb",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "my-esb",
+                            "autoscalingPolicy": "autoscaling-policy-2",
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-esb-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
+                            }
+                        }
+                    },
+                    {
+                        "type": "php",
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 4,
+                        "lvsVirtualIP": "192.168.56.50|255.255.255.0",
+                        "subscribableInfo": {
+                            "alias": "my-php",
+                            "autoscalingPolicy": "autoscaling-policy-2",
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "cartridges": [
+            {
+                "type": "tomcat",
+                "cartridgeMin": 2,
+                "cartridgeMax": 4,
+                "subscribableInfo": {
+                    "alias": "my-tomcat",
+                    "autoscalingPolicy": "autoscaling-policy-2",
+                    "deploymentPolicy": "deployment-policy-4",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
+                }
+            }
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}
+

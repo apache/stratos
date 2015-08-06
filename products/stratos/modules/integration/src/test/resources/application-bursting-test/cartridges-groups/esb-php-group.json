@@ -1,0 +1,19 @@
+{
+    "name": "esb-php-group",
+    "cartridges": [
+        "esb",
+        "php"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            {
+                "aliases": [
+                    "cartridge.my-esb",
+                    "cartridge.my-php"
+                ]
+            }
+        ],
+        "terminationBehaviour": "terminate-none"
+    }
+}
+

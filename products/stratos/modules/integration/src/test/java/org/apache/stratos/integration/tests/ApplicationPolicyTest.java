@@ -34,6 +34,8 @@ import static junit.framework.Assert.assertTrue;
  */
 public class ApplicationPolicyTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(ApplicationPolicyTest.class);
+    private static final String TEST_PATH = "/application-policy-test";
+
 
     @Test
     public void testApplicationPolicy() {

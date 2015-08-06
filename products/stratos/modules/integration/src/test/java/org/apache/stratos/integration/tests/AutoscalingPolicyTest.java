@@ -31,6 +31,8 @@ import static junit.framework.Assert.assertTrue;
  */
 public class AutoscalingPolicyTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(AutoscalingPolicyTest.class);
+    private static final String TEST_PATH = "/autoscaling-policy-test";
+
 
     @Test
     public void testAutoscalingPolicy() {

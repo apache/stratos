@@ -33,6 +33,8 @@ import static junit.framework.Assert.assertTrue;
  */
 public class CartridgeTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(CartridgeTest.class);
+    private static final String TEST_PATH = "/cartridge-group-test";
+
 
     @Test
     public void testCartridge() {

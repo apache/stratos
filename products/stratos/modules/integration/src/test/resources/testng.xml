@@ -57,5 +57,10 @@
             <class name="org.apache.stratos.integration.tests.SampleApplicationsTest" />
         </classes>
     </test>
+    <!--test name="ApplicationBurstingTest">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.ApplicationBurstingTest" />
+        </classes>
+    </test-->
 
 </suite>
