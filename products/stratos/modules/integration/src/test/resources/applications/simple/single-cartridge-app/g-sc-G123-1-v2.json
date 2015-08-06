@@ -7,7 +7,7 @@
             {
                 "name": "G1",
                 "groupMaxInstances": 5,
-                "groupMinInstances": 4,
+                "groupMinInstances": 2,
                 "alias": "group1",
                 "cartridges": [
                     {

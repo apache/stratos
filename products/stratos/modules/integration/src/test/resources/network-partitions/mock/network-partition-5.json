@@ -1,6 +1,6 @@
 {
-    "id": "network-partition-1",
-    "provider": "gce",
+    "id": "network-partition-5",
+    "provider": "mock",
     "partitions": [
         {
             "id": "partition-1",

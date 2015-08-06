@@ -18,12 +18,20 @@
  */
 package org.apache.stratos.integration.tests;
 
-import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
+import org.apache.stratos.common.beans.application.ApplicationBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
+import org.testng.annotations.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
- * Super class for application test cases
+ * This will handle the application bursting test cases
  */
-public class ApplicationTest extends StratosTestServerManager {
+public class ApplicationBurstingTest extends StratosTestServerManager {
 
+    @Test
+    public void testApplication() {
+        assertTrue("test passes", true);
+    }
 }

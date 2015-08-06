@@ -34,4 +34,19 @@ public class RestConstants {
     public static final String APPLICATIONS_DEPLOY = "/deploy";
     public static final String APPLICATIONS_UNDEPLOY = "/undeploy";
 
+    public static final String AUTOSCALING_POLICIES_PATH = "/autoscaling-policies/";
+    public static final String AUTOSCALING_POLICIES_NAME = "autoscalingPolicy";
+    public static final String CARTRIDGE_GROUPS_PATH = "/cartridges-groups/";
+    public static final String CARTRIDGE_GROUPS_NAME = "cartridgeGroup";
+    public static final String CARTRIDGES_PATH = "/cartridges/mock/";
+    public static final String CARTRIDGES_NAME = "cartridge";
+    public static final String NETWORK_PARTITIONS_PATH = "/network-partitions/mock/";
+    public static final String NETWORK_PARTITIONS_NAME = "networkPartition";
+    public static final String DEPLOYMENT_POLICIES_PATH = "/deployment-policies/";
+    public static final String DEPLOYMENT_POLICIES_NAME = "deploymentPolicy";
+    public static final String APPLICATIONS_PATH = "/applications/simple/single-cartridge-app/";
+    public static final String APPLICATIONS_NAME = "application";
+    public static final String APPLICATION_POLICIES_PATH = "/application-policies/";
+    public static final String APPLICATION_POLICIES_NAME = "applicationPolicy";
+
 }

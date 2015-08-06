@@ -1,13 +1,13 @@
 {
-    "id": "network-partition-3",
-    "provider": "kubernetes",
+    "id": "network-partition-7",
+    "provider": "mock",
     "partitions": [
         {
             "id": "partition-1",
             "property": [
                 {
-                    "name": "cluster",
-                    "value": "kubernetes-cluster-1"
+                    "name": "region",
+                    "value": "default"
                 }
             ]
         }

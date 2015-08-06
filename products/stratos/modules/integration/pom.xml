@@ -117,6 +117,9 @@
                         <extracted.dir>stratos-parent-${project.version}</extracted.dir>
                         <emma.home>${basedir}/target/emma</emma.home>
                     </systemProperties>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                     <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
             </plugin>

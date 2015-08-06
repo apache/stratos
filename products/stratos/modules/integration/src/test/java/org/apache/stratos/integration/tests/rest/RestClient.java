@@ -315,7 +315,7 @@ public class RestClient {
             log.error(msg + entityName);
             throw new RuntimeException(msg + entityName);
         } catch (Exception e) {
-            String message = "Could not add " + entityName;
+            String message = "Could not update " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);
         }

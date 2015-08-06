@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,14 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.integration.tests;
-
-import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
+package org.apache.stratos.integration.tests.config;
 
 /**
- * Super class for application test cases
+ * Created by reka on 5/7/15.
  */
-public class ApplicationTest extends StratosTestServerManager {
-
+public class ApplicationConfigParser {
 }
