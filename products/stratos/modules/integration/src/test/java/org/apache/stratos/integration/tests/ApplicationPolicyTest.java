@@ -43,17 +43,17 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             String applicationPolicyId = "application-policy-2";
             log.info("Started Application policy test case**************************************");
 
-            boolean addedN1 = restClient.addEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-7" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-8" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             applicationPolicyId + ".json",
                     RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addedDep, true);

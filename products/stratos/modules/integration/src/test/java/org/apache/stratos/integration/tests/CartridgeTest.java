@@ -42,7 +42,7 @@ public class CartridgeTest extends StratosTestServerManager {
 
         try {
             String cartridgeType = "c0";
-            boolean added = restClient.addEntity(RestConstants.CARTRIDGES_PATH + "/" +
+            boolean added = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(added, true);
@@ -76,7 +76,7 @@ public class CartridgeTest extends StratosTestServerManager {
             }
 
 
-            boolean updated = restClient.updateEntity(RestConstants.CARTRIDGES_PATH + "/" +
+            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(updated, true);

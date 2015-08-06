@@ -39,7 +39,7 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
         log.info("Started autoscaling policy test case**************************************");
         String policyId = "autoscaling-policy-c0";
         try {
-            boolean added = restClient.addEntity(RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
+            boolean added = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
 
             assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), added, true);
@@ -56,7 +56,7 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
                     bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
-            boolean updated = restClient.updateEntity(RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
+            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
 
             assertEquals(String.format("[autoscaling-policy-id] %s update failed", policyId), updated, true);
