@@ -38,7 +38,11 @@ class CLI(Cmd):
         # resolving the '-' issue
         return [a[3:].replace('_', '-') for a in self.get_names() if a.replace('_', '-').startswith('do-'+text)]
 
+    """
 
+    Stratos CLI specific methods
+
+    """
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -153,13 +157,16 @@ class CLI(Cmd):
     def do_list_cartridge_groups(self, line , opts=None):
         """Illustrate the base class method use."""
         cartridge_groups = Stratos.list_cartridge_groups()
-        table = PrintableTable()
-        rows = [["Name", "No. of cartridges", "No of groups", "Dependency scaling"]]
-        for cartridge_group in cartridge_groups:
-            rows.append([cartridge_group['name'], len(cartridge_group['cartridges']),
-                         len(cartridge_group['cartridges']), cartridge_group['groupScalingEnabled']])
-        table.add_rows(rows)
-        table.print_table()
+        if not cartridge_groups:
+            print("No cartrige groups found")
+        else:
+            table = PrintableTable()
+            rows = [["Name", "No. of cartridges", "No of groups", "Dependency scaling"]]
+            for cartridge_group in cartridge_groups:
+                rows.append([cartridge_group['name'], len(cartridge_group['cartridges']),
+                             len(cartridge_group['cartridges']), len(cartridge_group['dependencies'])])
+            table.add_rows(rows)
+            table.print_table()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -246,6 +253,7 @@ class CLI(Cmd):
                              kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
             table.add_rows(rows)
             table.print_table()
+
     @options([])
     def do_deploy_user(self, line , opts=None):
         """Illustrate the base class method use."""
@@ -291,3 +299,132 @@ class CLI(Cmd):
                 rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
             table.add_rows(rows)
             table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_cartridge(self, line , opts=None):
+        """Retrieve details of a specific cartridge."""
+        print(line)
+        cartridge = Stratos.describe_cartridge(line)
+        if not cartridge:
+            print("Cartridge not found")
+        else:
+            print("""
+-------------------------------------
+Cartridge Information:
+-------------------------------------""")
+
+            print("Type: "+cartridge[0]['type'])
+            print("Category: "+cartridge[0]['category'])
+            print("Name: "+cartridge[0]['displayName'])
+            print("Description: "+cartridge[0]['description'])
+            print("Version: "+str(cartridge[0]['version']))
+            print("Multi-Tenant: "+str(cartridge[0]['multiTenant']))
+            print("Host Name: "+cartridge[0]['host'])
+            print("-------------------------------------")
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_cartridge_group(self, line , opts=None):
+        """Retrieve details of a cartridge group."""
+        if not line.split():
+            print("usage: describe-cartridge-group [cartridge-group-name]")
+            return
+        cartridge_group = Stratos.describe_cartridge_group(line)
+        if not cartridge_group:
+            print("Cartridge group not found")
+        else:
+            PrintableJSON(cartridge_group).pprint()
+
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_deployment_policy(self, line , opts=None):
+        """Retrieve details of a specific deployment policy."""
+        if not line.split():
+            print("usage: describe-deployment-policy [deployment-policy-id]")
+            return
+        deployment_policy = Stratos.describe_deployment_policy(line)
+        if not deployment_policy:
+            print("Deployment policy not found")
+        else:
+            PrintableJSON(deployment_policy).pprint()
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_kubernetes_cluster(self, line , opts=None):
+        """Retrieve detailed information on a specific Kubernetes-CoreOS group.
+."""
+        if not line.split():
+            print("usage: describe-kubernetes-cluster [cluster-i]]")
+            return
+        kubernetes_cluster= Stratos.describe_kubernetes_cluster(line)
+        if not kubernetes_cluster:
+            print("Kubernetes cluster not found")
+        else:
+            PrintableJSON(kubernetes_cluster).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_kubernetes_master(self, line , opts=None):
+        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
+        if not line.split():
+            print("usage: describe-kubernetes-master [cluster-id]")
+            return
+        kubernetes_master = Stratos.describe_kubernetes_master(line)
+        if not kubernetes_master:
+            print("Kubernetes master not found")
+        else:
+            PrintableJSON(kubernetes_master).pprint()
+
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_autoscaling_policy(self, line , opts=None):
+        """Retrieve details of a specific auto-scaling policy."""
+        if not line.split():
+            print("usage: describe-autoscaling-policy [autoscaling-policy-id]")
+            return
+        autoscaling_policy = Stratos.describe_autoscaling_policy(line)
+        if not autoscaling_policy:
+            print("Network partition not found")
+        else:
+            PrintableJSON(autoscaling_policy).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_application_signup(self, line , opts=None):
+        """Retrieve details of a specific auto-scaling policy."""
+        if not line.split():
+            print("usage: describe-application-signup [application-id]")
+            return
+        application_signup = Stratos.describe_application_signup(line)
+        if not application_signup:
+            print("Application signup not found")
+        else:
+            PrintableJSON(application_signup).pprint()
