@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>kubernetes-api</artifactId>
-  <version>${kubernetes.api.stratos.version}</version>
+  <version>2.2.16-stratosv1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Fabric8 :: Kubernetes API</name>

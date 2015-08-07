@@ -28,7 +28,7 @@
     <!-- TODO: when out of labs, switch to org.jclouds.provider -->
     <groupId>org.apache.stratos</groupId>
     <artifactId>gce</artifactId>
-    <version>1.8.1-stratos</version>
+    <version>1.8.1-stratosv1-SNAPSHOT</version>
     <name>jclouds Google Compute Engine provider</name>
     <description>jclouds components to access GoogleCompute</description>
     <packaging>bundle</packaging>
