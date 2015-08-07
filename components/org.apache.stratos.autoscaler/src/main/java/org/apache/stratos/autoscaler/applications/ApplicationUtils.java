@@ -37,11 +37,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ApplicationUtils {
-    private static final Log log = LogFactory.getLog(ApplicationUtils.class);
-
     public static final String TOKEN_PAYLOAD_PARAM_NAME = "TOKEN";
     public static final String DEPLOYMENT = "DEPLOYMENT";
     public static final String PAYLOAD_PARAMETER = "payload_parameter.";
+    private static final Log log = LogFactory.getLog(ApplicationUtils.class);
     public static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
     public static boolean isAliasValid(String alias) {
@@ -139,12 +138,12 @@ public class ApplicationUtils {
     public static PayloadData createPayload(String appId, String groupName, Cartridge cartridge, String subscriptionKey, int tenantId, String clusterId,
                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases,
                                             org.apache.stratos.common.Properties properties, String oauthToken, String[] dependencyClusterIDs,
-                                            String[] exportMetadata, String[] importMetadata,String lvsVirtualIP)
+                                            String[] exportMetadata, String[] importMetadata, String lvsVirtualIP)
             throws ApplicationDefinitionException {
 
         //Create the payload
         BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridge, subscriptionKey,
-                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs, exportMetadata, importMetadata,lvsVirtualIP);
+                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs, exportMetadata, importMetadata, lvsVirtualIP);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
@@ -212,7 +211,7 @@ public class ApplicationUtils {
                                                        String subscriptionKey, String clusterId,
                                                        String hostName, String repoUrl, String alias,
                                                        int tenantId, String[] dependencyAliases, String[] dependencyCLusterIDs,
-                                                       String[] exportMetadata, String[] importMetadata,String lvsVirtualIP) {
+                                                       String[] exportMetadata, String[] importMetadata, String lvsVirtualIP) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setAppId(appId);
@@ -224,7 +223,7 @@ public class ApplicationUtils {
         basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridge));
         basicPayloadData.setServiceName(cartridge.getType());
         basicPayloadData.setProvider(cartridge.getProvider());
-	    basicPayloadData.setLvsVirtualIP(lvsVirtualIP);
+        basicPayloadData.setLvsVirtualIP(lvsVirtualIP);
 
         if (repoUrl != null) {
             basicPayloadData.setGitRepositoryUrl(repoUrl);

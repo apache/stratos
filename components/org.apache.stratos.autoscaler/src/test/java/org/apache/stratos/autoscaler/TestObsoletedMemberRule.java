@@ -46,6 +46,10 @@ public class TestObsoletedMemberRule {
     private StatefulKnowledgeSession ksession;
     private XMLConfiguration conf;
 
+    public static String get() {
+        return "null";
+    }
+
     @Before
     public void setUp() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
@@ -170,9 +174,5 @@ public class TestObsoletedMemberRule {
         assertTrue(TestDelegator.getObsoletedMembers().containsKey(memberId3));
 
 
-    }
-
-    public static String get() {
-        return "null";
     }
 }

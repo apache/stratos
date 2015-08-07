@@ -120,7 +120,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             getInstanceIdToInstanceContextMap().values()) {
                         ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.
                                 get(instanceContext.getId());
-                        ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
+                        ParentInstanceContext parentInstanceContext = (ParentInstanceContext) instanceContext;
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
                         if (instance.getStatus().getCode() <= ApplicationStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
@@ -152,7 +152,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 if (application != null) {
                     List<String> defaultNetworkPartitions = getDefaultNetworkPartitions(application);
                     //Checking for whether minimum application instances are there.
-                    if(defaultNetworkPartitions != null) {
+                    if (defaultNetworkPartitions != null) {
                         checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
                     }
 
@@ -328,7 +328,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
         }
         //Starting the dependencies
-        if(!instanceIds.isEmpty()) {
+        if (!instanceIds.isEmpty()) {
             startDependency(application, instanceIds);
         }
 
@@ -339,10 +339,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         for (NetworkPartitionContext networkPartitionContext : networkPartitionContextsMap.values()) {
             String nPartitionId = networkPartitionContext.getId();
-            if(!defaultNetworkPartitions.contains(nPartitionId)) {
+            if (!defaultNetworkPartitions.contains(nPartitionId)) {
                 log.info("The [application] " + appId + " runtime cannot be in [network-partition] "
                         + nPartitionId + " as it is removed from the [application-policy]...!");
-                for(InstanceContext instanceContext:  networkPartitionContext.
+                for (InstanceContext instanceContext : networkPartitionContext.
                         getInstanceIdToInstanceContextMap().values()) {
                     //Handling application instance termination
                     ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
@@ -554,7 +554,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         getInstanceByNetworkPartitionId(context.getId());
                 if (appInstance != null) {
                     //use the existing instance in the Topology to create the data
-                    if(!isRestarting) {
+                    if (!isRestarting) {
                         this.setRestarting(true);
                     }
                     instanceId = handleApplicationInstanceCreation(application, context, appInstance);
@@ -588,7 +588,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             " [appInstanceId] " + instance.getInstanceId());
                 }
             }
-            if(!instanceIds.isEmpty()) {
+            if (!instanceIds.isEmpty()) {
                 startDependency(application, instanceIds);
             }
 

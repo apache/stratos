@@ -84,23 +84,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ClusterMonitor extends Monitor {
 
+    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private final ScheduledExecutorService scheduler;
     private final ExecutorService executorService;
-
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;
+    protected String serviceType;
+    protected String clusterId;
     // future to cancel it when destroying monitors
     private ScheduledFuture<?> schedulerFuture;
-    protected String serviceType;
     private AtomicBoolean monitoringStarted;
-    protected String clusterId;
     private Cluster cluster;
     private int monitoringIntervalMilliseconds;
     //has scaling dependents
     private boolean hasScalingDependents;
     private boolean groupScalingEnabledSubtree;
-
-    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String deploymentPolicyId;
 
 
@@ -119,6 +117,27 @@ public class ClusterMonitor extends Monitor {
         this.monitoringStarted = new AtomicBoolean(false);
         this.hasScalingDependents = hasScalingDependents;
         this.deploymentPolicyId = deploymentPolicyId;
+    }
+
+    private static void createClusterInstance(String serviceType,
+                                              String clusterId, String alias, String instanceId,
+                                              String partitionId, String networkPartitionId) {
+
+        try {
+            CloudControllerServiceClient.getInstance().createClusterInstance(
+                    serviceType, clusterId, alias, instanceId, partitionId,
+                    networkPartitionId);
+        } catch (RemoteException e) {
+            String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId
+                    + "] instance-id [" + instanceId + "] service-type [" + serviceType + "]"
+                    + "] alias [" + alias + "] partition-id [" + partitionId + "]"
+                    + "] network-parition-id [" + networkPartitionId + "]"
+                    + " .Reason [" + e.getMessage() + "]";
+            log.error(msg);
+            throw new RuntimeException(msg, e);
+        }
+
+
     }
 
     @Override
@@ -244,27 +263,6 @@ public class ClusterMonitor extends Monitor {
     public boolean groupScalingEnabledSubtree() {
 
         return groupScalingEnabledSubtree;
-    }
-
-    private static void createClusterInstance(String serviceType,
-                                              String clusterId, String alias, String instanceId,
-                                              String partitionId, String networkPartitionId) {
-
-        try {
-            CloudControllerServiceClient.getInstance().createClusterInstance(
-                    serviceType, clusterId, alias, instanceId, partitionId,
-                    networkPartitionId);
-        } catch (RemoteException e) {
-            String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId
-                    + "] instance-id [" + instanceId + "] service-type [" + serviceType + "]"
-                    + "] alias [" + alias + "] partition-id [" + partitionId + "]"
-                    + "] network-parition-id [" + networkPartitionId + "]"
-                    + " .Reason [" + e.getMessage() + "]";
-            log.error(msg);
-            throw new RuntimeException(msg, e);
-        }
-
-
     }
 
     public void handleAverageLoadAverageEvent(

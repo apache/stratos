@@ -52,18 +52,6 @@ public class AutoscalerCloudControllerClient {
 
     private static CloudControllerServiceStub stub;
 
-    /* An instance of a CloudControllerClient is created when the class is loaded. 
-     * Since the class is loaded only once, it is guaranteed that an object of 
-     * CloudControllerClient is created only once. Hence it is singleton.
-     */
-    private static class InstanceHolder {
-        private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
-    }
-
-    public static AutoscalerCloudControllerClient getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
     private AutoscalerCloudControllerClient() {
         try {
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
@@ -79,6 +67,10 @@ public class AutoscalerCloudControllerClient {
         } catch (Exception e) {
             log.error("Could not initialize cloud controller client", e);
         }
+    }
+
+    public static AutoscalerCloudControllerClient getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     public synchronized MemberContext startInstance(PartitionRef partition,
@@ -182,7 +174,6 @@ public class AutoscalerCloudControllerClient {
         }
     }
 
-
     private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
 
         ArrayList<Volume> volumes = new ArrayList<Volume>();
@@ -232,5 +223,13 @@ public class AutoscalerCloudControllerClient {
             long endTime = System.currentTimeMillis();
             log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
         }
+    }
+
+    /* An instance of a CloudControllerClient is created when the class is loaded.
+     * Since the class is loaded only once, it is guaranteed that an object of
+     * CloudControllerClient is created only once. Hence it is singleton.
+     */
+    private static class InstanceHolder {
+        private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
     }
 }

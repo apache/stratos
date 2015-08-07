@@ -79,7 +79,7 @@ public class AutoscalerUtilTest {
     @Test
     public void testRemovalOfAutoscalingPolicy() {
         List<CartridgeContext> cartridgeContexts = new ArrayList<CartridgeContext>();
-        for(int i = 0; i < 12; i++) {
+        for (int i = 0; i < 12; i++) {
             CartridgeContext cartridgeContext = new CartridgeContext();
             SubscribableInfoContext subscribableContext = new SubscribableInfoContext();
             subscribableContext.setAlias("cart-" + i);
@@ -89,12 +89,12 @@ public class AutoscalerUtilTest {
             cartridgeContexts.add(cartridgeContext);
         }
         List<GroupContext> groupContextList = new ArrayList<GroupContext>();
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             GroupContext groupContext = new GroupContext();
             groupContext.setAlias("group-" + i);
             CartridgeContext[] cartridgeContexts1 = new CartridgeContext[2];
             cartridgeContexts1[0] = cartridgeContexts.get(i);
-            cartridgeContexts1[1] = cartridgeContexts.get(i+5);
+            cartridgeContexts1[1] = cartridgeContexts.get(i + 5);
 
             groupContext.setCartridgeContexts(cartridgeContexts1);
             groupContextList.add(groupContext);
@@ -123,7 +123,7 @@ public class AutoscalerUtilTest {
         canRemove = AutoscalerUtil.removableAutoScalerPolicy("test");
         assertEquals(canRemove, true);
 
-        for(int i = 0; i < 12; i ++) {
+        for (int i = 0; i < 12; i++) {
             canRemove = AutoscalerUtil.removableAutoScalerPolicy("auto-" + i);
             assertEquals(canRemove, false);
 

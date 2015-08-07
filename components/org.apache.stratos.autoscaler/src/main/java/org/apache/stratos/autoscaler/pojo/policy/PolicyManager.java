@@ -55,8 +55,12 @@ public class PolicyManager {
 
     private static Map<String, ApplicationPolicy> applicationPolicyListMap;
 
-    public Collection<DeploymentPolicy> getDeploymentPolicies() {
-        return deploymentPolicyListMap.values();
+    private PolicyManager() {
+        // Initialize distributed object provider
+        DistributedObjectProvider distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
+        autoscalePolicyListMap = distributedObjectProvider.getMap(AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP);
+        deploymentPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
+        applicationPolicyListMap = distributedObjectProvider.getMap(APPLICATION_ID_TO_APPLICATION_POLICY_MAP);
     }
 
     /* An instance of a PolicyManager is created when the class is loaded.
@@ -64,20 +68,12 @@ public class PolicyManager {
      * PolicyManager is created only once. Hence it is singleton.
      */
 
-    private static class InstanceHolder {
-        private static final PolicyManager INSTANCE = new PolicyManager();
-    }
-
     public static PolicyManager getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
-    private PolicyManager() {
-        // Initialize distributed object provider
-        DistributedObjectProvider distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
-        autoscalePolicyListMap = distributedObjectProvider.getMap(AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP);
-        deploymentPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
-        applicationPolicyListMap = distributedObjectProvider.getMap(APPLICATION_ID_TO_APPLICATION_POLICY_MAP);
+    public Collection<DeploymentPolicy> getDeploymentPolicies() {
+        return deploymentPolicyListMap.values();
     }
 
     // Add the policy to information model and persist.
@@ -119,7 +115,6 @@ public class PolicyManager {
         }
         return true;
     }
-
 
     /**
      * Add deployment policy to in memory map and persist.
@@ -276,7 +271,6 @@ public class PolicyManager {
         return autoscalePolicyListMap.get(id);
     }
 
-
     private void addDeploymentPolicyToPolicyListMap(DeploymentPolicy policy) {
         if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
             throw new RuntimeException("Application id is not found in the deployment policy");
@@ -346,7 +340,6 @@ public class PolicyManager {
     public DeploymentPolicy getDeploymentPolicy(String id) {
         return deploymentPolicyListMap.get(id);
     }
-
 
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidApplicationPolicyException {
         String applicationPolicyId = applicationPolicy.getId();
@@ -425,5 +418,9 @@ public class PolicyManager {
 
     public ApplicationPolicy[] getApplicationPolicies() {
         return applicationPolicyListMap.values().toArray(new ApplicationPolicy[0]);
+    }
+
+    private static class InstanceHolder {
+        private static final PolicyManager INSTANCE = new PolicyManager();
     }
 }

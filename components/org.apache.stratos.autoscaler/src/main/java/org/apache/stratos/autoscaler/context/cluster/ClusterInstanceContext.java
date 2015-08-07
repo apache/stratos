@@ -507,13 +507,13 @@ public class ClusterInstanceContext extends InstanceContext {
         return minCheckKnowledgeSession;
     }
 
-    public StatefulKnowledgeSession getMaxCheckKnowledgeSession() {
-        return maxCheckKnowledgeSession;
-    }
-
     public void setMinCheckKnowledgeSession(
             StatefulKnowledgeSession minCheckKnowledgeSession) {
         this.minCheckKnowledgeSession = minCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getMaxCheckKnowledgeSession() {
+        return maxCheckKnowledgeSession;
     }
 
     public StatefulKnowledgeSession getObsoleteCheckKnowledgeSession() {

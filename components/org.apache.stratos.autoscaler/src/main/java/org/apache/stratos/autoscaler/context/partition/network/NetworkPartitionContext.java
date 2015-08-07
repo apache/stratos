@@ -121,8 +121,8 @@ public class NetworkPartitionContext {
 
     public List<InstanceContext> getInstanceIdToInstanceContextMap(String parentInstanceId) {
         List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
-        for(InstanceContext instanceContext : instanceIdToInstanceContextMap.values()) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : instanceIdToInstanceContextMap.values()) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }
@@ -160,8 +160,8 @@ public class NetworkPartitionContext {
 
     public List<InstanceContext> getActiveInstances(String parentInstanceId) {
         List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
-        for(InstanceContext instanceContext : activeInstances) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : activeInstances) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }
@@ -170,8 +170,8 @@ public class NetworkPartitionContext {
 
     public List<InstanceContext> getPendingInstances(String parentInstanceId) {
         List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
-        for(InstanceContext instanceContext : pendingInstances) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : pendingInstances) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }
@@ -188,8 +188,8 @@ public class NetworkPartitionContext {
 
     public int getPendingInstancesCount(String parentInstanceId) {
         List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
-        for(InstanceContext instanceContext : pendingInstances) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : pendingInstances) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }
@@ -203,8 +203,8 @@ public class NetworkPartitionContext {
 
     public int getActiveInstancesCount(String parentInstanceId) {
         List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
-        for(InstanceContext instanceContext : activeInstances) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : activeInstances) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }
@@ -321,14 +321,14 @@ public class NetworkPartitionContext {
     public int getNonTerminatedInstancesCount(String parentInstanceId) {
         List<InstanceContext> instanceContexts = new ArrayList<InstanceContext>();
 
-        for(InstanceContext instanceContext : activeInstances) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : activeInstances) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }
 
-        for(InstanceContext instanceContext : pendingInstances) {
-            if(instanceContext.getParentInstanceId().equals(parentInstanceId)) {
+        for (InstanceContext instanceContext : pendingInstances) {
+            if (instanceContext.getParentInstanceId().equals(parentInstanceId)) {
                 instanceContexts.add(instanceContext);
             }
         }

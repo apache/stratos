@@ -49,12 +49,10 @@ public class AutoscalerContext {
     private static final String AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP = "AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP";
     private static final String AS_PENDING_APPLICATION_MONITOR_LIST = "AS_PENDING_APPLICATION_MONITOR_LIST";
     private static final String AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP = "AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP";
-    private boolean clustered;
-    private boolean coordinator;
-
     private static volatile AutoscalerContext instance;
     private final transient DistributedObjectProvider distributedObjectProvider;
-
+    private boolean clustered;
+    private boolean coordinator;
     // Map<ApplicationId, ApplicationContext>
     private Map<String, ApplicationContext> applicationContextMap;
     // Map<ClusterId, AbstractClusterMonitor>

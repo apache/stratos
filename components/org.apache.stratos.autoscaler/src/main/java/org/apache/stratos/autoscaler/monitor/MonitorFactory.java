@@ -148,10 +148,10 @@ public class MonitorFactory {
         //Find whether any other instances exists in group
         // which has not been added to in-memory model in the restart
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
-        if(applicationMonitor != null && applicationMonitor.isRestarting()) {
+        if (applicationMonitor != null && applicationMonitor.isRestarting()) {
             Collection<Instance> instances = parentMonitor.getInstances();
-            for(Instance instance : instances) {
-                if(!instanceIds.contains(instance.getInstanceId())) {
+            for (Instance instance : instances) {
+                if (!instanceIds.contains(instance.getInstanceId())) {
                     instanceIds.add(instance.getInstanceId());
                 }
             }
@@ -241,8 +241,8 @@ public class MonitorFactory {
             //Find whether any other instances exists in group
             // which has not been added to in-memory model in the restart
             Collection<Instance> instances = parentMonitor.getInstances();
-            for(Instance instance : instances) {
-                if(!parentInstanceIds.contains(instance.getInstanceId())) {
+            for (Instance instance : instances) {
+                if (!parentInstanceIds.contains(instance.getInstanceId())) {
                     parentInstanceIds.add(instance.getInstanceId());
                 }
             }

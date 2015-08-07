@@ -26,8 +26,8 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 
 public class PayloadFactory {
 
-    private static final String LB_IDENTIFIER = "lb";
     public static final String DATA_IDENTIFIER = "data";
+    private static final String LB_IDENTIFIER = "lb";
     private static Log log = LogFactory.getLog(PayloadFactory.class);
 
     /**

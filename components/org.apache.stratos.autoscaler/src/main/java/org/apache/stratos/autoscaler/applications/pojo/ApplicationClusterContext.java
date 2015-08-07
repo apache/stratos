@@ -45,15 +45,6 @@ public class ApplicationClusterContext implements Serializable {
     private Properties properties;
 
     private String[] dependencyClusterIds;
-
-    public PersistenceContext getPersistenceContext() {
-        return persistenceContext;
-    }
-
-    public void setPersistenceContext(PersistenceContext persistenceContext) {
-        this.persistenceContext = persistenceContext;
-    }
-
     private PersistenceContext persistenceContext;
 
     public ApplicationClusterContext(String cartridgeType, String clusterId, String hostName,
@@ -67,6 +58,14 @@ public class ApplicationClusterContext implements Serializable {
         this.deploymentPolicyName = deploymentPolicyName;
         this.tenantRange = tenantRange;
         this.dependencyClusterIds = dependencyClusterIds;
+    }
+
+    public PersistenceContext getPersistenceContext() {
+        return persistenceContext;
+    }
+
+    public void setPersistenceContext(PersistenceContext persistenceContext) {
+        this.persistenceContext = persistenceContext;
     }
 
     public String getClusterId() {

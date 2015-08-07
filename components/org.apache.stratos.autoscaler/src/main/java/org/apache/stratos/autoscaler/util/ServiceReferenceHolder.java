@@ -60,36 +60,36 @@ public class ServiceReferenceHolder {
         return instance;
     }
 
-    public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
-        this.axisConfiguration = axisConfiguration;
-    }
-
     public AxisConfiguration getAxisConfiguration() {
         return axisConfiguration;
     }
 
-    public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
-        this.distributedObjectProvider = distributedObjectProvider;
+    public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
+        this.axisConfiguration = axisConfiguration;
     }
 
     public DistributedObjectProvider getDistributedObjectProvider() {
         return distributedObjectProvider;
     }
 
-    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.hazelcastInstance = hazelcastInstance;
+    public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        this.distributedObjectProvider = distributedObjectProvider;
     }
 
     public HazelcastInstance getHazelcastInstance() {
         return hazelcastInstance;
     }
 
-    public void setRegistry(UserRegistry governanceSystemRegistry) {
-        registry = governanceSystemRegistry;
+    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        this.hazelcastInstance = hazelcastInstance;
     }
 
     public Registry getRegistry() {
         return registry;
+    }
+
+    public void setRegistry(UserRegistry governanceSystemRegistry) {
+        registry = governanceSystemRegistry;
     }
 
     public TaskService getTaskService() {
@@ -116,19 +116,19 @@ public class ServiceReferenceHolder {
         this.groupStatusProcessorChain = groupStatusProcessorChain;
     }
 
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-
     public ExecutorService getExecutorService() {
         return executorService;
     }
 
-    public void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
-        this.componentStartUpSynchronizer = componentStartUpSynchronizer;
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {
         return componentStartUpSynchronizer;
+    }
+
+    public void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
+        this.componentStartUpSynchronizer = componentStartUpSynchronizer;
     }
 }

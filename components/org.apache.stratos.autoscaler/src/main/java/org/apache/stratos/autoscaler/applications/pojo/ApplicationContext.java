@@ -25,12 +25,10 @@ import java.io.Serializable;
 
 public class ApplicationContext implements Serializable {
 
-    private static final long serialVersionUID = 6704036501869668646L;
-
     public static final String STATUS_CREATED = "Created";
     public static final String STATUS_DEPLOYED = "Deployed";
     public static final String STATUS_UNDEPLOYING = "Undeploying";
-
+    private static final long serialVersionUID = 6704036501869668646L;
     private String applicationId;
     private String alias;
     private boolean multiTenant;

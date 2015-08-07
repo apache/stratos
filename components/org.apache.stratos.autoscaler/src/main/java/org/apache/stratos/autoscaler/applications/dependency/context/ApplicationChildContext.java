@@ -29,16 +29,15 @@ import java.util.Stack;
  */
 public abstract class ApplicationChildContext {
 
-    private String id;
     protected boolean started;
+    protected boolean hasStartupDependents;
+    protected boolean isGroupScalingEnabled;
+    private String id;
     private boolean terminated;
     private ClusterStatus status;
     private Stack<ClusterStatus> statusLifeCycle;
     private List<ApplicationChildContext> applicationChildContextList;
     private ApplicationChildContext parent;
-
-    protected boolean hasStartupDependents;
-    protected boolean isGroupScalingEnabled;
 
     public ApplicationChildContext(String id, boolean killDependent) {
         applicationChildContextList = new ArrayList<ApplicationChildContext>();

@@ -54,11 +54,11 @@ public class ComponentContext implements Serializable {
         this.dependencyContext = dependencyContext;
     }
 
-    public void setApplicationClusterContexts(ApplicationClusterContext[] applicationClusterContexts) {
-        this.applicationClusterContexts = applicationClusterContexts;
-    }
-
     public ApplicationClusterContext[] getApplicationClusterContexts() {
         return applicationClusterContexts;
+    }
+
+    public void setApplicationClusterContexts(ApplicationClusterContext[] applicationClusterContexts) {
+        this.applicationClusterContexts = applicationClusterContexts;
     }
 }

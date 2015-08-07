@@ -72,13 +72,13 @@ public class ParserUtils {
         for (String commaSeparatedStartupOrder : startupOrderArr) {
             // convertStartupOrder all Startup Orders to aliases-based
             List<String> components = Arrays.asList(commaSeparatedStartupOrder.split(","));
-            for(String component : components) {
+            for (String component : components) {
                 boolean aliasFound = false;
-                if(component.startsWith(AutoscalerConstants.GROUP)) {
+                if (component.startsWith(AutoscalerConstants.GROUP)) {
                     String groupAlias = component.substring(AutoscalerConstants.GROUP.length() + 1);
-                    if(groupContext.getGroupContexts() != null) {
-                        for(GroupContext context : groupContext.getGroupContexts()) {
-                            if(context.getAlias().equals(groupAlias)) {
+                    if (groupContext.getGroupContexts() != null) {
+                        for (GroupContext context : groupContext.getGroupContexts()) {
+                            if (context.getAlias().equals(groupAlias)) {
                                 aliasFound = true;
                             }
                         }
@@ -87,15 +87,15 @@ public class ParserUtils {
                 } else {
                     String cartridgeAlias = component.substring(
                             AutoscalerConstants.CARTRIDGE.length() + 1);
-                    if(groupContext.getCartridgeContexts() != null) {
-                        for(CartridgeContext context : groupContext.getCartridgeContexts()) {
-                            if(context.getSubscribableInfoContext().getAlias().equals(cartridgeAlias)) {
+                    if (groupContext.getCartridgeContexts() != null) {
+                        for (CartridgeContext context : groupContext.getCartridgeContexts()) {
+                            if (context.getSubscribableInfoContext().getAlias().equals(cartridgeAlias)) {
                                 aliasFound = true;
                             }
                         }
                     }
                 }
-                if(!aliasFound) {
+                if (!aliasFound) {
                     String msg = "The startup-order defined in the [group] " + groupContext.getName()
                             + " is not correct. [startup-order-alias] " + component +
                             " is not there in the application.";

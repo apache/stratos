@@ -36,8 +36,8 @@ public class AbstractClusterContext implements Serializable {
 
     // cluster id
     protected String clusterId;
-    private String serviceId;
     protected Map<String, ClusterInstance> clusterInstanceMap;
+    private String serviceId;
 
 
     public AbstractClusterContext(String clusterId, String serviceId) {

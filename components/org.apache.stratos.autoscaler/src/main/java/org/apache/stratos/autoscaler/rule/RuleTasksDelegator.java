@@ -43,9 +43,8 @@ import org.apache.stratos.common.constants.StratosConstants;
  */
 public class RuleTasksDelegator {
 
-    private static boolean arspiIsSet = false;
-
     private static final Log log = LogFactory.getLog(RuleTasksDelegator.class);
+    private static boolean arspiIsSet = false;
 
     public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative, int timeInterval) {
         double predictedValue;

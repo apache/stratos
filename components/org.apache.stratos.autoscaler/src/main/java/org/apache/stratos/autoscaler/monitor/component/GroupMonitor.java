@@ -125,7 +125,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
                     for (InstanceContext instanceContext : networkPartitionContext.
                             getInstanceIdToInstanceContextMap().values()) {
-                        ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
+                        ParentInstanceContext parentInstanceContext = (ParentInstanceContext) instanceContext;
                         GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.
                                 get(instanceContext.getId());
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
@@ -158,7 +158,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                     Collection<Instance> parentInstances = parent.getInstances();
 
                     for (Instance parentInstance : parentInstances) {
-                        if(parentInstance.getNetworkPartitionId().equals(networkPartitionContext.getId())) {
+                        if (parentInstance.getNetworkPartitionId().equals(networkPartitionContext.getId())) {
                             int nonTerminatedInstancesCount = networkPartitionContext.
                                     getNonTerminatedInstancesCount(parentInstance.getInstanceId());
                             int minInstances = networkPartitionContext.
@@ -183,8 +183,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                                         if (activeAppInstances > 0) {
                                             //Creating new group instance based on the existing parent instances
                                             log.info("Creating a group instance of [application] "
-                                                        + appId + " [group] " + id +
-                                                        " as the the minimum required instances are not met");
+                                                    + appId + " [group] " + id +
+                                                    " as the the minimum required instances are not met");
 
                                             createInstanceOnDemand(parentInstanceContext.getId());
                                         }
@@ -204,10 +204,10 @@ public class GroupMonitor extends ParentComponentMonitor {
                                     InstanceContext instanceContext = contextList.get(i);
                                     //scale down only when extra instances found
                                     log.info("Terminating a group instance of [application] "
-                                                + appId + " [group] " + id + " as it exceeded the " +
-                                                "maximum no of instances by " + instancesToBeTerminated);
+                                            + appId + " [group] " + id + " as it exceeded the " +
+                                            "maximum no of instances by " + instancesToBeTerminated);
 
-                                    handleScalingDownBeyondMin((ParentInstanceContext)instanceContext,
+                                    handleScalingDownBeyondMin((ParentInstanceContext) instanceContext,
                                             networkPartitionContext, true);
 
                                 }
@@ -282,7 +282,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             } else {
                 if (groupScalingEnabled) {
                     if (nwPartitionContext.getNonTerminatedInstancesCount() >
-                                            nwPartitionContext.getMinInstanceCount()) {
+                            nwPartitionContext.getMinInstanceCount()) {
                         //send terminating to the specific group instance in the scale down
                         ApplicationBuilder.handleGroupTerminatingEvent(this.appId, this.id,
                                 instanceContext.getId());
@@ -505,7 +505,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                     getAppMonitor(appId);
             //In case if the group instance is not in terminating while application is
             // terminating, changing the status to terminating
-            if(applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
+            if (applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
                 //Sending group instance terminating event
                 ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
             }
@@ -672,8 +672,8 @@ public class GroupMonitor extends ParentComponentMonitor {
      * @return the group level network partition context
      */
     private NetworkPartitionContext getGroupLevelNetworkPartitionContext(String groupAlias,
-                                                                                    String appId,
-                                                                                    Instance parentInstanceContext) {
+                                                                         String appId,
+                                                                         Instance parentInstanceContext) {
         NetworkPartitionContext parentLevelNetworkPartitionContext;
         String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, groupAlias);
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
@@ -780,7 +780,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      * Creates the group instance and adds the required context objects
      *
      * @param group                              the group
-     * @param parentInstance              the parent instance context
+     * @param parentInstance                     the parent instance context
      * @param partitionContext                   partition-context used to create the group instance
      * @param parentLevelNetworkPartitionContext the group level network partition context
      */

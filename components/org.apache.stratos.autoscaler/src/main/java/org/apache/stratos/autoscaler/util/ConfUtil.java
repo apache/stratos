@@ -34,12 +34,10 @@ import java.util.HashMap;
 public class ConfUtil {
 
     private static Log log = LogFactory.getLog(ConfUtil.class);
-
-    private XMLConfiguration config;
-
     //To maintain the map of config files
     private static HashMap<String, ConfUtil> instanceMap = new HashMap<String, ConfUtil>();
     private static Object mutex = new Object();
+    private XMLConfiguration config;
 
     private ConfUtil(String configFilePath) {
         try {

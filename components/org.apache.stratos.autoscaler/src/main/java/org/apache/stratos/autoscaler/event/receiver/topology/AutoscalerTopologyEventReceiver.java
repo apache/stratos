@@ -93,7 +93,7 @@ public class AutoscalerTopologyEventReceiver {
                                     getApplications().values()) {
                                 ApplicationContext applicationContext =
                                         AutoscalerContext.getInstance().
-                                        getApplicationContext(application.getUniqueIdentifier());
+                                                getApplicationContext(application.getUniqueIdentifier());
                                 if (applicationContext != null && applicationContext.getStatus().
                                         equals(ApplicationContext.STATUS_DEPLOYED)) {
                                     if (AutoscalerUtil.allClustersInitialized(application)) {

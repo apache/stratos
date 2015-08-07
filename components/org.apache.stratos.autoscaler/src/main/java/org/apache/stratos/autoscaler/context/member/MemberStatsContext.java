@@ -54,52 +54,52 @@ public class MemberStatsContext {
         return memoryConsumption;
     }
 
-    public void setAverageLoadAverage(float value) {
-        loadAverage.setAverage(value);
-    }
-
-    public void setAverageMemoryConsumption(float value) {
-        memoryConsumption.setAverage(value);
-    }
-
-    public void setGradientOfLoadAverage(float value) {
-        loadAverage.setGradient(value);
-    }
-
-    public void setGradientOfMemoryConsumption(float value) {
-        memoryConsumption.setGradient(value);
-    }
-
-    public void setSecondDerivativeOfLoadAverage(float value) {
-        loadAverage.setSecondDerivative(value);
-    }
-
-    public void setSecondDerivativeOfMemoryConsumption(float value) {
-        memoryConsumption.setSecondDerivative(value);
-    }
-
     public float getAverageLoadAverage() {
         return loadAverage.getAverage();
+    }
+
+    public void setAverageLoadAverage(float value) {
+        loadAverage.setAverage(value);
     }
 
     public float getAverageMemoryConsumption() {
         return memoryConsumption.getAverage();
     }
 
+    public void setAverageMemoryConsumption(float value) {
+        memoryConsumption.setAverage(value);
+    }
+
     public float getGradientOfLoadAverage() {
         return loadAverage.getGradient();
+    }
+
+    public void setGradientOfLoadAverage(float value) {
+        loadAverage.setGradient(value);
     }
 
     public float getGradientOfMemoryConsumption() {
         return memoryConsumption.getGradient();
     }
 
+    public void setGradientOfMemoryConsumption(float value) {
+        memoryConsumption.setGradient(value);
+    }
+
     public float getSecondDerivativeOfLoadAverage() {
         return loadAverage.getSecondDerivative();
     }
 
+    public void setSecondDerivativeOfLoadAverage(float value) {
+        loadAverage.setSecondDerivative(value);
+    }
+
     public float getSecondDerivativeOfMemoryConsumption() {
         return memoryConsumption.getSecondDerivative();
+    }
+
+    public void setSecondDerivativeOfMemoryConsumption(float value) {
+        memoryConsumption.setSecondDerivative(value);
     }
 
     public String getInstanceId() {

@@ -230,10 +230,6 @@ public class DependencyTree {
                 allChildrenOfAppContext);
     }
 
-    public void setTerminationBehavior(TerminationBehavior terminationBehavior) {
-        this.terminationBehavior = terminationBehavior;
-    }
-
     public boolean isTerminateDependent() {
         return this.getTerminationBehavior() == TerminationBehavior.TERMINATE_DEPENDENT;
     }
@@ -242,13 +238,12 @@ public class DependencyTree {
         return this.getTerminationBehavior() == TerminationBehavior.TERMINATE_ALL;
     }
 
-
     public TerminationBehavior getTerminationBehavior() {
         return terminationBehavior;
     }
 
-    public enum TerminationBehavior {
-        TERMINATE_ALL, TERMINATE_NONE, TERMINATE_DEPENDENT
+    public void setTerminationBehavior(TerminationBehavior terminationBehavior) {
+        this.terminationBehavior = terminationBehavior;
     }
 
     public String getId() {
@@ -280,5 +275,9 @@ public class DependencyTree {
                 buildTreeStructure(childContext, stringBuilder);
             }
         }
+    }
+
+    public enum TerminationBehavior {
+        TERMINATE_ALL, TERMINATE_NONE, TERMINATE_DEPENDENT
     }
 }

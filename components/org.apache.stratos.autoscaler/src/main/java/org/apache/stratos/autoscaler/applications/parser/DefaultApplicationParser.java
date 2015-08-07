@@ -57,10 +57,10 @@ import java.util.*;
  */
 public class DefaultApplicationParser implements ApplicationParser {
 
-    private static final String METADATA_APPENDER = "-";
     public static final String ALIAS = "alias";
     public static final String CARTRIDGE_TYPE = "type";
     public static final String LOAD_BALANCER = "lb";
+    private static final String METADATA_APPENDER = "-";
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private List<ApplicationClusterContext> applicationClusterContexts;
@@ -71,6 +71,29 @@ public class DefaultApplicationParser implements ApplicationParser {
         this.applicationClusterContexts = new ArrayList<ApplicationClusterContext>();
         this.setAliasToProperties(new HashMap<String, Properties>());
 
+    }
+
+    /**
+     * Validates terminationBehavior. The terminationBehavior should be one of the following:
+     * 1. terminate-none
+     * 2. terminate-dependents
+     * 3. terminate-all
+     *
+     * @throws ApplicationDefinitionException if terminationBehavior is different to what is
+     *                                        listed above
+     */
+    private static void validateTerminationBehavior(String terminationBehavior) throws ApplicationDefinitionException {
+
+        if (!(terminationBehavior == null ||
+                AutoscalerConstants.TERMINATE_NONE.equals(terminationBehavior) ||
+                AutoscalerConstants.TERMINATE_DEPENDENTS.equals(terminationBehavior) ||
+                AutoscalerConstants.TERMINATE_ALL.equals(terminationBehavior))) {
+            throw new ApplicationDefinitionException("Invalid termination behaviour found: [ " +
+                    terminationBehavior + " ], should be one of '" +
+                    AutoscalerConstants.TERMINATE_NONE + "', '" +
+                    AutoscalerConstants.TERMINATE_DEPENDENTS + "', '" +
+                    AutoscalerConstants.TERMINATE_ALL + "'");
+        }
     }
 
     @Override
@@ -153,7 +176,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         if (!ApplicationUtils.isAliasValid(alias)) {
             handleError(String.format("Alias is not valid: [application-id] %s " +
-                    "[cartridge-type] %s [alias] %s [valid-pattern] %s", applicationId, cartridgeType, alias,
+                            "[cartridge-type] %s [alias] %s [valid-pattern] %s", applicationId, cartridgeType, alias,
                     ApplicationUtils.ALIAS_PATTERN.pattern()));
         }
 
@@ -234,7 +257,6 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         return subscribableInfoContextMap;
     }
-
 
     /**
      * Builds the Application structure
@@ -333,7 +355,6 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
         return application;
     }
-
 
     /**
      * Parse Subscription Information
@@ -455,7 +476,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     subscribableInfoContext.getDeploymentPolicy(), isLB,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
                     subscribableInfoContext.getProperties(), arrDependencyClusterIDs, arrExportMetadata,
-                    arrImportMetadata,subscribableInfoContext.getLvsVirtualIP());
+                    arrImportMetadata, subscribableInfoContext.getLvsVirtualIP());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
@@ -525,29 +546,6 @@ public class DefaultApplicationParser implements ApplicationParser {
             clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
             clusterDataMap.put(subscriptionAlias, clusterDataHolder);
 
-        }
-    }
-
-    /**
-     * Validates terminationBehavior. The terminationBehavior should be one of the following:
-     * 1. terminate-none
-     * 2. terminate-dependents
-     * 3. terminate-all
-     *
-     * @throws ApplicationDefinitionException if terminationBehavior is different to what is
-     *                                        listed above
-     */
-    private static void validateTerminationBehavior(String terminationBehavior) throws ApplicationDefinitionException {
-
-        if (!(terminationBehavior == null ||
-                AutoscalerConstants.TERMINATE_NONE.equals(terminationBehavior) ||
-                AutoscalerConstants.TERMINATE_DEPENDENTS.equals(terminationBehavior) ||
-                AutoscalerConstants.TERMINATE_ALL.equals(terminationBehavior))) {
-            throw new ApplicationDefinitionException("Invalid termination behaviour found: [ " +
-                    terminationBehavior + " ], should be one of '" +
-                    AutoscalerConstants.TERMINATE_NONE + "', '" +
-                    AutoscalerConstants.TERMINATE_DEPENDENTS + "', '" +
-                    AutoscalerConstants.TERMINATE_ALL + "'");
         }
     }
 
@@ -942,12 +940,12 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                                       String alias, String clusterId, String hostname,
                                                                       String deploymentPolicy, boolean isLB, String tenantRange,
                                                                       String[] dependencyAliases, Properties properties, String[] dependencyClustorIDs,
-                                                                      String[] exportMetadata, String[] importMetadata,String lvsVirtualIP)
+                                                                      String[] exportMetadata, String[] importMetadata, String lvsVirtualIP)
             throws ApplicationDefinitionException {
 
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs, exportMetadata, importMetadata,lvsVirtualIP);
+                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs, exportMetadata, importMetadata, lvsVirtualIP);
 
         String textPayload = payloadData.toString();
         if (log.isDebugEnabled()) {

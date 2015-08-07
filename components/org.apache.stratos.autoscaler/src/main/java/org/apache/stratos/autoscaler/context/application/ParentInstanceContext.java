@@ -33,14 +33,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * This will hold the application instance related info.
  */
 public class ParentInstanceContext extends InstanceContext {
+    //partitions of this network partition
+    private final List<ParentLevelPartitionContext> partitionCtxts;
     //key=id of the child, value=ScalingEvent
     private Map<String, ScalingEvent> idToScalingEvent;
     //key=id of the child, value=ScalingUpBeyondMaxEvent
     private Map<String, ScalingUpBeyondMaxEvent> idToScalingOverMaxEvent;
     //key=id of the child, value=ScalingDownBeyondMinEvent
     private Map<String, ScalingDownBeyondMinEvent> idToScalingDownBeyondMinEvent;
-    //partitions of this network partition
-    private final List<ParentLevelPartitionContext> partitionCtxts;
 
     public ParentInstanceContext(String id) {
         super(id);

@@ -70,8 +70,6 @@ public abstract class ParentComponentMonitor extends Monitor {
     //Scheduler executor service to execute this monitor in a thread
     private final ScheduledExecutorService scheduler = StratosThreadPool.getScheduledExecutorService(
             "autoscaler.monitor.scheduler.thread.pool", 100);
-    // future to cancel it when destroying monitors
-    private ScheduledFuture<?> schedulerFuture;
     //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
@@ -86,6 +84,8 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected Map<String, List<String>> terminatingInstancesMap;
     //network partition contexts
     protected Map<String, NetworkPartitionContext> networkPartitionContextsMap;
+    // future to cancel it when destroying monitors
+    private ScheduledFuture<?> schedulerFuture;
     //Executor service to maintain the thread pool
     private ExecutorService executorService;
 
@@ -207,7 +207,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 //starting a new instance of the child
                 Monitor monitor = aliasToActiveChildMonitorsMap.get(context.getId());
                 //Creating the new instance
-                if(monitor instanceof ParentComponentMonitor) {
+                if (monitor instanceof ParentComponentMonitor) {
                     ((ParentComponentMonitor) monitor).createInstanceOnTermination(instanceId);
                 } else {
                     monitor.createInstanceOnDemand(instanceId);
@@ -244,12 +244,12 @@ public abstract class ParentComponentMonitor extends Monitor {
                     Monitor monitor = aliasToActiveChildMonitorsMap.get(context.getId());
                     // Creating new instance
                     for (String instanceId : parentInstanceIds) {
-                        if(monitor.getInstancesByParentInstanceId(instanceId) == null ||
+                        if (monitor.getInstancesByParentInstanceId(instanceId) == null ||
                                 monitor.getInstancesByParentInstanceId(instanceId).isEmpty()) {
                             monitor.createInstanceOnDemand(instanceId);
                         } else {
                             log.info(String.format("Instance has already exists for [application] " +
-                                    "%s [component] %s [instance-id] %s", getAppId(),
+                                            "%s [component] %s [instance-id] %s", getAppId(),
                                     context.getId(), instanceId));
                         }
                     }
@@ -275,7 +275,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (networkPartitionContext != null) {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
-            ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
+            ParentInstanceContext parentInstanceContext = (ParentInstanceContext) instanceContext;
             if (instanceContext != null) {
                 if (parentInstanceContext.containsScalingEvent(id)) {
                     parentInstanceContext.removeScalingEvent(id);
@@ -302,7 +302,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         String instanceId = scalingDownBeyondMinEvent.getInstanceId();
         InstanceContext instanceContext = getNetworkPartitionContext(networkPartitionId).
                 getInstanceContext(instanceId);
-        ((ParentInstanceContext)instanceContext).addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
+        ((ParentInstanceContext) instanceContext).addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
     }
 
     @Override
@@ -323,7 +323,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             InstanceContext instanceContext = networkPartitionContext.
                     getInstanceContext(instanceId);
             if (instanceContext != null) {
-                ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
+                ParentInstanceContext parentInstanceContext = (ParentInstanceContext) instanceContext;
                 if (parentInstanceContext.containsScalingEvent(id)) {
                     parentInstanceContext.removeScalingOverMaxEvent(id);
                     parentInstanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
@@ -362,18 +362,18 @@ public abstract class ParentComponentMonitor extends Monitor {
             // no need to invoke start dependencies.
 
             Monitor childMonitor = aliasToActiveChildMonitorsMap.get(childId);
-            if(childMonitor != null) {
+            if (childMonitor != null) {
                 Instance instance = childMonitor.getInstance(instanceId);
                 boolean firstIteration = false;
-                if(instance != null) {
-                    if(instance instanceof GroupInstance) {
-                        GroupInstance groupInstance = (GroupInstance)instance;
+                if (instance != null) {
+                    if (instance instanceof GroupInstance) {
+                        GroupInstance groupInstance = (GroupInstance) instance;
                         firstIteration = groupInstance.getPreviousState() == GroupStatus.Created;
-                    } else if(instance instanceof ClusterInstance) {
-                        ClusterInstance clusterInstance = (ClusterInstance)instance;
+                    } else if (instance instanceof ClusterInstance) {
+                        ClusterInstance clusterInstance = (ClusterInstance) instance;
                         firstIteration = clusterInstance.getPreviousState() == ClusterStatus.Created;
                     }
-                    if(firstIteration || childMonitor.hasStartupDependents()) {
+                    if (firstIteration || childMonitor.hasStartupDependents()) {
                         startDep = startDependency(childId, instanceId);
                     }
                 } else {
@@ -666,9 +666,9 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Calculating the group instances status for [application] " +
-                    "%s [group] %s [group-instance] %s [required-status] %s [no-of-instances] %s",
+                            "%s [group] %s [group-instance] %s [required-status] %s [no-of-instances] %s",
                     appId, childId, instanceId, requiredStatus.toString(),
                     noOfInstancesOfRequiredStatus));
         }
@@ -681,14 +681,14 @@ public abstract class ParentComponentMonitor extends Monitor {
             //if terminated all the instances in this instances map should be in terminated state
             if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
                     requiredStatus == GroupStatus.Terminated) {
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Group instances in required status for [application] " +
                                     "%s [group] %s [group-instance] %s [required-status] %s",
                             appId, childId, instanceId, GroupStatus.Terminated.toString()));
                 }
                 return true;
             } else if (noOfInstancesOfRequiredStatus >= minInstances) {
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Group instances in required status for [application] " +
                                     "%s [group] %s [group-instance] %s [required-status] %s",
                             appId, childId, instanceId, requiredStatus.toString()));
@@ -697,7 +697,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             } else {
                 //of only one is inActive implies that the whole group is Inactive
                 if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Group instances in required status for [application] " +
                                         "%s [group] %s [group-instance] %s [required-status] %s",
                                 appId, childId, instanceId, GroupStatus.Inactive.toString()));

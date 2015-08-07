@@ -45,6 +45,10 @@ public class TestMinimumRule {
     private StatefulKnowledgeSession ksession;
     private XMLConfiguration conf;
 
+    public static String get() {
+        return "null";
+    }
+
     @Before
     public void setUp() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
@@ -94,9 +98,5 @@ public class TestMinimumRule {
 
         assertEquals(true, TestDelegator.isMinRuleFired());
 
-    }
-
-    public static String get() {
-        return "null";
     }
 }

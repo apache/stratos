@@ -27,11 +27,6 @@ import java.util.*;
  * Abstract class for the monitoring functionality in Autoscaler.
  */
 public abstract class Monitor implements EventHandler, Runnable {
-    //Monitor types
-    public enum MonitorType {
-        Application, Group, Cluster
-    }
-
     //Id of the monitor, cluster=clusterId, group=group-alias, application=app-alias
     protected String id;
     //The parent app which this monitor relates to
@@ -42,7 +37,6 @@ public abstract class Monitor implements EventHandler, Runnable {
     protected boolean hasStartupDependents;
     //monitors map, key=InstanceId and value=ClusterInstance/GroupInstance/ApplicationInstance
     protected Map<String, Instance> instanceIdToInstanceMap;
-
     public Monitor() {
         this.instanceIdToInstanceMap = new HashMap<String, Instance>();
     }
@@ -75,13 +69,6 @@ public abstract class Monitor implements EventHandler, Runnable {
     }
 
     /**
-     * Return the type of the monitor.
-     *
-     * @return monitor type
-     */
-    public abstract MonitorType getMonitorType();
-
-    /**
      * Set the id of the monitor
      *
      * @param id id of the monitor
@@ -89,6 +76,13 @@ public abstract class Monitor implements EventHandler, Runnable {
     public void setId(String id) {
         this.id = id;
     }
+
+    /**
+     * Return the type of the monitor.
+     *
+     * @return monitor type
+     */
+    public abstract MonitorType getMonitorType();
 
     /**
      * To get the appId of the monitor
@@ -215,5 +209,10 @@ public abstract class Monitor implements EventHandler, Runnable {
      */
     public boolean hasInstance() {
         return !instanceIdToInstanceMap.isEmpty();
+    }
+
+    //Monitor types
+    public enum MonitorType {
+        Application, Group, Cluster
     }
 }

@@ -41,9 +41,8 @@ import java.util.Map;
 public class AutoscalerRuleEvaluator {
 
     private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
-
-    private Map<String, KnowledgeBase> knowledgeBases;
     private static volatile AutoscalerRuleEvaluator instance;
+    private Map<String, KnowledgeBase> knowledgeBases;
 
     private AutoscalerRuleEvaluator() {
         knowledgeBases = new HashMap<String, KnowledgeBase>();
@@ -67,6 +66,24 @@ public class AutoscalerRuleEvaluator {
         return instance;
     }
 
+    private static KnowledgeBase readKnowledgeBase(String drlFileName) {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        String configDir = CarbonUtils.getCarbonConfigDirPath();
+        String droolsDir = configDir + File.separator + StratosConstants.DROOLS_DIR_NAME;
+        Resource resource = ResourceFactory.newFileResource(droolsDir + File.separator + drlFileName);
+        kbuilder.add(resource, ResourceType.DRL);
+        KnowledgeBuilderErrors errors = kbuilder.getErrors();
+        if (errors.size() > 0) {
+            for (KnowledgeBuilderError error : errors) {
+                log.error(error.getMessage());
+            }
+            throw new IllegalArgumentException("Could not parse knowledge");
+        }
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+        return kbase;
+    }
+
     public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName) {
         KnowledgeBase knowledgeBase = readKnowledgeBase(drlFileName);
         if (knowledgeBase == null) {
@@ -86,23 +103,5 @@ public class AutoscalerRuleEvaluator {
         ksession = knowledgeBases.get(drlFileName).newStatefulKnowledgeSession();
         ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
-    }
-
-    private static KnowledgeBase readKnowledgeBase(String drlFileName) {
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        String configDir = CarbonUtils.getCarbonConfigDirPath();
-        String droolsDir = configDir + File.separator + StratosConstants.DROOLS_DIR_NAME;
-        Resource resource = ResourceFactory.newFileResource(droolsDir + File.separator + drlFileName);
-        kbuilder.add(resource, ResourceType.DRL);
-        KnowledgeBuilderErrors errors = kbuilder.getErrors();
-        if (errors.size() > 0) {
-            for (KnowledgeBuilderError error : errors) {
-                log.error(error.getMessage());
-            }
-            throw new IllegalArgumentException("Could not parse knowledge");
-        }
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
-        return kbase;
     }
 }

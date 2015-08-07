@@ -80,10 +80,6 @@ public class AutoscalerUtil {
         return Holder.INSTANCE;
     }
 
-    private static class Holder {
-        private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
-    }
-
     public static Applications getApplications() {
 
         Applications applications;
@@ -264,80 +260,6 @@ public class AutoscalerUtil {
         org.apache.stratos.cloud.controller.stub.Properties properties = new org.apache.stratos.cloud.controller.stub.Properties();
         properties.setProperties(propertyArray);
         return toCommonProperties(properties);
-    }
-
-    public synchronized void startApplicationMonitor(String applicationId) {
-
-        AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
-        if (autoscalerContext.getAppMonitor(applicationId) == null) {
-            autoscalerContext.addApplicationPendingMonitor(applicationId);
-            ServiceReferenceHolder.getInstance().getExecutorService().submit(new ApplicationMonitorAdder(applicationId));
-
-            log.info(String.format("Monitor scheduled: [application] %s ", applicationId));
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Application monitor thread already exists: " +
-                        "[application] %s ", applicationId));
-            }
-        }
-    }
-
-    private class ApplicationMonitorAdder implements Runnable {
-        private String applicationId;
-
-        public ApplicationMonitorAdder(String applicationId) {
-            this.applicationId = applicationId;
-        }
-
-        public void run() {
-            long startTime = System.currentTimeMillis();
-            long endTime = startTime;
-            int retries = 5;
-            boolean success = false;
-            ApplicationMonitor applicationMonitor = null;
-            while (!success && retries != 0) {
-
-                try {
-                    startTime = System.currentTimeMillis();
-                    log.info("Starting monitor: [application] " + applicationId);
-                    try {
-                        applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
-                    } catch (PolicyValidationException e) {
-                        String msg = "Monitor creation failed: [application] " + applicationId;
-                        log.warn(msg, e);
-                        retries--;
-                    }
-                    success = true;
-                    endTime = System.currentTimeMillis();
-                } catch (DependencyBuilderException e) {
-                    String msg = "Monitor creation failed: [application] " + applicationId;
-                    log.warn(msg, e);
-                    retries--;
-                } catch (TopologyInConsistentException e) {
-                    String msg = "Monitor creation failed: [application] " + applicationId;
-                    log.warn(msg, e);
-                    retries--;
-                }
-            }
-
-            if (applicationMonitor == null) {
-                String msg = "Monitor creation failed, even after retrying for 5 times: "
-                        + "[application] " + applicationId;
-                log.error(msg);
-                throw new RuntimeException(msg);
-            }
-            AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
-            autoscalerContext.removeApplicationPendingMonitor(applicationId);
-            autoscalerContext.removeAppMonitor(applicationId);
-            autoscalerContext.addAppMonitor(applicationMonitor);
-
-            long startupTime = ((endTime - startTime) / 1000);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
-                                "[startup-time] %d seconds", applicationMonitor.getId(),
-                        applicationMonitor.getStartupDependencyTree(), startupTime));
-            }
-        }
     }
 
     public static Monitor.MonitorType findMonitorType(ApplicationChildContext context) {
@@ -711,7 +633,6 @@ public class AutoscalerUtil {
         }
     }
 
-
     /**
      * Validates an application policy against the application
      *
@@ -785,6 +706,150 @@ public class AutoscalerUtil {
             return true;
         }
         return false;
+    }
+
+    public static void validateStartupOrders(String groupName, String[] startupOrders) throws InvalidServiceGroupException {
+
+        if (startupOrders == null || startupOrders.length == 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("No Startup Order defined for group " + groupName);
+            }
+            return;
+        }
+
+        for (String startupOrder : startupOrders) {
+            // split comma separated startup orders
+            String[] splittedStartupOrders = startupOrder.split(",");
+            for (String splittedStartupOrder : splittedStartupOrders) {
+                if (!splittedStartupOrder.trim().startsWith("cartridge.") && !splittedStartupOrder.trim().startsWith("group.")) {
+                    // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
+                    throw new InvalidServiceGroupException("Invalid cartridge group: startup order [" + startupOrder +
+                            "] for group " + groupName +
+                            ", should prefixed by either 'cartridge.' or 'group.'");
+                }
+            }
+        }
+    }
+
+    public static void validateScalingDependencies(String groupName, String[] scalingDependents) throws InvalidServiceGroupException {
+
+        if (scalingDependents == null || scalingDependents.length == 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("No Scaling Dependents defined for group " + groupName);
+            }
+            return;
+        }
+
+        for (String scalingDependent : scalingDependents) {
+            // split comma separated scaling dependents
+            String[] splittedDependents = scalingDependent.split(",");
+            for (String splittedDependent : splittedDependents) {
+                if (!splittedDependent.trim().startsWith("cartridge.") && !splittedDependent.trim().startsWith("group.")) {
+                    // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
+                    throw new InvalidServiceGroupException("Invalid cartridge group: Scaling Dependency [" +
+                            scalingDependent + "] for group " + groupName +
+                            ", should prefixed by either 'cartridge.' or 'group.'");
+                }
+            }
+        }
+    }
+
+    /**
+     * Validate the Auto Scalar policy removal
+     *
+     * @param autoscalePolicyId Auto Scalar policy id boolean
+     * @return
+     */
+    public static boolean removableAutoScalerPolicy(String autoscalePolicyId) {
+        Collection<ApplicationContext> applicationContexts = AutoscalerContext.getInstance().
+                getApplicationContexts();
+        for (ApplicationContext applicationContext : applicationContexts) {
+            if (applicationContext.getComponents().getCartridgeContexts() != null) {
+                for (CartridgeContext cartridgeContext : applicationContext.getComponents().
+                        getCartridgeContexts()) {
+                    if (autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
+                            getAutoscalingPolicy())) {
+                        return false;
+                    }
+                }
+            }
+
+            if (applicationContext.getComponents().getGroupContexts() != null) {
+                return findAutoscalingPolicyInGroup(applicationContext.getComponents().getGroupContexts(),
+                        autoscalePolicyId);
+            }
+        }
+        return true;
+    }
+
+    public static boolean findAutoscalingPolicyInGroup(GroupContext[] groupContexts,
+                                                       String autoscalePolicyId) {
+        for (GroupContext groupContext : groupContexts) {
+            if (groupContext.getCartridgeContexts() != null) {
+                for (CartridgeContext cartridgeContext : groupContext.getCartridgeContexts()) {
+                    if (autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
+                            getAutoscalingPolicy())) {
+                        return false;
+                    }
+                }
+
+            }
+            if (groupContext.getGroupContexts() != null) {
+                return findAutoscalingPolicyInGroup(groupContext.getGroupContexts(),
+                        autoscalePolicyId);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validate the deployment policy removal
+     *
+     * @param deploymentPolicyId
+     * @return
+     */
+    public static boolean removableDeploymentPolicy(String deploymentPolicyId) {
+        boolean canRemove = true;
+        Map<String, Application> applications = ApplicationHolder.getApplications().getApplications();
+        for (Application application : applications.values()) {
+            List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.
+                    getDeploymentPolicyIdsReferredInApplication(application.getUniqueIdentifier());
+            for (String deploymentPolicyIdInApp : deploymentPolicyIdsReferredInApplication) {
+                if (deploymentPolicyId.equals(deploymentPolicyIdInApp)) {
+                    canRemove = false;
+                }
+            }
+        }
+        return canRemove;
+    }
+
+    public static void readApplicationContextsFromRegistry() {
+        String[] resourcePaths = RegistryManager.getInstance().getApplicationContextResourcePaths();
+        if ((resourcePaths == null) || (resourcePaths.length == 0)) {
+            return;
+        }
+
+        for (String resourcePath : resourcePaths) {
+            ApplicationContext applicationContext = RegistryManager.getInstance().
+                    getApplicationContextByResourcePath(resourcePath);
+            AutoscalerContext.getInstance().addApplicationContext(applicationContext);
+        }
+    }
+
+    public synchronized void startApplicationMonitor(String applicationId) {
+
+        AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+        if (autoscalerContext.getAppMonitor(applicationId) == null) {
+            autoscalerContext.addApplicationPendingMonitor(applicationId);
+            ServiceReferenceHolder.getInstance().getExecutorService().submit(new ApplicationMonitorAdder(applicationId));
+
+            log.info(String.format("Monitor scheduled: [application] %s ", applicationId));
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Application monitor thread already exists: " +
+                        "[application] %s ", applicationId));
+            }
+        }
     }
 
     public void updateApplicationsTopology(Application application)
@@ -889,132 +954,65 @@ public class AutoscalerUtil {
         }
     }
 
-    public static void validateStartupOrders(String groupName, String[] startupOrders) throws InvalidServiceGroupException {
-
-        if (startupOrders == null || startupOrders.length == 0) {
-            if (log.isDebugEnabled()) {
-                log.debug("No Startup Order defined for group " + groupName);
-            }
-            return;
-        }
-
-        for (String startupOrder : startupOrders) {
-            // split comma separated startup orders
-            String[] splittedStartupOrders = startupOrder.split(",");
-            for (String splittedStartupOrder : splittedStartupOrders) {
-                if (!splittedStartupOrder.trim().startsWith("cartridge.") && !splittedStartupOrder.trim().startsWith("group.")) {
-                    // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
-                    throw new InvalidServiceGroupException("Invalid cartridge group: startup order [" + startupOrder +
-                            "] for group " + groupName +
-                            ", should prefixed by either 'cartridge.' or 'group.'");
-                }
-            }
-        }
+    private static class Holder {
+        private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
     }
 
-    public static void validateScalingDependencies(String groupName, String[] scalingDependents) throws InvalidServiceGroupException {
+    private class ApplicationMonitorAdder implements Runnable {
+        private String applicationId;
 
-        if (scalingDependents == null || scalingDependents.length == 0) {
-            if (log.isDebugEnabled()) {
-                log.debug("No Scaling Dependents defined for group " + groupName);
-            }
-            return;
+        public ApplicationMonitorAdder(String applicationId) {
+            this.applicationId = applicationId;
         }
 
-        for (String scalingDependent : scalingDependents) {
-            // split comma separated scaling dependents
-            String[] splittedDependents = scalingDependent.split(",");
-            for (String splittedDependent : splittedDependents) {
-                if (!splittedDependent.trim().startsWith("cartridge.") && !splittedDependent.trim().startsWith("group.")) {
-                    // invalid startup order; should prefixed by either 'cartridge.' or 'group.'
-                    throw new InvalidServiceGroupException("Invalid cartridge group: Scaling Dependency [" +
-                            scalingDependent + "] for group " + groupName +
-                            ", should prefixed by either 'cartridge.' or 'group.'");
-                }
-            }
-        }
-    }
+        public void run() {
+            long startTime = System.currentTimeMillis();
+            long endTime = startTime;
+            int retries = 5;
+            boolean success = false;
+            ApplicationMonitor applicationMonitor = null;
+            while (!success && retries != 0) {
 
-    /**
-     * Validate the Auto Scalar policy removal
-     *
-     * @param autoscalePolicyId Auto Scalar policy id boolean
-     * @return
-     */
-    public static boolean removableAutoScalerPolicy(String autoscalePolicyId) {
-        Collection<ApplicationContext> applicationContexts = AutoscalerContext.getInstance().
-                getApplicationContexts();
-        for (ApplicationContext applicationContext : applicationContexts) {
-            if(applicationContext.getComponents().getCartridgeContexts() != null) {
-                for(CartridgeContext cartridgeContext : applicationContext.getComponents().
-                        getCartridgeContexts()) {
-                    if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
-                            getAutoscalingPolicy())) {
-                        return false;
+                try {
+                    startTime = System.currentTimeMillis();
+                    log.info("Starting monitor: [application] " + applicationId);
+                    try {
+                        applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
+                    } catch (PolicyValidationException e) {
+                        String msg = "Monitor creation failed: [application] " + applicationId;
+                        log.warn(msg, e);
+                        retries--;
                     }
+                    success = true;
+                    endTime = System.currentTimeMillis();
+                } catch (DependencyBuilderException e) {
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
                 }
             }
 
-            if(applicationContext.getComponents().getGroupContexts() != null) {
-                return findAutoscalingPolicyInGroup(applicationContext.getComponents().getGroupContexts(),
-                        autoscalePolicyId);
+            if (applicationMonitor == null) {
+                String msg = "Monitor creation failed, even after retrying for 5 times: "
+                        + "[application] " + applicationId;
+                log.error(msg);
+                throw new RuntimeException(msg);
             }
-        }
-        return true;
-    }
+            AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+            autoscalerContext.removeApplicationPendingMonitor(applicationId);
+            autoscalerContext.removeAppMonitor(applicationId);
+            autoscalerContext.addAppMonitor(applicationMonitor);
 
-    public static boolean findAutoscalingPolicyInGroup(GroupContext[] groupContexts,
-                                                String autoscalePolicyId) {
-        for(GroupContext groupContext : groupContexts) {
-            if(groupContext.getCartridgeContexts() != null) {
-                for(CartridgeContext cartridgeContext : groupContext.getCartridgeContexts()) {
-                    if(autoscalePolicyId.equals(cartridgeContext.getSubscribableInfoContext().
-                            getAutoscalingPolicy())) {
-                        return false;
-                    }
-                }
-
+            long startupTime = ((endTime - startTime) / 1000);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
+                                "[startup-time] %d seconds", applicationMonitor.getId(),
+                        applicationMonitor.getStartupDependencyTree(), startupTime));
             }
-            if(groupContext.getGroupContexts() != null) {
-                return findAutoscalingPolicyInGroup(groupContext.getGroupContexts(),
-                        autoscalePolicyId);
-            }
-        }
-        return true;
-    }
-
-
-    /**
-     * Validate the deployment policy removal
-     *
-     * @param deploymentPolicyId
-     * @return
-     */
-    public static boolean removableDeploymentPolicy(String deploymentPolicyId) {
-        boolean canRemove = true;
-        Map<String, Application> applications = ApplicationHolder.getApplications().getApplications();
-        for (Application application : applications.values()) {
-            List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.
-                    getDeploymentPolicyIdsReferredInApplication(application.getUniqueIdentifier());
-            for (String deploymentPolicyIdInApp : deploymentPolicyIdsReferredInApplication) {
-                if (deploymentPolicyId.equals(deploymentPolicyIdInApp)) {
-                    canRemove = false;
-                }
-            }
-        }
-        return canRemove;
-    }
-
-    public static void readApplicationContextsFromRegistry() {
-        String[] resourcePaths = RegistryManager.getInstance().getApplicationContextResourcePaths();
-        if ((resourcePaths == null) || (resourcePaths.length == 0)) {
-            return;
-        }
-
-        for (String resourcePath : resourcePaths) {
-            ApplicationContext applicationContext = RegistryManager.getInstance().
-                    getApplicationContextByResourcePath(resourcePath);
-            AutoscalerContext.getInstance().addApplicationContext( applicationContext);
         }
     }
 

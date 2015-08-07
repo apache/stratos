@@ -39,12 +39,28 @@ public class DependencyBuilder {
 
     }
 
-    private static class Holder {
-        private static final DependencyBuilder INSTANCE = new DependencyBuilder();
-    }
-
     public static DependencyBuilder getInstance() {
         return Holder.INSTANCE;
+    }
+
+    /**
+     * Utility method to get the group alias from the startup order Eg: group.mygroup
+     *
+     * @param startupOrder startup order
+     * @return group alias
+     */
+    public static String getGroupFromStartupOrder(String startupOrder) {
+        return startupOrder.substring(AutoscalerConstants.GROUP.length() + 1);
+    }
+
+    /**
+     * Utility method to get the cluster alias from startup order Eg: cartridge.myphp
+     *
+     * @param startupOrder startup order
+     * @return cluster alias
+     */
+    public static String getClusterFromStartupOrder(String startupOrder) {
+        return startupOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
     }
 
     /**
@@ -236,23 +252,7 @@ public class DependencyBuilder {
         return scalingDependentLists;
     }
 
-    /**
-     * Utility method to get the group alias from the startup order Eg: group.mygroup
-     *
-     * @param startupOrder startup order
-     * @return group alias
-     */
-    public static String getGroupFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(AutoscalerConstants.GROUP.length() + 1);
-    }
-
-    /**
-     * Utility method to get the cluster alias from startup order Eg: cartridge.myphp
-     *
-     * @param startupOrder startup order
-     * @return cluster alias
-     */
-    public static String getClusterFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
+    private static class Holder {
+        private static final DependencyBuilder INSTANCE = new DependencyBuilder();
     }
 }

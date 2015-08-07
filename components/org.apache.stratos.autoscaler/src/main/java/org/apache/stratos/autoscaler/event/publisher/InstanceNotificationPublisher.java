@@ -31,14 +31,6 @@ import org.apache.stratos.messaging.util.MessagingUtil;
 public class InstanceNotificationPublisher {
     private static final Log log = LogFactory.getLog(InstanceNotificationPublisher.class);
 
-    /* An instance of InstanceNotificationPublisher is created when the class is loaded.
-     * Since the class is loaded only once, it is guaranteed that an object of
-     * InstanceNotificationPublisher is created only once. Hence it is singleton.
-     */
-    private static class InstanceHolder {
-        private static final InstanceNotificationPublisher INSTANCE = new InstanceNotificationPublisher();
-    }
-
     public static InstanceNotificationPublisher getInstance() {
         return InstanceHolder.INSTANCE;
     }
@@ -65,5 +57,13 @@ public class InstanceNotificationPublisher {
     public synchronized void sendInstanceCleanupEventForMember(String memberId) {
         log.info(String.format("Publishing Instance Cleanup Event: [member] %s", memberId));
         publish(new InstanceCleanupMemberEvent(memberId));
+    }
+
+    /* An instance of InstanceNotificationPublisher is created when the class is loaded.
+     * Since the class is loaded only once, it is guaranteed that an object of
+     * InstanceNotificationPublisher is created only once. Hence it is singleton.
+     */
+    private static class InstanceHolder {
+        private static final InstanceNotificationPublisher INSTANCE = new InstanceNotificationPublisher();
     }
 }

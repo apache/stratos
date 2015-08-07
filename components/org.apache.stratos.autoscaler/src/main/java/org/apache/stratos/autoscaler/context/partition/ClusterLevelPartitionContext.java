@@ -93,6 +93,36 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.pendingMembers = new ArrayList<MemberContext>();
     }
 
+    public ClusterLevelPartitionContext(PartitionRef partition, String networkPartitionId, String deploymentPolicyId) {
+
+        super(partition, networkPartitionId, deploymentPolicyId);
+        this.pendingMembers = new ArrayList<MemberContext>();
+        this.activeMembers = new ArrayList<MemberContext>();
+        this.terminationPendingMembers = new ArrayList<MemberContext>();
+        this.obsoletedMembers = new ConcurrentHashMap<String, MemberContext>();
+        memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
+
+        terminationPendingStartedTime = new HashMap<String, Long>();
+        // check if a different value has been set for expiryTime
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
+        obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        spinTerminateParallel = conf.getBoolean(StratosConstants.SPIN_TERMINATE_PARALLEL, false);
+        terminationPendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT, 1800000);
+        if (log.isDebugEnabled()) {
+            log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
+            log.debug("Member obsoleted expiry time is set to: " + obsoltedMemberExpiryTime);
+            log.debug("Member pending termination expiry time is set to: " + terminationPendingMemberExpiryTime);
+        }
+
+        Thread th = new Thread(new PendingMemberWatcher(this));
+        th.start();
+        Thread th2 = new Thread(new ObsoletedMemberWatcher(this));
+        th2.start();
+        Thread th3 = new Thread(new TerminationPendingMemberWatcher(this));
+        th3.start();
+    }
+
     public void terminateAllRemainingInstances() {
 
         // Forcefully deleting remaining active members
@@ -135,36 +165,6 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         } catch (Exception e) {
             log.error("Error occurred while terminating instance", e);
         }
-    }
-
-    public ClusterLevelPartitionContext(PartitionRef partition, String networkPartitionId, String deploymentPolicyId) {
-
-        super(partition, networkPartitionId, deploymentPolicyId);
-        this.pendingMembers = new ArrayList<MemberContext>();
-        this.activeMembers = new ArrayList<MemberContext>();
-        this.terminationPendingMembers = new ArrayList<MemberContext>();
-        this.obsoletedMembers = new ConcurrentHashMap<String, MemberContext>();
-        memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
-
-        terminationPendingStartedTime = new HashMap<String, Long>();
-        // check if a different value has been set for expiryTime
-        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
-        obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
-        spinTerminateParallel = conf.getBoolean(StratosConstants.SPIN_TERMINATE_PARALLEL, false);
-        terminationPendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT, 1800000);
-        if (log.isDebugEnabled()) {
-            log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
-            log.debug("Member obsoleted expiry time is set to: " + obsoltedMemberExpiryTime);
-            log.debug("Member pending termination expiry time is set to: " + terminationPendingMemberExpiryTime);
-        }
-
-        Thread th = new Thread(new PendingMemberWatcher(this));
-        th.start();
-        Thread th2 = new Thread(new ObsoletedMemberWatcher(this));
-        th2.start();
-        Thread th3 = new Thread(new TerminationPendingMemberWatcher(this));
-        th3.start();
     }
 
     public long getTerminationPendingStartedTimeOfMember(String memberId) {
@@ -488,7 +488,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     public int getNonTerminatedMemberCount() {
         int nonTerminatedMemberCount = 0;
-        if(spinTerminateParallel) {
+        if (spinTerminateParallel) {
             // Returning all the pending members as there shouldn't be a spawning
             // before complete termination.
             // Will be applicable only when having min1*max1 situation
@@ -653,8 +653,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     }
 
     private class PendingMemberWatcher implements Runnable {
-        private ClusterLevelPartitionContext ctxt;
         private final Log log = LogFactory.getLog(PendingMemberWatcher.class);
+        private ClusterLevelPartitionContext ctxt;
 
         public PendingMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
@@ -675,16 +675,16 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                         String clusterInstanceId = pendingMember.getClusterInstanceId();
                         String clusterId = pendingMember.getClusterId();
                         String serviceName = pendingMember.getCartridgeType();
-                         Service service = TopologyManager.getTopology().
+                        Service service = TopologyManager.getTopology().
                                 getService(serviceName);
 
                         ClusterStatus status = ClusterStatus.Terminated;
-                        if(service != null) {
+                        if (service != null) {
                             Cluster cluster = service.getCluster(clusterId);
-                            if(cluster != null) {
+                            if (cluster != null) {
                                 ClusterInstance instance = cluster.
                                         getInstanceContexts(clusterInstanceId);
-                                if(instance!= null) {
+                                if (instance != null) {
                                     status = instance.getStatus();
                                 }
                             }
@@ -725,8 +725,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     }
 
     private class ObsoletedMemberWatcher implements Runnable {
-        private ClusterLevelPartitionContext ctxt;
         private final Log log = LogFactory.getLog(ObsoletedMemberWatcher.class);
+        private ClusterLevelPartitionContext ctxt;
 
         public ObsoletedMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
@@ -792,8 +792,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
      * This thread is responsible for moving member to obsolete list if pending termination timeout happens
      */
     private class TerminationPendingMemberWatcher implements Runnable {
-        private ClusterLevelPartitionContext ctxt;
         private final Log log = LogFactory.getLog(TerminationPendingMemberWatcher.class);
+        private ClusterLevelPartitionContext ctxt;
 
         public TerminationPendingMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;

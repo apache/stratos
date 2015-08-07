@@ -491,7 +491,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     return false;
                 } else {
                     log.info(String.format("Previous graceful un-deployment is in progress for " +
-                            "[application-id] %s , thus  terminating instances directly",
+                                    "[application-id] %s , thus  terminating instances directly",
                             applicationId));
                     appMonitor.setForce(true);
                     terminateAllMembersAndClustersForcefully(applicationId);
@@ -926,15 +926,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             //Stopping the cluster monitor thread
             ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
                     getClusterMonitor(clusterId);
-            if(clusterMonitor != null) {
+            if (clusterMonitor != null) {
                 clusterMonitor.destroy();
             } else {
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster monitor cannot be found for [application] %s " +
                             "[cluster] %s", applicationId, clusterId));
                 }
             }
-            if(cluster != null) {
+            if (cluster != null) {
                 Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
                 for (ClusterInstance clusterInstance : allClusterInstances) {
                     ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId, cluster.getServiceName(),
@@ -1132,7 +1132,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                     NetworkPartitionContext clusterLevelNetworkPartitionContext
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
-                    if(clusterLevelNetworkPartitionContext != null) {
+                    if (clusterLevelNetworkPartitionContext != null) {
                         try {
                             addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
                                     deploymentPolicy.getDeploymentPolicyID(), clusterMonitor.getClusterContext().getServiceId());

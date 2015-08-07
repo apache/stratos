@@ -32,7 +32,7 @@ import java.io.Serializable;
 public class BasicPayloadData implements Serializable {
 
     private static Log log = LogFactory.getLog(BasicPayloadData.class);
-
+    protected StringBuilder payloadBuilder;
     private String appId;
     private String groupName;
     private String serviceName;
@@ -56,9 +56,7 @@ public class BasicPayloadData implements Serializable {
     private String[] dependencyClusterIDs;
     private String[] exportMetadataKeys;
     private String[] importMetadataKeys;
-	private String lvsVirtualIP;
-
-    protected StringBuilder payloadBuilder;
+    private String lvsVirtualIP;
 
     public BasicPayloadData() {
 
@@ -129,10 +127,10 @@ public class BasicPayloadData implements Serializable {
         if (getExportMetadataKeys() != null) {
             payloadBuilder.append("IMPORT_METADATA_KEYS=" + getImportMetadataKeys());
         }
-	    payloadBuilder.append(",");
-	    if(getLvsVirtualIP()!=null && !getLvsVirtualIP().equals("")){
-		    payloadBuilder.append("LVS_VIRTUAL_IP=" +getLvsVirtualIP());
-	    }
+        payloadBuilder.append(",");
+        if (getLvsVirtualIP() != null && !getLvsVirtualIP().equals("")) {
+            payloadBuilder.append("LVS_VIRTUAL_IP=" + getLvsVirtualIP());
+        }
     }
 
     public String getServiceName() {
@@ -394,11 +392,11 @@ public class BasicPayloadData implements Serializable {
         this.importMetadataKeys = importMetadataKeys;
     }
 
-	public String getLvsVirtualIP() {
-		return lvsVirtualIP;
-	}
+    public String getLvsVirtualIP() {
+        return lvsVirtualIP;
+    }
 
-	public void setLvsVirtualIP(String lvsVirtualIP) {
-		this.lvsVirtualIP = lvsVirtualIP;
-	}
+    public void setLvsVirtualIP(String lvsVirtualIP) {
+        this.lvsVirtualIP = lvsVirtualIP;
+    }
 }
