@@ -28,6 +28,9 @@ class Stratos:
 
     """
     # Users
+     * list-users
+     * add-users
+     * remove-user
 
     """
     @staticmethod
@@ -36,17 +39,19 @@ class Stratos:
 
     @staticmethod
     def add_users(username, password, role_name, first_name, last_name, email, profile_name):
-        data = [username]
-        r = requests.post(Configs.stratos_api_url + 'users', data,
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        data = {
+            "userName": username,
+            "credential": password,
+            "role": role_name,
+            "firstName": first_name,
+            "lastName": last_name,
+            "email": email
+        }
+        return Stratos.post('users', data,  error_message='No applications found')
 
-    """
-    # Network Partitions
-
-    """
     @staticmethod
-    def list_network_partitions():
-        return Stratos.get('networkPartitions', error_message='No network partitions found')
+    def remove_user(name):
+        return Stratos.delete('users/'+name)
 
     """
     # Applications
@@ -70,6 +75,9 @@ class Stratos:
 
     """
     # Cartridges
+     * list-cartridges
+     * describe-cartridge
+     * remove-cartridges
 
     """
     @staticmethod
@@ -77,8 +85,71 @@ class Stratos:
         return Stratos.get('cartridges', error_message='No cartridges found')
 
     @staticmethod
+    def describe_cartridge(cartridge_type):
+        return Stratos.get('cartridges/'+cartridge_type, error_message='No cartridge found')
+
+    @staticmethod
+    def remove_cartridge(cartridge_type):
+        return Stratos.delete('cartridges/'+cartridge_type)
+
+    """
+    # Cartridge groups
+     * list-cartridge-groups
+     * describe-cartridge-group
+     * remove-cartridges-group
+
+    """
+
+    @staticmethod
     def list_cartridge_groups():
         return Stratos.get('cartridgeGroups', error_message='No cartridge groups found')
+
+    @staticmethod
+    def describe_cartridge_group(group_definition_name):
+        return Stratos.get('cartridgeGroups/'+group_definition_name, error_message='No cartridge groups found')
+
+    @staticmethod
+    def remove_cartridge_group(group_definition_name):
+        return Stratos.delete('cartridgeGroups/'+group_definition_name)
+
+    """
+    # Deployment Policy
+     * list-deployment-policies
+     * describe-deployment-policy
+     * remove-deployment-policy
+
+    """
+    @staticmethod
+    def list_deployment_policies():
+        return Stratos.get('deploymentPolicies',
+                           error_message='Deployment policies not found')
+    @staticmethod
+    def describe_deployment_policy(deployment_policy_name):
+        return Stratos.get('deploymentPolicies/'+ deployment_policy_name,
+                           error_message='No deployment policies found')
+    @staticmethod
+    def remove_deployment_policy(deployment_policy_id):
+        return Stratos.delete('deploymentPolicies/'+deployment_policy_id)
+
+    """
+    # Network partitions
+     * list-network-partitions
+     * describe-network-partition
+     * remove-network-partition
+
+    """
+    @staticmethod
+    def list_network_partitions():
+        return Stratos.get('networkPartitions', error_message='No network partitions found')
+
+    @staticmethod
+    def describe_network_partition(network_partition_id):
+        return Stratos.get('networkPartitions/'+ network_partition_id,
+                           error_message='No network partitions found')
+
+    @staticmethod
+    def remove_network_partition(network_partition_id):
+        return Stratos.delete('networkPartitions/'+network_partition_id)
 
     """
     # Kubernetes Clusters
@@ -93,34 +164,11 @@ class Stratos:
         return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts',
                            error_message='Kubernetes cluster not found')
 
-    @staticmethod
-    def list_deployment_policies():
-        return Stratos.get('deploymentPolicies',
-                           error_message='Deployment policies not found')
 
-    @staticmethod
-    def list_cartridge_groups():
-        return Stratos.get('cartridgeGroups',
-                           error_message='cartridge groups not found')
     @staticmethod
     def list_autoscaling_policies():
         return Stratos.get('autoscalingPolicies',
                            error_message='No Autoscaling policies found')
-
-    @staticmethod
-    def describe_cartridge(cartridge_type):
-        return Stratos.get('cartridges/'+cartridge_type,
-                           error_message='No Autoscaling policies found')
-
-    @staticmethod
-    def describe_cartridge_group(group_definition_name):
-        return Stratos.get('cartridgeGroups/'+group_definition_name,
-                           error_message='No cartridge groups found')
-
-    @staticmethod
-    def describe_deployment_policy(deployment_policy_name):
-        return Stratos.get('deploymentPolicies/'+ deployment_policy_name,
-                           error_message='No deployment policies found')
 
     @staticmethod
     def describe_kubernetes_cluster(kubernetes_cluster_id):
@@ -131,12 +179,6 @@ class Stratos:
     def describe_kubernetes_master(kubernetes_cluster_id):
         return Stratos.get('kubernetesClusters/'+ kubernetes_cluster_id+'/master',
                            error_message='No kubernetes clusters found')
-
-    @staticmethod
-    def describe_network_partition(network_partition_id):
-        return Stratos.get('networkPartitions/'+ network_partition_id,
-                           error_message='No nerwork partitions found')
-
     @staticmethod
     def describe_autoscaling_policy(autoscaling_policy_id):
         return Stratos.get('autoscalingPolicies/'+ autoscaling_policy_id,
@@ -157,7 +199,7 @@ class Stratos:
     def get(resource, error_message):
         r = requests.get(Configs.stratos_api_url + resource,
                          auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        #print(r.text)
+        # print(r.text)
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 400:
@@ -165,16 +207,16 @@ class Stratos:
         elif r.status_code == 401:
             raise AuthenticationError()
         elif r.status_code == 404:
-            if r.json() and r.json()['errorMessage'] == error_message:
+            if r.text and r.json() and r.json()['errorMessage'] == error_message:
                 return []
             else:
                 raise requests.HTTPError()
 
     @staticmethod
-    def post(resource, data,  error_message):
-        r = requests.post(Configs.stratos_api_url + resource, data,
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        #print(r.text)
+    def delete(resource):
+        r = requests.delete(Configs.stratos_api_url + resource,
+                            auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        print(r.text)
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 400:
@@ -182,7 +224,21 @@ class Stratos:
         elif r.status_code == 401:
             raise AuthenticationError()
         elif r.status_code == 404:
-            if r.json() and r.json()['errorMessage'] == error_message:
+            raise requests.HTTPError()
+
+    @staticmethod
+    def post(resource, data,  error_message):
+        r = requests.post(Configs.stratos_api_url + resource, data,
+                          auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        print(r.text)
+        if r.status_code == 200:
+            return r.json()
+        elif r.status_code == 400:
+            raise requests.HTTPError()
+        elif r.status_code == 401:
+            raise AuthenticationError()
+        elif r.status_code == 404:
+            if r.text and r.json() and r.json()['errorMessage'] == error_message:
                 return []
             else:
                 raise requests.HTTPError()

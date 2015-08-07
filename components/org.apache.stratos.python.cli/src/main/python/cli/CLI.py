@@ -41,38 +41,12 @@ class CLI(Cmd):
     """
 
     Stratos CLI specific methods
+    ====================================================================================================================
 
-    """
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_repositories(self, line, opts=None):
-        """ Shows the git repositories of the user identified by given the username and password
-          eg: repositories -u agentmilindu  -p agentmilindu123 """
-
-        r = requests.get('https://api.github.com/users/' + Configs.stratos_username + '/repos?per_page=5',
-                         auth=(Configs.stratos_username, Configs.stratos_password))
-        repositories = r.json()
-        print(r)
-        print(repositories)
-        table = PrintableTable()
-        rows = [["Name", "language"]]
-        table.set_cols_align(["l", "r"])
-        table.set_cols_valign(["t", "m"])
-
-        for repo in repositories:
-            rows.append([repo['name'], repo['language']])
-        print(rows)
-        table.add_rows(rows)
-        table.print_table()
-
-    """
-    User
+    # User
      * list-users
      * add-user
+     * remove-user
 
     """
 
@@ -86,11 +60,9 @@ class CLI(Cmd):
         try:
             users = Stratos.list_users()
             table = PrintableTable()
-            rows = [["Name", "language"]]
-            table.set_cols_align(["l", "r"])
-            table.set_cols_valign(["t", "m"])
+            rows = [["Username", "Role"]]
             for user in users:
-                rows.append([user['role'], user['userName']])
+                rows.append([user['userName'], user['role']])
             table.add_rows(rows)
             table.print_table()
         except AuthenticationError as e:
@@ -99,11 +71,13 @@ class CLI(Cmd):
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-s', '--username_user', type="str", help="Username of the user"),
+        make_option('-a', '--password_user', type="str", help="Password of the user"),
         make_option('-r', '--role_name', type="str", help="Role name of the user"),
         make_option('-f', '--first_name', type="str", help="First name of the user"),
         make_option('-l', '--last_name', type="str", help="Last name of the user"),
         make_option('-e', '--email', type="str", help="Email of the user"),
-        make_option('-x', '--profile_name', type="str", help="Profile name of the user")
+        make_option('-o', '--profile_name', type="str", help="Profile name of the user")
     ])
     @auth
     def do_add_user(self, line , opts=None):
@@ -123,15 +97,28 @@ class CLI(Cmd):
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
-    def do_list_network_partitions(self, line , opts=None):
-        """Illustrate the base class method use."""
-        network_partitions = Stratos.list_network_partitions()
-        table = PrintableTable()
-        rows = [["Network Partition ID", "Number of Partitions"]]
-        for network_partition in network_partitions:
-            rows.append([network_partition['id'], len(network_partition['partitions'])])
-        table.add_rows(rows)
-        table.print_table()
+    def do_remove_user(self, name , opts=None):
+        """Delete a specific user"""
+        try:
+            if not name:
+                print("usage: remove-user [username]")
+            else:
+                user_removed = Stratos.remove_user(name)
+                if user_removed:
+                    print("You have successfully deleted user: "+name)
+                else:
+                    print("Could not delete user: "+name)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    """
+    # Cartridges
+     * list-cartridges
+     * describe-cartridge
+     * add-cartridge
+     * remove-cartridge
+
+    """
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -154,11 +141,67 @@ class CLI(Cmd):
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
+    def do_describe_cartridge(self, cartridge_type , opts=None):
+        """Retrieve details of a specific cartridge."""
+        if not cartridge_type:
+            print("usage: describe-cartridge [cartridge-type]")
+        else:
+            try:
+                cartridge = Stratos.describe_cartridge(cartridge_type)
+                if not cartridge:
+                    print("Cartridge not found")
+                else:
+                    print("-------------------------------------")
+                    print("Cartridge Information:")
+                    print("-------------------------------------")
+                    print("Type: "+cartridge['type'])
+                    print("Category: "+cartridge['category'])
+                    print("Name: "+cartridge['displayName'])
+                    print("Description: "+cartridge['description'])
+                    print("Version: "+str(cartridge['version']))
+                    print("Multi-Tenant: "+str(cartridge['multiTenant']))
+                    print("Host Name: "+cartridge['host'])
+                    print("-------------------------------------")
+            except requests.HTTPError as e:
+                self.perror("Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_cartridge(self, cartridge_type , opts=None):
+        """Delete a cartridge"""
+        try:
+            if not cartridge_type:
+                print("usage: remove-cartridge [cartridge-type]")
+            else:
+                cartridge_removed = Stratos.remove_cartridge(cartridge_type)
+                if cartridge_removed:
+                    print("Successfully un-deployed cartridge : "+cartridge_type)
+                else:
+                    print("Could not un-deployed cartridge : "+cartridge_type)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    """
+    # Cartridge groups
+     * list-cartridge-groups
+     * describe-cartridge-group
+     * remove-cartridge-group
+
+    """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
     def do_list_cartridge_groups(self, line , opts=None):
         """Illustrate the base class method use."""
         cartridge_groups = Stratos.list_cartridge_groups()
         if not cartridge_groups:
-            print("No cartrige groups found")
+            print("No cartridge groups found")
         else:
             table = PrintableTable()
             rows = [["Name", "No. of cartridges", "No of groups", "Dependency scaling"]]
@@ -168,6 +211,186 @@ class CLI(Cmd):
             table.add_rows(rows)
             table.print_table()
 
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_cartridge_group(self, group_definition_name , opts=None):
+        """Retrieve details of a cartridge group."""
+        if not group_definition_name:
+            print("usage: describe-cartridge-group [cartridge-group-name]")
+            return
+        cartridge_group = Stratos.describe_cartridge_group(group_definition_name)
+        if not cartridge_group:
+            print("Cartridge group not found")
+        else:
+            print("Service Group : "+group_definition_name)
+            PrintableJSON(cartridge_group).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_cartridge_group(self, group_definition_name , opts=None):
+        """Delete a cartridge"""
+        try:
+            if not group_definition_name:
+                print("usage: remove-cartridge-group [cartridge-group-name]")
+            else:
+                cartridge_removed = Stratos.remove_cartridge_group(group_definition_name)
+                if cartridge_removed:
+                    print("Successfully un-deployed cartridge group : "+group_definition_name)
+                else:
+                    print("Could not un-deployed cartridge group : "+group_definition_name)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    """
+    # Deployment Policies
+     * list-deployment-policies
+     * describe-deployment-policy
+     * remove-deployment-policy
+
+    """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_deployment_policies(self, line , opts=None):
+        """Illustrate the base class method use."""
+        deployment_policies = Stratos.list_deployment_policies()
+        if not deployment_policies:
+            print("No deployment policies found")
+        else:
+            table = PrintableTable()
+            rows = [["Id", "Accessibility"]]
+            for deployment_policy in deployment_policies:
+                rows.append([deployment_policy['id'], len(deployment_policy['networkPartitions'])])
+            table.add_rows(rows)
+            table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_deployment_policy(self, line , opts=None):
+        """Retrieve details of a specific deployment policy."""
+        if not line.split():
+            print("usage: describe-deployment-policy [deployment-policy-id]")
+            return
+        deployment_policy = Stratos.describe_deployment_policy(line)
+        if not deployment_policy:
+            print("Deployment policy not found")
+        else:
+            PrintableJSON(deployment_policy).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_deployment_policy(self, deployment_policy_id , opts=None):
+        """Delete a cartridge"""
+        try:
+            if not deployment_policy_id:
+                print("usage: remove-deployment-policy [deployment-policy-id]")
+            else:
+                cartridge_removed = Stratos.remove_deployment_policy(deployment_policy_id)
+                if cartridge_removed:
+                    print("Successfully deleted deployment policy : "+deployment_policy_id)
+                else:
+                    print("Could not deleted deployment policy : "+deployment_policy_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    """
+    # Network Partitions
+     * list-deployment-policies
+     * describe-deployment-policy
+     * remove-deployment-policy
+
+    """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_network_partitions(self, line , opts=None):
+        """Illustrate the base class method use."""
+        network_partitions = Stratos.list_network_partitions()
+        table = PrintableTable()
+        rows = [["Network Partition ID", "Number of Partitions"]]
+        for network_partition in network_partitions:
+            rows.append([network_partition['id'], len(network_partition['partitions'])])
+        table.add_rows(rows)
+        table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_network_partition(self, network_partition_id , opts=None):
+        """Retrieve details of a specific deployment policy."""
+        if not network_partition_id:
+            print("usage: describe-network-partition [network-partition]")
+            return
+        deployment_policy = Stratos.describe_network_partition(network_partition_id)
+        if not deployment_policy:
+            print("Network partition not found: "+network_partition_id)
+        else:
+            print("Partition: "+network_partition_id)
+            PrintableJSON(deployment_policy).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_network_partition(self, network_partition_id, opts=None):
+        """Delete a cartridge"""
+        try:
+            if not network_partition_id:
+                print("usage: remove-network-partition [network-partition-id]")
+            else:
+                cartridge_removed = Stratos.remove_network_partition(network_partition_id)
+                if cartridge_removed:
+                    print("Successfully deleted network-partition : "+network_partition_id)
+                else:
+                    print("Could not deleted network-partition : "+network_partition_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    """
+    # Auto-scaling policies
+     *
+    """
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_autoscaling_policies(self, line , opts=None):
+        """Retrieve details of all the cartridge groups that have been added."""
+        autoscaling_policies = Stratos.list_autoscaling_policies()
+        if not autoscaling_policies:
+            print("No autoscaling policies found")
+        else:
+            table = PrintableTable()
+            rows = [["Id", "Accessibility"]]
+            for autoscaling_policy in autoscaling_policies:
+                rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
+            table.add_rows(rows)
+            table.print_table()
+            
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
@@ -262,105 +485,6 @@ class CLI(Cmd):
             Stratos.deploy_user()
         except ValueError as e:
             self.perror("sdc")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_list_deployment_policies(self, line , opts=None):
-        """Illustrate the base class method use."""
-        deployment_policies = Stratos.list_deployment_policies()
-        if not deployment_policies:
-            print("No deployment policies found")
-        else:
-            table = PrintableTable()
-            rows = [["Id", "Accessibility"]]
-            for deployment_policy in deployment_policies:
-                rows.append([deployment_policy['id'], len(deployment_policy['networkPartitions'])])
-            table.add_rows(rows)
-            table.print_table()
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_list_autoscaling_policies(self, line , opts=None):
-        """Retrieve details of all the cartridge groups that have been added."""
-        autoscaling_policies = Stratos.list_autoscaling_policies()
-        if not autoscaling_policies:
-            print("No autoscaling policies found")
-        else:
-            table = PrintableTable()
-            rows = [["Id", "Accessibility"]]
-            for autoscaling_policy in autoscaling_policies:
-                rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
-            table.add_rows(rows)
-            table.print_table()
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_cartridge(self, line , opts=None):
-        """Retrieve details of a specific cartridge."""
-        print(line)
-        cartridge = Stratos.describe_cartridge(line)
-        if not cartridge:
-            print("Cartridge not found")
-        else:
-            print("""
--------------------------------------
-Cartridge Information:
--------------------------------------""")
-
-            print("Type: "+cartridge[0]['type'])
-            print("Category: "+cartridge[0]['category'])
-            print("Name: "+cartridge[0]['displayName'])
-            print("Description: "+cartridge[0]['description'])
-            print("Version: "+str(cartridge[0]['version']))
-            print("Multi-Tenant: "+str(cartridge[0]['multiTenant']))
-            print("Host Name: "+cartridge[0]['host'])
-            print("-------------------------------------")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_cartridge_group(self, line , opts=None):
-        """Retrieve details of a cartridge group."""
-        if not line.split():
-            print("usage: describe-cartridge-group [cartridge-group-name]")
-            return
-        cartridge_group = Stratos.describe_cartridge_group(line)
-        if not cartridge_group:
-            print("Cartridge group not found")
-        else:
-            PrintableJSON(cartridge_group).pprint()
-
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_deployment_policy(self, line , opts=None):
-        """Retrieve details of a specific deployment policy."""
-        if not line.split():
-            print("usage: describe-deployment-policy [deployment-policy-id]")
-            return
-        deployment_policy = Stratos.describe_deployment_policy(line)
-        if not deployment_policy:
-            print("Deployment policy not found")
-        else:
-            PrintableJSON(deployment_policy).pprint()
-
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
