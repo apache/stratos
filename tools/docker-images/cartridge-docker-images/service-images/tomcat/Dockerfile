@@ -22,9 +22,9 @@
 FROM stratos/base-image:4.1.1
 MAINTAINER dev@stratos.apache.org
 
-ENV JDK_VERSION 1.7.0_67
-ENV JDK_TAR_FILENAME jdk-7u67-linux-x64.tar.gz
-ENV TOMCAT_VERSION 7.0.59
+ENV JDK_VERSION 1.7.0_80
+ENV JDK_TAR_FILENAME jdk-7u80-linux-x64.tar.gz
+ENV TOMCAT_VERSION 7.0.63
 
 # ----------------------
 # Install prerequisites

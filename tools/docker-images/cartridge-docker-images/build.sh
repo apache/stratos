@@ -30,14 +30,13 @@ cp -vf target/apache-stratos-python-cartridge-agent-4.1.1.zip ${script_path}/bas
 popd
 
 pushd ${script_path}/base-image/
-echo "Building base docker image..."
+echo "Building base Docker image..."
 sudo docker build -t stratos/base-image:4.1.1 .
 
 pushd ${script_path}/service-images/php
-echo "Building php docker image..."
+echo "Building PHP Docker image..."
 sudo docker build -t stratos/php:4.1.1 .
 
 pushd ${script_path}/service-images/tomcat
-echo "Building tomcat docker image..."
+echo "Building Tomcat Docker image..."
 sudo docker build -t stratos/tomcat:4.1.1 .
-

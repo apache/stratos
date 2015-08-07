@@ -23,8 +23,8 @@ FROM stratos/base-image:4.1.1
 MAINTAINER dev@stratos.apache.org
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV JDK_VERSION 1.7.0_60
-ENV JDK_TAR_FILENAME jdk-7u60-linux-x64.tar.gz
+ENV JDK_VERSION 1.7.0_80
+ENV JDK_TAR_FILENAME jdk-7u80-linux-x64.tar.gz
 ENV WSO2_IS_VERSION 5.0.0
 
 # ----------------------
