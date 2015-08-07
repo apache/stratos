@@ -27,7 +27,7 @@
         <version>4.1.1</version>
     </parent>
 
-    <artifactId>org.apache.stratos.lvs.extension</artifactId>
+    <artifactId>apache-stratos-lvs-extension</artifactId>
     <name>Apache Stratos - LVS Extension</name>
     <description>Apache Stratos LVS Extension for Load Balancing</description>
 
