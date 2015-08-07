@@ -390,8 +390,4 @@ public class TopologyHandler {
         String path = getClass().getResource("/").getPath();
         return StringUtils.removeEnd(path, File.separator);
     }
-
-    private void addEventListeners() {
-        topologyEventReceiver.addEventListener(MemberInitializedEventListener );
-    }
 }
