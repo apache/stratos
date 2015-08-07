@@ -798,7 +798,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public Cartridge[] getCartridgesByTenant(int tenantId) {
 
         Collection<Cartridge> allCartridges = CloudControllerContext.getInstance().getCartridges();
-        log.info("---------------------------- All cartridges: "+ allCartridges);
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
         if (allCartridges == null || allCartridges.size() == 0) {
             log.info("No registered Cartridge found for [tenant-id]" + tenantId);
@@ -813,7 +812,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
 
-        log.info("---------------------------- Cartridges for tenant: "+ cartridges);
         return cartridges.toArray(new Cartridge[cartridges.size()]);
     }
 

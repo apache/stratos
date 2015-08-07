@@ -1026,7 +1026,7 @@ public class StratosApiV41Utils {
         }
 
         List<String> cartridgeTypes = new ArrayList<String>();
-        String[] cartridgeUuids = null;
+        String[] cartridgeUuids;
         List<String> groupNames;
         String[] cartridgeGroupNames;
 
@@ -1332,7 +1332,7 @@ public class StratosApiV41Utils {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Removing cartridge group: [cartridge-group-name] %s [tenant-id] %d " ,name,tenantId));
         }
-        String serviceGroupUuid = null;
+        String serviceGroupUuid;
         // Check whether cartridge group exists
         try {
 
@@ -1670,11 +1670,7 @@ public class StratosApiV41Utils {
 
                 // Validate top level group deployment policy with cartridges
                 if (group.getCartridges() != null) {
-                    if (group.getDeploymentPolicy() != null) {
-                        groupParentHasDeploymentPolicy = true;
-                    } else {
-                        groupParentHasDeploymentPolicy = false;
-                    }
+                    groupParentHasDeploymentPolicy = group.getDeploymentPolicy() != null;
                     validateCartridgesForDeploymentPolicy(group.getCartridges(), groupParentHasDeploymentPolicy);
                 }
 
@@ -1740,7 +1736,7 @@ public class StratosApiV41Utils {
                                                   Collection<CartridgeGroupReferenceBean> groups, boolean hasDeploymentPolicy)
             throws RestAPIException {
 
-        boolean groupHasDeploymentPolicy = false;
+        boolean groupHasDeploymentPolicy;
 
         for (CartridgeGroupReferenceBean group : groups) {
             if (groupsSet.get(group.getAlias()) != null) {
@@ -2007,8 +2003,8 @@ public class StratosApiV41Utils {
     public static ApplicationInfoBean getApplicationRuntime(String applicationId,int tenantId)
             throws RestAPIException {
         ApplicationInfoBean applicationBean = null;
-        ApplicationContext applicationContext = null;
-        String applicationUuid=null;
+        ApplicationContext applicationContext;
+        String applicationUuid;
         //Checking whether application is in deployed mode
         try {
             applicationUuid=getAutoscalerServiceClient().getApplicationByTenant(applicationId,tenantId).getApplicationUuid();
@@ -2029,13 +2025,13 @@ public class StratosApiV41Utils {
         try {
             ApplicationManager.acquireReadLockForApplication(applicationUuid);
             Application application = ApplicationManager.getApplications().getApplication(applicationUuid);
+            if (application == null) {
+                return null;
+            }
             if (application.getInstanceContextCount() > 0
                     || (applicationContext != null &&
                     applicationContext.getStatus().equals("Deployed"))) {
 
-                if (application == null) {
-                    return null;
-                }
                 applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
                 for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
                     addClustersInstancesToApplicationInstanceBean(instanceBean, application);
