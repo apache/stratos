@@ -29,7 +29,7 @@
     <!-- TODO: when out of labs, switch to org.jclouds.api -->
     <groupId>org.apache.stratos</groupId>
     <artifactId>openstack-neutron</artifactId>
-    <version>1.8.1-stratosv1-SNAPSHOT</version>
+    <version>1.8.1-stratosv1</version>
     <name>jclouds openstack-neutron api</name>
     <description>jclouds components to access an implementation of OpenStack Neutron</description>
     <packaging>bundle</packaging>

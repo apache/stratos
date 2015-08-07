@@ -27,7 +27,7 @@
     </parent>
     <groupId>org.apache.stratos</groupId>
     <artifactId>vcloud</artifactId>
-    <version>1.8.1-stratosv1-SNAPSHOT</version>
+    <version>1.8.1-stratosv1</version>
     <name>jclouds vcloud api</name>
     <description>jclouds components to access an implementation of VMWare vCloud</description>
     <packaging>bundle</packaging>
