@@ -118,7 +118,7 @@
                         <emma.home>${basedir}/target/emma</emma.home>
                     </systemProperties>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/strats-testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
