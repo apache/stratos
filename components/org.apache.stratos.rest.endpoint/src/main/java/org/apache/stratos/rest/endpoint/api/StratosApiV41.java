@@ -21,7 +21,9 @@ package org.apache.stratos.rest.endpoint.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
+import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
@@ -44,6 +46,8 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
+import org.apache.stratos.common.client.AutoscalerServiceClient;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.exception.InvalidEmailException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
@@ -780,16 +784,14 @@ public class StratosApiV41 extends AbstractApi {
     public Response addApplication(ApplicationBean applicationDefinition) throws RestAPIException {
         try {
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            applicationDefinition.setTenantId(carbonContext.getTenantId());
-            applicationDefinition.setApplicationUuid(UUID.randomUUID().toString());
-            StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(),
+            int tenantId = carbonContext.getTenantId();
+            String applicationUuid = UUID.randomUUID().toString();
+            StratosApiV41Utils.addApplication(applicationDefinition, applicationUuid, tenantId, getConfigContext(),
                     getUsername(), getTenantDomain());
 
-
-            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationUuid()).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationUuid).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Application added successfully: [application] %s",
-                            applicationDefinition.getApplicationUuid()))).build();
+                    String.format("Application added successfully: [application] %s", applicationUuid))).build();
         } catch (ApplicationAlreadyExistException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Application already exists")).build();
@@ -823,12 +825,17 @@ public class StratosApiV41 extends AbstractApi {
     public Response updateApplication(ApplicationBean applicationDefinition) throws RestAPIException {
 
         try {
-            StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(),
-                    getUsername(), getTenantDomain());
-            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationUuid()).build();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ApplicationContext applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant
+                    (applicationDefinition.getApplicationId(), carbonContext.getTenantId());
+            StratosApiV41Utils.updateApplication(applicationDefinition, applicationContext.getApplicationUuid(),
+                    carbonContext.getTenantId(), getConfigContext(), getUsername(), getTenantDomain());
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationContext.getApplicationUuid()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application updated successfully: [application] %s",
-                            applicationDefinition.getApplicationUuid()))).build();
+                            applicationContext.getApplicationUuid()))).build();
+        } catch (RemoteException e) {
+            throw new RestAPIException(e.getMessage());
         } catch (AutoscalerServiceCartridgeNotFoundExceptionException e) {
             String backendErrorMessage = e.getFaultMessage().getCartridgeNotFoundException().
                     getMessage();
@@ -840,7 +847,6 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, backendErrorMessage)).build();
         }
-
     }
 
     /**
@@ -1287,7 +1293,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force)
             throws RestAPIException {
 	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,carbonContext.getTenantId());
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,
+                carbonContext.getTenantId());
         if (applicationDefinition == null) {
             String message = String.format("Application does not exist [application-id] %s", applicationId);
             log.error(message);
@@ -1301,7 +1308,15 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, message)).build();
         }
-        StratosApiV41Utils.undeployApplication(applicationDefinition.getApplicationUuid(), force);
+
+        ApplicationContext applicationContext = null;
+        try {
+            applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationId,
+                    carbonContext.getTenantId());
+        } catch (RemoteException e) {
+            throw new RestAPIException(e.getMessage());
+        }
+        StratosApiV41Utils.undeployApplication(applicationContext.getApplicationUuid(), force);
         return Response.accepted().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Application undeploy process started successfully: [application-id] %s", applicationId))).build();
     }
@@ -1904,15 +1919,13 @@ public class StratosApiV41 extends AbstractApi {
 
         try {
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            kubernetesCluster.setTenantId(carbonContext.getTenantId());
-            kubernetesCluster.setClusterUuid(UUID.randomUUID().toString());
-            StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
-            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();
+            int tenantId = carbonContext.getTenantId();
+            String kubernetesClusterUuid = UUID.randomUUID().toString();
+            StratosApiV41Utils.addKubernetesCluster(kubernetesCluster, kubernetesClusterUuid, tenantId);
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesClusterUuid).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Kubernetes cluster added successfully: [kub-host-cluster] %s",
-                            kubernetesCluster.getClusterUuid()))).build();
-        } catch (RestAPIException e) {
-            throw e;
+                            kubernetesClusterUuid))).build();
         } catch (CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Kubernetes cluster already exists")).build();
@@ -1925,7 +1938,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Update kubernetes host cluster.
      *
-     * @param kubernetesCluster the kubernetes cluster
+     * @param kubernetesClusterBean the kubernetes cluster
      * @return 200 if the kubernetes cluster is successfully updated
      * @throws RestAPIException the rest api exception
      */
@@ -1935,18 +1948,21 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/kubernetesClusters/manage")
     public Response updateKubernetesCluster(
-            KubernetesClusterBean kubernetesCluster) throws RestAPIException {
+            KubernetesClusterBean kubernetesClusterBean) throws RestAPIException {
 
         try {
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            kubernetesCluster.setTenantId(carbonContext.getTenantId());
-            StratosApiV41Utils.updateKubernetesCluster(kubernetesCluster);
+            KubernetesCluster kubernetesCluster = CloudControllerServiceClient.getInstance().getKubernetesClusterByTenantId
+                    (kubernetesClusterBean
+                    .getClusterId(), carbonContext.getTenantId());
+            StratosApiV41Utils.updateKubernetesCluster(kubernetesClusterBean, kubernetesCluster.getClusterUuid(),
+                    kubernetesCluster.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();
             return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Kubernetes cluster updated successfully: [kub-host-cluster] %s",
                             kubernetesCluster.getClusterUuid()))).build();
-        } catch (RestAPIException e) {
-            throw e;
+        } catch (RemoteException e) {
+            throw new RestAPIException(e.getMessage());
         } catch (CloudControllerServiceInvalidKubernetesClusterExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Kubernetes cluster is invalid")).build();

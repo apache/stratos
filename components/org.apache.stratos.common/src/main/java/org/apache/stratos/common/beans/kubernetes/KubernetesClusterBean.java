@@ -27,22 +27,12 @@ import java.util.List;
 @XmlRootElement
 public class KubernetesClusterBean {
 
-    private String clusterUuid;
 	private String clusterId;
     private String description;
     private List<KubernetesHostBean> kubernetesHosts;
     private KubernetesMasterBean kubernetesMaster;
     private PortRangeBean portRange;
     private List<PropertyBean> property;
-	private int tenantId;
-
-    public String getClusterUuid() {
-        return clusterUuid;
-    }
-
-    public void setClusterUuid(String clusterUuid) {
-        this.clusterUuid = clusterUuid;
-    }
 
     public List<KubernetesHostBean> getKubernetesHosts() {
         return kubernetesHosts;
@@ -90,13 +80,5 @@ public class KubernetesClusterBean {
 
 	public void setClusterId(String clusterId) {
 		this.clusterId = clusterId;
-	}
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
 	}
 }

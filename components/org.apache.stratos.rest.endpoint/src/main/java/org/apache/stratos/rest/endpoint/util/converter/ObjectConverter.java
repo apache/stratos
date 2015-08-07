@@ -939,22 +939,23 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster
-    convertToCCKubernetesClusterPojo(KubernetesClusterBean kubernetesClusterBean) throws RestAPIException {
+    convertToCCKubernetesClusterPojo(KubernetesClusterBean kubernetesClusterBean, String kubernetesClusterUuid,
+                                     int tenantId) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster = new
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster();
 
-        kubernetesCluster.setClusterUuid(kubernetesClusterBean.getClusterUuid());
+        kubernetesCluster.setClusterUuid(kubernetesClusterUuid);
         kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterId());
         kubernetesCluster.setDescription(kubernetesClusterBean.getDescription());
         kubernetesCluster.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(
-                kubernetesClusterBean.getKubernetesMaster(),kubernetesClusterBean.getTenantId()));
+                kubernetesClusterBean.getKubernetesMaster(), tenantId));
         kubernetesCluster.setPortRange(convertPortRangeToStubPortRange(kubernetesClusterBean.getPortRange()));
         kubernetesCluster.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesClusterBean.getKubernetesHosts(),
-                kubernetesClusterBean.getTenantId()));
+                tenantId));
         kubernetesCluster.setProperties((convertPropertyBeansToCCStubProperties(kubernetesClusterBean.getProperty(),
-                kubernetesClusterBean.getTenantId())));
-        kubernetesCluster.setTenantId(kubernetesClusterBean.getTenantId());
+                tenantId)));
+        kubernetesCluster.setTenantId(tenantId);
 
         return kubernetesCluster;
     }
@@ -1045,7 +1046,7 @@ public class ObjectConverter {
             return null;
         }
         KubernetesClusterBean kubernetesClusterBean = new KubernetesClusterBean();
-        kubernetesClusterBean.setClusterUuid(kubernetesCluster.getClusterId());
+        kubernetesClusterBean.setClusterId(kubernetesCluster.getClusterId());
         kubernetesClusterBean.setDescription(kubernetesCluster.getDescription());
         kubernetesClusterBean.setPortRange(convertStubPortRangeToPortRange(kubernetesCluster.getPortRange()));
         kubernetesClusterBean.setKubernetesHosts(convertStubKubernetesHostsToKubernetesHosts(kubernetesCluster.getKubernetesHosts()));
@@ -1132,18 +1133,18 @@ public class ObjectConverter {
     }
 
     public static ApplicationContext convertApplicationDefinitionToStubApplicationContext(
-            ApplicationBean applicationDefinition) throws RestAPIException {
+            ApplicationBean applicationDefinition, String applicationUuid, int tenantId) throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
-        applicationContext.setApplicationUuid(applicationDefinition.getApplicationUuid());
+        applicationContext.setApplicationUuid(applicationUuid);
         applicationContext.setApplicationId(applicationDefinition.getApplicationId());
         applicationContext.setAlias(applicationDefinition.getAlias());
         applicationContext.setMultiTenant(applicationDefinition.isMultiTenant());
         applicationContext.setName(applicationDefinition.getName());
         applicationContext.setDescription(applicationDefinition.getDescription());
         applicationContext.setStatus(applicationDefinition.getStatus());
-        applicationContext.setTenantId(applicationDefinition.getTenantId());
+        applicationContext.setTenantId(tenantId);
 
         // convert and set components
         if (applicationDefinition.getComponents() != null) {
@@ -1154,7 +1155,7 @@ public class ObjectConverter {
             if (applicationDefinition.getComponents().getGroups() != null) {
                 componentContext.setGroupContexts(
                         convertGroupDefinitionsToStubGroupContexts(applicationDefinition.getComponents().getGroups(),
-                                applicationDefinition.getTenantId()));
+                                tenantId));
             }
             // top level dependency information
             if (applicationDefinition.getComponents().getDependencies() != null) {
@@ -1164,7 +1165,7 @@ public class ObjectConverter {
             // top level cartridge context information
             if (applicationDefinition.getComponents().getCartridges() != null) {
                 componentContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts
-                        (applicationDefinition.getComponents().getCartridges(), applicationDefinition.getTenantId()));
+                        (applicationDefinition.getComponents().getCartridges(), tenantId));
             }
             applicationContext.setComponents(componentContext);
         }
@@ -1178,14 +1179,12 @@ public class ObjectConverter {
         }
 
         ApplicationBean applicationDefinition = new ApplicationBean();
-        applicationDefinition.setApplicationUuid(applicationContext.getApplicationUuid());
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setAlias(applicationContext.getAlias());
         applicationDefinition.setMultiTenant(applicationContext.getMultiTenant());
         applicationDefinition.setName(applicationContext.getName());
         applicationDefinition.setDescription(applicationContext.getDescription());
         applicationDefinition.setStatus(applicationContext.getStatus());
-        applicationDefinition.setApplicationUuid(applicationContext.getApplicationUuid());
         // convert and set components
         if (applicationContext.getComponents() != null) {
             applicationDefinition.setComponents(new ComponentBean());
@@ -1536,7 +1535,6 @@ public class ObjectConverter {
         return prop;
     }
 
-
     private static DependencyContext convertDependencyDefinitionsToDependencyContexts(DependencyBean dependencyBean) {
         if (dependencyBean == null) {
             return null;
@@ -1734,8 +1732,8 @@ public class ObjectConverter {
         }
 
         ApplicationInfoBean applicationBean = new ApplicationInfoBean();
-        applicationBean.setId(application.getUniqueIdentifier());
-        applicationBean.setName(application.getId());
+        applicationBean.setId(application.getId());
+        applicationBean.setName(application.getName());
         applicationBean.setStatus(application.getStatus().name());
         applicationBean.setDescription(application.getDescription());
         applicationBean.setTenantDomain(application.getTenantDomain());

@@ -990,7 +990,7 @@ public class RestCommandLineService {
             RowMapper<ApplicationBean> rowMapper = new RowMapper<ApplicationBean>() {
                 public String[] getData(ApplicationBean applicationDefinition) {
                     String[] data = new String[3];
-                    data[0] = applicationDefinition.getApplicationUuid();
+                    data[0] = applicationDefinition.getApplicationId();
                     data[1] = applicationDefinition.getAlias();
                     data[2] = applicationDefinition.getStatus();
                     return data;
@@ -1146,7 +1146,7 @@ public class RestCommandLineService {
                 RowMapper<KubernetesClusterBean> partitionMapper = new RowMapper<KubernetesClusterBean>() {
                     public String[] getData(KubernetesClusterBean kubernetesCluster) {
                         String[] data = new String[2];
-                        data[0] = kubernetesCluster.getClusterUuid();
+                        data[0] = kubernetesCluster.getClusterId();
                         data[1] = kubernetesCluster.getDescription();
                         return data;
                     }
