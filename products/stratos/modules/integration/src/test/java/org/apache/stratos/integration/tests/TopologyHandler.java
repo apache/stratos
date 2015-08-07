@@ -31,6 +31,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.listener.topology.MemberInitializedEventListener;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
@@ -390,5 +391,7 @@ public class TopologyHandler {
         return StringUtils.removeEnd(path, File.separator);
     }
 
-
+    private void addEventListeners() {
+        topologyEventReceiver.addEventListener(MemberInitializedEventListener );
+    }
 }

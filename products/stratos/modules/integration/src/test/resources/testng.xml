@@ -24,42 +24,42 @@
 
     <test name="CartridgeTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.CartridgeTest" />
+            <class name="org.apache.stratos.integration.tests.group.CartridgeTest" />
         </classes>
     </test>
     <test name="CartridgeGroupTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.CartridgeGroupTest" />
+            <class name="org.apache.stratos.integration.tests.group.CartridgeGroupTest" />
         </classes>
     </test>
     <test name="NetworkPartitionTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.NetworkPartitionTest" />
+            <class name="org.apache.stratos.integration.tests.policies.NetworkPartitionTest" />
         </classes>
     </test>
     <test name="ApplicationPolicyTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.ApplicationPolicyTest" />
+            <class name="org.apache.stratos.integration.tests.policies.ApplicationPolicyTest" />
         </classes>
     </test>
     <test name="DeploymentPolicyTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.DeploymentPolicyTest" />
+            <class name="org.apache.stratos.integration.tests.policies.DeploymentPolicyTest" />
         </classes>
     </test>
     <test name="AutoscalingPolicyTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.AutoscalingPolicyTest" />
+            <class name="org.apache.stratos.integration.tests.policies.AutoscalingPolicyTest" />
         </classes>
     </test>
     <test name="SampleApplicationsTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.SampleApplicationsTest" />
+            <class name="org.apache.stratos.integration.tests.application.SampleApplicationsTest" />
         </classes>
     </test>
     <test name="ApplicationBurstingTest">
         <classes>
-            <class name="org.apache.stratos.integration.tests.ApplicationBurstingTest" />
+            <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest" />
         </classes>
     </test>
 

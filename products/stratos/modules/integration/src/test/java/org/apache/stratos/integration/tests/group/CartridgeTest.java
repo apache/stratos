@@ -17,12 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.integration.tests;
+package org.apache.stratos.integration.tests.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.integration.tests.RestConstants;
+import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;

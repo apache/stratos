@@ -16,22 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.integration.tests;
+package org.apache.stratos.integration.tests.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
+import org.apache.stratos.integration.tests.RestConstants;
+import org.apache.stratos.integration.tests.StratosTestServerManager;
+import org.apache.stratos.integration.tests.TopologyHandler;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 /**
- * This will handle the application bursting test cases
+ * This will handle the scale-up and scale-down of a particular cluster bursting test cases
  */
-public class ApplicationBurstingTest extends StratosTestServerManager {
+public class SingleClusterScalingTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
     private static final String TEST_PATH = "/application-bursting-test";
 
@@ -219,5 +222,12 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
             assertTrue("An error occurred while handling  application bursting", false);
         }
     }
-}
 
+    @Test(dependsOnMethods = {"testApplication"})
+    public void testClusterScalingUp() {
+
+    }
+
+
+
+}
