@@ -56,7 +56,7 @@
                                 "name": "G3",
                                 "groupMaxInstances": 3,
                                 "groupMinInstances": 2,
-                                "deploymentPolicy": "static-1",
+                                "deploymentPolicy": "deployment-policy-1",
                                 "alias": "group3",
                                 "cartridges": [
                                     {

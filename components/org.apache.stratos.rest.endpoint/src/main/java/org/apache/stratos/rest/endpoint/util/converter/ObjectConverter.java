@@ -1132,18 +1132,18 @@ public class ObjectConverter {
     }
 
     public static ApplicationContext convertApplicationDefinitionToStubApplicationContext(
-            ApplicationBean applicationDefinition) throws RestAPIException {
+            ApplicationBean applicationDefinition,String applicationUuid,int tenantId) throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
-        applicationContext.setApplicationUuid(applicationDefinition.getApplicationUuid());
+        applicationContext.setApplicationUuid(applicationUuid);
         applicationContext.setApplicationId(applicationDefinition.getApplicationId());
         applicationContext.setAlias(applicationDefinition.getAlias());
         applicationContext.setMultiTenant(applicationDefinition.isMultiTenant());
         applicationContext.setName(applicationDefinition.getName());
         applicationContext.setDescription(applicationDefinition.getDescription());
         applicationContext.setStatus(applicationDefinition.getStatus());
-        applicationContext.setTenantId(applicationDefinition.getTenantId());
+        applicationContext.setTenantId(tenantId);
 
         // convert and set components
         if (applicationDefinition.getComponents() != null) {
@@ -1154,7 +1154,7 @@ public class ObjectConverter {
             if (applicationDefinition.getComponents().getGroups() != null) {
                 componentContext.setGroupContexts(
                         convertGroupDefinitionsToStubGroupContexts(applicationDefinition.getComponents().getGroups(),
-                                applicationDefinition.getTenantId()));
+                                tenantId));
             }
             // top level dependency information
             if (applicationDefinition.getComponents().getDependencies() != null) {
@@ -1164,7 +1164,7 @@ public class ObjectConverter {
             // top level cartridge context information
             if (applicationDefinition.getComponents().getCartridges() != null) {
                 componentContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts
-                        (applicationDefinition.getComponents().getCartridges(), applicationDefinition.getTenantId()));
+                        (applicationDefinition.getComponents().getCartridges(),tenantId));
             }
             applicationContext.setComponents(componentContext);
         }

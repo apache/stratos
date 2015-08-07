@@ -1466,10 +1466,10 @@ public class StratosApiV41Utils {
 
         // To validate groups have unique alias in the application definition
         validateGroupsInApplicationDefinition(appDefinition);
-
-
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        String applicationUuid=UUID.randomUUID().toString();
         ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(
-                appDefinition);
+                appDefinition,applicationUuid,carbonContext.getTenantId());
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTenantAdminUsername(userName);
@@ -1521,32 +1521,33 @@ public class StratosApiV41Utils {
                                          String userName, String tenantDomain)
             throws RestAPIException, AutoscalerServiceCartridgeNotFoundExceptionException, AutoscalerServiceCartridgeGroupNotFoundExceptionException {
 
-        if (StringUtils.isBlank(appDefinition.getApplicationUuid())) {
+        if (StringUtils.isBlank(appDefinition.getApplicationId())) {
             String message = "Please specify the application name";
             log.error(message);
             throw new RestAPIException(message);
         }
-
-        validateApplication(appDefinition);
-
-        ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(
-                appDefinition);
-        applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
-        applicationContext.setTenantDomain(tenantDomain);
-        applicationContext.setTenantAdminUsername(userName);
-
-        if (appDefinition.getProperty() != null) {
-            org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
-            for (PropertyBean propertyBean : appDefinition.getProperty()) {
-                org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
-                property.setName(propertyBean.getName());
-                property.setValue(propertyBean.getValue());
-                properties.addProperties(property);
-            }
-            applicationContext.setProperties(properties);
-        }
-
         try {
+            validateApplication(appDefinition);
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            String applicationUuid = AutoscalerServiceClient.getInstance().getApplicationByTenant(appDefinition.getApplicationId(), carbonContext.getTenantId()).getApplicationUuid();
+            ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(
+                    appDefinition,applicationUuid,carbonContext.getTenantId());
+            applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
+            applicationContext.setTenantDomain(tenantDomain);
+            applicationContext.setTenantAdminUsername(userName);
+
+            if (appDefinition.getProperty() != null) {
+                org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
+                for (PropertyBean propertyBean : appDefinition.getProperty()) {
+                    org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
+                    property.setName(propertyBean.getName());
+                    property.setValue(propertyBean.getValue());
+                    properties.addProperties(property);
+                }
+                applicationContext.setProperties(properties);
+            }
+
+
             AutoscalerServiceClient.getInstance().updateApplication(applicationContext);
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
             String message = e.getFaultMessage().getApplicationDefinitionException().getMessage();

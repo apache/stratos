@@ -279,7 +279,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getType(), "c3");
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 1);
             assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 2);
-            /*
+
             boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
                     endpoint, restClient);
             assertEquals(updated, true);
@@ -315,7 +315,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 2);
             assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 3);
 
-
+            /*
             boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
             assertEquals(removedGroup, false);
@@ -451,15 +451,15 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertClusterActivation(bean.getApplicationUuid());
 
             //Updating application
-          /*  boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
+            boolean updated = applicationTest.updateApplication("g-sc-G123-1.json",
                     endpoint, restClient);
             assertEquals(updated, true);
 
-            assertGroupInstanceCount(bean.getApplicationId(), "group3", 2);
+            assertGroupInstanceCount(bean.getApplicationUuid(), "group3", 2);
             ApplicationBean updatedBean = applicationTest.getApplication("g-sc-G123-1", endpoint,
                     restClient);
             assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1");
-
+            /*
             boolean removedGroup = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
                     restClient);
             assertEquals(removedGroup, false);

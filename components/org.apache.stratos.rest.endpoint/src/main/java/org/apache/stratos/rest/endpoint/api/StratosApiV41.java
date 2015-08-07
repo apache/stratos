@@ -825,7 +825,7 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateApplication(applicationDefinition, getConfigContext(),
                     getUsername(), getTenantDomain());
-            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationUuid()).build();
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Application updated successfully: [application] %s",
                             applicationDefinition.getApplicationUuid()))).build();
