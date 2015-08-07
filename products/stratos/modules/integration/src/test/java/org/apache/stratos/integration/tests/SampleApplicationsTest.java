@@ -165,14 +165,14 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(bean.getName(), "G1");
 
-        /*    boolean updated = cartridgeGroupTest.updateCartridgeGroup("cartrdige-nested.json",
+            boolean updated = cartridgeGroupTest.updateCartridgeGroup("cartrdige-nested.json",
                     endpoint, restClient);
             assertEquals(updated, true);
             CartridgeGroupBean updatedBean = cartridgeGroupTest.getCartridgeGroup("G1", endpoint,
                     restClient);
-            assertEquals(updatedBean.getName(), "G1");    */
+            assertEquals(updatedBean.getName(), "G1");
 
-            boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
+         /*   boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
                     restClient);
             assertEquals(removedC1, false);
 
@@ -182,7 +182,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             boolean removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
                     restClient);
-            assertEquals(removedC3, false);
+            assertEquals(removedC3, false);    */
 
 
             boolean removed = cartridgeGroupTest.removeCartridgeGroup("G1", endpoint,
@@ -193,15 +193,15 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     restClient);
             assertEquals(beanRemoved, null);
 
-            removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
+            boolean removedC1 = cartridgeTest.removeCartridge("c1", endpoint,
                     restClient);
             assertEquals(removedC1, true);
 
-            removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
+            boolean removedC2 = cartridgeTest.removeCartridge("c2", endpoint,
                     restClient);
             assertEquals(removedC2, true);
 
-            removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
+            boolean removedC3 = cartridgeTest.removeCartridge("c3", endpoint,
                     restClient);
             assertEquals(removedC3, true);
 

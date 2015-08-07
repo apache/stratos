@@ -1104,7 +1104,7 @@ public class StratosApiV41Utils {
         }
 
         ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
-                serviceGroupDefinition, tenantId);
+                serviceGroupDefinition,UUID.randomUUID().toString(), tenantId);
 
         AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
         try {
@@ -1132,9 +1132,6 @@ public class StratosApiV41Utils {
         try {
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
             ServiceGroup existingServiceGroup =autoscalerServiceClient.getServiceGroupByTenant(cartridgeGroup.getName(), tenantId);
-            ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
-                    cartridgeGroup, tenantId);
-
 
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
 
@@ -1155,14 +1152,14 @@ public class StratosApiV41Utils {
             //validate the group definition to check for cyclic group behaviour
             validateGroupDuplicationInGroupDefinition(cartridgeGroup);
 
-            if (serviceGroup != null) {
+            if (existingServiceGroup != null) {
                 autoscalerServiceClient.updateServiceGroup(
-                        ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(cartridgeGroup, tenantId));
+                        ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(cartridgeGroup,existingServiceGroup.getUuid(), tenantId));
 
                 List<String> cartridgesBeforeUpdating = new ArrayList<String>();
                 List<String> cartridgesAfterUpdating = new ArrayList<String>();
 
-                ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(serviceGroup.getUuid());
+                ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(existingServiceGroup.getUuid());
                 findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
                 findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
 
