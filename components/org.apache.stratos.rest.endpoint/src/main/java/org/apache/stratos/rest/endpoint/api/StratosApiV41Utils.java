@@ -56,17 +56,16 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
-import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.exception.InvalidEmailException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 import org.apache.stratos.manager.user.management.StratosUserManagerUtils;
-import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -93,7 +92,6 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.apache.stratos.kubernetes.client.KubernetesConstants;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -102,12 +100,12 @@ import java.util.regex.Pattern;
 
 
 public class StratosApiV41Utils {
+    private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
+
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
-
-    private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
 
     /**
      * Add New Cartridge
@@ -973,7 +971,6 @@ public class StratosApiV41Utils {
         List<String> cartridgeTypes = new ArrayList<String>();
         String[] cartridgeNames = null;
         List<String> groupNames;
-        String[] cartridgeGroupNames;
 
         if (log.isDebugEnabled()) {
             log.debug("Checking cartridges in cartridge group " + serviceGroupDefinition.getName());
@@ -1018,11 +1015,10 @@ public class StratosApiV41Utils {
 
             List<CartridgeGroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
             groupNames = new ArrayList<String>();
-            cartridgeGroupNames = new String[groupDefinitions.size()];
+
             int i = 0;
             for (CartridgeGroupBean groupList : groupDefinitions) {
                 groupNames.add(groupList.getName());
-                cartridgeGroupNames[i] = groupList.getName();
                 i++;
             }
 
@@ -1102,29 +1098,24 @@ public class StratosApiV41Utils {
                 List<String> cartridgesToRemove = new ArrayList<String>();
                 List<String> cartridgesToAdd = new ArrayList<String>();
 
-                if (cartridgesBeforeUpdating != null) {
-                    if (!cartridgesBeforeUpdating.isEmpty()) {
-                        cartridgesToRemove.addAll(cartridgesBeforeUpdating);
-                    }
+
+                if (!cartridgesBeforeUpdating.isEmpty()) {
+                    cartridgesToRemove.addAll(cartridgesBeforeUpdating);
                 }
 
-                if (cartridgesAfterUpdating != null) {
-                    if (!cartridgesAfterUpdating.isEmpty()) {
-                        cartridgesToAdd.addAll(cartridgesAfterUpdating);
-                    }
+                if (!cartridgesAfterUpdating.isEmpty()) {
+                    cartridgesToAdd.addAll(cartridgesAfterUpdating);
                 }
 
-                if ((cartridgesBeforeUpdating != null) && (cartridgesAfterUpdating != null)) {
-                    if ((!cartridgesBeforeUpdating.isEmpty()) && (!cartridgesAfterUpdating.isEmpty())) {
-                        for (String before : cartridgesBeforeUpdating) {
-                            for (String after : cartridgesAfterUpdating) {
-                                if (before.toLowerCase().equals(after.toLowerCase())) {
-                                    if (cartridgesToRemove.contains(after)) {
-                                        cartridgesToRemove.remove(after);
-                                    }
-                                    if (cartridgesToAdd.contains(after)) {
-                                        cartridgesToAdd.remove(after);
-                                    }
+                if ((!cartridgesBeforeUpdating.isEmpty()) && (!cartridgesAfterUpdating.isEmpty())) {
+                    for (String before : cartridgesBeforeUpdating) {
+                        for (String after : cartridgesAfterUpdating) {
+                            if (before.toLowerCase().equals(after.toLowerCase())) {
+                                if (cartridgesToRemove.contains(after)) {
+                                    cartridgesToRemove.remove(after);
+                                }
+                                if (cartridgesToAdd.contains(after)) {
+                                    cartridgesToAdd.remove(after);
                                 }
                             }
                         }
@@ -1941,10 +1932,6 @@ public class StratosApiV41Utils {
                 if (application.getInstanceContextCount() > 0
                         || (applicationContext != null &&
                         applicationContext.getStatus().equals("Deployed"))) {
-
-                    if (application == null) {
-                        return null;
-                    }
                     applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
                     for (ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
                         addClustersInstancesToApplicationInstanceBean(instanceBean, application);

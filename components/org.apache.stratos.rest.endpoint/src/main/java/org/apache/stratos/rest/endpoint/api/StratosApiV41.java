@@ -445,7 +445,8 @@ public class StratosApiV41 extends AbstractApi {
                     .build();
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
+                    ResponseMessageBean.ERROR,
+                    e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
         }
     }
 
@@ -480,10 +481,12 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, e.getMessage())).build();
         } catch (AutoscalerServiceInvalidServiceGroupExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, e.getFaultMessage().getInvalidServiceGroupException().getMessage())).build();
+                    ResponseMessageBean.ERROR,
+                    e.getFaultMessage().getInvalidServiceGroupException().getMessage())).build();
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
+                    ResponseMessageBean.ERROR,
+                    e.getFaultMessage().getCartridgeNotFoundException().getMessage())).build();
         }
     }
 
@@ -1252,7 +1255,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         StratosApiV41Utils.undeployApplication(applicationId, force);
         return Response.accepted().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Application undeploy process started successfully: [application-id] %s", applicationId))).build();
+                String.format("Application undeploy process started successfully: [application-id] %s",
+                        applicationId))).build();
     }
 
     /**
@@ -1305,7 +1309,8 @@ public class StratosApiV41 extends AbstractApi {
         if (!applicationDefinition.getStatus().equalsIgnoreCase(StratosApiV41Utils.APPLICATION_STATUS_CREATED)) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
                     String.format("Could not delete since application is not in CREATED state :" +
-                            " [application] %s [current-status] %S", applicationId, applicationDefinition.getStatus()))).build();
+                                    " [application] %s [current-status] %S", applicationId,
+                            applicationDefinition.getStatus()))).build();
         }
 
         StratosApiV41Utils.removeApplication(applicationId);
@@ -1501,10 +1506,12 @@ public class StratosApiV41 extends AbstractApi {
 
         } catch (InvalidEmailException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, String.format("Invalid email: [email] %s", tenantInfoBean.getEmail()))).build();
+                    ResponseMessageBean.ERROR, String.format("Invalid email: [email] %s",
+                    tenantInfoBean.getEmail()))).build();
         } catch (InvalidDomainException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, String.format("Invalid domain: [domain] %s", tenantInfoBean.getTenantDomain()))).build();
+                    ResponseMessageBean.ERROR, String.format("Invalid domain: [domain] %s",
+                    tenantInfoBean.getTenantDomain()))).build();
         }
 
     }
@@ -1527,16 +1534,19 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.updateExistingTenant(tenantInfoBean);
             return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                    String.format("Tenant updated successfully: [tenant] %s", tenantInfoBean.getTenantDomain()))).build();
+                    String.format("Tenant updated successfully: [tenant] %s",
+                            tenantInfoBean.getTenantDomain()))).build();
         } catch (TenantNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, "Tenant not found")).build();
         } catch (InvalidEmailException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, String.format("Invalid email [email] %s", tenantInfoBean.getEmail()))).build();
+                    ResponseMessageBean.ERROR, String.format("Invalid email [email] %s",
+                    tenantInfoBean.getEmail()))).build();
         } catch (InvalidDomainException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, String.format("Invalid Domain [Domain] %s", tenantInfoBean.getTenantDomain()))).build();
+                    ResponseMessageBean.ERROR, String.format("Invalid Domain [Domain] %s",
+                    tenantInfoBean.getTenantDomain()))).build();
         } catch (Exception e) {
             String msg = "Error in updating tenant " + tenantInfoBean.getTenantDomain();
             log.error(msg, e);
@@ -1643,13 +1653,15 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
         try {
-            List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = StratosApiV41Utils.searchPartialTenantsDomains(tenantDomain);
+            List<org.apache.stratos.common.beans.TenantInfoBean> tenantList =
+                    StratosApiV41Utils.searchPartialTenantsDomains(tenantDomain);
             if (tenantList == null || tenantList.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
                         ResponseMessageBean.ERROR, "No tenants found")).build();
             }
 
-            return Response.ok().entity(tenantList.toArray(new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()])).build();
+            return Response.ok().entity(tenantList.toArray(
+                    new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()])).build();
         } catch (Exception e) {
             String msg = "Error in getting information for tenant " + tenantDomain;
             log.error(msg, e);
