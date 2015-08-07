@@ -296,7 +296,7 @@ public class StratosApiV41 extends AbstractApi {
 
         CartridgeBean cartridgeBean = null;
         try {
-            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType,carbonContext.getTenantId());
+            cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType, carbonContext.getTenantId());
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException ignore) {
             //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
         }
@@ -312,7 +312,7 @@ public class StratosApiV41 extends AbstractApi {
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Cartridge added successfully: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
-                        cartridgeType,cartridgeUuid, tenantId))).build();
+                        cartridgeType, cartridgeUuid, tenantId))).build();
     }
 
     /**
