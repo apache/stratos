@@ -17,7 +17,8 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.jclouds.labs</groupId>
@@ -40,14 +41,15 @@
         <test.google-compute-engine.credential>Private key (PKCS12 file) associated with the Google API client_id
         </test.google-compute-engine.credential>
         <test.google-compute-engine.api-version>v1</test.google-compute-engine.api-version>
-        <test.google-compute-engine.build-version />
-        <test.google-compute-engine.template>imageId=debian-7-wheezy-v20131120,locationId=us-central1-a,minRam=2048</test.google-compute-engine.template>
+        <test.google-compute-engine.build-version/>
+        <test.google-compute-engine.template>imageId=debian-7-wheezy-v20131120,locationId=us-central1-a,minRam=2048
+        </test.google-compute-engine.template>
         <jclouds.osgi.export>org.jclouds.googlecomputeengine*;version="${project.version}"</jclouds.osgi.export>
         <jclouds.osgi.import>
-          org.jclouds.compute.internal;version="${jclouds.version}",
-          org.jclouds.rest.internal;version="${jclouds.version}",
-          org.jclouds*;version="${jclouds.version}",
-          *
+            org.jclouds.compute.internal;version="${jclouds.version}",
+            org.jclouds.rest.internal;version="${jclouds.version}",
+            org.jclouds*;version="${jclouds.version}",
+            *
         </jclouds.osgi.import>
     </properties>
 
@@ -128,7 +130,8 @@
                                         <test.google-compute-engine.build-version>
                                             ${test.google-compute-engine.build-version}
                                         </test.google-compute-engine.build-version>
-                                        <test.google-compute-engine.template>${test.google-compute-engine.template}</test.google-compute-engine.template>
+                                        <test.google-compute-engine.template>${test.google-compute-engine.template}
+                                        </test.google-compute-engine.template>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>
