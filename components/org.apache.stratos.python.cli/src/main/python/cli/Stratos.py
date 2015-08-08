@@ -152,7 +152,30 @@ class Stratos:
         return Stratos.delete('networkPartitions/'+network_partition_id)
 
     """
-    # Kubernetes Clusters
+    # Auto-scaling policies
+     * list-autoscaling-policies
+     * describe-autoscaling-policy
+     * remove-autoscaling-policy
+
+    """
+    @staticmethod
+    def list_autoscaling_policies():
+        return Stratos.get('autoscalingPolicies',
+                           error_message='No Autoscaling policies found')
+    @staticmethod
+    def describe_autoscaling_policy(autoscaling_policy_id):
+        return Stratos.get('autoscalingPolicies/'+autoscaling_policy_id,
+                           error_message='No autoscaling policy found')
+    @staticmethod
+    def remove_autoscaling_policy(autoscaling_policy_id):
+        return Stratos.delete('autoscalingPolicies/'+autoscaling_policy_id, error_message="Autoscaling policy not found")
+
+    """
+    # Kubernetes clusters/hosts
+     * list-kubernetes-clusters
+     * describe-kubernetes-cluster
+     * list-kubernetes-hosts
+     * describe-kubernetes-master
 
     """
     @staticmethod
@@ -160,29 +183,17 @@ class Stratos:
         return Stratos.get('kubernetesClusters', error_message='Kubernetes cluster not found')
 
     @staticmethod
-    def list_kubernetes_hosts(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts',
-                           error_message='Kubernetes cluster not found')
-
-
-    @staticmethod
-    def list_autoscaling_policies():
-        return Stratos.get('autoscalingPolicies',
-                           error_message='No Autoscaling policies found')
-
-    @staticmethod
     def describe_kubernetes_cluster(kubernetes_cluster_id):
         return Stratos.get('kubernetesClusters/'+ kubernetes_cluster_id,
                            error_message='No kubernetes clusters found')
-
+    @staticmethod
+    def list_kubernetes_hosts(kubernetes_cluster_id):
+        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts',
+                           error_message='Kubernetes cluster not found')
     @staticmethod
     def describe_kubernetes_master(kubernetes_cluster_id):
         return Stratos.get('kubernetesClusters/'+ kubernetes_cluster_id+'/master',
                            error_message='No kubernetes clusters found')
-    @staticmethod
-    def describe_autoscaling_policy(autoscaling_policy_id):
-        return Stratos.get('autoscalingPolicies/'+ autoscaling_policy_id,
-                           error_message='No autoscaling policy found')
 
     @staticmethod
     def describe_application_signup(application_id):
@@ -208,12 +219,12 @@ class Stratos:
             raise AuthenticationError()
         elif r.status_code == 404:
             if r.text and r.json() and r.json()['errorMessage'] == error_message:
-                return []
+                return False
             else:
                 raise requests.HTTPError()
 
     @staticmethod
-    def delete(resource):
+    def delete(resource, error_message=None):
         r = requests.delete(Configs.stratos_api_url + resource,
                             auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
         print(r.text)
@@ -224,7 +235,10 @@ class Stratos:
         elif r.status_code == 401:
             raise AuthenticationError()
         elif r.status_code == 404:
-            raise requests.HTTPError()
+            if r.text and r.json() and r.json()['errorMessage'] == error_message:
+                return []
+            else:
+                raise requests.HTTPError()
 
     @staticmethod
     def post(resource, data,  error_message):

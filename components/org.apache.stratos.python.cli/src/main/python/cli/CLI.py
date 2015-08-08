@@ -369,9 +369,11 @@ class CLI(Cmd):
 
     """
     # Auto-scaling policies
-     *
-    """
+     * list-autoscaling-policies
+     * describe-autoscaling-policy
+     * remove-autoscaling-policy
 
+    """
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -390,29 +392,54 @@ class CLI(Cmd):
                 rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
             table.add_rows(rows)
             table.print_table()
-            
+
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
-    def do_list_applications(self, line , opts=None):
-        """Illustrate the base class method use."""
-        applications = Stratos.list_applications()
-        if not applications:
-            print("No applications found")
+    def do_describe_autoscaling_policy(self, autoscaling_policy_id , opts=None):
+        """Retrieve details of a specific auto-scaling policy."""
+        if not autoscaling_policy_id:
+            print("usage: describe-autoscaling-policy [autoscaling-policy-id]")
+            return
+        autoscaling_policy = Stratos.describe_autoscaling_policy(autoscaling_policy_id)
+        if not autoscaling_policy:
+            print("Autoscaling policy not found : "+autoscaling_policy_id)
         else:
-            table = PrintableTable()
-            rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
-            for application in applications:
-                rows.append([application['type'], application['category'], application['displayName'],
-                             application['description'], application['version'], application['multiTenant']])
-            table.add_rows(rows)
-            table.print_table()
-    """
-    # Kubernetes Cluster/Host
+            print("Autoscaling policy : "+autoscaling_policy_id)
+            PrintableJSON(autoscaling_policy).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_autoscaling_policy(self, autoscaling_policy_id , opts=None):
+        """Delete a cartridge"""
+        try:
+            if not autoscaling_policy_id:
+                print("usage: remove-autoscaling-policy [application-id]")
+            else:
+                cartridge_removed = Stratos.remove_autoscaling_policy(autoscaling_policy_id)
+                if cartridge_removed:
+                    print("Successfully deleted Auto-scaling policy : "+autoscaling_policy_id)
+                else:
+                    print("Auto-scaling policy not found : "+autoscaling_policy_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
 
     """
+    # Kubernetes clusters/hosts
+     * list-kubernetes-clusters
+     * describe-kubernetes-cluster
+     * list-kubernetes-hosts
+     * describe-kubernetes-master
+     * remove-kubernetes-cluster
+     * remove-kubernetes-host
+
+    """
+
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
@@ -430,6 +457,22 @@ class CLI(Cmd):
                 rows.append([kubernetes_cluster['clusterId'], kubernetes_cluster['description']])
             table.add_rows(rows)
             table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_kubernetes_cluster(self, kubernetes_cluster_id, opts=None):
+        """Retrieve detailed information on a specific Kubernetes-CoreOS group"""
+        if not kubernetes_cluster_id:
+            print("usage: describe-kubernetes-cluster [cluster-i]]")
+            return
+        kubernetes_cluster = Stratos.describe_kubernetes_cluster(kubernetes_cluster_id)
+        if not kubernetes_cluster:
+            print("Kubernetes cluster not found")
+        else:
+            PrintableJSON(kubernetes_cluster).pprint()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -453,6 +496,62 @@ class CLI(Cmd):
                              kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
             table.add_rows(rows)
             table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_kubernetes_master(self, kubernetes_cluster_id , opts=None):
+        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
+        if not kubernetes_cluster_id:
+            print("usage: describe-kubernetes-master [cluster-id]")
+            return
+        kubernetes_master = Stratos.describe_kubernetes_master(kubernetes_cluster_id)
+        if not kubernetes_master:
+            print("Kubernetes master not found in : "+kubernetes_cluster_id)
+        else:
+            print("Cluster : "+kubernetes_cluster_id)
+            PrintableJSON(kubernetes_master).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_kubernetes_cluster(self, kubernetes_cluster_id, opts=None):
+        """Delete a cartridge"""
+        try:
+            if not kubernetes_cluster_id:
+                print("usage: remove-kubernetes-cluster [cluster-id]")
+            else:
+                cartridge_removed = Stratos.remove_autoscaling_policy(kubernetes_cluster_id)
+                if cartridge_removed:
+                    print("Successfully un-deployed kubernetes cluster : "+kubernetes_cluster_id)
+                else:
+                    print("Kubernetes cluster not found : "+kubernetes_cluster_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_applications(self, line , opts=None):
+        """Illustrate the base class method use."""
+        applications = Stratos.list_applications()
+        if not applications:
+            print("No applications found")
+        else:
+            table = PrintableTable()
+            rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
+            for application in applications:
+                rows.append([application['type'], application['category'], application['displayName'],
+                             application['description'], application['version'], application['multiTenant']])
+            table.add_rows(rows)
+            table.print_table()
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -485,57 +584,6 @@ class CLI(Cmd):
             Stratos.deploy_user()
         except ValueError as e:
             self.perror("sdc")
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_kubernetes_cluster(self, line , opts=None):
-        """Retrieve detailed information on a specific Kubernetes-CoreOS group.
-."""
-        if not line.split():
-            print("usage: describe-kubernetes-cluster [cluster-i]]")
-            return
-        kubernetes_cluster= Stratos.describe_kubernetes_cluster(line)
-        if not kubernetes_cluster:
-            print("Kubernetes cluster not found")
-        else:
-            PrintableJSON(kubernetes_cluster).pprint()
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_kubernetes_master(self, line , opts=None):
-        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
-        if not line.split():
-            print("usage: describe-kubernetes-master [cluster-id]")
-            return
-        kubernetes_master = Stratos.describe_kubernetes_master(line)
-        if not kubernetes_master:
-            print("Kubernetes master not found")
-        else:
-            PrintableJSON(kubernetes_master).pprint()
-
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_autoscaling_policy(self, line , opts=None):
-        """Retrieve details of a specific auto-scaling policy."""
-        if not line.split():
-            print("usage: describe-autoscaling-policy [autoscaling-policy-id]")
-            return
-        autoscaling_policy = Stratos.describe_autoscaling_policy(line)
-        if not autoscaling_policy:
-            print("Network partition not found")
-        else:
-            PrintableJSON(autoscaling_policy).pprint()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
