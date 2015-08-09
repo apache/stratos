@@ -1034,7 +1034,7 @@ public class StratosApiV41Utils {
             log.debug("Checking cartridges in cartridge group " + cartridgeGroupUuid);
         }
 
-        findCartridgesInGroupBean(serviceGroupDefinition, cartridgeTypes);
+
 
         //validate the group definition to check if cartridges duplicate in any groups defined
         validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
@@ -1107,7 +1107,7 @@ public class StratosApiV41Utils {
 
         ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(
                 serviceGroupDefinition,UUID.randomUUID().toString(), tenantId);
-
+        findCartridgesInGroupBean(serviceGroup, cartridgeTypes);
         AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
         try {
             asServiceClient.addServiceGroup(serviceGroup);
@@ -1155,15 +1155,15 @@ public class StratosApiV41Utils {
             validateGroupDuplicationInGroupDefinition(cartridgeGroup);
 
             if (existingServiceGroup != null) {
-                autoscalerServiceClient.updateServiceGroup(
-                        ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(cartridgeGroup,existingServiceGroup.getUuid(), tenantId));
+                ServiceGroup serviceGroup= ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(cartridgeGroup, existingServiceGroup.getUuid(), tenantId);
+                autoscalerServiceClient.updateServiceGroup(serviceGroup);
 
                 List<String> cartridgesBeforeUpdating = new ArrayList<String>();
                 List<String> cartridgesAfterUpdating = new ArrayList<String>();
 
                 ServiceGroup serviceGroupToBeUpdated = autoscalerServiceClient.getServiceGroup(existingServiceGroup.getUuid());
                 findCartridgesInServiceGroup(serviceGroupToBeUpdated, cartridgesBeforeUpdating);
-                findCartridgesInGroupBean(cartridgeGroup, cartridgesAfterUpdating);
+                findCartridgesInGroupBean(serviceGroup, cartridgesAfterUpdating);
 
                 List<String> cartridgesToRemove = new ArrayList<String>();
                 List<String> cartridgesToAdd = new ArrayList<String>();
@@ -1388,7 +1388,7 @@ public class StratosApiV41Utils {
             for (String cartridgeName : serviceGroup.getCartridges()) {
                 cartridgeUuid = CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeName,
                         carbonContext.getTenantId()).getUuid();
-                if (cartridgeName != null && (!cartridgeNames.contains(cartridgeUuid))) {
+                if (cartridgeName != null && (!cartridgeNames.contains(cartridgeName))) {
 
                     cartridgeNames.add(cartridgeUuid);
                 }
@@ -1408,7 +1408,7 @@ public class StratosApiV41Utils {
      * @param groupBean  groupBean
      * @param cartridges List of cartridges
      */
-    private static void findCartridgesInGroupBean(CartridgeGroupBean groupBean, List<String> cartridges) {
+    private static void findCartridgesInGroupBean(ServiceGroup groupBean, List<String> cartridges) {
 
         if (groupBean == null || cartridges == null) {
             return;
@@ -1417,13 +1417,13 @@ public class StratosApiV41Utils {
         if (groupBean.getCartridges() != null) {
             for (String cartridge : groupBean.getCartridges()) {
                 if (!cartridges.contains(cartridge)) {
-                    cartridges.add(cartridge);
+                    cartridges.add(groupBean.getUuid());
                 }
             }
         }
 
         if (groupBean.getGroups() != null) {
-            for (CartridgeGroupBean seGroup : groupBean.getGroups()) {
+            for (ServiceGroup seGroup : groupBean.getGroups()) {
                 findCartridgesInGroupBean(seGroup, cartridges);
             }
         }
