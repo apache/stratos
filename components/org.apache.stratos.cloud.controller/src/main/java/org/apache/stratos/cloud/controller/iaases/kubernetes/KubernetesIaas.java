@@ -107,7 +107,7 @@ public class KubernetesIaas extends Iaas {
             if (parameterArray != null) {
                 for (String parameter : parameterArray) {
                     if (parameter != null) {
-                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR);
+                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
                         if ((nameValueArray != null) && (nameValueArray.length == 2)) {
                             NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
                             payload.add(nameValuePair);
