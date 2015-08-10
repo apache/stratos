@@ -288,7 +288,8 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.Properties stubProperties
                 = new org.apache.stratos.cloud.controller.stub.Properties();
         org.apache.stratos.cloud.controller.stub.Property[] stubPropertiesArray =
-                stubPropertiesList.toArray(new org.apache.stratos.cloud.controller.stub.Property[stubPropertiesList.size()]);
+                stubPropertiesList.toArray(
+                        new org.apache.stratos.cloud.controller.stub.Property[stubPropertiesList.size()]);
         stubProperties.setProperties(stubPropertiesArray);
 
         return stubProperties;
@@ -457,7 +458,8 @@ public class ObjectConverter {
         networkPartition.setProvider(stubNetworkPartition.getProvider());
         if (stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
-            for (org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition : stubNetworkPartition.getPartitions()) {
+            for (org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition :
+                    stubNetworkPartition.getPartitions()) {
                 if (stubPartition != null) {
                     partitionList.add(convertCCStubPartitionToPartition(stubPartition));
                 }
@@ -484,7 +486,8 @@ public class ObjectConverter {
         return networkPartition;
     }
 
-    public static ApplicationPolicyBean convertASStubApplicationPolicyToApplicationPolicy(ApplicationPolicy applicationPolicy) {
+    public static ApplicationPolicyBean convertASStubApplicationPolicyToApplicationPolicy(
+            ApplicationPolicy applicationPolicy) {
 
         if (applicationPolicy == null) {
             return null;
@@ -498,7 +501,8 @@ public class ObjectConverter {
         if (applicationPolicy.getProperties() != null) {
             List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
                     = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
-            for (org.apache.stratos.autoscaler.stub.Property stubProperty : applicationPolicy.getProperties().getProperties()) {
+            for (org.apache.stratos.autoscaler.stub.Property stubProperty :
+                    applicationPolicy.getProperties().getProperties()) {
                 if (stubProperty != null) {
                     org.apache.stratos.common.beans.PropertyBean propertyBean
                             = new org.apache.stratos.common.beans.PropertyBean();
@@ -555,7 +559,8 @@ public class ObjectConverter {
         return properties;
     }
 
-    private static PartitionBean convertCCStubPartitionToPartition(org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition) {
+    private static PartitionBean convertCCStubPartitionToPartition(
+            org.apache.stratos.cloud.controller.stub.domain.Partition stubPartition) {
 
         if (stubPartition == null) {
             return null;
@@ -793,7 +798,8 @@ public class ObjectConverter {
         return partitionBeans;
     }
 
-    public static PartitionBean populatePartitionPojo(org.apache.stratos.cloud.controller.stub.domain.Partition partition) {
+    public static PartitionBean populatePartitionPojo(
+            org.apache.stratos.cloud.controller.stub.domain.Partition partition) {
 
         PartitionBean partitionBeans = new PartitionBean();
         if (partition == null) {
@@ -860,7 +866,8 @@ public class ObjectConverter {
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         if (autoscalePolicy.getLoadThresholds() != null) {
-            autoscalePolicyBean.setLoadThresholds(convertStubLoadThresholdsToLoadThresholds(autoscalePolicy.getLoadThresholds()));
+            autoscalePolicyBean.setLoadThresholds(convertStubLoadThresholdsToLoadThresholds(
+                    autoscalePolicy.getLoadThresholds()));
         }
 
         return autoscalePolicyBean;
@@ -1011,7 +1018,8 @@ public class ObjectConverter {
         kubernetesClusterBean.setClusterId(kubernetesCluster.getClusterId());
         kubernetesClusterBean.setDescription(kubernetesCluster.getDescription());
         kubernetesClusterBean.setPortRange(convertStubPortRangeToPortRange(kubernetesCluster.getPortRange()));
-        kubernetesClusterBean.setKubernetesHosts(convertStubKubernetesHostsToKubernetesHosts(kubernetesCluster.getKubernetesHosts()));
+        kubernetesClusterBean.setKubernetesHosts(convertStubKubernetesHostsToKubernetesHosts(
+                kubernetesCluster.getKubernetesHosts()));
         kubernetesClusterBean.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(
                 kubernetesCluster.getKubernetesMaster()));
         kubernetesClusterBean.setProperty(convertCCStubPropertiesToPropertyBeans(kubernetesCluster.getProperties()));
@@ -1038,7 +1046,8 @@ public class ObjectConverter {
             return null;
         }
         List<KubernetesHostBean> kubernetesHostList = new ArrayList<KubernetesHostBean>();
-        for (org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost : kubernetesHosts) {
+        for (org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost :
+                kubernetesHosts) {
             kubernetesHostList.add(convertStubKubernetesHostToKubernetesHost(kubernetesHost));
         }
         return kubernetesHostList;
@@ -1119,12 +1128,14 @@ public class ObjectConverter {
             // top level dependency information
             if (applicationDefinition.getComponents().getDependencies() != null) {
                 componentContext.setDependencyContext(
-                        convertDependencyDefinitionsToDependencyContexts(applicationDefinition.getComponents().getDependencies()));
+                        convertDependencyDefinitionsToDependencyContexts(applicationDefinition.getComponents().
+                                getDependencies()));
             }
             // top level cartridge context information
             if (applicationDefinition.getComponents().getCartridges() != null) {
                 componentContext.setCartridgeContexts(
-                        convertCartridgeReferenceBeansToStubCartridgeContexts(applicationDefinition.getComponents().getCartridges()));
+                        convertCartridgeReferenceBeansToStubCartridgeContexts(applicationDefinition.getComponents().
+                                getCartridges()));
             }
             applicationContext.setComponents(componentContext);
         }
@@ -1151,23 +1162,27 @@ public class ObjectConverter {
             // top level Groups
             if (applicationContext.getComponents().getGroupContexts() != null) {
                 applicationDefinition.getComponents().setGroups(
-                        convertStubGroupContextsToGroupDefinitions(applicationContext.getComponents().getGroupContexts()));
+                        convertStubGroupContextsToGroupDefinitions(applicationContext.getComponents().
+                                getGroupContexts()));
             }
             // top level dependency information
             if (applicationContext.getComponents().getDependencyContext() != null) {
                 applicationDefinition.getComponents().setDependencies(
-                        convertStubDependencyContextsToDependencyDefinitions(applicationContext.getComponents().getDependencyContext()));
+                        convertStubDependencyContextsToDependencyDefinitions(applicationContext.getComponents().
+                                getDependencyContext()));
             }
             // top level cartridge context information
             if (applicationContext.getComponents().getCartridgeContexts() != null) {
                 applicationDefinition.getComponents().setCartridges(
-                        convertStubCartridgeContextsToCartridgeReferenceBeans(applicationContext.getComponents().getCartridgeContexts()));
+                        convertStubCartridgeContextsToCartridgeReferenceBeans(applicationContext.getComponents().
+                                getCartridgeContexts()));
             }
         }
         return applicationDefinition;
     }
 
-    private static List<CartridgeGroupReferenceBean> convertStubGroupContextsToGroupDefinitions(GroupContext[] groupContexts) {
+    private static List<CartridgeGroupReferenceBean> convertStubGroupContextsToGroupDefinitions(
+            GroupContext[] groupContexts) {
         List<CartridgeGroupReferenceBean> groupDefinitions = new ArrayList<CartridgeGroupReferenceBean>();
         if (groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
@@ -1177,7 +1192,8 @@ public class ObjectConverter {
                     groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
                     groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
                     groupDefinition.setName(groupContext.getName());
-                    groupDefinition.setGroups(convertStubGroupContextsToGroupDefinitions(groupContext.getGroupContexts()));
+                    groupDefinition.setGroups(convertStubGroupContextsToGroupDefinitions(
+                            groupContext.getGroupContexts()));
                     groupDefinition.setCartridges(convertStubCartridgeContextsToCartridgeReferenceBeans(
                             groupContext.getCartridgeContexts()));
                     groupDefinitions.add(groupDefinition);
@@ -1187,7 +1203,8 @@ public class ObjectConverter {
         return groupDefinitions;
     }
 
-    private static DependencyBean convertStubDependencyContextsToDependencyDefinitions(DependencyContext dependencyContext) {
+    private static DependencyBean convertStubDependencyContextsToDependencyDefinitions(
+            DependencyContext dependencyContext) {
         DependencyBean dependencyBean = new DependencyBean();
         dependencyBean.setTerminationBehaviour(dependencyContext.getTerminationBehaviour());
 
@@ -1389,7 +1406,7 @@ public class ObjectConverter {
         infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
         infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
         infoContext.setMinMembers(subscribableInfo.getMinMembers());
-	    infoContext.setLvsVirtualIP(subscribableInfo.getLvsVirtualIP());
+        infoContext.setLvsVirtualIP(subscribableInfo.getLvsVirtualIP());
 
         if (subscribableInfo.getArtifactRepository() != null) {
             ArtifactRepositoryBean artifactRepository = subscribableInfo.getArtifactRepository();
@@ -1472,13 +1489,15 @@ public class ObjectConverter {
             dependencyContext.setStartupOrdersContexts(startupOrders.toArray(new String[startupOrders.size()]));
         }
         if (dependencyBean.getScalingDependents() != null) {
-            List<String> scalingDependents = convertScalingDependentsBeansToStringList(dependencyBean.getScalingDependents());
+            List<String> scalingDependents = convertScalingDependentsBeansToStringList(
+                    dependencyBean.getScalingDependents());
             dependencyContext.setScalingDependents(scalingDependents.toArray(new String[scalingDependents.size()]));
         }
         return dependencyContext;
     }
 
-    private static List<String> convertScalingDependentsBeansToStringList(List<ScalingDependentsBean> scalingDependentsBeans) {
+    private static List<String> convertScalingDependentsBeansToStringList(
+            List<ScalingDependentsBean> scalingDependentsBeans) {
         List<String> scalingDependents = new ArrayList<String>();
         if (scalingDependentsBeans != null) {
             for (ScalingDependentsBean scalingDependentsBean : scalingDependentsBeans) {
@@ -1519,7 +1538,8 @@ public class ObjectConverter {
 
             // Cartridges
             if (groupDefinition.getCartridges() != null) {
-                groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges()));
+                groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(
+                        groupDefinition.getCartridges()));
             }
             groupContexts[i++] = groupContext;
         }
@@ -1805,7 +1825,8 @@ public class ObjectConverter {
             validateTerminationBehavior(dependencyBean.getTerminationBehaviour());
             dependencies.setTerminationBehaviour(dependencyBean.getTerminationBehaviour());
             if (dependencyBean.getScalingDependents() != null) {
-                List<String> scalingDependents = convertScalingDependentsBeansToStringList(dependencyBean.getScalingDependents());
+                List<String> scalingDependents = convertScalingDependentsBeansToStringList(
+                        dependencyBean.getScalingDependents());
                 dependencies.setScalingDependants(scalingDependents.toArray(new String[scalingDependents.size()]));
             }
             servicegroup.setDependencies(dependencies);
@@ -1920,7 +1941,8 @@ public class ObjectConverter {
         return applicationSignUp;
     }
 
-    public static ApplicationSignUpBean convertStubApplicationSignUpToApplicationSignUpBean(ApplicationSignUp applicationSignUp) {
+    public static ApplicationSignUpBean convertStubApplicationSignUpToApplicationSignUpBean(
+            ApplicationSignUp applicationSignUp) {
 
         if (applicationSignUp == null) {
             return null;
@@ -1971,7 +1993,8 @@ public class ObjectConverter {
         return domainMappingBean;
     }
 
-    public static DeploymentPolicyBean convertCCStubDeploymentPolicyToDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+    public static DeploymentPolicyBean convertCCStubDeploymentPolicyToDeploymentPolicy(
+            DeploymentPolicy deploymentPolicy) {
 
         if (deploymentPolicy == null) {
             return null;
@@ -1997,7 +2020,8 @@ public class ObjectConverter {
         applicationPolicy.setNetworkPartitions(applicationPolicyBean.getNetworkPartitions());
         if (applicationPolicyBean.getProperties() != null) {
             if (!applicationPolicyBean.getProperties().isEmpty()) {
-                applicationPolicy.setProperties(getASPropertiesFromCommonProperties(applicationPolicyBean.getProperties()));
+                applicationPolicy.setProperties(getASPropertiesFromCommonProperties(
+                        applicationPolicyBean.getProperties()));
             }
         }
         return applicationPolicy;
@@ -2038,7 +2062,8 @@ public class ObjectConverter {
     }
 
 
-    private static DeploymentPolicyBean convertASStubDeploymentPolicyToDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+    private static DeploymentPolicyBean convertASStubDeploymentPolicyToDeploymentPolicy(
+            DeploymentPolicy deploymentPolicy) {
 
         if (deploymentPolicy == null) {
             return null;
