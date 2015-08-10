@@ -886,7 +886,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/view")
     public Response getApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,carbonContext.getTenantId());
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
@@ -1292,7 +1292,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response undeployApplication(
             @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force)
             throws RestAPIException {
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,
                 carbonContext.getTenantId());
         if (applicationDefinition == null) {
@@ -1362,7 +1362,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applications/manage")
     public Response removeApplication(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
-	    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId,carbonContext.getTenantId());
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
@@ -1954,7 +1954,7 @@ public class StratosApiV41 extends AbstractApi {
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             KubernetesCluster kubernetesCluster = CloudControllerServiceClient.getInstance().getKubernetesClusterByTenantId
                     (kubernetesClusterBean
-                    .getClusterId(), carbonContext.getTenantId());
+                            .getClusterId(), carbonContext.getTenantId());
             StratosApiV41Utils.updateKubernetesCluster(kubernetesClusterBean, kubernetesCluster.getClusterUuid(),
                     kubernetesCluster.getTenantId());
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterUuid()).build();

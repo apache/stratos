@@ -1213,6 +1213,7 @@ public class ObjectConverter {
             for (GroupContext groupContext : groupContexts) {
                 if (groupContext != null) {
                     CartridgeGroupReferenceBean groupDefinition = new CartridgeGroupReferenceBean();
+                    groupDefinition.setUuid(groupContext.getUuid());
                     groupDefinition.setAlias(groupContext.getAlias());
                     groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
                     groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
