@@ -688,11 +688,14 @@ public class AutoscalerUtil {
                 if (networkPartitionGroupsPropertyValue != null) {
                     String[] networkPartitionGroups = networkPartitionGroupsPropertyValue.
                             split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER);
+                    String[] networkPartitionGroupsUuid=null;
                     if (networkPartitionGroups != null) {
+                        int i=0;
                         for (String networkPartitionIdsString : networkPartitionGroups) {
                             networkPartitionIds = networkPartitionIdsString.
                                     split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
-                            if (networkPartitionIds != null) {
+                             if (networkPartitionIds != null) {
+                                 networkPartitionGroupsUuid=new String[networkPartitionGroups.length];
                                 for (String networkPartitionId : networkPartitionIds) {
                                     // network-partition-id can't be null or empty
                                     if (null == networkPartitionId || networkPartitionId.isEmpty()) {
@@ -704,19 +707,23 @@ public class AutoscalerUtil {
                                     }
 
                                     // network partitions should be added already
-                                    if (null == CloudControllerServiceClient.getInstance().
-                                            getNetworkPartition(networkPartitionId)) {
+                                    NetworkPartition networkPartition=    CloudControllerServiceClient.getInstance().
+                                            getNetworkPartitionByTenant(networkPartitionId,applicationPolicy.getTenantId());
+                                    if (null ==networkPartition) {
                                         String msg = String.format("Invalid Application Policy: "
                                                 + "Network partition not found for " +
                                                 "[network-partition-id] : %s", networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
                                     }
+                                    else{
+                                         networkPartitionGroupsUuid[i] =networkPartition.getUuid();
+                                    }
                                 }
                             }
                         }
                         // populating network partition groups in application policy
-                        applicationPolicy.setNetworkPartitionGroups(networkPartitionGroups);
+                        applicationPolicy.setNetworkPartitionGroups(networkPartitionGroupsUuid);
                     }
                 }
             }

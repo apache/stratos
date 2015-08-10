@@ -76,7 +76,7 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("The Second network partition is not %s in %s",
                             "network-partition-8", applicationPolicyId), bean.getNetworkPartitions()[1],
                     "network-partition-8");
-          /*  boolean algoFound = false;
+            boolean algoFound = false;
             for (PropertyBean propertyBean : bean.getProperties()) {
                 if (propertyBean.getName().equals("networkPartitionGroups")) {
                     assertEquals(String.format("The networkPartitionGroups algorithm %s is not found in %s",
@@ -89,7 +89,7 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             if (!algoFound) {
                 assertTrue(String.format("The networkPartitionGroups property is not found in %s",
                         applicationPolicyId), false);
-            }   */
+            }
 
             boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-7", RestConstants.NETWORK_PARTITIONS_NAME);

@@ -325,7 +325,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
           /*  boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(removedGroup, false);
+            assertEquals(removedGroup, false);      */
 
             boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -339,7 +339,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
             boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     "deployment-policy-1", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertEquals(removedDep, false);     */
+            assertEquals(removedDep, false);
 
             //Un-deploying the application
             String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1" +
@@ -387,15 +387,15 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     RestConstants.CARTRIDGES_NAME);
             assertEquals(removedC3, true);
 
-            boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+            removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(removedAuto, true);
 
-            boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+            removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     "deployment-policy-1", RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, true);
 
-            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-1", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedNet, false);
 

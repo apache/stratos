@@ -7,7 +7,7 @@
     ],
     "properties": [
         {
-            "name": "key-1",
+            "name": "networkPartitionGroups",
             "value": "network-partition-7,network-partition-8"
         },
         {
