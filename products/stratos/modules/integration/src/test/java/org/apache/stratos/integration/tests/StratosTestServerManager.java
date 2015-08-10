@@ -26,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.stratos.common.test.TestLogAppender;
+import org.apache.stratos.integration.tests.application.SampleApplicationsTest;
+import org.apache.stratos.integration.tests.rest.RestClient;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
@@ -53,20 +55,23 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
+    protected RestClient restClient;
+    private String endpoint = "https://localhost:9443";
 
+    private BrokerService broker = new BrokerService();
+    private TestLogAppender testLogAppender = new TestLogAppender();
     private ServerUtils serverUtils;
     private String carbonHome;
 
     public StratosTestServerManager() {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
+        restClient = new RestClient(endpoint, "admin", "admin");
     }
 
     @Override
     @BeforeSuite(timeOut = 600000)
     public String startServer() throws IOException {
-
-        TestLogAppender testLogAppender = new TestLogAppender();
         Logger.getRootLogger().addAppender(testLogAppender);
         Logger.getRootLogger().setLevel(Level.INFO);
 
@@ -74,13 +79,15 @@ public class StratosTestServerManager extends TestServerManager {
             // Start ActiveMQ
             long time1 = System.currentTimeMillis();
             log.info("Starting ActiveMQ...");
-            BrokerService broker = new BrokerService();
+            broker.setDataDirectory(StratosTestServerManager.class.getResource("/").getPath() +
+                    File.separator + ".." + File.separator + "activemq-data");
             broker.setBrokerName("testBroker");
             broker.addConnector(ACTIVEMQ_BIND_ADDRESS);
             broker.start();
             long time2 = System.currentTimeMillis();
-            log.info(String.format("ActiveMQ started in %d sec", (time2 - time1)/1000));
-        } catch (Exception e) {
+            log.info(String.format("ActiveMQ started in %d sec", (time2 - time1) / 1000));
+        }
+        catch (Exception e) {
             throw new RuntimeException("Could not start ActiveMQ", e);
         }
 
@@ -104,24 +111,48 @@ public class StratosTestServerManager extends TestServerManager {
                 this.serverUtils.startServerUsingCarbonHome(carbonHome, carbonHome, "stratos", PORT_OFFSET, null);
                 FrameworkSettings.init();
 
-                while (!serverStarted(testLogAppender)) {
+                while (!serverStarted()) {
                     log.info("Waiting for topology to be initialized...");
                     Thread.sleep(5000);
                 }
 
+                while (!mockServiceStarted()) {
+                    log.info("Waiting for mock service to be initialized...");
+                    Thread.sleep(1000);
+                }
+
                 long time4 = System.currentTimeMillis();
-                log.info(String.format("Stratos server started in %d sec", (time4 - time3)/1000));
+                log.info(String.format("Stratos server started in %d sec", (time4 - time3) / 1000));
                 return carbonHome;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("Could not start Stratos server", e);
         }
+    }
+
+    private boolean mockServiceStarted() {
+        for (String message : testLogAppender.getMessages()) {
+            if (message.contains("Mock IaaS service component activated")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     @AfterSuite(timeOut = 600000)
     public void stopServer() throws Exception {
         super.stopServer();
+       /*
+       while (!serverStopped()) {
+            log.info("Waiting for server to be shutdown...");
+            Thread.sleep(1000);
+        }
+        log.info("Stopped Apache Stratos server.");
+        */
+        broker.stop();
+        log.info("Stopped ActiveMQ server.");
     }
 
     protected void copyArtifacts(String carbonHome) throws IOException {
@@ -144,9 +175,19 @@ public class StratosTestServerManager extends TestServerManager {
         log.info(sourceFilePath + " file copied");
     }
 
-    private boolean serverStarted(TestLogAppender testLogAppender) {
-        for(String message : testLogAppender.getMessages()) {
-            if(message.contains("Topology initialized")) {
+    private boolean serverStopped() {
+        for (String message : testLogAppender.getMessages()) {
+            if (message.contains("Halting JVM")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private boolean serverStarted() {
+        for (String message : testLogAppender.getMessages()) {
+            if (message.contains("Topology initialized")) {
                 return true;
             }
         }
