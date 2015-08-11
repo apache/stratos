@@ -43,7 +43,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
     @Test
     public void testDeployApplication() {
         try {
-            log.info("Started application runtime update test case**************************************");
+            log.info("-------------------------Started application runtime update test case-------------------------");
 
             String autoscalingPolicyId = "autoscaling-policy-application-update-test";
 
@@ -231,7 +231,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
 
-            log.info("Ended application runtime update test case**************************************");
+            log.info("-------------------------Ended application runtime update test case-------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling application deployment/undeployment and update", e);

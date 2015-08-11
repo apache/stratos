@@ -60,7 +60,7 @@ import static junit.framework.Assert.*;
 public class TopologyHandler {
     private static final Log log = LogFactory.getLog(TopologyHandler.class);
 
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 180000;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 300000;
     public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 60000;
     public static final int APPLICATION_TOPOLOGY_TIMEOUT = 60000;
     public static final String APPLICATION_STATUS_CREATED = "Created";

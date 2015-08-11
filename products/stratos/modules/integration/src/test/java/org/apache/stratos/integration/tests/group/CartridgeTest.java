@@ -40,7 +40,7 @@ public class CartridgeTest extends StratosTestServerManager {
 
     @Test
     public void testCartridge() {
-        log.info("Started Cartridge test case**************************************");
+        log.info("--------------------Started Cartridge test case-----------------------------");
 
         try {
             String cartridgeType = "c0-cartridge-test";
@@ -121,7 +121,7 @@ public class CartridgeTest extends StratosTestServerManager {
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(beanRemoved, null);
 
-            log.info("Ended Cartridge test case**************************************");
+            log.info("---------------------------Ended Cartridge test case-------------------------");
         } catch (Exception e) {
             log.error("An error occurred while handling RESTConstants.CARTRIDGES_PATH", e);
             assertTrue("An error occurred while handling RESTConstants.CARTRIDGES_PATH", false);

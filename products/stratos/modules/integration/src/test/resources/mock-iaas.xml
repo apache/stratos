@@ -68,15 +68,15 @@
                  stop: stop publishing statistics -->
             <pattern factor="memory-consumption" mode="stop">
                 <!-- Sample values -->
-                <sampleValues>20,20</sampleValues>
+                <sampleValues>20,20,20,20</sampleValues>
                 <!-- Duration of each sample value in seconds -->
-                <sampleDuration>60</sampleDuration>
+                <sampleDuration>30</sampleDuration>
             </pattern>
             <pattern factor="load-average" mode="stop">
                 <!-- Sample values -->
-                <sampleValues>20,20</sampleValues>
+                <sampleValues>20,20,20,20</sampleValues>
                 <!-- Duration of each sample value in seconds -->
-                <sampleDuration>60</sampleDuration>
+                <sampleDuration>30</sampleDuration>
             </pattern>
         </cartridge>
         <cartridge type="php">
