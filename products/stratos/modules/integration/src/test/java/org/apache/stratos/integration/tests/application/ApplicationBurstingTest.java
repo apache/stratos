@@ -151,17 +151,17 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("cartridge-group-app");
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test");
             if (!undeploy) {
                 //Need to forcefully undeploy the application
-                log.info("Force undeployment is going to start for the [application] " + "cartridge-group-app");
+                log.info("Force undeployment is going to start for the [application] " + "application-bursting-test");
 
-                restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "cartridge-group-app" +
+                restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("cartridge-group-app");
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test");
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
-                        "cartridge-group-app"), forceUndeployed, true);
+                        "application-bursting-test"), forceUndeployed, true);
 
             }
 
