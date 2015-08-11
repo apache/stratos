@@ -28,9 +28,8 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
-import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
+import org.apache.stratos.autoscaler.context.application.ParentInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -48,7 +47,6 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -122,29 +120,30 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             getInstanceIdToInstanceContextMap().values()) {
                         ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.
                                 get(instanceContext.getId());
+                        ParentInstanceContext parentInstanceContext = (ParentInstanceContext)instanceContext;
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
                         if (instance.getStatus().getCode() <= ApplicationStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
-                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
+                            if (!parentInstanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
                                 //handling the scaling max out of the children
-                                handleScalingMaxOut(instanceContext, networkPartitionContext);
+                                handleScalingMaxOut(parentInstanceContext, networkPartitionContext);
 
-                            } else if (!instanceContext.getIdToScalingEvent().isEmpty()) {
+                            } else if (!parentInstanceContext.getIdToScalingEvent().isEmpty()) {
                                 //handling the dependent scaling for application
-                                handleDependentScaling(instanceContext, networkPartitionContext);
+                                handleDependentScaling(parentInstanceContext, networkPartitionContext);
 
-                            } else if (!instanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()) {
+                            } else if (!parentInstanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()) {
                                 //handling the scale down of the application
-                                handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
+                                handleScalingDownBeyondMin(parentInstanceContext, networkPartitionContext);
                             }
                         }
 
                         //Resetting the events events
-                        instanceContext.setIdToScalingDownBeyondMinEvent(
+                        parentInstanceContext.setIdToScalingDownBeyondMinEvent(
                                 new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
-                        instanceContext.setIdToScalingEvent(
+                        parentInstanceContext.setIdToScalingEvent(
                                 new ConcurrentHashMap<String, ScalingEvent>());
-                        instanceContext.setIdToScalingOverMaxEvent(
+                        parentInstanceContext.setIdToScalingOverMaxEvent(
                                 new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                     }
                 }
@@ -167,9 +166,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         executorService.execute(monitoringRunnable);
     }
 
-    private void handleScalingMaxOut(InstanceContext instanceContext,
+    private void handleScalingMaxOut(ParentInstanceContext instanceContext,
                                      NetworkPartitionContext networkPartitionContext) {
-        if (((ParentLevelNetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
+        if (((NetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
             //handling the application bursting only when there are no pending instances found
             try {
                 if (log.isInfoEnabled()) {
@@ -200,7 +199,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param instanceContext    instance-context which can be scaled-down
      * @param nwPartitionContext the network-partition-context of the instance
      */
-    private void handleScalingDownBeyondMin(InstanceContext instanceContext,
+    private void handleScalingDownBeyondMin(ParentInstanceContext instanceContext,
                                             NetworkPartitionContext nwPartitionContext) {
         //Traverse through all the children to see whether all have sent the scale down
         boolean allChildrenScaleDown = false;
@@ -311,8 +310,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 log.info("Detected a newly updated [network-partition] " + networkPartitionId +
                         " for [application] " + appId + ". Hence new application instance " +
                         "creation is going to start now!");
-                ParentLevelNetworkPartitionContext context =
-                        new ParentLevelNetworkPartitionContext(networkPartitionId);
+                NetworkPartitionContext context =
+                        new NetworkPartitionContext(networkPartitionId);
                 //If application instances found in the ApplicationsTopology,
                 // then have to add them first before creating new one
                 ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -489,20 +488,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     /**
-     * This will start the minimum dependencies
-     *
-     * @param application the application which used to create monitors
-     * @return whether monitor created or not
-     * @throws TopologyInConsistentException
-     * @throws PolicyValidationException
-     */
-    public boolean startMinimumDependencies(Application application)
-            throws TopologyInConsistentException, PolicyValidationException {
-
-        return createInstanceAndStartDependency(application);
-    }
-
-    /**
      * Utility to create application instance by parsing the deployment policy for a monitor
      *
      * @param application the application
@@ -510,7 +495,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @throws TopologyInConsistentException
      * @throws PolicyValidationException
      */
-    private boolean createInstanceAndStartDependency(Application application)
+    public boolean createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
 
         boolean initialStartup = true;
@@ -561,8 +546,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
 
             for (String networkPartitionIds : nextNetworkPartitions) {
-                ParentLevelNetworkPartitionContext context =
-                        new ParentLevelNetworkPartitionContext(networkPartitionIds);
+                NetworkPartitionContext context =
+                        new NetworkPartitionContext(networkPartitionIds);
                 //If application instances found in the ApplicationsTopology,
                 // then have to add them first before creating new one
                 ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -589,8 +574,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             Map<String, ApplicationInstance> instanceMap = application.getInstanceIdToInstanceContextMap();
             for (ApplicationInstance instance : instanceMap.values()) {
                 if (!instanceIds.contains(instance.getInstanceId())) {
-                    ParentLevelNetworkPartitionContext context =
-                            new ParentLevelNetworkPartitionContext(instance.getNetworkPartitionId());
+                    NetworkPartitionContext context =
+                            new NetworkPartitionContext(instance.getNetworkPartitionId());
                     //If application instances found in the ApplicationsTopology,
                     // then have to add them first before creating new one
                     ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -624,10 +609,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @return instance Id
      */
     private String handleApplicationInstanceCreation(Application application,
-                                                     ParentLevelNetworkPartitionContext context,
+                                                     NetworkPartitionContext context,
                                                      ApplicationInstance instanceExist) {
         ApplicationInstance instance;
-        ApplicationInstanceContext instanceContext;
+        ParentInstanceContext instanceContext;
         if (instanceExist != null) {
             //using the existing instance
             instance = instanceExist;
@@ -639,7 +624,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         String instanceId = instance.getInstanceId();
 
         //Creating appInstanceContext
-        instanceContext = new ApplicationInstanceContext(instanceId);
+        instanceContext = new ParentInstanceContext(instanceId);
         //adding the created App InstanceContext to ApplicationLevelNetworkPartitionContext
         context.addInstanceContext(instanceContext);
         context.addPendingInstance(instanceContext);
@@ -717,8 +702,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         for (String networkPartitionId : nextNetworkPartitions) {
             if (!this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
                 String instanceId;
-                ParentLevelNetworkPartitionContext context = new
-                        ParentLevelNetworkPartitionContext(networkPartitionId);
+                NetworkPartitionContext context = new
+                        NetworkPartitionContext(networkPartitionId);
 
                 ApplicationInstance appInstance = (ApplicationInstance) application.
                         getInstanceByNetworkPartitionId(context.getId());

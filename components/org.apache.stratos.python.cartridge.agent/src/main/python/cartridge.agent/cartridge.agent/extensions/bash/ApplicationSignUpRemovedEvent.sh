@@ -23,6 +23,4 @@
 # event is received and they are copied to the given path.
 # --------------------------------------------------------------
 #
-
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Tenant UnSubscribed Event" | tee -a $log
+echo `date`": Application signup removed event shell extension executed"

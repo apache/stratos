@@ -23,17 +23,15 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.stratos</groupId>
     <artifactId>org.wso2.carbon.ui</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - UI</name>
     <description>org.wso2.carbon.ui patch version for apache stratos</description>
-    <version>4.2.0-stratos</version>
     <url>http://wso2.org</url>
 
     <repositories>
@@ -228,7 +226,7 @@
                         </Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.ui.internal,
-                            org.wso2.carbon.ui.*
+                            org.wso2.carbon.ui.*; version="${carbon.platform.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.ui.*,

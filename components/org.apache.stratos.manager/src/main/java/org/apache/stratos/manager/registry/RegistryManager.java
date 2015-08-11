@@ -42,11 +42,11 @@ public class RegistryManager {
 
     private static final RegistryManager instance = new RegistryManager();
 
-    public static RegistryManager getInstance() {
-        return instance;
+    private RegistryManager() {
     }
 
-    private RegistryManager() {
+    public static RegistryManager getInstance() {
+        return instance;
     }
 
     /**

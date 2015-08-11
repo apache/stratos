@@ -31,7 +31,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.1.0</version>
+    <version>4.1.2-SNAPSHOT</version>
     <name>Apache Stratos</name>
     <description>Apache Stratos is an open source polyglot Platform as a Service (PaaS) framework</description>
     <url>http://stratos.apache.org</url>
@@ -75,7 +75,7 @@
         <connection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</developerConnection>
         <url>https://git-wip-us.apache.org/repos/asf?p=stratos.git</url>
-        <tag>4.1.0-rc4</tag>
+        <tag>4.1.2-SNAPSHOT</tag>
     </scm>
 
     <modules>
@@ -169,8 +169,8 @@
                                 <exclude>**/scriptaculous/**/*</exclude>
                                 <exclude>**/prototype-1.6.js</exclude>
                                 <exclude>**/prototype.js</exclude>
-				<exclude>**/.gitmodules</exclude>
-
+                                <exclude>**/*.log</exclude>
+                                <exclude>**/.gitmodules</exclude>
                                 <!-- Added following based on jclouds -->
                                 <exclude>**/src/test/resources/**/*.xml</exclude>
                                 <!-- META-INF/services files -->
@@ -178,13 +178,13 @@
                                 <exclude>**/services/*ApiMetadata</exclude>
                                 <exclude>**/services/*ProviderMetadata</exclude>
                                 <exclude>**/dhtmlHistory.js</exclude>
-				
-				<!-- for ActivMQ test broker -->
+
+                                <!-- for ActivMQ test broker -->
                                 <exclude>**/db.data</exclude>
-				
-				<!-- WSDLs -->
-				<exclude>**/*.wsdl</exclude>
-				
+
+                                <!-- WSDLs -->
+                                <exclude>**/*.wsdl</exclude>
+
                             </excludes>
                             <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
@@ -553,6 +553,8 @@
         <carbon.platform.package.export.version>4.2.0</carbon.platform.package.export.version>
         <axis2.osgi.version>1.6.1.wso2v10</axis2.osgi.version>
         <jclouds.version>1.8.1</jclouds.version>
-        <project.jclouds.stratos.version>1.8.1-stratos</project.jclouds.stratos.version>
+        <project.jclouds.stratos.version>1.8.1-stratosv1</project.jclouds.stratos.version>
+        <kubernetes.api.version>2.2.16</kubernetes.api.version>
+        <store.version>1.0.1</store.version>
     </properties>
 </project>

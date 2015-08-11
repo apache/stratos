@@ -38,8 +38,7 @@ import java.util.concurrent.locks.Lock;
  */
 public class StratosManagerContext implements Serializable {
 
-    private static volatile StratosManagerContext instance;
-
+    public static final String DATA_RESOURCE = "/stratos.manager/data";
     private static final String SM_CARTRIDGE_TYPE_TO_CARTIDGE_GROUPS_MAP = "SM_CARTRIDGE_TYPE_TO_CARTIDGE_GROUPS_MAP";
     private static final String SM_CARTRIDGE_TYPE_TO_APPLICATIONS_MAP = "SM_CARTRIDGE_TYPE_TO_APPLICATIONS_MAP";
     private static final String SM_CARTRIDGE_GROUP_TO_CARTIDGE_GROUPS_MAP = "SM_CARTRIDGE_GROUP_TO_CARTIDGE_GROUPS_MAP";
@@ -49,12 +48,9 @@ public class StratosManagerContext implements Serializable {
     private static final String SM_CARTRIDGES_APPLICATIONS_WRITE_LOCK = "SM_CARTRIDGES_APPLICATIONS_WRITE_LOCK";
     private static final String SM_CARTRIDGEGROUPS_CARTRIDGESUBGROUPS_WRITE_LOCK = "SM_CARTRIDGEGROUPS_CARTRIDGESUBGROUPS_WRITE_LOCK";
     private static final String SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK = "SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK";
-
-    public static final String DATA_RESOURCE = "/stratos.manager/data";
-
-    private final transient DistributedObjectProvider distributedObjectProvider;
     private static final Log log = LogFactory.getLog(StratosManagerContext.class);
-
+    private static volatile StratosManagerContext instance;
+    private final transient DistributedObjectProvider distributedObjectProvider;
     /**
      * Key - cartridge type
      * Value - list of cartridgeGroupNames
@@ -82,17 +78,6 @@ public class StratosManagerContext implements Serializable {
     private boolean clustered;
     private boolean coordinator;
 
-    public static StratosManagerContext getInstance() {
-        if (instance == null) {
-            synchronized (StratosManagerContext.class) {
-                if (instance == null) {
-                    instance = new StratosManagerContext();
-                }
-            }
-        }
-        return instance;
-    }
-
     private StratosManagerContext() {
         // Initialize clustering status
         AxisConfiguration axisConfiguration = ServiceReferenceHolder.getInstance().getAxisConfiguration();
@@ -113,12 +98,23 @@ public class StratosManagerContext implements Serializable {
         updateContextFromRegistry();
     }
 
-    public void setCoordinator(boolean coordinator) {
-        this.coordinator = coordinator;
+    public static StratosManagerContext getInstance() {
+        if (instance == null) {
+            synchronized (StratosManagerContext.class) {
+                if (instance == null) {
+                    instance = new StratosManagerContext();
+                }
+            }
+        }
+        return instance;
     }
 
     public boolean isCoordinator() {
         return coordinator;
+    }
+
+    public void setCoordinator(boolean coordinator) {
+        this.coordinator = coordinator;
     }
 
     public boolean isClustered() {

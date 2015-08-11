@@ -417,7 +417,7 @@ $(document).ready(function(){
         var applicationId = applicationJSON.applicationId;
         var btn = $(this);
 
-        btn.html("<i class='fa fa-spinner fa-spin'></i> Adding Application Policy ");
+        btn.html("<i class='fa fa-spinner fa-spin'></i> Deploying Application ");
         $.ajax({
             type: "POST",
             url: caramel.context + "/controllers/applications/application_requests.jag",
@@ -437,7 +437,7 @@ $(document).ready(function(){
             }
         })
             .always(function () {
-                btn.html('Add '+formtype);
+                btn.html('Deploy Application');
             });
 
     });

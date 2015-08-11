@@ -12,7 +12,8 @@
 			"name": "tomcat-http",
             "protocol": "http",
             "port": "8080",
-            "proxyPort": "8280"
+            "proxyPort": "8280",
+            "kubernetesPortType":"NodePort"
         }
     ],
     "deployment": {

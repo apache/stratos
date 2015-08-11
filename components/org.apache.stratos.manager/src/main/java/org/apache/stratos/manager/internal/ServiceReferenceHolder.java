@@ -71,6 +71,10 @@ public class ServiceReferenceHolder {
         return registryService;
     }
 
+    public static void setRegistryService(RegistryService registryService) {
+        ServiceReferenceHolder.registryService = registryService;
+    }
+
     public static ConfigurationContext getClientConfigContext() {
         CarbonUtils.checkSecurity();
         return clientConfigContext;
@@ -89,47 +93,43 @@ public class ServiceReferenceHolder {
         ServiceReferenceHolder.serverConfigContext = serverConfigContext;
     }
 
-    public static void setRegistryService(RegistryService registryService) {
-        ServiceReferenceHolder.registryService = registryService;
+    public TaskService getTaskService() {
+        return taskService;
     }
 
     public void setTaskService(TaskService taskService) {
         this.taskService = taskService;
     }
 
-    public TaskService getTaskService() {
-        return taskService;
+    public HazelcastInstance getHazelcastInstance() {
+        return hazelcastInstance;
     }
 
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
         this.hazelcastInstance = hazelcastInstance;
     }
 
-    public HazelcastInstance getHazelcastInstance() {
-        return hazelcastInstance;
+    public AxisConfiguration getAxisConfiguration() {
+        return axisConfiguration;
     }
 
     public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
         this.axisConfiguration = axisConfiguration;
     }
 
-    public AxisConfiguration getAxisConfiguration() {
-        return axisConfiguration;
+    public DistributedObjectProvider getDistributedObjectProvider() {
+        return distributedObjectProvider;
     }
 
     public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
         this.distributedObjectProvider = distributedObjectProvider;
     }
 
-    public DistributedObjectProvider getDistributedObjectProvider() {
-        return distributedObjectProvider;
+    public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {
+        return componentStartUpSynchronizer;
     }
 
     public void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
         this.componentStartUpSynchronizer = componentStartUpSynchronizer;
-    }
-
-    public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {
-        return componentStartUpSynchronizer;
     }
 }

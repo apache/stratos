@@ -39,8 +39,8 @@ import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -1063,18 +1063,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                                 try {
                                     if (clusterPortMapping.isKubernetes()) {
-                                        URL accessUrl = new URL(clusterPortMapping.getProtocol(), appClusterCtxt.getHostName(),
-                                                clusterPortMapping.getKubernetesServicePort(), "");
+                                        // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
+                                        URI accessUrl = new URI(clusterPortMapping.getProtocol(), null, appClusterCtxt.getHostName(),
+                                                clusterPortMapping.getKubernetesServicePort(), null, null, null);
                                         accessUrlPerCluster.add(accessUrl.toString());
                                     } else {
-                                        URL accessUrl = new URL(clusterPortMapping.getProtocol(), appClusterCtxt.getHostName(),
-                                                clusterPortMapping.getProxyPort(), "");
+                                        URI accessUrl = new URI(clusterPortMapping.getProtocol(), null, appClusterCtxt.getHostName(),
+                                                clusterPortMapping.getProxyPort(), null, null, null);
                                         accessUrlPerCluster.add(accessUrl.toString());
                                     }
-                                } catch (MalformedURLException e) {
+                                } catch (URISyntaxException e) {
                                     String message = "Could not generate access URL";
                                     log.error(message, e);
-                                    throw new ApplicationClusterRegistrationException(message, e);
                                 }
                             }
                             accessUrls.put(dependencyClusterIDs[i], accessUrlPerCluster);

@@ -455,7 +455,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     subscribableInfoContext.getDeploymentPolicy(), isLB,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
                     subscribableInfoContext.getProperties(), arrDependencyClusterIDs, arrExportMetadata,
-                    arrImportMetadata);
+                    arrImportMetadata,subscribableInfoContext.getLvsVirtualIP());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
@@ -942,12 +942,12 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                                       String alias, String clusterId, String hostname,
                                                                       String deploymentPolicy, boolean isLB, String tenantRange,
                                                                       String[] dependencyAliases, Properties properties, String[] dependencyClustorIDs,
-                                                                      String[] exportMetadata, String[] importMetadata)
+                                                                      String[] exportMetadata, String[] importMetadata,String lvsVirtualIP)
             throws ApplicationDefinitionException {
 
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs, exportMetadata, importMetadata);
+                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs, exportMetadata, importMetadata,lvsVirtualIP);
 
         String textPayload = payloadData.toString();
         if (log.isDebugEnabled()) {

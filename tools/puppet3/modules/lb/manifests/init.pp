@@ -29,7 +29,7 @@
 #
 
 class lb (
-  $version            = '4.1.0',
+  $version            = undef,
   $offset             = 0,
   $tribes_port        = 4000,
   $maintenance_mode   = true,

@@ -25,7 +25,6 @@ import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitio
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
@@ -39,7 +38,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
@@ -57,7 +56,6 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoscalerService;
-import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
@@ -186,11 +184,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         ApplicationContext existingApplicationContext = AutoscalerContext.getInstance().
                 getApplicationContext(applicationId);
 
+        //Need to update the application
+        AutoscalerUtil.getInstance().updateApplicationsTopology(application);
+
         if (existingApplicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-
-            //Need to update the application
-            AutoscalerUtil.getInstance().updateApplicationsTopology(application);
-
             //Update the clusterMonitors
             AutoscalerUtil.getInstance().updateClusterMonitor(application);
 
@@ -1078,7 +1075,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if ((!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm))
                     && (!StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm))) {
                 String msg = String.format("Partition algorithm is not valid: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s [partition-algorithm] %s",
+                                "[network-partition-id] %s [partition-algorithm] %s. : " +
+                                "Partition algorithm should be either one-after-another or round-robin ",
                         deploymentPolicyId, networkPartitionId, partitionAlgorithm);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
@@ -1132,7 +1130,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             //Following if statement checks the relevant clusters for the updated deployment policy
             if (deploymentPolicy.getDeploymentPolicyID().equals(clusterMonitor.getDeploymentPolicyId())) {
                 for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
-                    ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext
+                    NetworkPartitionContext clusterLevelNetworkPartitionContext
                             = clusterMonitor.getClusterContext().getNetworkPartitionCtxt(networkPartition.getId());
                     if(clusterLevelNetworkPartitionContext != null) {
                         try {
@@ -1165,7 +1163,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private void removeOldPartitionsFromClusterMonitor(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
+    private void removeOldPartitionsFromClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
                                                        NetworkPartitionRef networkPartition) {
 
         for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
@@ -1197,7 +1195,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private void addNewPartitionsToClusterMonitor(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
+    private void addNewPartitionsToClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
                                                   NetworkPartitionRef networkPartitionRef, String deploymentPolicyID,
                                                   String cartridgeType) throws RemoteException,
             CloudControllerServiceInvalidPartitionExceptionException,
@@ -1207,7 +1205,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         for (PartitionRef partition : networkPartitionRef.getPartitionRefs()) {
 
             //Iterating through instances
-            for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
+            for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.
+                    getInstanceIdToInstanceContextMap().values()) {
 
                 ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) instanceContext;
                 if (null == clusterInstanceContext.getPartitionCtxt(partition.getId())) {

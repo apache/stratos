@@ -17,7 +17,7 @@
 
 import json
 
-from ... topology.topologycontext import *
+from entity import *
 
 
 class MemberActivatedEvent:

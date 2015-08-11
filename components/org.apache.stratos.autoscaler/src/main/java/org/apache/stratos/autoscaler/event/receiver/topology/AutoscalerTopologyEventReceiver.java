@@ -133,7 +133,7 @@ public class AutoscalerTopologyEventReceiver {
                             (ApplicationClustersCreatedEvent) event;
                     String appId = applicationClustersCreatedEvent.getAppId();
                     boolean appMonitorCreationTriggered = false;
-                    int retries = 5;
+                    int retries = 30;
                     while (!appMonitorCreationTriggered && retries > 0) {
                         try {
                             //acquire read lock

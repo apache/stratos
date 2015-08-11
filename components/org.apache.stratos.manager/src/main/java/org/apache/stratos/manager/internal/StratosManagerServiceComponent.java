@@ -225,7 +225,7 @@ public class StratosManagerServiceComponent {
 
         TenantUserRoleManager tenantUserRoleManager = new TenantUserRoleManager();
         componentContext.getBundleContext().registerService(
-                org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
+                org.wso2.carbon.stratos.common.listeners.TenantMgtListener.class.getName(),
                 tenantUserRoleManager, null);
     }
 
@@ -241,7 +241,7 @@ public class StratosManagerServiceComponent {
         }
         final TenantEventPublisher tenantEventPublisher = new TenantEventPublisher();
         componentContext.getBundleContext().registerService(
-                org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
+                org.wso2.carbon.stratos.common.listeners.TenantMgtListener.class.getName(),
                 tenantEventPublisher, null);
         if (log.isInfoEnabled()) {
             log.info("Tenant event publisher initialized");

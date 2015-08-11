@@ -37,6 +37,7 @@
                 <clientTimeout>300000</clientTimeout>
         </identity>
         <member>
+            <spinAfterTerminate>false</spinAfterTerminate>
             <!-- this is the maximum time(ms) a member can be in pending member state -->
             <pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
             <!-- this is the maximum time(ms) a member can be in obsoleted member state -->

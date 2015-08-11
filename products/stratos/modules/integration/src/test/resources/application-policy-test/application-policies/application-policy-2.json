@@ -1,0 +1,18 @@
+{
+    "id": "application-policy-2",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-7",
+        "network-partition-8"
+    ],
+    "properties": [
+        {
+            "name": "networkPartitionGroups",
+            "value": "network-partition-7,network-partition-8"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

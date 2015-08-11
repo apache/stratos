@@ -49,10 +49,6 @@ public class ClusterStatusEventPublisher {
                         log.info("Publishing Cluster created event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    /*ClusterStatusClusterCreatedEvent clusterCreatedEvent =
-                            new ClusterStatusClusterCreatedEvent(appId, serviceName, clusterId);
-
-                    publishEvent(clusterCreatedEvent);*/
                 } else {
                     log.warn("Created is not in the possible state list of [cluster] " + clusterId);
                 }
@@ -227,9 +223,7 @@ public class ClusterStatusEventPublisher {
 
                     publishEvent(appStatusClusterTerminatedEvent);
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.warn("Cluster is already terminated, [cluster] " + clusterId);
-                    }
+                    log.warn("Cluster is already terminated, [cluster] " + clusterId);
                 }
             } else {
                 log.warn("Terminated is not in the possible state list for [ClusterInstance] " +

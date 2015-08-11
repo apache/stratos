@@ -19,15 +19,30 @@ from yapsy.IPlugin import IPlugin
 
 
 class ICartridgeAgentPlugin(IPlugin):
+    """
+    To implement a Cartridge Agent plugin to be executed on a MB event
+    """
 
     def run_plugin(self, values):
         raise NotImplementedError
 
 
 class IArtifactManagementPlugin(IPlugin):
+    """
+    To implement an artifact management plugin to manage artifact distribution using a custom version control tool
+    """
 
     def checkout(self):
         raise NotImplementedError
 
     def push(self):
+        raise NotImplementedError
+
+
+class IHealthStatReaderPlugin(IPlugin):
+    """
+    To implement a health statistics reader plugin to read health statistics using a custom factor
+    """
+
+    def stat_cartridge_health(self, health_stat):
         raise NotImplementedError

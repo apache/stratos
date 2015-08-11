@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
@@ -63,8 +63,7 @@ public class RuleTasksDelegator {
 
     public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float rifThreshold) {
 
-        if (rifThreshold != 0) {
-
+        if (rifThreshold > 0) {
             float requiredNumberOfInstances = rifPredictedValue / rifThreshold;
             return (int) Math.ceil(requiredNumberOfInstances);
         } else {
@@ -174,12 +173,11 @@ public class RuleTasksDelegator {
      * @param clusterMonitorPartitionContext Cluster monitor partition context
      * @param clusterId                      Cluster id
      * @param clusterInstanceId              Instance id
-     * @param isPrimary                      Is a primary member
      * @param autoscalingReason              scaling reason for member
      * @param scalingTime                    scaling time
      */
     public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId,
-                              String clusterInstanceId, boolean isPrimary, String autoscalingReason, long scalingTime) {
+                              String clusterInstanceId, String autoscalingReason, long scalingTime) {
 
         try {
             String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
@@ -188,7 +186,7 @@ public class RuleTasksDelegator {
             int minimumCountOfNetworkPartition;
             ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
             ClusterContext clusterContext = clusterMonitor.getClusterContext();
-            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext =
+            NetworkPartitionContext clusterLevelNetworkPartitionContext =
                     clusterContext.getNetworkPartitionCtxt(nwPartitionId);
             ClusterInstanceContext clusterInstanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
@@ -200,8 +198,8 @@ public class RuleTasksDelegator {
                             .startInstance(clusterMonitorPartitionContext.getPartition(),
                                     clusterId,
                                     clusterInstanceId, clusterMonitorPartitionContext.getNetworkPartitionId(),
-                                    isPrimary,
                                     minimumCountOfNetworkPartition, autoscalingReason, scalingTime);
+
             if (memberContext != null) {
                 ClusterLevelPartitionContext partitionContext = clusterInstanceContext.
                         getPartitionCtxt(clusterMonitorPartitionContext.getPartitionId());
@@ -370,7 +368,8 @@ public class RuleTasksDelegator {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();
                 float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();
-                float memberMemoryConsumptionSecondDerivative = memberStatsContext.getMemoryConsumption().getSecondDerivative();
+                float memberMemoryConsumptionSecondDerivative =
+                        memberStatsContext.getMemoryConsumption().getSecondDerivative();
 
                 double memberPredictedMemoryConsumption = getPredictedValueForNextMinute(memberMemoryConsumptionAverage,
                         memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);

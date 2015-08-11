@@ -57,7 +57,6 @@ import java.util.*;
  */
 public class MonitorFactory {
     private static final Log log = LogFactory.getLog(MonitorFactory.class);
-    public static final String IS_PRIMARY = "PRIMARY";
 
     /**
      * Factor method used to create relevant monitors based on the given context
@@ -196,7 +195,7 @@ public class MonitorFactory {
             ApplicationHolder.releaseReadLock();
         }
         //Creating the immediate dependencies
-        applicationMonitor.startMinimumDependencies(application);
+        applicationMonitor.createInstanceAndStartDependency(application);
         // Starting the scheduler of the application monitor
         applicationMonitor.startScheduler();
 
@@ -301,14 +300,6 @@ public class MonitorFactory {
             ClusterMonitor clusterMonitor = new ClusterMonitor(cluster, hasScalingDependents,
                     groupScalingEnabledSubtree,
                     deploymentPolicyId);
-
-            Properties props = cluster.getProperties();
-            if (props != null) {
-                // Set hasPrimary property
-                // hasPrimary is true if there are primary members available in that cluster
-                clusterMonitor.setHasPrimary(Boolean.parseBoolean(
-                        cluster.getProperties().getProperty(IS_PRIMARY)));
-            }
 
             // Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);

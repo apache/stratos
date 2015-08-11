@@ -18,17 +18,16 @@
 
 import threading
 
-from modules.subscriber.eventsubscriber import EventSubscriber
-from modules.publisher import cartridgeagentpublisher
+from subscriber import EventSubscriber
+import publisher
 from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
 from modules.event.topology.events import *
 from modules.event.application.signup.events import *
 from modules.event.domain.mapping.events import *
-from modules.tenant.tenantcontext import *
-from modules.topology.topologycontext import *
-from modules.datapublisher.logpublisher import *
-from config import CartridgeAgentConfiguration
+from entity import *
+from logpublisher import *
+from config import Config
 from modules.event.eventhandler import EventHandler
 import constants
 
@@ -42,10 +41,9 @@ class CartridgeAgent(threading.Thread):
         self.__log_publish_manager = None
         self.__terminated = False
         self.__log = LogFactory().get_log(__name__)
-        self.__config = CartridgeAgentConfiguration()
 
-        mb_ip = self.__config.read_property(constants.MB_IP)
-        mb_port = self.__config.read_property(constants.MB_PORT)
+        mb_ip = Config.read_property(constants.MB_IP)
+        mb_port = Config.read_property(constants.MB_PORT)
 
         self.__inst_topic_subscriber = EventSubscriber(constants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port)
         self.__tenant_topic_subscriber = EventSubscriber(constants.TENANT_TOPIC, mb_ip, mb_port)
@@ -60,11 +58,16 @@ class CartridgeAgent(threading.Thread):
         # Start topology event receiver thread
         self.register_topology_event_listeners()
 
+        if Config.lvs_virtual_ip is None or str(Config.lvs_virtual_ip).strip() == "":
+            self.__log.debug("LVS Virtual IP is not defined")
+        else:
+            self.__event_handler.create_dummy_interface()
+
         # wait until complete topology message is received to get LB IP
         self.wait_for_complete_topology()
 
         # wait for member initialized event
-        while not self.__config.initialized:
+        while not Config.initialized:
             self.__log.debug("Waiting for cartridge agent to be initialized...")
             time.sleep(1)
 
@@ -81,7 +84,7 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_instance_started_event()
 
         # Publish instance started event
-        cartridgeagentpublisher.publish_instance_started_event()
+        publisher.publish_instance_started_event()
 
         # Execute start servers extension
         try:
@@ -90,23 +93,23 @@ class CartridgeAgent(threading.Thread):
             self.__log.exception("Error processing start servers event: %s" % e)
 
         # check if artifact management is required before publishing instance activated event
-        repo_url = self.__config.repo_url
+        repo_url = Config.repo_url
         if repo_url is None or str(repo_url).strip() == "":
             self.__log.info("No artifact repository found")
             self.__event_handler.on_instance_activated_event()
-            cartridgeagentpublisher.publish_instance_activated_event()
+            publisher.publish_instance_activated_event(Config.health_stat_plugin)
         else:
             self.__log.info(
                 "Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s",
                 repo_url)
 
-        persistence_mapping_payload = self.__config.persistence_mappings
+        persistence_mapping_payload = Config.persistence_mappings
         if persistence_mapping_payload is not None:
             self.__event_handler.volume_mount_extension(persistence_mapping_payload)
 
         # start log publishing thread
         if DataPublisherConfiguration.get_instance().enabled:
-            log_file_paths = self.__config.log_file_paths
+            log_file_paths = Config.log_file_paths
             if log_file_paths is None:
                 self.__log.exception("No valid log file paths found, no logs will be published")
             else:
@@ -194,7 +197,7 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_artifact_updated_event(event_obj)
 
     def on_instance_cleanup_member(self, msg):
-        member_in_payload = self.__config.member_id
+        member_in_payload = Config.member_id
         event_obj = InstanceCleanupMemberEvent.create_from_json(msg.payload)
         member_in_event = event_obj.member_id
         if member_in_payload == member_in_event:
@@ -202,9 +205,9 @@ class CartridgeAgent(threading.Thread):
 
     def on_instance_cleanup_cluster(self, msg):
         event_obj = InstanceCleanupClusterEvent.create_from_json(msg.payload)
-        cluster_in_payload = self.__config.cluster_id
+        cluster_in_payload = Config.cluster_id
         cluster_in_event = event_obj.cluster_id
-        instance_in_payload = self.__config.cluster_instance_id
+        instance_in_payload = Config.cluster_instance_id
         instance_in_event = event_obj.cluster_instance_id
 
         if cluster_in_event == cluster_in_payload and instance_in_payload == instance_in_event:

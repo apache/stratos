@@ -19,21 +19,8 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed to start the servers.
+# This extension script will be executed when a subscription domain added
+# event is received by the cartridge agent.
 # --------------------------------------------------------------
 #
-
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-if [[ -z $STRATOS_CLUSTERING ]]; then
-   echo `date`": Starting servers..." | tee -a $log
-else
-   echo `date`": Starting servers in clustering mode..." | tee -a $log
-fi
-
-echo "LB IP: ${STRATOS_LB_IP}" | tee -a $log
-echo "LB PUBLIC IP: $STRATOS_LB_PUBLIC_IP}" | tee -a $log
-echo "STRATOS_PARAM_FILE_PATH: ${STRATOS_PARAM_FILE_PATH}"
-echo "Member List: ${STRATOS_MEMBER_LIST_JSON}" | tee -a $log
-echo "Complete Topology: ${STRATOS_TOPOLOGY_JSON}" | tee -a $log
-echo "Members in LB: ${STRATOS_MEMBERS_IN_LB_JSON}" | tee -a $log
-echo "APPLICATION_PATH: ${APPLICATION_PATH}" | tee -a $log
+echo `date`": Start servers event shell extension executed"

@@ -23,6 +23,7 @@
 # event is received and they are copied to the given path.
 # --------------------------------------------------------------
 #
+echo `date`": Artifacts updated event shell extension executed"
 
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Artifacts Updated Event" | tee -a $log
+
+

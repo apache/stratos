@@ -27,8 +27,9 @@
                     },
                     {
                         "type": "php",
-                        "cartridgeMin": 1,
-                        "cartridgeMax": 2,
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 4,
+                        "lvsVirtualIP": "192.168.56.50|255.255.255.0",
                         "subscribableInfo": {
                             "alias": "my-php",
                             "autoscalingPolicy": "autoscaling-policy-1",
@@ -57,7 +58,8 @@
                         "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
                         "repoUsername": "",
                         "repoPassword": ""
-                    }
+                    },
+                    "lvsVirtualIP": "192.168.56.50|255.255.255.0",
                 }
             }
         ],

@@ -1,0 +1,106 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>bin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/src/main/bin</directory>
+            <outputDirectory>/bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>lvs-extension.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>jndi.properties</include>
+                <include>log4j.properties</include>
+                <include>thrift-client-config.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/security</directory>
+            <outputDirectory>/security</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>client-truststore.jks</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/templates</directory>
+            <outputDirectory>/templates</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>keepalived.conf.template</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/scripts</directory>
+            <outputDirectory>/scripts</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>get-weight.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>DISCLAIMER</include>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>INSTALL*</include>
+            </includes>
+        </fileSet>
+	<fileSet>
+            <directory>${project.basedir}/src/main/license</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0600</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/notice</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0600</fileMode>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+	        <excludes>
+                <exclude>*:icu4j*</exclude>
+                <exclude>*:jaxen*</exclude>
+                <exclude>*:jboss-transaction-api*</exclude>
+                <exclude>*:wrapper*</exclude>
+                <exclude>*:xom*</exclude>
+            </excludes>
+            <useProjectArtifact>true</useProjectArtifact>
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+</assembly>

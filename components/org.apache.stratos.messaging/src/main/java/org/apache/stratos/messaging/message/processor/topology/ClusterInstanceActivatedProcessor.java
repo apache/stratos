@@ -119,27 +119,7 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            List<KubernetesService> kubernetesServices = event.getKubernetesServices();
-            if (kubernetesServices != null) {
-                // Set kubernetes services
-                cluster.setKubernetesServices(kubernetesServices);
-                try {
-                    // Generate access URLs for kubernetes services
-                    for (KubernetesService kubernetesService : kubernetesServices) {
-                        // Public IP = Kubernetes minion public IP
-                        String[] publicIPs = kubernetesService.getPublicIPs();
-                        if((publicIPs != null) && (publicIPs.length > 0)) {
-                            for(String publicIP : publicIPs) {
-                                URL accessURL = new URL(kubernetesService.getProtocol(), publicIP,
-                                        kubernetesService.getPort(), "");
-                                cluster.addAccessUrl(accessURL.toString());
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("Could not create access URLs for Kubernetes services", e);
-                }
-            }
+            cluster.setAccessUrls(event.getAccessUrls());
 
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {

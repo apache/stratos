@@ -56,6 +56,7 @@ public class BasicPayloadData implements Serializable {
     private String[] dependencyClusterIDs;
     private String[] exportMetadataKeys;
     private String[] importMetadataKeys;
+	private String lvsVirtualIP;
 
     protected StringBuilder payloadBuilder;
 
@@ -128,6 +129,10 @@ public class BasicPayloadData implements Serializable {
         if (getExportMetadataKeys() != null) {
             payloadBuilder.append("IMPORT_METADATA_KEYS=" + getImportMetadataKeys());
         }
+	    payloadBuilder.append(",");
+	    if(getLvsVirtualIP()!=null && !getLvsVirtualIP().equals("")){
+		    payloadBuilder.append("LVS_VIRTUAL_IP=" +getLvsVirtualIP());
+	    }
     }
 
     public String getServiceName() {
@@ -388,4 +393,12 @@ public class BasicPayloadData implements Serializable {
     public void setImportMetadataKeys(String[] importMetadataKeys) {
         this.importMetadataKeys = importMetadataKeys;
     }
+
+	public String getLvsVirtualIP() {
+		return lvsVirtualIP;
+	}
+
+	public void setLvsVirtualIP(String lvsVirtualIP) {
+		this.lvsVirtualIP = lvsVirtualIP;
+	}
 }

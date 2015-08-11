@@ -34,8 +34,6 @@ import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ParentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.*;
@@ -813,9 +811,9 @@ public class AutoscalerUtil {
                         //Updating the GroupMonitor
                         for (NetworkPartitionContext networkPartitionContext : groupMonitor.
                                 getNetworkPartitionContextsMap().values()) {
-                            ((ParentLevelNetworkPartitionContext) networkPartitionContext).
+                            ((NetworkPartitionContext) networkPartitionContext).
                                     setMinInstanceCount(newGroup.getGroupMinInstances());
-                            ((ParentLevelNetworkPartitionContext) networkPartitionContext).
+                            ((NetworkPartitionContext) networkPartitionContext).
                                     setMaxInstanceCount(newGroup.getGroupMaxInstances());
                         }
                     }
@@ -853,7 +851,7 @@ public class AutoscalerUtil {
             ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
                     getClusterMonitor(clusterDataHolder.getClusterId());
             if (clusterMonitor != null) {
-                for (ClusterLevelNetworkPartitionContext networkPartitionContext :
+                for (NetworkPartitionContext networkPartitionContext :
                         clusterMonitor.getNetworkPartitionCtxts()) {
                     for (InstanceContext instanceContext :
                             networkPartitionContext.getInstanceIdToInstanceContextMap().values()) {

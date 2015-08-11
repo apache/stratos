@@ -37,7 +37,7 @@ TOMCAT_URL="http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/apache-to
 HAWTBUF_URL="http://repo1.maven.org/maven2/org/fusesource/hawtbuf/hawtbuf/1.9/hawtbuf-1.9.jar"
 
 # if you change the JDK version, you will need to change the version in the Dockerfile too
-JDK_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u51-linux-x64.tar.gz"
+JDK_URL="http://download.oracle.com/otn-pub/java/jdk/7u51-b13/jdk-7u80-linux-x64.tar.gz"
 
 #
 # Tomcat to be copied to the image
@@ -87,7 +87,7 @@ cp -f $STRATOS_SOURCE/products/load-balancer/modules/distribution/target/apache-
 
 cd files/
 tar -cvzf apache-activemq-libs.tgz -C apache-activemq-lib/ .
-tar -cvzf jdk.tgz                            jdk-7u51-linux-x64.tar.gz
+tar -cvzf jdk.tgz                            jdk-7u80-linux-x64.tar.gz
 tar -cvzf apache-tomcat.tgz                  apache-tomcat-7.0.52.tar.gz
 tar -cvzf apache-stratos-cartridge-agent.tgz apache-stratos-cartridge-agent-*.zip 
 tar -cvzf apache-stratos-load-balancer.tgz   apache-stratos-load-balancer-*.zip 

@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPubl
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -45,6 +46,9 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -146,38 +150,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated(ClusterStatusClusterCreatedEvent event) {
-        TopologyManager.acquireWriteLock();
-        Cluster cluster;
 
-        try {
-            Topology topology = TopologyManager.getTopology();
-            Service service = topology.getService(event.getServiceName());
-            if (service == null) {
-                log.error("Service " + event.getServiceName() +
-                        " not found in Topology, unable to update the cluster status to Created");
-                return;
-            }
-
-            if (service.clusterExists(event.getClusterId())) {
-                log.warn("Cluster " + event.getClusterId() + " is already in the Topology ");
-                return;
-            } else {
-                cluster = new Cluster(event.getServiceName(),
-                        event.getClusterId(), event.getDeploymentPolicyName(),
-                        event.getAutosScalePolicyName(), event.getAppId());
-                //cluster.setStatus(Status.Created);
-                cluster.setHostNames(event.getHostNames());
-                cluster.setTenantRange(event.getTenantRange());
-                service.addCluster(cluster);
-                TopologyManager.updateTopology(topology);
-            }
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-
-        TopologyEventPublisher.sendClusterCreatedEvent(cluster);
-    }
 
     public static void handleApplicationClustersCreated(String appId, List<Cluster> appClusters) {
 
@@ -212,6 +185,9 @@ public class TopologyBuilder {
                 ClusterPortMapping clusterPortMapping = new ClusterPortMapping(appId,
                         cluster.getClusterId(), portMapping.getName(), portMapping.getProtocol(), portMapping.getPort(),
                         portMapping.getProxyPort());
+                if (portMapping.getKubernetesPortType() != null) {
+                    clusterPortMapping.setKubernetesServiceType(portMapping.getKubernetesPortType());
+                }
                 CloudControllerContext.getInstance().addClusterPortMapping(clusterPortMapping);
                 log.debug("Cluster port mapping created: " + clusterPortMapping.toString());
             }
@@ -902,9 +878,41 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
             cluster.setKubernetesServices(kubernetesServices);
-            clusterInstanceActivatedEvent.setKubernetesServices(kubernetesServices);
+
+            if (kubernetesServices != null) {
+                // Set kubernetes services
+                cluster.setKubernetesServices(kubernetesServices);
+                try {
+                    // Generate access URLs for kubernetes services
+                    for (KubernetesService kubernetesService : kubernetesServices) {
+
+                        if (kubernetesService.getServiceType().equals(KubernetesConstants.NODE_PORT)) {
+                            // Public IP = Kubernetes minion public IP
+                            String[] publicIPs = kubernetesService.getPublicIPs();
+                            if ((publicIPs != null) && (publicIPs.length > 0)) {
+                                for (String publicIP : publicIPs) {
+                                    // There can be a String array with null values
+                                    if (publicIP != null) {
+                                        // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
+                                        URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
+                                                kubernetesService.getPort(), null, null, null);
+                                        cluster.addAccessUrl(accessURL.toString());
+                                        clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
+                                    } else {
+                                        log.error(String.format("Could not create access URL for [Kubernetes-service] %s , " +
+                                                "since Public IP is not available", kubernetesService.getId()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (URISyntaxException e) {
+                    log.error("Could not create access URLs for Kubernetes services", e);
+                }
+            }
 
             ClusterInstance context = cluster.getInstanceContexts(clusterStatusClusterActivatedEvent.getInstanceId());
+
             if (context == null) {
                 log.warn("Cluster instance context is not found for [cluster] " +
                         clusterStatusClusterActivatedEvent.getClusterId() + " [instance-id] " +

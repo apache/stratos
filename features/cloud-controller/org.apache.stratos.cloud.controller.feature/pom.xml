@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cloud-controller-features</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -254,12 +254,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>kubernetes-api</artifactId>
-            <version>2.1.11-stratosv1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>kubernetes-model</artifactId>
-            <version>2.1.11-stratosv1</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -365,8 +360,7 @@
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:kubernetes-api:2.1.11-stratosv1</bundleDef>
-                                <bundleDef>org.apache.stratos:kubernetes-model:2.1.11-stratosv1</bundleDef>
+                                <bundleDef>org.apache.stratos:kubernetes-api:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>

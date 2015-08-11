@@ -16,43 +16,43 @@
   #  KIND, either express or implied.  See the License for the
   #  specific language governing permissions and limitations
   #  under the License.
-  --> 
+  -->
 <cloudController xmlns:svns="http://org.wso2.securevault/configuration">
-	<svns:secureVault provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
+    <svns:secureVault provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler"/>
 
     <!-- BAM data publisher configuration -->
     <dataPublisher enable="false">
-		<bamServer>
+        <bamServer>
             <!-- BAM server URL should be specified in carbon.xml -->
-			<adminUserName>admin</adminUserName>
-			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
-		</bamServer>
-		<!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
-			 Optional element. -->
-		<cron>1 * * * * ? *</cron>
-	</dataPublisher>
+            <adminUserName>admin</adminUserName>
+            <adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
+        </bamServer>
+        <!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
+             Optional element. -->
+        <cron>1 * * * * ? *</cron>
+    </dataPublisher>
 
     <!-- Complete topology event publisher cron configuration -->
     <topologySync enable="true">
-		<property name="cron" value="1 * * * * ? *" />
-	</topologySync>	
+        <property name="cron" value="1 * * * * ? *"/>
+    </topologySync>
 
-	<!-- Specify the properties that are common to an IaaS here. This element 
-		is not necessary [0..1]. But you can use this section to avoid specifying 
-		same property over and over again. -->
-	<iaasProviders>
-		<!-- iaasProvider type="openstack" name="Openstack">
+    <!-- Specify the properties that are common to an IaaS here. This element
+        is not necessary [0..1]. But you can use this section to avoid specifying
+        same property over and over again. -->
+    <iaasProviders>
+        <!-- iaasProvider type="openstack" name="Openstack">
             <className>org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas</className>
-			<provider>openstack-nova</provider>
-			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
-			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
-			<property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
-           	<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
-			<property name="jclouds.api-version" value="2.0/" />
-			<property name="openstack.networking.provider" value="nova" />
-			<property name="X" value="x" />
-			<property name="Y" value="y" />
-		</iaasProvider -->
+            <provider>openstack-nova</provider>
+            <identity svns:secretAlias="cloud.controller.openstack.identity">project:username</identity>
+            <credential svns:secretAlias="cloud.controller.openstack.credential">credential</credential>
+            <property name="jclouds.endpoint" value="http://192.168.16.99:5000/v2.0" />
+            <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
+            <property name="jclouds.api-version" value="2.0/" />
+            <property name="openstack.networking.provider" value="nova" />
+            <property name="keyPair" value="keypair-name" />
+            <property name="securityGroups" value="default" />
+        </iaasProvider -->
         <!-- iaasProvider type="ec2" name="Amazon EC2">
             <className>org.apache.stratos.cloud.controller.iaases.ec2.EC2Iaas</className>
             <provider>aws-ec2</provider>
@@ -60,7 +60,7 @@
             <credential svns:secretAlias="cloud.controller.ec2.credential">credential</credential>
             <property name="jclouds.ec2.ami-query" value="owner-id=owner-id;state=available;image-type=machine"/>
             <property name="availabilityZone" value="ap-southeast-1b"/>
-            <property name="securityGroups" value="security-group"/>
+            <property name="securityGroups" value="default"/>
             <property name="autoAssignIp" value="true" />
             <property name="keyPair" value="keypair-name"/>
         </iaasProvider -->
@@ -75,7 +75,7 @@
             <provider>mock</provider>
             <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>
-            <property name="api.endpoint" value="https://localhost:9443/mock-iaas/api" />
+            <property name="api.endpoint" value="https://localhost:9443/mock-iaas/api"/>
         </iaasProvider>
-	</iaasProviders>
+    </iaasProviders>
 </cloudController>

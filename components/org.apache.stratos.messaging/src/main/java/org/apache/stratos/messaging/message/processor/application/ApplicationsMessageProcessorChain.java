@@ -44,6 +44,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     private ApplicationInstanceTerminatedMessageProcessor applicationTerminatedMessageProcessor;
     private ApplicationInstanceTerminatingMessageProcessor applicationTerminatingMessageProcessor;
     private CompleteApplicationsMessageProcessor completeApplicationsMessageProcessor;
+    private GroupMaintenanceModeProcessor groupMaintenanceModeProcessor;
 
     public void initialize() {
         // Add instance notifier event processors
@@ -87,6 +88,9 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
         applicationTerminatedMessageProcessor = new ApplicationInstanceTerminatedMessageProcessor();
         add(applicationTerminatedMessageProcessor);
 
+        groupMaintenanceModeProcessor = new GroupMaintenanceModeProcessor();
+        add(groupMaintenanceModeProcessor);
+
         if (log.isDebugEnabled()) {
             log.debug("Instance notifier message processor chain initialized");
         }
@@ -120,6 +124,8 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
             applicationTerminatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof CompleteApplicationsEventListener) {
             completeApplicationsMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof GroupMaintenanceModeEventListener){
+            groupMaintenanceModeProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener " + eventListener.toString());
         }

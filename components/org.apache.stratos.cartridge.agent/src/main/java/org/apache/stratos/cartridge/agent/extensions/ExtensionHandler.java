@@ -26,8 +26,6 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 
 public interface ExtensionHandler {
@@ -70,10 +68,5 @@ public interface ExtensionHandler {
 
     public void onCopyArtifactsExtension(String src, String des);
 
-    public void onTenantSubscribedEvent(TenantSubscribedEvent tenantSubscribedEvent);
-
-    public void onTenantUnSubscribedEvent(TenantUnSubscribedEvent tenantUnSubscribedEvent);
-
     public void onApplicationSignUpRemovedEvent(ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent);
-
 }

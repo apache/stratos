@@ -55,7 +55,7 @@ public class CarbonRegistry implements DataStore {
         if (!tempRegistry.resourceExists(resourcePath)) {
             return null;
         }
-
+        // We are using only super tenant registry to persist
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
@@ -93,9 +93,9 @@ public class CarbonRegistry implements DataStore {
 
         if (!tempRegistry.resourceExists(resourcePath)) {
             return null;
-            //throw new RegistryException("Cluster does not exist at " + resourcePath);
         }
 
+        // We are using only super tenant registry to persist
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
@@ -125,6 +125,7 @@ public class CarbonRegistry implements DataStore {
         String resourcePath = mainResource + applicationId;
 
         try {
+            // We are using only super tenant registry to persist
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
@@ -141,18 +142,19 @@ public class CarbonRegistry implements DataStore {
             }
 
             boolean updated = false;
-            for(String value : property.getValues()){
-                if(!propertyValueExist(nodeResource, property.getKey(), value)){
+            for (String value : property.getValues()) {
+                if (!propertyValueExist(nodeResource, property.getKey(), value)) {
                     updated = true;
-                    log.info(String.format("Registry property is added: [resource-path] %s [Property Name] %s [Property Value] %s",
+                    log.info(String.format("Registry property is added: [resource-path] %s " +
+                                    "[Property Name] %s [Property Value] %s",
                             resourcePath, property.getKey(), value));
                     nodeResource.addProperty(property.getKey(), value);
-                }else{
+                } else {
                     log.info(String.format("Property value already exist property=%s value=%s", property.getKey(), value));
                 }
             }
 
-            if(updated){
+            if (updated) {
                 registry.put(resourcePath, nodeResource);
             }
             //registry.commitTransaction();
@@ -166,35 +168,38 @@ public class CarbonRegistry implements DataStore {
 
     private boolean propertyValueExist(Resource nodeResource, String key, String value) {
         List<String> properties = nodeResource.getPropertyValues(key);
-        if(properties == null){
+        if (properties == null) {
             return false;
-        }else{
+        } else {
             return properties.contains(value);
         }
 
     }
 
-    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException {
+    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove)
+            throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
 
-            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        // We are using only super tenant registry to persist
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-            registry.beginTransaction();
-            Resource nodeResource;
-            if (registry.resourceExists(resourcePath)) {
-                nodeResource = registry.get(resourcePath);
-            } else {
-                log.warn(String.format("Registry [resource] %s not found ", resourcePath));
-                return false;
-            }
-            nodeResource.removePropertyValue(propertyName, valueToRemove);
-            registry.put(resourcePath, nodeResource);
-            registry.commitTransaction();
+        registry.beginTransaction();
+        Resource nodeResource;
+        if (registry.resourceExists(resourcePath)) {
+            nodeResource = registry.get(resourcePath);
+        } else {
+            log.warn(String.format("Registry [resource] %s not found ", resourcePath));
+            return false;
+        }
+        nodeResource.removePropertyValue(propertyName, valueToRemove);
+        registry.put(resourcePath, nodeResource);
+        registry.commitTransaction();
 
-            log.info(String.format("Application %s property %s value %s is removed from metadata ", applicationId, propertyName, valueToRemove));
+        log.info(String.format("Application %s property %s value %s is removed from metadata ",
+                applicationId, propertyName, valueToRemove));
 
         return true;
     }
@@ -211,29 +216,31 @@ public class CarbonRegistry implements DataStore {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId + "/" + clusterId;
 
-            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        // We are using only super tenant registry to persist
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-            Resource nodeResource = null;
-            if (registry.resourceExists(resourcePath)) {
-                nodeResource = registry.get(resourcePath);
-            } else {
-                nodeResource = registry.newResource();
-                if (log.isDebugEnabled()) {
-                    log.debug("Registry resource is create at path for cluster" + nodeResource.getPath() + " for cluster");
-                }
+        Resource nodeResource = null;
+        if (registry.resourceExists(resourcePath)) {
+            nodeResource = registry.get(resourcePath);
+        } else {
+            nodeResource = registry.newResource();
+            if (log.isDebugEnabled()) {
+                log.debug("Registry resource is create at path for cluster" + nodeResource.getPath() + " for cluster");
             }
+        }
 
-            nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
-            registry.put(resourcePath, nodeResource);
+        nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
+        registry.put(resourcePath, nodeResource);
 
-            log.info(String.format("Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
-                    resourcePath, property.getKey(), Arrays.asList(property.getValues())));
+        log.info(String.format("Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
+                resourcePath, property.getKey(), Arrays.asList(property.getValues())));
     }
 
     private UserRegistry getRegistry() throws RegistryException {
-        return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
+        return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().
+                getRegistryService().getGovernanceSystemRegistry();
     }
 
     /**
@@ -248,50 +255,52 @@ public class CarbonRegistry implements DataStore {
             throw new IllegalArgumentException("Application ID can not be null");
         }
 
+        // We are using only super tenant registry to persist
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
         Registry registry;
         String resourcePath = mainResource + applicationId;
-
-            registry = getRegistry();
-            registry.beginTransaction();
-            if (registry.resourceExists(resourcePath)) {
-                registry.delete(resourcePath);
-                registry.commitTransaction();
-                log.info(String.format("Application [application-id ] properties removed from registry %s", applicationId));
-                return true;
-            }
+        registry = getRegistry();
+        registry.beginTransaction();
+        if (registry.resourceExists(resourcePath)) {
+            registry.delete(resourcePath);
+            registry.commitTransaction();
+            log.info(String.format("Application [application-id ] properties removed from registry %s", applicationId));
+            return true;
+        }
 
         return false;
     }
 
-    public boolean removePropertyFromApplication(String applicationId, String propertyName) throws org.wso2.carbon.registry.api.RegistryException {
+    public boolean removePropertyFromApplication(String applicationId, String propertyName)
+            throws org.wso2.carbon.registry.api.RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
+        // We are using only super tenant registry to persist
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-            Resource nodeResource;
-            if (registry.resourceExists(resourcePath)) {
-                nodeResource = registry.get(resourcePath);
-                if(nodeResource.getProperty(propertyName) == null) {
-                    log.info(String.format("[application-id] %s does not have a property [property-name] %s ", applicationId, propertyName));
-                    return false;
-                }else{
-                    nodeResource.removeProperty(propertyName);
-                    registry.put(resourcePath, nodeResource);
-                }
-
-            }else {
-                log.error("Registry resource not not found at " + resourcePath);
-               return false;
+        Resource nodeResource;
+        if (registry.resourceExists(resourcePath)) {
+            nodeResource = registry.get(resourcePath);
+            if (nodeResource.getProperty(propertyName) == null) {
+                log.info(String.format("[application-id] %s does not have a property [property-name] %s ", applicationId,
+                        propertyName));
+                return false;
+            } else {
+                nodeResource.removeProperty(propertyName);
+                registry.put(resourcePath, nodeResource);
             }
+        } else {
+            log.error("Registry resource not not found at " + resourcePath);
+            return false;
+        }
 
-        log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ", applicationId, propertyName));
+        log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ",
+                applicationId, propertyName));
         return true;
     }
 

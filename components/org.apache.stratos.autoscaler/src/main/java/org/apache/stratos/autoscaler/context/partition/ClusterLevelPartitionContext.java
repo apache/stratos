@@ -58,6 +58,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     // 15 mints as the default
     private long pendingMemberExpiryTime = 900000;
+    //
+    private boolean spinTerminateParallel;
     // pending members
     private List<MemberContext> pendingMembers;
 
@@ -149,6 +151,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
         obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        spinTerminateParallel = conf.getBoolean(StratosConstants.SPIN_TERMINATE_PARALLEL, false);
         terminationPendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT, 1800000);
         if (log.isDebugEnabled()) {
             log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
@@ -484,7 +487,17 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     }
 
     public int getNonTerminatedMemberCount() {
-        return activeMembers.size() + pendingMembers.size();
+        int nonTerminatedMemberCount = 0;
+        if(spinTerminateParallel) {
+            // Returning all the pending members as there shouldn't be a spawning
+            // before complete termination.
+            // Will be applicable only when having min1*max1 situation
+            nonTerminatedMemberCount = activeMembers.size() + pendingMembers.size() +
+                    terminationPendingMembers.size() + obsoletedMembers.size();
+        } else {
+            nonTerminatedMemberCount = activeMembers.size() + pendingMembers.size();
+        }
+        return nonTerminatedMemberCount;
     }
 
     public List<MemberContext> getActiveMembers() {

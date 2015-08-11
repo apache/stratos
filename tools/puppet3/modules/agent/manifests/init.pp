@@ -16,7 +16,7 @@
 # under the License.
 
 class agent(
-  $version                = '4.1.0',
+  $version                = undef,
   $owner                  = 'root',
   $group                  = 'root',
   $target                 = "/mnt",
@@ -24,7 +24,7 @@ class agent(
   $enable_artifact_update = true,
   $auto_commit            = false,
   $auto_checkout          = true,
-  $module                 = 'undef',
+  $module                 = undef,
   $custom_templates       = [],
   $exclude_templates	  = []
 ){

@@ -30,6 +30,8 @@ enable.artifact.update                =true
 auto.commit                           =false
 auto.checkout                         =true
 artifact.update.interval              =15
+artifact.clone.retries                =5
+artifact.clone.interval               =10
 port.check.timeout                    =600000
 enable.data.publisher                 =<%= @enable_log_publisher %>
 monitoring.server.ip                  =<%= @bam_ip %>

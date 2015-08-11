@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
@@ -56,7 +56,7 @@ public class ClusterContext extends AbstractClusterContext {
     private static final Log log = LogFactory.getLog(ClusterContext.class);
 
     // Map<NetworkpartitionId, Network Partition Context>
-    protected Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts;
+    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
 
     private String autoscalingPolicyId;
 
@@ -66,12 +66,12 @@ public class ClusterContext extends AbstractClusterContext {
                           boolean hasScalingDependents, String deploymentPolicyId) {
 
         super(clusterId, serviceId);
-        this.networkPartitionCtxts = new ConcurrentHashMap<String, ClusterLevelNetworkPartitionContext>();
+        this.networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
         this.autoscalingPolicyId = autoscalingPolicyId;
         this.deploymentPolicyId = deploymentPolicyId;
     }
 
-    public Map<String, ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
+    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
         return networkPartitionCtxts;
     }
 
@@ -79,11 +79,11 @@ public class ClusterContext extends AbstractClusterContext {
         return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
     }
 
-    public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
+    public NetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
         return networkPartitionCtxts.get(networkPartitionId);
     }
 
-    public void setPartitionCtxt(Map<String, ClusterLevelNetworkPartitionContext> partitionCtxt) {
+    public void setPartitionCtxt(Map<String, NetworkPartitionContext> partitionCtxt) {
         this.networkPartitionCtxts = partitionCtxt;
     }
 
@@ -91,15 +91,15 @@ public class ClusterContext extends AbstractClusterContext {
         return networkPartitionCtxts.containsKey(partitionId);
     }
 
-    public void addNetworkPartitionCtxt(ClusterLevelNetworkPartitionContext ctxt) {
+    public void addNetworkPartitionCtxt(NetworkPartitionContext ctxt) {
         this.networkPartitionCtxts.put(ctxt.getId(), ctxt);
     }
 
-    public ClusterLevelNetworkPartitionContext getPartitionCtxt(String id) {
+    public NetworkPartitionContext getPartitionCtxt(String id) {
         return this.networkPartitionCtxts.get(id);
     }
 
-    public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(Member member) {
+    public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
 
         String networkPartitionId = member.getNetworkPartitionId();
         if (networkPartitionCtxts.containsKey(networkPartitionId)) {
@@ -112,7 +112,7 @@ public class ClusterContext extends AbstractClusterContext {
     public void addInstanceContext(String instanceId, Cluster cluster, boolean hasScalingDependents,
                                    boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
-        ClusterLevelNetworkPartitionContext networkPartitionContext = null;
+        NetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
 
         String deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(cluster.getAppId(),
@@ -137,11 +137,11 @@ public class ClusterContext extends AbstractClusterContext {
 
             if (networkPartition == null) {
                 //Parent should have the partition specified
-                networkPartitionContext = new ClusterLevelNetworkPartitionContext(
+                networkPartitionContext = new NetworkPartitionContext(
                         clusterInstance.getNetworkPartitionId());
             } else {
-                networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getId(),
-                        networkPartition.getPartitionAlgo(), 0);
+                networkPartitionContext = new NetworkPartitionContext(networkPartition.getId(),
+                        networkPartition.getPartitionAlgo());
             }
         }
 
@@ -167,10 +167,10 @@ public class ClusterContext extends AbstractClusterContext {
 
     }
 
-    private ClusterLevelNetworkPartitionContext parseDeploymentPolicy(
+    private NetworkPartitionContext parseDeploymentPolicy(
             ClusterInstance clusterInstance,
             Cluster cluster,
-            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
+            NetworkPartitionContext clusterLevelNetworkPartitionContext,
             boolean hasGroupScalingDependent, boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
@@ -224,10 +224,10 @@ public class ClusterContext extends AbstractClusterContext {
         return clusterLevelNetworkPartitionContext;
     }
 
-    private ClusterLevelNetworkPartitionContext addPartition(
+    private NetworkPartitionContext addPartition(
             ClusterInstance clusterInstance,
             Cluster cluster,
-            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
+            NetworkPartitionContext clusterLevelNetworkPartitionContext,
             PartitionRef partition,
             boolean hasScalingDependents, boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {

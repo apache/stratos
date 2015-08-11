@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.event.topology;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.event.Event;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,13 +33,14 @@ public class ClusterInstanceActivatedEvent extends Event {
     private final String clusterId;
     private String appId;
     private String instanceId;
-    private List<KubernetesService> kubernetesServices;
+    private List<String> accessUrls;
 
     public ClusterInstanceActivatedEvent(String appId, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.appId = appId;
         this.instanceId = instanceId;
+        this.accessUrls = new ArrayList<String>();
     }
 
     public String getServiceName() {
@@ -63,11 +65,20 @@ public class ClusterInstanceActivatedEvent extends Event {
         return instanceId;
     }
 
-    public List<KubernetesService> getKubernetesServices() {
-        return kubernetesServices;
+    public List<String> getAccessUrls() {
+        return accessUrls;
     }
 
-    public void setKubernetesServices(List<KubernetesService> kubernetesServices) {
-        this.kubernetesServices = kubernetesServices;
+    public void setAccessUrls(List<String> accessUrls) {
+        this.accessUrls = accessUrls;
+    }
+
+    public void addAccessUrl(String accessUrl) {
+        if (accessUrls == null) {
+            accessUrls = new ArrayList<String>();
+        }
+        if (!accessUrls.contains(accessUrl)) {
+            accessUrls.add(accessUrl);
+        }
     }
 }

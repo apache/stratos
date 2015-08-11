@@ -31,9 +31,8 @@ import java.util.Properties;
 
 public class CartridgeConfigFileReader {
 
-    private static String carbonHome = CarbonUtils.getCarbonHome();
-
     private static final Log log = LogFactory.getLog(CartridgeConfigFileReader.class);
+    private static String carbonHome = CarbonUtils.getCarbonHome();
 
     /**
      * Reads cartridge-config.properties file and assign properties to system

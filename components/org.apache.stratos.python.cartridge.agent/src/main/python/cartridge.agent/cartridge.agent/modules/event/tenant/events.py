@@ -16,7 +16,7 @@
 # under the License.
 
 import json
-from ... tenant.tenantcontext import *
+from entity import *
 
 
 class CompleteTenantEvent:

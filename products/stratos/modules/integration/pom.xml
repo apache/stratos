@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -83,9 +83,19 @@
             <version>5.10.0</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.3.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.5.wso2v1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>4.1.0</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -107,6 +117,9 @@
                         <extracted.dir>stratos-parent-${project.version}</extracted.dir>
                         <emma.home>${basedir}/target/emma</emma.home>
                     </systemProperties>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/stratos-testing.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                     <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
             </plugin>

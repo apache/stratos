@@ -30,6 +30,7 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
         extension_values = {}
         for key in values.keys():
             extension_values["STRATOS_" + key] = values[key]
+            os.environ["STRATOS_" + key] = values[key]
             # log.debug("%s => %s" % ("STRATOS_" + key, extension_values["STRATOS_" + key]))
 
         try:
@@ -48,11 +49,14 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
         :param bash_file: name of the bash file to execute
         :return: tuple of (output, errors)
         """
+        log = LogFactory().get_log(__name__)
+
         working_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
         command = working_dir[:-2] + "bash/" + bash_file
         current_env_vars = os.environ.copy()
         extension_values.update(current_env_vars)
 
+        log.debug("Execute bash script :: %s" % command)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=extension_values)
         output, errors = p.communicate()
 

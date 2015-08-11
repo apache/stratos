@@ -15,20 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import urllib2, urllib
+import urllib2
 from urllib2 import URLError, HTTPError
 import json
 from modules.util.log import LogFactory
-from config import CartridgeAgentConfiguration
+from config import Config
 import constants
 
 
 log = LogFactory().get_log(__name__)
-config = CartridgeAgentConfiguration()
-mds_url = config.read_property(constants.METADATA_SERVICE_URL)
-alias = config.read_property(constants.CARTRIDGE_ALIAS)
-app_id = config.read_property(constants.APPLICATION_ID)
-token = config.read_property(constants.TOKEN)
+
+mds_url = Config.read_property(constants.METADATA_SERVICE_URL)
+alias = Config.read_property(constants.CARTRIDGE_ALIAS)
+app_id = Config.read_property(constants.APPLICATION_ID)
+token = Config.read_property(constants.TOKEN)
 alias_resource_url = mds_url + "/metadata/api/applications/" + app_id + "/clusters/" + alias + "/properties"
 app_resource_url = mds_url + "/metadata/api/applications/" + app_id + "/properties"
 
@@ -51,7 +51,8 @@ def put(put_req, app=False):
     put_request.add_header('Content-Type', 'application/json')
 
     try:
-        log.debug("Publishing metadata to Metadata service. [URL] %s, [DATA] %s" % (put_request.get_full_url(), request_data))
+        log.debug("Publishing metadata to Metadata service. [URL] %s, [DATA] %s" %
+                  (put_request.get_full_url(), request_data))
         handler = urllib2.urlopen(put_request, request_data)
         log.debug("Metadata service response: %s" % handler.getcode())
 
@@ -107,13 +108,14 @@ def update(data):
 def delete_property_value(property_name, value):
     log.info("Removing property %s value %s " % (property_name, value))
     opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(mds_url + "/metadata/api/applications/" + app_id + "/properties/" + property_name + "/value/" + value)
+    request = urllib2.Request(
+        mds_url + "/metadata/api/applications/" + app_id + "/properties/" + property_name + "/value/" + value)
     request.add_header("Authorization", "Bearer %s" % token)
     request.add_header('Content-Type', 'application/json')
     request.get_method = lambda: 'DELETE'
     url = opener.open(request)
 
-    log.info("Property value removed %s " % (url))
+    log.info("Property value removed %s " % url)
 
 
 class MDSPutRequest:

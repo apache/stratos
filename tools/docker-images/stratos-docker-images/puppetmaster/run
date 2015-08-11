@@ -47,8 +47,8 @@ sed -i "3i dns_alt_names=${MASTERHOSTNAME}" /etc/puppet/puppet.conf
 PUPPET_FILE=/etc/puppet/manifests/nodes/base.pp
 
 # TODO java version is hard coded
-sed -i -E "s:(\s*[$]java_name.*=).*$:\1 \"jdk1.7.0_51\":g" $PUPPET_FILE
-sed -i -E "s:(\s*[$]java_distribution.*=).*$:\1 \"jdk-7u51-linux-x64.tar.gz\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]java_name.*=).*$:\1 \"jdk1.7.0_80\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]java_distribution.*=).*$:\1 \"jdk-7u80-linux-x64.tar.gz\":g" $PUPPET_FILE
 
 sed -i -E "s:(\s*[$]local_package_dir.*=).*$:\1 \"/mnt/packs\":g" $PUPPET_FILE
 sed -i -E "s:(\s*[$]mb_ip.*=).*$:\1 \"$MB_HOSTNAME\":g" $PUPPET_FILE

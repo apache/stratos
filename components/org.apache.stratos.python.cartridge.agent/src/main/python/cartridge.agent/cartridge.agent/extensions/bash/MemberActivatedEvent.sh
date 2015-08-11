@@ -19,25 +19,8 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed when member activated
-# event is received.
+# This extension script will be executed when a subscription domain added
+# event is received by the cartridge agent.
 # --------------------------------------------------------------
 #
-
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-OUTPUT=`date`": Member Activated Event: "
-OUTPUT="$OUTPUT MEMBER_ID: ${STRATOS_MEMBER_ID}, "
-OUTPUT="$OUTPUT MEMBER_IP: ${STRATOS_MEMBER_IP}, "
-OUTPUT="$OUTPUT CLUSTER_ID: ${STRATOS_CLUSTER_ID}, "
-OUTPUT="$OUTPUT LB_CLUSTER_ID: ${STRATOS_LB_CLUSTER_ID}, "
-OUTPUT="$OUTPUT NETWORK_PARTITION_ID: ${STRATOS_NETWORK_PARTITION_ID}, "
-OUTPUT="$OUTPUT SERVICE_NAME: ${STRATOS_SERVICE_NAME}, "
-OUTPUT="$OUTPUT PORTS: ${STRATOS_PORTS},"
-OUTPUT="$OUTPUT STRATOS_LB_IP: ${STRATOS_LB_IP},"
-OUTPUT="$OUTPUT STRATOS_LB_PUBLIC_IP: ${STRATOS_LB_PUBLIC_IP},"
-OUTPUT="$OUTPUT APPLICATION_PATH: ${APPLICATION_PATH},"
-OUTPUT="$OUTPUT STRATOS_PARAM_FILE_PATH: ${STRATOS_PARAM_FILE_PATH}"
-echo $OUTPUT | tee -a $log
-echo "Member List: ${STRATOS_MEMBER_LIST_JSON}" | tee -a $log
-echo "Topology: ${STRATOS_TOPOLOGY_JSON}" | tee -a $log
-echo "---------------" | tee -a $log
+echo `date`": Member activated event shell extension executed"

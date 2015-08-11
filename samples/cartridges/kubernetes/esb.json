@@ -12,7 +12,8 @@
             "name": "http-22",
             "protocol": "http",
             "port": "22",
-            "proxyPort": "8280"
+            "proxyPort": "8280",
+            "kubernetesPortType":"NodePort"
         }
     ],
     "deployment": {
@@ -21,7 +22,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/cartridge:4.1.0-alpha",
+            "imageId": "stratos/cartridge:4.1.1",
             "networkInterfaces": [
                 {
                     "networkUuid": ""
