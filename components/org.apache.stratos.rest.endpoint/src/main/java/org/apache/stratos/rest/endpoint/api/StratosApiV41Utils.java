@@ -2222,9 +2222,9 @@ public class StratosApiV41Utils {
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost =
                     ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean,tenantId);
-
             try {
-                return cloudControllerServiceClient.addKubernetesHost(kubernetesClusterId, kubernetesHost);
+                KubernetesCluster kubernetesCluster=cloudControllerServiceClient.getKubernetesClusterByTenantId(kubernetesClusterId, tenantId);
+                return cloudControllerServiceClient.addKubernetesHost(kubernetesCluster.getClusterUuid(), kubernetesHost);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -2337,14 +2337,15 @@ public class StratosApiV41Utils {
      * @return remove status
      * @throws RestAPIException
      */
-    public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException,
+    public static boolean removeKubernetesCluster(String kubernetesClusterId,int tenantId) throws RestAPIException,
             CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
-
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                cloudControllerServiceClient.undeployKubernetesCluster(kubernetesClusterId);
+                KubernetesCluster kubernetesCluster=cloudControllerServiceClient.getKubernetesClusterByTenantId(kubernetesClusterId, tenantId);
+                cloudControllerServiceClient.undeployKubernetesCluster(kubernetesCluster.getClusterUuid());
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);

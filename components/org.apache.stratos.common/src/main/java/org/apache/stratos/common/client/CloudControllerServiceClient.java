@@ -147,11 +147,11 @@ public class CloudControllerServiceClient {
         return stub.addKubernetesCluster(kubernetesCluster);
     }
 
-    public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost)
+    public boolean addKubernetesHost(String kubernetesClusterUuid, KubernetesHost kubernetesHost)
             throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
             CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
-        return stub.addKubernetesHost(kubernetesClusterId, kubernetesHost);
+        return stub.addKubernetesHost(kubernetesClusterUuid, kubernetesHost);
     }
 
     public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws RemoteException,

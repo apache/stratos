@@ -2141,7 +2141,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeKubernetesHostCluster(
             @PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
-            StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId);
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId,carbonContext.getTenantId());
         } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
@@ -2169,6 +2170,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeKubernetesHostOfKubernetesCluster(
             @PathParam("hostId") String kubernetesHostId) throws RestAPIException {
         try {
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             StratosApiV41Utils.removeKubernetesHost(kubernetesHostId);
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(
