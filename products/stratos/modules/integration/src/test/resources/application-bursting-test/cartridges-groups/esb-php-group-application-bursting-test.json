@@ -1,0 +1,19 @@
+{
+    "name": "esb-php-group-application-bursting-test",
+    "cartridges": [
+        "esb-application-bursting-test",
+        "php-application-bursting-test"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            {
+                "aliases": [
+                    "cartridge.my-esb-application-bursting-test",
+                    "cartridge.my-php-application-bursting-test"
+                ]
+            }
+        ],
+        "terminationBehaviour": "terminate-none"
+    }
+}
+

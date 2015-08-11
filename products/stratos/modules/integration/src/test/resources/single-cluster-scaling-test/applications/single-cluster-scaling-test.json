@@ -1,0 +1,28 @@
+{
+    "applicationId": "single-cluster-scaling-test",
+    "alias": "single-cluster-scaling-test",
+    "components": {
+        "cartridges": [
+            {
+                "type": "c7-single-cluster-scaling-test",
+                "cartridgeMin": 2,
+                "cartridgeMax": 5,
+                "subscribableInfo": {
+                    "alias": "my-c7",
+                    "autoscalingPolicy": "autoscaling-policy-single-cluster-scaling-test",
+                    "deploymentPolicy": "deployment-policy-single-cluster-scaling-test",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
+                }
+            }
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}
+

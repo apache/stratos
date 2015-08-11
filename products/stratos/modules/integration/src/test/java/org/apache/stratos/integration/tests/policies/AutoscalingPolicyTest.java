@@ -39,7 +39,7 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
     @Test
     public void testAutoscalingPolicy() {
         log.info("Started autoscaling policy test case**************************************");
-        String policyId = "autoscaling-policy-c0";
+        String policyId = "autoscaling-policy-autoscaling-policy-test";
         try {
             boolean added = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);

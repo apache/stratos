@@ -1,0 +1,22 @@
+{
+    "id": "deployment-policy-single-cluster-scaling-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-single-cluster-scaling-test",
+            "partitionAlgo": "round-robin",
+            "partitions": [
+                {
+                    "id": "network-partition-11-partition-1",
+                    "partitionMax": 3
+                },
+                {
+                    "id": "network-partition-11-partition-2",
+                    "partitionMax": 3
+                }
+            ]
+        }
+    ]
+}
+
+
+

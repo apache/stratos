@@ -42,16 +42,16 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
     @Test
     public void testApplicationPolicy() {
         try {
-            String applicationPolicyId = "application-policy-2";
+            String applicationPolicyId = "application-policy-application-policy-test";
             log.info("Started Application policy test case**************************************");
 
             boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-7" + ".json",
+                            "network-partition-application-policy-test-1" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
             boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-8" + ".json",
+                            "network-partition-application-policy-test-2" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
@@ -71,17 +71,17 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("The expected networkpartitions size %s is not found in %s",
                     2, applicationPolicyId), bean.getNetworkPartitions().length, 2);
             assertEquals(String.format("The first network partition is not %s in %s",
-                            "network-partition-7", applicationPolicyId), bean.getNetworkPartitions()[0],
-                    "network-partition-7");
+                            "network-partition-application-policy-test-1", applicationPolicyId), bean.getNetworkPartitions()[0],
+                    "network-partition-application-policy-test-1");
             assertEquals(String.format("The Second network partition is not %s in %s",
-                            "network-partition-8", applicationPolicyId), bean.getNetworkPartitions()[1],
-                    "network-partition-8");
+                            "network-partition-application-policy-test-2", applicationPolicyId), bean.getNetworkPartitions()[1],
+                    "network-partition-application-policy-test-2");
             boolean algoFound = false;
             for (PropertyBean propertyBean : bean.getProperties()) {
                 if (propertyBean.getName().equals("networkPartitionGroups")) {
                     assertEquals(String.format("The networkPartitionGroups algorithm %s is not found in %s",
-                                    "network-partition-7,network-partition-8", applicationPolicyId),
-                            propertyBean.getValue(), "network-partition-7,network-partition-8");
+                                    "network-partition-application-policy-test-1,network-partition-application-policy-test-2", applicationPolicyId),
+                            propertyBean.getValue(), "network-partition-application-policy-test-1,network-partition-application-policy-test-2");
                     algoFound = true;
 
                 }
@@ -92,7 +92,7 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             }
 
             boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-7", RestConstants.NETWORK_PARTITIONS_NAME);
+                    "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
@@ -106,20 +106,20 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             assertEquals(beanRemovedDep, null);
 
             boolean removedN1 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-7", RestConstants.NETWORK_PARTITIONS_NAME);
+                    "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN1, true);
 
             NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClient.
-                    getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-7",
+                    getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemovedN1, null);
 
             boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-8", RestConstants.NETWORK_PARTITIONS_NAME);
+                    "network-partition-application-policy-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
 
             NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClient.
-                    getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-8",
+                    getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-2",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemovedN2, null);
 

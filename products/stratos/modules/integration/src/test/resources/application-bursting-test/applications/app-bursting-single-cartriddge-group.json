@@ -1,22 +1,22 @@
 {
-    "applicationId": "cartridge-group-app",
+    "applicationId": "application-bursting-test",
     "alias": "my-cartridge-group-app",
     "components": {
         "groups": [
             {
-                "name": "esb-php-group",
-                "alias": "my-esb-php-group",
-                "deploymentPolicy": "deployment-policy-4",
+                "name": "esb-php-group-application-bursting-test",
+                "alias": "my-esb-php-group-application-bursting-test",
+                "deploymentPolicy": "deployment-policy-application-bursting-test",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 2,
                 "cartridges": [
                     {
-                        "type": "esb",
+                        "type": "esb-application-bursting-test",
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "my-esb",
-                            "autoscalingPolicy": "autoscaling-policy-2",
+                            "alias": "my-esb-application-bursting-test",
+                            "autoscalingPolicy": "autoscaling-policy-application-bursting-test",
                             "artifactRepository": {
                                 "privateRepo": false,
                                 "repoUrl": "https://github.com/imesh/stratos-esb-applications.git",
@@ -26,13 +26,13 @@
                         }
                     },
                     {
-                        "type": "php",
+                        "type": "php-application-bursting-test",
                         "cartridgeMin": 2,
                         "cartridgeMax": 4,
                         "lvsVirtualIP": "192.168.56.50|255.255.255.0",
                         "subscribableInfo": {
-                            "alias": "my-php",
-                            "autoscalingPolicy": "autoscaling-policy-2",
+                            "alias": "my-php-application-bursting-test",
+                            "autoscalingPolicy": "autoscaling-policy-application-bursting-test",
                             "artifactRepository": {
                                 "privateRepo": false,
                                 "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
@@ -46,13 +46,13 @@
         ],
         "cartridges": [
             {
-                "type": "tomcat",
+                "type": "tomcat-application-bursting-test",
                 "cartridgeMin": 2,
                 "cartridgeMax": 4,
                 "subscribableInfo": {
-                    "alias": "my-tomcat",
-                    "autoscalingPolicy": "autoscaling-policy-2",
-                    "deploymentPolicy": "deployment-policy-4",
+                    "alias": "my-tomcat-application-bursting-test",
+                    "autoscalingPolicy": "autoscaling-policy-application-bursting-test",
+                    "deploymentPolicy": "deployment-policy-application-bursting-test",
                     "artifactRepository": {
                         "privateRepo": false,
                         "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",

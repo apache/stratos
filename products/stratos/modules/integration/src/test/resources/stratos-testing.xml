@@ -20,8 +20,7 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="StratosIntegrationSuite">
-
+<suite name="StratosIntegrationSuite" parallel="tests" thread-count="5">
     <test name="CartridgeTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.group.CartridgeTest" />
@@ -57,10 +56,25 @@
             <class name="org.apache.stratos.integration.tests.application.SampleApplicationsTest" />
         </classes>
     </test>
-    <test name="ApplicationBurstingTest">
+    <!--test name="ApplicationBurstingTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest" />
         </classes>
+    </test-->
+    <!--test name="SingleClusterScalingTest">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest" />
+        </classes>
     </test>
+    <test name="PartitionRoundRobinClusterTest">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest" />
+        </classes>
+    </test-->
+    <!--<test name="ApplicationUpdateTest">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.ApplicationUpdateTest" />
+        </classes>
+    </test>-->
 
 </suite>

@@ -1,0 +1,32 @@
+{
+    "id": "deployment-policy-application-bursting-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-application-bursting-test-1",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 4
+                }
+            ]
+        },
+        {
+            "id": "network-partition-application-bursting-test-2",
+            "partitionAlgo": "round-robin",
+            "partitions": [
+                {
+                    "id": "network-partition-10-partition-1",
+                    "partitionMax": 4
+                },
+                {
+                    "id": "network-partition-10-partition-2",
+                    "partitionMax": 4
+                }
+            ]
+        }
+    ]
+}
+
+
+

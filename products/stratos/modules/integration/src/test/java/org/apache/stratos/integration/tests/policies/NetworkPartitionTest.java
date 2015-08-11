@@ -40,7 +40,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
     @Test
     public void testNetworkPartition() {
         try {
-            String networkPartitionId = "network-partition-3";
+            String networkPartitionId = "network-partition-network-partition-test";
             log.info("Started network partition test case**************************************");
 
             boolean added = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
@@ -52,7 +52,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
 
-            assertEquals(bean.getId(), "network-partition-3");
+            assertEquals(bean.getId(), "network-partition-network-partition-test");
             assertEquals(bean.getPartitions().size(), 1);
             assertEquals(bean.getPartitions().get(0).getId(), "partition-1");
             assertEquals(bean.getPartitions().get(0).getProperty().get(0).getName(), "region");
@@ -66,7 +66,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             NetworkPartitionBean updatedBean = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(updatedBean.getId(), "network-partition-3");
+            assertEquals(updatedBean.getId(), "network-partition-network-partition-test");
             assertEquals(updatedBean.getPartitions().size(), 2);
             assertEquals(updatedBean.getPartitions().get(1).getId(), "partition-2");
             assertEquals(updatedBean.getPartitions().get(1).getProperty().get(0).getName(), "region");

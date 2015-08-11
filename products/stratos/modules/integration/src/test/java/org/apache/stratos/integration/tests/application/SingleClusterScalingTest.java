@@ -21,22 +21,33 @@ package org.apache.stratos.integration.tests.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.apache.stratos.integration.tests.TopologyHandler;
+import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import java.util.Set;
+
+import static junit.framework.Assert.*;
 
 /**
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
  */
 public class SingleClusterScalingTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
-    private static final String TEST_PATH = "/application-bursting-test";
+    private static final String TEST_PATH = "/single-cluster-scaling-test";
+    private static final int CLUSTER_SCALE_UP_TIMEOUT = 180000;
 
 
     @Test
@@ -44,176 +55,132 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
         try {
             log.info("Started application Bursting test case**************************************");
 
-            String autoscalingPolicyId = "autoscaling-policy-2";
+            String autoscalingPolicyId = "autoscaling-policy-single-cluster-scaling-test";
 
             boolean addedScalingPolicy = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb.json",
+            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7-single-cluster-scaling-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC2, true);
-
-            boolean addedC3 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC3, true);
-
-            boolean addedG1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "esb-php-group.json", RestConstants.CARTRIDGE_GROUPS,
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(addedG1, true);
-
-            CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClient.
-                    getEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
-                            CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(beanG1.getName(), "esb-php-group");
-
             boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-9.json",
+                            "network-partition-single-cluster-scaling-test.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-10.json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN2, true);
-
             boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                            "deployment-policy-4.json",
+                            "deployment-policy-single-cluster-scaling-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
             boolean added = restClient.addEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                            "app-bursting-single-cartriddge-group.json", RestConstants.APPLICATIONS,
+                            "single-cluster-scaling-test.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(added, true);
 
             ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                    "cartridge-group-app", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertEquals(bean.getApplicationId(), "cartridge-group-app");
+                    "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+            assertEquals(bean.getApplicationId(), "single-cluster-scaling-test");
 
             boolean addAppPolicy = restClient.addEntity(TEST_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                            "application-policy-3.json", RestConstants.APPLICATION_POLICIES,
+                            "application-policy-single-cluster-scaling-test.json", RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addAppPolicy, true);
 
             ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient.getEntity(
                     RestConstants.APPLICATION_POLICIES,
-                    "application-policy-3", ApplicationPolicyBean.class,
+                    "application-policy-single-cluster-scaling-test", ApplicationPolicyBean.class,
                     RestConstants.APPLICATION_POLICIES_NAME);
 
             //deploy the application
-            String resourcePath = RestConstants.APPLICATIONS + "/" + "cartridge-group-app" +
-                    RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-3";
+            String resourcePath = RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
+                    RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-single-cluster-scaling-test";
             boolean deployed = restClient.deployEntity(resourcePath,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(deployed, true);
 
             //Application active handling
-            TopologyHandler.getInstance().assertApplicationActivation(bean.getApplicationId());
-
-            //Group active handling
-            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId()
+                    , ApplicationStatus.Active);
 
             //Cluster active handling
             TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
 
-            boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(removedGroup, false);
+            //Verifying whether members got created using round robin algorithm
+            assertClusterWithScalingup(bean.getApplicationId());
 
             boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(removedAuto, false);
 
             boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-9",
+                    "network-partition-single-cluster-scaling-test",
                     RestConstants.NETWORK_PARTITIONS_NAME);
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
             boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-4", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                    "deployment-policy-single-cluster-scaling-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, false);
 
             //Un-deploying the application
-            String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "cartridge-group-app" +
+            String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
                     RestConstants.APPLICATIONS_UNDEPLOY;
 
             boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("cartridge-group-app");
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test");
             if (!undeploy) {
                 //Need to forcefully undeploy the application
-                log.info("Force undeployment is going to start for the [application] " + "cartridge-group-app");
+                log.info("Force undeployment is going to start for the [application] " + "single-cluster-scaling-test");
 
-                restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "cartridge-group-app" +
+                restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("cartridge-group-app");
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test");
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
-                        "cartridge-group-app"), forceUndeployed, true);
+                        "single-cluster-scaling-test"), forceUndeployed, true);
 
             }
 
-            boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "cartridge-group-app",
+            boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "single-cluster-scaling-test",
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(removed, true);
 
             ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                    "cartridge-group-app", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+                    "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(beanRemoved, null);
 
-            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(removedGroup, true);
-
-            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "esb",
+            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c7-single-cluster-scaling-test",
                     RestConstants.CARTRIDGES_NAME);
             assertEquals(removedC1, true);
 
-            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "php",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC2, true);
-
-            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC3, true);
 
             removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(removedAuto, true);
 
             removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-4", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                    "deployment-policy-single-cluster-scaling-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, true);
 
             removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-9", RestConstants.NETWORK_PARTITIONS_NAME);
+                    "network-partition-single-cluster-scaling-test", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedNet, false);
 
-            boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-10", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, false);
 
             boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                    "application-policy-3", RestConstants.APPLICATION_POLICIES_NAME);
+                    "application-policy-single-cluster-scaling-test", RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(removeAppPolicy, true);
 
             removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-9", RestConstants.NETWORK_PARTITIONS_NAME);
+                    "network-partition-single-cluster-scaling-test", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedNet, true);
-
-            removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-10", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, true);
 
             log.info("Ended application bursting test case**************************************");
 
@@ -223,11 +190,55 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
         }
     }
 
-    @Test(dependsOnMethods = {"testApplication"})
-    public void testClusterScalingUp() {
+    /**
+     * Assert application activation
+     *
+     * @param applicationName
+     */
+    private void assertClusterWithScalingup(String applicationName) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        assertNotNull(String.format("Application is not found: [application-id] %s",
+                applicationName), application);
+        boolean clusterScaleup = false;
+        String clusterId = null;
+        long startTime = System.currentTimeMillis();
+        while (!clusterScaleup) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
+            for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+                String serviceName = clusterDataHolder.getServiceType();
+                clusterId = clusterDataHolder.getClusterId();
+                Service service = TopologyManager.getTopology().getService(serviceName);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                        applicationName, serviceName), service);
 
+                Cluster cluster = service.getCluster(clusterId);
+                assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                        applicationName, serviceName, clusterId), cluster);
+                for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                    int activeInstances = 0;
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
+                            if (member.getStatus().equals(MemberStatus.Active)) {
+                                activeInstances++;
+                            }
+                        }
+                    }
+                    clusterScaleup = activeInstances > clusterDataHolder.getMinInstances();
+                    if(clusterScaleup) {
+                        break;
+                    }
+                }
+                application = ApplicationManager.getApplications().getApplication(applicationName);
+                if ((System.currentTimeMillis() - startTime) > CLUSTER_SCALE_UP_TIMEOUT) {
+                    break;
+                }
+            }
+        }
+        assertEquals(String.format("Cluster did not get scaled up: [cluster-id] %s", clusterId),
+                clusterScaleup, true);
     }
-
-
-
 }

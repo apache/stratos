@@ -1,0 +1,50 @@
+{
+    "name": "G4-cartridge-group-test",
+    "dependencies": {
+        "terminationBehaviour": "terminate-none",
+        "startupOrders": [
+            {
+                "aliases": [
+                    "group.group5-cartridge-group-test",
+                    "cartridge.c4-1x0-cartridge-group-test"
+                ]
+            }
+        ]
+    },
+    "cartridges": [
+        "c4-cartridge-group-test"
+    ],
+    "groups": [
+        {
+            "name": "G5-cartridge-group-test",
+            "dependencies": {
+                "terminationBehaviour": "terminate-dependents",
+                "startupOrders": [
+                    {
+                        "aliases": [
+                            "group.group6-cartridge-group-test",
+                            "cartridge.c5-1x0-cartridge-group-test"
+                        ]
+                    }
+                ]
+            },
+            "cartridges": [
+                "c5-cartridge-group-test"
+            ],
+            "groups": [
+                {
+                    "name": "G6-cartridge-group-test",
+                    "dependencies": {
+                        "terminationBehaviour": "terminate-all",
+                        "startupOrders": []
+                    },
+                    "cartridges": [
+                        "c6-cartridge-group-test"
+                    ],
+                    "groups": []
+                }
+            ]
+        }
+    ]
+}
+

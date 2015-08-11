@@ -1,0 +1,36 @@
+{
+    "id": "deployment-policy-sample-applications-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-sample-applications-test-1",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 25
+                },
+                {
+                    "id": "partition-2",
+                    "partitionMax": 20
+                }
+            ]
+        },
+        {
+            "id": "network-partition-sample-applications-test-2",
+            "partitionAlgo": "round-robin",
+            "partitions": [
+                {
+                    "id": "network-partition-2-partition-1",
+                    "partitionMax": 15
+                },
+                {
+                    "id": "network-partition-2-partition-2",
+                    "partitionMax": 5
+                }
+            ]
+        }
+    ]
+}
+
+
+

@@ -27,7 +27,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.stratos.common.test.TestLogAppender;
 import org.apache.stratos.integration.tests.application.SampleApplicationsTest;
+import org.apache.stratos.integration.tests.rest.IntegrationMockClient;
 import org.apache.stratos.integration.tests.rest.RestClient;
+import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
@@ -62,11 +64,13 @@ public class StratosTestServerManager extends TestServerManager {
     private TestLogAppender testLogAppender = new TestLogAppender();
     private ServerUtils serverUtils;
     private String carbonHome;
+    protected IntegrationMockClient mockIaasApiClient;
 
     public StratosTestServerManager() {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
         restClient = new RestClient(endpoint, "admin", "admin");
+        mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
     }
 
     @Override

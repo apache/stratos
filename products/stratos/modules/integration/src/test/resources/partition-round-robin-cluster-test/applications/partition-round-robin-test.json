@@ -1,0 +1,28 @@
+{
+    "applicationId": "partition-round-robin-test",
+    "alias": "partition-round-robin-test",
+    "components": {
+        "cartridges": [
+            {
+                "type": "c7-partition-round-robin-test",
+                "cartridgeMin": 6,
+                "cartridgeMax": 8,
+                "subscribableInfo": {
+                    "alias": "my-c7",
+                    "autoscalingPolicy": "autoscaling-policy-partition-round-robin-test",
+                    "deploymentPolicy": "deployment-policy-partition-round-robin-test",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
+                }
+            }
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}
+

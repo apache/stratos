@@ -158,6 +158,7 @@ public class RestClient {
 
             HttpResponse response = doPost(uri, content);
             if (response != null) {
+                Thread.sleep(5000);
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return true;
                 } else {

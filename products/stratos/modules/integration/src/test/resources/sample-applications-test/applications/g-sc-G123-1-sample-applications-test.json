@@ -1,0 +1,86 @@
+{
+    "alias": "g-sc-G123-1-sample-applications-test",
+    "applicationId": "g-sc-G123-1-sample-applications-test",
+    "components": {
+        "cartridges": [],
+        "groups": [
+            {
+                "name": "G1-sample-applications-test",
+                "groupMaxInstances": 1,
+                "groupMinInstances": 1,
+                "alias": "group1-sample-applications-test",
+                "cartridges": [
+                    {
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "type": "c1-sample-applications-test",
+                        "subscribableInfo": {
+                            "alias": "c1-1x0-sample-applications-test",
+                            "deploymentPolicy": "deployment-policy-sample-applications-test",
+                            "artifactRepository": {
+                                "repoUsername": "user",
+                                "repoUrl": "http://stratos.apache.org:10080/git/default.git",
+                                "privateRepo": true,
+                                "repoPassword": "c-policy"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-sample-applications-test"
+                        }
+                    }
+                ],
+                "groups": [
+                    {
+                        "name": "G2-sample-applications-test",
+                        "groupMaxInstances": 1,
+                        "groupMinInstances": 1,
+                        "alias": "group2-sample-applications-test",
+                        "cartridges": [
+                            {
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "type": "c2-sample-applications-test",
+                                "subscribableInfo": {
+                                    "alias": "c2-1x0-sample-applications-test",
+                                    "deploymentPolicy": "deployment-policy-sample-applications-test",
+                                    "artifactRepository": {
+                                        "repoUsername": "user",
+                                        "repoUrl": "http://stratos.apache.org:10080/git/default.git",
+                                        "privateRepo": true,
+                                        "repoPassword": "c-policy"
+                                    },
+                                    "autoscalingPolicy": "autoscaling-policy-sample-applications-test"
+                                }
+                            }
+                        ],
+                        "groups": [
+                            {
+                                "name": "G3-sample-applications-test",
+                                "groupMaxInstances": 2,
+                                "groupMinInstances": 1,
+                                "deploymentPolicy": "deployment-policy-sample-applications-test",
+                                "alias": "group3-sample-applications-test",
+                                "cartridges": [
+                                    {
+                                        "cartridgeMin": 1,
+                                        "cartridgeMax": 2,
+                                        "type": "c3-sample-applications-test",
+                                        "subscribableInfo": {
+                                            "alias": "c3-1x0-sample-applications-test",
+                                            "artifactRepository": {
+                                                "repoUsername": "user",
+                                                "repoUrl": "http://stratos.apache.org:10080/git/default.git",
+                                                "privateRepo": true,
+                                                "repoPassword": "c-policy"
+                                            },
+                                            "autoscalingPolicy": "autoscaling-policy-sample-applications-test"
+                                        }
+                                    }
+                                ],
+                                "groups": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

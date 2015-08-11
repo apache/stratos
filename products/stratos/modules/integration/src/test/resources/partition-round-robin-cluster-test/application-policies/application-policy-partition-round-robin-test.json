@@ -1,0 +1,13 @@
+{
+    "id": "application-policy-partition-round-robin-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-partition-round-robin-test"
+    ],
+    "properties": [
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

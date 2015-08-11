@@ -99,6 +99,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
             <version>0.13.wso2v8</version>

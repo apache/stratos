@@ -1,0 +1,14 @@
+{
+    "id": "autoscaling-policy-sample-applications-test",
+    "loadThresholds": {
+        "requestsInFlight": {
+            "threshold": 35
+        },
+        "memoryConsumption": {
+            "threshold": 45
+        },
+        "loadAverage": {
+            "threshold": 25
+        }
+    }
+}

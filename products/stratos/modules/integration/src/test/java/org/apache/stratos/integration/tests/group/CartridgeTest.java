@@ -43,7 +43,7 @@ public class CartridgeTest extends StratosTestServerManager {
         log.info("Started Cartridge test case**************************************");
 
         try {
-            String cartridgeType = "c0";
+            String cartridgeType = "c0-cartridge-test";
             boolean added = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
@@ -85,7 +85,7 @@ public class CartridgeTest extends StratosTestServerManager {
             CartridgeBean updatedBean = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertEquals(updatedBean.getType(), "c0");
+            assertEquals(updatedBean.getType(), "c0-cartridge-test");
             assertEquals(updatedBean.getCategory(), "Data");
             assertEquals(updatedBean.getHost(), "qmog.cisco.com12");
             for (PropertyBean property : updatedBean.getProperty()) {

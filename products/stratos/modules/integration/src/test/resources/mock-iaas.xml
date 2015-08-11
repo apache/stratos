@@ -39,6 +39,46 @@
                 <sampleDuration>60</sampleDuration>
             </pattern>
         </cartridge>
+        <cartridge type="c7-single-cluster-scaling-test">
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>60,70,80,90,90,90,40,60,50,60</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>70,70,70</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>
+        <cartridge type="c7-partition-round-robin-test">
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="stop">
+                <!-- Sample values -->
+                <sampleValues>20,20,20,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>30</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="stop">
+                <!-- Sample values -->
+                <sampleValues>20,20,20,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>30</sampleDuration>
+            </pattern>
+        </cartridge>
         <cartridge type="php">
             <!-- factor:memory-consumption|load-average|requests-in-flight-->
             <!-- mode:loop|continue|stop -->
