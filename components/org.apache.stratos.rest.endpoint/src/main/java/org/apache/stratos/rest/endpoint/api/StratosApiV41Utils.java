@@ -2981,6 +2981,14 @@ public class StratosApiV41Utils {
                     .getNetworkPartitions()) {
                 NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
                         .getNetworkPartitionByTenant(networkPartitionReferenceBean.getId(), tenantId);
+
+                if (networkPartition == null) {
+                    String message = String.format("Network partition not found: for [deployment-policy-id] %s" +
+                            "[network-partition-id] %s" , deploymentPolicyDefinitionBean.getId(),
+                            networkPartitionReferenceBean.getId());
+                    throw new RestAPIException(message);
+                }
+
                 for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
                     if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
                             (networkPartitionReferenceBean.getId())) {
@@ -3080,6 +3088,14 @@ public class StratosApiV41Utils {
                     .getNetworkPartitions()) {
                 NetworkPartition networkPartition = CloudControllerServiceClient.getInstance()
                         .getNetworkPartitionByTenant(networkPartitionReferenceBean.getId(), tenantId);
+
+                if (networkPartition == null) {
+                    String message = String.format("Network partition not found: for [deployment-policy-id] %s" +
+                                    "[network-partition-id] %s" , deploymentPolicyDefinitionBean.getId(),
+                            networkPartitionReferenceBean.getId());
+                    throw new RestAPIException(message);
+                }
+
                 for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
                     if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
                             (networkPartitionReferenceBean.getId())) {

@@ -498,6 +498,18 @@ public class StratosApiV41 extends AbstractApi {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         String cartrideGroupUuid= UUID.randomUUID().toString();
         int tenantId = carbonContext.getTenantId();
+
+        CartridgeGroupBean groupBean = null;
+        groupBean = StratosApiV41Utils.getServiceGroupDefinition(cartridgeGroupBean.getName(), carbonContext.getTenantId());
+
+        if (groupBean != null) {
+            String msg = String.format("Cartridge already exists: [cartridge-type] %s [cartridge-uuid] %s [tenant-id] %d",
+                    cartridgeGroupBean.getName(), cartrideGroupUuid, tenantId);
+            log.warn(msg);
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
+        }
+
         try {
             StratosApiV41Utils.addCartridgeGroup(cartridgeGroupBean, cartrideGroupUuid, tenantId);
             URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeGroupBean.getName()).build();
@@ -573,7 +585,8 @@ public class StratosApiV41 extends AbstractApi {
             @PathParam("name") String name) throws RestAPIException {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(name,carbonContext.getTenantId());
+        CartridgeGroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(name,
+                carbonContext.getTenantId());
 
         if (serviceGroupDefinition != null) {
             return Response.ok().entity(serviceGroupDefinition).build();

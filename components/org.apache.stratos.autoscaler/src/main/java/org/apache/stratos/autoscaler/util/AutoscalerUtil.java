@@ -639,7 +639,7 @@ public class AutoscalerUtil {
         }
 
         // application policy should contain at least one network partition reference
-        String[] networkPartitionIds = applicationPolicy.getNetworkPartitionsUuid();
+        String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
         if (null == networkPartitionIds || networkPartitionIds.length == 0) {
             String msg = "Invalid Application Policy: "
                     + "Application Policy is not containing any network partition reference";
@@ -663,7 +663,7 @@ public class AutoscalerUtil {
             NetworkPartition networkPartitionForTenant = null;
             if (networkPartitions != null) {
                 for (NetworkPartition networkPartition : networkPartitions) {
-                    if (applicationPolicy.getTenantId() == networkPartition.getTenantId() && networkPartition.getUuid()
+                    if (applicationPolicy.getTenantId() == networkPartition.getTenantId() && networkPartition.getId()
                             .equals(networkPartitionId)) {
                         networkPartitionForTenant = networkPartition;
                     }
