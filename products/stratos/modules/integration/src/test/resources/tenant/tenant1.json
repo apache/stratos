@@ -1,0 +1,9 @@
+{
+  "admin": "admin",
+  "firstName": "Frank",
+  "lastName": "Myers",
+  "adminPassword": "admin123",
+  "tenantDomain": "test1.com",
+  "email": "foo1@bar.com",
+  "active": "true"
+}
