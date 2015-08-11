@@ -79,7 +79,7 @@ dialect "mvel"
 
                 count++;
             } else {
-
+                log.warn("[min-check] Partition is not available to fulfil minimum count!" + " [cluster] " + clusterId);
                 partitionsAvailable = false;
             }
         }
