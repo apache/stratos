@@ -31,7 +31,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.1.1</version>
+    <version>4.1.2-SNAPSHOT</version>
     <name>Apache Stratos</name>
     <description>Apache Stratos is an open source polyglot Platform as a Service (PaaS) framework</description>
     <url>http://stratos.apache.org</url>
@@ -75,7 +75,7 @@
         <connection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</developerConnection>
         <url>https://git-wip-us.apache.org/repos/asf?p=stratos.git</url>
-        <tag>4.1.1</tag>
+        <tag>4.1.2-SNAPSHOT</tag>
     </scm>
 
     <modules>
