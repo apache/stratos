@@ -272,7 +272,7 @@ public interface CloudControllerService {
     /**
      * Retrieves registered Kubernetes clusters.
      */
-    public KubernetesCluster[] getKubernetesClusters();
+    public KubernetesCluster[] getKubernetesClusters(int tenantId);
 
     /**
      * Retrieves Kubernetes cluster for given Kubernetes cluster UUID.

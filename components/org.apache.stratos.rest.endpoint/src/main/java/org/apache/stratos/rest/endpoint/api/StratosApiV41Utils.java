@@ -2279,13 +2279,13 @@ public class StratosApiV41Utils {
      * @return Array of KubernetesClusterBeans
      * @throws RestAPIException
      */
-    public static KubernetesClusterBean[] getAvailableKubernetesClusters() throws RestAPIException {
+    public static KubernetesClusterBean[] getAvailableKubernetesClusters(int tenantId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[]
-                        kubernetesClusters = cloudControllerServiceClient.getAvailableKubernetesClusters();
+                        kubernetesClusters = cloudControllerServiceClient.getAvailableKubernetesClusters(tenantId);
                 if (kubernetesClusters == null) {
                     if (log.isDebugEnabled()) {
                         log.debug("There are no available Kubernetes clusters");

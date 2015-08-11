@@ -1194,8 +1194,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public KubernetesCluster[] getKubernetesClusters() {
-        return CloudControllerContext.getInstance().getKubernetesClusters();
+    public KubernetesCluster[] getKubernetesClusters(int tenantId) {
+        KubernetesCluster[] kubernetesClusters=CloudControllerContext.getInstance().getKubernetesClusters();
+        List<KubernetesCluster> kubernetesClusterList = new ArrayList<KubernetesCluster>();
+        for(int i=0;i<kubernetesClusters.length;i++){
+            if(kubernetesClusters[i].getTenantId()==tenantId){
+                kubernetesClusterList.add(kubernetesClusters[i]);
+            }
+        }
+        return kubernetesClusterList.toArray(new KubernetesCluster[kubernetesClusterList.size()]);
+
     }
 
     @Override
@@ -1207,7 +1215,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId,int tenantId) throws
             NonExistingKubernetesClusterException {
-        for(KubernetesCluster kubernetesCluster:getKubernetesClusters()){
+        for(KubernetesCluster kubernetesCluster:getKubernetesClusters(tenantId)){
             if(kubernetesCluster.getClusterId().equals(kubernetesClusterId)&&kubernetesCluster.getTenantId()==tenantId){
                 return kubernetesCluster;
             }

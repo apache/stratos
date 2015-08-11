@@ -160,8 +160,8 @@ public class CloudControllerServiceClient {
         return stub.updateKubernetesMaster(kubernetesMaster);
     }
 
-    public KubernetesCluster[] getAvailableKubernetesClusters() throws RemoteException {
-        return stub.getKubernetesClusters();
+    public KubernetesCluster[] getAvailableKubernetesClusters(int tenantId) throws RemoteException {
+        return stub.getKubernetesClusters(tenantId);
     }
 
     public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws RemoteException,
