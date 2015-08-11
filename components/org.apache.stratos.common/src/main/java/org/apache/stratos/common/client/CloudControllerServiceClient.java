@@ -120,9 +120,9 @@ public class CloudControllerServiceClient {
         return stub.getCartridgesByTenant(tenantId);
     }
 
-    public Cartridge getCartridge(String cartridgeType) throws RemoteException,
+    public Cartridge getCartridge(String cartridgeUuid) throws RemoteException,
             CloudControllerServiceCartridgeNotFoundExceptionException {
-        return stub.getCartridge(cartridgeType);
+        return stub.getCartridge(cartridgeUuid);
     }
 
     public Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws RemoteException,

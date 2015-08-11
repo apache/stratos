@@ -75,7 +75,7 @@ public class CartridgeGroupTest extends StratosTestServerManager {
             assertEquals(String.format("Updated Cartridge Group didn't match: [cartridge-group-name] %s",
                     "g4-g5-g6"), updatedBean.getName(), "G4");
 
-         /*   boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4",
+            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can be removed while it is used in " +
                     "cartridge group: [cartridge-name] %s", "c4"), removedC1, false);
@@ -90,7 +90,7 @@ public class CartridgeGroupTest extends StratosTestServerManager {
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can be removed while it is used in " +
                             "cartridge group: [cartridge-name] %s",
-                    "c6"), removedC3, false);    */
+                    "c6"), removedC3, false);
 
             boolean removed = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G4",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
@@ -104,17 +104,17 @@ public class CartridgeGroupTest extends StratosTestServerManager {
                             "[cartridge-group-name] %s",
                     "g4-g5-g6"), beanRemoved, null);
 
-            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4",
+            removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c4"), removedC1, true);
 
-            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c5",
+            removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c5",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c5"), removedC2, true);
 
-            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c6",
+            removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c6",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c6"), removedC3, true);

@@ -1035,7 +1035,11 @@ public class StratosApiV41Utils {
 
         ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup
                 (serviceGroupDefinition,UUID.randomUUID().toString(), tenantId);
-        findCartridgesInGroupBean(serviceGroup, cartridgeTypes);
+        try {
+            findCartridgesInGroupBean(serviceGroup, cartridgeTypes);
+        } catch (RemoteException e) {
+            throw new RestAPIException(e.getMessage());
+        }
 
         //validate the group definition to check if cartridges duplicate in any groups defined
         validateCartridgeDuplicationInGroupDefinition(serviceGroupDefinition);
@@ -1051,29 +1055,12 @@ public class StratosApiV41Utils {
             throw new RestAPIException(message, e);
         }
 
-
-        CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
-
         cartridgeUuids = new String[cartridgeTypes.size()];
         int j = 0;
-        for (String cartridgeType : cartridgeTypes) {
-            try {
-                Cartridge cartridge = ccServiceClient.getCartridgeByTenant(cartridgeType, tenantId);
-                if (cartridge == null) {
-                    // cartridge is not deployed, can't continue
-                    log.error("Invalid cartridge found in cartridge group " + cartridgeType);
-                    throw new InvalidCartridgeException();
-                } else {
-                    cartridgeUuids[j] = cartridge.getUuid();
-                    j++;
-                }
-            } catch (RemoteException e) {
-                String message = "Could not add the cartridge group: " + cartridgeGroupUuid;
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
+        for (String cartridgeUuid : cartridgeTypes) {
+            cartridgeUuids[j] = cartridgeUuid;
+            j++;
         }
-
 
         // if any sub groups are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getGroups() != null) {
@@ -1405,8 +1392,9 @@ public class StratosApiV41Utils {
      * @param groupBean  groupBean
      * @param cartridges List of cartridges
      */
-    private static void findCartridgesInGroupBean(ServiceGroup groupBean, List<String> cartridges) {
-
+    private static void findCartridgesInGroupBean(ServiceGroup groupBean, List<String> cartridges) throws
+            RemoteException, CloudControllerServiceCartridgeNotFoundExceptionException {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         if (groupBean == null || cartridges == null) {
             return;
         }
@@ -1414,7 +1402,9 @@ public class StratosApiV41Utils {
         if (groupBean.getCartridges() != null) {
             for (String cartridge : groupBean.getCartridges()) {
                 if (!cartridges.contains(cartridge)) {
-                    cartridges.add(cartridge);
+                    Cartridge cartridge1 = CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridge,
+                            groupBean.getTenantId());
+                    cartridges.add(cartridge1.getUuid());
                 }
             }
         }

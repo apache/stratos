@@ -123,9 +123,9 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
             //Cluster active handling
             TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
 
-        /*    boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
+           boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(removedGroup, false);       */
+            assertEquals(removedGroup, false);
 
             boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -171,7 +171,7 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     "cartridge-group-app", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(beanRemoved, null);
 
-            boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
+            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(removedGroup, true);
 
