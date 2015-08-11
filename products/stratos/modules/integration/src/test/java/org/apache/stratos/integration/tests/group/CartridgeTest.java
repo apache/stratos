@@ -35,7 +35,7 @@ import static junit.framework.Assert.assertTrue;
  */
 public class CartridgeTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(CartridgeTest.class);
-    private static final String TEST_PATH = "/cartridge-test";
+    private static final String RESOURCES_PATH = "/cartridge-test";
 
 
     @Test
@@ -44,7 +44,7 @@ public class CartridgeTest extends StratosTestServerManager {
 
         try {
             String cartridgeType = "c0-cartridge-test";
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(added, true);
@@ -78,7 +78,7 @@ public class CartridgeTest extends StratosTestServerManager {
             }
 
 
-            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(updated, true);

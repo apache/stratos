@@ -38,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
  */
 public class ApplicationUpdateTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(ApplicationUpdateTest.class);
-    private static final String TEST_PATH = "/application-update-test";
+    private static final String RESOURCES_PATH = "/application-update-test";
 
     @Test
     public void testDeployApplication() {
@@ -47,24 +47,24 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
 
             String autoscalingPolicyId = "autoscaling-policy-application-update-test";
 
-            boolean addedScalingPolicy = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-application-update-test.json",
+            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-application-update-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-application-update-test.json",
+            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-application-update-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-application-update-test.json",
+            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-application-update-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC3, true);
 
-            boolean addedG1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "cartrdige-nested-application-update-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(addedG1, true);
@@ -74,22 +74,22 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(beanG1.getName(), "G1-application-update-test");
 
-            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-update-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-update-test-2.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             "deployment-policy-application-update-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                             "g-sc-G123-1-application-update-test.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(added, true);
@@ -98,7 +98,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(bean.getApplicationId(), "g-sc-G123-1-application-update-test");
 
-            boolean addAppPolicy = restClient.addEntity(TEST_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             "application-policy-application-update-test.json", RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addAppPolicy, true);
@@ -126,7 +126,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
 
             //Updating application
-            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                             "g-sc-G123-1-application-update-test-v1.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(updated, true);

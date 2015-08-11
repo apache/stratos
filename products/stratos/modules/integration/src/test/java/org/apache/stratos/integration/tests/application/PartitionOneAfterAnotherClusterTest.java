@@ -45,36 +45,36 @@ import static junit.framework.Assert.*;
  */
 public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
-    private static final String TEST_PATH = "/partition-round-robin-cluster-test";
+    private static final String RESOURCES_PATH = "/partition-round-robin-cluster-test";
 
 
     @Test
     public void testDeployApplication() {
         try {
-            log.info("Started Partition One after another test case**************************************");
+            log.info("-------------------------------Started Partition One after another test case-------------------------------");
 
             String autoscalingPolicyId = "autoscaling-policy-3";
 
-            boolean addedScalingPolicy = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7.json",
+            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC1, true);
 
-            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-11.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             "deployment-policy-5.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                             "single-cluster-scaling-test.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(added, true);
@@ -83,7 +83,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
                     "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(bean.getApplicationId(), "single-cluster-scaling-test");
 
-            boolean addAppPolicy = restClient.addEntity(TEST_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             "application-policy-4.json", RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addAppPolicy, true);
@@ -183,7 +183,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
                     "network-partition-11", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedNet, true);
 
-            log.info("Ended Partition one after another test case**************************************");
+            log.info("-------------------------------Ended Partition one after another test case-------------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling  application bursting", e);

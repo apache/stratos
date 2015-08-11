@@ -37,34 +37,34 @@ import static junit.framework.Assert.assertTrue;
  */
 public class ApplicationBurstingTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
-    private static final String TEST_PATH = "/application-bursting-test";
+    private static final String RESOURCES_PATH = "/application-bursting-test";
 
 
     @Test
     public void testApplicationBusting() {
         try {
-            log.info("Started application Bursting test case**************************************");
+            log.info("-------------------------------Started application Bursting test case-------------------------------");
 
             String autoscalingPolicyId = "autoscaling-policy-application-bursting-test";
 
-            boolean addedScalingPolicy = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
+            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
+            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
+            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC3, true);
 
-            boolean addedG1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "esb-php-group-application-bursting-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(addedG1, true);
@@ -74,22 +74,22 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(beanG1.getName(), "esb-php-group-application-bursting-test");
 
-            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-bursting-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-bursting-test-2.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             "deployment-policy-application-bursting-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                             "app-bursting-single-cartriddge-group.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(added, true);
@@ -98,7 +98,7 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(bean.getApplicationId(), "application-bursting-test");
 
-            boolean addAppPolicy = restClient.addEntity(TEST_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             "application-policy-application-bursting-test.json", RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addAppPolicy, true);
@@ -217,7 +217,7 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     "network-partition-application-bursting-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
 
-            log.info("Ended application bursting test case**************************************");
+            log.info("-------------------------------Ended application bursting test case-------------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling  application bursting", e);

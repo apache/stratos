@@ -21,7 +21,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="StratosIntegrationSuite">
-    <!--<test name="CartridgeTest">
+    <test name="CartridgeTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.group.CartridgeTest" />
         </classes>
@@ -65,7 +65,7 @@
         <classes>
             <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest" />
         </classes>
-    </test>-->
+    </test>
     <test name="ApplicationBurstingTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest" />
@@ -76,6 +76,4 @@
             <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest" />
         </classes>
     </test>
-
-
 </suite>

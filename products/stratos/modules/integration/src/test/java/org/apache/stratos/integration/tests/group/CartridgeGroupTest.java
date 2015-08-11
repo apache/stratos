@@ -34,32 +34,32 @@ import static junit.framework.Assert.assertTrue;
  */
 public class CartridgeGroupTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(CartridgeGroupTest.class);
-    private static final String TEST_PATH = "/cartridge-group-test";
+    private static final String RESOURCES_PATH = "/cartridge-group-test";
 
     @Test
     public void testCartridgeGroup() {
         try {
-            log.info("Started Cartridge group test case**************************************");
+            log.info("-------------------------Started Cartridge group test case-------------------------");
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH +
+            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH +
                             "/" + "c4-cartridge-group-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s",
                     "c4-cartridge-group-test"), addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH +
+            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH +
                             "/" + "c5-cartridge-group-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s",
                     "c5-cartridge-group-test"), addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH +
+            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH +
                             "/" + "c6-cartridge-group-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(String.format("Cartridge did not added: [cartridge-name] %s",
                     "c6-cartridge-group-test"), addedC3, true);
 
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "g4-g5-g6-cartridge-group-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group did not added: [cartridge-group-name] %s",
@@ -71,7 +71,7 @@ public class CartridgeGroupTest extends StratosTestServerManager {
             assertEquals(String.format("Cartridge Group name did not match: [cartridge-group-name] %s",
                     "g4-g5-g6-cartridge-group-test.json"), bean.getName(), "G4-cartridge-group-test");
 
-            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "g4-g5-g6-cartridge-group-test-v1.json",
                     RestConstants.CARTRIDGE_GROUPS, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group did not updated: [cartridge-group-name] %s",
@@ -127,7 +127,7 @@ public class CartridgeGroupTest extends StratosTestServerManager {
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
                     "c6-cartridge-group-test"), removedC3, true);
 
-            log.info("Ended Cartridge group test case**************************************");
+            log.info("-------------------------Ended Cartridge group test case-------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling Cartridge group test case", e);

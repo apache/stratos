@@ -36,26 +36,26 @@ import static junit.framework.Assert.assertTrue;
  */
 public class ApplicationPolicyTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(ApplicationPolicyTest.class);
-    private static final String TEST_PATH = "/application-policy-test";
+    private static final String RESOURCES_PATH = "/application-policy-test";
 
 
     @Test
     public void testApplicationPolicy() {
         try {
             String applicationPolicyId = "application-policy-application-policy-test";
-            log.info("Started Application policy test case**************************************");
+            log.info("-------------------------Started Application policy test case-------------------------");
 
-            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-policy-test-1" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-policy-test-2" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             applicationPolicyId + ".json",
                     RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addedDep, true);
@@ -123,7 +123,7 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemovedN2, null);
 
-            log.info("Ended deployment policy test case**************************************");
+            log.info("-------------------------Ended deployment policy test case-------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling deployment policy", e);

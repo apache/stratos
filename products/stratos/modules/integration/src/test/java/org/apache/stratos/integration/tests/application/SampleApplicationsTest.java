@@ -23,8 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupReferenceBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
+import org.apache.stratos.messaging.domain.application.Group;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -36,32 +39,32 @@ import static junit.framework.Assert.assertTrue;
  */
 public class SampleApplicationsTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
-    private static final String TEST_PATH = "/sample-applications-test";
+    private static final String RESOURCES_PATH = "/sample-applications-test";
 
     @Test
     public void testApplication() {
-        log.info("Started application test case**************************************");
+        log.info("-------------------------------Started application test case-------------------------------");
         try {
             String autoscalingPolicyId = "autoscaling-policy-sample-applications-test";
 
-            boolean addedScalingPolicy = restClient.addEntity(TEST_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
+            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-sample-applications-test.json",
+            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-sample-applications-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-sample-applications-test.json",
+            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-sample-applications-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC3, true);
 
-            boolean addedG1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "cartrdige-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(addedG1, true);
@@ -71,22 +74,22 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(beanG1.getName(), "G1-sample-applications-test");
 
-            boolean addedN1 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-sample-applications-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(TEST_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-sample-applications-test-2.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(TEST_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             "deployment-policy-sample-applications-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                             "g-sc-G123-1-sample-applications-test.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(added, true);
@@ -95,34 +98,42 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(bean.getApplicationId(), "g-sc-G123-1-sample-applications-test");
 
-            assertEquals(bean.getComponents().getGroups().get(0).getName(), "G1-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getAlias(), "group1-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroupMaxInstances(), 1);
-            assertEquals(bean.getComponents().getGroups().get(0).getGroupMinInstances(), 1);
+            CartridgeGroupReferenceBean group1 = bean.getComponents().getGroups().get(0);
+            CartridgeGroupReferenceBean group2 = group1.getGroups().get(0);
+            CartridgeGroupReferenceBean group3 = group2.getGroups().get(0);
+            CartridgeReferenceBean c1 = group1.getCartridges().get(0);
+            CartridgeReferenceBean c2 = group2.getCartridges().get(0);
+            CartridgeReferenceBean c3 = group3.getCartridges().get(0);
 
-            assertEquals(bean.getComponents().getGroups().get(0).getCartridges().get(0).getType(), "c1-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 1);
-            assertEquals(bean.getComponents().getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 2);
+            assertEquals(group1.getName(), "G1-sample-applications-test");
+            assertEquals(group1.getAlias(), "group1-sample-applications-test");
+            assertEquals(group1.getGroupMaxInstances(), 1);
+            assertEquals(group1.getGroupMinInstances(), 1);
 
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getAlias(), "group2-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getName(), "G2-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroupMaxInstances(), 1);
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroupMinInstances(), 1);
+            assertEquals(c1.getType(), "c1-sample-applications-test");
+            assertEquals(c1.getCartridgeMin(), 1);
+            assertEquals(c1.getCartridgeMax(), 2);
 
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getCartridges().get(0).getType(), "c2-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 1);
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 2);
+            assertEquals(group2.getAlias(), "group2-sample-applications-test");
+            assertEquals(group2.getName(), "G2-sample-applications-test");
+            assertEquals(group2.getGroupMaxInstances(), 1);
+            assertEquals(group2.getGroupMinInstances(), 1);
 
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getAlias(), "group3-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getName(), "G3-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroupMaxInstances(), 2);
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroupMinInstances(), 1);
+            assertEquals(c2.getType(), "c2-sample-applications-test");
+            assertEquals(c2.getCartridgeMin(), 1);
+            assertEquals(c2.getCartridgeMax(), 2);
 
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getType(), "c3-sample-applications-test");
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 1);
-            assertEquals(bean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 2);
+            assertEquals(group3.getAlias(), "group3-sample-applications-test");
+            assertEquals(group3.getName(), "G3-sample-applications-test");
+            assertEquals(group3.getGroupMaxInstances(), 2);
+            assertEquals(group3.getGroupMinInstances(), 1);
 
-            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.APPLICATIONS_PATH + "/g-sc-G123-1-sample-applications-test-v1.json",
+            assertEquals(c3.getType(), "c3-sample-applications-test");
+            assertEquals(c3.getCartridgeMin(), 1);
+            assertEquals(c3.getCartridgeMax(), 2);
+
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH +
+                            "/g-sc-G123-1-sample-applications-test-v1.json",
                     RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
             assertEquals(updated, true);
 
@@ -130,32 +141,40 @@ public class SampleApplicationsTest extends StratosTestServerManager {
                     "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
 
             assertEquals(bean.getApplicationId(), "g-sc-G123-1-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getName(), "G1-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getAlias(), "group1-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroupMaxInstances(), 1);
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroupMinInstances(), 1);
 
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getCartridges().get(0).getType(), "c1-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 2);
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 3);
+            group1 = updatedBean.getComponents().getGroups().get(0);
+            group2 = group1.getGroups().get(0);
+            group3 = group2.getGroups().get(0);
+            c1 = group1.getCartridges().get(0);
+            c2 = group2.getCartridges().get(0);
+            c3 = group3.getCartridges().get(0);
 
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getAlias(), "group2-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getName(), "G2-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroupMaxInstances(), 1);
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroupMinInstances(), 1);
+            assertEquals(group1.getName(), "G1-sample-applications-test");
+            assertEquals(group1.getAlias(), "group1-sample-applications-test");
+            assertEquals(group1.getGroupMaxInstances(), 1);
+            assertEquals(group1.getGroupMinInstances(), 1);
 
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getCartridges().get(0).getType(), "c2-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 2);
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 4);
+            assertEquals(c1.getType(), "c1-sample-applications-test");
+            assertEquals(c1.getCartridgeMin(), 2);
+            assertEquals(c1.getCartridgeMax(), 3);
 
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getAlias(), "group3-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getName(), "G3-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroupMaxInstances(), 3);
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getGroupMinInstances(), 2);
+            assertEquals(group2.getAlias(), "group2-sample-applications-test");
+            assertEquals(group2.getName(), "G2-sample-applications-test");
+            assertEquals(group2.getGroupMaxInstances(), 1);
+            assertEquals(group2.getGroupMinInstances(), 1);
 
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getType(), "c3-sample-applications-test");
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMin(), 2);
-            assertEquals(updatedBean.getComponents().getGroups().get(0).getGroups().get(0).getGroups().get(0).getCartridges().get(0).getCartridgeMax(), 3);
+            assertEquals(c2.getType(), "c2-sample-applications-test");
+            assertEquals(c2.getCartridgeMin(), 2);
+            assertEquals(c2.getCartridgeMax(), 4);
+
+            assertEquals(group3.getAlias(), "group3-sample-applications-test");
+            assertEquals(group3.getName(), "G3-sample-applications-test");
+            assertEquals(group3.getGroupMaxInstances(), 3);
+            assertEquals(group3.getGroupMinInstances(), 2);
+
+            assertEquals(c3.getType(), "c3-sample-applications-test");
+            assertEquals(c3.getCartridgeMin(), 2);
+            assertEquals(c3.getCartridgeMax(), 3);
 
 
             boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
@@ -217,7 +236,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(String.format("[Network partition] network-partition-sample-applications-test-2 " +
                     "could not be removed for [application] g-sc-G123-1-sample-applications-test"),removedN2, true);
 
-            log.info("Ended application test case**************************************");
+            log.info("-------------------------------Ended application test case-------------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling application test case", e);
