@@ -555,6 +555,5 @@
         <jclouds.version>1.8.1</jclouds.version>
         <project.jclouds.stratos.version>1.8.1-stratosv1</project.jclouds.stratos.version>
         <kubernetes.api.version>2.2.16</kubernetes.api.version>
-        <kubernetes.api.stratos.version>2.2.16-stratosv1</kubernetes.api.stratos.version>
     </properties>
 </project>

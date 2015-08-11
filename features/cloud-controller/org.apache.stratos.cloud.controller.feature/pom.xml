@@ -254,7 +254,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>kubernetes-api</artifactId>
-            <version>${kubernetes.api.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -360,7 +360,7 @@
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:kubernetes-api:${kubernetes.api.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:kubernetes-api:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
