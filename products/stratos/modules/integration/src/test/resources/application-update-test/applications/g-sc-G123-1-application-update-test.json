@@ -1,0 +1,86 @@
+{
+    "alias": "g-sc-G123-1-application-update-test",
+    "applicationId": "g-sc-G123-1-application-update-test",
+    "components": {
+        "cartridges": [],
+        "groups": [
+            {
+                "name": "G1-application-update-test",
+                "groupMaxInstances": 1,
+                "groupMinInstances": 1,
+                "alias": "group1-application-update-test",
+                "cartridges": [
+                    {
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "type": "c1-application-update-test",
+                        "subscribableInfo": {
+                            "alias": "c1-1x0-application-update-test",
+                            "deploymentPolicy": "deployment-policy-application-update-test",
+                            "artifactRepository": {
+                                "repoUsername": "user",
+                                "repoUrl": "http://stratos.apache.org:10080/git/default.git",
+                                "privateRepo": true,
+                                "repoPassword": "c-policy"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-application-update-test"
+                        }
+                    }
+                ],
+                "groups": [
+                    {
+                        "name": "G2-application-update-test",
+                        "groupMaxInstances": 1,
+                        "groupMinInstances": 1,
+                        "alias": "group2-application-update-test",
+                        "cartridges": [
+                            {
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "type": "c2-application-update-test",
+                                "subscribableInfo": {
+                                    "alias": "c2-1x0-application-update-test",
+                                    "deploymentPolicy": "deployment-policy-application-update-test",
+                                    "artifactRepository": {
+                                        "repoUsername": "user",
+                                        "repoUrl": "http://stratos.apache.org:10080/git/default.git",
+                                        "privateRepo": true,
+                                        "repoPassword": "c-policy"
+                                    },
+                                    "autoscalingPolicy": "autoscaling-policy-application-update-test"
+                                }
+                            }
+                        ],
+                        "groups": [
+                            {
+                                "name": "G3-application-update-test",
+                                "groupMaxInstances": 2,
+                                "groupMinInstances": 1,
+                                "deploymentPolicy": "deployment-policy-application-update-test",
+                                "alias": "group3-application-update-test",
+                                "cartridges": [
+                                    {
+                                        "cartridgeMin": 1,
+                                        "cartridgeMax": 2,
+                                        "type": "c3-application-update-test",
+                                        "subscribableInfo": {
+                                            "alias": "c3-1x0-application-update-test",
+                                            "artifactRepository": {
+                                                "repoUsername": "user",
+                                                "repoUrl": "http://stratos.apache.org:10080/git/default.git",
+                                                "privateRepo": true,
+                                                "repoPassword": "c-policy"
+                                            },
+                                            "autoscalingPolicy": "autoscaling-policy-application-update-test"
+                                        }
+                                    }
+                                ],
+                                "groups": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

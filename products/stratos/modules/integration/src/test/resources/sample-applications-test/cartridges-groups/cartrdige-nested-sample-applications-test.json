@@ -1,0 +1,50 @@
+{
+    "name": "G1-sample-applications-test",
+    "dependencies": {
+        "terminationBehaviour": "terminate-none",
+        "startupOrders": [
+            {
+                "aliases": [
+                    "group.group2-sample-applications-test",
+                    "cartridge.c1-1x0-sample-applications-test"
+                ]
+            }
+        ]
+    },
+    "cartridges": [
+        "c1-sample-applications-test"
+    ],
+    "groups": [
+        {
+            "name": "G2-sample-applications-test",
+            "dependencies": {
+                "terminationBehaviour": "terminate-dependents",
+                "startupOrders": [
+                    {
+                        "aliases": [
+                            "group.group3-sample-applications-test",
+                            "cartridge.c2-1x0-sample-applications-test"
+                        ]
+                    }
+                ]
+            },
+            "cartridges": [
+                "c2-sample-applications-test"
+            ],
+            "groups": [
+                {
+                    "name": "G3-sample-applications-test",
+                    "dependencies": {
+                        "terminationBehaviour": "terminate-all",
+                        "startupOrders": []
+                    },
+                    "cartridges": [
+                        "c3-sample-applications-test"
+                    ],
+                    "groups": []
+                }
+            ]
+        }
+    ]
+}
+

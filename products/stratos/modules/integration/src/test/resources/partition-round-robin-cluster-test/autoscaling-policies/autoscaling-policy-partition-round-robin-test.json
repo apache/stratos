@@ -1,0 +1,14 @@
+{
+    "id": "autoscaling-policy-partition-round-robin-test",
+    "loadThresholds": {
+        "requestsInFlight": {
+            "threshold": 20
+        },
+        "memoryConsumption": {
+            "threshold": 30
+        },
+        "loadAverage": {
+            "threshold": 25
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "subscription-G1-G2-G3",
+  "dependencies": {
+    "terminationBehaviour": "terminate-none",
+    "startupOrders": []
+  },
+  "cartridges": [],
+  "groups": [
+    {
+      "name": "multiple-groups-no-startup-G1",
+      "dependencies": {
+        "terminationBehaviour": "terminate-none",
+        "startupOrders": []
+      },
+      "cartridges": [
+        "c1",
+        "c2"
+      ],
+      "groups": []
+    },
+    {
+      "name": "multiple-groups-no-startup-G2",
+      "dependencies": {
+        "terminationBehaviour": "terminate-none",
+        "startupOrders": []
+      },
+      "cartridges": [
+        "c1",
+        "c2"
+      ],
+      "groups": []
+    }
+  ]
+}

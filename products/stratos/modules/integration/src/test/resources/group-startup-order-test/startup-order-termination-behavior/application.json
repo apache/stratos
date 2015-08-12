@@ -1,0 +1,108 @@
+{
+  "alias": "s-n-gr-s-G12-t-a-2-Id",
+  "applicationId": "s-n-gr-s-G12-t-a-2-Id",
+  "components": {
+    "cartridges": [],
+    "groups": [
+      {
+        "name": "s-n-gr-s-G12-t-a-2",
+        "groupMaxInstances": 1,
+        "groupMinInstances": 1,
+        "alias": "s-n-gr-s-G12-t-a-2",
+        "cartridges": [
+          {
+            "cartridgeMin": 1,
+            "cartridgeMax": 1,
+            "type": "c1",
+            "subscribableInfo": {
+              "alias": "c1-0x0",
+              "deploymentPolicy": "static-1",
+              "artifactRepository": {
+                "repoUsername": "user",
+                "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                "privateRepo": true,
+                "repoPassword": "c-policy"
+              },
+              "autoscalingPolicy": "autoscaling-policy-1"
+            }
+          },
+          {
+            "cartridgeMin": 1,
+            "cartridgeMax": 1,
+            "type": "c2",
+            "subscribableInfo": {
+              "alias": "c2-0x0",
+              "deploymentPolicy": "static-1",
+              "artifactRepository": {
+                "repoUsername": "user",
+                "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                "privateRepo": true,
+                "repoPassword": "c-policy"
+              },
+              "autoscalingPolicy": "autoscaling-policy-1"
+            }
+          },
+          {
+            "cartridgeMin": 1,
+            "cartridgeMax": 1,
+            "type": "c3",
+            "subscribableInfo": {
+              "alias": "c3-0x0",
+              "deploymentPolicy": "static-1",
+              "artifactRepository": {
+                "repoUsername": "user",
+                "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                "privateRepo": true,
+                "repoPassword": "c-policy"
+              },
+              "autoscalingPolicy": "autoscaling-policy-1"
+            }
+          }
+        ],
+        "groups": [
+          {
+            "name": "n-st-G2-t-a-2",
+            "groupMaxInstances": 1,
+            "groupMinInstances": 1,
+            "alias": "n-st-G2-t-a-2-0x0",
+            "cartridges": [
+              {
+                "cartridgeMin": 1,
+                "cartridgeMax": 1,
+                "type": "c4",
+                "subscribableInfo": {
+                  "alias": "c4-1x0",
+                  "deploymentPolicy": "static-1",
+                  "artifactRepository": {
+                    "repoUsername": "user",
+                    "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                    "privateRepo": true,
+                    "repoPassword": "c-policy"
+                  },
+                  "autoscalingPolicy": "autoscaling-policy-1"
+                }
+              },
+              {
+                "cartridgeMin": 1,
+                "cartridgeMax": 1,
+                "type": "c5",
+                "subscribableInfo": {
+                  "alias": "c5-1x0",
+                  "deploymentPolicy": "static-1",
+                  "artifactRepository": {
+                    "repoUsername": "user",
+                    "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                    "privateRepo": true,
+                    "repoPassword": "c-policy"
+                  },
+                  "autoscalingPolicy": "autoscaling-policy-1"
+                }
+              }
+            ],
+            "groups": []
+          }
+        ]
+      }
+    ]
+  }
+}

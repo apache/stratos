@@ -1,0 +1,13 @@
+{
+    "id": "application-policy-single-cluster-scaling-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-single-cluster-scaling-test"
+    ],
+    "properties": [
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "id": "autoscaling-policy-single-cluster-scaling-test",
+    "loadThresholds": {
+        "requestsInFlight": {
+            "threshold": 20
+        },
+        "memoryConsumption": {
+            "threshold": 30
+        },
+        "loadAverage": {
+            "threshold": 25
+        }
+    }
+}

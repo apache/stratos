@@ -1,0 +1,22 @@
+{
+    "id": "deployment-policy-partition-round-robin-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-partition-round-robin-test",
+            "partitionAlgo": "round-robin",
+            "partitions": [
+                {
+                    "id": "network-partition-11-partition-1",
+                    "partitionMax": 5
+                },
+                {
+                    "id": "network-partition-11-partition-2",
+                    "partitionMax": 5
+                }
+            ]
+        }
+    ]
+}
+
+
+
