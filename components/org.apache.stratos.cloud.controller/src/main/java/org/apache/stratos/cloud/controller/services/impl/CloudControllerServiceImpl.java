@@ -790,7 +790,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
 
-        String msg = "Could not find cartridge: [cartridge-type] [tenant-id] " + cartridgeType + tenantId;
+        String msg = "Could not find cartridge: [cartridge-type]" + cartridgeType;
         throw new CartridgeNotFoundException(msg);
     }
 
