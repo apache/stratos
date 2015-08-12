@@ -1194,8 +1194,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public KubernetesCluster[] getKubernetesClusters() {
-        return CloudControllerContext.getInstance().getKubernetesClusters();
+    public KubernetesCluster[] getKubernetesClusters(int tenantId) {
+        KubernetesCluster[] kubernetesClusters=CloudControllerContext.getInstance().getKubernetesClusters();
+        List<KubernetesCluster> kubernetesClusterList = new ArrayList<KubernetesCluster>();
+        for(int i=0;i<kubernetesClusters.length;i++){
+            if(kubernetesClusters[i].getTenantId()==tenantId){
+                kubernetesClusterList.add(kubernetesClusters[i]);
+            }
+        }
+        return kubernetesClusterList.toArray(new KubernetesCluster[kubernetesClusterList.size()]);
+
     }
 
     @Override
@@ -1207,7 +1215,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId,int tenantId) throws
             NonExistingKubernetesClusterException {
-        for(KubernetesCluster kubernetesCluster:getKubernetesClusters()){
+        for(KubernetesCluster kubernetesCluster:getKubernetesClusters(tenantId)){
             if(kubernetesCluster.getClusterId().equals(kubernetesClusterId)&&kubernetesCluster.getTenantId()==tenantId){
                 return kubernetesCluster;
             }
@@ -1303,12 +1311,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost) throws
+    public boolean addKubernetesHost(String groupUuid, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesClusterException {
         if (kubernetesHost == null) {
             throw new InvalidKubernetesHostException("Kubernetes host cannot be null");
         }
-        if (StringUtils.isEmpty(kubernetesClusterId)) {
+        if (StringUtils.isEmpty(groupUuid)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id cannot be null");
         }
 
@@ -1318,11 +1326,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding kubernetes host for kubernetes cluster: [kubernetes-cluster-id] %s " +
-                        "[hostname] %s", kubernetesClusterId, kubernetesHost.getHostname()));
+                        "[hostname] %s", groupUuid, kubernetesHost.getHostname()));
             }
             CloudControllerUtil.validateKubernetesHost(kubernetesHost);
 
-            KubernetesCluster kubernetesCluster = getKubernetesCluster(kubernetesClusterId);
+            KubernetesCluster kubernetesCluster = getKubernetesCluster(groupUuid);
             ArrayList<KubernetesHost> kubernetesHostArrayList;
 
             if (kubernetesCluster.getKubernetesHosts() == null) {
@@ -1357,8 +1365,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
-        if (StringUtils.isEmpty(kubernetesClusterId)) {
+    public boolean removeKubernetesCluster(String groupUuid) throws NonExistingKubernetesClusterException {
+        if (StringUtils.isEmpty(groupUuid)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id cannot be empty");
         }
 
@@ -1367,13 +1375,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
 
             if (log.isInfoEnabled()) {
-                log.info("Removing Kubernetes cluster: " + kubernetesClusterId);
+                log.info("Removing Kubernetes cluster: " + groupUuid);
             }
             // Remove entry from information model
-            CloudControllerContext.getInstance().removeKubernetesCluster(kubernetesClusterId);
+            CloudControllerContext.getInstance().removeKubernetesCluster(groupUuid);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes cluster removed successfully: [id] %s", kubernetesClusterId));
+                log.info(String.format("Kubernetes cluster removed successfully: [id] %s", groupUuid));
             }
 
             CloudControllerContext.getInstance().persist();

@@ -272,7 +272,7 @@ public interface CloudControllerService {
     /**
      * Retrieves registered Kubernetes clusters.
      */
-    public KubernetesCluster[] getKubernetesClusters();
+    public KubernetesCluster[] getKubernetesClusters(int tenantId);
 
     /**
      * Retrieves Kubernetes cluster for given Kubernetes cluster UUID.
@@ -329,11 +329,11 @@ public interface CloudControllerService {
     /**
      * Add a Kubernetes host to a Kubernetes cluster.
      *
-     * @param groupId
+     * @param groupUuid
      * @param kubernetesHost
      * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException
      */
-    public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
+    public boolean addKubernetesHost(String groupUuid, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException,
             NonExistingKubernetesClusterException;
 
@@ -350,10 +350,10 @@ public interface CloudControllerService {
     /**
      * Remove a Kubernetes host.
      *
-     * @param groupId
+     * @param groupUuid
      * @throws NonExistingKubernetesClusterException
      */
-    public boolean removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException;
+    public boolean removeKubernetesCluster(String groupUuid) throws NonExistingKubernetesClusterException;
 
     /**
      * Update a Kubernetes host.

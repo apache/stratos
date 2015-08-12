@@ -29,6 +29,7 @@ import org.apache.stratos.common.test.TestLogAppender;
 import org.apache.stratos.integration.tests.application.SampleApplicationsTest;
 import org.apache.stratos.integration.tests.rest.RestClient;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
 import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -55,6 +57,7 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
+    protected RestClient restClientAdmin;
     protected RestClient restClient;
     private String endpoint = "https://localhost:9443";
 
@@ -66,6 +69,7 @@ public class StratosTestServerManager extends TestServerManager {
     public StratosTestServerManager() {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
+        restClientAdmin=new RestClient(endpoint,"admin","admin");
         restClient = new RestClient(endpoint, "admin", "admin");
     }
 
@@ -123,6 +127,7 @@ public class StratosTestServerManager extends TestServerManager {
 
                 long time4 = System.currentTimeMillis();
                 log.info(String.format("Stratos server started in %d sec", (time4 - time3) / 1000));
+                tenantCreation();
                 return carbonHome;
             }
         }
@@ -192,5 +197,14 @@ public class StratosTestServerManager extends TestServerManager {
             }
         }
         return false;
+    }
+
+
+    public void tenantCreation(){
+        log.info("Added tenants to the testing suit");
+        boolean addedTenant1=restClientAdmin.addEntity(RestConstants.TENANT1_RESOURCE,RestConstants.TENANT_API,RestConstants.TENANTS_NAME);
+        assertEquals(addedTenant1,true);
+        boolean addedTenant2=restClientAdmin.addEntity(RestConstants.TENANT2_RESOURCE,RestConstants.TENANT_API,RestConstants.TENANTS_NAME);
+        assertEquals(addedTenant2,true);
     }
 }
