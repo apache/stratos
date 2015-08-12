@@ -726,17 +726,25 @@ public class StratosApiV41Utils {
                     (carbonContext.getTenantId());
             String[] networkPartitions = applicationPolicy.getNetworkPartitions();
             String[] networkPartitionsUuid = new String[applicationPolicy.getNetworkPartitions().length];
-            for (int i = 0; i < networkPartitions.length; i++) {
-                for (NetworkPartition networkPartition : existingNetworkPartitions) {
-                    if (networkPartitions[i].equals(networkPartition.getId()) && (tenantId == networkPartition
-                            .getTenantId())) {
-                        networkPartitionsUuid[i] = networkPartition.getUuid();
+
+                for (int i = 0; i < networkPartitions.length; i++) {
+                    if (existingNetworkPartitions != null) {
+                        for (NetworkPartition networkPartition : existingNetworkPartitions) {
+                            if (networkPartitions[i].equals(networkPartition.getId()) && (tenantId == networkPartition
+                                    .getTenantId())) {
+                                networkPartitionsUuid[i] = networkPartition.getUuid();
+                            }
+                        }
+                    } else {
+                        String message = String.format("Network partition not found: for [application-policy-id] %s" +
+                                        "[network-partition-id] %s", applicationPolicyBean.getId(),
+                                networkPartitions[i]);
+                        throw new RestAPIException(message);
                     }
                 }
-            }
+
             applicationPolicy.setNetworkPartitionsUuid(networkPartitionsUuid);
             serviceClient.addApplicationPolicy(applicationPolicy);
-
 
         } catch (RemoteException e) {
             String msg = "Could not add application policy. " + e.getLocalizedMessage();
@@ -2859,7 +2867,14 @@ public class StratosApiV41Utils {
 
             org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition =
                     serviceClient.getNetworkPartitionByTenant(networkPartitionId, tenantId);
-            String networkPartitionUuid = networkPartition.getUuid();
+            String networkPartitionUuid;
+            if (networkPartition != null) {
+                networkPartitionUuid = networkPartition.getUuid();
+            } else {
+                String message = String .format("Network partition not found [network-partition-id] %s", networkPartitionId);
+                log.error(message);
+                throw new RestAPIException(message);
+            }
 
             DeploymentPolicy[] deploymentPolicies = autoscalerServiceClient.getDeploymentPoliciesByTenant(carbonContext.getTenantId());
 
