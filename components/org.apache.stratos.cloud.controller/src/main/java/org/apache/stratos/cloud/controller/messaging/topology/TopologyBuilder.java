@@ -177,7 +177,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterCreatedEvent(cluster);
     }
 
-    public static void handleApplicationClustersCreated(String appId, List<Cluster> appClusters) {
+    public static void handleApplicationClustersCreated(String appUuid, List<Cluster> appClusters) {
 
         TopologyManager.acquireWriteLock();
 
@@ -198,16 +198,16 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
 
-        log.debug("Creating cluster port mappings: [application-id] " + appId);
+        log.debug("Creating cluster port mappings: [application-id] " + appUuid);
         for(Cluster cluster : appClusters) {
-            String cartridgeType = cluster.getServiceUuid();
-            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
+            String cartridgeUuid = cluster.getServiceUuid();
+            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeUuid);
             if(cartridge == null) {
-                throw new CloudControllerException("Cartridge not found: [cartridge-type] " + cartridgeType);
+                throw new CloudControllerException("Cartridge not found: [cartridge-uuid] " + cartridgeUuid);
             }
 
             for(PortMapping portMapping : cartridge.getPortMappings()) {
-                ClusterPortMapping clusterPortMapping = new ClusterPortMapping(appId,
+                ClusterPortMapping clusterPortMapping = new ClusterPortMapping(appUuid,
                         cluster.getClusterId(), portMapping.getName(), portMapping.getProtocol(), portMapping.getPort(),
                         portMapping.getProxyPort());
                 CloudControllerContext.getInstance().addClusterPortMapping(clusterPortMapping);
@@ -219,7 +219,7 @@ public class TopologyBuilder {
         CloudControllerContext.getInstance().persist();
 
         // Send application clusters created event
-        TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
+        TopologyEventPublisher.sendApplicationClustersCreated(appUuid, appClusters);
     }
 
     public static void handleApplicationClustersRemoved(String appId,
