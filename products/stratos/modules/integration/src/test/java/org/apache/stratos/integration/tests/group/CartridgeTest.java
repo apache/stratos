@@ -35,16 +35,16 @@ import static junit.framework.Assert.assertTrue;
  */
 public class CartridgeTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(CartridgeTest.class);
-    private static final String TEST_PATH = "/cartridge-test";
+    private static final String RESOURCES_PATH = "/cartridge-test";
 
 
     @Test
     public void testCartridge() {
-        log.info("Started Cartridge test case**************************************");
+        log.info("--------------------Started Cartridge test case-----------------------------");
 
         try {
-            String cartridgeType = "c0";
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            String cartridgeType = "c0-cartridge-test";
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(added, true);
@@ -78,14 +78,14 @@ public class CartridgeTest extends StratosTestServerManager {
             }
 
 
-            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(updated, true);
             CartridgeBean updatedBean = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertEquals(updatedBean.getType(), "c0");
+            assertEquals(updatedBean.getType(), "c0-cartridge-test");
             assertEquals(updatedBean.getCategory(), "Data");
             assertEquals(updatedBean.getHost(), "qmog.cisco.com12");
             for (PropertyBean property : updatedBean.getProperty()) {
@@ -121,7 +121,7 @@ public class CartridgeTest extends StratosTestServerManager {
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(beanRemoved, null);
 
-            log.info("Ended Cartridge test case**************************************");
+            log.info("---------------------------Ended Cartridge test case-------------------------");
         } catch (Exception e) {
             log.error("An error occurred while handling RESTConstants.CARTRIDGES_PATH", e);
             assertTrue("An error occurred while handling RESTConstants.CARTRIDGES_PATH", false);

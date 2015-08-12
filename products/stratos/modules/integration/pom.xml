@@ -95,7 +95,13 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>4.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -117,6 +123,9 @@
                         <extracted.dir>stratos-parent-${project.version}</extracted.dir>
                         <emma.home>${basedir}/target/emma</emma.home>
                     </systemProperties>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/stratos-testing.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                     <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
             </plugin>

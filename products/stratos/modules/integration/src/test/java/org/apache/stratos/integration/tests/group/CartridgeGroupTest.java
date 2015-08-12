@@ -34,92 +34,100 @@ import static junit.framework.Assert.assertTrue;
  */
 public class CartridgeGroupTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(CartridgeGroupTest.class);
-    private static final String TEST_PATH = "/cartridge-group-test";
+    private static final String RESOURCES_PATH = "/cartridge-group-test";
 
     @Test
     public void testCartridgeGroup() {
         try {
-            log.info("Started Cartridge group test case**************************************");
+            log.info("-------------------------Started Cartridge group test case-------------------------");
 
-            boolean addedC1 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c4.json",
+            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH +
+                            "/" + "c4-cartridge-group-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c4"), addedC1, true);
+            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s",
+                    "c4-cartridge-group-test"), addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c5.json",
+            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH +
+                            "/" + "c5-cartridge-group-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c5"), addedC2, true);
+            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s",
+                    "c5-cartridge-group-test"), addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c6.json",
+            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH +
+                            "/" + "c6-cartridge-group-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s", "c6"), addedC3, true);
+            assertEquals(String.format("Cartridge did not added: [cartridge-name] %s",
+                    "c6-cartridge-group-test"), addedC3, true);
 
-            boolean added = restClient.addEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "g4-g5-g6.json", RestConstants.CARTRIDGE_GROUPS,
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                            "/" + "g4-g5-g6-cartridge-group-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group did not added: [cartridge-group-name] %s",
-                    "g4-g5-g6"), added, true);
+                    "g4-g5-g6-cartridge-group-test"), added, true);
+
             CartridgeGroupBean bean = (CartridgeGroupBean) restClient.
-                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4",
+                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4-cartridge-group-test",
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group name did not match: [cartridge-group-name] %s",
-                    "g4-g5-g6.json"), bean.getName(), "G4");
+                    "g4-g5-g6-cartridge-group-test.json"), bean.getName(), "G4-cartridge-group-test");
 
-            boolean updated = restClient.updateEntity(TEST_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "g4-g5-g6-v1.json",
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                            "/" + "g4-g5-g6-cartridge-group-test-v1.json",
                     RestConstants.CARTRIDGE_GROUPS, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group did not updated: [cartridge-group-name] %s",
-                    "g4-g5-g6"), updated, true);
+                    "g4-g5-g6-cartridge-group-test"), updated, true);
+
             CartridgeGroupBean updatedBean = (CartridgeGroupBean) restClient.
-                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4",
+                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4-cartridge-group-test",
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Updated Cartridge Group didn't match: [cartridge-group-name] %s",
-                    "g4-g5-g6"), updatedBean.getName(), "G4");
+                    "g4-g5-g6-cartridge-group-test"), updatedBean.getName(), "G4-cartridge-group-test");
 
-            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4",
+            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can be removed while it is used in " +
-                    "cartridge group: [cartridge-name] %s", "c4"), removedC1, false);
+                    "cartridge group: [cartridge-name] %s", "c4-cartridge-group-test"), removedC1, false);
 
-            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c5",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(String.format("Cartridge can be removed while it is used in " +
-                            "cartridge group: [cartridge-name] %s",
-                    "c5"), removedC2, false);
-
-            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c6",
+            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c5-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can be removed while it is used in " +
                             "cartridge group: [cartridge-name] %s",
-                    "c6"), removedC3, false);
+                    "c5-cartridge-group-test"), removedC2, false);
 
-            boolean removed = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G4",
+            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c6-cartridge-group-test",
+                    RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertEquals(String.format("Cartridge can be removed while it is used in " +
+                            "cartridge group: [cartridge-name] %s",
+                    "c6-cartridge-group-test"), removedC3, false);
+
+            boolean removed = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G4-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group did not removed: [cartridge-group-name] %s",
-                    "g4-g5-g6"), removed, true);
+                    "g4-g5-g6-cartridge-group-test"), removed, true);
 
             CartridgeGroupBean beanRemoved = (CartridgeGroupBean) restClient.
-                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4",
+                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4-cartridge-group-test",
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge Group did not removed completely: " +
                             "[cartridge-group-name] %s",
-                    "g4-g5-g6"), beanRemoved, null);
+                    "g4-g5-g6-cartridge-group-test"), beanRemoved, null);
 
-            removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4",
+            removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
-                    "c4"), removedC1, true);
+                    "c4-cartridge-group-test"), removedC1, true);
 
-            removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c5",
+            removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c5-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
-                    "c5"), removedC2, true);
+                    "c5-cartridge-group-test"), removedC2, true);
 
-            removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c6",
+            removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c6-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Cartridge can not be removed : [cartridge-name] %s",
-                    "c6"), removedC3, true);
+                    "c6-cartridge-group-test"), removedC3, true);
 
-            log.info("Ended Cartridge group test case**************************************");
+            log.info("-------------------------Ended Cartridge group test case-------------------------");
 
         } catch (Exception e) {
             log.error("An error occurred while handling Cartridge group test case", e);

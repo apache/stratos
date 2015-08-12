@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.integration.tests.rest.IntegrationMockClient;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
@@ -31,7 +32,13 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.listener.topology.MemberInitializedEventListener;
+import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.application.GroupInstanceCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberCreatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.listener.application.*;
+import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
@@ -40,12 +47,12 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 
 /**
  * To start the Topology receivers
@@ -53,13 +60,18 @@ import static junit.framework.Assert.assertNull;
 public class TopologyHandler {
     private static final Log log = LogFactory.getLog(TopologyHandler.class);
 
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 120000;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 300000;
+    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 60000;
     public static final int APPLICATION_TOPOLOGY_TIMEOUT = 60000;
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     private ApplicationsEventReceiver applicationsEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
     public static TopologyHandler topologyHandler;
+    private Map<String, Map<String, Long>> terminatedNodes = new ConcurrentHashMap<String, Map<String, Long>>();
+    private Map<String, Long> terminatedMembers = new ConcurrentHashMap<String, Long>();
+    private Map<String, Map<String, Long>> createdNodes = new ConcurrentHashMap<String, Map<String, Long>>();
+    private Map<String, Map<String, Long>> activeNodes = new ConcurrentHashMap<String, Map<String, Long>>();
 
     private TopologyHandler() {
         // Set jndi.properties.dir system property for initializing event receivers
@@ -69,6 +81,7 @@ public class TopologyHandler {
         initializeTopologyEventReceiver();
         assertApplicationTopologyInitialized();
         assertTopologyInitialized();
+        addTopologyEventListeners();
     }
 
     public static TopologyHandler getInstance() {
@@ -150,10 +163,10 @@ public class TopologyHandler {
      *
      * @param applicationName
      */
-    public void assertApplicationActivation(String applicationName) {
+    public void assertApplicationStatus(String applicationName, ApplicationStatus status) {
         long startTime = System.currentTimeMillis();
         Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
-        while (!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
+        while (!((application != null) && (application.getStatus() == status))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
@@ -164,8 +177,9 @@ public class TopologyHandler {
             }
         }
         assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
-        assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
-                ApplicationStatus.Active, application.getStatus());
+        assertEquals(String.format("Application status did not change to %s: [application-id] %s",
+                        status.toString(), applicationName),
+                status, application.getStatus());
     }
 
     /**
@@ -224,6 +238,53 @@ public class TopologyHandler {
             }
             assertEquals(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
                     clusterActive, true);
+        }
+
+    }
+
+    /**
+     * Assert application activation
+     *
+     * @param applicationName
+     */
+    public void terminateMemberFromCluster(String cartridgeName, String applicationName, IntegrationMockClient mockIaasApiClient) {
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+        assertNotNull(String.format("Application is not found: [application-id] %s",
+                applicationName), application);
+
+        Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
+        for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+            String serviceName = clusterDataHolder.getServiceType();
+            if(cartridgeName.equals(serviceName)) {
+                String clusterId = clusterDataHolder.getClusterId();
+                Service service = TopologyManager.getTopology().getService(serviceName);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                        applicationName, serviceName), service);
+
+                Cluster cluster = service.getCluster(clusterId);
+                assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                        applicationName, serviceName, clusterId), cluster);
+                boolean memberTerminated = false;
+
+                for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
+                            if (member.getStatus().equals(MemberStatus.Active)) {
+                                mockIaasApiClient.terminateInstance(member.getMemberId());
+                                memberTerminated = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(memberTerminated) {
+                        break;
+                    }
+
+                }
+                assertTrue("Any member couldn't be terminated from the mock IaaS client", memberTerminated);
+            }
+
         }
 
     }
@@ -319,7 +380,7 @@ public class TopologyHandler {
             } catch (RemoteException e) {
                 log.error("Error while getting the application context for [application] " + applicationName);
             }
-            if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_UNDEPLOYMENT_TIMEOUT) {
                 break;
             }
         }
@@ -389,5 +450,99 @@ public class TopologyHandler {
     private String getResourcesFolderPath() {
         String path = getClass().getResource("/").getPath();
         return StringUtils.removeEnd(path, File.separator);
+    }
+
+    private void addTopologyEventListeners() {
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
+                terminatedMembers.put(memberTerminatedEvent.getMemberId(), System.currentTimeMillis());
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ClusterInstanceCreatedEvent event1 = (ClusterInstanceCreatedEvent) event;
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+
+    }
+
+    private void addApplicationEventListeners() {
+        applicationsEventReceiver.addEventListener(new ApplicationInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                GroupInstanceCreatedEvent event1 = (GroupInstanceCreatedEvent) event;
+                String appId = event1.getAppId();
+                String id = event1.getGroupId();
+                String instanceId = event1.getGroupInstance().getInstanceId();
+
+            }
+        });
+
+
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
     }
 }
