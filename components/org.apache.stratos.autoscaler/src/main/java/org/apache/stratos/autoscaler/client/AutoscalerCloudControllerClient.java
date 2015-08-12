@@ -157,7 +157,7 @@ public class AutoscalerCloudControllerClient {
                     dto.setClusterId(applicationClusterContext.getClusterId());
                     dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
                     dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
-                    dto.setCartridgeType(applicationClusterContext.getCartridgeUuid());
+                    dto.setCartridgeUuid(applicationClusterContext.getCartridgeUuid());
                     dto.setHostName(applicationClusterContext.getHostName());
                     dto.setTenantRange(applicationClusterContext.getTenantRange());
                     dto.setTextPayload(applicationClusterContext.getTextPayload());

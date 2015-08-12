@@ -1140,7 +1140,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
                 ClusterContext clusterContext = new ClusterContext(
-                        appUuid, appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
+                        appUuid, appClusterCtxt.getCartridgeUuid(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getTextPayload(), appClusterCtxt.getHostName(),
                         appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties());
 
@@ -1151,7 +1151,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
                 // Create cluster object
-                Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
+                Cluster cluster = new Cluster(appClusterCtxt.getCartridgeUuid(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appUuid);
                 cluster.setLbCluster(false);
                 cluster.setTenantRange(appClusterCtxt.getTenantRange());
