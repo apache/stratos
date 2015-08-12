@@ -140,6 +140,7 @@ class CLI(Cmd):
     """
     # Applications
      * list-applications
+     * describe-application
      * add-application
      * remove-application
 
@@ -163,6 +164,24 @@ class CLI(Cmd):
                 rows.append([application['applicationId'], application['alias'], application['status']])
             table.add_rows(rows)
             table.print_table()
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_application(self, application_id , opts=None):
+        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
+        if not application_id:
+            print("usage: describe-application [cluster-id]")
+            return
+        application = Stratos.describe_application(application_id)
+        if not application:
+            print("Application not found in : "+application_id)
+        else:
+            print("Application : "+application_id)
+            PrintableJSON(application).pprint()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -202,6 +221,53 @@ class CLI(Cmd):
                     print("Could not delete application : "+application)
         except AuthenticationError as e:
             self.perror("Authentication Error")
+
+    """
+    # Application deployment
+     * describe-application-runtime
+     * deploy-application
+
+    """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_application_runtime(self, application_id , opts=None):
+        """Retrieve details of a specific auto-scaling policy."""
+        if not application_id:
+            print("usage: describe-application-runtime [application-id]")
+            return
+        application_runtime = Stratos.describe_application_runtime(application_id)
+        if not application_runtime:
+            print("Application runtime not found")
+        else:
+            print("Application : "+application_id)
+            PrintableJSON(application_runtime).pprint()
+
+    """
+    # Application signup
+     * describe-application-signup
+
+    """
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_application_signup(self, line , opts=None):
+        """Retrieve details of a specific auto-scaling policy."""
+        if not line.split():
+            print("usage: describe-application-signup [application-id]")
+            return
+        application_signup = Stratos.describe_application_signup(line)
+        if not application_signup:
+            print("Application signup not found")
+        else:
+            PrintableJSON(application_signup).pprint()
+
+
 
     """
     # Tenants
@@ -797,9 +863,9 @@ class CLI(Cmd):
             else:
                 autoscaling_policy = Stratos.update_autoscaling_policy(open(opts.json_file_path, 'r').read())
                 if autoscaling_policy:
-                    print("Cartridge updated successfully")
+                    print("Autoscaling policy updated successfully:")
                 else:
-                    print("Error updating Cartridge")
+                    print("Error updating Autoscaling policy")
         except AuthenticationError as e:
             self.perror("Authentication Error")
 
@@ -828,6 +894,8 @@ class CLI(Cmd):
      * describe-kubernetes-cluster
      * list-kubernetes-hosts
      * describe-kubernetes-master
+     * update-kubernetes-host
+     * update-kubernetes-master
      * remove-kubernetes-cluster
      * remove-kubernetes-host
 
@@ -910,6 +978,47 @@ class CLI(Cmd):
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-c', '--cluster_id', type="str", help="Cluster id of the cluster"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_update_kubernetes_master(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: update-kubernetes-master [-c <cluster id>] [-p <resource path>]")
+            else:
+                cartridge = Stratos.update_kubernetes_master(opts.cluster_id, open(opts.json_file_path, 'r').read())
+                if cartridge:
+                    print("Kubernetes master updated successfully")
+                else:
+                    print("Error updating Kubernetes master")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+         make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_update_kubernetes_host(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: update-kubernetes-host [-f <resource path>]")
+            else:
+                cartridge = Stratos.update_kubernetes_host(open(opts.json_file_path, 'r').read())
+                if cartridge:
+                    print("Kubernetes host updated successfully")
+                else:
+                    print("Error updating Kubernetes host")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
@@ -980,34 +1089,6 @@ class CLI(Cmd):
         except ValueError as e:
             self.perror("sdc")
 
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_application_signup(self, line , opts=None):
-        """Retrieve details of a specific auto-scaling policy."""
-        if not line.split():
-            print("usage: describe-application-signup [application-id]")
-            return
-        application_signup = Stratos.describe_application_signup(line)
-        if not application_signup:
-            print("Application signup not found")
-        else:
-            PrintableJSON(application_signup).pprint()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @options([
@@ -1049,38 +1130,6 @@ class CLI(Cmd):
         except AuthenticationError as e:
             self.perror("Authentication Error")
 
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_application_runtime(self, line , opts=None):
-        """Retrieve details of a specific auto-scaling policy."""
-        if not line.split():
-            print("usage: describe-application-runtime [application-id]")
-            return
-        application_runtime = Stratos.describe_application_runtime(line)
-        if not application_runtime:
-            print("Application runtime not found")
-        else:
-            PrintableJSON(application_runtime).pprint()
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_application(self, line , opts=None):
-        """Retrieve details of a specific auto-scaling policy."""
-        if not line.split():
-            print("usage: describe-application [application-id]")
-            return
-        application = Stratos.describe_application(line)
-        if not application:
-            print("Application not found")
-        else:
-            PrintableJSON(application).pprint()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),

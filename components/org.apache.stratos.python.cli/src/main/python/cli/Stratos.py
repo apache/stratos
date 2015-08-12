@@ -70,6 +70,7 @@ class Stratos:
     """
     # Applications
      * list-applications
+     * describe-applications
      * add-application
      * remove-application
 
@@ -79,9 +80,32 @@ class Stratos:
         return Stratos.get('applications', error_message='No applications found')
 
     @staticmethod
+    def describe_application(application_id):
+        return Stratos.get('applications/'+application_id,
+                           error_message='No application found')
+
+    @staticmethod
     def remove_application(application):
         return Stratos.delete('application/'+application)
 
+    """
+    # Application deployment
+     * describe-application-runtime
+
+    """
+    @staticmethod
+    def describe_application_runtime(application_id):
+        return Stratos.get('applications/'+application_id+"/runtime", error_message='No application runtime found')
+
+    """
+    # Application signup
+     * describe-application-signup
+
+    """
+    @staticmethod
+    def describe_application_signup(application_id):
+        return Stratos.get('applications/'+application_id + '/signup',
+                           error_message='No signup application found')
     """
     # Tenants
      * list-tenants
@@ -262,6 +286,10 @@ class Stratos:
         return Stratos.get('autoscalingPolicies/'+autoscaling_policy_id,
                            error_message='No autoscaling policy found')
     @staticmethod
+    def update_autoscaling_policy(json):
+        return Stratos.put('autoscalingPolicies', json,  error_message='No cartridge found')
+
+    @staticmethod
     def remove_autoscaling_policy(autoscaling_policy_id):
         return Stratos.delete('autoscalingPolicies/'+autoscaling_policy_id, error_message="Autoscaling policy not found")
 
@@ -271,6 +299,10 @@ class Stratos:
      * describe-kubernetes-cluster
      * list-kubernetes-hosts
      * describe-kubernetes-master
+     * update-kubernetes-host
+     * update-kubernetes-master
+     * remove-kubernetes-cluster
+     * remove-kubernetes-host
 
     """
     @staticmethod
@@ -290,6 +322,14 @@ class Stratos:
         return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/master', error_message='No kubernetes clusters found')
 
     @staticmethod
+    def update_kubernetes_master(cluster_id, json):
+        return Stratos.put('kubernetesClusters/'+cluster_id+'/master', json,  error_message='No cartridge found')
+
+    @staticmethod
+    def update_kubernetes_host(json):
+        return Stratos.put('kubernetesClusters/update/host/', json,  error_message='No cartridge found')
+
+    @staticmethod
     def remove_kubernetes_cluster(kubernetes_cluster_id):
         return Stratos.delete('kubernetesClusters/'+kubernetes_cluster_id,
                               error_message="Autoscaling policy not found")
@@ -297,10 +337,7 @@ class Stratos:
     def remove_kubernetes_host(kubernetes_cluster_id, host_id):
         return Stratos.delete('kubernetesClusters/'+kubernetes_cluster_id+"/hosts/"+host_id,
                               error_message="Autoscaling policy not found")
-    @staticmethod
-    def describe_application_signup(application_id):
-        return Stratos.get('applications/'+ application_id + '/signup',
-                           error_message='No signup application found')
+
 
     """
     # Utils
@@ -391,12 +428,6 @@ class Stratos:
 
     def remove_application_signup(signup):
         return Stratos.delete('applicationSignup/'+signup)
-
-    def describe_application_runtime(application):
-        return Stratos.get('applicationRuntime/'+application, error_message='No application runtime found')
-
-    def describe_application(application):
-        return Stratos.get('application/'+application, error_message='No application found')
 
     @staticmethod
     def add_network_partition(json):
