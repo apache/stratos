@@ -47,11 +47,11 @@ public class ClusterContext implements Serializable {
     private List<KubernetesService> kubernetesServices;
     private String kubernetesClusterId;
 
-    public ClusterContext(String applicationId, String cartridgeType, String clusterId, String payload, String hostName,
+    public ClusterContext(String applicationId, String cartridgeUuid, String clusterId, String payload, String hostName,
                           boolean isLbCluster, Properties properties) {
 
         this.applicationUuid = applicationId;
-        this.cartridgeUuid = cartridgeType;
+        this.cartridgeUuid = cartridgeUuid;
         this.clusterId = clusterId;
         this.payload = payload;
         this.hostName = hostName;
