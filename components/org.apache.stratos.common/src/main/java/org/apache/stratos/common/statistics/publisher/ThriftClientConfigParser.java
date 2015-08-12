@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.common.statistics.publisher.wso2.cep;
+package org.apache.stratos.common.statistics.publisher;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
@@ -83,7 +83,7 @@ public class ThriftClientConfigParser {
             String secretAlias = "thrift.client.configuration.password";
 
             // Iterate the thrift-client-config.xml file and read child element
-            // consists of credential information necessary for WSO2CEPStatisticsPublisher
+            // consists of credential information necessary for ThriftStatisticsPublisher
             while (thriftClientIterator.hasNext()) {
                 OMElement thriftClientElement = (OMElement) thriftClientIterator.next();
 

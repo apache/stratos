@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.common.statistics.publisher.wso2.cep;
+package org.apache.stratos.common.statistics.publisher;
 
 
 import org.apache.commons.lang.StringUtils;
@@ -57,7 +57,7 @@ public class ThriftClientConfig {
 
     /**
      * Returns an ThriftClientInfo Object that stores the credential information.
-     * CEP credential information can be found under thrift-client-config.xml file
+     * Thrift client credential information can be found under thrift-client-config.xml file
      * These credential information then get parsed and assigned into ThriftClientInfo
      * Object.
      * <p/>

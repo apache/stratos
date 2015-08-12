@@ -20,7 +20,8 @@
 package org.apache.stratos.common.test;
 
 import junit.framework.TestCase;
-import org.apache.stratos.common.statistics.publisher.wso2.cep.ThriftClientConfig;
+import org.apache.stratos.common.statistics.publisher.ThriftClientConfig;
+import org.apache.stratos.common.statistics.publisher.ThriftClientInfo;
 import org.junit.Test;
 
 import java.net.URL;
@@ -41,11 +42,11 @@ public class ThriftClientConfigParserTest extends TestCase {
         URL configFileUrl = ThriftClientConfigParserTest.class.getResource("/thrift-client-config.xml");
         System.setProperty(ThriftClientConfig.THRIFT_CLIENT_CONFIG_FILE_PATH, configFileUrl.getPath());
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
-        thriftClientConfig.getThriftClientInfo();
+        ThriftClientInfo thriftClientInfo = thriftClientConfig.getThriftClientInfo();
 
-        assertEquals("Incorrect Password", "admin", thriftClientConfig.getThriftClientInfo().getUsername());
-        assertEquals("Incorrect Password", "1234", thriftClientConfig.getThriftClientInfo().getPassword());
-        assertEquals("Incorrect IP", "192.168.10.10", thriftClientConfig.getThriftClientInfo().getIp());
-        assertEquals("Incorrect Port", "9300", thriftClientConfig.getThriftClientInfo().getPort());
+        assertEquals("Incorrect Username", "admin", thriftClientInfo.getUsername());
+        assertEquals("Incorrect Password", "1234", thriftClientInfo.getPassword());
+        assertEquals("Incorrect IP", "192.168.10.10", thriftClientInfo.getIp());
+        assertEquals("Incorrect Port", "9300", thriftClientInfo.getPort());
     }
 }
