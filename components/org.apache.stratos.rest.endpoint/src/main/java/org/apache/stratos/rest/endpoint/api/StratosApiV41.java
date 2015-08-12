@@ -161,8 +161,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Deployment policy added successfully: [deployment-policy-uuid] %s " +
-                        "[deployment-policy-uuid] %s", deploymentPolicyUuid, deploymentPolicyId))).build();
+                String.format("Deployment policy added successfully: [deployment-policy-id] %s ",
+                        deploymentPolicyId))).build();
     }
 
     /**
@@ -1453,13 +1453,12 @@ public class StratosApiV41 extends AbstractApi {
     public Response addAutoscalingPolicy(
             AutoscalePolicyBean autoscalePolicy) throws RestAPIException {
         String autoscalingPolicyId = autoscalePolicy.getId();
-        autoscalePolicy.setUuid(UUID.randomUUID().toString());
-        String autoscalingPolicyUuid = autoscalePolicy.getUuid();
+        String autoscalingPolicyUuid = UUID.randomUUID().toString();
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        autoscalePolicy.setTenantId(carbonContext.getTenantId());
+        int tenantId = carbonContext.getTenantId();
         try {
-            StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
+            StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy, autoscalingPolicyUuid, tenantId);
             URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
             return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                     String.format("Autoscaling policy added successfully: [autoscale-policy-uuid] %s " +
@@ -1497,8 +1496,7 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Autoscaling policy is invalid")).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
-                String.format("Autoscaling policy updated successfully: [autoscale-policy-uuid] %s " +
-                                "[autoscale-policy-id] %s", autoscalePolicy.getUuid(),
+                String.format("Autoscaling policy updated successfully: [autoscale-policy-id] %s",
                         autoscalePolicy.getId()))).build();
     }
 

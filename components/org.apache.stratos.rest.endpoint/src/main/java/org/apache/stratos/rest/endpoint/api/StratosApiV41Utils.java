@@ -674,18 +674,18 @@ public class StratosApiV41Utils {
      * @param autoscalePolicyBean autoscalePolicyBean
      * @throws RestAPIException
      */
-    public static void addAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException,
+    public static void addAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean, String autoscalingPolicyUuid,
+                                            int tenantId) throws RestAPIException,
             AutoscalerServiceInvalidPolicyExceptionException,
             AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException {
 
         log.info(String.format("Adding autoscaling policy: [autoscaling-policy-uuid] %s [autoscaling-policy-id] %s",
-                autoscalePolicyBean.getUuid(), autoscalePolicyBean.getId()));
+                autoscalingPolicyUuid, autoscalePolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-                    convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalePolicyBean.getUuid(),autoscalePolicyBean.getTenantId());
+                    convertToCCAutoscalerPojo(autoscalePolicyBean, autoscalingPolicyUuid, tenantId);
 
             try {
                 autoscalerServiceClient.addAutoscalingPolicy(autoscalePolicy);
@@ -890,8 +890,7 @@ public class StratosApiV41Utils {
     public static void updateAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException,
             AutoscalerServiceInvalidPolicyExceptionException {
 
-        log.info(String.format("Updating autoscaling policy: [autoscaling-policy-uuid] %s [autoscaling-policy-id] %s",
-                autoscalePolicyBean.getUuid(), autoscalePolicyBean.getId()));
+        log.info(String.format("Updating autoscaling policy: [autoscaling-policy-id] %s", autoscalePolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -901,7 +900,8 @@ public class StratosApiV41Utils {
                         .getAutoScalePolicyForTenant(autoscalePolicyBean.getId(), carbonContext.getTenantId())
                         .getUuid();
                 org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy =
-                        ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean,autoscalerUuid,carbonContext.getTenantId());
+                        ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean, autoscalerUuid,
+                                carbonContext.getTenantId());
                 autoscalerServiceClient.updateAutoscalingPolicy(autoscalePolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
