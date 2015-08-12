@@ -19,7 +19,10 @@
 
 package org.apache.stratos.common.statistics.publisher.wso2.cep;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.statistics.publisher.InFlightRequestPublisher;
+import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -33,13 +36,15 @@ import java.util.List;
  * In-flight request count:
  * Number of requests being served at a given moment could be identified as in-flight request count.
  */
-public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher implements InFlightRequestPublisher {
+public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher implements InFlightRequestPublisher {
+    private static final Log log = LogFactory.getLog(WSO2CEPInFlightRequestPublisher.class);
 
+    private static final String STATS_PUBLISHER_ENABLED = "cep.stats.publisher.enabled";
     private static final String DATA_STREAM_NAME = "in_flight_requests";
     private static final String VERSION = "1.0.0";
 
     public WSO2CEPInFlightRequestPublisher() {
-        super(createStreamDefinition());
+        super(createStreamDefinition(), STATS_PUBLISHER_ENABLED);
     }
 
     private static StreamDefinition createStreamDefinition() {
@@ -66,18 +71,23 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher 
     /**
      * Publish in-flight request count of a cluster.
      *
-     * @param timeStamp
-     * @param clusterId
-     * @param clusterInstanceId
-     * @param networkPartitionId
-     * @param inFlightRequestCount
+     * @param timestamp            Time
+     * @param clusterId            Cluster id
+     * @param clusterInstanceId    Cluster instance id
+     * @param networkPartitionId   Network partition id of the cluster
+     * @param inFlightRequestCount In-flight request count of the cluster
      */
     @Override
-    public void publish(Long timeStamp, String clusterId, String clusterInstanceId, String networkPartitionId,
+    public void publish(Long timestamp, String clusterId, String clusterInstanceId, String networkPartitionId,
                         int inFlightRequestCount) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Publishing health statistics: [timestamp] %d [cluster] %s " +
+                            "[cluster-instance] %s [network-partition] %s [in-flight-request-count] %d",
+                    timestamp, clusterId, clusterInstanceId, networkPartitionId, inFlightRequestCount));
+        }
         // Set payload values
         List<Object> payload = new ArrayList<Object>();
-        payload.add(timeStamp);
+        payload.add(timestamp);
         payload.add(clusterId);
         payload.add(clusterInstanceId);
         payload.add(networkPartitionId);

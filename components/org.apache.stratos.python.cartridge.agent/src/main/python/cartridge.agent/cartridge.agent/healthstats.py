@@ -139,7 +139,7 @@ class HealthStatisticsPublisher:
         stream_def.description = HealthStatisticsPublisherManager.STREAM_DESCRIPTION
 
         # stream_def.add_payloaddata_attribute()
-        stream_def.add_payloaddata_attribute("time_stamp", StreamDefinition.LONG)
+        stream_def.add_payloaddata_attribute("timestamp", StreamDefinition.LONG)
         stream_def.add_payloaddata_attribute("cluster_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("cluster_instance_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("network_partition_id", StreamDefinition.STRING)
@@ -226,7 +226,7 @@ class DefaultHealthStatisticsReader:
         (one, five, fifteen) = os.getloadavg()
         cores = multiprocessing.cpu_count()
 
-        return (one/cores) * 100
+        return (one / cores) * 100
 
 
 class CartridgeHealthStatistics:

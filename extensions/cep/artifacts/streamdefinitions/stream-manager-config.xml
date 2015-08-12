@@ -30,7 +30,7 @@
         <correlationData>
         </correlationData>
         <payloadData>
-            <property name="time_stamp" type="long"/>
+            <property name="timestamp" type="long"/>
             <property name="cluster_id" type="String"/>
             <property name="cluster_instance_id" type="String"/>
             <property name="network_partition_id" type="String"/>
@@ -93,7 +93,7 @@
         <correlationData>
         </correlationData>
         <payloadData>
-            <property name="time_stamp" type="long"/>
+            <property name="timestamp" type="long"/>
             <property name="cluster_id" type="String"/>
             <property name="cluster_instance_id" type="String"/>
             <property name="network_partition_id" type="String"/>
