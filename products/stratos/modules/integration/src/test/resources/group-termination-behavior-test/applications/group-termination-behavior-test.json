@@ -1,0 +1,101 @@
+{
+    "alias": "group-termination-behavior-test",
+    "applicationId": "group-termination-behavior-test",
+    "components": {
+        "cartridges": [],
+        "groups": [
+            {
+                "name": "g-sc-G4-group-termination-behavior-test",
+                "groupMaxInstances": 1,
+                "groupMinInstances": 1,
+                "alias": "my-g-sc-G4-group-termination-behavior-test",
+                "cartridges": [
+                    {
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 1,
+                        "type": "c1-group-termination-behavior-test",
+                        "subscribableInfo": {
+                            "alias": "c1-1x0-group-termination-behavior-test",
+                            "deploymentPolicy": "deployment-policy-group-termination-behavior-test",
+                            "artifactRepository": {
+                                "repoUsername": "user",
+                                "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                                "privateRepo": true,
+                                "repoPassword": "c-policy"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-group-termination-behavior-test"
+                        }
+                    }
+                ],
+                "groups": [
+                    {
+                        "name": "g-G3-group-termination-behavior-test",
+                        "groupMaxInstances": 1,
+                        "groupMinInstances": 1,
+                        "alias": "g-G3-1x0-group-termination-behavior-test",
+                        "cartridges": [
+                            {
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 1,
+                                "type": "c2-group-termination-behavior-test",
+                                "subscribableInfo": {
+                                    "alias": "c2-1x0-group-termination-behavior-test",
+                                    "deploymentPolicy": "deployment-policy-group-termination-behavior-test",
+                                    "artifactRepository": {
+                                        "repoUsername": "user",
+                                        "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                                        "privateRepo": true,
+                                        "repoPassword": "c-policy"
+                                    },
+                                    "autoscalingPolicy": "autoscaling-policy-group-termination-behavior-test"
+                                }
+                            }
+                        ],
+                        "groups": [
+                            {
+                                "name": "g-G1-group-termination-behavior-test",
+                                "groupMaxInstances": 1,
+                                "groupMinInstances": 1,
+                                "alias": "g-G1-1x0-group-termination-behavior-test",
+                                "cartridges": [
+                                    {
+                                        "cartridgeMin": 1,
+                                        "cartridgeMax": 1,
+                                        "type": "c4",
+                                        "subscribableInfo": {
+                                            "alias": "c4-1x0",
+                                            "deploymentPolicy": "deployment-policy-group-termination-behavior-test",
+                                            "artifactRepository": {
+                                                "repoUsername": "user",
+                                                "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                                                "privateRepo": true,
+                                                "repoPassword": "c-policy"
+                                            },
+                                            "autoscalingPolicy": "autoscaling-policy-group-termination-behavior-test"
+                                        }
+                                    },
+                                    {
+                                        "cartridgeMin": 1,
+                                        "cartridgeMax": 1,
+                                        "type": "c3-group-termination-behavior-test",
+                                        "subscribableInfo": {
+                                            "alias": "c3-1x0-group-termination-behavior-test",
+                                            "deploymentPolicy": "deployment-policy-group-termination-behavior-test",
+                                            "artifactRepository": {
+                                                "repoUsername": "user",
+                                                "repoUrl": "http://octl.qmog.cisco.com:10080/git/default.git",
+                                                "privateRepo": true,
+                                                "repoPassword": "c-policy"
+                                            },
+                                            "autoscalingPolicy": "autoscaling-policy-group-termination-behavior-test"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "id": "application-policy-group-termination-behavior-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-group-termination-behavior-test-1"
+    ],
+    "properties": [
+        {
+            "name": "networkPartitionGroups",
+            "value": "network-partition-group-termination-behavior-test-1"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

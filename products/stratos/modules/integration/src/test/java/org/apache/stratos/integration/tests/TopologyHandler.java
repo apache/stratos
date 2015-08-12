@@ -33,16 +33,16 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.application.GroupInstanceCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberCreatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
-import org.apache.stratos.messaging.listener.topology.MemberCreatedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberInitializedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
+import org.apache.stratos.messaging.listener.application.*;
+import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -68,8 +68,10 @@ public class TopologyHandler {
     private ApplicationsEventReceiver applicationsEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
     public static TopologyHandler topologyHandler;
+    private Map<String, Map<String, Long>> terminatedNodes = new ConcurrentHashMap<String, Map<String, Long>>();
     private Map<String, Long> terminatedMembers = new ConcurrentHashMap<String, Long>();
-    private Map<String, Long> createdMembers = new ConcurrentHashMap<String, Long>();
+    private Map<String, Map<String, Long>> createdNodes = new ConcurrentHashMap<String, Map<String, Long>>();
+    private Map<String, Map<String, Long>> activeNodes = new ConcurrentHashMap<String, Map<String, Long>>();
 
     private TopologyHandler() {
         // Set jndi.properties.dir system property for initializing event receivers
@@ -79,7 +81,7 @@ public class TopologyHandler {
         initializeTopologyEventReceiver();
         assertApplicationTopologyInitialized();
         assertTopologyInitialized();
-        addEventListeners();
+        addTopologyEventListeners();
     }
 
     public static TopologyHandler getInstance() {
@@ -450,7 +452,7 @@ public class TopologyHandler {
         return StringUtils.removeEnd(path, File.separator);
     }
 
-    private void addEventListeners() {
+    private void addTopologyEventListeners() {
         topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -463,8 +465,82 @@ public class TopologyHandler {
         topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                MemberCreatedEvent memberCreatedEvent = (MemberCreatedEvent) event;
-                createdMembers.put(memberCreatedEvent.getMemberId(), System.currentTimeMillis());
+
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ClusterInstanceCreatedEvent event1 = (ClusterInstanceCreatedEvent) event;
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+
+    }
+
+    private void addApplicationEventListeners() {
+        applicationsEventReceiver.addEventListener(new ApplicationInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                GroupInstanceCreatedEvent event1 = (GroupInstanceCreatedEvent) event;
+                String appId = event1.getAppId();
+                String id = event1.getGroupId();
+                String instanceId = event1.getGroupInstance().getInstanceId();
+
+            }
+        });
+
+
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
 
             }
         });

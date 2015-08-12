@@ -1,0 +1,58 @@
+{
+  "name": "g-sc-G4-group-termination-behavior-test",
+  "dependencies": {
+    "terminationBehaviour": "terminate-none",
+    "startupOrders": [
+      {
+        "aliases": [
+          "group.g-G3-1x0-group-termination-behavior-test",
+          "cartridge.c1-1x0-group-termination-behavior-test"
+        ]
+      }
+    ]
+  },
+  "cartridges": [
+    "c1-group-termination-behavior-test"
+  ],
+  "groups": [
+    {
+      "name": "g-G3-group-termination-behavior-test",
+      "dependencies": {
+        "terminationBehaviour": "terminate-dependents",
+        "startupOrders": [
+          {
+            "aliases": [
+              "group.g-G1-1x0-group-termination-behavior-test",
+              "cartridge.c2-1x0-group-termination-behavior-test"
+            ]
+          }
+        ]
+      },
+      "cartridges": [
+        "c2-group-termination-behavior-test"
+      ],
+      "groups": [
+          {
+              "name": "g-G1-group-termination-behavior-test",
+              "dependencies": {
+                  "terminationBehaviour": "terminate-all",
+                  "startupOrders": [
+                      {
+                          "aliases": [
+                              "cartridge.c3-1x0-group-termination-behavior-test",
+                              "cartridge.c4-1x0-group-termination-behavior-test"
+                          ]
+                      }
+                  ]
+              },
+              "cartridges": [
+                  "c4",
+                  "c5"
+              ],
+              "groups": [
+              ]
+          }
+      ]
+    }
+  ]
+}
