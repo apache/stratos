@@ -48,6 +48,7 @@ public class BasicPayloadData implements Serializable {
     private String subscriptionKey;
     private String applicationPath;
     private String gitRepositoryUrl;
+    private String ports;
     private String portMappings;
     private String multitenant;
     private String provider;
@@ -94,7 +95,9 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("REPO_URL=" + getGitRepositoryUrl());
         payloadBuilder.append(",");
-        payloadBuilder.append("PORTS=" + getPortMappings());
+        payloadBuilder.append("PORTS=" + getPorts());
+        payloadBuilder.append(",");
+        payloadBuilder.append("PORT_MAPPINGS=" + getPortMappings());
         payloadBuilder.append(",");
         payloadBuilder.append("PROVIDER=" + getProvider());
 
@@ -226,6 +229,14 @@ public class BasicPayloadData implements Serializable {
         this.gitRepositoryUrl = gitRepositoryUrl;
     }
 
+    public String getPorts() {
+        return ports;
+    }
+
+    public void setPorts(String ports) {
+        this.ports = ports;
+    }
+
     public String getPortMappings() {
         return portMappings;
     }
@@ -233,6 +244,7 @@ public class BasicPayloadData implements Serializable {
     public void setPortMappings(String portMappings) {
         this.portMappings = portMappings;
     }
+
 
     public String getMultitenant() {
         return multitenant;

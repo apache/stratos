@@ -75,7 +75,28 @@ public class ApplicationUtils {
         return globalProperties;
     }
 
-    private static String createPortMappingPayloadString(Cartridge cartridge) {
+    private static String createPortsToPayloadString(Cartridge cartridge) {
+
+        // port mappings
+        StringBuilder portMapBuilder = new StringBuilder();
+        PortMapping[] portMappings = cartridge.getPortMappings();
+
+        if (cartridge.getPortMappings()[0] == null) {
+            // first element is null, which means no port mappings.
+            return null;
+        }
+
+        for (PortMapping portMapping : portMappings) {
+            portMapBuilder.append(portMapping.getPort()).append("|");
+        }
+
+        // remove last "|" character
+        String portMappingString = portMapBuilder.toString().replaceAll("\\|$", "");
+
+        return portMappingString;
+    }
+
+    private static String createPortMappingsToPayloadString(Cartridge cartridge) {
 
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
@@ -88,13 +109,16 @@ public class ApplicationUtils {
 
         for (PortMapping portMapping : portMappings) {
             int port = portMapping.getPort();
-            portMapBuilder.append(port).append("|");
+            //'NAME:mgt-console|PROTOCOL:https|PORT:30649|PROXY_PORT:0|TYPE:NodePort
+            portMapBuilder.append(String.format("NAME:%s|PROTOCOL:%s|PORT:%d|PROXY_PORT:%d|TYPE:%s;",
+                    portMapping.getName(), portMapping.getProtocol(),
+                    portMapping.getPort(), portMapping.getProxyPort(),
+                    portMapping.getKubernetesPortType()));
         }
-
-        // remove last "|" character
-        String portMappingString = portMapBuilder.toString().replaceAll("\\|$", "");
-
+        //remove last ;
+        String portMappingString = portMapBuilder.toString().replaceAll(";$", "");
         return portMappingString;
+
     }
 
     public static StringBuilder getTextPayload(String appId, String groupName, String clusterId) {
@@ -220,7 +244,8 @@ public class ApplicationUtils {
         basicPayloadData.setSubscriptionKey(subscriptionKey);
         //basicPayloadData.setDeployment("default");//currently hard coded to default
         basicPayloadData.setMultitenant(String.valueOf(cartridge.getMultiTenant()));
-        basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridge));
+        basicPayloadData.setPorts(createPortsToPayloadString(cartridge));
+        basicPayloadData.setPortMappings(createPortMappingsToPayloadString(cartridge));
         basicPayloadData.setServiceName(cartridge.getType());
         basicPayloadData.setProvider(cartridge.getProvider());
         basicPayloadData.setLvsVirtualIP(lvsVirtualIP);
