@@ -80,7 +80,7 @@ public class ApplicationUtils {
      * This method creates payload string with port numbers in
      * 'PORTS': '9443|8280|8243' format
      * @param cartridge
-     * @return String containing port mapping
+     * @return String containing ports
      */
     private static String createPortsToPayloadString(Cartridge cartridge) {
 
@@ -108,9 +108,8 @@ public class ApplicationUtils {
      * PORT_MAPPINGS='NAME:mgt-console|PROTOCOL:https|PORT:30649|PROXY_PORT:0|TYPE:NodePort;
      * NAME:pt-http|PROTOCOL:http|PORT:30650|PROXY_PORT:0|TYPE:NodePort;
      * NAME:pt-https|PROTOCOL:https|PORT:30651|PROXY_PORT:0|TYPE:NodePort
-     *
      * @param cartridge
-     * @return
+     * @return string containing port mapping
      */
     private static String createPortMappingsToPayloadString(Cartridge cartridge) {
 
