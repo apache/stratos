@@ -22,7 +22,6 @@ package org.apache.stratos.integration.tests.policies;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
@@ -45,12 +44,12 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             String networkPartitionId = "network-partition-network-partition-test";
             log.info("-------------------------Started network partition test case-------------------------");
 
-            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             networkPartitionId + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
 
             assertEquals(added, true);
-            NetworkPartitionBean bean = (NetworkPartitionBean) restClient.
+            NetworkPartitionBean bean = (NetworkPartitionBean) restClientTenant1.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
 
@@ -61,12 +60,12 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             assertEquals(p1.getProperty().get(0).getName(), "region");
             assertEquals(p1.getProperty().get(0).getValue(), "default");
 
-            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             networkPartitionId + "-v1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
 
             assertEquals(updated, true);
-            NetworkPartitionBean updatedBean = (NetworkPartitionBean) restClient.
+            NetworkPartitionBean updatedBean = (NetworkPartitionBean) restClientTenant1.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
 
@@ -79,11 +78,11 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             assertEquals(p2.getProperty().get(1).getName(), "zone");
             assertEquals(p2.getProperty().get(1).getValue(), "z1");
 
-            boolean removed = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removed = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removed, true);
 
-            NetworkPartitionBean beanRemoved = (NetworkPartitionBean) restClient.
+            NetworkPartitionBean beanRemoved = (NetworkPartitionBean) restClientTenant1.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemoved, null);

@@ -46,22 +46,22 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
             String deploymentPolicyId = "deployment-policy-deployment-policy-test";
             log.info("-------------------------Started deployment policy test case-------------------------");
 
-            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-deployment-policy-test-1" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-deployment-policy-test-2" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             deploymentPolicyId + ".json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
-            DeploymentPolicyBean bean = (DeploymentPolicyBean) restClient.
+            DeploymentPolicyBean bean = (DeploymentPolicyBean) restClientTenant1.
                     getEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
                             DeploymentPolicyBean.class, RestConstants.DEPLOYMENT_POLICIES_NAME);
 
@@ -90,18 +90,18 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
             assertEquals(nw2P2.getPartitionMax(), 9);
 
             //update network partition
-            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-deployment-policy-test-1-v1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(updated, true);
 
             //update deployment policy with new partition and max values
-            boolean updatedDep = restClient.updateEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH +
+            boolean updatedDep = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH +
                             "/" + deploymentPolicyId + "-v1.json", RestConstants.DEPLOYMENT_POLICIES,
                     RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(updatedDep, true);
 
-            DeploymentPolicyBean updatedBean = (DeploymentPolicyBean) restClient.
+            DeploymentPolicyBean updatedBean = (DeploymentPolicyBean) restClientTenant1.
                     getEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
                             DeploymentPolicyBean.class, RestConstants.DEPLOYMENT_POLICIES_NAME);
 
@@ -132,34 +132,34 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
                     "network-partition-6-partition-2");
             assertEquals(nw2P2.getPartitionMax(), 5);
 
-            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-deployment-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
-            boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+            boolean removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, true);
 
-            DeploymentPolicyBean beanRemovedDep = (DeploymentPolicyBean) restClient.
+            DeploymentPolicyBean beanRemovedDep = (DeploymentPolicyBean) restClientTenant1.
                     getEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
                             DeploymentPolicyBean.class, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(beanRemovedDep, null);
 
-            boolean removedN1 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedN1 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-deployment-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN1, true);
 
-            NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClient.
+            NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClientTenant1.
                     getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-deployment-policy-test-1",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemovedN1, null);
 
-            boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-deployment-policy-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
 
-            NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClient.
+            NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClientTenant1.
                     getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-deployment-policy-test-2",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemovedN2, null);

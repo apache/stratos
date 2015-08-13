@@ -44,11 +44,11 @@ public class CartridgeTest extends StratosTestServerManager {
 
         try {
             String cartridgeType = "c0-cartridge-test";
-            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(added, true);
-            CartridgeBean bean = (CartridgeBean) restClient.
+            CartridgeBean bean = (CartridgeBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(bean.getCategory(), "Application");
@@ -78,11 +78,11 @@ public class CartridgeTest extends StratosTestServerManager {
             }
 
 
-            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(updated, true);
-            CartridgeBean updatedBean = (CartridgeBean) restClient.
+            CartridgeBean updatedBean = (CartridgeBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(updatedBean.getType(), "c0-cartridge-test");
@@ -112,11 +112,11 @@ public class CartridgeTest extends StratosTestServerManager {
                 }
             }
 
-            boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
+            boolean removed = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
                     RestConstants.CARTRIDGES_NAME);
             assertEquals(removed, true);
 
-            CartridgeBean beanRemoved = (CartridgeBean) restClient.
+            CartridgeBean beanRemoved = (CartridgeBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(beanRemoved, null);

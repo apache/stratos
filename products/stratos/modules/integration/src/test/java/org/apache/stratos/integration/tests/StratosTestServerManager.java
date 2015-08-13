@@ -30,9 +30,7 @@ import org.apache.stratos.integration.tests.application.SampleApplicationsTest;
 import org.apache.stratos.integration.tests.rest.IntegrationMockClient;
 import org.apache.stratos.integration.tests.rest.RestClient;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
 import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
@@ -61,7 +59,7 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
     protected RestClient restClientAdmin;
-    protected RestClient restClient;
+    protected RestClient restClientTenant1;
     private String endpoint = "https://localhost:9443";
 
     private BrokerService broker = new BrokerService();
@@ -76,8 +74,8 @@ public class StratosTestServerManager extends TestServerManager {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
         restClientAdmin=new RestClient(endpoint,"admin","admin");
-        restClient = new RestClient(endpoint, "admin", "admin");
-     //   restClient = new RestClient(endpoint, "admin", "admin");
+        restClientTenant1 = new RestClient(endpoint, "admin", "admin");
+     //   restClientTenant1 = new RestClient(endpoint, "admin", "admin");
         mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
     }
 
