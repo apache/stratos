@@ -124,7 +124,7 @@ public class ApplicationUtils {
 
         for (PortMapping portMapping : portMappings) {
             int port = portMapping.getPort();
-            //'NAME:mgt-console|PROTOCOL:https|PORT:30649|PROXY_PORT:0|TYPE:NodePort
+            //Format : NAME:mgt-console|PROTOCOL:https|PORT:30649|PROXY_PORT:0|TYPE:NodePort;
             portMapBuilder.append(String.format("NAME:%s|PROTOCOL:%s|PORT:%d|PROXY_PORT:%d|TYPE:%s;",
                     portMapping.getName(), portMapping.getProtocol(),
                     portMapping.getPort(), portMapping.getProxyPort(),
