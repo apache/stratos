@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 public class ApplicationUtils {
     public static final String TOKEN_PAYLOAD_PARAM_NAME = "TOKEN";
     public static final String DEPLOYMENT = "DEPLOYMENT";
+    private static final String PORT_SEPARATOR="|";
     public static final String PAYLOAD_PARAMETER = "payload_parameter.";
     private static final Log log = LogFactory.getLog(ApplicationUtils.class);
     public static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
@@ -75,6 +76,14 @@ public class ApplicationUtils {
         return globalProperties;
     }
 
+    /**
+     * This method creates payload string with port mappings in following format.
+     * PORT_MAPPINGS='NAME:mgt-console|PROTOCOL:https|PORT:30649|PROXY_PORT:0|TYPE:NodePort;
+     * NAME:pt-http|PROTOCOL:http|PORT:30650|PROXY_PORT:0|TYPE:NodePort;
+     * NAME:pt-https|PROTOCOL:https|PORT:30651|PROXY_PORT:0|TYPE:NodePort
+     * @param cartridge
+     * @return String containing port mapping
+     */
     private static String createPortsToPayloadString(Cartridge cartridge) {
 
         // port mappings
@@ -87,7 +96,7 @@ public class ApplicationUtils {
         }
 
         for (PortMapping portMapping : portMappings) {
-            portMapBuilder.append(portMapping.getPort()).append("|");
+            portMapBuilder.append(portMapping.getPort()).append(PORT_SEPARATOR);
         }
 
         // remove last "|" character
@@ -96,6 +105,12 @@ public class ApplicationUtils {
         return portMappingString;
     }
 
+    /**
+     * This method creates payload string with port numbers in
+     * 'PORTS': '9443|8280|8243' format
+     * @param cartridge
+     * @return
+     */
     private static String createPortMappingsToPayloadString(Cartridge cartridge) {
 
         // port mappings
@@ -115,7 +130,7 @@ public class ApplicationUtils {
                     portMapping.getPort(), portMapping.getProxyPort(),
                     portMapping.getKubernetesPortType()));
         }
-        //remove last ;
+        //remove last ";" character
         String portMappingString = portMapBuilder.toString().replaceAll(";$", "");
         return portMappingString;
 
