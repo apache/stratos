@@ -227,7 +227,7 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
                             }
                         }
                     }
-                    clusterScaleup = activeInstances > clusterDataHolder.getMinInstances();
+                    clusterScaleup = activeInstances >= clusterDataHolder.getMinInstances();
                     if(clusterScaleup) {
                         break;
                     }

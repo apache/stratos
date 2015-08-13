@@ -51,6 +51,8 @@ public class RestConstants {
 
     public static final String TENANT1_RESOURCE ="/tenant/tenant1.json";
     public static final String TENANT2_RESOURCE ="/tenant/tenant2.json";
+    public static final String TENANT1_GET_RESOURCE ="test1.com";
+    public static final String TENANT2_GET_RESOURCE ="test2.com";
     public static final String TENANT_API = "/" + API + "/tenants";
     public static final String TENANTS_NAME = "tenants";
 

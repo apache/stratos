@@ -133,7 +133,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
 
             TopologyHandler.getInstance().assertGroupInstanceCount(bean.getApplicationId(), "group3-application-update-test", 2);
 
-            TopologyHandler.getInstance().assertClusterMinMemberCount(bean.getApplicationId(), 2);
+            TopologyHandler.getInstance().assertClusterMinMemberCount(bean.getApplicationId(), 1);
 
             ApplicationBean updatedBean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
                     "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
