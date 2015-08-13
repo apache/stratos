@@ -264,7 +264,7 @@ class Config:
             Config.application_id = Config.read_property(constants.APPLICATION_ID)
             Config.service_name = Config.read_property(constants.SERVICE_NAME)
             Config.cluster_id = Config.read_property(constants.CLUSTER_ID)
-            self.ports = str(self.read_property(constants.PORTS)).replace("'","").split("|")
+            Config.ports = Config.read_property(constants.PORTS)).replace("'","").split("|")
             Config.is_multiTenant = Config.read_property(constants.MULTITENANT)
             Config.tenant_id = Config.read_property(constants.TENANT_ID)
 
