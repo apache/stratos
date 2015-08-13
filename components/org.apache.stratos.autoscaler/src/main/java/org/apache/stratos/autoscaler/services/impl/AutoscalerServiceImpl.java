@@ -1170,15 +1170,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : allClusters) {
-            String serviceType = clusterDataHolder.getServiceType();
+            String serviceUuid = clusterDataHolder.getServiceUuid();
             String clusterId = clusterDataHolder.getClusterId();
 
             Cluster cluster;
             try {
-                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                TopologyManager.acquireReadLockForCluster(serviceUuid, clusterId);
+                cluster = TopologyManager.getTopology().getService(serviceUuid).getCluster(clusterId);
             } finally {
-                TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
+                TopologyManager.releaseReadLockForCluster(serviceUuid, clusterId);
             }
 
             //If there are no members in cluster Instance, send cluster Terminated Event
