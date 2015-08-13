@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -35,11 +36,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
+import com.amazonaws.services.cloudwatch.model.Datapoint;
+import com.amazonaws.services.cloudwatch.model.Dimension;
+import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
+import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
@@ -58,6 +66,7 @@ public class AWSHelper {
 	private String lbSecurityGroupName;
 	private String lbSecurityGroupDescription;
 	private String allowedCidrIpForLBSecurityGroup;
+	private int statisticsInterval;
 
 	private AtomicInteger lbSequence;
 
@@ -70,6 +79,7 @@ public class AWSHelper {
 
 	AmazonElasticLoadBalancingClient elbClient;
 	AmazonEC2Client ec2Client;
+	private AmazonCloudWatchClient cloudWatchClient;
 
 	private static final Log log = LogFactory.getLog(AWSHelper.class);
 
@@ -141,6 +151,25 @@ public class AWSHelper {
 				this.allowedProtocolsForLBSecurityGroup.add(protocol);
 			}
 
+			String interval = properties
+					.getProperty(Constants.STATISTICS_INTERVAL);
+
+			if (interval == null || interval.isEmpty()) {
+				this.statisticsInterval = Constants.STATISTICS_INTERVAL_MULTIPLE_OF;
+			} else {
+				try {
+					this.statisticsInterval = Integer.parseInt(interval);
+
+					if (this.statisticsInterval
+							% Constants.STATISTICS_INTERVAL_MULTIPLE_OF != 0) {
+						this.statisticsInterval = Constants.STATISTICS_INTERVAL_MULTIPLE_OF;
+					}
+				} catch (NumberFormatException e) {
+					log.warn("Invalid statistics interval. Setting it to 15.");
+					this.statisticsInterval = 15;
+				}
+			}
+
 			this.lbSecurityGroupDescription = Constants.LOAD_BALANCER_SECURITY_GROUP_DESCRIPTION;
 
 			regionToSecurityGroupIdMap = new ConcurrentHashMap<String, String>();
@@ -153,6 +182,9 @@ public class AWSHelper {
 
 			ec2Client = new AmazonEC2Client(awsCredentials, clientConfiguration);
 
+			cloudWatchClient = new AmazonCloudWatchClient(awsCredentials,
+					clientConfiguration);
+
 		} catch (IOException e) {
 			log.error("Error reading aws configuration file.");
 			throw new LoadBalancerExtensionException(
@@ -164,6 +196,10 @@ public class AWSHelper {
 				log.warn("Failed to close input stream to aws configuration file.");
 			}
 		}
+	}
+
+	public int getStatisticsInterval() {
+		return statisticsInterval;
 	}
 
 	public int getNextLBSequence() {
@@ -579,6 +615,135 @@ public class AWSHelper {
 
 			return securityGroupId;
 		}
+	}
+
+	/**
+	 * @param loadBalancerName
+	 * @param region
+	 * @param timeInterval
+	 *            in seconds
+	 * @return
+	 */
+	public int getRequestCount(String loadBalancerName, String region,
+			int timeInterval) {
+		int count = 0;
+
+		try {
+			GetMetricStatisticsRequest request = new GetMetricStatisticsRequest();
+			request.setMetricName(Constants.REQUEST_COUNT_METRIC_NAME);
+			request.setNamespace(Constants.CLOUD_WATCH_NAMESPACE_NAME);
+
+			Date currentTime = new DateTime(DateTimeZone.UTC).toDate();
+			Date pastTime = new DateTime(DateTimeZone.UTC).minusSeconds(
+					timeInterval).toDate();
+
+			request.setStartTime(pastTime);
+			request.setEndTime(currentTime);
+
+			request.setPeriod(timeInterval);
+
+			HashSet<String> statistics = new HashSet<String>();
+			statistics.add(Constants.SUM_STATISTICS_NAME);
+			request.setStatistics(statistics);
+
+			HashSet<Dimension> dimensions = new HashSet<Dimension>();
+			Dimension loadBalancerDimension = new Dimension();
+			loadBalancerDimension
+					.setName(Constants.LOAD_BALANCER_DIMENTION_NAME);
+			loadBalancerDimension.setValue(loadBalancerName);
+			dimensions.add(loadBalancerDimension);
+			request.setDimensions(dimensions);
+
+			cloudWatchClient.setEndpoint(String.format(
+					Constants.CLOUD_WATCH_ENDPOINT_URL_FORMAT, region));
+
+			GetMetricStatisticsResult result = cloudWatchClient
+					.getMetricStatistics(request);
+
+			List<Datapoint> dataPoints = result.getDatapoints();
+
+			if (dataPoints != null && dataPoints.size() > 0) {
+				count = dataPoints.get(0).getSum().intValue();
+			}
+
+		} catch (AmazonClientException e) {
+			log.error(
+					"Could not get request count statistics of load balancer "
+							+ loadBalancerName, e);
+		}
+
+		return count;
+	}
+
+	public int getAllResponsesCount(String loadBalancerName, String region,
+			int timeInterval) {
+		int total = 0;
+
+		Date currentTime = new DateTime(DateTimeZone.UTC).toDate();
+		Date pastTime = new DateTime(DateTimeZone.UTC).minusSeconds(
+				timeInterval).toDate();
+
+		total += getResponseCountForMetric(loadBalancerName, region,
+				Constants.HTTP_RESPONSE_2XX, pastTime, currentTime,
+				timeInterval);
+		total += getResponseCountForMetric(loadBalancerName, region,
+				Constants.HTTP_RESPONSE_3XX, pastTime, currentTime,
+				timeInterval);
+		total += getResponseCountForMetric(loadBalancerName, region,
+				Constants.HTTP_RESPONSE_4XX, pastTime, currentTime,
+				timeInterval);
+		total += getResponseCountForMetric(loadBalancerName, region,
+				Constants.HTTP_RESPONSE_5XX, pastTime, currentTime,
+				timeInterval);
+
+		return total;
+	}
+
+	public int getResponseCountForMetric(String loadBalancerName,
+			String region, String metricName, Date startTime, Date endTime,
+			int timeInterval) {
+		int count = 0;
+
+		try {
+			GetMetricStatisticsRequest request = new GetMetricStatisticsRequest();
+			request.setMetricName(metricName);
+			request.setNamespace(Constants.CLOUD_WATCH_NAMESPACE_NAME);
+
+			request.setStartTime(startTime);
+			request.setEndTime(endTime);
+
+			request.setPeriod(timeInterval);
+
+			HashSet<String> statistics = new HashSet<String>();
+			statistics.add(Constants.SUM_STATISTICS_NAME);
+			request.setStatistics(statistics);
+
+			HashSet<Dimension> dimensions = new HashSet<Dimension>();
+			Dimension loadBalancerDimension = new Dimension();
+			loadBalancerDimension
+					.setName(Constants.LOAD_BALANCER_DIMENTION_NAME);
+			loadBalancerDimension.setValue(loadBalancerName);
+			dimensions.add(loadBalancerDimension);
+			request.setDimensions(dimensions);
+
+			cloudWatchClient.setEndpoint(String.format(
+					Constants.CLOUD_WATCH_ENDPOINT_URL_FORMAT, region));
+
+			GetMetricStatisticsResult result = cloudWatchClient
+					.getMetricStatistics(request);
+
+			List<Datapoint> dataPoints = result.getDatapoints();
+
+			if (dataPoints != null && dataPoints.size() > 0) {
+				count = dataPoints.get(0).getSum().intValue();
+			}
+
+		} catch (AmazonClientException e) {
+			log.error("Could not get the statistics for metric " + metricName
+					+ " of load balancer " + loadBalancerName, e);
+		}
+
+		return count;
 	}
 
 	/**

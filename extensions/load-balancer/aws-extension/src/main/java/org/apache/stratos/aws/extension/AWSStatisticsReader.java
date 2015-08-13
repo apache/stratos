@@ -29,8 +29,10 @@ import org.apache.stratos.load.balancer.common.domain.Port;
 import org.apache.stratos.load.balancer.common.domain.Service;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * AWS statistics reader.
@@ -42,11 +44,16 @@ public class AWSStatisticsReader implements LoadBalancerStatisticsReader {
 	private TopologyProvider topologyProvider;
 	private String clusterInstanceId;
 
-	public AWSStatisticsReader(TopologyProvider topologyProvider) {
+	private AWSHelper awsHelper;
+
+	public AWSStatisticsReader(TopologyProvider topologyProvider)
+			throws LoadBalancerExtensionException {
 		this.topologyProvider = topologyProvider;
 		this.clusterInstanceId = System.getProperty(
 				StratosConstants.CLUSTER_INSTANCE_ID,
 				StratosConstants.NOT_DEFINED);
+
+		awsHelper = new AWSHelper();
 	}
 
 	@Override
@@ -56,7 +63,29 @@ public class AWSStatisticsReader implements LoadBalancerStatisticsReader {
 
 	@Override
 	public int getInFlightRequestCount(String clusterId) {
-		// Find out logic
-		return 0;
+
+		int inFlightRequestCount = 0;
+
+		ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap = AWSLoadBalancer
+				.getClusterIdToLoadBalancerMap();
+
+		if (clusterIdToLoadBalancerMap.containsKey(clusterId)) {
+			LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap
+					.get(clusterId);
+
+			String loadBalancerName = loadBalancerInfo.getName();
+			String region = loadBalancerInfo.getRegion();
+
+			inFlightRequestCount = awsHelper.getRequestCount(loadBalancerName,
+					region, awsHelper.getStatisticsInterval())
+					- awsHelper.getAllResponsesCount(loadBalancerName, region,
+							awsHelper.getStatisticsInterval());
+
+			if (inFlightRequestCount < 0)
+				inFlightRequestCount = 0;
+
+		}
+
+		return inFlightRequestCount;
 	}
 }

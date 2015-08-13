@@ -42,7 +42,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
 	// A map <clusterId, load balancer id>
-	private ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap;
+	private static ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap;
 
 	private AWSHelper awsHelper;
 
@@ -271,6 +271,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 		}
 
 		// Remove domain mappings
+	}
+
+	public static ConcurrentHashMap<String, LoadBalancerInfo> getClusterIdToLoadBalancerMap() {
+		return clusterIdToLoadBalancerMap;
 	}
 }
 
