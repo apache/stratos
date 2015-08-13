@@ -203,21 +203,21 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
      * @param applicationName
      */
     private void assertClusterWithRoundRobinAlgorithm(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, -1234);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-            String serviceName = clusterDataHolder.getServiceType();
+            String serviceUUid = clusterDataHolder.getServiceUuid();
             String clusterId = clusterDataHolder.getClusterId();
-            Service service = TopologyManager.getTopology().getService(serviceName);
+            Service service = TopologyManager.getTopology().getService(serviceUUid);
             assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                    applicationName, serviceName), service);
+                    applicationName, serviceUUid), service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                    applicationName, serviceName, clusterId), cluster);
+                    applicationName, serviceUUid, clusterId), cluster);
 
             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
                 List<String> partitionsUsedInMembers = new ArrayList<String>();

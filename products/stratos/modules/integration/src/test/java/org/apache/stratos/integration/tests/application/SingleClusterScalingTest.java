@@ -196,7 +196,7 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
      * @param applicationName
      */
     private void assertClusterWithScalingup(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
         boolean clusterScaleup = false;
@@ -209,15 +209,15 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
             }
             Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
             for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-                String serviceName = clusterDataHolder.getServiceType();
+                String serviceUuid = clusterDataHolder.getServiceUuid();
                 clusterId = clusterDataHolder.getClusterId();
-                Service service = TopologyManager.getTopology().getService(serviceName);
+                Service service = TopologyManager.getTopology().getService(serviceUuid);
                 assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                        applicationName, serviceName), service);
+                        applicationName, serviceUuid), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                        applicationName, serviceName, clusterId), cluster);
+                        applicationName, serviceUuid, clusterId), cluster);
                 for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
                     int activeInstances = 0;
                     for (Member member : cluster.getMembers()) {
@@ -232,7 +232,7 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
                         break;
                     }
                 }
-                application = ApplicationManager.getApplications().getApplication(applicationName);
+                application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
                 if ((System.currentTimeMillis() - startTime) > CLUSTER_SCALE_UP_TIMEOUT) {
                     break;
                 }
