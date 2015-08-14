@@ -116,13 +116,13 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
 
             //Application active handling
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active);
+                    ApplicationStatus.Active, -1234);
 
             //Group active handling
-            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), -1234);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), -1234);
 
             boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
@@ -150,7 +150,7 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test");
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", -1234);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "application-bursting-test");
@@ -158,7 +158,7 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
                 restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test");
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", -1234);
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "application-bursting-test"), forceUndeployed, true);
 

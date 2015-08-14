@@ -27,6 +27,7 @@ import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -82,6 +83,12 @@ public class CartridgeGroupTest extends StratosTestServerManager {
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(String.format("Updated Cartridge Group didn't match: [cartridge-group-name] %s",
                     "g4-g5-g6-cartridge-group-test"), updatedBean.getName(), "G4-cartridge-group-test");
+
+            updatedBean = (CartridgeGroupBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4-cartridge-group-test",
+                            CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertNull(String.format("Updated Cartridge Group found in other tenant: [cartridge-group-name] %s",
+                    "g4-g5-g6-cartridge-group-test"), updatedBean);
 
             boolean removedC1 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "c4-cartridge-group-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);

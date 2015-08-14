@@ -35,7 +35,6 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.GroupInstanceCreatedEvent;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberCreatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.listener.application.*;
 import org.apache.stratos.messaging.listener.topology.*;
@@ -161,17 +160,18 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
+     * @param tenantId
      * @param applicationName
      */
-    public void assertApplicationStatus(String applicationName, ApplicationStatus status) {
+    public void assertApplicationStatus(String applicationName, ApplicationStatus status, int tenantId) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         while (!((application != null) && (application.getStatus() == status))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+            application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,tenantId);
             if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                 break;
             }
@@ -186,9 +186,10 @@ public class TopologyHandler {
      * Assert application activation
      *
      * @param applicationName
+     * @param tenantId
      */
-    public void assertGroupActivation(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+    public void assertGroupActivation(String applicationName, int tenantId) {
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
@@ -202,9 +203,10 @@ public class TopologyHandler {
      * Assert application activation
      *
      * @param applicationName
+     * @param tenantId
      */
-    public void assertClusterActivation(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+    public void assertClusterActivation(String applicationName, int tenantId) {
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
@@ -245,10 +247,11 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
+     * @param tenantId
      * @param applicationName
      */
-    public void terminateMemberFromCluster(String cartridgeName, String applicationName, IntegrationMockClient mockIaasApiClient) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+    public void terminateMemberFromCluster(String cartridgeName, String applicationName, IntegrationMockClient mockIaasApiClient, int tenantId) {
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
@@ -289,10 +292,10 @@ public class TopologyHandler {
 
     }
 
-    public void assertClusterMinMemberCount(String applicationName, int minMembers) {
+    public void assertClusterMinMemberCount(String applicationName, int minMembers, int tenantId) {
         long startTime = System.currentTimeMillis();
 
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
@@ -358,13 +361,14 @@ public class TopologyHandler {
      * Assert application activation
      *
      * @param applicationName
+     * @param tenantId
      */
-    public boolean assertApplicationUndeploy(String applicationName) {
+    public boolean assertApplicationUndeploy(String applicationName, int tenantId) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, -1234);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         ApplicationContext applicationContext = null;
         try {
-            applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationName,-1234);
+            applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationName,tenantId);
         } catch (RemoteException e) {
             log.error("Error while getting the application context for [application] " + applicationName);
         }
@@ -374,9 +378,9 @@ public class TopologyHandler {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+            application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,tenantId);
             try {
-                applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationName,-1234);
+                applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationName,tenantId);
             } catch (RemoteException e) {
                 log.error("Error while getting the application context for [application] " + applicationName);
             }
@@ -403,11 +407,12 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
+     * @param tenantId
      * @param applicationName
      */
-    public void assertGroupInstanceCount(String applicationName, String groupAlias, int count) {
+    public void assertGroupInstanceCount(String applicationName, String groupAlias, int count, int tenantId) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,-1234);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         if (application != null) {
             Group group = application.getGroupRecursively(groupAlias);
             while (group.getInstanceContextCount() != count) {

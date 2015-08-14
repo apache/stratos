@@ -27,8 +27,7 @@ import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Test to handle Cartridge CRUD operations
@@ -52,7 +51,7 @@ public class CartridgeTest extends StratosTestServerManager {
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(bean.getCategory(), "Application");
-            assertEquals(bean.getHost(), "qmog.cisco.com");
+
             for (PropertyBean property : bean.getProperty()) {
                 if (property.getName().equals("payload_parameter.CEP_IP")) {
                     assertEquals(property.getValue(), "octl.qmog.cisco.com");
@@ -76,8 +75,10 @@ public class CartridgeTest extends StratosTestServerManager {
                     assertEquals(property.getValue(), "61616");
                 }
             }
-
-
+            bean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertNull("Cartridge exists in other tenant", bean);
             boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
@@ -112,9 +113,58 @@ public class CartridgeTest extends StratosTestServerManager {
                 }
             }
 
+            bean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertNull("Cartridge exists in other tenant", bean);
+
+            added = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+                            cartridgeType + ".json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertEquals(added, true);
+
+            updated = restClientTenant2.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+                            cartridgeType + "-v1.json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertEquals(updated, true);
+
+            updatedBean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(updatedBean.getType(), "c0-cartridge-test");
+            assertEquals(updatedBean.getCategory(), "Data");
+            assertEquals(updatedBean.getHost(), "qmog.cisco.com12");
+            for (PropertyBean property : updatedBean.getProperty()) {
+                if (property.getName().equals("payload_parameter.CEP_IP")) {
+                    assertEquals(property.getValue(), "octl.qmog.cisco.com123");
+                } else if (property.getName().equals("payload_parameter.CEP_ADMIN_PASSWORD")) {
+                    assertEquals(property.getValue(), "admin123");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_IP")) {
+                    assertEquals(property.getValue(), "octl.qmog.cisco.com123");
+                } else if (property.getName().equals("payload_parameter.QTCM_NETWORK_COUNT")) {
+                    assertEquals(property.getValue(), "3");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_ADMIN_PASSWORD")) {
+                    assertEquals(property.getValue(), "admin123");
+                } else if (property.getName().equals("payload_parameter.QTCM_DNS_SEGMENT")) {
+                    assertEquals(property.getValue(), "test123");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_SECURE_PORT")) {
+                    assertEquals(property.getValue(), "7712");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_PORT")) {
+                    assertEquals(property.getValue(), "7612");
+                } else if (property.getName().equals("payload_parameter.CEP_PORT")) {
+                    assertEquals(property.getValue(), "7612");
+                } else if (property.getName().equals("payload_parameter.MB_PORT")) {
+                    assertEquals(property.getValue(), "61617");
+                }
+            }
             boolean removed = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
                     RestConstants.CARTRIDGES_NAME);
             assertEquals(removed, true);
+
+            bean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertNotNull("Cartridge not exists in other tenant", bean);
 
             CartridgeBean beanRemoved = (CartridgeBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,

@@ -76,7 +76,7 @@ public class StratosTestServerManager extends TestServerManager {
         serverUtils = new ServerUtils();
         restClientAdmin=new RestClient(endpoint,"admin","admin");
         restClientTenant1 = new RestClient(endpoint, "admin", "admin");
-        restClientTenant2 = new RestClient(endpoint, "admin", "admin");
+        restClientTenant2 = new RestClient(endpoint, "admin@test2.com", "admin123");
         mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
     }
 
