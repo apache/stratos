@@ -103,7 +103,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
             TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), -1234);
 
             //Verifying whether members got created using round robin algorithm
-          /*  assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());
+          /*  assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());        */
 
             //Application in-active handling
             log.info("Waiting for the faulty member detection from " +
@@ -116,7 +116,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                     ApplicationStatus.Active,-1234);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(),-1234);    */
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(),-1234);
 
             boolean removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
