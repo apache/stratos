@@ -1,0 +1,124 @@
+{
+    "category": "Application",
+    "description": "c1-cartridge-test Cartridge",
+    "displayName": "c1-cartridge-test",
+    "host": "qmog.cisco.com",
+    "iaasProvider": [
+        {
+            "imageId": "RegionOne/16e7e35b-0c88-4605-90ce-cbef9e9dde0f",
+            "maxInstanceLimit": "4",
+            "networkInterfaces": [
+                {
+                    "floatingNetworks": [
+                        {
+                            "name": "public",
+                            "networkUuid": "26b4aa2b-06bc-4e4f-a6eb-c19fbc211af6"
+                        }
+                    ],
+                    "name": "core",
+                    "networkUuid": "5e107fbd-4820-47ad-84ea-6f135496f889"
+                }
+            ],
+            "property": [
+                {
+                    "name": "instanceType",
+                    "value": "RegionOne/2cdbd576-8c9b-4c2d-8b1a-0f79dc4fb809"
+                },
+                {
+                    "name": "keyPair",
+                    "value": "phoenix"
+                },
+                {
+                    "name": "autoAssignIp",
+                    "value": "false"
+                },
+                {
+                    "name": "securityGroups",
+                    "value": "default"
+                }
+            ],
+            "type": "mock"
+        }
+    ],
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "port": "22",
+            "protocol": "http",
+            "proxyPort": "8280"
+        }
+    ],
+    "property": [
+        {
+            "name": "payload_parameter.MB_IP",
+            "value": "octl.qmog.cisco.com"
+        },
+        {
+            "name": "payload_parameter.MB_PORT",
+            "value": "61616"
+        },
+        {
+            "name": "payload_parameter.CEP_IP",
+            "value": "octl.qmog.cisco.com"
+        },
+        {
+            "name": "payload_parameter.CEP_PORT",
+            "value": "7611"
+        },
+        {
+            "name": "payload_parameter.CEP_ADMIN_USERNAME",
+            "value": "admin"
+        },
+        {
+            "name": "payload_parameter.CEP_ADMIN_PASSWORD",
+            "value": "admin"
+        },
+        {
+            "name": "payload_parameter.CERT_TRUSTSTORE",
+            "value": "/opt/apache-stratos-cartridge-agent/security/client-truststore.jks"
+        },
+        {
+            "name": "payload_parameter.TRUSTSTORE_PASSWORD",
+            "value": "wso2carbon"
+        },
+        {
+            "name": "payload_parameter.ENABLE_DATA_PUBLISHER",
+            "value": "false"
+        },
+        {
+            "name": "payload_parameter.MONITORING_SERVER_IP",
+            "value": "octl.qmog.cisco.com"
+        },
+        {
+            "name": "payload_parameter.MONITORING_SERVER_PORT",
+            "value": "7611"
+        },
+        {
+            "name": "payload_parameter.MONITORING_SERVER_SECURE_PORT",
+            "value": "7711"
+        },
+        {
+            "name": "payload_parameter.MONITORING_SERVER_ADMIN_USERNAME",
+            "value": "admin"
+        },
+        {
+            "name": "payload_parameter.MONITORING_SERVER_ADMIN_PASSWORD",
+            "value": "admin"
+        },
+        {
+            "name": "payload_parameter.QTCM_DNS_SEGMENT",
+            "value": "test"
+        },
+        {
+            "name": "payload_parameter.QTCM_NETWORK_COUNT",
+            "value": "1"
+        },
+        {
+            "name": "payload_parameter.SIMPLE_PROPERTY",
+            "value": "value"
+        }
+    ],
+    "provider": "cisco",
+    "type": "c1-cartridge-test",
+    "version": "1.0"
+}

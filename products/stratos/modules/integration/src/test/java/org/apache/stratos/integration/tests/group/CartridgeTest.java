@@ -19,6 +19,7 @@
 
 package org.apache.stratos.integration.tests.group;
 
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.PropertyBean;
@@ -27,8 +28,11 @@ import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.*;
 
 /**
  * Test to handle Cartridge CRUD operations
@@ -125,6 +129,71 @@ public class CartridgeTest extends StratosTestServerManager {
         } catch (Exception e) {
             log.error("An error occurred while handling RESTConstants.CARTRIDGES_PATH", e);
             assertTrue("An error occurred while handling RESTConstants.CARTRIDGES_PATH", false);
+        }
+    }
+
+    @Test
+    public void testCartridgeList() {
+        log.info("--------------------Started Cartridge list test case-----------------------------");
+
+        try {
+            String cartridgeType1 = "c1-cartridge-test";
+            String cartridgeType2 = "c2-cartridge-test";
+            boolean added1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+                            cartridgeType1 + ".json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertEquals(added1, true);
+
+            boolean added2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+                            cartridgeType2 + ".json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertEquals(added2, true);
+
+            Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
+            }.getType();
+
+            List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(RestConstants.CARTRIDGES,
+                    listType, RestConstants.CARTRIDGES_NAME);
+            assertEquals(cartridgeList.size(), 2);
+
+            CartridgeBean bean1 = null;
+            for (CartridgeBean cartridgeBean : cartridgeList) {
+                if (cartridgeBean.getType().equals(cartridgeType1)) {
+                    bean1 = cartridgeBean;
+                }
+            }
+            assertNotNull(bean1);
+
+            CartridgeBean bean2 = null;
+            for (CartridgeBean cartridgeBean : cartridgeList) {
+                if (cartridgeBean.getType().equals(cartridgeType1)) {
+                    bean2 = cartridgeBean;
+                }
+            }
+            assertNotNull(bean2);
+
+            boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType1,
+                    RestConstants.CARTRIDGES_NAME);
+            assertEquals(removed, true);
+
+            CartridgeBean beanRemoved = (CartridgeBean) restClient.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType1,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(beanRemoved, null);
+
+            removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType2,
+                    RestConstants.CARTRIDGES_NAME);
+            assertEquals(removed, true);
+
+            beanRemoved = (CartridgeBean) restClient.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType2,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(beanRemoved, null);
+
+            log.info("---------------------------Ended Cartridge list test case-------------------------");
+        } catch (Exception e) {
+            log.error("An error occurred while handling Cartridges list", e);
+            assertTrue("An error occurred while handling Cartridges list", false);
         }
     }
 }

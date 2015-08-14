@@ -19,17 +19,20 @@
 
 package org.apache.stratos.integration.tests.policies;
 
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.*;
 
 /**
  * Test to handle Network partition CRUD operations
@@ -49,7 +52,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
                             networkPartitionId + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
 
-            assertEquals(added, true);
+            assertTrue(added);
             NetworkPartitionBean bean = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
@@ -65,7 +68,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
                             networkPartitionId + "-v1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
 
-            assertEquals(updated, true);
+            assertTrue(updated);
             NetworkPartitionBean updatedBean = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
@@ -81,12 +84,80 @@ public class NetworkPartitionTest extends StratosTestServerManager {
 
             boolean removed = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removed, true);
+            assertTrue(removed);
 
             NetworkPartitionBean beanRemoved = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(beanRemoved, null);
+            assertNull(beanRemoved);
+
+            log.info("-------------------------Ended network partition test case-------------------------");
+        } catch (Exception e) {
+            log.error("An error occurred while handling network partitions", e);
+            assertTrue("An error occurred while handling network partitions", false);
+        }
+    }
+
+    @Test
+    public void testNetworkPartitionList() {
+        try {
+            String networkPartitionId1 = "network-partition-network-partition-test-1";
+            String networkPartitionId2 = "network-partition-network-partition-test-2";
+
+            log.info("-------------------------Started network partition list test case-------------------------");
+
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            networkPartitionId1 + ".json",
+                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(added);
+
+            added = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            networkPartitionId2 + ".json",
+                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(added);
+
+            Type listType = new TypeToken<ArrayList<NetworkPartitionBean>>() {
+            }.getType();
+
+            List<NetworkPartitionBean> cartridgeList = (List<NetworkPartitionBean>) restClient.
+                    listEntity(RestConstants.NETWORK_PARTITIONS,
+                            listType, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(cartridgeList.size(), 2);
+
+            NetworkPartitionBean bean1 = null;
+            for (NetworkPartitionBean networkPartitionBean : cartridgeList) {
+                if (networkPartitionBean.getId().equals(networkPartitionId1)) {
+                    bean1 = networkPartitionBean;
+                }
+            }
+            assertNotNull(bean1);
+
+            NetworkPartitionBean bean2 = null;
+            for (NetworkPartitionBean networkPartitionBean : cartridgeList) {
+                if (networkPartitionBean.getId().equals(networkPartitionId2)) {
+                    bean2 = networkPartitionBean;
+                }
+            }
+            assertNotNull(bean2);
+
+
+            boolean removed = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    networkPartitionId1, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(removed);
+
+            NetworkPartitionBean beanRemoved = (NetworkPartitionBean) restClient.
+                    getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId1,
+                            NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertNull(beanRemoved);
+
+            removed = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    networkPartitionId2, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(removed);
+
+            beanRemoved = (NetworkPartitionBean) restClient.
+                    getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId2,
+                            NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertNull(beanRemoved);
 
             log.info("-------------------------Ended network partition test case-------------------------");
         } catch (Exception e) {

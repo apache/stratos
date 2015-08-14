@@ -46,8 +46,8 @@
                   ]
               },
               "cartridges": [
-                  "c4",
-                  "c5"
+                  "c3-group-termination-behavior-test",
+                  "c4-group-termination-behavior-test"
               ],
               "groups": [
               ]

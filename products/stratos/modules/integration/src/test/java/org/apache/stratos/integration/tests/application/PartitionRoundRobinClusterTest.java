@@ -52,7 +52,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
     public void testDeployApplication() {
         try {
             log.info("-------------------------------Started application Bursting test case-------------------------------");
-
+            TopologyHandler topologyHandler = TopologyHandler.getInstance();
             String autoscalingPolicyId = "autoscaling-policy-partition-round-robin-test";
 
             boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
@@ -97,11 +97,11 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
 
 
             //Application active handling
-            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+            topologyHandler.assertApplicationStatus(bean.getApplicationId(),
                     ApplicationStatus.Active);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
+            topologyHandler.assertClusterActivation(bean.getApplicationId());
 
             //Verifying whether members got created using round robin algorithm
             assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());
@@ -109,15 +109,15 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
             //Application in-active handling
             log.info("Waiting for the faulty member detection from " +
                     "CEP as the statistics are stopped...");
-            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+            topologyHandler.assertApplicationStatus(bean.getApplicationId(),
                     ApplicationStatus.Inactive);
 
             //Application active handling after application becomes active again
-            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+            topologyHandler.assertApplicationStatus(bean.getApplicationId(),
                     ApplicationStatus.Active);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
+            topologyHandler.assertClusterActivation(bean.getApplicationId());
 
             boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -141,7 +141,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("partition-round-robin-test");
+            boolean undeploy = topologyHandler.assertApplicationUndeploy("partition-round-robin-test");
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "partition-round-robin-test");
@@ -149,7 +149,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                 restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "partition-round-robin-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("partition-round-robin-test");
+                boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("partition-round-robin-test");
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "partition-round-robin-test"), forceUndeployed, true);
 

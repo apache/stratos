@@ -58,7 +58,7 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
     protected RestClient restClient;
-    private String endpoint = "https://localhost:9443";
+    private String endpoint = "http://localhost:9763";
 
     private BrokerService broker = new BrokerService();
     private TestLogAppender testLogAppender = new TestLogAppender();

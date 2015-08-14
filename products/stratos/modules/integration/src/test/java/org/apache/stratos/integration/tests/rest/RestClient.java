@@ -34,6 +34,7 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Type;
 import java.net.URI;
 
 /**
@@ -243,6 +244,35 @@ public class RestClient {
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return gson.fromJson(response.getContent(), responseJsonClass);
+                } else if (response.getStatusCode() == 404) {
+                    return null;
+                } else {
+                    ErrorResponse errorResponse = gson.fromJson(response.getContent(),
+                            ErrorResponse.class);
+                    if (errorResponse != null) {
+                        throw new RuntimeException(errorResponse.getErrorMessage());
+                    }
+                }
+            }
+            String msg = "An unknown error occurred while getting the " + entityName;
+            log.error(msg);
+            throw new RuntimeException(msg);
+        } catch (Exception e) {
+            String message = "Could not get " + entityName;
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public Object listEntity(String resourcePath, Type type, String entityName) {
+        try {
+            URI uri = new URIBuilder(this.endPoint + resourcePath).build();
+            HttpResponse response = doGet(uri);
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                    return gson.fromJson(response.getContent(), type);
                 } else if (response.getStatusCode() == 404) {
                     return null;
                 } else {

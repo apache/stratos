@@ -52,7 +52,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
     public void testDeployApplication() {
         try {
             log.info("-------------------------------Started Partition One after another test case-------------------------------");
-
+            TopologyHandler topologyHandler = TopologyHandler.getInstance();
             String autoscalingPolicyId = "autoscaling-policy-3";
 
             boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
@@ -101,11 +101,11 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
             assertEquals(deployed, true);
 
             //Application active handling
-            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+            topologyHandler.assertApplicationStatus(bean.getApplicationId(),
                     ApplicationStatus.Active);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId());
+            topologyHandler.assertClusterActivation(bean.getApplicationId());
 
             //Verifying whether members got created using round robin algorithm
             assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());
@@ -135,7 +135,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test");
+            boolean undeploy = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "single-cluster-scaling-test");
@@ -143,7 +143,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
                 restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test");
+                boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "single-cluster-scaling-test"), forceUndeployed, true);
 

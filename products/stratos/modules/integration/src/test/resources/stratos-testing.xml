@@ -21,22 +21,22 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="StratosIntegrationSuite">
-    <test name="CartridgeTest">
+   <!-- <test name="CartridgeTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.group.CartridgeTest" />
         </classes>
-    </test>
-    <test name="CartridgeGroupTest" >
+    </test>-->
+    <!--<test name="CartridgeGroupTest" >
         <classes>
             <class name="org.apache.stratos.integration.tests.group.CartridgeGroupTest" />
         </classes>
-    </test>
+    </test>-->
     <test name="NetworkPartitionTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.policies.NetworkPartitionTest" />
         </classes>
     </test>
-    <test name="ApplicationPolicyTest">
+    <!--<test name="ApplicationPolicyTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.policies.ApplicationPolicyTest" />
         </classes>
@@ -76,4 +76,9 @@
             <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest" />
         </classes>
     </test>
+    <test name="GroupTerminationBehaviorTest">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest" />
+        </classes>
+    </test>-->
 </suite>
