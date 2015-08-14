@@ -22,9 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.Partition;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
+import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.cloud.controller.iaases.vcloud.VCloudPartitionValidator;
+import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.Scope;
 
 import java.util.Properties;
 
@@ -34,17 +38,75 @@ import java.util.Properties;
  */
 public class GCEPartitionValidator implements PartitionValidator {
 
-    private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
-
+    private static final Log log = LogFactory.getLog(GCEPartitionValidator.class);
     private IaasProvider iaasProvider;
+    private Iaas iaas;
 
     @Override
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-        return iaasProvider;
+        try {
+            if (properties.containsKey(Scope.REGION.toString())) {
+                String region = properties.getProperty(Scope.REGION.toString());
+
+                if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
+
+                    String message = "Invalid partition detected, invalid region. [partition-id] " + partition.getId() +
+                            ", [region] " + region;
+                    log.error(message);
+                    throw new InvalidPartitionException(message);
+                }
+
+                iaas.isValidRegion(region);
+
+                IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
+                Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+                updatedIaas.setIaasProvider(updatedIaasProvider);
+
+                if (properties.containsKey(Scope.ZONE.toString())) {
+                    String zone = properties.getProperty(Scope.ZONE.toString());
+                    iaas.isValidZone(region, zone);
+                    updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
+                    updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+                    updatedIaas.setIaasProvider(updatedIaasProvider);
+                }
+
+                updateOtherProperties(updatedIaasProvider, properties);
+                return updatedIaasProvider;
+            } else {
+                return iaasProvider;
+            }
+        }
+        catch (Exception ex) {
+            String message = "Invalid partition detected: [partition-id] " + partition.getId();
+            throw new InvalidPartitionException(message, ex);
+        }
+    }
+
+    private void updateOtherProperties(IaasProvider updatedIaasProvider, Properties properties) {
+        Iaas updatedIaas;
+        try {
+            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+
+            for (Object property : properties.keySet()) {
+                if (property instanceof String) {
+                    String key = (String) property;
+                    updatedIaasProvider.setProperty(key, properties.getProperty(key));
+                    if (log.isDebugEnabled()) {
+                        log.debug("Added property " + key + " to the IaasProvider.");
+                    }
+                }
+            }
+            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+            updatedIaas.setIaasProvider(updatedIaasProvider);
+        }
+        catch (InvalidIaasProviderException ignore) {
+        }
+
     }
 
     @Override
     public void setIaasProvider(IaasProvider iaasProvider) {
         this.iaasProvider = iaasProvider;
+        this.iaas = iaasProvider.getIaas();
     }
 }

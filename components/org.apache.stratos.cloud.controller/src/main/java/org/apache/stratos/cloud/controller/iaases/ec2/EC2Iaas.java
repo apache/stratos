@@ -97,7 +97,7 @@ public class EC2Iaas extends JcloudsIaas {
                 if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
                         location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
                     templateBuilder.locationId(location.getId());
-                    log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
+                    log.info("zone has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
                             + " with id: " + location.getId());
                     break;
                 }
@@ -114,7 +114,7 @@ public class EC2Iaas extends JcloudsIaas {
 
         if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             if (!template.getLocation().getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
-                log.warn("couldn't find assignable ZONE of id :" +
+                log.warn("couldn't find assignable zone of id :" +
                         iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) + " in the IaaS. " +
                         "Hence using the default location as " + template.getLocation().getScope().toString() +
                         " with the id " + template.getLocation().getId());
@@ -374,7 +374,7 @@ public class EC2Iaas extends JcloudsIaas {
 
         if (region == null || iaasInfo == null) {
             String msg =
-                    "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " +
+                    "Region or IaaSProvider is null. [region] " + region + ", [IaaSProvider] " +
                             iaasInfo;
             log.error(msg);
             throw new InvalidRegionException(msg);
@@ -402,7 +402,7 @@ public class EC2Iaas extends JcloudsIaas {
 
         if (zone == null || iaasInfo == null) {
             String msg =
-                    "Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
+                    "Zone or IaaSProvider is null. [zone] " + zone + ", [IaaSProvider] " +
                             iaasInfo;
             log.error(msg);
             throw new InvalidZoneException(msg);

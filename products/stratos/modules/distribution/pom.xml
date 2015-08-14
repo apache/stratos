@@ -482,7 +482,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>${project.version}</version>
+            <version>4.2.0-stratosv1</version>
         </dependency>
     </dependencies>
     <build>

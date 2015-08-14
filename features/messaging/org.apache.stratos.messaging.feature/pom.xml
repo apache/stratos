@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${gson2.version}</version>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 
@@ -66,7 +66,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
-                                <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
+                                <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
                                 <bundleDef>org.apache.commons:commons-lang3:3.1</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-api:1.6.4</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12:1.6.4</bundleDef>

@@ -119,7 +119,7 @@ public abstract class JcloudsIaas extends Iaas {
             Template template = getIaasProvider().getTemplate();
 
             if (template == null) {
-                String msg = "Could not start an instance, jclouds template is null for iaas provider [type]: " +
+                String msg = "Could not start an instance, jclouds template is null for iaas provider. [type] " +
                         getIaasProvider().getType();
                 log.error(msg);
                 throw new InvalidIaasProviderException(msg);

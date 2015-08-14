@@ -19,7 +19,6 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
@@ -38,7 +37,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -62,8 +60,10 @@
                             org.wso2.carbon.utils.*,
                             org.apache.stratos.kubernetes.client,
                             org.apache.stratos.kubernetes.client.exceptions,
-                            <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
-                            org.jclouds*;version="${jclouds.version}",-->
+                            org.jclouds.aws.ec2.*,
+                            org.jclouds.ec2.*,
+                            org.jclouds.compute.*,
+                            org.jclouds.domain.*,
                             *; resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
+            <version>16.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
@@ -220,9 +220,9 @@
             <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
+            <groupId>org.apache.stratos.jclouds</groupId>
             <artifactId>aws-ec2</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
@@ -230,9 +230,9 @@
             <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
+            <groupId>org.apache.jclouds.labs</groupId>
             <artifactId>openstack-neutron</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
@@ -245,14 +245,9 @@
             <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>vcloud</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>gce</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
+            <groupId>org.apache.jclouds.labs</groupId>
+            <artifactId>google-compute-engine</artifactId>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jamesmurty.utils.wso2</groupId>
@@ -326,4 +321,3 @@
         <sun.jersey.version>1.12</sun.jersey.version>
     </properties>
 </project>
-

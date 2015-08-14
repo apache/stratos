@@ -34,14 +34,14 @@ class THttpClient(TTransportBase):
   def __init__(self, uri_or_host, port=None, path=None):
     """THttpClient supports two different types constructor parameters.
 
-    THttpClient(host, port, path) - deprecated
+    THttpClient(HOST, port, path) - deprecated
     THttpClient(uri)
 
     Only the second supports https.
     """
     if port is not None:
       warnings.warn(
-        "Please use the THttpClient('http://host:port/path') syntax",
+        "Please use the THttpClient('http://HOST:port/path') syntax",
         DeprecationWarning,
         stacklevel=2)
       self.host = uri_or_host

@@ -24,7 +24,7 @@ appending_file=$3
 subdomain=$1
 ip=$2
 
-#appending the zone file
+#appending the ZONE file
 echo $subdomain'\t'IN'\t'A'\t'$ip>> $appending_file
 
 #increasing the count

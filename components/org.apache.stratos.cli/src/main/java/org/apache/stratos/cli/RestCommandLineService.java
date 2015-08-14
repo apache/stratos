@@ -1374,7 +1374,8 @@ public class RestCommandLineService {
      * @throws CommandException
      */
     public void undeployKubernetesHost(String clusterId, String hostId) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId), "kubernetes host", hostId);
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId),
+                "kubernetes host", hostId);
     }
 
     /**

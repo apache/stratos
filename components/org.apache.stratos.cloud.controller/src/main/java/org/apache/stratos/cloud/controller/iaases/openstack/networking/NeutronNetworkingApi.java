@@ -526,11 +526,13 @@ public class NeutronNetworkingApi implements OpenstackNetworkingApi {
         }
 
         this.portApi = neutronApi.getPortApi(region);
-        String portApiNullOrEmptyErrorMessage = String.format("Unable to get port Api from neutron Api for region ", region);
+        String portApiNullOrEmptyErrorMessage = String.format("Unable to get port Api from neutron Api for region: %s",
+                region);
         assertNotNull(portApi, portApiNullOrEmptyErrorMessage);
 
         this.floatingIPApi = neutronApi.getFloatingIPApi(region).get();
-        String floatingIPApiNullOrEmptyErrorMessage = String.format("Unable to get floatingIP Api from neutron Api for region ", region);
+        String floatingIPApiNullOrEmptyErrorMessage = String.format("Unable to get floatingIP Api from neutron Api " +
+                "for region: %s", region);
         assertNotNull(floatingIPApi, floatingIPApiNullOrEmptyErrorMessage);
     }
 

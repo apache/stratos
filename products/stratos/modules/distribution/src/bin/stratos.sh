@@ -264,7 +264,7 @@ cd "$CARBON_HOME"
 START_EXIT_STATUS=121
 status=$START_EXIT_STATUS
 
-#To monitor a Carbon server in remote JMX mode on linux host machines, set the below system property.
+#To monitor a Carbon server in remote JMX mode on linux HOST machines, set the below system property.
 #   -Djava.rmi.server.hostname="your.IP.goes.here"
 
 while [ "$status" = "$START_EXIT_STATUS" ]

@@ -418,8 +418,8 @@ public class StratosApiV41Utils {
             throw new RestAPIException(errorMsg, axisFault);
         } catch (RemoteException e) {
             String errorMsg =
-                    String.format("Error while getting cartridge information for provider %s  Cause: %s ", provider,
-                            e.getMessage());
+                    String.format("Error while getting cartridge information for [provider] %s,  [cause] %s ",
+                            provider, e.getMessage());
             log.error(errorMsg, e);
             throw new RestAPIException(errorMsg, e);
         }

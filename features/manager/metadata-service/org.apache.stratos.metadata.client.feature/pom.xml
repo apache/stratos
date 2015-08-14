@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${gson2.version}</version>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -99,7 +99,7 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.metadata.client:${project.version}
                                 </bundleDef>
-                                <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
+                                <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
                                 <bundleDef>org.apache.commons:commons-lang3:3.1</bundleDef>
                                 <bundleDef>org.apache.httpcomponents:httpclient-osgi:4.3.5</bundleDef>
                                 <bundleDef>org.apache.httpcomponents:httpcore-osgi:4.3.2</bundleDef>

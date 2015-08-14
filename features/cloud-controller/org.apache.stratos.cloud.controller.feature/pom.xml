@@ -19,7 +19,6 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cloud-controller-features</artifactId>
@@ -33,230 +32,6 @@
     <name>Apache Stratos - Cloud Controller Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the required bundles for the functionality of Cloud Controller</description>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.cloud.controller</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.kubernetes.client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.3.0.wso2v1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.5.wso2v1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>17.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch.agentproxy.jsch</artifactId>
-            <version>0.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch.agentproxy.core</artifactId>
-            <version>0.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch.agentproxy.connector-factory</artifactId>
-            <version>0.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>net.schmizz</groupId>
-            <artifactId>sshj</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-core</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-compute</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-bouncycastle</artifactId>
-            <version>${jclouds.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk16</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-sshj</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-log4j</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.driver</groupId>
-            <artifactId>jclouds-enterprise</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>cloudstack</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>ec2</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>aws-ec2</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>openstack-nova</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>openstack-keystone</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>openstack-neutron</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-scriptbuilder</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>sts</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jamesmurty.utils.wso2</groupId>
-            <artifactId>java-xmlbuilder</artifactId>
-            <version>0.4.wso2v1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>vcloud</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>gce</artifactId>
-            <version>${project.jclouds.stratos.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guice.wso2</groupId>
-            <artifactId>guice</artifactId>
-            <version>${google.guice.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guice.assistedinject.wso2</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-            <version>${com.google.guice.assistedinject.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <version>${sun.jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.oauth.core</groupId>
-            <artifactId>oauth</artifactId>
-            <version>20100527</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io.wso2</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.0.0.wso2v1</version>
-        </dependency>
-        <dependency>
-            <groupId>rhino.wso2</groupId>
-            <artifactId>js</artifactId>
-            <version>1.7.0.R1-wso2v3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.andes.wso2</groupId>
-            <artifactId>andes-client</artifactId>
-            <version>0.13.wso2v8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jsch-agentproxy-jsch</artifactId>
-            <version>0.0.7_1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch.agentproxy.usocket-nc</artifactId>
-            <version>0.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jsch-agentproxy-sshj</artifactId>
-            <version>0.0.7_1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jzlib</artifactId>
-            <version>1.1.1_1</version>
-        </dependency>
-        <!-- Dependencies for fabric8 kubernetes api client -->
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>kubernetes-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -307,60 +82,82 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.kubernetes.client:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.mock.iaas.client:${project.version}</bundleDef>
+                                <!-- Stratos bundles -->
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}
+                                </bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.kubernetes.client:${project.version}
+                                </bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.mock.iaas.client:${project.version}
+                                </bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}
+                                </bundleDef>
+
+                                <!-- Forked bundles -->
+                                <bundleDef>org.apache.stratos:aws-ec2:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:jclouds-labs-google-bundle:${jclouds.version}
+                                </bundleDef>
+                                <bundleDef>org.apache.stratos:kubernetes-api:${project.version}</bundleDef>
+
+                                <!-- jclouds bundles -->
                                 <bundleDef>org.apache.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>
-                                <!--bundleDef>org.apache.jclouds.driver:jclouds-log4j:${jclouds.version}</bundleDef-->
                                 <bundleDef>org.apache.jclouds.driver:jclouds-enterprise:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-core:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-compute:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:ec2:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:openstack-nova:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:openstack-neutron:${project.jclouds.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:vcloud:${project.jclouds.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:gce:${project.jclouds.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:aws-ec2:${project.jclouds.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
-                                <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
+                                <bundleDef>org.apache.jclouds.labs:openstack-neutron:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
-                                <bundleDef>com.google.guava:guava:17.0</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:cloudstack:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-jsch:0.0.7_1</bundleDef>
+                                <bundleDef>org.apache.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-joda:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-netty:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-slf4j:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
+
+                                <!-- jclouds dependencies -->
+                                <bundleDef>com.google.guava:guava:16.0.1</bundleDef>
+                                <bundleDef>
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-jsch:0.0.7_1
+                                </bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.connector-factory:0.0.7</bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.sshagent:0.0.7</bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.usocket-nc:0.0.7</bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.core:0.0.7</bundleDef>
                                 <bundleDef>net.java.dev.jna:jna:4.1.0</bundleDef>
-                                <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-sshj:0.0.7_1</bundleDef>
+                                <bundleDef>
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-sshj:0.0.7_1
+                                </bundleDef>
                                 <bundleDef>net.schmizz:sshj:0.9.0</bundleDef>
-                                <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jzlib:1.1.1_1</bundleDef>
-                                <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
+                                <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jzlib:1.1.1_1
+                                </bundleDef>
+                                <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
                                 <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
-                                <bundleDef>com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}</bundleDef>
+                                <bundleDef>
+                                    com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}
+                                </bundleDef>
                                 <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
-                                <bundleDef>org.apache.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
+
                                 <bundleDef>org.99soft.guice.wso2:rocoto:6.1.wso2v1</bundleDef>
                                 <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:1.45.wso2v1</bundleDef>
                                 <bundleDef>net.schmizz:sshj:0.8.0</bundleDef>
-                                <bundleDef>org.apache.jclouds.driver:jclouds-joda:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.jclouds.driver:jclouds-netty:${jclouds.version}</bundleDef>
+
+                                <!-- Misc -->
+                                <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
+                                <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
                                 <bundleDef>io.netty:netty:3.3.0.Final</bundleDef>
                                 <bundleDef>commons-io.wso2:commons-io:2.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-api:1.7.0</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12:1.7.0</bundleDef>
-                                <bundleDef>org.apache.jclouds.driver:jclouds-slf4j:${jclouds.version}</bundleDef>
-                                <bundleDef>com.google.common.wso2:google-collect:${google.collect.osgi.version}</bundleDef>
+
+                                <bundleDef>com.google.common.wso2:google-collect:${google.collect.osgi.version}
+                                </bundleDef>
                                 <bundleDef>jdom.wso2:jdom:1.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.json.wso2:json:1.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.apache.httpcomponents.wso2:httpcore:4.3.0.wso2v1</bundleDef>
                                 <bundleDef>org.apache.httpcomponents.wso2:httpclient:4.2.5.wso2v1</bundleDef>
-                                <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:kubernetes-api:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>

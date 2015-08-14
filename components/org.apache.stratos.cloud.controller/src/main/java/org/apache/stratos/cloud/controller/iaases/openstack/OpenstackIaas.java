@@ -266,8 +266,8 @@ public class OpenstackIaas extends JcloudsIaas {
 
         // jclouds availability zone = stratos zone
         if (region == null || zone == null || iaasInfo == null) {
-            String msg = "Host or Zone or IaaSProvider is null: region: " + region + " - zone: " +
-                    zone + " - IaaSProvider: " + iaasInfo;
+            String msg = "Host or Zone or IaaSProvider is null. [region] " + region + ", [zone] " +
+                    zone + ", [IaaSProvider] " + iaasInfo;
             log.error(msg);
             throw new InvalidZoneException(msg);
         }
@@ -295,7 +295,8 @@ public class OpenstackIaas extends JcloudsIaas {
         IaasProvider iaasInfo = getIaasProvider();
 
         if (host == null || zone == null || iaasInfo == null) {
-            String msg = String.format("Host or Zone or IaaSProvider is null: host: %s - zone: %s - IaaSProvider: %s", host, zone, iaasInfo);
+            String msg = String.format("Host or Zone or IaaSProvider is null. [host] %s, [zone] %s, [IaaSProvider] %s",
+                    host, zone, iaasInfo);
             log.error(msg);
             throw new InvalidHostException(msg);
         }
@@ -313,7 +314,8 @@ public class OpenstackIaas extends JcloudsIaas {
             }
         }
 
-        String msg = String.format("Invalid host: %s in the zone: %s and of the iaas: %s", host, zone, iaasInfo.getType());
+        String msg = String.format("Invalid host: %s in the zone: %s and of the iaas: %s", host, zone, iaasInfo.getType
+                ());
         log.error(msg);
         throw new InvalidHostException(msg);
     }
@@ -357,7 +359,8 @@ public class OpenstackIaas extends JcloudsIaas {
         }
 
         if (volume == null) {
-            log.fatal(String.format("Volume creation was unsuccessful. [region] : %s [zone] : %s of Iaas : %s", region, zone, iaasInfo));
+            log.fatal(String.format("Volume creation was unsuccessful. [region] %s, [zone] %s, [Iaas] %s", region,
+                    zone, iaasInfo));
             return null;
         }
 
@@ -378,7 +381,8 @@ public class OpenstackIaas extends JcloudsIaas {
             return volumeId;
         }
         */
-        log.info(String.format("Successfully created a new volume [id]: %s in [region] : %s [zone] : %s of Iaas : %s [Volume ID]%s", volume.getId(), region, zone, iaasInfo, volume.getId()));
+        log.info(String.format("Successfully created a new volume [id]: %s in [region] : %s [zone] : %s of Iaas : %s " +
+                "[Volume ID]%s", volume.getId(), region, zone, iaasInfo, volume.getId()));
         return volumeId;
     }
 
