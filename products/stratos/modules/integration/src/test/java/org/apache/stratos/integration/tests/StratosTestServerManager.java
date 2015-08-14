@@ -60,6 +60,7 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
     protected RestClient restClientAdmin;
     protected RestClient restClientTenant1;
+    protected RestClient restClientTenant2;
     private String endpoint = "https://localhost:9443";
 
     private BrokerService broker = new BrokerService();
@@ -75,7 +76,7 @@ public class StratosTestServerManager extends TestServerManager {
         serverUtils = new ServerUtils();
         restClientAdmin=new RestClient(endpoint,"admin","admin");
         restClientTenant1 = new RestClient(endpoint, "admin", "admin");
-     //   restClientTenant1 = new RestClient(endpoint, "admin", "admin");
+        restClientTenant2 = new RestClient(endpoint, "admin", "admin");
         mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
     }
 
