@@ -288,7 +288,7 @@ dialect "mvel"
 
                 }
             } else {
-                log.info("[scale-down] Min is reached, hence not scaling down [cluster] " + clusterId + " [instance id]"
+                log.debug("[scale-down] Min is reached, hence not scaling down [cluster] " + clusterId + " [instance id]"
                     + clusterInstanceContext.getId());
                 //if(clusterInstanceContext.isInGroupScalingEnabledSubtree()){
 
