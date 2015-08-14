@@ -555,5 +555,6 @@
         <jclouds.version>1.9.1</jclouds.version>
         <kubernetes.api.version>2.2.16</kubernetes.api.version>
         <store.version>1.0.1</store.version>
+        <gson.version>2.3</gson.version>
     </properties>
 </project>

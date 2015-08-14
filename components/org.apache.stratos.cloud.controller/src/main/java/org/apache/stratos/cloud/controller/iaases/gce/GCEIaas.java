@@ -103,8 +103,7 @@ public class GCEIaas extends JcloudsIaas {
                 if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
                         location.getId().equals(zone)) {
                     templateBuilder.locationId(location.getId());
-                    log.info("zone has been set as " + zone
-                            + " with id: " + location.getId());
+                    log.info("zone has been set as " + zone + " with id: " + location.getId());
                     break;
                 }
             }
@@ -147,11 +146,9 @@ public class GCEIaas extends JcloudsIaas {
 
         for (String propertyKey : iaasInfo.getProperties().keySet()) {
             if (propertyKey.startsWith(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX)) {
-                keyValuePairTagsMap
-                        .put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
-                                iaasInfo.getProperties().get(propertyKey));
-                template.getOptions()
-                        .userMetadata(keyValuePairTagsMap);
+                keyValuePairTagsMap.put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX
+                        .length()), iaasInfo.getProperties().get(propertyKey));
+                template.getOptions().as(GoogleComputeEngineTemplateOptions.class).userMetadata(keyValuePairTagsMap);
             }
             log.info("usermeta data key:" + propertyKey + " value: " + iaasInfo.getProperties().get(propertyKey));
         }

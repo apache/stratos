@@ -62,7 +62,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.1</version>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
@@ -129,7 +129,7 @@
                                 <bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
                                 <bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
-                                <bundleDef>com.google.code.gson:gson:2.1</bundleDef>
+                                <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
                                 <bundleDef>org.apache.commons:commons-lang3:3.1</bundleDef>
                                 <bundleDef>org.eclipse.jgit:org.eclipse.jgit:2.1.0.wso2v1</bundleDef>
                                 <bundleDef>com.jcraft:jsch:0.1.49.wso2v1</bundleDef>

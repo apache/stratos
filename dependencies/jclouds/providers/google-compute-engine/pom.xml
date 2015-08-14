@@ -48,11 +48,6 @@
             <artifactId>oauth</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.auto.value</groupId>
-            <artifactId>auto-value</artifactId>
-            <version>1.1</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -103,9 +98,10 @@
                         </Private-Package>
                         <Import-Package>
                             !org.jclouds.googlecomputeengine.*,
-                            org.jclouds.compute.internal;version="${jclouds.version}",
-                            org.jclouds.rest.internal;version="${jclouds.version}",
-                            org.jclouds*;version="${jclouds.version}",
+                            !org.jclouds.googlecloud.*,
+                            !org.jclouds.oauth.v2.*,
+                            org.jclouds.compute.*; version="${jclouds.version}",
+                            org.jclouds.rest.*; version="${jclouds.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Include-Resource>
