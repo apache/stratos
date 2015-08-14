@@ -222,7 +222,7 @@
             <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos.jclouds</groupId>
+            <groupId>org.apache.stratos</groupId>
             <artifactId>aws-ec2</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
