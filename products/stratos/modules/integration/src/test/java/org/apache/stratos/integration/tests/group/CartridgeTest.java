@@ -51,7 +51,7 @@ public class CartridgeTest extends StratosTestServerManager {
             boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(added, true);
+            assertTrue(added);
             CartridgeBean bean = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
@@ -85,7 +85,7 @@ public class CartridgeTest extends StratosTestServerManager {
             boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(updated, true);
+            assertTrue(updated);
             CartridgeBean updatedBean = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
@@ -118,12 +118,12 @@ public class CartridgeTest extends StratosTestServerManager {
 
             boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
                     RestConstants.CARTRIDGES_NAME);
-            assertEquals(removed, true);
+            assertTrue(removed);
 
             CartridgeBean beanRemoved = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertEquals(beanRemoved, null);
+            assertNull(beanRemoved);
 
             log.info("---------------------------Ended Cartridge test case-------------------------");
         } catch (Exception e) {
@@ -142,12 +142,12 @@ public class CartridgeTest extends StratosTestServerManager {
             boolean added1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType1 + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(added1, true);
+            assertTrue(added1);
 
             boolean added2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType2 + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(added2, true);
+            assertTrue(added2);
 
             Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
             }.getType();
@@ -174,7 +174,7 @@ public class CartridgeTest extends StratosTestServerManager {
 
             boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType1,
                     RestConstants.CARTRIDGES_NAME);
-            assertEquals(removed, true);
+            assertTrue(removed);
 
             CartridgeBean beanRemoved = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType1,
@@ -183,12 +183,12 @@ public class CartridgeTest extends StratosTestServerManager {
 
             removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType2,
                     RestConstants.CARTRIDGES_NAME);
-            assertEquals(removed, true);
+            assertTrue(removed);
 
             beanRemoved = (CartridgeBean) restClient.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType2,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertEquals(beanRemoved, null);
+            assertNull(beanRemoved);
 
             log.info("---------------------------Ended Cartridge list test case-------------------------");
         } catch (Exception e) {
