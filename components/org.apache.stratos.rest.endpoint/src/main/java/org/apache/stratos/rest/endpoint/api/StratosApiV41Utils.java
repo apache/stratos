@@ -1383,12 +1383,11 @@ public class StratosApiV41Utils {
         }
         String cartridgeUuid;
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        if (serviceGroup.getCartridges() != null) {
+        if (serviceGroup.getCartridges().length > 0) {
             for (String cartridgeName : serviceGroup.getCartridges()) {
-                cartridgeUuid = CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeName,
-                        carbonContext.getTenantId()).getUuid();
                 if (cartridgeName != null && (!cartridgeNames.contains(cartridgeName))) {
-
+                    cartridgeUuid = CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeName,
+                            carbonContext.getTenantId()).getUuid();
                     cartridgeNames.add(cartridgeUuid);
                 }
             }
