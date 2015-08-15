@@ -1,0 +1,44 @@
+{
+    "type": "stratos-lb",
+    "provider": "stratos",
+    "category": "load-balancer",
+    "host": "complex-app-with-lb",
+    "displayName": "Stratos Load Balancer",
+    "description": "Stratos Load Balancer Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "name": "http-22",
+            "protocol": "http",
+            "port": "22",
+            "proxyPort": "8280"
+        }
+    ],
+    "deployment": {
+    },
+    "iaasProvider": [
+        {
+            "type": "mock",
+            "imageId": "image1",
+            "property": [
+                {
+                    "name": "instanceType",
+                    "value": "instanceType1"
+                },
+                {
+                    "name": "keyPair",
+                    "value": "default"
+                },
+                {
+                    "name": "securityGroups",
+                    "value": "default"
+                }
+            ]
+        }
+    ],
+    "metadataKeys": [
+        "writeparam3",
+        "writeparam4"
+    ]
+}

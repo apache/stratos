@@ -1,0 +1,31 @@
+{
+    "type": "tomcat3",
+    "provider": "apache",
+    "host": "tomcat.stratos.org",
+    "category": "framework",
+    "displayName": "Tomcat 7",
+    "description": "Tomcat 7 Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "name": "http-8080",
+            "protocol": "http",
+            "port": "8080",
+            "proxyPort": "8280"
+        }
+    ],
+    "deployment": {
+        "baseDir": "/opt/tomcat/webapps"
+    },
+    "iaasProvider": [
+        {
+            "type": "mock",
+            "imageId": "not-needed",
+            "networkInterfaces": [
+            ],
+            "property": [
+            ]
+        }
+    ]
+}

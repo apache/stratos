@@ -26,10 +26,7 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.apache.stratos.integration.tests.TopologyHandler;
-import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
-import org.apache.stratos.messaging.domain.application.Group;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -89,7 +86,7 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
                             "network-partition-group-termination-behavior-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertTrue(addedN1);
-            
+
             boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             "deployment-policy-group-termination-behavior-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
@@ -164,6 +161,7 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
                     ApplicationStatus.Active);
 
             assertCreationOfNodes(groupId, clusterIdC2);
+
             assertCreationOfNodes(clusterIdC3, clusterIdC4);
 
             //Group active handling
@@ -274,7 +272,7 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         long startTime = System.currentTimeMillis();
         Map<String, Long> inActiveMap = TopologyHandler.getInstance().getInActiveMembers();
 
-        while(!inActiveMap.containsKey(clusterId)) {
+        while (!inActiveMap.containsKey(clusterId)) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
@@ -286,7 +284,7 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         }
         assertTrue(inActiveMap.containsKey(clusterId));
 
-        while(!inActiveMap.containsKey(groupId)) {
+        while (!inActiveMap.containsKey(groupId)) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
@@ -302,9 +300,9 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
 
     private void assertTerminatingOfNodes(String groupId, List<String> clusterIds) {
         Map<String, Long> terminatingMembers = TopologyHandler.getInstance().getTerminatingMembers();
-        for(String clusterId : clusterIds) {
+        for (String clusterId : clusterIds) {
             long startTime = System.currentTimeMillis();
-            while(!terminatingMembers.containsKey(clusterId)) {
+            while (!terminatingMembers.containsKey(clusterId)) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignore) {
@@ -317,7 +315,7 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             assertTrue(terminatingMembers.containsKey(groupId));
         }
         long startTime = System.currentTimeMillis();
-        while(!terminatingMembers.containsKey(groupId)) {
+        while (!terminatingMembers.containsKey(groupId)) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
@@ -335,8 +333,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         long startTime = System.currentTimeMillis();
         Map<String, Long> terminatedMembers = TopologyHandler.getInstance().getTerminatedMembers();
 
-        for(String clusterId : clusterIds) {
-            while(!terminatedMembers.containsKey(clusterId)) {
+        for (String clusterId : clusterIds) {
+            while (!terminatedMembers.containsKey(clusterId)) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignore) {
@@ -349,7 +347,7 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             assertTrue(terminatedMembers.containsKey(clusterId));
         }
 
-        while(!terminatedMembers.containsKey(groupId)) {
+        while (!terminatedMembers.containsKey(groupId)) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {

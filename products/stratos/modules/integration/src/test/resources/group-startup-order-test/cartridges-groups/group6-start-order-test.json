@@ -1,0 +1,19 @@
+{
+    "name": "group6-group-startup-order-test",
+    "cartridges": [
+        "tomcat2-group-startup-order-test",
+        "tomcat1-group-startup-order-test"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            {
+                "aliases": [
+                    "cartridge.my-tomcat2-group-startup-order-test",
+                    "cartridge.my-tomcat1-group-startup-order-test"
+                ]
+            }
+        ],
+        "terminationBehaviour": "terminate-all"
+    }
+}
+
