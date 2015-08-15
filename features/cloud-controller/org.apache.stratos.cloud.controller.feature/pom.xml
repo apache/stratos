@@ -117,47 +117,46 @@
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
 
                                 <!-- jclouds dependencies -->
+                                <bundleDef>com.jcraft:jsch.agentproxy.core:0.0.8</bundleDef>
+                                <bundleDef>com.jcraft:jsch.agentproxy.connector-factory:0.0.8</bundleDef>
+                                <bundleDef>com.jcraft:jsch.agentproxy.sshagent:0.0.8</bundleDef>
+                                <bundleDef>
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-sshj:0.0.8_1
+                                </bundleDef>
+                                <bundleDef>com.jcraft:jsch.agentproxy.usocket-nc:0.0.8</bundleDef>
+                                <bundleDef>io.netty:netty:3.5.9.Final</bundleDef>
                                 <bundleDef>com.google.guava:guava:16.0.1</bundleDef>
-                                <bundleDef>
-                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-jsch:0.0.7_1
-                                </bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.connector-factory:0.0.7</bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.sshagent:0.0.7</bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.usocket-nc:0.0.7</bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.core:0.0.7</bundleDef>
+                                <bundleDef>net.schmizz:sshj:0.8.1</bundleDef>
                                 <bundleDef>net.java.dev.jna:jna:4.1.0</bundleDef>
-                                <bundleDef>
-                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-sshj:0.0.7_1
-                                </bundleDef>
-                                <bundleDef>net.schmizz:sshj:0.9.0</bundleDef>
+                                <bundleDef>net.java.dev.jna:jna-platform:4.1.0</bundleDef>
                                 <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jzlib:1.1.1_1
                                 </bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
-                                <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
+                                <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.guice:3.0_1
+                                </bundleDef>
                                 <bundleDef>
                                     com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}
                                 </bundleDef>
-                                <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
-
                                 <bundleDef>org.99soft.guice.wso2:rocoto:6.1.wso2v1</bundleDef>
                                 <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:1.45.wso2v1</bundleDef>
-                                <bundleDef>net.schmizz:sshj:0.8.0</bundleDef>
+                                <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
+                                <bundleDef>
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.javax-inject:1_2
+                                </bundleDef>
 
                                 <!-- Misc -->
+                                <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
                                 <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
                                 <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
-                                <bundleDef>io.netty:netty:3.3.0.Final</bundleDef>
                                 <bundleDef>commons-io.wso2:commons-io:2.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-api:1.7.0</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12:1.7.0</bundleDef>
-
                                 <bundleDef>com.google.common.wso2:google-collect:${google.collect.osgi.version}
                                 </bundleDef>
                                 <bundleDef>jdom.wso2:jdom:1.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.json.wso2:json:1.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.apache.httpcomponents.wso2:httpcore:4.3.0.wso2v1</bundleDef>
                                 <bundleDef>org.apache.httpcomponents.wso2:httpclient:4.2.5.wso2v1</bundleDef>
-                                <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
