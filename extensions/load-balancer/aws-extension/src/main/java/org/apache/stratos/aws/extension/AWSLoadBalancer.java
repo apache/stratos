@@ -42,12 +42,11 @@ public class AWSLoadBalancer implements LoadBalancer {
 	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
 	// A map <clusterId, load balancer id>
-	private static ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap;
+	private static ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LoadBalancerInfo>();
 
 	private AWSHelper awsHelper;
 
 	public AWSLoadBalancer() throws LoadBalancerExtensionException {
-		clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LoadBalancerInfo>();
 		awsHelper = new AWSHelper();
 	}
 
@@ -219,17 +218,23 @@ public class AWSLoadBalancer implements LoadBalancer {
 			}
 
 			// Find out clusters which were present earlier but are not now.
-			// Delete load balancers associated with those clusters.
+			List<String> clustersToRemoveFromMap = new ArrayList<String>();
 
 			for (String clusterId : clusterIdToLoadBalancerMap.keySet()) {
 				if (!activeClusters.contains(clusterId)) {
-					// Remove load balancer for that cluster.
-					awsHelper.deleteLoadBalancer(clusterIdToLoadBalancerMap
-							.get(clusterId).getName(),
-							clusterIdToLoadBalancerMap.get(clusterId)
-									.getRegion());
-					clusterIdToLoadBalancerMap.remove(clusterId);
+					clustersToRemoveFromMap.add(clusterId);
 				}
+			}
+
+			// Delete load balancers associated with these clusters.
+			for(String clusterId : clustersToRemoveFromMap)
+			{
+				// Remove load balancer for this cluster.
+				awsHelper.deleteLoadBalancer(clusterIdToLoadBalancerMap
+						.get(clusterId).getName(),
+						clusterIdToLoadBalancerMap.get(clusterId)
+								.getRegion());
+				clusterIdToLoadBalancerMap.remove(clusterId);
 			}
 
 			activeClusters.clear();

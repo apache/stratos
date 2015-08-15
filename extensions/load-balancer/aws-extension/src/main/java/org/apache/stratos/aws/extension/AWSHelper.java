@@ -308,8 +308,7 @@ public class AWSHelper {
 			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			RegisterInstancesWithLoadBalancerResult result = elbClient
-					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
+			elbClient.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
 
 		} catch (AmazonClientException e) {
 			log.error("Could not register instances to load balancer "
@@ -339,8 +338,7 @@ public class AWSHelper {
 			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			DeregisterInstancesFromLoadBalancerResult result = elbClient
-					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
+			elbClient.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
 
 		} catch (AmazonClientException e) {
 			log.error("Could not de-register instances from load balancer "
