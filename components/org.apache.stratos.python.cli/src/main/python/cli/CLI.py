@@ -58,7 +58,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_users(self, line , opts=None):
-        """Illustrate the base class method use."""
+        """List the users of Stratos"""
         try:
             users = Stratos.list_users()
             table = PrintableTable()
@@ -81,16 +81,20 @@ class CLI(Cmd):
         make_option('-e', '--email', type="str", help="Email of the user"),
         make_option('-o', '--profile_name', type="str", help="Profile name of the user")
     ])
-    @auth
     def do_add_user(self, line , opts=None):
         """Add a new user to the system"""
         try:
-            user = Stratos.add_users(opts.username_user, opts.password_user, opts.role_name, opts.first_name, opts.last_name,
-                                       opts.email, opts.profile_name)
-            if user:
-                print("User successfully created")
+            if not opts.username_user or not opts.password_user:
+                print("usage: add-user [-s <username>] [-a <credential>] [-r <role>] [-e <email>] [-f <first name>]" +
+                      " [-l <last name>] [-o <profile name>]")
+                return
             else:
-                print("Error creating the user")
+                user = Stratos.add_users(opts.username_user, opts.password_user, opts.role_name, opts.first_name, opts.last_name,
+                                       opts.email, opts.profile_name)
+                if user:
+                    print("User successfully created")
+                else:
+                    print("Error creating the user")
         except AuthenticationError as e:
             self.perror("Authentication Error")
 
@@ -130,6 +134,7 @@ class CLI(Cmd):
                 print("usage: remove-user [username]")
             else:
                 user_removed = Stratos.remove_user(name)
+                print(user_removed)
                 if user_removed:
                     print("You have successfully deleted user: "+name)
                 else:
@@ -160,7 +165,6 @@ class CLI(Cmd):
             table = PrintableTable()
             rows = [["Application ID", "Alias", "Status"]]
             for application in applications:
-                PrintableJSON(application).pprint()
                 rows.append([application['applicationId'], application['alias'], application['status']])
             table.add_rows(rows)
             table.print_table()
@@ -222,6 +226,28 @@ class CLI(Cmd):
         except AuthenticationError as e:
             self.perror("Authentication Error")
 
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-a', '--application_id', type="str", help="Unique ID of the application"),
+        make_option('-o', '--application_policy_id', type="str", help="Unique ID of the application policy")
+    ])
+    @auth
+    def do_deploy_application(self, line , opts=None):
+        """Deploy an application."""
+        try:
+            if not opts.application_id or not opts.application_policy_id:
+                print("usage: deploy-application [-a <applicationId>] [-o <applicationPolicyId>]")
+            else:
+                application_removed = Stratos.deploy_application(opts.application_id, opts.application_policy_id)
+                if application_removed:
+                    print("You have successfully deployed application: "+opts.application_id)
+                else:
+                    print("Could not deployed application : "+opts.application_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
     """
     # Application deployment
      * describe-application-runtime
@@ -249,6 +275,8 @@ class CLI(Cmd):
     """
     # Application signup
      * describe-application-signup
+     * add-application-signup
+     * remove-application-signup
 
     """
     @options([
@@ -256,17 +284,55 @@ class CLI(Cmd):
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
-    def do_describe_application_signup(self, line , opts=None):
-        """Retrieve details of a specific auto-scaling policy."""
-        if not line.split():
+    def do_describe_application_signup(self, application_id , opts=None):
+        """Retrieve details of a specific application signup."""
+        if not application_id:
             print("usage: describe-application-signup [application-id]")
             return
-        application_signup = Stratos.describe_application_signup(line)
+        application_signup = Stratos.describe_application_signup(application_id)
         if not application_signup:
             print("Application signup not found")
         else:
             PrintableJSON(application_signup).pprint()
 
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_application_signup(self, application_id, opts=None):
+        """Add a new application signup to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: add-application-signup [-f <resource path>] [application_id]")
+            else:
+                application_signup = Stratos.add_application_signup(application_id, open(opts.json_file_path, 'r').read())
+                if application_signup:
+                    print("Application signup added successfully")
+                else:
+                    print("Error creating application signup")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_application_signup(self, signup , opts=None):
+        """Delete a specific user"""
+        try:
+            if not signup:
+                print("usage: remove-application-signup [signup]")
+            else:
+                signup_removed = Stratos.remove_application_signup(signup)
+                if signup_removed:
+                    print("You have successfully remove signup: "+signup)
+                else:
+                    print("Could not delete application signup: "+signup)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
 
 
     """
@@ -445,7 +511,7 @@ class CLI(Cmd):
         rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
         for cartridge in cartridges:
             rows.append([cartridge['type'], cartridge['category'], cartridge['displayName'], cartridge['description'],
-                         cartridge['version'], cartridge['multiTenant']])
+                         cartridge['version'], "True" if cartridge['multiTenant'] == 1 else "False"])
         table.add_rows(rows)
         table.print_table()
 
@@ -485,7 +551,10 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_cartridge(self, line , opts=None):
-        """Add a new user to the system"""
+        """
+        Add a new cartridge to the system
+        Usage: add-cartridge [-f <resource path>]
+        """
         try:
             if not opts.json_file_path:
                 print("usage: add-cartridge [-f <resource path>]")
@@ -496,7 +565,7 @@ class CLI(Cmd):
                 else:
                     print("Error adding Cartridge")
         except AuthenticationError as e:
-            self.perror("Authentication Error")
+            print("Authentication Error")
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -646,6 +715,7 @@ class CLI(Cmd):
     # Deployment Policies
      * list-deployment-policies
      * describe-deployment-policy
+     * add-deployment-policy
      * update-deployment-policy
      * remove-deployment-policy
 
@@ -692,7 +762,27 @@ class CLI(Cmd):
         make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
     ])
     @auth
-    def do_update_deployment_policy(self, line , opts=None):
+    def do_add_deployment_policy(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: add-deployment-policy [-f <resource path>]")
+            else:
+                deployment_policy = Stratos.add_deployment_policy(open(opts.json_file_path, 'r').read())
+                if deployment_policy:
+                    print("Deployment policy added successfully")
+                else:
+                    print("Error creating deployment policy")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_update_application_policy(self, line , opts=None):
         """Add a new user to the system"""
         try:
             if not opts.json_file_path:
@@ -726,11 +816,116 @@ class CLI(Cmd):
             self.perror("Authentication Error")
 
     """
+    # Deployment Policies
+     * list-application-policies
+     * describe-application-policy
+     * update-application-policy
+     * remove-application-policy
+
+    """
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_list_application_policies(self, line , opts=None):
+        """Illustrate the base class method use."""
+        application_policies = Stratos.list_application_policies()
+        if not application_policies:
+            print("No application policies found")
+        else:
+            table = PrintableTable()
+            rows = [["Id", "Accessibility"]]
+            for application_policy in application_policies:
+                rows.append([application_policy['id'], len(application_policy['networkPartitions'])])
+            table.add_rows(rows)
+            table.print_table()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_application_policy(self, line , opts=None):
+        """Retrieve details of a specific application policy."""
+        if not line.split():
+            print("usage: describe-application-policy [application-policy-id]")
+            return
+        application_policy = Stratos.describe_application_policy(line)
+        if not application_policy:
+            print("Deployment policy not found")
+        else:
+            PrintableJSON(application_policy).pprint()
+
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_application_policy(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: add-application-policy [-f <resource path>]")
+            else:
+                application_policy = Stratos.add_application_policy(open(opts.json_file_path, 'r').read())
+                if application_policy:
+                    print("Deployment policy added successfully")
+                else:
+                    print("Error creating application policy")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_update_application_policy(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: update-application-policy [-f <resource path>]")
+            else:
+                cartridge = Stratos.update_application_policy(open(opts.json_file_path, 'r').read())
+                if cartridge:
+                    print("Deployment policy updated successfully")
+                else:
+                    print("Error updating Deployment policy")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_remove_application_policy(self, application_policy_id , opts=None):
+        """Delete a cartridge"""
+        try:
+            if not application_policy_id:
+                print("usage: remove-application-policy [application-policy-id]")
+            else:
+                cartridge_removed = Stratos.remove_application_policy(application_policy_id)
+                if cartridge_removed:
+                    print("Successfully deleted application policy : "+application_policy_id)
+                else:
+                    print("Could not deleted application policy : "+application_policy_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+
+    """
     # Network Partitions
-     * list-deployment-policies
-     * describe-deployment-policy
-     * update-deployment-policy
-     * remove-deployment-policy
+     * list-network-partitions
+     * describe-network-partition
+     * add-network-partition
+     * update-network-partition
+     * remove-network-partition
 
     """
 
@@ -765,6 +960,26 @@ class CLI(Cmd):
         else:
             print("Partition: "+network_partition_id)
             PrintableJSON(deployment_policy).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_network_partition(self, line , opts=None):
+        """Add a new user to the system"""
+        try:
+            if not opts.json_file_path:
+                print("usage: add-network-partition [-f <resource path>]")
+            else:
+                tenant = Stratos.add_network_partition(open(opts.json_file_path, 'r').read())
+                if tenant:
+                    print("Network partition added successfully")
+                else:
+                    print("Error creating network partition")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -892,8 +1107,10 @@ class CLI(Cmd):
     # Kubernetes clusters/hosts
      * list-kubernetes-clusters
      * describe-kubernetes-cluster
-     * list-kubernetes-hosts
      * describe-kubernetes-master
+     * add-kubernetes-cluster
+     * add-kubernetes-host
+     * list-kubernetes-hosts
      * update-kubernetes-host
      * update-kubernetes-master
      * remove-kubernetes-cluster
@@ -938,10 +1155,46 @@ class CLI(Cmd):
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_kubernetes_master(self, kubernetes_cluster_id , opts=None):
+        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
+        if not kubernetes_cluster_id:
+            print("usage: describe-kubernetes-master [cluster-id]")
+            return
+        kubernetes_master = Stratos.describe_kubernetes_master(kubernetes_cluster_id)
+        if not kubernetes_master:
+            print("Kubernetes master not found in : "+kubernetes_cluster_id)
+        else:
+            print("Cluster : "+kubernetes_cluster_id)
+            PrintableJSON(kubernetes_master).pprint()
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_kubernetes_host(self, kubernetes_cluster_id , opts=None):
+        """Add a host (slave) to an existing Kubernetes-CoreOS Cluster."""
+        try:
+            if not kubernetes_cluster_id or not opts.json_file_path:
+                print("usage: add-kubernetes-cluster [-f <resource path>] [kubernetes cluster id]")
+            else:
+                kubernetes_host = Stratos.add_kubernetes_host(kubernetes_cluster_id, open(opts.json_file_path, 'r').read())
+                if kubernetes_host:
+                    print("You have successfully deployed host to Kubernetes cluster: "+kubernetes_cluster_id)
+                else:
+                    print("Error deploying host to Kubernetes cluster: "+kubernetes_cluster_id)
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user"),
         make_option('-c', '--cluster_id', type="str", help="Cluster ID")
     ])
-    @auth
     def do_list_kubernetes_hosts(self, line , opts=None):
         """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
         if not opts.cluster_id:
@@ -958,23 +1211,6 @@ class CLI(Cmd):
                              kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
             table.add_rows(rows)
             table.print_table()
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_describe_kubernetes_master(self, kubernetes_cluster_id , opts=None):
-        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
-        if not kubernetes_cluster_id:
-            print("usage: describe-kubernetes-master [cluster-id]")
-            return
-        kubernetes_master = Stratos.describe_kubernetes_master(kubernetes_cluster_id)
-        if not kubernetes_master:
-            print("Kubernetes master not found in : "+kubernetes_cluster_id)
-        else:
-            print("Cluster : "+kubernetes_cluster_id)
-            PrintableJSON(kubernetes_master).pprint()
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1011,7 +1247,8 @@ class CLI(Cmd):
             else:
                 cartridge = Stratos.update_kubernetes_host(open(opts.json_file_path, 'r').read())
                 if cartridge:
-                    print("Kubernetes host updated successfully")
+                    print(cartridge)
+                    print("You have succesfully updated host to Kubernetes cluster")
                 else:
                     print("Error updating Kubernetes host")
         except AuthenticationError as e:
@@ -1061,6 +1298,8 @@ class CLI(Cmd):
     """
     # Domain Mapping
      * list-domain-mappings
+     * add-domain-mapping
+     * remove-domain-mapping
 
     """
     @options([
@@ -1070,25 +1309,41 @@ class CLI(Cmd):
     @auth
     def do_list_domain_mappings(self, application_id , opts=None):
         """Illustrate the base class method use."""
-        tenants = Stratos.list_domain_mappings(application_id)
-        table = PrintableTable()
-        rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
-        for tenant in tenants:
-            rows.append([tenant['tenantDomain'], tenant['tenantId'], tenant['email'],
-                         "Active" if tenant['active'] else "De-Active", datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
-        table.add_rows(rows)
-        table.print_table()
+        if not application_id:
+            print("usage: list-domain-mappings [application-id]")
+        else:
+            domain_mappings = Stratos.list_domain_mappings(application_id)
+            if domain_mappings:
+                table = PrintableTable()
+                rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
+                for domain_mapping in domain_mappings:
+                    rows.append([domain_mapping['domain_mappingsDomain'], domain_mapping['domain_mappingId'], domain_mapping['email'],
+                                 "Active" if domain_mapping['active'] else "De-Active", datetime.datetime.fromtimestamp(domain_mapping['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
+                table.add_rows(rows)
+                table.print_table()
+            else:
+                print("No domain mappings found in application: "+application_id)
 
 
-    @options([])
-    def do_deploy_user(self, line , opts=None):
-        """Illustrate the base class method use."""
-        print("hello User")
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_domain_mapping(self, application_id, opts=None):
+        """Add a new user to the system"""
         try:
-            Stratos.deploy_user()
-        except ValueError as e:
-            self.perror("sdc")
-
+            if not application_id or not opts.json_file_path:
+                print("usage: add-domain-mapping [-f <resource path>] [application id]")
+            else:
+                domain_mapping = Stratos.add_domain_mapping(application_id, open(opts.json_file_path, 'r').read())
+                if domain_mapping:
+                    print(" Domain mapping added successfully")
+                else:
+                    print("Error creating domain mapping")
+        except AuthenticationError as e:
+            self.perror("Authentication Error")
 
 
     @options([
@@ -1107,118 +1362,6 @@ class CLI(Cmd):
                     print("You have successfully deleted domain: "+domain)
                 else:
                     print("Could not delete domain: "+domain)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user")
-    ])
-    @auth
-    def do_remove_application_signup(self, signup , opts=None):
-        """Delete a specific user"""
-        try:
-            if not signup:
-                print("usage: remove-application-signup [signup]")
-            else:
-                signup_removed = Stratos.remove_application_signup(signup)
-                if signup_removed:
-                    print("You have successfully remove signup: "+signup)
-                else:
-                    print("Could not delete application signup: "+signup)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user"),
-        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
-    ])
-    @auth
-    def do_add_network_partition(self, line , opts=None):
-        """Add a new user to the system"""
-        try:
-            if not opts.json_file_path:
-                print("usage: add-network-partition [-f <resource path>]")
-            else:
-                tenant = Stratos.add_network_partition(open(opts.json_file_path, 'r').read())
-                if tenant:
-                    print("Network partition added successfully")
-                else:
-                    print("Error creating network partition")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user"),
-        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
-    ])
-    @auth
-    def do_add_kubernetes_cluster(self, line , opts=None):
-        """Add a new user to the system"""
-        try:
-            if not opts.json_file_path:
-                print("usage: add-kubernetes-cluster [-f <resource path>]")
-            else:
-                tenant = Stratos.add_kubernetes_cluster(open(opts.json_file_path, 'r').read())
-                if tenant:
-                    print("Kubernertes cluster added successfully")
-                else:
-                    print("Error creating network partition")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user"),
-        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
-    ])
-    @auth
-    def do_add_domain_mapping(self, application_id, opts=None):
-        """Add a new user to the system"""
-        try:
-            if not opts.json_file_path:
-                print("usage: add-domain-mapping [-f <resource path>]")
-            else:
-                tenant = Stratos.add_domain_mapping(application_id, """{
-  "domainMappings": [
-    {
-      "cartridgeAlias": "tomcat",
-      "domainName": "agentmilindu.com",
-      "contextPath": "/abc/app"
-    }
-  ]
-}""")
-                if tenant:
-                    print(" Domain mapping added successfully")
-                else:
-                    print("Error creating domain mapping")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user"),
-        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
-    ])
-    @auth
-    def do_add_deployment_policy(self, line , opts=None):
-        """Add a new user to the system"""
-        try:
-            if not opts.json_file_path:
-                print("usage: add-deployment-policy [-f <resource path>]")
-            else:
-                deployment_policy = Stratos.add_deployment_policy(open(opts.json_file_path, 'r').read())
-                if deployment_policy:
-                    print("Deployment policy added successfully")
-                else:
-                    print("Error creating deployment policy")
         except AuthenticationError as e:
             self.perror("Authentication Error")
 
