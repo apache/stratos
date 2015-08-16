@@ -15,9 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-class AuthenticationError(Exception):
-    def __init__(self, message=""):
-        pass
+class BadResponseError(Exception):
+    def __init__(self, error_code, message=""):
+        self.error_code = error_code
+        self.message = message
 
     def __str__(self):
-        return "Authentication error"
+        return self.message

@@ -20,7 +20,8 @@ from rpm._rpm import te
 from Utils import *
 from Stratos import *
 import Configs
-from cli.exceptions import AuthenticationError
+from Logging import logging
+from cli.exceptions import BadResponseError
 
 
 class CLI(Cmd):
@@ -67,8 +68,9 @@ class CLI(Cmd):
                 rows.append([user['userName'], user['role']])
             table.add_rows(rows)
             table.print_table()
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -95,8 +97,9 @@ class CLI(Cmd):
                     print("User successfully created")
                 else:
                     print("Error creating the user")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -119,8 +122,9 @@ class CLI(Cmd):
                 print("User successfully updated")
             else:
                 print("Error updating the user")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -139,8 +143,9 @@ class CLI(Cmd):
                     print("You have successfully deleted user: "+name)
                 else:
                     print("Could not delete user: "+name)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Applications
@@ -204,8 +209,9 @@ class CLI(Cmd):
                     print("Application added successfully")
                 else:
                     print("Error adding application")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -223,8 +229,9 @@ class CLI(Cmd):
                     print("You have successfully removed application: "+application)
                 else:
                     print("Could not delete application : "+application)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
 
     @options([
@@ -245,8 +252,9 @@ class CLI(Cmd):
                     print("You have successfully deployed application: "+opts.application_id)
                 else:
                     print("Could not deployed application : "+opts.application_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Application deployment
@@ -312,8 +320,9 @@ class CLI(Cmd):
                     print("Application signup added successfully")
                 else:
                     print("Error creating application signup")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -331,8 +340,9 @@ class CLI(Cmd):
                     print("You have successfully remove signup: "+signup)
                 else:
                     print("Could not delete application signup: "+signup)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
 
     """
@@ -403,7 +413,8 @@ class CLI(Cmd):
                     print("Created date: "+datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     print("-------------------------------------")
             except requests.HTTPError as e:
-                self.perror("Error")
+                self.perror(str(e))
+                logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -425,8 +436,9 @@ class CLI(Cmd):
                 print("Tenant added successfully : "+opts.domain_name)
             else:
                 print("Error creating the tenant : "+opts.domain_name)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -449,8 +461,9 @@ class CLI(Cmd):
                 print("Tenant updated successfully : "+opts.domain_name)
             else:
                 print("Error updating the tenant : "+opts.domain_name)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -468,8 +481,9 @@ class CLI(Cmd):
                     print("You have successfully activated the tenant : "+tenant_domain)
                 else:
                     print("Could not activate tenant : "+tenant_domain)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -487,8 +501,9 @@ class CLI(Cmd):
                     print("You have successfully deactivated the tenant : "+tenant_domain)
                 else:
                     print("Could not deactivate tenant : "+tenant_domain)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Cartridges
@@ -542,7 +557,8 @@ class CLI(Cmd):
                     print("Host Name: "+cartridge['host'])
                     print("-------------------------------------")
             except requests.HTTPError as e:
-                self.perror("Error")
+                self.perror(str(e))
+                logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -564,7 +580,7 @@ class CLI(Cmd):
                     print("Cartridge added successfully")
                 else:
                     print("Error adding Cartridge")
-        except AuthenticationError as e:
+        except BadResponseError as e:
             print("Authentication Error")
 
     @options([
@@ -584,8 +600,9 @@ class CLI(Cmd):
                     print("Cartridge updated successfully")
                 else:
                     print("Error updating Cartridge")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -603,8 +620,9 @@ class CLI(Cmd):
                     print("Successfully un-deployed cartridge : "+cartridge_type)
                 else:
                     print("Could not un-deployed cartridge : "+cartridge_type)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Cartridge groups
@@ -669,8 +687,9 @@ class CLI(Cmd):
                     print("Cartridge group added successfully")
                 else:
                     print("Error adding Cartridge group")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -689,8 +708,9 @@ class CLI(Cmd):
                     print("Cartridge group updated successfully")
                 else:
                     print("Error updating Cartridge group")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -708,8 +728,9 @@ class CLI(Cmd):
                     print("Successfully un-deployed cartridge group : "+group_definition_name)
                 else:
                     print("Could not un-deployed cartridge group : "+group_definition_name)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Deployment Policies
@@ -773,8 +794,9 @@ class CLI(Cmd):
                     print("Deployment policy added successfully")
                 else:
                     print("Error creating deployment policy")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -793,8 +815,9 @@ class CLI(Cmd):
                     print("Deployment policy updated successfully")
                 else:
                     print("Error updating Deployment policy")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -812,8 +835,9 @@ class CLI(Cmd):
                     print("Successfully deleted deployment policy : "+deployment_policy_id)
                 else:
                     print("Could not deleted deployment policy : "+deployment_policy_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Deployment Policies
@@ -876,8 +900,9 @@ class CLI(Cmd):
                     print("Deployment policy added successfully")
                 else:
                     print("Error creating application policy")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -896,8 +921,9 @@ class CLI(Cmd):
                     print("Deployment policy updated successfully")
                 else:
                     print("Error updating Deployment policy")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -915,8 +941,9 @@ class CLI(Cmd):
                     print("Successfully deleted application policy : "+application_policy_id)
                 else:
                     print("Could not deleted application policy : "+application_policy_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
 
     """
@@ -978,8 +1005,9 @@ class CLI(Cmd):
                     print("Network partition added successfully")
                 else:
                     print("Error creating network partition")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -998,8 +1026,9 @@ class CLI(Cmd):
                     print("Network partition updated successfully")
                 else:
                     print("Error updating Network partition")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1017,8 +1046,9 @@ class CLI(Cmd):
                     print("Successfully deleted network-partition : "+network_partition_id)
                 else:
                     print("Could not deleted network-partition : "+network_partition_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Auto-scaling policies
@@ -1081,8 +1111,9 @@ class CLI(Cmd):
                     print("Autoscaling policy updated successfully:")
                 else:
                     print("Error updating Autoscaling policy")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1100,8 +1131,9 @@ class CLI(Cmd):
                     print("Successfully deleted Auto-scaling policy : "+autoscaling_policy_id)
                 else:
                     print("Auto-scaling policy not found : "+autoscaling_policy_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     """
     # Kubernetes clusters/hosts
@@ -1187,8 +1219,9 @@ class CLI(Cmd):
                     print("You have successfully deployed host to Kubernetes cluster: "+kubernetes_cluster_id)
                 else:
                     print("Error deploying host to Kubernetes cluster: "+kubernetes_cluster_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1230,8 +1263,9 @@ class CLI(Cmd):
                     print("Kubernetes master updated successfully")
                 else:
                     print("Error updating Kubernetes master")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1251,8 +1285,9 @@ class CLI(Cmd):
                     print("You have succesfully updated host to Kubernetes cluster")
                 else:
                     print("Error updating Kubernetes host")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1270,8 +1305,9 @@ class CLI(Cmd):
                     print("Successfully un-deployed kubernetes cluster : "+kubernetes_cluster_id)
                 else:
                     print("Kubernetes cluster not found : "+kubernetes_cluster_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1291,8 +1327,9 @@ class CLI(Cmd):
                     print("Successfully un-deployed kubernetes host : "+opts.host_id)
                 else:
                     print("Kubernetes host not found : "+opts.cluster_id+"/"+opts.host_id)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
 
     """
@@ -1342,8 +1379,9 @@ class CLI(Cmd):
                     print(" Domain mapping added successfully")
                 else:
                     print("Error creating domain mapping")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))
 
 
     @options([
@@ -1362,8 +1400,9 @@ class CLI(Cmd):
                     print("You have successfully deleted domain: "+domain)
                 else:
                     print("Could not delete domain: "+domain)
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error("HTTP "+e.error_code+" : "+str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1382,6 +1421,6 @@ class CLI(Cmd):
                     print("Autoscaling policy added successfully")
                 else:
                     print("Error adding autoscaling policy")
-        except AuthenticationError as e:
-            self.perror("Authentication Error")
-
+        except BadResponseError as e:
+            self.perror(str(e))
+            logging.error(str(e))

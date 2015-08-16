@@ -18,8 +18,7 @@
 import requests
 import json
 import Configs
-from Logging import logging
-from cli.exceptions.AuthenticationError import AuthenticationError
+from cli.exceptions.BadResponseError import BadResponseError
 
 
 class Stratos:
@@ -424,28 +423,8 @@ class Stratos:
         try:
             Stratos.get('init')
             return True
-        except AuthenticationError as e:
+        except BadResponseError as e:
             return False
-
-    @staticmethod
-    def get(resource, error_message=""):
-        r = requests.get(Configs.stratos_api_url + resource,
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        print(r)
-        print(r.text)
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 400:
-            raise requests.HTTPError()
-        elif r.status_code == 401:
-            raise AuthenticationError()
-        elif r.status_code == 404:
-            if r.text and r.json() and r.json()['message'] == error_message:
-                return False
-            else:
-                raise requests.HTTPError()
-        else:
-            logging.error(r.status_code+" : "+r.text)
 
     @staticmethod
     def delete(resource, error_message=None):
@@ -456,9 +435,9 @@ class Stratos:
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 400:
-            raise requests.HTTPError()
+            raise BadResponseError(str(r.status_code), r.json()['message'])
         elif r.status_code == 401:
-            raise AuthenticationError()
+            raise BadResponseError(str(r.status_code), r.json()['message'])
         elif r.status_code == 404:
             if r.text and r.json() and r.json()['message']:
                 return False
@@ -466,9 +445,9 @@ class Stratos:
             if r.text and r.json() and r.json()['message']:
                 return False
             else:
-                raise requests.HTTPError()
+                raise BadResponseError(str(r.status_code), r.json()['message'])
         else:
-            logging.error(r.status_code+" : "+r.text)
+            raise BadResponseError(str(r.status_code), r.json()['message'])
 
     @staticmethod
     def post(resource, data,  error_message=None):
@@ -482,16 +461,16 @@ class Stratos:
         elif r.status_code == 201:
             return True
         elif r.status_code == 400:
-            raise requests.HTTPError()
+            raise BadResponseError(str(r.status_code), r.json()['message'])
         elif r.status_code == 401:
-            raise AuthenticationError()
+            raise BadResponseError(str(r.status_code), r.json()['message'])
         elif r.status_code == 404:
             if r.text and r.json() and r.json()['message'] == error_message:
                 return []
             else:
-                raise requests.HTTPError()
+                raise BadResponseError(str(r.status_code), r.text)
         else:
-            logging.error(r.status_code+" : "+r.text)
+            raise BadResponseError(str(r.status_code), r.json()['message'])
 
     @staticmethod
     def put(resource, data,  error_message):
@@ -505,16 +484,16 @@ class Stratos:
         elif r.status_code == 201:
             return True
         elif r.status_code == 400:
-            raise requests.HTTPError()
+            raise BadResponseError(str(r.status_code), r.json()['message'])
         elif r.status_code == 401:
-            raise AuthenticationError()
+            raise BadResponseError(str(r.status_code), r.json()['message'])
         elif r.status_code == 404:
             if r.text and r.json() and r.json()['message'] == error_message:
                 return []
             else:
-                raise requests.HTTPError()
+                raise BadResponseError(str(r.status_code), r.json()['message'])
         else:
-            logging.error(r.status_code+" : "+r.text)
+            raise BadResponseError(str(r.status_code), r.json()['message'])
 
 
     @staticmethod
@@ -524,5 +503,26 @@ class Stratos:
     @staticmethod
     def add_application(json):
         return Stratos.post('applications', json,  error_message='No application found')
+
+
+def get(resource, error_message=""):
+    r = requests.get(Configs.stratos_api_url + resource,
+                     auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+    print(r)
+    print(r.text)
+    if r.status_code == 200:
+        return r.json()
+    elif r.status_code == 400:
+        raise BadResponseError(str(r.status_code), r.json()['message'])
+    elif r.status_code == 401:
+        raise BadResponseError(str(r.status_code), r.json()['message'])
+    elif r.status_code == 404:
+        if r.text and r.json() and r.json()['message'] == error_message:
+            return False
+        else:
+            raise BadResponseError(str(r.status_code), " : "+r.text)
+    else:
+        raise BadResponseError(str(r.status_code), r.json()['message'])
+    return response(r)
 
 
