@@ -61,9 +61,9 @@
                                     {
                                         "cartridgeMin": 1,
                                         "cartridgeMax": 1,
-                                        "type": "c4",
+                                        "type": "c4-group-termination-behavior-test",
                                         "subscribableInfo": {
-                                            "alias": "c4-1x0",
+                                            "alias": "c4-1x0-group-termination-behavior-test",
                                             "deploymentPolicy": "deployment-policy-group-termination-behavior-test",
                                             "artifactRepository": {
                                                 "repoUsername": "user",

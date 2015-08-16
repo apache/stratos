@@ -6,11 +6,7 @@
             "partitionAlgo": "one-after-another",
             "partitions": [
                 {
-                    "id": "network-partition-10-partition-1",
-                    "partitionMax": 4
-                },
-                {
-                    "id": "network-partition-10-partition-2",
+                    "id": "partition-1",
                     "partitionMax": 4
                 }
             ]

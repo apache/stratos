@@ -66,7 +66,6 @@ public class TopologyHandler {
     private ApplicationsEventReceiver applicationsEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
     public static TopologyHandler topologyHandler;
-    private Map<String, Map<String, Long>> terminatedNodes = new ConcurrentHashMap<String, Map<String, Long>>();
     private Map<String, Long> terminatedMembers = new ConcurrentHashMap<String, Long>();
     private Map<String, Long> terminatingMembers = new ConcurrentHashMap<String, Long>();
     private Map<String, Long> createdMembers = new ConcurrentHashMap<String, Long>();
@@ -464,30 +463,27 @@ public class TopologyHandler {
             @Override
             protected void onEvent(Event event) {
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
-                terminatedMembers.put(memberTerminatedEvent.getMemberId(), System.currentTimeMillis());
+                getTerminatedMembers().put(memberTerminatedEvent.getMemberId(), System.currentTimeMillis());
 
             }
         });
 
-        topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-
-
-            }
-        });
 
         topologyEventReceiver.addEventListener(new ClusterInstanceCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 ClusterInstanceCreatedEvent event1 = (ClusterInstanceCreatedEvent) event;
-
+                String clusterId = event1.getClusterId();
+                getCreatedMembers().put(clusterId, System.currentTimeMillis());
             }
         });
 
         topologyEventReceiver.addEventListener(new ClusterInstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+                ClusterInstanceActivatedEvent event1 = (ClusterInstanceActivatedEvent) event;
+                String clusterId = event1.getClusterId();
+                getActivateddMembers().put(clusterId, System.currentTimeMillis());
 
             }
         });
@@ -495,14 +491,27 @@ public class TopologyHandler {
         topologyEventReceiver.addEventListener(new ClusterInstanceInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
-
+                ClusterInstanceInactivateEvent event1 = (ClusterInstanceInactivateEvent) event;
+                String clusterId = event1.getClusterId();
+                getInActiveMembers().put(clusterId, System.currentTimeMillis());
             }
         });
 
         topologyEventReceiver.addEventListener(new ClusterInstanceTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+                ClusterInstanceTerminatedEvent event1 = (ClusterInstanceTerminatedEvent) event;
+                String clusterId = event1.getClusterId();
+                getTerminatedMembers().put(clusterId, System.currentTimeMillis());
+            }
+        });
 
+        topologyEventReceiver.addEventListener(new ClusterInstanceTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ClusterInstanceTerminatingEvent event1 = (ClusterInstanceTerminatingEvent) event;
+                String clusterId = event1.getClusterId();
+                getTerminatingMembers().put(clusterId, System.currentTimeMillis());
             }
         });
 
@@ -510,26 +519,19 @@ public class TopologyHandler {
     }
 
     private void addApplicationEventListeners() {
-        applicationsEventReceiver.addEventListener(new ApplicationInstanceCreatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-
-
-            }
-        });
 
         applicationsEventReceiver.addEventListener(new GroupInstanceCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 GroupInstanceCreatedEvent event1 = (GroupInstanceCreatedEvent) event;
                 String appId = event1.getAppId();
-                String id = event1.getGroupId();
+                String groupId = event1.getGroupId();
                 String instanceId = event1.getGroupInstance().getInstanceId();
+                String id = generateId(appId, groupId, instanceId);
+                getCreatedMembers().put(id, System.currentTimeMillis());
 
             }
         });
-
-
 
         applicationsEventReceiver.addEventListener(new GroupInstanceActivatedEventListener() {
             @Override
@@ -584,8 +586,8 @@ public class TopologyHandler {
         return appId + "-" + groupId + "-" + instanceId;
     }
 
-    public String getClusterIdFromAlias(String applicationId, String alias) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+    public String getClusterIdFromAlias(String applicationId, String alias,int tenantId) {
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationId,tenantId);
         assertNotNull(application);
 
         ClusterDataHolder dataHolder = application.getClusterDataHolderRecursivelyByAlias(alias);
