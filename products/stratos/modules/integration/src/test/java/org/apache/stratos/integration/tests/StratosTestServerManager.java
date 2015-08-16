@@ -31,6 +31,7 @@ import org.apache.stratos.integration.tests.rest.IntegrationMockClient;
 import org.apache.stratos.integration.tests.rest.RestClient;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
 import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
@@ -75,9 +76,10 @@ public class StratosTestServerManager extends TestServerManager {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
         restClientAdmin=new RestClient(endpoint,"admin","admin");
-        restClientTenant1 = new RestClient(endpoint, "admin", "admin");
+        restClientTenant1 = new RestClient(endpoint, "admin@test1.com", "admin123");
         restClientTenant2 = new RestClient(endpoint, "admin@test2.com", "admin123");
         mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
+
     }
 
     @Override
@@ -213,11 +215,14 @@ public class StratosTestServerManager extends TestServerManager {
         assertEquals(addedTenant1,true);
         boolean addedTenant2=restClientAdmin.addEntity(RestConstants.TENANT2_RESOURCE,RestConstants.TENANT_API,RestConstants.TENANTS_NAME);
         assertEquals(addedTenant2,true);
+
+    }
+
+    @BeforeClass
+    public void getTenantDetails(){
         Tenant tenant1=(Tenant)restClientAdmin.getEntity(RestConstants.TENANT_API,RestConstants.TENANT1_GET_RESOURCE,Tenant.class,RestConstants.TENANTS_NAME);
         tenant1Id=tenant1.getTenantId();
         Tenant tenant2=(Tenant)restClientAdmin.getEntity(RestConstants.TENANT_API,RestConstants.TENANT2_GET_RESOURCE,Tenant.class,RestConstants.TENANTS_NAME);
         tenant2Id=tenant2.getTenantId();
     }
-
-
 }

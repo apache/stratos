@@ -117,13 +117,13 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
 
             //Application active handling
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active, -1234);
+                    ApplicationStatus.Active, tenant1Id);
 
             //Group active handling
-            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), -1234);
+            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenant1Id);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), -1234);
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
 
             //Updating application
             boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
@@ -131,9 +131,9 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(updated, true);
 
-            TopologyHandler.getInstance().assertGroupInstanceCount(bean.getApplicationId(), "group3-application-update-test", 2, -1234);
+            TopologyHandler.getInstance().assertGroupInstanceCount(bean.getApplicationId(), "group3-application-update-test", 2, tenant1Id);
 
-            TopologyHandler.getInstance().assertClusterMinMemberCount(bean.getApplicationId(), 1, -1234);
+            TopologyHandler.getInstance().assertClusterMinMemberCount(bean.getApplicationId(), 1, tenant1Id);
 
             ApplicationBean updatedBean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
                     "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
@@ -165,7 +165,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", -1234);
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenant1Id);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "g-sc-G123-1-application-update-test");
@@ -173,7 +173,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                 restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", -1234);
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenant1Id);
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "g-sc-G123-1-application-update-test"), forceUndeployed, true);
 

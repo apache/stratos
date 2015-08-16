@@ -97,13 +97,13 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
 
             //Application active handling
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active, -1234);
+                    ApplicationStatus.Active, tenant1Id);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), -1234);
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
 
             //Verifying whether members got created using round robin algorithm
-          /*  assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());        */
+           /* assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());
 
             //Application in-active handling
             log.info("Waiting for the faulty member detection from " +
@@ -116,7 +116,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                     ApplicationStatus.Active,-1234);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(),-1234);
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(),-1234);   */
 
             boolean removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -140,7 +140,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("partition-round-robin-test", -1234);
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("partition-round-robin-test", tenant1Id);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "partition-round-robin-test");
@@ -148,7 +148,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                 restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "partition-round-robin-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("partition-round-robin-test", -1234);
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("partition-round-robin-test", tenant1Id);
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "partition-round-robin-test"), forceUndeployed, true);
 
@@ -202,7 +202,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
      * @param applicationName
      */
     private void assertClusterWithRoundRobinAlgorithm(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, -1234);
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenant1Id);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
@@ -271,7 +271,7 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
                         p2Index++;
                         previousPartition = p2;
                         assertEquals("Partition-2 doesn't not contain correct values in current " +
-                                "iteration", allInitTime.get(i), p2InitTime.get(p2Index));
+                                "iteration", allInitTime.get(allInitTime.size()-1), p2InitTime.get(p2Index));
                         if (p1Index >= 0) {
                             assertEquals("Partition-1 doesn't not contain correct values in the " +
                                     "previous iteration", allInitTime.get(i - 1), p1InitTime.get(p1Index));

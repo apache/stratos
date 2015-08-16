@@ -102,10 +102,10 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
 
             //Application active handling
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active, -1234);
+                    ApplicationStatus.Active, tenant1Id);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), -1234);
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
 
             //Verifying whether members got created using round robin algorithm
             assertClusterWithRoundRobinAlgorithm(bean.getApplicationId());
@@ -135,7 +135,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test", -1234);
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test", tenant1Id);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "single-cluster-scaling-test");
@@ -143,7 +143,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosTestServerManage
                 restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test", -1234);
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("single-cluster-scaling-test", tenant1Id);
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "single-cluster-scaling-test"), forceUndeployed, true);
 
