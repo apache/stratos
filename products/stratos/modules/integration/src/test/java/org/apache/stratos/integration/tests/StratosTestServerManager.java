@@ -62,7 +62,7 @@ public class StratosTestServerManager extends TestServerManager {
     protected RestClient restClientAdmin;
     protected RestClient restClientTenant1;
     protected RestClient restClientTenant2;
-    private String endpoint = "https://localhost:9443";
+    private String endpoint = "http://localhost:9763";
 
     private BrokerService broker = new BrokerService();
     private TestLogAppender testLogAppender = new TestLogAppender();

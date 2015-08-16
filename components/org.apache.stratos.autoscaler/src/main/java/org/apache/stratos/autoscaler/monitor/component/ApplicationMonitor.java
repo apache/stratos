@@ -454,9 +454,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 return false;
             }
 
-            for (String networkPartitionIds : nextNetworkPartitions) {
+            for (String networkPartitionUuids : nextNetworkPartitions) {
                 ParentLevelNetworkPartitionContext context =
-                        new ParentLevelNetworkPartitionContext(networkPartitionIds);
+                        new ParentLevelNetworkPartitionContext(networkPartitionUuids);
                 //If application instances found in the ApplicationsTopology,
                 // then have to add them first before creating new one
                 ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -471,8 +471,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                 }
                 instanceIds.add(instanceId);
-                log.info("Application instance has been added for the [network partition] " +
-                        networkPartitionIds + " [appInstanceId] " + instanceId);
+                log.info("Application instance has been added for the [network partition uuid] " +
+                        networkPartitionUuids + " [appInstanceId] " + instanceId);
             }
 
             //Find whether any other instances exists in cluster

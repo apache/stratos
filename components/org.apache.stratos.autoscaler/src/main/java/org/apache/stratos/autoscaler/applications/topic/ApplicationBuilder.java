@@ -80,10 +80,10 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
-    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId,
-                                                                            String networkPartitionId) {
+    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appUuid,
+                                                                            String networkPartitionUuid) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling application instance creation event: [application-id] " + appId);
+            log.debug("Handling application instance creation event: [application-id] " + appUuid);
         }
         ApplicationInstance applicationInstance = null;
         //acquiring write lock to add the required instances
@@ -91,26 +91,26 @@ public class ApplicationBuilder {
         try {
 
             Applications applications = ApplicationHolder.getApplications();
-            Application application = applications.getApplication(appId);
+            Application application = applications.getApplication(appUuid);
             //update the status of the Group
             if (application == null) {
                 log.warn(String.format("Application does not exist: [application-id] %s",
-                        appId));
+                        appUuid));
                 return null;
             }
-            String instanceId = application.getNextInstanceId(appId);
+            String instanceId = application.getNextInstanceId(appUuid);
 
             if (!application.containsInstanceContext(instanceId)) {
                 //setting the status, persist and publish
-                applicationInstance = new ApplicationInstance(appId, instanceId);
-                applicationInstance.setNetworkPartitionUuid(networkPartitionId);
+                applicationInstance = new ApplicationInstance(appUuid, instanceId);
+                applicationInstance.setNetworkPartitionUuid(networkPartitionUuid);
                 application.addInstance(instanceId, applicationInstance);
                 //updateApplicationMonitor(appId, status);
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendApplicationInstanceCreatedEvent(appId, applicationInstance);
+                ApplicationsEventPublisher.sendApplicationInstanceCreatedEvent(appUuid, applicationInstance);
             } else {
                 log.warn(String.format("Application Instance Context already exists" +
-                        " [appId] %s [ApplicationInstanceId] %s", appId, instanceId));
+                        " [appId] %s [ApplicationInstanceId] %s", appUuid, instanceId));
             }
         } finally {
             ApplicationHolder.releaseWriteLock();

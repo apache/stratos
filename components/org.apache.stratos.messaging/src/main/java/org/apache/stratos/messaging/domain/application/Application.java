@@ -151,14 +151,14 @@ public class Application extends ParentComponent<ApplicationInstance> {
         return uuid.hashCode();
     }
 
-    public Instance getInstanceByNetworkPartitionId(String networkPartitionId) {
+    public Instance getInstanceByNetworkPartitionId(String networkPartitionUuid) {
         // if map is empty, return null
         if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
         }
 
         for (Instance instance : getInstanceIdToInstanceContextMap().values()) {
-            if (instance.getNetworkPartitionUuid().equals(networkPartitionId)) {
+            if (instance.getNetworkPartitionUuid().equals(networkPartitionUuid)) {
                 return instance;
             }
         }
