@@ -22,6 +22,8 @@ from CLI import CLI
 import Configs
 
 # Fix Python 2.x.
+from cli.Stratos import Stratos
+
 try:
     input = raw_input
 except NameError:
@@ -30,13 +32,18 @@ except NameError:
 
 def prompt_for_credentials():
     """Prompt for user credentials"""
-    while True:
-        _username = input("Username: ")
-        _password = getpass.getpass("Password: ")
-        if _username is not "" and _password is not "":
-            Configs.stratos_username = _username
-            Configs.stratos_password = _password
-            break
+    while Configs.stratos_username is "" or Configs.stratos_password is "":
+        if Configs.stratos_username is "":
+            Configs.stratos_username = input("Username: ")
+
+        if Configs.stratos_password is "":
+            Configs.stratos_password = getpass.getpass("Password: ")
+    if Stratos.authenticate():
+        print("Successfully authenticated")
+    else:
+        print("Could not authenticate")
+        exit()
+
 
 
 def main():
