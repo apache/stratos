@@ -16,7 +16,7 @@
 # under the License.
 
 class AuthenticationError(Exception):
-    def __init__(self):
+    def __init__(self, message=""):
         pass
 
     def __str__(self):
