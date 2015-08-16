@@ -165,7 +165,7 @@ class CompleteTopologyEvent:
         topology_str = json_obj["topology"] if "topology" in json_obj else None
         if topology_str is not None:
             topology_obj = Topology()
-            topology_obj.initialized = True if str(topology_str["initialized"]).lower == "true" else False
+            topology_obj.initialized = True if str(topology_str["initialized"]).lower() == "true" else False
             topology_obj.json_str = topology_str
 
             # add service map
@@ -192,9 +192,9 @@ class CompleteTopologyEvent:
                                           cl_deployment_policy_name, cl_autoscale_policy_name)
                     cluster_obj.hostnames = cluster_str["hostNames"]
                     cluster_obj.tenant_range = cluster_str["tenantRange"] if "tenantRange" in cluster_str else None
-                    cluster_obj.is_lb_cluster = True if str(cluster_str["isLbCluster"]).lower == "true" else False
-                    cluster_obj.is_kubernetes_cluster = True if str(cluster_str["isKubernetesCluster"]).lower == "true" \
-                        else False
+                    cluster_obj.is_lb_cluster = True if str(cluster_str["isLbCluster"]).lower() == "true" else False
+                    cluster_obj.is_kubernetes_cluster = True if str(cluster_str["isKubernetesCluster"]).lower() == \
+                                                                "true" else False
                     # cluster_obj.status = cluster_str["status"] if "status" in cluster_str else None
                     cluster_obj.load_balancer_algorithm_name = cluster_str["loadBalanceAlgorithmName"] \
                         if "loadBalanceAlgorithmName" in cluster_str else None
@@ -220,7 +220,8 @@ class CompleteTopologyEvent:
                         member_obj.member_default_public_ip = member_str["defaultPublicIP"] \
                             if "defaultPublicIP" in member_str else None
                         member_obj.status = member_str["memberStateManager"]["stateStack"][-1]
-                        member_obj.member_private_ips = member_str["memberPrivateIPs"] if "memberPrivateIPs" in member_str \
+                        member_obj.member_private_ips = member_str[
+                            "memberPrivateIPs"] if "memberPrivateIPs" in member_str \
                             else None
                         member_obj.member_default_private_ip = member_str["defaultPrivateIP"] \
                             if "defaultPrivateIP" in member_str else None
@@ -235,6 +236,20 @@ class CompleteTopologyEvent:
                             mm_port_obj = Port(mm_port_str["protocol"], mm_port_str["value"], mm_port_proxy)
                             member_obj.add_port(mm_port_obj)
                         cluster_obj.add_member(member_obj)
+
+                    for kubService_str in cluster_str["kubernetesServices"]:
+                        kubService_id = kubService_str["id"]
+                        kubService_portalIP = kubService_str["portalIP"]
+                        kubService_protocol = kubService_str["protocol"]
+                        kubService_port = kubService_str["port"]
+                        kubService_containerPort = kubService_str["containerPort"]
+                        kubService_serviceType = kubService_str["serviceType"]
+                        kubService_portName = kubService_str["portName"]
+                        kubService_obj = KubernetesService(kubService_id, kubService_portalIP, kubService_protocol,
+                                                           kubService_port, kubService_containerPort,
+                                                           kubService_serviceType, kubService_portName)
+                        kubService_obj.publicIPs = kubService_str["publicIPs"]
+                        cluster_obj.add_kubernetesService(kubService_obj)
                     service_obj.add_cluster(cluster_obj)
                 topology_obj.add_service(service_obj)
             instance.topology = topology_obj

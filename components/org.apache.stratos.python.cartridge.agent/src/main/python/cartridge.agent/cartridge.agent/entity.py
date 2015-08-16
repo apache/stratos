@@ -223,6 +223,8 @@ class Cluster:
         """ :type : str  """
         self.app_id = ""
         """ :type : str """
+        self.kubernetesService_map = {}
+        """ :type : dict[str, KubernetesService]  """
         # Not relevant to cartridge agent
         # self.instance_id_instance_context_map = {}
         # """ :type : dict[str, ClusterInstance] """
@@ -241,6 +243,17 @@ class Cluster:
         :rtype: list[Member]
         """
         return self.member_map.values()
+
+    def get_kubernetesServices(self):
+        """
+        Provides the list of kubernetes Services in the cluster
+        :return: The list of KubernetesService object
+        :rtype: list[KubernetesService]
+        """
+        return self.kubernetesService_map.values()
+
+    def add_kubernetesService(self, kubernetesService):
+        self.kubernetesService_map[kubernetesService.id] = kubernetesService
 
     def add_member(self, member):
         self.member_map[member.member_id] = member
@@ -401,6 +414,33 @@ class Member:
             self.add_port(port)
 
 
+class KubernetesService:
+    """
+    Represents a kubernetes service on a particular cluster
+    """
+
+    def __init__(self, id, portalIP, protocol, port, containerPort, serviceType, portName):
+        self.id = id
+        """ :type : str  """
+        self.portalIP = portalIP
+        """ :type : str  """
+        self.protocol = protocol
+        """ :type : str  """
+        self.port = port
+        """ :type : str  """
+        self.containerPort = containerPort
+        """ :type : str  """
+        self.serviceType = serviceType
+        """ :type : str  """
+        self.portName = portName
+        """ :type : str  """
+        self.publicIPs = []
+        """ :type : list[str]  """
+
+    def add_public_ips(self, public_ip):
+        self.publicIPs.append(public_ip)
+
+
 class Port:
     """
     Represents a port on a particular member
@@ -472,7 +512,7 @@ class Tenant:
     Object type representing the tenant details of a single tenant
     """
 
-    def __init__(self, tenant_id,  tenant_domain):
+    def __init__(self, tenant_id, tenant_domain):
         self.tenant_id = tenant_id
         """ :type : int """
         self.tenant_domain = tenant_domain
