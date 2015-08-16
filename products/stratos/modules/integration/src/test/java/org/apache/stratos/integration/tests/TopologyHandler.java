@@ -33,9 +33,8 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.GroupInstanceCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.event.application.*;
+import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.application.*;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
@@ -69,8 +68,10 @@ public class TopologyHandler {
     public static TopologyHandler topologyHandler;
     private Map<String, Map<String, Long>> terminatedNodes = new ConcurrentHashMap<String, Map<String, Long>>();
     private Map<String, Long> terminatedMembers = new ConcurrentHashMap<String, Long>();
-    private Map<String, Map<String, Long>> createdNodes = new ConcurrentHashMap<String, Map<String, Long>>();
-    private Map<String, Map<String, Long>> activeNodes = new ConcurrentHashMap<String, Map<String, Long>>();
+    private Map<String, Long> terminatingMembers = new ConcurrentHashMap<String, Long>();
+    private Map<String, Long> createdMembers = new ConcurrentHashMap<String, Long>();
+    private Map<String, Long> inActiveMembers = new ConcurrentHashMap<String, Long>();
+    private Map<String, Long> activateddMembers = new ConcurrentHashMap<String, Long>();
 
     private TopologyHandler() {
         // Set jndi.properties.dir system property for initializing event receivers
@@ -81,6 +82,7 @@ public class TopologyHandler {
         assertApplicationTopologyInitialized();
         assertTopologyInitialized();
         addTopologyEventListeners();
+        addApplicationEventListeners();
     }
 
     public static TopologyHandler getInstance() {
@@ -532,22 +534,118 @@ public class TopologyHandler {
         applicationsEventReceiver.addEventListener(new GroupInstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-
+                GroupInstanceActivatedEvent event1 = (GroupInstanceActivatedEvent) event;
+                String appId = event1.getAppId();
+                String groupId = event1.getGroupId();
+                String instanceId = event1.getInstanceId();
+                String id = generateId(appId, groupId, instanceId);
+                getActivateddMembers().put(id, System.currentTimeMillis());
             }
         });
 
         applicationsEventReceiver.addEventListener(new GroupInstanceInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
-
+                GroupInstanceInactivatedEvent event1 = (GroupInstanceInactivatedEvent) event;
+                String appId = event1.getAppId();
+                String groupId = event1.getGroupId();
+                String instanceId = event1.getInstanceId();
+                String id = generateId(appId, groupId, instanceId);
+                getInActiveMembers().put(id, System.currentTimeMillis());
             }
         });
 
         applicationsEventReceiver.addEventListener(new GroupInstanceTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-
+                GroupInstanceTerminatedEvent event1 = (GroupInstanceTerminatedEvent) event;
+                String appId = event1.getAppId();
+                String groupId = event1.getGroupId();
+                String instanceId = event1.getInstanceId();
+                String id = generateId(appId, groupId, instanceId);
+                getTerminatedMembers().put(id, System.currentTimeMillis());
             }
         });
+
+        applicationsEventReceiver.addEventListener(new GroupInstanceTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                GroupInstanceTerminatingEvent event1 = (GroupInstanceTerminatingEvent) event;
+                String appId = event1.getAppId();
+                String groupId = event1.getGroupId();
+                String instanceId = event1.getInstanceId();
+                String id = generateId(appId, groupId, instanceId);
+                getTerminatingMembers().put(id, System.currentTimeMillis());
+            }
+        });
+    }
+
+    public String generateId(String appId, String groupId, String instanceId) {
+        return appId + "-" + groupId + "-" + instanceId;
+    }
+
+    public String getClusterIdFromAlias(String applicationId, String alias) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        assertNotNull(application);
+
+        ClusterDataHolder dataHolder = application.getClusterDataHolderRecursivelyByAlias(alias);
+        assertNotNull(dataHolder);
+
+        return dataHolder.getClusterId();
+    }
+
+
+    public void removeMembersFromMaps(String applicationId) {
+        for(Map.Entry<String, Long> entry: getActivateddMembers().entrySet()) {
+            if(entry.getKey().contains(applicationId)) {
+                getActivateddMembers().remove(entry.getKey());
+            }
+        }
+
+        for(Map.Entry<String, Long> entry: getTerminatedMembers().entrySet()) {
+            if(entry.getKey().contains(applicationId)) {
+                getTerminatedMembers().remove(entry.getKey());
+            }
+        }
+    }
+
+    public Map<String, Long> getTerminatedMembers() {
+        return terminatedMembers;
+    }
+
+    public void setTerminatedMembers(Map<String, Long> terminatedMembers) {
+        this.terminatedMembers = terminatedMembers;
+    }
+
+    public Map<String, Long> getTerminatingMembers() {
+        return terminatingMembers;
+    }
+
+    public void setTerminatingMembers(Map<String, Long> terminatingMembers) {
+        this.terminatingMembers = terminatingMembers;
+    }
+
+    public Map<String, Long> getCreatedMembers() {
+        return createdMembers;
+    }
+
+    public void setCreatedMembers(Map<String, Long> createdMembers) {
+        this.createdMembers = createdMembers;
+    }
+
+    public Map<String, Long> getInActiveMembers() {
+        return inActiveMembers;
+    }
+
+    public void setInActiveMembers(Map<String, Long> inActiveMembers) {
+        this.inActiveMembers = inActiveMembers;
+    }
+
+    public Map<String, Long> getActivateddMembers() {
+        return activateddMembers;
+    }
+
+    public void setActivateddMembers(Map<String, Long> activateddMembers) {
+        this.activateddMembers = activateddMembers;
     }
 }
