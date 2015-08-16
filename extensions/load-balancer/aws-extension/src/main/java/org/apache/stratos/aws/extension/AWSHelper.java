@@ -40,7 +40,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
@@ -219,8 +218,11 @@ public class AWSHelper {
 	 * cluster is added.
 	 * 
 	 * @param name
+	 *            of the load balancer to be created
 	 * @param listeners
+	 *            to be attached to the load balancer
 	 * @param region
+	 *            in which the load balancer needs to be created
 	 * @return DNS name of newly created load balancer
 	 * @throws LoadBalancerExtensionException
 	 */
@@ -267,7 +269,9 @@ public class AWSHelper {
 	 * with which this load balancer was associated, is removed.
 	 * 
 	 * @param loadBalancerName
+	 *            to be deleted
 	 * @param region
+	 *            of the laod balancer
 	 */
 	public void deleteLoadBalancer(String loadBalancerName, String region) {
 
@@ -293,13 +297,19 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param instances
+	 *            to attached to the load balancer
 	 * @param region
+	 *            of the load balancer
 	 */
 	public void registerInstancesToLoadBalancer(String loadBalancerName,
 			List<Instance> instances, String region) {
 
-		log.info("Attaching instance " + instances.get(0)
-				+ " to load balancer + " + loadBalancerName);
+		log.info("Attaching following instance(s) to load balancer + "
+				+ loadBalancerName);
+
+		for (Instance instance : instances) {
+			log.info(instance.getInstanceId());
+		}
 
 		RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest = new RegisterInstancesWithLoadBalancerRequest(
 				loadBalancerName, instances);
@@ -308,7 +318,8 @@ public class AWSHelper {
 			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			elbClient.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
+			elbClient
+					.registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
 
 		} catch (AmazonClientException e) {
 			log.error("Could not register instances to load balancer "
@@ -323,13 +334,19 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param instances
+	 *            to be de-registered from load balancer
 	 * @param region
+	 *            of the load balancer
 	 */
 	public void deregisterInstancesFromLoadBalancer(String loadBalancerName,
 			List<Instance> instances, String region) {
 
-		log.info("Detaching instance " + instances.get(0)
-				+ " from load balancer + " + loadBalancerName);
+		log.info("De-registering following instance(s) from load balancer + "
+				+ loadBalancerName);
+
+		for (Instance instance : instances) {
+			log.info(instance.getInstanceId());
+		}
 
 		DeregisterInstancesFromLoadBalancerRequest deregisterInstancesFromLoadBalancerRequest = new DeregisterInstancesFromLoadBalancerRequest(
 				loadBalancerName, instances);
@@ -338,7 +355,8 @@ public class AWSHelper {
 			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-			elbClient.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
+			elbClient
+					.deregisterInstancesFromLoadBalancer(deregisterInstancesFromLoadBalancerRequest);
 
 		} catch (AmazonClientException e) {
 			log.error("Could not de-register instances from load balancer "
@@ -352,13 +370,13 @@ public class AWSHelper {
 	 * 
 	 * @param loadBalancerName
 	 * @param region
+	 *            of the load balancer
 	 * @return description of the load balancer
 	 */
 	private LoadBalancerDescription getLoadBalancerDescription(
 			String loadBalancerName, String region) {
 
 		List<String> loadBalancers = new ArrayList<String>();
-
 		loadBalancers.add(loadBalancerName);
 
 		DescribeLoadBalancersRequest describeLoadBalancersRequest = new DescribeLoadBalancersRequest(
@@ -450,6 +468,15 @@ public class AWSHelper {
 
 	}
 
+	/**
+	 * Checks if the security group is already present in the given region. If
+	 * yes, then returns its group id. If not, present the returns null.
+	 * 
+	 * @param groupName
+	 *            to be checked for presence.
+	 * @param region
+	 * @return id of the security group
+	 */
 	public String getSecurityGroupId(String groupName, String region) {
 		if (groupName == null || groupName.isEmpty()) {
 			return null;
@@ -482,6 +509,17 @@ public class AWSHelper {
 		return null;
 	}
 
+	/**
+	 * Creates security group with the given name in the given region
+	 * 
+	 * @param groupName
+	 *            to be created
+	 * @param description
+	 * @param region
+	 *            in which the security group to be created
+	 * @return Id of the security group created
+	 * @throws LoadBalancerExtensionException
+	 */
 	public String createSecurityGroup(String groupName, String description,
 			String region) throws LoadBalancerExtensionException {
 		if (groupName == null || groupName.isEmpty()) {
@@ -510,6 +548,22 @@ public class AWSHelper {
 
 	}
 
+	/**
+	 * Adds inbound rule to the security group which allows users to access load
+	 * balancer at specified port and using the specified protocol. Port
+	 * specified should be a proxy port mentioned in the port mappings of the
+	 * cartridge.
+	 * 
+	 * @param groupId
+	 *            to which this rule to be added
+	 * @param region
+	 *            of the security group
+	 * @param protocol
+	 *            with which load balancer can be accessed
+	 * @param port
+	 *            at which load balancer can be accessed
+	 * @throws LoadBalancerExtensionException
+	 */
 	public void addInboundRuleToSecurityGroup(String groupId, String region,
 			String protocol, int port) throws LoadBalancerExtensionException {
 		if (groupId == null || groupId.isEmpty()) {
@@ -581,17 +635,22 @@ public class AWSHelper {
 						.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
 
 			} catch (AmazonClientException e) {
-
-				// if(!e.getMessage().contains("already exist"))
-				// {
 				throw new LoadBalancerExtensionException(
 						"Could not add inbound rule to security group "
-								+ groupId + ".");
-				// }
+								+ groupId + ".", e);
 			}
 		}
 	}
 
+	/**
+	 * Returns the security group id for the given region if it is already
+	 * present. If it is not already present then creates a new security group
+	 * in that region.
+	 * 
+	 * @param region
+	 * @return Id of the security group
+	 * @throws LoadBalancerExtensionException
+	 */
 	public String getSecurityGroupIdForRegion(String region)
 			throws LoadBalancerExtensionException {
 		if (region == null)
@@ -616,11 +675,14 @@ public class AWSHelper {
 	}
 
 	/**
+	 * Retrieves the total number of requests that were made to the load
+	 * balancer during the given time interval in the past
+	 * 
 	 * @param loadBalancerName
 	 * @param region
 	 * @param timeInterval
-	 *            in seconds
-	 * @return
+	 *            in seconds which must be multiple of 60
+	 * @return number of requests made
 	 */
 	public int getRequestCount(String loadBalancerName, String region,
 			int timeInterval) {
@@ -673,6 +735,16 @@ public class AWSHelper {
 		return count;
 	}
 
+	/**
+	 * Retrieves total number of responses generated by all instances attached
+	 * to the load balancer during the time interval in the past.
+	 * 
+	 * @param loadBalancerName
+	 * @param region
+	 * @param timeInterval
+	 *            in seconds which must be multiple of 60
+	 * @return number of responses generated
+	 */
 	public int getAllResponsesCount(String loadBalancerName, String region,
 			int timeInterval) {
 		int total = 0;
@@ -697,6 +769,24 @@ public class AWSHelper {
 		return total;
 	}
 
+	/**
+	 * Retrieves the number of responses generated for a particular response
+	 * code like 2XX, 3XX, 4XX, 5XX
+	 * 
+	 * @param loadBalancerName
+	 * @param region
+	 * @param metricName
+	 *            which is one among HTTPCode_Backend_2XX or
+	 *            HTTPCode_Backend_3XX or HTTPCode_Backend_4XX or
+	 *            HTTPCode_Backend_5XX
+	 * @param startTime
+	 *            of the window to be scanned
+	 * @param endTime
+	 *            of the window to be scanned
+	 * @param timeInterval
+	 *            in seconds
+	 * @return number for response for this metric
+	 */
 	public int getResponseCountForMetric(String loadBalancerName,
 			String region, String metricName, Date startTime, Date endTime,
 			int timeInterval) {

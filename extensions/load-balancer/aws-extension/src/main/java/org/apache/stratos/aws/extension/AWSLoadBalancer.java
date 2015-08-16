@@ -19,10 +19,8 @@
 
 package org.apache.stratos.aws.extension;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +31,6 @@ import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import com.amazonaws.services.elasticloadbalancing.model.Listener;
 
@@ -41,9 +38,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
-	// A map <clusterId, load balancer id>
+	// A map <clusterId, load balancer info> to store load balancer information against the cluster id
 	private static ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LoadBalancerInfo>();
 
+	// Object used to invoke methods related to AWS API
 	private AWSHelper awsHelper;
 
 	public AWSLoadBalancer() throws LoadBalancerExtensionException {
@@ -78,11 +76,11 @@ public class AWSLoadBalancer implements LoadBalancer {
 						String loadBalancerName = loadBalancerInfo.getName();
 						String region = loadBalancerInfo.getRegion();
 
-						// 1. Get all the instances attached
-						// Add/remove instances as necessary
+						// Get all the instances attached
+						// Attach newly added instances to load balancer
 
 						// attachedInstances list is useful in finding out what
-						// all new instances
+						// all new instances which
 						// should be attached to this load balancer.
 						List<Instance> attachedInstances = awsHelper
 								.getAttachedInstances(loadBalancerName, region);
@@ -120,8 +118,6 @@ public class AWSLoadBalancer implements LoadBalancer {
 								awsHelper.registerInstancesToLoadBalancer(
 										loadBalancerName,
 										instancesToAddToLoadBalancer, region);
-
-							// Update domain mappings
 						}
 
 					} else {
@@ -130,9 +126,6 @@ public class AWSLoadBalancer implements LoadBalancer {
 								.getMembers();
 
 						if (clusterMembers.size() > 0) {
-
-							// try
-							// {
 							// a unique load balancer name with user-defined
 							// prefix and a sequence number.
 							String loadBalancerName = awsHelper
@@ -155,10 +148,9 @@ public class AWSLoadBalancer implements LoadBalancer {
 									.createLoadBalancer(loadBalancerName,
 											listenersForThisCluster, region);
 
-							// Also add the inbound rule
+							// Add the inbound rule the security group of the load balancer
 							// For each listener, add a new rule with load
-							// balancer port as allowed protocol.
-
+							// balancer port as allowed protocol in the security group.
 							for (Listener listener : listenersForThisCluster) {
 								int port = listener.getLoadBalancerPort();
 
@@ -179,7 +171,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 									+ "' created for cluster '"
 									+ cluster.getClusterId());
 
-							// register instances to LB
+							// Register instances in the cluster to load balancer
 							List<Instance> instances = new ArrayList<Instance>();
 
 							for (Member member : clusterMembers) {
@@ -199,19 +191,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 							awsHelper.registerInstancesToLoadBalancer(
 									loadBalancerName, instances, region);
 
-							// Create domain mappings
-
 							LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(
 									loadBalancerName, region);
 
 							clusterIdToLoadBalancerMap.put(
 									cluster.getClusterId(), loadBalancerInfo);
 							activeClusters.add(cluster.getClusterId());
-							// }
-							// catch(LoadBalancerExtensionException e)
-							// {
-							// log.debug(e);
-							// }
 						}
 					}
 				}
@@ -270,12 +255,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 		// Remove all load balancers
 		for (LoadBalancerInfo loadBalancerInfo : clusterIdToLoadBalancerMap
 				.values()) {
-			// remove load balancer
+			// Remove load balancer
 			awsHelper.deleteLoadBalancer(loadBalancerInfo.getName(),
 					loadBalancerInfo.getRegion());
 		}
-
-		// Remove domain mappings
 	}
 
 	public static ConcurrentHashMap<String, LoadBalancerInfo> getClusterIdToLoadBalancerMap() {
