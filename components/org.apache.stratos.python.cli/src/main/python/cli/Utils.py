@@ -83,7 +83,6 @@ class PrintableJSON(Texttable):
 def auth(func):
     """Authenticate"""
     def auth_inner(self, *args, **kwargs):
-
         if len(args) > 1 and hasattr(args[1], 'username') and args[1].username is not None:
             Configs.stratos_username = args[1].username
         if len(args) > 1 and hasattr(args[1], 'password') and args[1].password is not None:
@@ -94,4 +93,7 @@ def auth(func):
             logging.warning("Pre authentication failed. Some authentication details are missing")
         else:
             return func(self, *args, **kwargs)
+    auth_inner.__name__ = func.__name__.replace('_', '-')
+    auth_inner.__doc__ = func.__doc__
     return auth_inner
+
