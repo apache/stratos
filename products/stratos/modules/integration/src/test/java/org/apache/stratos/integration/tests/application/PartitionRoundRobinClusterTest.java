@@ -109,14 +109,14 @@ public class PartitionRoundRobinClusterTest extends StratosTestServerManager {
             log.info("Waiting for the faulty member detection from " +
                     "CEP as the statistics are stopped...");
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Inactive,-1234);
+                    ApplicationStatus.Inactive,tenant1Id);       */
 
             //Application active handling after application becomes active again
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active,-1234);
+                    ApplicationStatus.Active,tenant1Id);
 
             //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(),-1234);   */
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(),tenant1Id);
 
             boolean removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);

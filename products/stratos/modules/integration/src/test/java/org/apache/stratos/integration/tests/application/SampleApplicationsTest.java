@@ -29,9 +29,7 @@ import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Sample application tests with application add, .
@@ -131,6 +129,11 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(c3.getCartridgeMin(), 1);
             assertEquals(c3.getCartridgeMax(), 2);
 
+            bean = (ApplicationBean) restClientTenant2.getEntity(RestConstants.APPLICATIONS,
+                    "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+
+            assertNull("Application found in tenant 2",bean);
+
             boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH +
                             "/g-sc-G123-1-sample-applications-test-v1.json",
                     RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
@@ -139,7 +142,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             ApplicationBean updatedBean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
                     "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
 
-            assertEquals(bean.getApplicationId(), "g-sc-G123-1-sample-applications-test");
+            assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1-sample-applications-test");
 
             group1 = updatedBean.getComponents().getGroups().get(0);
             group2 = group1.getGroups().get(0);
@@ -175,6 +178,10 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             assertEquals(c3.getCartridgeMin(), 2);
             assertEquals(c3.getCartridgeMax(), 3);
 
+            updatedBean = (ApplicationBean) restClientTenant2.getEntity(RestConstants.APPLICATIONS,
+                    "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+
+            assertNull("Application found in tenant 2",updatedBean);
 
             boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
