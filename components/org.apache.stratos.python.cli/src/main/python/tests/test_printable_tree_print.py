@@ -15,8 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import sys
-from cli import Utils
+from cli import Stratos
+from cli import Configs
+import responses
 
 
 class TestClass:
@@ -25,14 +26,89 @@ class TestClass:
         pass
 
     @staticmethod
-    def test_zero():
-        i = 1
-        assert i == 1
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
 
     @staticmethod
-    def test_one():
-        tree = Utils.PrintableTree(
-            """[{"id":"network-partition-2","partitions":[{"id":"partition-2","partitionMax":0,"property":[{"name":"region","value":"default"}],"public":false},{"id":"partition-3","partitionMax":0,"property":[{"name":"region","value":"default"}],"public":false}]},{"id":"network-partition-1","partitions":[{"id":"partition-1","partitionMax":0,"property":[{"name":"region","value":"default"}],"public":false}]}]""")
-        tree.print_tree()
-        output = sys.stdout.getline().strip()  # because stdout is an StringIO instance
-        assert output == 'hello world!'
+    @responses.activate
+    def test_http_get_handler_on_400():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='', status=400,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
+
+    @staticmethod
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
+
+    @staticmethod
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
+
+    @staticmethod
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
+
+    @staticmethod
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
+
+    @staticmethod
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
+
+    @staticmethod
+    @responses.activate
+    def test_http_get_handler_on_200():
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='{"keyOne": "valueOne"}', status=200,
+                      content_type='application/json')
+
+        r = Stratos.get("")
+
+        assert r == {"keyOne": "valueOne"}
