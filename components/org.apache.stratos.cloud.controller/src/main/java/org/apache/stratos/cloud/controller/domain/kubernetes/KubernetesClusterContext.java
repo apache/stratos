@@ -48,7 +48,6 @@ public class KubernetesClusterContext implements Serializable {
     private transient KubernetesApiClient kubApi;
     private AtomicLong serviceSeqNo;
     private AtomicLong podSeqNo;
-    private AtomicLong clusterSeqNo;
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
         servicePorts = new ArrayList<Integer>();
@@ -62,7 +61,6 @@ public class KubernetesClusterContext implements Serializable {
         this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
         this.serviceSeqNo = new AtomicLong();
         this.podSeqNo = new AtomicLong();
-        this.clusterSeqNo = new AtomicLong();
 
     }
 
@@ -147,10 +145,6 @@ public class KubernetesClusterContext implements Serializable {
 
     public AtomicLong getPodSeqNo() {
         return podSeqNo;
-    }
-
-    public AtomicLong getClusterSeqNo(){
-        return clusterSeqNo;
     }
 
     @Override
