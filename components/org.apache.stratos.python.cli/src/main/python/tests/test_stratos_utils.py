@@ -15,100 +15,83 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import unittest
 from cli import Stratos
 from cli import Configs
+from cli.exceptions import BadResponseError
 import responses
 
 
-class TestClass:
+class MyTestCase(unittest.TestCase):
 
-    def __init__(self):
-        pass
 
-    @staticmethod
     @responses.activate
-    def test_http_get_handler_on_200():
+    def test_http_get_handler_on_200(self):
         responses.add(responses.GET, Configs.stratos_api_url,
                       body='{"keyOne": "valueOne"}', status=200,
                       content_type='application/json')
 
-        r = Stratos.get("")
+        r = Stratos.post("")
 
         assert r == {"keyOne": "valueOne"}
 
-    @staticmethod
     @responses.activate
-    def test_http_get_handler_on_400():
+    def test_http_get_handler_on_400(self):
         responses.add(responses.GET, Configs.stratos_api_url,
                       body='', status=400,
                       content_type='application/json')
 
-        r = Stratos.get("")
+        self.assertRaises(BadResponseError, Stratos.get(""))
 
-        assert r == {"keyOne": "valueOne"}
-
-    @staticmethod
     @responses.activate
-    def test_http_get_handler_on_200():
+    def test_http_get_handler_on_404(self):
         responses.add(responses.GET, Configs.stratos_api_url,
+                      body='', status=404,
+                      content_type='application/json')
+
+        self.assertRaises(BadResponseError, Stratos.get(""))
+
+    @responses.activate
+    def test_http_get_handler_on_500(self):
+        responses.add(responses.GET, Configs.stratos_api_url,
+                      body='', status=500,
+                      content_type='application/json')
+
+        self.assertRaises(BadResponseError, Stratos.get(""))
+
+    @responses.activate
+    def test_http_post_handler_on_200(self):
+        responses.add(responses.POST, Configs.stratos_api_url,
                       body='{"keyOne": "valueOne"}', status=200,
                       content_type='application/json')
 
-        r = Stratos.get("")
+        r = Stratos.post("")
 
-        assert r == {"keyOne": "valueOne"}
+        assert r is True
 
-    @staticmethod
     @responses.activate
-    def test_http_get_handler_on_200():
-        responses.add(responses.GET, Configs.stratos_api_url,
-                      body='{"keyOne": "valueOne"}', status=200,
+    def test_http_post_handler_on_400(self):
+        responses.add(responses.POST, Configs.stratos_api_url,
+                      body='', status=400,
                       content_type='application/json')
 
-        r = Stratos.get("")
+        self.assertRaises(BadResponseError, Stratos.post(""))
 
-        assert r == {"keyOne": "valueOne"}
-
-    @staticmethod
     @responses.activate
-    def test_http_get_handler_on_200():
-        responses.add(responses.GET, Configs.stratos_api_url,
-                      body='{"keyOne": "valueOne"}', status=200,
+    def test_http_post_handler_on_404(self):
+        responses.add(responses.POST, Configs.stratos_api_url,
+                      body='', status=404,
                       content_type='application/json')
 
-        r = Stratos.get("")
+        self.assertRaises(BadResponseError, Stratos.post(""))
 
-        assert r == {"keyOne": "valueOne"}
-
-    @staticmethod
     @responses.activate
-    def test_http_get_handler_on_200():
-        responses.add(responses.GET, Configs.stratos_api_url,
-                      body='{"keyOne": "valueOne"}', status=200,
+    def test_http_post_handler_on_500(self):
+        responses.add(responses.POST, Configs.stratos_api_url,
+                      body='', status=500,
                       content_type='application/json')
 
-        r = Stratos.get("")
+        self.assertRaises(BadResponseError, Stratos.post(""))
 
-        assert r == {"keyOne": "valueOne"}
-
-    @staticmethod
-    @responses.activate
-    def test_http_get_handler_on_200():
-        responses.add(responses.GET, Configs.stratos_api_url,
-                      body='{"keyOne": "valueOne"}', status=200,
-                      content_type='application/json')
-
-        r = Stratos.get("")
-
-        assert r == {"keyOne": "valueOne"}
-
-    @staticmethod
-    @responses.activate
-    def test_http_get_handler_on_200():
-        responses.add(responses.GET, Configs.stratos_api_url,
-                      body='{"keyOne": "valueOne"}', status=200,
-                      content_type='application/json')
-
-        r = Stratos.get("")
-
-        assert r == {"keyOne": "valueOne"}
+if __name__ == '__main__':
+    unittest.main()
