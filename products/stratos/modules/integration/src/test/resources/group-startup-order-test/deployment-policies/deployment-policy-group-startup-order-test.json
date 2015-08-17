@@ -1,0 +1,18 @@
+{
+    "id": "deployment-policy-group-startup-order-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-group-startup-order-test-1",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 4
+                }
+            ]
+        }
+    ]
+}
+
+
+
