@@ -183,6 +183,13 @@ public class TopologyHandler {
                 status, application.getStatus());
     }
 
+    public void assertApplicationForNonAvailability(String applicationName,  int tenantId) {
+
+        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+        assertNull(String.format("Application is found for other tenant : [application-id] %s", applicationName),application);
+
+    }
+
     /**
      * Assert application activation
      *

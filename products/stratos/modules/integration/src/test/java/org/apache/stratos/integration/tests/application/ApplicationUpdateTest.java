@@ -118,6 +118,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             //Application active handling
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
                     ApplicationStatus.Active, tenant1Id);
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(bean.getApplicationId(),tenant2Id);
 
             //Group active handling
             TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenant1Id);
@@ -138,6 +139,8 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             ApplicationBean updatedBean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
                     "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1-application-update-test");
+
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(bean.getApplicationId(),tenant2Id);
 
             boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
