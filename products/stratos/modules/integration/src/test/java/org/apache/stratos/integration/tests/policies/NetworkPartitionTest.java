@@ -28,6 +28,7 @@ import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -77,6 +78,11 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             assertEquals(p2.getProperty().get(0).getValue(), "default1");
             assertEquals(p2.getProperty().get(1).getName(), "zone");
             assertEquals(p2.getProperty().get(1).getValue(), "z1");
+
+            updatedBean = (NetworkPartitionBean) restClientTenant2.
+                    getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                            NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertNull("Network partition found in tenant 2",updatedBean);
 
             boolean removed = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);

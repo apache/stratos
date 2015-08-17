@@ -29,6 +29,7 @@ import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -90,6 +91,11 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
                 assertTrue(String.format("The networkPartitionGroups property is not found in %s",
                         applicationPolicyId), false);
             }
+
+            bean = (ApplicationPolicyBean) restClientTenant2.
+                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
+                            ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+            assertNull("Application policy bean found in tenant 2",bean);
 
             boolean removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);

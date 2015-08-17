@@ -72,6 +72,12 @@ public class CartridgeGroupTest extends StratosTestServerManager {
             assertEquals(String.format("Cartridge Group name did not match: [cartridge-group-name] %s",
                     "g4-g5-g6-cartridge-group-test.json"), bean.getName(), "G4-cartridge-group-test");
 
+            CartridgeGroupBean tenant2Bean = (CartridgeGroupBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G4-cartridge-group-test",
+                            CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertNull(String.format("Cartridge Group name fouund in tenant 2: [cartridge-group-name] %s",
+                    bean.getName()),tenant2Bean);
+
             boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "g4-g5-g6-cartridge-group-test-v1.json",
                     RestConstants.CARTRIDGE_GROUPS, RestConstants.CARTRIDGE_GROUPS_NAME);

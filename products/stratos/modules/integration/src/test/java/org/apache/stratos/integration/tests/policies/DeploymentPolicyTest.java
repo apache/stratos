@@ -30,6 +30,7 @@ import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -131,6 +132,11 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
             assertEquals(nw2P2.getId(),
                     "network-partition-6-partition-2");
             assertEquals(nw2P2.getPartitionMax(), 5);
+
+            updatedBean = (DeploymentPolicyBean) restClientTenant2.
+                    getEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
+                            DeploymentPolicyBean.class, RestConstants.DEPLOYMENT_POLICIES_NAME);
+            assertNull("Deployment policy found in tenant 2",updatedBean);
 
             boolean removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-deployment-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);

@@ -26,6 +26,7 @@ import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -71,6 +72,11 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
                     updatedBean.getLoadThresholds().getMemoryConsumption().getThreshold(), 40.0, 0.0);
             assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
                     updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
+
+            updatedBean = (AutoscalePolicyBean) restClientTenant2.getEntity(
+                    RestConstants.AUTOSCALING_POLICIES, policyId,
+                    AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertNull("Auto scaling policy found in tenant 2",updatedBean);
 
             boolean removed = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     policyId, RestConstants.AUTOSCALING_POLICIES_NAME);
