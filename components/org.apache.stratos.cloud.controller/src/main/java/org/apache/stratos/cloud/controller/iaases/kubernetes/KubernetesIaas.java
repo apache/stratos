@@ -510,7 +510,8 @@ public class KubernetesIaas extends Iaas {
                 // Find next service sequence no
                 long serviceSeqNo = kubernetesClusterContext.getServiceSeqNo().incrementAndGet();
                 String serviceId = KubernetesIaasUtil.fixSpecialCharacters("service" + "-" + (serviceSeqNo));
-                String serviceLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
+                long clusterSeqNo = kubernetesClusterContext.getClusterSeqNo().incrementAndGet();
+                String serviceLabel = KubernetesIaasUtil.fixSpecialCharacters("cluster" + "-" + (clusterSeqNo));
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Creating kubernetes service: [cluster] %s [service] %s " +
