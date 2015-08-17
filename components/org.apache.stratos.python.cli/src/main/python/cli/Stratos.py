@@ -87,13 +87,24 @@ class Stratos:
         return Stratos.get('applications/'+application_id)
 
     @staticmethod
+    def add_application(json):
+        return Stratos.post('applications', json)
+
+    @staticmethod
+    def update_application(application_id, json):
+        return Stratos.put('applications/'+application_id, json)
+
+    @staticmethod
     def remove_application(application):
         return Stratos.delete('applications/'+application)
 
     @staticmethod
     def deploy_application(application_id, application_policy_id):
-        return Stratos.post('applications/'+application_id+'/deploy/'+application_policy_id, None,
-                            )
+        return Stratos.post('applications/'+application_id+'/deploy/'+application_policy_id, None)
+
+    @staticmethod
+    def deploy_application(application_id, application_policy_id):
+        return Stratos.post('applications/'+application_id+'/undeploy/'+application_policy_id, None)
     @staticmethod
     def describe_application_runtime(application_id):
         return Stratos.get('applications/'+application_id+"/runtime")
@@ -469,9 +480,5 @@ class Stratos:
             else:
                 logging.error("HTTP "+str(r.status_code)+" : Could not connect to Stratos server")
                 raise BadResponseError(str(r.status_code), "Could not connect to Stratos server")
-
-    @staticmethod
-    def add_application(json):
-        return Stratos.post('applications', json)
 
 

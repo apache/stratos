@@ -146,7 +146,10 @@ class CLI(Cmd):
      * list-applications
      * describe-application
      * add-application
+     * update-application
      * remove-application
+     * describe-application-runtime
+     * deploy-application
 
     """
 
@@ -156,7 +159,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_applications(self, line , opts=None):
-        """Illustrate the base class method use."""
+        """Retrieve details of all the applications."""
         try:
             applications = Stratos.list_applications()
             if not applications:
@@ -177,7 +180,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_describe_application(self, application_id , opts=None):
-        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
+        """Describe an application."""
         try:
             if not application_id:
                 print("usage: describe-application [cluster-id]")
@@ -198,7 +201,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_application(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add an application."""
         try:
             if not opts.json_file_path:
                 print("usage: add-application [-f <resource path>]")
@@ -211,6 +214,26 @@ class CLI(Cmd):
         except BadResponseError as e:
             self.perror(str(e))
 
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_update_application(self, application , opts=None):
+        """Update an application."""
+        try:
+            if not opts.json_file_path:
+                print("usage: update-application [-f <resource path>] [application]")
+            else:
+                update_application = Stratos.update_application(application, open(opts.json_file_path, 'r').read())
+                if update_application:
+                    print("Application updated successfully")
+                else:
+                    print("Error updating application")
+        except BadResponseError as e:
+            self.perror(str(e))
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -218,7 +241,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_application(self, application , opts=None):
-        """Delete a specific user"""
+        """Delete an application."""
         try:
             if not application:
                 print("usage: remove-application [application]")
@@ -252,12 +275,26 @@ class CLI(Cmd):
         except BadResponseError as e:
             self.perror(str(e))
 
-    """
-    # Application deployment
-     * describe-application-runtime
-     * deploy-application
-
-    """
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-a', '--application_id', type="str", help="Unique ID of the application"),
+        make_option('-o', '--application_policy_id', type="str", help="Unique ID of the application policy")
+    ])
+    @auth
+    def do_undeploy_application(self, line , opts=None):
+        """Undeploy an application."""
+        try:
+            if not opts.application_id or not opts.application_policy_id:
+                print("usage: undeploy-application [-a <applicationId>] [-o <applicationPolicyId>]")
+            else:
+                application_removed = Stratos.undeploy_application(opts.application_id, opts.application_policy_id)
+                if application_removed:
+                    print("You have successfully undeployed application: "+opts.application_id)
+                else:
+                    print("Could not undeployed application : "+opts.application_id)
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -265,7 +302,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_describe_application_runtime(self, application_id , opts=None):
-        """Retrieve details of a specific auto-scaling policy."""
+        """Describe the runtime topology of an application."""
         try:
             if not application_id:
                 print("usage: describe-application-runtime [application-id]")
@@ -331,7 +368,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_application_signup(self, signup , opts=None):
-        """Delete a specific user"""
+        """Delete an application sign up."""
         try:
             if not signup:
                 print("usage: remove-application-signup [signup]")
@@ -613,7 +650,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_cartridge(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update a cartridge"""
         try:
             if not opts.json_file_path:
                 print("usage: update-cartridge [-f <resource path>]")
@@ -661,7 +698,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_cartridge_groups(self, line , opts=None):
-        """Illustrate the base class method use."""
+        """Retrieve details of all the cartridge groups."""
         try:
             cartridge_groups = Stratos.list_cartridge_groups()
             if not cartridge_groups:
@@ -704,7 +741,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_cartridge_group(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add a cartridge group."""
         try:
             if not opts.json_file_path:
                 print("usage: add-cartridge-group [-f <resource path>]")
@@ -743,7 +780,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_cartridge_group(self, group_definition_name , opts=None):
-        """Delete a cartridge"""
+        """Delete a cartridge group."""
         try:
             if not group_definition_name:
                 print("usage: remove-cartridge-group [cartridge-group-name]")
@@ -834,7 +871,7 @@ class CLI(Cmd):
         make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
     ])
     @auth
-    def do_update_application_policy(self, line , opts=None):
+    def do_update_deployment_policy(self, line , opts=None):
         """Update a deployment policy."""
         try:
             if not opts.json_file_path:
@@ -884,7 +921,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_application_policies(self, line , opts=None):
-        """Illustrate the base class method use."""
+        """Retrieve details of all the application policies."""
         try:
             application_policies = Stratos.list_application_policies()
             if not application_policies:
@@ -926,7 +963,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_application_policy(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add an application policy."""
         try:
             if not opts.json_file_path:
                 print("usage: add-application-policy [-f <resource path>]")
@@ -946,7 +983,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_application_policy(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update an application policy."""
         try:
             if not opts.json_file_path:
                 print("usage: update-application-policy [-f <resource path>]")
@@ -965,7 +1002,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_application_policy(self, application_policy_id , opts=None):
-        """Delete a cartridge"""
+        """Delete an application policy."""
         try:
             if not application_policy_id:
                 print("usage: remove-application-policy [application-policy-id]")
@@ -1433,7 +1470,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_domain_mappings(self, application_id , opts=None):
-        """Illustrate the base class method use."""
+        """Retrieve details of domain mappings of an application."""
         try:
             if not application_id:
                 print("usage: list-domain-mappings [application-id]")
@@ -1459,7 +1496,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_domain_mapping(self, application_id, opts=None):
-        """Add a new user to the system"""
+        """Map domain to a subscribed cartridge."""
         try:
             if not application_id or not opts.json_file_path:
                 print("usage: add-domain-mapping [-f <resource path>] [application id]")
@@ -1478,7 +1515,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_domain_mappings(self, domain , opts=None):
-        """Delete a specific user"""
+        """Remove domain mappings of an application."""
         try:
             if not domain:
                 print("usage: remove-domain-mappings [domain]")
