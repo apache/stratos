@@ -23,6 +23,7 @@ import Configs
 
 # Fix Python 2.x.
 from cli.Stratos import Stratos
+from cli.exceptions import BadResponseError
 
 try:
     input = raw_input
@@ -53,7 +54,10 @@ def main():
     cli = CLI()
 
     if len(sys.argv) > 1:
-        cli.onecmd(' '.join(sys.argv[1:]))
+        try:
+            cli.onecmd(' '.join(sys.argv[1:]))
+        except BadResponseError as e:
+            print(str(e))
     else:
         prompt_for_credentials()
         cli.cmdloop()

@@ -16,11 +16,9 @@
 # under the License.
 
 from cmd2 import *
-from rpm._rpm import te
 from Utils import *
 from Stratos import *
 import Configs
-from Logging import logging
 from cli.exceptions import BadResponseError
 
 
@@ -59,7 +57,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_users(self, line , opts=None):
-        """List the users of Stratos"""
+        """Retrieve details of all users."""
         try:
             users = Stratos.list_users()
             table = PrintableTable()
@@ -70,7 +68,6 @@ class CLI(Cmd):
             table.print_table()
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -84,7 +81,7 @@ class CLI(Cmd):
         make_option('-o', '--profile_name', type="str", help="Profile name of the user")
     ])
     def do_add_user(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add a user."""
         try:
             if not opts.username_user or not opts.password_user:
                 print("usage: add-user [-s <username>] [-a <credential>] [-r <role>] [-e <email>] [-f <first name>]" +
@@ -99,7 +96,6 @@ class CLI(Cmd):
                     print("Error creating the user")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -114,7 +110,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_user(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update a specific user."""
         try:
             user = Stratos.update_user(opts.username_user, opts.password_user, opts.role_name, opts.first_name, opts.last_name,
                                        opts.email, opts.profile_name)
@@ -124,7 +120,6 @@ class CLI(Cmd):
                 print("Error updating the user")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -132,7 +127,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_user(self, name , opts=None):
-        """Delete a specific user"""
+        """Delete a user."""
         try:
             if not name:
                 print("usage: remove-user [username]")
@@ -145,7 +140,6 @@ class CLI(Cmd):
                     print("Could not delete user: "+name)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     """
     # Applications
@@ -163,17 +157,19 @@ class CLI(Cmd):
     @auth
     def do_list_applications(self, line , opts=None):
         """Illustrate the base class method use."""
-        applications = Stratos.list_applications()
-        if not applications:
-            print("No applications found")
-        else:
-            table = PrintableTable()
-            rows = [["Application ID", "Alias", "Status"]]
-            for application in applications:
-                rows.append([application['applicationId'], application['alias'], application['status']])
-            table.add_rows(rows)
-            table.print_table()
-
+        try:
+            applications = Stratos.list_applications()
+            if not applications:
+                print("No applications found")
+            else:
+                table = PrintableTable()
+                rows = [["Application ID", "Alias", "Status"]]
+                for application in applications:
+                    rows.append([application['applicationId'], application['alias'], application['status']])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -182,15 +178,18 @@ class CLI(Cmd):
     @auth
     def do_describe_application(self, application_id , opts=None):
         """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
-        if not application_id:
-            print("usage: describe-application [cluster-id]")
-            return
-        application = Stratos.describe_application(application_id)
-        if not application:
-            print("Application not found in : "+application_id)
-        else:
-            print("Application : "+application_id)
-            PrintableJSON(application).pprint()
+        try:
+            if not application_id:
+                print("usage: describe-application [cluster-id]")
+                return
+            application = Stratos.describe_application(application_id)
+            if not application:
+                print("Application not found in : "+application_id)
+            else:
+                print("Application : "+application_id)
+                PrintableJSON(application).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -211,7 +210,7 @@ class CLI(Cmd):
                     print("Error adding application")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -231,8 +230,6 @@ class CLI(Cmd):
                     print("Could not delete application : "+application)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
-
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -254,7 +251,6 @@ class CLI(Cmd):
                     print("Could not deployed application : "+opts.application_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     """
     # Application deployment
@@ -270,15 +266,18 @@ class CLI(Cmd):
     @auth
     def do_describe_application_runtime(self, application_id , opts=None):
         """Retrieve details of a specific auto-scaling policy."""
-        if not application_id:
-            print("usage: describe-application-runtime [application-id]")
-            return
-        application_runtime = Stratos.describe_application_runtime(application_id)
-        if not application_runtime:
-            print("Application runtime not found")
-        else:
-            print("Application : "+application_id)
-            PrintableJSON(application_runtime).pprint()
+        try:
+            if not application_id:
+                print("usage: describe-application-runtime [application-id]")
+                return
+            application_runtime = Stratos.describe_application_runtime(application_id)
+            if not application_runtime:
+                print("Application runtime not found")
+            else:
+                print("Application : "+application_id)
+                PrintableJSON(application_runtime).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     """
     # Application signup
@@ -294,14 +293,17 @@ class CLI(Cmd):
     @auth
     def do_describe_application_signup(self, application_id , opts=None):
         """Retrieve details of a specific application signup."""
-        if not application_id:
-            print("usage: describe-application-signup [application-id]")
-            return
-        application_signup = Stratos.describe_application_signup(application_id)
-        if not application_signup:
-            print("Application signup not found")
-        else:
-            PrintableJSON(application_signup).pprint()
+        try:
+            if not application_id:
+                print("usage: describe-application-signup [application-id]")
+                return
+            application_signup = Stratos.describe_application_signup(application_id)
+            if not application_signup:
+                print("Application signup not found")
+            else:
+                PrintableJSON(application_signup).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -322,7 +324,6 @@ class CLI(Cmd):
                     print("Error creating application signup")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -342,8 +343,6 @@ class CLI(Cmd):
                     print("Could not delete application signup: "+signup)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
-
 
     """
     # Tenants
@@ -362,15 +361,18 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_tenants(self, line , opts=None):
-        """Illustrate the base class method use."""
-        tenants = Stratos.list_tenants()
-        table = PrintableTable()
-        rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
-        for tenant in tenants:
-            rows.append([tenant['tenantDomain'], tenant['tenantId'], tenant['email'],
-                         "Active" if tenant['active'] else "De-Active", datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
-        table.add_rows(rows)
-        table.print_table()
+        """Retrieve details of all tenants."""
+        try:
+            tenants = Stratos.list_tenants()
+            table = PrintableTable()
+            rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
+            for tenant in tenants:
+                rows.append([tenant['tenantDomain'], tenant['tenantId'], tenant['email'],
+                             "Active" if tenant['active'] else "De-Active", datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
+            table.add_rows(rows)
+            table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -378,15 +380,18 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_tenants_by_partial_domain(self, partial_domain , opts=None):
-        """Illustrate the base class method use."""
-        tenants = Stratos.list_tenants_by_partial_domain(partial_domain)
-        table = PrintableTable()
-        rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
-        for tenant in tenants:
-            rows.append([tenant['tenantDomain'], tenant['tenantId'], tenant['email'],
-                         "Active" if tenant['active'] else "De-Active", datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
-        table.add_rows(rows)
-        table.print_table()
+        """Search for tenants based on the partial domain value entered."""
+        try:
+            tenants = Stratos.list_tenants_by_partial_domain(partial_domain)
+            table = PrintableTable()
+            rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
+            for tenant in tenants:
+                rows.append([tenant['tenantDomain'], tenant['tenantId'], tenant['email'],
+                             "Active" if tenant['active'] else "De-Active", datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
+            table.add_rows(rows)
+            table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -412,9 +417,8 @@ class CLI(Cmd):
                     print("Email: "+tenant['email'])
                     print("Created date: "+datetime.datetime.fromtimestamp(tenant['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     print("-------------------------------------")
-            except requests.HTTPError as e:
+            except BadResponseError as e:
                 self.perror(str(e))
-                logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -428,7 +432,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_tenant(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add a tenant."""
         try:
             tenant = Stratos.add_tenant(opts.username_user, opts.first_name, opts.last_name, opts.password_user,
                                         opts.domain_name, opts.email)
@@ -438,7 +442,6 @@ class CLI(Cmd):
                 print("Error creating the tenant : "+opts.domain_name)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -453,7 +456,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_tenant(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update a specific tenant."""
         try:
             tenant = Stratos.update_tenant(opts.username_user, opts.first_name, opts.last_name, opts.password_user,
                                            opts.domain_name, opts.email, opts.tenant_id)
@@ -463,7 +466,6 @@ class CLI(Cmd):
                 print("Error updating the tenant : "+opts.domain_name)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -471,7 +473,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_activate_tenant(self, tenant_domain, opts=None):
-        """Add a new user to the system"""
+        """Activate a tenant."""
         try:
             if not tenant_domain:
                 print("usage: activate-tenant <TENANT_DOMAIN> ")
@@ -483,7 +485,6 @@ class CLI(Cmd):
                     print("Could not activate tenant : "+tenant_domain)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -491,7 +492,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_deactivate_tenant(self, tenant_domain, opts=None):
-        """Add a new user to the system"""
+        """Deactivate a tenant."""
         try:
             if not tenant_domain:
                 print("usage: deactivate-tenant <TENANT_DOMAIN> ")
@@ -503,11 +504,11 @@ class CLI(Cmd):
                     print("Could not deactivate tenant : "+tenant_domain)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     """
     # Cartridges
      * list-cartridges
+     * list-cartridges-by-filter
      * describe-cartridge
      * add-cartridge
      * remove-cartridge
@@ -520,22 +521,47 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_cartridges(self, line , opts=None):
-        """Illustrate the base class method use."""
-        cartridges = Stratos.list_cartridges()
-        table = PrintableTable()
-        rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
-        for cartridge in cartridges:
-            rows.append([cartridge['type'], cartridge['category'], cartridge['displayName'], cartridge['description'],
-                         cartridge['version'], "True" if cartridge['multiTenant'] == 1 else "False"])
-        table.add_rows(rows)
-        table.print_table()
+        """Retrieve details of available cartridges."""
+        try:
+            cartridges = Stratos.list_cartridges()
+            table = PrintableTable()
+            rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
+            for cartridge in cartridges:
+                rows.append([cartridge['type'], cartridge['category'], cartridge['displayName'], cartridge['description'],
+                             cartridge['version'], "True" if cartridge['multiTenant'] == 1 else "False"])
+            table.add_rows(rows)
+            table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
-    def do_describe_cartridge(self, cartridge_type , opts=None):
+    def do_list_cartridges_by_filter(self, filter_text , opts=None):
+        """Retrieve details of available cartridges."""
+        try:
+            if not filter_text:
+                print("")
+            else:
+                cartridges = Stratos.list_cartridges_by_filter(filter_text)
+                table = PrintableTable()
+                rows = [["Type", "Category", "Name", "Description", "Version", "Multi-Tenant"]]
+                for cartridge in cartridges:
+                    rows.append([cartridge['type'], cartridge['category'], cartridge['displayName'], cartridge['description'],
+                                 cartridge['version'], "True" if cartridge['multiTenant'] == 1 else "False"])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user")
+    ])
+    @auth
+    def do_describe_cartridge(self, cartridge_type, opts=None):
         """Retrieve details of a specific cartridge."""
         if not cartridge_type:
             print("usage: describe-cartridge [cartridge-type]")
@@ -558,7 +584,7 @@ class CLI(Cmd):
                     print("-------------------------------------")
             except requests.HTTPError as e:
                 self.perror(str(e))
-                logging.error(str(e))
+    
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -567,10 +593,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_cartridge(self, line , opts=None):
-        """
-        Add a new cartridge to the system
-        Usage: add-cartridge [-f <resource path>]
-        """
+        """Add a cartridge definition."""
         try:
             if not opts.json_file_path:
                 print("usage: add-cartridge [-f <resource path>]")
@@ -581,7 +604,7 @@ class CLI(Cmd):
                 else:
                     print("Error adding Cartridge")
         except BadResponseError as e:
-            print("Authentication Error")
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -602,7 +625,7 @@ class CLI(Cmd):
                     print("Error updating Cartridge")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -622,7 +645,6 @@ class CLI(Cmd):
                     print("Could not un-deployed cartridge : "+cartridge_type)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     """
     # Cartridge groups
@@ -640,17 +662,20 @@ class CLI(Cmd):
     @auth
     def do_list_cartridge_groups(self, line , opts=None):
         """Illustrate the base class method use."""
-        cartridge_groups = Stratos.list_cartridge_groups()
-        if not cartridge_groups:
-            print("No cartridge groups found")
-        else:
-            table = PrintableTable()
-            rows = [["Name", "No. of cartridges", "No of groups"]]
-            for cartridge_group in cartridge_groups:
-                rows.append([cartridge_group['name'], len(cartridge_group['cartridges']),
-                             len(cartridge_group['cartridges'])])
-            table.add_rows(rows)
-            table.print_table()
+        try:
+            cartridge_groups = Stratos.list_cartridge_groups()
+            if not cartridge_groups:
+                print("No cartridge groups found")
+            else:
+                table = PrintableTable()
+                rows = [["Name", "No. of cartridges", "No of groups"]]
+                for cartridge_group in cartridge_groups:
+                    rows.append([cartridge_group['name'], len(cartridge_group['cartridges']),
+                                 len(cartridge_group['cartridges'])])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -659,16 +684,18 @@ class CLI(Cmd):
     @auth
     def do_describe_cartridge_group(self, group_definition_name , opts=None):
         """Retrieve details of a cartridge group."""
-        if not group_definition_name:
-            print("usage: describe-cartridge-group [cartridge-group-name]")
-            return
-        cartridge_group = Stratos.describe_cartridge_group(group_definition_name)
-        if not cartridge_group:
-            print("Cartridge group not found")
-        else:
-            print("Service Group : "+group_definition_name)
-            PrintableJSON(cartridge_group).pprint()
-
+        try:
+            if not group_definition_name:
+                print("usage: describe-cartridge-group [cartridge-group-name]")
+                return
+            cartridge_group = Stratos.describe_cartridge_group(group_definition_name)
+            if not cartridge_group:
+                print("Cartridge group not found")
+            else:
+                print("Service Group : "+group_definition_name)
+                PrintableJSON(cartridge_group).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -689,7 +716,6 @@ class CLI(Cmd):
                     print("Error adding Cartridge group")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -710,7 +736,6 @@ class CLI(Cmd):
                     print("Error updating Cartridge group")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -730,7 +755,6 @@ class CLI(Cmd):
                     print("Could not un-deployed cartridge group : "+group_definition_name)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     """
     # Deployment Policies
@@ -748,17 +772,20 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_deployment_policies(self, line , opts=None):
-        """Illustrate the base class method use."""
-        deployment_policies = Stratos.list_deployment_policies()
-        if not deployment_policies:
-            print("No deployment policies found")
-        else:
-            table = PrintableTable()
-            rows = [["Id", "Accessibility"]]
-            for deployment_policy in deployment_policies:
-                rows.append([deployment_policy['id'], len(deployment_policy['networkPartitions'])])
-            table.add_rows(rows)
-            table.print_table()
+        """Retrieve details of a deployment policy."""
+        try:
+            deployment_policies = Stratos.list_deployment_policies()
+            if not deployment_policies:
+                print("No deployment policies found")
+            else:
+                table = PrintableTable()
+                rows = [["Id", "Accessibility"]]
+                for deployment_policy in deployment_policies:
+                    rows.append([deployment_policy['id'], len(deployment_policy['networkPartitions'])])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -766,15 +793,18 @@ class CLI(Cmd):
     ])
     @auth
     def do_describe_deployment_policy(self, line , opts=None):
-        """Retrieve details of a specific deployment policy."""
-        if not line.split():
-            print("usage: describe-deployment-policy [deployment-policy-id]")
-            return
-        deployment_policy = Stratos.describe_deployment_policy(line)
-        if not deployment_policy:
-            print("Deployment policy not found")
-        else:
-            PrintableJSON(deployment_policy).pprint()
+        """Describe a deployment policy."""
+        try:
+            if not line:
+                print("usage: describe-deployment-policy [deployment-policy-id]")
+                return
+            deployment_policy = Stratos.describe_deployment_policy(line)
+            if not deployment_policy:
+                print("Deployment policy not found")
+            else:
+                PrintableJSON(deployment_policy).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
 
     @options([
@@ -784,7 +814,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_deployment_policy(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add a deployment policy definition."""
         try:
             if not opts.json_file_path:
                 print("usage: add-deployment-policy [-f <resource path>]")
@@ -796,7 +826,7 @@ class CLI(Cmd):
                     print("Error creating deployment policy")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -805,7 +835,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_application_policy(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update a deployment policy."""
         try:
             if not opts.json_file_path:
                 print("usage: update-deployment-policy [-f <resource path>]")
@@ -817,7 +847,7 @@ class CLI(Cmd):
                     print("Error updating Deployment policy")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -825,7 +855,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_deployment_policy(self, deployment_policy_id , opts=None):
-        """Delete a cartridge"""
+        """Delete a deployment policy."""
         try:
             if not deployment_policy_id:
                 print("usage: remove-deployment-policy [deployment-policy-id]")
@@ -837,7 +867,7 @@ class CLI(Cmd):
                     print("Could not deleted deployment policy : "+deployment_policy_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     """
     # Deployment Policies
@@ -855,32 +885,38 @@ class CLI(Cmd):
     @auth
     def do_list_application_policies(self, line , opts=None):
         """Illustrate the base class method use."""
-        application_policies = Stratos.list_application_policies()
-        if not application_policies:
-            print("No application policies found")
-        else:
-            table = PrintableTable()
-            rows = [["Id", "Accessibility"]]
-            for application_policy in application_policies:
-                rows.append([application_policy['id'], len(application_policy['networkPartitions'])])
-            table.add_rows(rows)
-            table.print_table()
+        try:
+            application_policies = Stratos.list_application_policies()
+            if not application_policies:
+                print("No application policies found")
+            else:
+                table = PrintableTable()
+                rows = [["Id", "Accessibility"]]
+                for application_policy in application_policies:
+                    rows.append([application_policy['id'], len(application_policy['networkPartitions'])])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user")
     ])
     @auth
-    def do_describe_application_policy(self, line , opts=None):
+    def do_describe_application_policy(self, application_policy_id , opts=None):
         """Retrieve details of a specific application policy."""
-        if not line.split():
-            print("usage: describe-application-policy [application-policy-id]")
-            return
-        application_policy = Stratos.describe_application_policy(line)
-        if not application_policy:
-            print("Deployment policy not found")
-        else:
-            PrintableJSON(application_policy).pprint()
+        try:
+            if not application_policy_id:
+                print("usage: describe-application-policy [application-policy-id]")
+                return
+            application_policy = Stratos.describe_application_policy(application_policy_id)
+            if not application_policy:
+                print("Deployment policy not found")
+            else:
+                PrintableJSON(application_policy).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
 
     @options([
@@ -902,7 +938,6 @@ class CLI(Cmd):
                     print("Error creating application policy")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -923,7 +958,6 @@ class CLI(Cmd):
                     print("Error updating Deployment policy")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -943,8 +977,6 @@ class CLI(Cmd):
                     print("Could not deleted application policy : "+application_policy_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
-
 
     """
     # Network Partitions
@@ -962,14 +994,17 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_network_partitions(self, line , opts=None):
-        """Illustrate the base class method use."""
-        network_partitions = Stratos.list_network_partitions()
-        table = PrintableTable()
-        rows = [["Network Partition ID", "Number of Partitions"]]
-        for network_partition in network_partitions:
-            rows.append([network_partition['id'], len(network_partition['partitions'])])
-        table.add_rows(rows)
-        table.print_table()
+        """Retrieve details of all the network partitions."""
+        try:
+            network_partitions = Stratos.list_network_partitions()
+            table = PrintableTable()
+            rows = [["Network Partition ID", "Number of Partitions"]]
+            for network_partition in network_partitions:
+                rows.append([network_partition['id'], len(network_partition['partitions'])])
+            table.add_rows(rows)
+            table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -977,16 +1012,19 @@ class CLI(Cmd):
     ])
     @auth
     def do_describe_network_partition(self, network_partition_id , opts=None):
-        """Retrieve details of a specific deployment policy."""
-        if not network_partition_id:
-            print("usage: describe-network-partition [network-partition]")
-            return
-        deployment_policy = Stratos.describe_network_partition(network_partition_id)
-        if not deployment_policy:
-            print("Network partition not found: "+network_partition_id)
-        else:
-            print("Partition: "+network_partition_id)
-            PrintableJSON(deployment_policy).pprint()
+        """Describe a network partition."""
+        try:
+            if not network_partition_id:
+                print("usage: describe-network-partition [network-partition]")
+                return
+            deployment_policy = Stratos.describe_network_partition(network_partition_id)
+            if not deployment_policy:
+                print("Network partition not found: "+network_partition_id)
+            else:
+                print("Partition: "+network_partition_id)
+                PrintableJSON(deployment_policy).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -995,7 +1033,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_network_partition(self, line , opts=None):
-        """Add a new user to the system"""
+        """Add a new network partition."""
         try:
             if not opts.json_file_path:
                 print("usage: add-network-partition [-f <resource path>]")
@@ -1007,7 +1045,6 @@ class CLI(Cmd):
                     print("Error creating network partition")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1016,7 +1053,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_network_partition(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update a specific network partition."""
         try:
             if not opts.json_file_path:
                 print("usage: update-network-partition [-f <resource path>]")
@@ -1028,7 +1065,6 @@ class CLI(Cmd):
                     print("Error updating Network partition")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1036,7 +1072,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_network_partition(self, network_partition_id, opts=None):
-        """Delete a cartridge"""
+        """Delete a network partition."""
         try:
             if not network_partition_id:
                 print("usage: remove-network-partition [network-partition-id]")
@@ -1048,12 +1084,12 @@ class CLI(Cmd):
                     print("Could not deleted network-partition : "+network_partition_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     """
     # Auto-scaling policies
      * list-autoscaling-policies
      * describe-autoscaling-policy
+     * add-autoscaling-policy
      * update-autoscaling-policy
      * remove-autoscaling-policy
 
@@ -1065,17 +1101,20 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_autoscaling_policies(self, line , opts=None):
-        """Retrieve details of all the cartridge groups that have been added."""
-        autoscaling_policies = Stratos.list_autoscaling_policies()
-        if not autoscaling_policies:
-            print("No autoscaling policies found")
-        else:
-            table = PrintableTable()
-            rows = [["Id", "Accessibility"]]
-            for autoscaling_policy in autoscaling_policies:
-                rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
-            table.add_rows(rows)
-            table.print_table()
+        """Retrieve details of auto-scaling policies."""
+        try:
+            autoscaling_policies = Stratos.list_autoscaling_policies()
+            if not autoscaling_policies:
+                print("No autoscaling policies found")
+            else:
+                table = PrintableTable()
+                rows = [["Id", "Accessibility"]]
+                for autoscaling_policy in autoscaling_policies:
+                    rows.append([autoscaling_policy['id'], "Public"  if autoscaling_policy['isPublic'] else "Private"])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1084,15 +1123,38 @@ class CLI(Cmd):
     @auth
     def do_describe_autoscaling_policy(self, autoscaling_policy_id , opts=None):
         """Retrieve details of a specific auto-scaling policy."""
-        if not autoscaling_policy_id:
-            print("usage: describe-autoscaling-policy [autoscaling-policy-id]")
-            return
-        autoscaling_policy = Stratos.describe_autoscaling_policy(autoscaling_policy_id)
-        if not autoscaling_policy:
-            print("Autoscaling policy not found : "+autoscaling_policy_id)
-        else:
-            print("Autoscaling policy : "+autoscaling_policy_id)
-            PrintableJSON(autoscaling_policy).pprint()
+        try:
+            if not autoscaling_policy_id:
+                print("usage: describe-autoscaling-policy [autoscaling-policy-id]")
+                return
+            autoscaling_policy = Stratos.describe_autoscaling_policy(autoscaling_policy_id)
+            if not autoscaling_policy:
+                print("Autoscaling policy not found : "+autoscaling_policy_id)
+            else:
+                print("Autoscaling policy : "+autoscaling_policy_id)
+                PrintableJSON(autoscaling_policy).pprint()
+        except BadResponseError as e:
+                self.perror(str(e))
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_autoscaling_policy(self, line , opts=None):
+        """Add an auto-scaling policy definition."""
+        try:
+            if not opts.json_file_path:
+                print("usage: add-autoscaling-policy [-f <resource path>]")
+            else:
+                autoscaling_policy = Stratos.add_autoscaling_policy(open(opts.json_file_path, 'r').read())
+                if autoscaling_policy:
+                    print("Autoscaling policy added successfully")
+                else:
+                    print("Error adding autoscaling policy")
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1101,7 +1163,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_autoscaling_policy(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update an auto-scaling policy."""
         try:
             if not opts.json_file_path:
                 print("usage: update-autoscaling-policy [-f <resource path>]")
@@ -1113,7 +1175,7 @@ class CLI(Cmd):
                     print("Error updating Autoscaling policy")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1121,7 +1183,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_autoscaling_policy(self, autoscaling_policy_id , opts=None):
-        """Delete a autoscaling_policy"""
+        """Delete an autoscaling_policy."""
         try:
             if not autoscaling_policy_id:
                 print("usage: remove-autoscaling-policy [application-id]")
@@ -1133,7 +1195,7 @@ class CLI(Cmd):
                     print("Auto-scaling policy not found : "+autoscaling_policy_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
+
 
     """
     # Kubernetes clusters/hosts
@@ -1156,17 +1218,20 @@ class CLI(Cmd):
     ])
     @auth
     def do_list_kubernetes_clusters(self, line , opts=None):
-        """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
-        kubernetes_clusters = Stratos.list_kubernetes_clusters()
-        if not kubernetes_clusters:
-            print("No Kubernetes clusters found")
-        else:
-            table = PrintableTable()
-            rows = [["Group ID", "Description"]]
-            for kubernetes_cluster in kubernetes_clusters:
-                rows.append([kubernetes_cluster['clusterId'], kubernetes_cluster['description']])
-            table.add_rows(rows)
-            table.print_table()
+        """Retrieving details of all Kubernetes-CoreOS Clusters."""
+        try:
+            kubernetes_clusters = Stratos.list_kubernetes_clusters()
+            if not kubernetes_clusters:
+                print("No Kubernetes clusters found")
+            else:
+                table = PrintableTable()
+                rows = [["Group ID", "Description"]]
+                for kubernetes_cluster in kubernetes_clusters:
+                    rows.append([kubernetes_cluster['clusterId'], kubernetes_cluster['description']])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1174,16 +1239,19 @@ class CLI(Cmd):
     ])
     @auth
     def do_describe_kubernetes_cluster(self, kubernetes_cluster_id, opts=None):
-        """Retrieve detailed information on a specific Kubernetes-CoreOS group"""
-        if not kubernetes_cluster_id:
-            print("usage: describe-kubernetes-cluster [cluster-i]]")
-            return
-        kubernetes_cluster = Stratos.describe_kubernetes_cluster(kubernetes_cluster_id)
-        if not kubernetes_cluster:
-            print("Kubernetes cluster not found")
-        else:
-            print("Kubernetes cluster: "+kubernetes_cluster_id)
-            PrintableJSON(kubernetes_cluster).pprint()
+        """Describe a Kubernetes-CoreOS Cluster."""
+        try:
+            if not kubernetes_cluster_id:
+                print("usage: describe-kubernetes-cluster [cluster-i]]")
+                return
+            kubernetes_cluster = Stratos.describe_kubernetes_cluster(kubernetes_cluster_id)
+            if not kubernetes_cluster:
+                print("Kubernetes cluster not found")
+            else:
+                print("Kubernetes cluster: "+kubernetes_cluster_id)
+                PrintableJSON(kubernetes_cluster).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1191,16 +1259,39 @@ class CLI(Cmd):
     ])
     @auth
     def do_describe_kubernetes_master(self, kubernetes_cluster_id , opts=None):
-        """Retrieve detailed information on the master node in a specific Kubernetes-CoreOS group"""
-        if not kubernetes_cluster_id:
-            print("usage: describe-kubernetes-master [cluster-id]")
-            return
-        kubernetes_master = Stratos.describe_kubernetes_master(kubernetes_cluster_id)
-        if not kubernetes_master:
-            print("Kubernetes master not found in : "+kubernetes_cluster_id)
-        else:
-            print("Cluster : "+kubernetes_cluster_id)
-            PrintableJSON(kubernetes_master).pprint()
+        """Retrieve details of the master in a Kubernetes-CoreOS Cluster."""
+        try:
+            if not kubernetes_cluster_id:
+                print("usage: describe-kubernetes-master [cluster-id]")
+                return
+            kubernetes_master = Stratos.describe_kubernetes_master(kubernetes_cluster_id)
+            if not kubernetes_master:
+                print("Kubernetes master not found in : "+kubernetes_cluster_id)
+            else:
+                print("Cluster : "+kubernetes_cluster_id)
+                PrintableJSON(kubernetes_master).pprint()
+        except BadResponseError as e:
+            self.perror(str(e))
+
+    @options([
+        make_option('-u', '--username', type="str", help="Username of the user"),
+        make_option('-p', '--password', type="str", help="Password of the user"),
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+    ])
+    @auth
+    def do_add_kubernetes_cluster(self, opts=None):
+        """Add a Kubernetes-CoreOS Cluster."""
+        try:
+            if not opts.json_file_path:
+                print("usage: add-kubernetes-cluster [-f <resource path>]")
+            else:
+                kubernetes_cluster = Stratos.add_kubernetes_cluster(open(opts.json_file_path, 'r').read())
+                if kubernetes_cluster:
+                    print("You have successfully deployed the Kubernetes cluster")
+                else:
+                    print("Error deploying the Kubernetes cluster ")
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1209,10 +1300,10 @@ class CLI(Cmd):
     ])
     @auth
     def do_add_kubernetes_host(self, kubernetes_cluster_id , opts=None):
-        """Add a host (slave) to an existing Kubernetes-CoreOS Cluster."""
+        """Add a host to a Kubernetes-CoreOS Cluster."""
         try:
             if not kubernetes_cluster_id or not opts.json_file_path:
-                print("usage: add-kubernetes-cluster [-f <resource path>] [kubernetes cluster id]")
+                print("usage: add-kubernetes-host [-f <resource path>] [kubernetes cluster id]")
             else:
                 kubernetes_host = Stratos.add_kubernetes_host(kubernetes_cluster_id, open(opts.json_file_path, 'r').read())
                 if kubernetes_host:
@@ -1221,7 +1312,6 @@ class CLI(Cmd):
                     print("Error deploying host to Kubernetes cluster: "+kubernetes_cluster_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1229,21 +1319,24 @@ class CLI(Cmd):
         make_option('-c', '--cluster_id', type="str", help="Cluster ID")
     ])
     def do_list_kubernetes_hosts(self, line , opts=None):
-        """Retrieve detailed information on all Kubernetes-CoreOS Clusters."""
-        if not opts.cluster_id:
-            print("usage: list-kubernetes-hosts [-c <cluster id>]")
-            return
-        kubernetes_cluster_hosts = Stratos.list_kubernetes_hosts(opts.cluster_id)
-        if not kubernetes_cluster_hosts:
-            print("No kubernetes hosts found")
-        else:
-            table = PrintableTable()
-            rows = [["Host ID", "Hostname", "Private IP Address", "Public IP Address"]]
-            for kubernetes_cluster_host in kubernetes_cluster_hosts:
-                rows.append([kubernetes_cluster_host['hostId'], kubernetes_cluster_host['hostname'],
-                             kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
-            table.add_rows(rows)
-            table.print_table()
+        """Retrieve details of all hosts of a Kubernetes-CoreOS Cluster."""
+        try:
+            if not opts.cluster_id:
+                print("usage: list-kubernetes-hosts [-c <cluster id>]")
+                return
+            kubernetes_cluster_hosts = Stratos.list_kubernetes_hosts(opts.cluster_id)
+            if not kubernetes_cluster_hosts:
+                print("No kubernetes hosts found")
+            else:
+                table = PrintableTable()
+                rows = [["Host ID", "Hostname", "Private IP Address", "Public IP Address"]]
+                for kubernetes_cluster_host in kubernetes_cluster_hosts:
+                    rows.append([kubernetes_cluster_host['hostId'], kubernetes_cluster_host['hostname'],
+                                 kubernetes_cluster_host['privateIPAddress'], kubernetes_cluster_host['publicIPAddress']])
+                table.add_rows(rows)
+                table.print_table()
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1253,7 +1346,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_update_kubernetes_master(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update the master node of the Kubernetes-CoreOS Cluster."""
         try:
             if not opts.json_file_path:
                 print("usage: update-kubernetes-master [-c <cluster id>] [-p <resource path>]")
@@ -1265,16 +1358,15 @@ class CLI(Cmd):
                     print("Error updating Kubernetes master")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user"),
-         make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
+        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
     ])
     @auth
     def do_update_kubernetes_host(self, line , opts=None):
-        """Add a new user to the system"""
+        """Update the host of a Kubernetes-CoreOS Cluster."""
         try:
             if not opts.json_file_path:
                 print("usage: update-kubernetes-host [-f <resource path>]")
@@ -1287,7 +1379,6 @@ class CLI(Cmd):
                     print("Error updating Kubernetes host")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1295,7 +1386,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_kubernetes_cluster(self, kubernetes_cluster_id, opts=None):
-        """Delete a kubernetes cluster"""
+        """Delete a Kubernetes-CoreOS Cluster."""
         try:
             if not kubernetes_cluster_id:
                 print("usage: remove-kubernetes-cluster [cluster-id]")
@@ -1307,7 +1398,6 @@ class CLI(Cmd):
                     print("Kubernetes cluster not found : "+kubernetes_cluster_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1317,7 +1407,7 @@ class CLI(Cmd):
     ])
     @auth
     def do_remove_kubernetes_host(self, line, opts=None):
-        """Delete a kubernetes host"""
+        """Delete the host of a Kubernetes-CoreOS Cluster."""
         try:
             if not opts.cluster_id or not opts.host_id:
                 print("usage: remove-kubernetes-host [-c cluster-id] [-o host-id]")
@@ -1329,8 +1419,6 @@ class CLI(Cmd):
                     print("Kubernetes host not found : "+opts.cluster_id+"/"+opts.host_id)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
-
 
     """
     # Domain Mapping
@@ -1346,21 +1434,23 @@ class CLI(Cmd):
     @auth
     def do_list_domain_mappings(self, application_id , opts=None):
         """Illustrate the base class method use."""
-        if not application_id:
-            print("usage: list-domain-mappings [application-id]")
-        else:
-            domain_mappings = Stratos.list_domain_mappings(application_id)
-            if domain_mappings:
-                table = PrintableTable()
-                rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
-                for domain_mapping in domain_mappings:
-                    rows.append([domain_mapping['domain_mappingsDomain'], domain_mapping['domain_mappingId'], domain_mapping['email'],
-                                 "Active" if domain_mapping['active'] else "De-Active", datetime.datetime.fromtimestamp(domain_mapping['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
-                table.add_rows(rows)
-                table.print_table()
+        try:
+            if not application_id:
+                print("usage: list-domain-mappings [application-id]")
             else:
-                print("No domain mappings found in application: "+application_id)
-
+                domain_mappings = Stratos.list_domain_mappings(application_id)
+                if domain_mappings:
+                    table = PrintableTable()
+                    rows = [["Domain", "Tenant ID", "Email", " State", "Created Date"]]
+                    for domain_mapping in domain_mappings:
+                        rows.append([domain_mapping['domain_mappingsDomain'], domain_mapping['domain_mappingId'], domain_mapping['email'],
+                                     "Active" if domain_mapping['active'] else "De-Active", datetime.datetime.fromtimestamp(domain_mapping['createdDate']/1000).strftime('%Y-%m-%d %H:%M:%S')])
+                    table.add_rows(rows)
+                    table.print_table()
+                else:
+                    print("No domain mappings found in application: "+application_id)
+        except BadResponseError as e:
+            self.perror(str(e))
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1381,8 +1471,6 @@ class CLI(Cmd):
                     print("Error creating domain mapping")
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error(str(e))
-
 
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
@@ -1403,24 +1491,3 @@ class CLI(Cmd):
         except BadResponseError as e:
             self.perror(str(e))
             logging.error("HTTP "+e.error_code+" : "+str(e))
-
-    @options([
-        make_option('-u', '--username', type="str", help="Username of the user"),
-        make_option('-p', '--password', type="str", help="Password of the user"),
-        make_option('-f', '--json_file_path', type="str", help="Path of the JSON file")
-    ])
-    @auth
-    def do_add_autoscaling_policy(self, line , opts=None):
-        """Add a new user to the system"""
-        try:
-            if not opts.json_file_path:
-                print("usage: add-autoscaling-policy [-f <resource path>]")
-            else:
-                autoscaling_policy = Stratos.add_autoscaling_policy(open(opts.json_file_path, 'r').read())
-                if autoscaling_policy:
-                    print("Autoscaling policy added successfully")
-                else:
-                    print("Error adding autoscaling policy")
-        except BadResponseError as e:
-            self.perror(str(e))
-            logging.error(str(e))

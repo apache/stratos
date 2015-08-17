@@ -18,6 +18,7 @@
 import requests
 import json
 import Configs
+from Logging import logging
 from cli.exceptions.BadResponseError import BadResponseError
 
 
@@ -37,7 +38,7 @@ class Stratos:
     """
     @staticmethod
     def list_users():
-        return Stratos.get('users', error_message='No users found')
+        return Stratos.get('users')
 
     @staticmethod
     def add_users(username, password, role_name, first_name, last_name, email, profile_name):
@@ -49,7 +50,7 @@ class Stratos:
             "lastName": last_name,
             "email": email
         }
-        return Stratos.post('users', json.dumps(data),  error_message='No applications found')
+        return Stratos.post('users', json.dumps(data))
 
     @staticmethod
     def update_user(username, password, role_name, first_name, last_name, email, profile_name):
@@ -61,11 +62,11 @@ class Stratos:
             "lastName": last_name,
             "email": email
         }
-        return Stratos.put('users', json.dumps(data),  error_message='No applications found')
+        return Stratos.put('users', json.dumps(data))
 
     @staticmethod
     def remove_user(name):
-        return Stratos.delete('users/'+name, error_message="Requested user "+name+" does not exist")
+        return Stratos.delete('users/'+name)
 
     """
     # Applications
@@ -79,12 +80,11 @@ class Stratos:
     """
     @staticmethod
     def list_applications():
-        return Stratos.get('applications', error_message='No applications found')
+        return Stratos.get('applications')
 
     @staticmethod
     def describe_application(application_id):
-        return Stratos.get('applications/'+application_id,
-                           error_message='No application found')
+        return Stratos.get('applications/'+application_id)
 
     @staticmethod
     def remove_application(application):
@@ -93,10 +93,10 @@ class Stratos:
     @staticmethod
     def deploy_application(application_id, application_policy_id):
         return Stratos.post('applications/'+application_id+'/deploy/'+application_policy_id, None,
-                            error_message='No application found')
+                            )
     @staticmethod
     def describe_application_runtime(application_id):
-        return Stratos.get('applications/'+application_id+"/runtime", error_message='No application runtime found')
+        return Stratos.get('applications/'+application_id+"/runtime")
 
     """
     # Application signup
@@ -106,11 +106,10 @@ class Stratos:
     """
     @staticmethod
     def describe_application_signup(application_id):
-        return Stratos.get('applications/'+application_id+'/signup',
-                           error_message='No signup application found')
+        return Stratos.get('applications/'+application_id+'/signup')
     @staticmethod
     def add_application_signup(application_id, json):
-        return Stratos.post('applications/'+application_id+"/runtime", json, error_message='No application runtime found')
+        return Stratos.post('applications/'+application_id+"/runtime", json)
 
     @staticmethod
     def remove_application_signup(application_id):
@@ -128,15 +127,15 @@ class Stratos:
     """
     @staticmethod
     def list_tenants():
-        return Stratos.get('tenants', error_message='No cartridges found')
+        return Stratos.get('tenants')
 
     @staticmethod
     def list_tenants_by_partial_domain(partial_domain):
-        return Stratos.get('tenants/search/'+partial_domain, error_message='No cartridges found')
+        return Stratos.get('tenants/search/'+partial_domain)
 
     @staticmethod
     def describe_tenant(tenant_domain_name):
-        return Stratos.get('tenants/'+tenant_domain_name, error_message='No cartridge found')
+        return Stratos.get('tenants/'+tenant_domain_name)
 
     @staticmethod
     def add_tenant(username, first_name, last_name, password, domain_name, email):
@@ -149,7 +148,7 @@ class Stratos:
             "email": email,
             "active": "true"
         }
-        return Stratos.post('tenants', json.dumps(data),  error_message='No tenant found')
+        return Stratos.post('tenants', json.dumps(data))
 
     @staticmethod
     def update_tenant(username, first_name, last_name, password, domain_name, email, tenant_id):
@@ -163,15 +162,15 @@ class Stratos:
             "email": email,
             "active": "true"
         }
-        return Stratos.put('tenants', json.dumps(data),  error_message='No tenant found')
+        return Stratos.put('tenants', json.dumps(data))
 
     @staticmethod
     def activate_tenant(tenant_domain):
-        return Stratos.put('tenants/activate/'+tenant_domain, "",  error_message='No tenant found')
+        return Stratos.put('tenants/activate/'+tenant_domain, "")
 
     @staticmethod
     def deactivate_tenant(tenant_domain):
-        return Stratos.put('tenants/deactivate/'+tenant_domain, "",  error_message='No tenant found')
+        return Stratos.put('tenants/deactivate/'+tenant_domain, "")
 
     """
     # Cartridges
@@ -183,19 +182,23 @@ class Stratos:
     """
     @staticmethod
     def list_cartridges():
-        return Stratos.get('cartridges', error_message='No cartridges found')
+        return Stratos.get('cartridges')
+
+    @staticmethod
+    def list_cartridges_by_filter(filter_text):
+        return Stratos.get('cartridges/filter/'+filter_text)
 
     @staticmethod
     def describe_cartridge(cartridge_type):
-        return Stratos.get('cartridges/'+cartridge_type, error_message='Cartridge not found')
+        return Stratos.get('cartridges/'+cartridge_type)
 
     @staticmethod
     def add_cartridge(json):
-        return Stratos.post('cartridges', json,  error_message='No cartridge found')
+        return Stratos.post('cartridges', json)
 
     @staticmethod
     def update_cartridge(json):
-        return Stratos.put('cartridges', json,  error_message='No cartridge found')
+        return Stratos.put('cartridges', json)
 
     @staticmethod
     def remove_cartridge(cartridge_type):
@@ -212,19 +215,19 @@ class Stratos:
 
     @staticmethod
     def list_cartridge_groups():
-        return Stratos.get('cartridgeGroups', error_message='No cartridge groups found')
+        return Stratos.get('cartridgeGroups')
 
     @staticmethod
     def describe_cartridge_group(group_definition_name):
-        return Stratos.get('cartridgeGroups/'+group_definition_name, error_message='No cartridge groups found')
+        return Stratos.get('cartridgeGroups/'+group_definition_name)
 
     @staticmethod
     def add_cartridge_group(json):
-        return Stratos.post('cartridgeGroups', json,  error_message='No cartridge group found')
+        return Stratos.post('cartridgeGroups', json)
 
     @staticmethod
     def update_cartridge_group(json):
-        return Stratos.put('cartridgeGroups', json,  error_message='No cartridge found')
+        return Stratos.put('cartridgeGroups', json)
 
     @staticmethod
     def remove_cartridge_group(group_definition_name):
@@ -241,19 +244,17 @@ class Stratos:
     """
     @staticmethod
     def list_deployment_policies():
-        return Stratos.get('deploymentPolicies',
-                           error_message='Deployment policies not found')
+        return Stratos.get('deploymentPolicies')
     @staticmethod
     def describe_deployment_policy(deployment_policy_name):
-        return Stratos.get('deploymentPolicies/'+ deployment_policy_name,
-                           error_message='No deployment policies found')
+        return Stratos.get('deploymentPolicies/'+ deployment_policy_name)
     @staticmethod
     def add_deployment_policy(json):
-        return Stratos.post('deploymentPolicies', json,  error_message='No deployment policy found')
+        return Stratos.post('deploymentPolicies', json)
 
     @staticmethod
     def update_deployment_policy(json):
-        return Stratos.put('deploymentPolicies', json,  error_message='No deployment policies found')
+        return Stratos.put('deploymentPolicies', json)
 
     @staticmethod
     def remove_deployment_policy(deployment_policy_id):
@@ -269,15 +270,13 @@ class Stratos:
     """
     @staticmethod
     def list_application_policies():
-        return Stratos.get('applicationPolicies',
-                           error_message='Deployment policies not found')
+        return Stratos.get('applicationPolicies')
     @staticmethod
     def describe_application_policy(application_policy_name):
-        return Stratos.get('applicationPolicies/'+ application_policy_name,
-                           error_message='No application policies found')
+        return Stratos.get('applicationPolicies/'+ application_policy_name)
     @staticmethod
     def update_application_policy(json):
-        return Stratos.put('applicationPolicies', json,  error_message='No application policies found')
+        return Stratos.put('applicationPolicies', json)
 
     @staticmethod
     def remove_application_policy(application_policy_id):
@@ -294,18 +293,17 @@ class Stratos:
     """
     @staticmethod
     def list_network_partitions():
-        return Stratos.get('networkPartitions', error_message='No network partitions found')
+        return Stratos.get('networkPartitions')
 
     @staticmethod
     def describe_network_partition(network_partition_id):
-        return Stratos.get('networkPartitions/'+network_partition_id,
-                           error_message='No network partitions found')
+        return Stratos.get('networkPartitions/'+network_partition_id)
     @staticmethod
     def add_network_partition(json):
-        return Stratos.post('networkPartitions', json,  error_message='No network partition found')
+        return Stratos.post('networkPartitions', json)
     @staticmethod
     def update_network_partition(json):
-        return Stratos.put('networkPartitions', json,  error_message='No cartridge found')
+        return Stratos.put('networkPartitions', json)
 
 
     @staticmethod
@@ -316,25 +314,29 @@ class Stratos:
     # Auto-scaling policies
      * list-autoscaling-policies
      * describe-autoscaling-policy
+     * add-autoscaling-policy
      * update-autoscaling-policy
      * remove-autoscaling-policy
 
     """
     @staticmethod
     def list_autoscaling_policies():
-        return Stratos.get('autoscalingPolicies',
-                           error_message='No Autoscaling policies found')
+        return Stratos.get('autoscalingPolicies')
     @staticmethod
     def describe_autoscaling_policy(autoscaling_policy_id):
-        return Stratos.get('autoscalingPolicies/'+autoscaling_policy_id,
-                           error_message='No autoscaling policy found')
+        return Stratos.get('autoscalingPolicies/'+autoscaling_policy_id)
+
+    @staticmethod
+    def add_autoscaling_policy(json):
+        return Stratos.post('autoscalingPolicies', json)
+
     @staticmethod
     def update_autoscaling_policy(json):
-        return Stratos.put('autoscalingPolicies', json,  error_message='No cartridge found')
+        return Stratos.put('autoscalingPolicies', json)
 
     @staticmethod
     def remove_autoscaling_policy(autoscaling_policy_id):
-        return Stratos.delete('autoscalingPolicies/'+autoscaling_policy_id, error_message="Autoscaling policy not found")
+        return Stratos.delete('autoscalingPolicies/'+autoscaling_policy_id)
 
     """
     # Kubernetes clusters/hosts
@@ -351,45 +353,43 @@ class Stratos:
     """
     @staticmethod
     def list_kubernetes_clusters():
-        return Stratos.get('kubernetesClusters', error_message='Kubernetes cluster not found')
+        return Stratos.get('kubernetesClusters')
 
     @staticmethod
     def describe_kubernetes_cluster(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id,
-                           error_message='Kubernetes cluster not found')
+        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id)
     @staticmethod
     def describe_kubernetes_master(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/master', error_message='No kubernetes clusters found')
+        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/master')
 
     @staticmethod
     def add_kubernetes_cluster(json):
-        return Stratos.post('kubernetesClusters', json,  error_message='No kubernetes cluster found')
+        return Stratos.post('kubernetesClusters', json)
 
     @staticmethod
     def add_kubernetes_host(kubernetes_cluster_id, json):
-        return Stratos.post('kubernetesClusters/'+kubernetes_cluster_id+'/minion', json,  error_message='No kubernetes cluster found')
+        return Stratos.post('kubernetesClusters/'+kubernetes_cluster_id+'/minion', json)
 
     @staticmethod
     def list_kubernetes_hosts(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts',
-                           error_message='Kubernetes cluster not found')
+        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts')
 
     @staticmethod
     def update_kubernetes_master(cluster_id, json):
-        return Stratos.put('kubernetesClusters/'+cluster_id+'/master', json,  error_message='No cartridge found')
+        return Stratos.put('kubernetesClusters/'+cluster_id+'/master', json)
 
     @staticmethod
     def update_kubernetes_host(json):
-        return Stratos.put('kubernetesClusters/update/host', json,  error_message='No cartridge found')
+        return Stratos.put('kubernetesClusters/update/host', json)
 
     @staticmethod
     def remove_kubernetes_cluster(kubernetes_cluster_id):
         return Stratos.delete('kubernetesClusters/'+kubernetes_cluster_id,
-                              error_message="Autoscaling policy not found")
+                              )
     @staticmethod
     def remove_kubernetes_host(kubernetes_cluster_id, host_id):
         return Stratos.delete('kubernetesClusters/'+kubernetes_cluster_id+"/hosts/"+host_id,
-                              error_message="Autoscaling policy not found")
+                              )
 
     """
     # Domain Mapping
@@ -401,8 +401,7 @@ class Stratos:
 
     @staticmethod
     def list_domain_mappings(application_id):
-        return Stratos.get('applications/'+application_id+'/domainMappings',
-                           error_message='No domain mapping found')
+        return Stratos.get('applications/'+application_id+'/domainMappings')
 
     @staticmethod
     def remove_domain_mappings(application_id):
@@ -411,7 +410,7 @@ class Stratos:
     @staticmethod
     def add_domain_mapping(application_id, json):
         return Stratos.post('applications/'+application_id+'/domainMappings', json,
-                            error_message='No domain mapping found')
+                            )
 
     """
     # Utils
@@ -427,102 +426,52 @@ class Stratos:
             return False
 
     @staticmethod
-    def delete(resource, error_message=None):
-        r = requests.delete(Configs.stratos_api_url + resource,
-                            auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        print(r)
-        print(r.text)
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 400:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-        elif r.status_code == 401:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-        elif r.status_code == 404:
-            if r.text and r.json() and r.json()['message']:
-                return False
-        elif r.status_code == 404:
-            if r.text and r.json() and r.json()['message']:
-                return False
-            else:
-                raise BadResponseError(str(r.status_code), r.json()['message'])
-        else:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
+    def get(resource):
+        r = requests.get(Configs.stratos_api_url + resource,
+                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        return Stratos.response(r)
 
     @staticmethod
-    def post(resource, data,  error_message=None):
+    def delete(resource):
+        r = requests.delete(Configs.stratos_api_url + resource,
+                            auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        return Stratos.response(r)
+
+    @staticmethod
+    def post(resource, data):
         headers = {'content-type': 'application/json'}
         r = requests.post(Configs.stratos_api_url + resource, data, headers=headers,
                           auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        print(r)
-        print(r.text)
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code == 201:
-            return True
-        elif r.status_code == 400:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-        elif r.status_code == 401:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-        elif r.status_code == 404:
-            if r.text and r.json() and r.json()['message'] == error_message:
-                return []
-            else:
-                raise BadResponseError(str(r.status_code), r.text)
-        else:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
+        return Stratos.response(r)
 
     @staticmethod
-    def put(resource, data,  error_message):
+    def put(resource, data):
         headers = {'content-type': 'application/json'}
         r = requests.put(Configs.stratos_api_url + resource, data, headers=headers,
                          auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
+        return Stratos.response(r)
+
+
+    @staticmethod
+    def response(r):
         print(r)
         print(r.text)
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 201:
             return True
-        elif r.status_code == 400:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-        elif r.status_code == 401:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-        elif r.status_code == 404:
-            if r.text and r.json() and r.json()['message'] == error_message:
-                return []
-            else:
+        elif r.status_code == 202:
+            return True
+        elif r.status_code >= 400:
+            if r.text and r.json() and r.json()['message']:
+                logging.error("HTTP "+str(r.status_code)+" : "+r.json()['message'])
                 raise BadResponseError(str(r.status_code), r.json()['message'])
-        else:
-            raise BadResponseError(str(r.status_code), r.json()['message'])
-
-
-    @staticmethod
-    def add_autoscaling_policy(json):
-        return Stratos.post('autoscalingPolicies', json,  error_message='No autoscaling policy found')
+            else:
+                logging.error("HTTP "+str(r.status_code)+" : Could not connect to Stratos server")
+                raise BadResponseError(str(r.status_code), "Could not connect to Stratos server")
 
     @staticmethod
     def add_application(json):
-        return Stratos.post('applications', json,  error_message='No application found')
-
-
-def get(resource, error_message=""):
-    r = requests.get(Configs.stratos_api_url + resource,
-                     auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-    print(r)
-    print(r.text)
-    if r.status_code == 200:
-        return r.json()
-    elif r.status_code == 400:
-        raise BadResponseError(str(r.status_code), r.json()['message'])
-    elif r.status_code == 401:
-        raise BadResponseError(str(r.status_code), r.json()['message'])
-    elif r.status_code == 404:
-        if r.text and r.json() and r.json()['message'] == error_message:
-            return False
-        else:
-            raise BadResponseError(str(r.status_code), " : "+r.text)
-    else:
-        raise BadResponseError(str(r.status_code), r.json()['message'])
-    return response(r)
+        return Stratos.post('applications', json)
 
 
