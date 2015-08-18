@@ -86,7 +86,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     "deployment-policy-application-update-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, false);
 
-           // testApplicationRuntimeForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
+            testApplicationRuntimeForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
 
             //Un-deploying the application
             String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
@@ -164,7 +164,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
 
-           // testApplicationUndeplymentForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
+            testApplicationUndeplymentForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
 
             log.info("-------------------------Ended application runtime update test case-------------------------");
 
