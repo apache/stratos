@@ -58,7 +58,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(updated, true);
 
-            TopologyHandler.getInstance().assertGroupInstanceCount(applicationId, "group3-application-update-test", 2, tenant1Id);
+            TopologyHandler.getInstance().assertGroupInstanceCount(applicationId, "group3-application-update-test", 1, tenant1Id);
 
             TopologyHandler.getInstance().assertClusterMinMemberCount(applicationId, 1, tenant1Id);
 
@@ -88,81 +88,9 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
 
             testApplicationRuntimeForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
 
-            //Un-deploying the application
-            String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
-                    RestConstants.APPLICATIONS_UNDEPLOY;
+            testApplicationUndeplymentForTenant(restClientTenant1,tenant1Id,autoscalingPolicyId);
 
-            boolean unDeployed = restClientTenant1.undeployEntity(resourcePathUndeploy,
-                    RestConstants.APPLICATIONS_NAME);
-            assertEquals(unDeployed, true);
-
-
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenant1Id);
-            if (!undeploy) {
-                //Need to forcefully undeploy the application
-                log.info("Force undeployment is going to start for the [application] " + "g-sc-G123-1-application-update-test");
-
-                restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
-                        RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
-
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenant1Id);
-                assertEquals(String.format("Forceful undeployment failed for the application %s",
-                        "g-sc-G123-1-application-update-test"), forceUndeployed, true);
-
-            }
-
-
-            boolean removed = restClientTenant1.removeEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-application-update-test",
-                    RestConstants.APPLICATIONS_NAME);
-            assertEquals(removed, true);
-
-            ApplicationBean beanRemoved = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
-                    "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertEquals(beanRemoved, null);
-
-            removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(removedGroup, true);
-
-            boolean removedC1 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "c1-application-update-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC1, true);
-
-            boolean removedC2 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "c2-application-update-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC2, true);
-
-            boolean removedC3 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "c3-application-update-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC3, true);
-
-            removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                    autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(removedAuto, true);
-
-            removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-application-update-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertEquals(removedDep, true);
-
-            removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-application-update-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedNet, false);
-
-            boolean removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, false);
-
-            boolean removeAppPolicy = restClientTenant1.removeEntity(RestConstants.APPLICATION_POLICIES,
-                    "application-policy-application-update-test", RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(removeAppPolicy, true);
-
-            removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-application-update-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedNet, true);
-
-            removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, true);
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(applicationId,tenant1Id);
 
             testApplicationUndeplymentForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
 
@@ -256,6 +184,28 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
     }
 
     private void testApplicationUndeplymentForTenant(RestClient restClientTenant,int tenantId,String autoscalingPolicyId){
+
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
+                RestConstants.APPLICATIONS_UNDEPLOY;
+
+        boolean unDeployed = restClientTenant.undeployEntity(resourcePathUndeploy,
+                RestConstants.APPLICATIONS_NAME);
+        assertEquals(unDeployed, true);
+
+        boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenantId);
+        if (!undeploy) {
+            //Need to forcefully undeploy the application
+            log.info("Force undeployment is going to start for the [application] " + "g-sc-G123-1-application-update-test");
+
+            restClientTenant.undeployEntity(RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
+                    RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
+
+            boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenantId);
+            assertEquals(String.format("Forceful undeployment failed for the application %s",
+                    "g-sc-G123-1-application-update-test"), forceUndeployed, true);
+
+        }
+
         boolean removed = restClientTenant.removeEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-application-update-test",
                 RestConstants.APPLICATIONS_NAME);
         assertEquals(removed, true);
