@@ -1,19 +1,44 @@
 {
     "name": "group6-group-startup-order-test",
-    "cartridges": [
-        "tomcat2-group-startup-order-test",
-        "tomcat1-group-startup-order-test"
-    ],
-    "dependencies": {
-        "startupOrders": [
-            {
-                "aliases": [
-                    "cartridge.my-tomcat2-group-startup-order-test",
-                    "cartridge.my-tomcat1-group-startup-order-test"
+    "groups": [
+        {
+            "name": "group7-group-startup-order-test",
+            "cartridges": [
+                "tomcat-group-startup-order-test",
+                "tomcat1-group-startup-order-test"
+            ],
+            "dependencies": {
+                "terminationBehaviour": "terminate-none",
+                "startupOrders": [
+                    {
+                        "aliases": [
+                            "cartridge.my-group7-tomcat-group-startup-order-test",
+                            "cartridge.my-group7-tomcat1-group-startup-order-test"
+                        ]
+                    }
                 ]
             }
-        ],
-        "terminationBehaviour": "terminate-all"
-    }
+        },
+        {
+            "name": "group-tom2-group-startup-order-test",
+            "dependencies": {
+                "terminationBehaviour": "terminate-none",
+                "startupOrders": [
+                    {
+                        "aliases": [
+                            "cartridge.my-group-tom2-tomcat2-group-startup-order-test",
+                            "cartridge.my-group-tom2-tomcat3-group-startup-order-test"
+                        ]
+                    }
+                ]
+            },
+            "cartridges": [
+                "tomcat2-group-startup-order-test",
+                "tomcat3-group-startup-order-test"
+            ]
+        }
+    ]
 }
+
+
 

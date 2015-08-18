@@ -1,10 +1,10 @@
 {
-    "type": "tomcat2",
+    "type": "tomcat2-group-startup-order-test",
     "provider": "apache",
     "category": "framework",
-    "host": "tomcat2.stratos.org",
-    "displayName": "tomcat2",
-    "description": "tomcat2 Cartridge",
+    "host": "tomcat2-group-startup-order-test.stratos.org",
+    "displayName": "tomcat2-group-startup-order-test",
+    "description": "tomcat2-group-startup-order-test Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [

@@ -79,26 +79,26 @@
                 <sampleDuration>30</sampleDuration>
             </pattern>
         </cartridge>
-        <cartridge type="c3-group-termination-behavior-test">
-            <!-- factor:memory-consumption|load-average|requests-in-flight-->
-            <!-- mode:loop|continue|stop -->
-            <!-- Mode defines the action needs to be taken after the last sample value:
+        <!--<cartridge type="c3-group-termination-behavior-test">
+            &lt;!&ndash; factor:memory-consumption|load-average|requests-in-flight&ndash;&gt;
+            &lt;!&ndash; mode:loop|continue|stop &ndash;&gt;
+            &lt;!&ndash; Mode defines the action needs to be taken after the last sample value:
                  loop: start from beginning
                  continue: continue the last sample value
-                 stop: stop publishing statistics -->
+                 stop: stop publishing statistics &ndash;&gt;
             <pattern factor="memory-consumption" mode="stop">
-                <!-- Sample values -->
-                <sampleValues>20,20,20</sampleValues>
-                <!-- Duration of each sample value in seconds -->
+                &lt;!&ndash; Sample values &ndash;&gt;
+                <sampleValues>20,20,20,</sampleValues>
+                &lt;!&ndash; Duration of each sample value in seconds &ndash;&gt;
                 <sampleDuration>60</sampleDuration>
             </pattern>
             <pattern factor="load-average" mode="stop">
-                <!-- Sample values -->
+                &lt;!&ndash; Sample values &ndash;&gt;
                 <sampleValues>20,20,20</sampleValues>
-                <!-- Duration of each sample value in seconds -->
+                &lt;!&ndash; Duration of each sample value in seconds &ndash;&gt;
                 <sampleDuration>60</sampleDuration>
             </pattern>
-        </cartridge>
+        </cartridge>-->
         <cartridge type="php">
             <!-- factor:memory-consumption|load-average|requests-in-flight-->
             <!-- mode:loop|continue|stop -->

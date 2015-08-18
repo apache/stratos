@@ -1,5 +1,5 @@
 {
-    "name": "esb-php-group-group-startup-order-test",
+    "name": "esb-php-group-startup-order-test",
     "cartridges": [
         "esb-group-startup-order-test",
         "php-group-startup-order-test"

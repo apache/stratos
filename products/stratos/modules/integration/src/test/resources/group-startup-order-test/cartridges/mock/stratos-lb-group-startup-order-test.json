@@ -1,5 +1,5 @@
 {
-    "type": "stratos-lb",
+    "type": "stratos-lb-group-startup-order-test",
     "provider": "stratos",
     "category": "load-balancer",
     "host": "complex-app-with-lb",

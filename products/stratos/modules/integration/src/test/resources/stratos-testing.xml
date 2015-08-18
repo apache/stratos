@@ -76,9 +76,14 @@
             <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest" />
         </classes>
     </test>
-    <!--<test name="GroupTerminationBehaviorTest">
+    <test name="GroupTerminationBehaviorTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest" />
         </classes>
-    </test>-->
+    </test>
+    <!--test name="GroupStartupOrderTest">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.GroupStartupOrderTest" />
+        </classes>
+    </test-->
 </suite>
