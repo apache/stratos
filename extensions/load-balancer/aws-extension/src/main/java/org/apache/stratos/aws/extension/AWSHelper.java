@@ -284,6 +284,7 @@ public class AWSHelper {
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
 			elbClient.deleteLoadBalancer(deleteLoadBalancerRequest);
+			log.info("Deleted load balancer " + loadBalancerName);
 		} catch (AmazonClientException e) {
 			log.error("Could not delete load balancer : " + loadBalancerName, e);
 		}
