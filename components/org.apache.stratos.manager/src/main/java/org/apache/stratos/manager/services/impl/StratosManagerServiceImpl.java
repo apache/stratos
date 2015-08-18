@@ -63,6 +63,16 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
+    public boolean applicationSignUpExist(String applicationId, int tenantId) throws ApplicationSignUpException {
+        return signUpHandler.applicationSignUpExist(applicationId, tenantId);
+    }
+
+    @Override
+    public boolean applicationSignUpsExist(String applicationId) throws ApplicationSignUpException {
+        return signUpHandler.applicationSignUpsExist(applicationId);
+    }
+
+    @Override
     public ApplicationSignUp[] getApplicationSignUps(String applicationId) throws ApplicationSignUpException {
         return signUpHandler.getApplicationSignUps(applicationId);
     }

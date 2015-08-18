@@ -37,6 +37,7 @@ public class ApplicationBean implements Serializable {
     private String alias;
     private String status;
     private ComponentBean components;
+    private boolean signUpsExist;
     private List<PropertyBean> property;
 
     public String getApplicationId() {
@@ -101,5 +102,13 @@ public class ApplicationBean implements Serializable {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+
+    public boolean isSignUpsExist() {
+        return signUpsExist;
+    }
+
+    public void setSignUpsExist(boolean signUpsExist) {
+        this.signUpsExist = signUpsExist;
     }
 }

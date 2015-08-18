@@ -1853,12 +1853,21 @@ public class StratosApiV41Utils {
                     if (applicationContext != null) {
                         ApplicationBean applicationDefinition =
                                 ObjectConverter.convertStubApplicationContextToApplicationDefinition(applicationContext);
+                        if(applicationDefinition.isMultiTenant()) {
+                            boolean hasSignUps = StratosManagerServiceClient.getInstance().
+                                    applicationSignUpsExist(applicationDefinition.getApplicationId());
+                            applicationDefinition.setSignUpsExist(hasSignUps);
+                        }
                         applicationDefinitions.add(applicationDefinition);
                     }
                 }
             }
             return applicationDefinitions;
         } catch (RemoteException e) {
+            String message = "Could not read applications";
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        } catch (StratosManagerServiceApplicationSignUpExceptionException e) {
             String message = "Could not read applications";
             log.error(message, e);
             throw new RestAPIException(message, e);

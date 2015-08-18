@@ -56,6 +56,24 @@ public interface StratosManagerService {
     public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException;
 
     /**
+     * Check application signup availability by tenant
+     * @param applicationId
+     * @param tenantId
+     * @return
+     * @throws ApplicationSignUpException
+     */
+    public boolean applicationSignUpExist(String applicationId, int tenantId) throws ApplicationSignUpException;
+
+    /**
+     * Check application signup availability
+     * @param applicationId
+     * @return
+     * @throws ApplicationSignUpException
+     */
+    public boolean applicationSignUpsExist(String applicationId) throws ApplicationSignUpException;
+
+
+    /**
      * Get application signups available for an application.
      *
      * @return

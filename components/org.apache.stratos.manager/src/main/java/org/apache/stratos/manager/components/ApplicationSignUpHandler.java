@@ -94,7 +94,7 @@ public class ApplicationSignUpHandler {
     }
 
     /**
-     * Check application signup availability.
+     * Check application signup availability by tenant.
      *
      * @param applicationId
      * @param tenantId
@@ -108,6 +108,34 @@ public class ApplicationSignUpHandler {
             return (applicationSignUp != null);
         } catch (Exception e) {
             String message = "Could not check application signup availability";
+            log.error(message, e);
+            throw new ApplicationSignUpException(message, e);
+        }
+    }
+
+    /**
+     * Check application signup availability.
+     * @param applicationId
+     * @return
+     * @throws ApplicationSignUpException
+     */
+    public boolean applicationSignUpsExist(String applicationId) throws ApplicationSignUpException {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Checking application signups: [application-id] %s", applicationId));
+            }
+
+            if (StringUtils.isBlank(applicationId)) {
+                throw new RuntimeException("Application id is null");
+            }
+
+            String[] resourcePaths = (String[]) RegistryManager.getInstance().read(APPLICATION_SIGNUP_RESOURCE_PATH);
+            if ((resourcePaths != null) && (resourcePaths.length > 0)) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            String message = "Could not check application signup availability: [application-id] " + applicationId;
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
         }

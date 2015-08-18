@@ -113,6 +113,29 @@ public class StratosManagerServiceClient {
     }
 
     /**
+     * Check application signup availability
+     * @param applicationId
+     * @param tenantId
+     * @return
+     * @throws StratosManagerServiceApplicationSignUpExceptionException
+     * @throws RemoteException
+     */
+    public boolean applicationSignUpExist(String applicationId, int tenantId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+        return stub.applicationSignUpExist(applicationId, tenantId);
+    }
+
+    /**
+     * Check application signup availability
+     * @param applicationId
+     * @return
+     * @throws StratosManagerServiceApplicationSignUpExceptionException
+     * @throws RemoteException
+     */
+    public boolean applicationSignUpsExist(String applicationId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+        return stub.applicationSignUpsExist(applicationId);
+    }
+
+    /**
      * Get application signups.
      *
      * @return
