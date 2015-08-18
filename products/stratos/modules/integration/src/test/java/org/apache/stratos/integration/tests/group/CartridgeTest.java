@@ -171,6 +171,17 @@ public class CartridgeTest extends StratosTestServerManager {
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(beanRemoved, null);
 
+            removed = restClientTenant2.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
+                    RestConstants.CARTRIDGES_NAME);
+            assertEquals(removed, true);
+
+            beanRemoved = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(beanRemoved, null);
+
+
+
             log.info("---------------------------Ended Cartridge test case-------------------------");
         } catch (Exception e) {
             log.error("An error occurred while handling RESTConstants.CARTRIDGES_PATH", e);

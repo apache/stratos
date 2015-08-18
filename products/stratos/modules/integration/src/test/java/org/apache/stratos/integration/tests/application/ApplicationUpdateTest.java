@@ -68,7 +68,6 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
 
             TopologyHandler.getInstance().assertApplicationForNonAvailability(applicationId,tenant2Id);
 
-
             boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(removedGroup, false);
@@ -83,11 +82,11 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
-            testApplicationRuntimeForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
-
             boolean removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     "deployment-policy-application-update-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, false);
+
+           // testApplicationRuntimeForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
 
             //Un-deploying the application
             String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
@@ -164,6 +163,8 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
+
+           // testApplicationUndeplymentForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
 
             log.info("-------------------------Ended application runtime update test case-------------------------");
 
@@ -252,5 +253,59 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
 
         //Cluster active handling
         TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenantId);
+    }
+
+    private void testApplicationUndeplymentForTenant(RestClient restClientTenant,int tenantId,String autoscalingPolicyId){
+        boolean removed = restClientTenant.removeEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-application-update-test",
+                RestConstants.APPLICATIONS_NAME);
+        assertEquals(removed, true);
+
+        ApplicationBean beanRemoved = (ApplicationBean) restClientTenant.getEntity(RestConstants.APPLICATIONS,
+                "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertEquals(beanRemoved, null);
+
+        boolean removedGroup = restClientTenant.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
+                RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertEquals(removedGroup, true);
+
+        boolean removedC1 = restClientTenant.removeEntity(RestConstants.CARTRIDGES, "c1-application-update-test",
+                RestConstants.CARTRIDGES_NAME);
+        assertEquals(removedC1, true);
+
+        boolean removedC2 = restClientTenant.removeEntity(RestConstants.CARTRIDGES, "c2-application-update-test",
+                RestConstants.CARTRIDGES_NAME);
+        assertEquals(removedC2, true);
+
+        boolean removedC3 = restClientTenant.removeEntity(RestConstants.CARTRIDGES, "c3-application-update-test",
+                RestConstants.CARTRIDGES_NAME);
+        assertEquals(removedC3, true);
+
+        boolean removedAuto = restClientTenant.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        assertEquals(removedAuto, true);
+
+        boolean removedDep = restClientTenant.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+                "deployment-policy-application-update-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+        assertEquals(removedDep, true);
+
+        boolean removedNet = restClientTenant.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                "network-partition-application-update-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedNet, false);
+
+        boolean removedN2 = restClientTenant.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedN2, false);
+
+        boolean removeAppPolicy = restClientTenant.removeEntity(RestConstants.APPLICATION_POLICIES,
+                "application-policy-application-update-test", RestConstants.APPLICATION_POLICIES_NAME);
+        assertEquals(removeAppPolicy, true);
+
+        removedNet = restClientTenant.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                "network-partition-application-update-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedNet, true);
+
+        removedN2 = restClientTenant.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                "network-partition-application-update-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedN2, true);
     }
 }

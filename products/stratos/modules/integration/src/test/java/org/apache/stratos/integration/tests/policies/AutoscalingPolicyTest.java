@@ -25,9 +25,7 @@ import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Test to handle autoscaling policy CRUD operations
@@ -59,6 +57,28 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
                     bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
+            bean = (AutoscalePolicyBean) restClientTenant2.
+                    getEntity(RestConstants.AUTOSCALING_POLICIES, policyId,
+                            AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertNull("Auto scale policy exists for other tenant",bean);
+
+            boolean addedTenant2 = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
+                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+
+            assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), addedTenant2, true);
+            bean = (AutoscalePolicyBean) restClientTenant2.
+                    getEntity(RestConstants.AUTOSCALING_POLICIES, policyId,
+                            AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
+
+            assertEquals(String.format("[autoscaling-policy-id] %s is not correct", bean.getId()),
+                    bean.getId(), policyId);
+            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
+                    bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 35.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
+                    bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
+                    bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
+
             boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
 
@@ -73,10 +93,20 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
                     updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
 
-            updatedBean = (AutoscalePolicyBean) restClientTenant2.getEntity(
+            boolean updatedTenant2 = restClientTenant2.updateEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
+                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+
+            assertEquals(String.format("[autoscaling-policy-id] %s update failed", policyId), updatedTenant2, true);
+            AutoscalePolicyBean updatedTenant2Bean = (AutoscalePolicyBean) restClientTenant2.getEntity(
                     RestConstants.AUTOSCALING_POLICIES, policyId,
                     AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertNull("Auto scaling policy found in tenant 2",updatedBean);
+            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
+                    updatedTenant2Bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 30.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
+                    updatedTenant2Bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 40.0, 0.0);
+            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
+                    updatedTenant2Bean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
+
 
             boolean removed = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     policyId, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -88,6 +118,17 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
                     AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
                     policyId), beanRemoved, null);
+
+            beanRemoved = (AutoscalePolicyBean) restClientTenant2.getEntity(
+                    RestConstants.AUTOSCALING_POLICIES, policyId,
+                    AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertNotNull("Auto scale policy not exist in other tenant",beanRemoved);
+
+            removed = restClientTenant2.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+                    policyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertEquals(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId),
+                    removed, true);
+
             log.info("-------------------------Ended autoscaling policy test case---------------------------");
         } catch (Exception e) {
             log.error("An error occurred while handling [autoscaling policy] " + policyId, e);
