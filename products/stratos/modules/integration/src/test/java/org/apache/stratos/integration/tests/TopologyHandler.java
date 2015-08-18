@@ -58,9 +58,9 @@ import static junit.framework.Assert.*;
 public class TopologyHandler {
     private static final Log log = LogFactory.getLog(TopologyHandler.class);
 
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 300000;
-    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 60000;
-    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 60000;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 360000;
+    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 120000;
+    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 90000;
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     private ApplicationsEventReceiver applicationsEventReceiver;
@@ -247,7 +247,8 @@ public class TopologyHandler {
      *
      * @param applicationName
      */
-    public void terminateMemberFromCluster(String cartridgeName, String applicationName, IntegrationMockClient mockIaasApiClient) {
+    public void terminateMemberFromCluster(String cartridgeName, String applicationName,
+                                           IntegrationMockClient mockIaasApiClient) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);

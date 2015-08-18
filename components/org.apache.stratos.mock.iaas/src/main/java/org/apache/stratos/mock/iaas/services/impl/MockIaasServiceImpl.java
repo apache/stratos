@@ -102,7 +102,7 @@ public class MockIaasServiceImpl implements MockIaasService {
             }
 
             // Generate instance id
-            String instanceId = UUID.randomUUID().toString();
+            String instanceId = mockInstanceContext.getMemberId();
             mockInstanceContext.setInstanceId(instanceId);
 
             MockInstance mockInstance = new MockInstance(mockInstanceContext);

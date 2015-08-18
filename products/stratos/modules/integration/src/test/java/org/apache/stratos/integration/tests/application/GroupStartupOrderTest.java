@@ -21,20 +21,16 @@ package org.apache.stratos.integration.tests.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
-import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.apache.stratos.integration.tests.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
-import static junit.framework.Assert.assertFalse;
 
 /**
  * Handling the startup order of the group
@@ -70,10 +66,6 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC3);
 
-            boolean addedC4 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "group8-group-startup-order-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC4);
-
             boolean addedC5 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat1-group-startup-order-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC5);
@@ -101,7 +93,7 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
             assertTrue(addedG2);
 
             boolean addedG3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "group-8-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
+                            "/" + "group8-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertTrue(addedG3);
 
