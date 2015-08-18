@@ -261,7 +261,6 @@ public class AWSHelper {
 			throw new LoadBalancerExtensionException(
 					"Could not create load balancer " + name, e);
 		}
-
 	}
 
 	/**
@@ -304,7 +303,7 @@ public class AWSHelper {
 	public void registerInstancesToLoadBalancer(String loadBalancerName,
 			List<Instance> instances, String region) {
 
-		log.info("Attaching following instance(s) to load balancer + "
+		log.info("Registering following instance(s) to load balancer "
 				+ loadBalancerName);
 
 		for (Instance instance : instances) {
@@ -341,7 +340,7 @@ public class AWSHelper {
 	public void deregisterInstancesFromLoadBalancer(String loadBalancerName,
 			List<Instance> instances, String region) {
 
-		log.info("De-registering following instance(s) from load balancer + "
+		log.info("De-registering following instance(s) from load balancer "
 				+ loadBalancerName);
 
 		for (Instance instance : instances) {
@@ -541,7 +540,7 @@ public class AWSHelper {
 			return createSecurityGroupResult.getGroupId();
 
 		} catch (AmazonClientException e) {
-			log.debug("Could not create security group.", e);
+			log.error("Could not create security group.", e);
 			throw new LoadBalancerExtensionException(
 					"Could not create security group.", e);
 		}
@@ -596,7 +595,7 @@ public class AWSHelper {
 				secirutyGroup = securityGroups.get(0);
 			}
 		} catch (AmazonClientException e) {
-			log.debug("Could not describe security groups.", e);
+			log.error("Could not describe security groups.", e);
 		}
 
 		if (secirutyGroup != null) {

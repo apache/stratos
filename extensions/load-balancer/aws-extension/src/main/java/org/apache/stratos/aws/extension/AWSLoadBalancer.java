@@ -38,7 +38,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
-	// A map <clusterId, load balancer info> to store load balancer information against the cluster id
+	// A map <clusterId, load balancer info> to store load balancer information
+	// against the cluster id
 	private static ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LoadBalancerInfo>();
 
 	// Object used to invoke methods related to AWS API
@@ -57,176 +58,188 @@ public class AWSLoadBalancer implements LoadBalancer {
 	public boolean configure(Topology topology)
 			throws LoadBalancerExtensionException {
 
-		log.info("AWS load balancer extension re-configured.");
+		log.info("AWS load balancer extension is being reconfigured.");
 
-		try {
-			HashSet<String> activeClusters = new HashSet<String>();
+		HashSet<String> activeClusters = new HashSet<String>();
 
-			for (Service service : topology.getServices()) {
-				for (Cluster cluster : service.getClusters()) {
-					// Check if a load balancer is created for this cluster
-					if (clusterIdToLoadBalancerMap.containsKey(cluster
-							.getClusterId())) {
-						// A load balancer is already present for this cluster
-						// Get the load balancer and update it.
+		for (Service service : topology.getServices()) {
+			for (Cluster cluster : service.getClusters()) {
+				// Check if a load balancer is created for this cluster
+				if (clusterIdToLoadBalancerMap.containsKey(cluster
+						.getClusterId())) {
+					// A load balancer is already present for this cluster
+					// Get the load balancer and update it.
 
-						LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap
-								.get(cluster.getClusterId());
+					if (log.isDebugEnabled()) {
+						log.debug("Load balancer for cluster "
+								+ cluster.getClusterId()
+								+ " is already present.");
+					}
 
-						String loadBalancerName = loadBalancerInfo.getName();
-						String region = loadBalancerInfo.getRegion();
+					LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap
+							.get(cluster.getClusterId());
 
-						// Get all the instances attached
-						// Attach newly added instances to load balancer
+					String loadBalancerName = loadBalancerInfo.getName();
+					String region = loadBalancerInfo.getRegion();
 
-						// attachedInstances list is useful in finding out what
-						// all new instances which
-						// should be attached to this load balancer.
-						List<Instance> attachedInstances = awsHelper
-								.getAttachedInstances(loadBalancerName, region);
+					// Get all the instances attached
+					// Attach newly added instances to load balancer
 
-						// clusterMembers stores all the members of a cluster.
-						Collection<Member> clusterMembers = cluster
-								.getMembers();
+					// attachedInstances list is useful in finding out what
+					// all new instances which
+					// should be attached to this load balancer.
+					List<Instance> attachedInstances = awsHelper
+							.getAttachedInstances(loadBalancerName, region);
 
-						if (clusterMembers.size() > 0) {
-							activeClusters.add(cluster.getClusterId());
+					// clusterMembers stores all the members of a cluster.
+					Collection<Member> clusterMembers = cluster.getMembers();
 
-							List<Instance> instancesToAddToLoadBalancer = new ArrayList<Instance>();
+					if (clusterMembers.size() > 0) {
+						activeClusters.add(cluster.getClusterId());
 
-							for (Member member : clusterMembers) {
-								// if instance id of member is not in
-								// attachedInstances
-								// add this to instancesToAddToLoadBalancer
+						List<Instance> instancesToAddToLoadBalancer = new ArrayList<Instance>();
 
-								log.debug("Instance id : "
-										+ awsHelper.getAWSInstanceName(member
-												.getInstanceId()));
+						for (Member member : clusterMembers) {
+							// if instance id of member is not in
+							// attachedInstances
+							// add this to instancesToAddToLoadBalancer
+							Instance instance = new Instance(
+									awsHelper.getAWSInstanceName(member
+											.getInstanceId()));
 
-								Instance instance = new Instance(
-										awsHelper.getAWSInstanceName(member
-												.getInstanceId()));
+							if (attachedInstances == null
+									|| !attachedInstances.contains(instance)) {
+								instancesToAddToLoadBalancer.add(instance);
 
-								if (attachedInstances == null
-										|| !attachedInstances
-												.contains(instance)) {
-									instancesToAddToLoadBalancer.add(instance);
+								if (log.isDebugEnabled()) {
+									log.debug("Instance "
+											+ awsHelper
+													.getAWSInstanceName(member
+															.getInstanceId())
+											+ " needs to be registered to load balancer "
+											+ loadBalancerName);
 								}
-							}
 
-							if (instancesToAddToLoadBalancer.size() > 0)
-								awsHelper.registerInstancesToLoadBalancer(
-										loadBalancerName,
-										instancesToAddToLoadBalancer, region);
+							}
 						}
 
-					} else {
-						// Create a new load balancer for this cluster
-						Collection<Member> clusterMembers = cluster
-								.getMembers();
-
-						if (clusterMembers.size() > 0) {
-							// a unique load balancer name with user-defined
-							// prefix and a sequence number.
-							String loadBalancerName = awsHelper
-									.generateLoadBalancerName();
-
-							String region = awsHelper
-									.getAWSRegion(clusterMembers.iterator()
-											.next().getInstanceId());
-
-							// list of AWS listeners obtained using port
-							// mappings of one of the members of the cluster.
-							List<Listener> listenersForThisCluster = awsHelper
-									.getRequiredListeners(clusterMembers
-											.iterator().next());
-
-							// DNS name of load balancer which was created.
-							// This is used in the domain mapping of this
-							// cluster.
-							String loadBalancerDNSName = awsHelper
-									.createLoadBalancer(loadBalancerName,
-											listenersForThisCluster, region);
-
-							// Add the inbound rule the security group of the load balancer
-							// For each listener, add a new rule with load
-							// balancer port as allowed protocol in the security group.
-							for (Listener listener : listenersForThisCluster) {
-								int port = listener.getLoadBalancerPort();
-
-								for (String protocol : awsHelper
-										.getAllowedProtocolsForLBSecurityGroup()) {
-									awsHelper
-											.addInboundRuleToSecurityGroup(
-													awsHelper
-															.getSecurityGroupId(
-																	awsHelper
-																			.getLbSecurityGroupName(),
-																	region),
-													region, protocol, port);
-								}
-							}
-
-							log.info("Load balancer '" + loadBalancerDNSName
-									+ "' created for cluster '"
-									+ cluster.getClusterId());
-
-							// Register instances in the cluster to load balancer
-							List<Instance> instances = new ArrayList<Instance>();
-
-							for (Member member : clusterMembers) {
-								String instanceId = member.getInstanceId();
-
-								log.debug("Instance id : "
-										+ awsHelper
-												.getAWSInstanceName(instanceId));
-
-								Instance instance = new Instance();
-								instance.setInstanceId(awsHelper
-										.getAWSInstanceName(instanceId));
-
-								instances.add(instance);
-							}
-
+						if (instancesToAddToLoadBalancer.size() > 0)
 							awsHelper.registerInstancesToLoadBalancer(
-									loadBalancerName, instances, region);
+									loadBalancerName,
+									instancesToAddToLoadBalancer, region);
+					}
 
-							LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(
-									loadBalancerName, region);
+				} else {
+					// Create a new load balancer for this cluster
+					Collection<Member> clusterMembers = cluster.getMembers();
 
-							clusterIdToLoadBalancerMap.put(
-									cluster.getClusterId(), loadBalancerInfo);
-							activeClusters.add(cluster.getClusterId());
+					if (clusterMembers.size() > 0) {
+						// a unique load balancer name with user-defined
+						// prefix and a sequence number.
+						String loadBalancerName = awsHelper
+								.generateLoadBalancerName();
+
+						String region = awsHelper.getAWSRegion(clusterMembers
+								.iterator().next().getInstanceId());
+
+						// list of AWS listeners obtained using port
+						// mappings of one of the members of the cluster.
+						List<Listener> listenersForThisCluster = awsHelper
+								.getRequiredListeners(clusterMembers.iterator()
+										.next());
+
+						// DNS name of load balancer which was created.
+						// This is used in the domain mapping of this
+						// cluster.
+						String loadBalancerDNSName = awsHelper
+								.createLoadBalancer(loadBalancerName,
+										listenersForThisCluster, region);
+
+						// Add the inbound rule the security group of the load
+						// balancer
+						// For each listener, add a new rule with load
+						// balancer port as allowed protocol in the security
+						// group.
+						for (Listener listener : listenersForThisCluster) {
+							int port = listener.getLoadBalancerPort();
+
+							for (String protocol : awsHelper
+									.getAllowedProtocolsForLBSecurityGroup()) {
+								awsHelper
+										.addInboundRuleToSecurityGroup(
+												awsHelper.getSecurityGroupId(
+														awsHelper
+																.getLbSecurityGroupName(),
+														region), region,
+												protocol, port);
+							}
 						}
+
+						log.info("Load balancer '" + loadBalancerDNSName
+								+ "' created for cluster '"
+								+ cluster.getClusterId());
+
+						// Register instances in the cluster to load balancer
+						List<Instance> instances = new ArrayList<Instance>();
+
+						for (Member member : clusterMembers) {
+							String instanceId = member.getInstanceId();
+
+							if (log.isDebugEnabled()) {
+								log.debug("Instance "
+										+ awsHelper
+												.getAWSInstanceName(instanceId)
+										+ " needs to be registered to load balancer "
+										+ loadBalancerName);
+							}
+
+							Instance instance = new Instance();
+							instance.setInstanceId(awsHelper
+									.getAWSInstanceName(instanceId));
+
+							instances.add(instance);
+						}
+
+						awsHelper.registerInstancesToLoadBalancer(
+								loadBalancerName, instances, region);
+
+						LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(
+								loadBalancerName, region);
+
+						clusterIdToLoadBalancerMap.put(cluster.getClusterId(),
+								loadBalancerInfo);
+						activeClusters.add(cluster.getClusterId());
 					}
 				}
 			}
-
-			// Find out clusters which were present earlier but are not now.
-			List<String> clustersToRemoveFromMap = new ArrayList<String>();
-
-			for (String clusterId : clusterIdToLoadBalancerMap.keySet()) {
-				if (!activeClusters.contains(clusterId)) {
-					clustersToRemoveFromMap.add(clusterId);
-				}
-			}
-
-			// Delete load balancers associated with these clusters.
-			for(String clusterId : clustersToRemoveFromMap)
-			{
-				// Remove load balancer for this cluster.
-				awsHelper.deleteLoadBalancer(clusterIdToLoadBalancerMap
-						.get(clusterId).getName(),
-						clusterIdToLoadBalancerMap.get(clusterId)
-								.getRegion());
-				clusterIdToLoadBalancerMap.remove(clusterId);
-			}
-
-			activeClusters.clear();
-		} catch (LoadBalancerExtensionException e) {
-			throw new LoadBalancerExtensionException(e);
 		}
 
+		// Find out clusters which were present earlier but are not now.
+		List<String> clustersToRemoveFromMap = new ArrayList<String>();
+
+		for (String clusterId : clusterIdToLoadBalancerMap.keySet()) {
+			if (!activeClusters.contains(clusterId)) {
+				clustersToRemoveFromMap.add(clusterId);
+
+				if (log.isDebugEnabled()) {
+					log.debug("Load balancer for cluster " + clusterId
+							+ " needs to be removed.");
+				}
+
+			}
+		}
+
+		// Delete load balancers associated with these clusters.
+		for (String clusterId : clustersToRemoveFromMap) {
+			// Remove load balancer for this cluster.
+			awsHelper.deleteLoadBalancer(
+					clusterIdToLoadBalancerMap.get(clusterId).getName(),
+					clusterIdToLoadBalancerMap.get(clusterId).getRegion());
+			clusterIdToLoadBalancerMap.remove(clusterId);
+		}
+
+		activeClusters.clear();
+		log.info("AWS load balancer extension was reconfigured as per the topology.");
 		return true;
 	}
 
