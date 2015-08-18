@@ -58,9 +58,11 @@ import static junit.framework.Assert.*;
 public class TopologyHandler {
     private static final Log log = LogFactory.getLog(TopologyHandler.class);
 
+
     public static final int APPLICATION_ACTIVATION_TIMEOUT = 400000;
     public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 60000;
     public static final int APPLICATION_TOPOLOGY_TIMEOUT = 60000;
+
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     private ApplicationsEventReceiver applicationsEventReceiver;
@@ -183,6 +185,10 @@ public class TopologyHandler {
                 status, application.getStatus());
     }
 
+    public Application getApplication(String applicationName, int tenantId) {
+        return ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+    }
+
     public void assertApplicationForNonAvailability(String applicationName,  int tenantId) {
 
         Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
@@ -257,6 +263,7 @@ public class TopologyHandler {
      * @param tenantId
      * @param applicationName
      */
+
     public void terminateMemberFromCluster(String cartridgeName, String applicationName, IntegrationMockClient mockIaasApiClient, int tenantId) {
         Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         assertNotNull(String.format("Application is not found: [application-id] %s",
@@ -264,16 +271,16 @@ public class TopologyHandler {
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-            String serviceName = clusterDataHolder.getServiceType();
-            if(cartridgeName.equals(serviceName)) {
+            String serviceUuid = clusterDataHolder.getServiceUuid();
+            if(cartridgeName.equals(serviceUuid)) {
                 String clusterId = clusterDataHolder.getClusterId();
-                Service service = TopologyManager.getTopology().getService(serviceName);
-                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                        applicationName, serviceName), service);
+                Service service = TopologyManager.getTopology().getService(serviceUuid);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service uuid] %s",
+                        applicationName, serviceUuid), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                        applicationName, serviceName, clusterId), cluster);
+                        applicationName, serviceUuid, clusterId), cluster);
                 boolean memberTerminated = false;
 
                 for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {

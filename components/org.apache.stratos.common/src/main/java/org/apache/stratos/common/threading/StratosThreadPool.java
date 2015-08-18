@@ -24,10 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * Utility class for Stratos thread pool
@@ -53,7 +50,10 @@ public class StratosThreadPool {
         if (executorService == null) {
             synchronized (executorServiceMapLock) {
                 if (executorService == null) {
-                    executorService = Executors.newFixedThreadPool(threadPoolSize);
+                    final BlockingQueue<Runnable> queue = new ArrayBlockingQueue(threadPoolSize);
+                    executorService =new ThreadPoolExecutor(threadPoolSize, 1000,
+                            0L, TimeUnit.MILLISECONDS,
+                            queue);// Executors.newFixedThreadPool(threadPoolSize);
                     executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
                 }

@@ -29,8 +29,12 @@ import org.apache.stratos.integration.tests.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
 
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+
+
+
 
 /**
  * Handling the startup order of the group
@@ -63,8 +67,25 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC3, true);
 
+
+            boolean addedC5 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat1-group-startup-order-test.json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertTrue(addedC5);
+
+            boolean addedC6 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat2-group-startup-order-test.json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertTrue(addedC6);
+
+            boolean addedC7 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat3-group-startup-order-test.json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertTrue(addedC7);
+
+            boolean addedC8 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-group-startup-order-test.json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertTrue(addedC8);
+
             boolean addedG1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "esb-php-group-application-bursting-test.json", RestConstants.CARTRIDGE_GROUPS,
+                            "/" + "esb-php-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(addedG1, true);
 
@@ -73,10 +94,21 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(beanG1.getName(), "esb-php-group-application-bursting-test");
 
+            boolean addedG2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                            "/" + "group6-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
+                    RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertTrue(addedG2);
+
+            boolean addedG3 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                            "/" + "group8-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
+                    RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertTrue(addedG3);
+
             boolean addedN1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-bursting-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN1, true);
+
 
             boolean addedN2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-bursting-test-2.json",
