@@ -59,6 +59,13 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
+    private static final String SUPER_ADMIN_USERNAME = "admin";
+    private static final String SUPER_ADMIN_PASSWD = "admin";
+    private static final String TENANT1_USER_NAME = "admin@test1.com";
+    private static final String TENANT1_PASSWD = "admin123";
+    private static final String TENANT2_USER_NAME = "admin@test2.com";
+    private static final String TENANT2_PASSWD = "admin123";
+
     protected RestClient restClientAdmin;
     protected RestClient restClientTenant1;
     protected RestClient restClientTenant2;
@@ -75,9 +82,9 @@ public class StratosTestServerManager extends TestServerManager {
     public StratosTestServerManager() {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
-        restClientAdmin=new RestClient(endpoint,"admin","admin");
-        restClientTenant1 = new RestClient(endpoint, "admin@test1.com", "admin123");
-        restClientTenant2 = new RestClient(endpoint, "admin@test2.com", "admin123");
+        restClientAdmin=new RestClient(endpoint, SUPER_ADMIN_USERNAME, SUPER_ADMIN_PASSWD);
+        restClientTenant1 = new RestClient(endpoint, TENANT1_USER_NAME, TENANT1_PASSWD);
+        restClientTenant2 = new RestClient(endpoint, TENANT2_USER_NAME, TENANT2_PASSWD);
         mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
 
     }
@@ -209,7 +216,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
 
-    public void tenantCreation(){
+    private void tenantCreation(){
         log.info("Added tenants to the testing suit");
         boolean addedTenant1=restClientAdmin.addEntity(RestConstants.TENANT1_RESOURCE,RestConstants.TENANT_API,RestConstants.TENANTS_NAME);
         assertEquals(addedTenant1,true);
