@@ -27,9 +27,7 @@ import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Test to handle Network partition CRUD operations
@@ -84,11 +82,35 @@ public class NetworkPartitionTest extends StratosTestServerManager {
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertNull("Network partition found in tenant 2",updatedBean);
 
+            added = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            networkPartitionId + ".json",
+                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+
+            assertEquals(added, true);
+            bean = (NetworkPartitionBean) restClientTenant2.
+                    getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                            NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertNotNull("Network partition not exist in other tenant",bean);
+
             boolean removed = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removed, true);
 
             NetworkPartitionBean beanRemoved = (NetworkPartitionBean) restClientTenant1.
+                    getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                            NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(beanRemoved, null);
+
+            bean = (NetworkPartitionBean) restClientTenant2.
+                    getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                            NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertNotNull("Network partition not exist in other tenant",bean);
+
+            removed = restClientTenant2.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(removed, true);
+
+            beanRemoved = (NetworkPartitionBean) restClientTenant2.
                     getEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(beanRemoved, null);
