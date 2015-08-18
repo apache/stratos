@@ -85,4 +85,5 @@
             <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest" />
         </classes>
     </test>
+
 </suite>

@@ -27,6 +27,7 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.apache.stratos.integration.tests.TopologyHandler;
+import org.apache.stratos.integration.tests.rest.RestClient;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
 
@@ -43,88 +44,13 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
     @Test
     public void testDeployApplication() {
         try {
-            log.info("-------------------------Started application runtime update test case-------------------------");
 
             String autoscalingPolicyId = "autoscaling-policy-application-update-test";
+            String applicationId="g-sc-G123-1-application-update-test";
 
-            boolean addedScalingPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                            + "/" + autoscalingPolicyId + ".json",
-                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(addedScalingPolicy, true);
+            testApplicationRuntimeForTenant(restClientTenant1,tenant1Id,autoscalingPolicyId)  ;
 
-            boolean addedC1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-application-update-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC1, true);
-
-            boolean addedC2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-application-update-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC2, true);
-
-            boolean addedC3 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-application-update-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC3, true);
-
-            boolean addedG1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "cartrdige-nested-application-update-test.json", RestConstants.CARTRIDGE_GROUPS,
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(addedG1, true);
-
-            CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClientTenant1.
-                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
-                            CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(beanG1.getName(), "G1-application-update-test");
-
-            boolean addedN1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-application-update-test-1.json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN1, true);
-
-            boolean addedN2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-application-update-test-2.json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN2, true);
-
-            boolean addedDep = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                            "deployment-policy-application-update-test.json",
-                    RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertEquals(addedDep, true);
-
-            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                            "g-sc-G123-1-application-update-test.json", RestConstants.APPLICATIONS,
-                    RestConstants.APPLICATIONS_NAME);
-            assertEquals(added, true);
-
-            ApplicationBean bean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
-                    "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertEquals(bean.getApplicationId(), "g-sc-G123-1-application-update-test");
-
-            boolean addAppPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                            "application-policy-application-update-test.json", RestConstants.APPLICATION_POLICIES,
-                    RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(addAppPolicy, true);
-
-            ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClientTenant1.getEntity(
-                    RestConstants.APPLICATION_POLICIES,
-                    "application-policy-application-update-test", ApplicationPolicyBean.class,
-                    RestConstants.APPLICATION_POLICIES_NAME);
-
-            //deploy the application
-            String resourcePath = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
-                    RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-application-update-test";
-            boolean deployed = restClientTenant1.deployEntity(resourcePath,
-                    RestConstants.APPLICATIONS_NAME);
-            assertEquals(deployed, true);
-
-            //Application active handling
-            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active, tenant1Id);
-            TopologyHandler.getInstance().assertApplicationForNonAvailability(bean.getApplicationId(),tenant2Id);
-
-            //Group active handling
-            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenant1Id);
-
-            //Cluster active handling
-            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(applicationId,tenant2Id);
 
             //Updating application
             boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
@@ -132,15 +58,16 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(updated, true);
 
-            TopologyHandler.getInstance().assertGroupInstanceCount(bean.getApplicationId(), "group3-application-update-test", 2, tenant1Id);
+            TopologyHandler.getInstance().assertGroupInstanceCount(applicationId, "group3-application-update-test", 2, tenant1Id);
 
-            TopologyHandler.getInstance().assertClusterMinMemberCount(bean.getApplicationId(), 1, tenant1Id);
+            TopologyHandler.getInstance().assertClusterMinMemberCount(applicationId, 1, tenant1Id);
 
             ApplicationBean updatedBean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
                     "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1-application-update-test");
 
-            TopologyHandler.getInstance().assertApplicationForNonAvailability(bean.getApplicationId(),tenant2Id);
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(applicationId,tenant2Id);
+
 
             boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
@@ -156,6 +83,8 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             //Trying to remove the used network partition
             assertEquals(removedNet, false);
 
+            testApplicationRuntimeForTenant(restClientTenant2,tenant2Id,autoscalingPolicyId);
+
             boolean removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     "deployment-policy-application-update-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(removedDep, false);
@@ -167,6 +96,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
             boolean unDeployed = restClientTenant1.undeployEntity(resourcePathUndeploy,
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
+
 
             boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("g-sc-G123-1-application-update-test", tenant1Id);
             if (!undeploy) {
@@ -181,6 +111,7 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
                         "g-sc-G123-1-application-update-test"), forceUndeployed, true);
 
             }
+
 
             boolean removed = restClientTenant1.removeEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-application-update-test",
                     RestConstants.APPLICATIONS_NAME);
@@ -242,5 +173,84 @@ public class ApplicationUpdateTest extends StratosTestServerManager {
         }
     }
 
+    private void testApplicationRuntimeForTenant(RestClient restClientTenant,int tenantId, String autoscalingPolicyId ){
 
+        boolean addedScalingPolicy = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+                        + "/" + autoscalingPolicyId + ".json",
+                RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+        assertEquals(addedScalingPolicy, true);
+
+        boolean addedC1 = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-application-update-test.json",
+                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertEquals(addedC1, true);
+
+        boolean addedC2 = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-application-update-test.json",
+                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertEquals(addedC2, true);
+
+        boolean addedC3 = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-application-update-test.json",
+                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertEquals(addedC3, true);
+
+        boolean addedG1 = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                        "/" + "cartrdige-nested-application-update-test.json", RestConstants.CARTRIDGE_GROUPS,
+                RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertEquals(addedG1, true);
+
+        CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClientTenant.
+                getEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
+                        CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertEquals(beanG1.getName(), "G1-application-update-test");
+
+        boolean addedN1 = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                        "network-partition-application-update-test-1.json",
+                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(addedN1, true);
+
+        boolean addedN2 = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                        "network-partition-application-update-test-2.json",
+                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(addedN2, true);
+
+        boolean addedDep = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+                        "deployment-policy-application-update-test.json",
+                RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
+        assertEquals(addedDep, true);
+
+        boolean added = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+                        "g-sc-G123-1-application-update-test.json", RestConstants.APPLICATIONS,
+                RestConstants.APPLICATIONS_NAME);
+        assertEquals(added, true);
+
+        ApplicationBean bean = (ApplicationBean) restClientTenant.getEntity(RestConstants.APPLICATIONS,
+                "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertEquals(bean.getApplicationId(), "g-sc-G123-1-application-update-test");
+
+        boolean addAppPolicy = restClientTenant.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+                        "application-policy-application-update-test.json", RestConstants.APPLICATION_POLICIES,
+                RestConstants.APPLICATION_POLICIES_NAME);
+        assertEquals(addAppPolicy, true);
+
+        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClientTenant.getEntity(
+                RestConstants.APPLICATION_POLICIES,
+                "application-policy-application-update-test", ApplicationPolicyBean.class,
+                RestConstants.APPLICATION_POLICIES_NAME);
+
+        //deploy the application
+        String resourcePath = RestConstants.APPLICATIONS + "/" + "g-sc-G123-1-application-update-test" +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-application-update-test";
+        boolean deployed = restClientTenant.deployEntity(resourcePath,
+                RestConstants.APPLICATIONS_NAME);
+        assertEquals(deployed, true);
+
+        //Application active handling
+        TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+                ApplicationStatus.Active, tenantId);
+
+        //Group active handling
+        TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenantId);
+
+        //Cluster active handling
+        TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenantId);
+    }
 }

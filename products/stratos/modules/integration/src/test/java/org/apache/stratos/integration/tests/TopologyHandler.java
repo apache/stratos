@@ -187,7 +187,6 @@ public class TopologyHandler {
 
         Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
         assertNull(String.format("Application is found for other tenant : [application-id] %s", applicationName),application);
-
     }
 
     /**

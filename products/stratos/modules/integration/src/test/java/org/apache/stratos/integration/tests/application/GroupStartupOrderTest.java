@@ -118,6 +118,8 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
             TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
                     ApplicationStatus.Active, tenant1Id);
 
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(bean.getApplicationId(),tenant2Id);
+
             //Group active handling
             TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenant1Id);
 
