@@ -1,20 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * Copyright 2005-2007 WSO2, Inc. (http://wso2.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.wso2.carbon.ui;
@@ -44,6 +41,7 @@ import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.base.ServerConfiguration;
 
 /**
  * Utility class for Carbon UI
@@ -56,6 +54,9 @@ public class CarbonUIUtil {
 
     //To store the product specific params 
     private static HashMap productParams = new HashMap();
+
+    private static final String PROXY_CONTEXT_PATH = "ProxyContextPath";
+    private static final String WORKER_PROXY_CONTEXT_PATH = "WorkerProxyContextPath";
 
     /**
      * Get a proxy object to the business logic implementation class.
@@ -167,6 +168,8 @@ public class CarbonUIUtil {
             context = "";
         }
 
+        String proxyContextPath = CarbonUIUtil.getProxyContextPath(false);
+
         if (httpsPort == -1) {
             return null;
         }
@@ -179,12 +182,15 @@ public class CarbonUIUtil {
                 && "true".equalsIgnoreCase(enableHTTPAdminConsole.trim())) {
             int httpPort = CarbonUtils.getTransportPort(
                     CarbonUIServiceComponent.getConfigurationContextService(), "http");
-            adminConsoleURL = "http://" + hostName + ":" + httpPort + context + "/carbon/";
+            adminConsoleURL = "http://" + hostName + ":" + httpPort + proxyContextPath + context + "/carbon/";
         } else {
             adminConsoleURL = "https://" + hostName + ":"
-                    + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + context + "/carbon/";
+                    + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + proxyContextPath + context + "/carbon/";
         }
 
+        if(log.isDebugEnabled()){
+            log.debug("Generated admin console URL: " + adminConsoleURL);
+        }
         return adminConsoleURL;
     }
 
@@ -214,8 +220,17 @@ public class CarbonUIUtil {
         if ("/".equals(context)) {
             context = "";
         }
-        return "https://" + hostName + ":" + (httpsProxyPort != -1? httpsProxyPort : httpsPort) +
-            context + "/carbon/";
+
+        String proxyContextPath = CarbonUIUtil.getProxyContextPath(false);
+
+        String adminConsoleURL =  "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) +
+                proxyContextPath + context + "/carbon/";
+
+        if(log.isDebugEnabled()){
+            log.debug("Generated admin console URL: " + adminConsoleURL);
+        }
+
+        return adminConsoleURL;
     }
 
     /**
@@ -468,5 +483,51 @@ public class CarbonUIUtil {
 
     private static Object getDefaultHomePageProductParam() {
         return getProductParam(CarbonConstants.PRODUCT_XML_WSO2CARBON + CarbonConstants.DEFAULT_HOME_PAGE);
+    }
+
+    /**
+     * Returns the proxy context path value specified in the carbon.xml.(Duplicated Util Method)
+     *
+     * @param isWorkerNode If isWorkerNode is true then this method returns the proxy context path of the
+     *                     corresponding worker node. If the worker proxy context path is not specified, this method
+     *                     returns the value specified for the proxy context path.
+     * @return the proxy context path value.
+     */
+    private static String getProxyContextPath(boolean isWorkerNode) {
+        String proxyContextPath = "";
+
+        if (isWorkerNode) {
+            proxyContextPath = getProxyContextPathValue(WORKER_PROXY_CONTEXT_PATH);
+            if ("".equals(proxyContextPath)) {
+                proxyContextPath = getProxyContextPathValue(PROXY_CONTEXT_PATH);
+            }
+        } else {
+            proxyContextPath = getProxyContextPathValue(PROXY_CONTEXT_PATH);
+        }
+
+        if(log.isDebugEnabled()){
+            log.debug("Proxy context path : " + proxyContextPath);
+        }
+        return proxyContextPath;
+    }
+
+    /**
+     * Retrieves the proxy context path from the ServerConfiguration and process it before returning. (Duplicated Util Method)
+     *
+     * @param key Property key
+     * @return the processed proxy context path.
+     */
+    private static String getProxyContextPathValue(String key) {
+        String proxyContextPath = ServerConfiguration.getInstance().getFirstProperty(key);
+
+        if (proxyContextPath == null || proxyContextPath.length() == 0 | "/".equals(proxyContextPath)) {
+            proxyContextPath = "";
+        } else {
+            proxyContextPath = proxyContextPath.trim();
+            if (!proxyContextPath.startsWith("/")) {
+                proxyContextPath = "/" + proxyContextPath;
+            }
+        }
+        return proxyContextPath;
     }
 }

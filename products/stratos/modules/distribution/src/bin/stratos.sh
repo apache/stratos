@@ -272,7 +272,6 @@ do
     $JAVACMD \
     -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
     -Xms256m -Xmx1024m -XX:MaxPermSize=256m \
-    -server \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
     $JAVA_OPTS \

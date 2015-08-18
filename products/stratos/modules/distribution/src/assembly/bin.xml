@@ -53,6 +53,9 @@
                 <exclude>**/repository/conf/log4j.properties</exclude>
                 <exclude>**/repository/conf/data-bridge/**</exclude>
                 <exclude>**/repository/resources/security/client-truststore.jks</exclude>
+                <exclude>**/bin/org.wso2.carbon.bootstrap-4.2.0.jar</exclude>
+                <exclude>**/lib/org.wso2.carbon.server-4.2.0.jar</exclude>
+                <exclude>**/lib/org.wso2.ciphertool-1.0.0-wso2v2.jar</exclude>
             </excludes>
         </fileSet>
         <!-- Copying p2 profile and osgi bundles-->
@@ -169,14 +172,6 @@
             </includes>
         </fileSet>
 
-        <!-- axis2.xml -->
-        <fileSet>
-            <directory>src/main/conf/</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/axis2</outputDirectory>
-            <includes>
-                <include>axis2.xml</include>
-            </includes>
-        </fileSet>
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/etc/</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
@@ -206,9 +201,11 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
             <excludes>
                 <exclude>**/identity/**</exclude>
-                <!-- new version of mysql.sql and db2.sql is coming from WSO2-CARBON-PATCH-4.2.0-0001 patch. So excluding them-->
+                <!-- Patched in WSO2-CARBON-PATCH-4.2.0-0001 and WSO2-CARBON-PATCH-4.2.0-0003
+                Excluding since overwriting is not supported in assembly plugin -->
                 <exclude>mysql.sql</exclude>
                 <exclude>db2.sql</exclude>
+                <exclude>mysql_cluster.sql</exclude>
             </excludes>
             <includes>
                 <include>**/**.sql</include>
@@ -258,12 +255,19 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
         </fileSet>
 
-        <!-- Kernel Patches-->
+        <!-- Apply Kernel Patches-->
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
             <includes>
                 <include>**/patch0001/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
+            <includes>
+                <include>**/**.sql</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -319,6 +323,66 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
             <includes>
                 <include>**/patch0008/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <excludes>
+                <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+            </excludes>
+            <includes>
+                <include>**/patch0009/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0010</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <excludes>
+                <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+            </excludes>
+            <includes>
+                <include>**/patch0010/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0011</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <excludes>
+                <exclude>**/org.wso2.carbon.ui-4.2.0.jar</exclude>
+            </excludes>
+            <includes>
+                <include>**/patch0011/*.*</include>
+            </includes>
+        </fileSet>
+
+        <!-- Additional configuration for kernel patches -->
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009/lib</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
+            <includes>
+                <include>**/org.wso2.carbon.server-4.2.0.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009/bin</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/bin</outputDirectory>
+            <includes>
+                <include>**/org.wso2.carbon.bootstrap_4.2.0.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0010/lib</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
+            <includes>
+                <include>**/org.wso2.ciphertool-1.0.0-wso2v2.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0003/dbscripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
+            <includes>
+                <include>**/mysql_cluster.sql</include>
             </includes>
         </fileSet>
 
@@ -451,6 +515,26 @@
 
     <files>
         <file>
+            <source>src/main/conf/carbon.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/conf/security/authenticators.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/conf/security/cipher-text.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/conf/security/cipher-tool.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
             <source>src/main/conf/log4j.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
@@ -553,6 +637,18 @@
             <source>src/main/conf/security/client-truststore.jks</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/security/</outputDirectory>
             <filtered>false</filtered>
+            <fileMode>600</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/axis2/axis2.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>600</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/axis2/axis2_client.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
             <fileMode>600</fileMode>
         </file>
         <file>
@@ -759,27 +855,6 @@
             <source>src/main/conf/thrift-client-config.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
             <fileMode>644</fileMode>
-        </file>
-
-        <!-- Kernel patches configuration -->
-        <file>
-            <source>
-                ../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>
-                ../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-tool.properties
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0004/repository/conf/carbon.xml</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
-            <filtered>true</filtered>
         </file>
     </files>
 </assembly>
