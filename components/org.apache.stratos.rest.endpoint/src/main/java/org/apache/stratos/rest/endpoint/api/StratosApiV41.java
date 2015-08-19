@@ -40,7 +40,6 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -142,12 +141,6 @@ public class StratosApiV41 extends AbstractApi {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
-
-        List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans = deploymentPolicyDefinitionBean
-                .getNetworkPartitions();
-        for (NetworkPartitionReferenceBean networkPartitionReferenceBeans1 : networkPartitionReferenceBeans) {
-            networkPartitionReferenceBeans1.setTenantId(tenantId);
-        }
 
         try {
             StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean, deploymentPolicyUuid, tenantId);

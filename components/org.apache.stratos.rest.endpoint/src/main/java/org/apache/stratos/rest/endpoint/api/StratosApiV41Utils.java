@@ -3019,7 +3019,6 @@ public class StratosApiV41Utils {
                 for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
                     if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
                             (networkPartitionReferenceBean.getId())) {
-                        networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
                         for (PartitionReferenceBean partitionReferenceBean : networkPartitionReferenceBean.getPartitions()) {
                             for (Partition partition : partitions) {
                                 if (partition.getTenantId() == tenantId &&
@@ -3126,7 +3125,6 @@ public class StratosApiV41Utils {
                 for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
                     if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
                             (networkPartitionReferenceBean.getId())) {
-                        networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
                         for (PartitionReferenceBean partition : networkPartitionReferenceBean.getPartitions()) {
                             for (Partition existingPartition : CloudControllerServiceClient
                                     .getInstance().getPartitionsByNetworkPartition(networkPartitionReferenceBean

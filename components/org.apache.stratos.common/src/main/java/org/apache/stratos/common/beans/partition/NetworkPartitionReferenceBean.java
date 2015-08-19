@@ -26,8 +26,6 @@ import java.util.List;
 public class NetworkPartitionReferenceBean {
 
     private String id;
-    private String uuid;
-    private int tenantId;
     private String provider;
     private List<PartitionReferenceBean> partitions;
     private String partitionAlgo;
@@ -38,22 +36,6 @@ public class NetworkPartitionReferenceBean {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
     }
 
     public List<PartitionReferenceBean> getPartitions() {

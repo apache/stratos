@@ -62,6 +62,7 @@ import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.rest.endpoint.api.StratosApiV41Utils;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.rmi.RemoteException;
@@ -630,7 +631,6 @@ public class ObjectConverter {
         for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
             NetworkPartitionReferenceBean networkPartitionReferenceBean = new NetworkPartitionReferenceBean();
             networkPartitionReferenceBean.setId(networkPartitionRef.getId());
-            networkPartitionReferenceBean.setUuid(networkPartitionRef.getUuid());
             networkPartitionReferenceBean.setPartitionAlgo(networkPartitionRef.getPartitionAlgo());
             networkPartitionReferenceBean.setPartitions(
                     convertASStubPartitionsToPartitions(networkPartitionRef.getPartitionRefs()));
@@ -2092,7 +2092,7 @@ public class ObjectConverter {
 
 
     public static DeploymentPolicy convertDeploymentPolicyBeanToASDeploymentPolicy(
-            DeploymentPolicyBean deploymentPolicyBean, String deploymentPolicyUuid, int tenantId) {
+            DeploymentPolicyBean deploymentPolicyBean, String deploymentPolicyUuid, int tenantId) throws RemoteException {
 
         if (deploymentPolicyBean == null) {
             return null;
@@ -2147,7 +2147,6 @@ public class ObjectConverter {
         for (NetworkPartitionRef networkPartition : networkPartitions) {
             NetworkPartitionReferenceBean networkPartitionReferenceBean = new NetworkPartitionReferenceBean();
             networkPartitionReferenceBean.setId(networkPartition.getId());
-            networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
             networkPartitionReferenceBean.setPartitionAlgo(networkPartition.getPartitionAlgo());
             networkPartitionReferenceBean.setPartitions(
                     convertASStubPartitionRefsToPartitionReferences(networkPartition.getPartitionRefs()));
@@ -2200,14 +2199,17 @@ public class ObjectConverter {
 
 
     private static NetworkPartitionRef[] convertNetworkPartitionToASStubNetworkPartition(
-            List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans) {
+            List<NetworkPartitionReferenceBean> networkPartitionReferenceBeans) throws RemoteException {
 
         List<NetworkPartitionRef> networkPartitionRefList =
                 new ArrayList<NetworkPartitionRef>();
         for (NetworkPartitionReferenceBean networkPartitionReferenceBean : networkPartitionReferenceBeans) {
             NetworkPartitionRef networkPartitionRef = new NetworkPartitionRef();
             networkPartitionRef.setId(networkPartitionReferenceBean.getId());
-            networkPartitionRef.setUuid(networkPartitionReferenceBean.getUuid());
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            String networkPartitionUuid = CloudControllerServiceClient.getInstance().getNetworkPartitionUuid
+                    (networkPartitionReferenceBean.getId(), carbonContext.getTenantId());
+            networkPartitionRef.setUuid(networkPartitionUuid);
             networkPartitionRef.setPartitionAlgo(networkPartitionReferenceBean.getPartitionAlgo());
             if (networkPartitionReferenceBean.getPartitions() != null) {
                 networkPartitionRef.setPartitionRefs(convertToASStubPartitions(

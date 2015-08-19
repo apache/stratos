@@ -239,6 +239,10 @@ public class CloudControllerServiceClient {
         return stub.getPartitionsByNetworkPartition(networkPartitionId, tenantId);
     }
 
+    public String getNetworkPartitionUuid(String networkPartitionId, int tenantId) throws RemoteException {
+        return stub.getNetworkPartitionUuid(networkPartitionId, tenantId);
+    }
+
     public void createClusterInstance(String serviceUuid, String clusterId,
                                       String alias, String instanceId, String partitionId,
                                       String networkPartitionUuid) throws RemoteException {
