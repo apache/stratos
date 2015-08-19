@@ -582,12 +582,10 @@ public class ObjectConverter {
         if (stubPartition == null) {
             return null;
         }
-        PartitionBean partition = new PartitionBean();
+        PartitionBean partitionBean = new PartitionBean();
 
-        partition.setUuid(stubPartition.getUuid());
-        partition.setId(stubPartition.getId());
-        partition.setTenantId(stubPartition.getTenantId());
-        partition.setDescription(stubPartition.getDescription());
+        partitionBean.setId(stubPartition.getId());
+        partitionBean.setDescription(stubPartition.getDescription());
         if (stubPartition.getProperties() != null) {
             List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList
                     = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
@@ -599,9 +597,9 @@ public class ObjectConverter {
                     }
                 }
             }
-            partition.setProperty(propertyBeanList);
+            partitionBean.setProperty(propertyBeanList);
         }
-        return partition;
+        return partitionBean;
     }
 
 
@@ -825,20 +823,19 @@ public class ObjectConverter {
 
     public static PartitionBean populatePartitionPojo(org.apache.stratos.cloud.controller.stub.domain.Partition partition) {
 
-        PartitionBean partitionBeans = new PartitionBean();
+        PartitionBean partitionBean = new PartitionBean();
         if (partition == null) {
-            return partitionBeans;
+            return partitionBean;
         }
 
-        partitionBeans.setUuid(partition.getId());
-        partitionBeans.setDescription(partition.getDescription());
+        partitionBean.setDescription(partition.getDescription());
         //properties
         if (partition.getProperties() != null) {
             List<org.apache.stratos.common.beans.PropertyBean> propertyBeans
                     = convertCCStubPropertiesToPropertyBeans(partition.getProperties());
-            partitionBeans.setProperty(propertyBeans);
+            partitionBean.setProperty(propertyBeans);
         }
-        return partitionBeans;
+        return partitionBean;
     }
 
     private static List<org.apache.stratos.common.beans.PropertyBean> convertJavaUtilPropertiesToPropertyBeans(

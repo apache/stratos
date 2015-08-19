@@ -32,6 +32,7 @@ import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.PropertyBean;
@@ -50,7 +51,6 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionReferenceBean;
-import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionReferenceBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
@@ -3013,16 +3013,19 @@ public class StratosApiV41Utils {
                     throw new RestAPIException(message);
                 }
 
+                Partition[] partitions = CloudControllerServiceClient.getInstance().getPartitionsByNetworkPartition
+                        (networkPartitionReferenceBean.getId(), tenantId);
+
                 for (NetworkPartitionBean networkPartitionBean : networkPartitions) {
                     if (networkPartition.getTenantId() == tenantId && networkPartitionBean.getId().equals
                             (networkPartitionReferenceBean.getId())) {
                         networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
-                        for (PartitionReferenceBean partition : networkPartitionReferenceBean.getPartitions()) {
-                            for (PartitionBean existingPartition : networkPartitionBean.getPartitions()) {
-                                if (existingPartition.getTenantId() == tenantId &&
-                                        partition.getId().equals(existingPartition.getId())) {
-                                    partition.setUuid(existingPartition.getUuid());
-                                    partition.setTenantId(tenantId);
+                        for (PartitionReferenceBean partitionReferenceBean : networkPartitionReferenceBean.getPartitions()) {
+                            for (Partition partition : partitions) {
+                                if (partition.getTenantId() == tenantId &&
+                                        partitionReferenceBean.getId().equals(partition.getId())) {
+                                    partitionReferenceBean.setUuid(partition.getUuid());
+                                    partitionReferenceBean.setTenantId(tenantId);
                                 }
                             }
                         }
@@ -3125,7 +3128,9 @@ public class StratosApiV41Utils {
                             (networkPartitionReferenceBean.getId())) {
                         networkPartitionReferenceBean.setUuid(networkPartition.getUuid());
                         for (PartitionReferenceBean partition : networkPartitionReferenceBean.getPartitions()) {
-                            for (PartitionBean existingPartition : networkPartitionBean.getPartitions()) {
+                            for (Partition existingPartition : CloudControllerServiceClient
+                                    .getInstance().getPartitionsByNetworkPartition(networkPartitionReferenceBean
+                                            .getId(), tenantId)) {
                                 if (existingPartition.getTenantId() == tenantId &&
                                         partition.getId().equals(existingPartition.getId())) {
                                     partition.setUuid(existingPartition.getUuid());

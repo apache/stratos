@@ -31,15 +31,6 @@ public class PartitionBean {
 	private String id;
     private String description;
     private List<PropertyBean> property;
-	private int tenantId;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
     public String getDescription() {
         return description;
@@ -63,13 +54,5 @@ public class PartitionBean {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
 	}
 }
