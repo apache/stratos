@@ -88,7 +88,7 @@ public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher 
                         String memberId, String partitionId, String health, double value) {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s " +
-                            "[partition] %s [member] %s [health] %s [value] %f",
+                            "[partition] %s [member] %s [health] %s [value] %d",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
         }
         // Set payload values
