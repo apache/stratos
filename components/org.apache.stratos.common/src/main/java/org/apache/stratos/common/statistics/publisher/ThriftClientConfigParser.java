@@ -39,10 +39,14 @@ public class ThriftClientConfigParser {
     /**
      * Fields to be read from the thrift-client-config.xml file
      */
+    private static final String NAME_ELEMENT = "name";
     private static final String USERNAME_ELEMENT = "username";
     private static final String PASSWORD_ELEMENT = "password";
     private static final String IP_ELEMENT = "ip";
     private static final String PORT_ELEMENT = "port";
+
+    private static final String CEP_NAME_ELEMENT = "cep";
+    private static final String DAS_NAME_ELEMENT = "das";
 
     /**
      * This method reads thrift-client-config.xml file and assign necessary credential
@@ -61,8 +65,8 @@ public class ThriftClientConfigParser {
             }
 
             ThriftClientConfig thriftClientIConfig = new ThriftClientConfig();
-            ThriftClientInfo thriftClientInfo = new ThriftClientInfo();
-            thriftClientIConfig.setThriftClientInfo(thriftClientInfo);
+            ThriftClientInfo cepThriftClientInfo = new ThriftClientInfo();
+            ThriftClientInfo dasThriftClientInfo = new ThriftClientInfo();
 
             File configFile = new File(filePath);
             if (!configFile.exists()) {
@@ -74,6 +78,7 @@ public class ThriftClientConfigParser {
             //Initialize the SecretResolver providing the configuration element.
             SecretResolver secretResolver = SecretResolverFactory.create(document, false);
 
+            String nameValuesStr = null;
             String userNameValuesStr = null;
             String passwordValueStr = null;
             String ipValuesStr = null;
@@ -85,35 +90,56 @@ public class ThriftClientConfigParser {
             // Iterate the thrift-client-config.xml file and read child element
             // consists of credential information necessary for ThriftStatisticsPublisher
             while (thriftClientIterator.hasNext()) {
-                OMElement thriftClientElement = (OMElement) thriftClientIterator.next();
+                OMElement thriftClientConfig = (OMElement) thriftClientIterator.next();
+                Iterator thriftClientConfigIterator = thriftClientConfig.getChildElements();
+                ThriftClientInfo thriftClientInfo = new ThriftClientInfo();
+                log.info("Client Config: " + thriftClientConfigIterator.toString());
 
-                if (USERNAME_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
-                    userNameValuesStr = thriftClientElement.getText();
-                    thriftClientInfo.setUsername(userNameValuesStr);
-                }
-                //password field protected using Secure vault
-                if (PASSWORD_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
-                    if ((secretResolver != null) && (secretResolver.isInitialized())) {
-                        if (secretResolver.isTokenProtected(secretAlias)) {
-                            passwordValueStr = secretResolver.resolve(secretAlias);
-                        } else {
-                            passwordValueStr = thriftClientElement.getText();
+                while (thriftClientConfigIterator.hasNext()) {
+                    OMElement thriftClientConfigElement = (OMElement) thriftClientConfigIterator.next();
+                    log.info("Client Config Element: " + thriftClientConfigElement);
+
+                    if (NAME_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {
+                        nameValuesStr = thriftClientConfigElement.getText();
+                        if (CEP_NAME_ELEMENT.equals(nameValuesStr)) {
+                            cepThriftClientInfo = thriftClientInfo;
+                        } else if (DAS_NAME_ELEMENT.equals(nameValuesStr)) {
+                            dasThriftClientInfo = thriftClientInfo;
                         }
-                    } else {
-                        passwordValueStr = thriftClientElement.getText();
                     }
-                    thriftClientInfo.setPassword(passwordValueStr);
-                }
 
-                if (IP_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
-                    ipValuesStr = thriftClientElement.getText();
-                    thriftClientInfo.setIp(ipValuesStr);
-                }
+                    if (USERNAME_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {
+                        userNameValuesStr = thriftClientConfigElement.getText();
+                        thriftClientInfo.setUsername(userNameValuesStr);
+                    }
 
-                if (PORT_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
-                    portValueStr = thriftClientElement.getText();
-                    thriftClientInfo.setPort(portValueStr);
+                    //password field protected using Secure vault
+                    if (PASSWORD_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {
+                        if ((secretResolver != null) && (secretResolver.isInitialized())) {
+                            if (secretResolver.isTokenProtected(secretAlias)) {
+                                passwordValueStr = secretResolver.resolve(secretAlias);
+                            } else {
+                                passwordValueStr = thriftClientConfigElement.getText();
+                            }
+                        } else {
+                            passwordValueStr = thriftClientConfigElement.getText();
+                        }
+                        thriftClientInfo.setPassword(passwordValueStr);
+                    }
+
+                    if (IP_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {
+                        ipValuesStr = thriftClientConfigElement.getText();
+                        thriftClientInfo.setIp(ipValuesStr);
+                    }
+
+                    if (PORT_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {
+                        portValueStr = thriftClientConfigElement.getText();
+                        thriftClientInfo.setPort(portValueStr);
+                    }
                 }
+            }
+            if (nameValuesStr == null) {
+                throw new RuntimeException("Name value not found in thrift client configuration ");
             }
 
             if (userNameValuesStr == null) {
@@ -130,6 +156,9 @@ public class ThriftClientConfigParser {
             if (portValueStr == null) {
                 throw new RuntimeException("Port not found in thrift client configuration ");
             }
+
+            thriftClientIConfig.setCEPThriftClientInfo(cepThriftClientInfo);
+            thriftClientIConfig.setDASThriftClientInfo(dasThriftClientInfo);
 
             return thriftClientIConfig;
         } catch (Exception e) {
