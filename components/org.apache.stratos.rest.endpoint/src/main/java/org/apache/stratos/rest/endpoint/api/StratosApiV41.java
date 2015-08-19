@@ -969,13 +969,9 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Application policy already exists")).build();
-
-        } catch (RestAPIException e) {
-            throw e;
+                    ResponseMessageBean.ERROR, String.format("Application policy already exists: " +
+                            "[application-policy-id] %s", applicationPolicyId))).build();
         }
-
-
     }
 
     /**
@@ -1463,7 +1459,8 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Provided Autoscaling policy is invalid")).build();
         } catch (AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Autoscaling policy already exists")).build();
+                    ResponseMessageBean.ERROR, String.format("Autoscaling policy already exists " +
+                    "[autoscaling-policy-id] %s", autoscalingPolicyId))).build();
         } catch (RestAPIException e) {
             throw e;
         }

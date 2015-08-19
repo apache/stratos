@@ -3007,7 +3007,7 @@ public class StratosApiV41Utils {
                         .getNetworkPartitionByTenant(networkPartitionReferenceBean.getId(), tenantId);
 
                 if (networkPartition == null) {
-                    String message = String.format("Network partition not found: for [deployment-policy-id] %s" +
+                    String message = String.format("Network partition not found: for [deployment-policy-id] %s " +
                             "[network-partition-id] %s" , deploymentPolicyDefinitionBean.getId(),
                             networkPartitionReferenceBean.getId());
                     throw new RestAPIException(message);
