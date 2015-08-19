@@ -23,6 +23,7 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -407,7 +408,7 @@ public class KubernetesIaas extends Iaas {
         // Create pod
         long podSeqNo = kubernetesClusterContext.getPodSeqNo().incrementAndGet();
         String podId = "pod" + "-" + podSeqNo;
-        String podLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
+        String podLabel = DigestUtils.md5Hex(clusterId);
         String dockerImage = iaasProvider.getImage();
         List<EnvVar> environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
@@ -422,9 +423,9 @@ public class KubernetesIaas extends Iaas {
         kubernetesApi.createPod(podId, podLabel, dockerImage, cpu, memory, ports, environmentVariables);
 
         log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s " +
-                        "[pod] %s [cpu] %d [memory] %d MB",
+                        "[pod] %s [pod-label] %s [cpu] %d [memory] %d MB",
                 memberContext.getApplicationId(), memberContext.getCartridgeType(),
-                memberContext.getMemberId(), podId, cpu, memory));
+                memberContext.getMemberId(), podId, podLabel, cpu, memory));
 
         // Add pod id to member context
         memberContext.setKubernetesPodId(podId);
@@ -510,12 +511,12 @@ public class KubernetesIaas extends Iaas {
                 // Find next service sequence no
                 long serviceSeqNo = kubernetesClusterContext.getServiceSeqNo().incrementAndGet();
                 String serviceId = KubernetesIaasUtil.fixSpecialCharacters("service" + "-" + (serviceSeqNo));
-                String serviceLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
+                String serviceLabel = DigestUtils.md5Hex(clusterId);
 
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Creating kubernetes service: [cluster] %s [service] %s " +
+                    log.info(String.format("Creating kubernetes service: [cluster] %s [service] %s [service-label] %s " +
                                     "[protocol] %s [service-port] %d [container-port] %s", clusterId,
-                            serviceId, clusterPortMapping.getProtocol(),
+                            serviceId, serviceLabel, clusterPortMapping.getProtocol(),
                             clusterPortMapping.getKubernetesServicePort(), containerPort));
                 }
 
