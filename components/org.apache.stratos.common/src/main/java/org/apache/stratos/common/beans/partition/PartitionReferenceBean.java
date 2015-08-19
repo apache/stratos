@@ -32,7 +32,6 @@ public class PartitionReferenceBean {
     private String description;
     private List<PropertyBean> property;
     private int partitionMax;
-	private int tenantId;
 
     public String getUuid() {
         return uuid;
@@ -72,13 +71,5 @@ public class PartitionReferenceBean {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
 	}
 }

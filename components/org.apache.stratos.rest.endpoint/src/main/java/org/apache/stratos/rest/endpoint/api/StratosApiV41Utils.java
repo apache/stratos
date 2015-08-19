@@ -3024,7 +3024,6 @@ public class StratosApiV41Utils {
                                 if (partition.getTenantId() == tenantId &&
                                         partitionReferenceBean.getId().equals(partition.getId())) {
                                     partitionReferenceBean.setUuid(partition.getUuid());
-                                    partitionReferenceBean.setTenantId(tenantId);
                                 }
                             }
                         }
@@ -3132,7 +3131,6 @@ public class StratosApiV41Utils {
                                 if (existingPartition.getTenantId() == tenantId &&
                                         partition.getId().equals(existingPartition.getId())) {
                                     partition.setUuid(existingPartition.getUuid());
-                                    partition.setTenantId(tenantId);
                                 }
                             }
                         }

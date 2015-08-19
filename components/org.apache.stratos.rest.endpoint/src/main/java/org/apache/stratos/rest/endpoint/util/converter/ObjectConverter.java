@@ -2176,11 +2176,11 @@ public class ObjectConverter {
         if (partitionReferenceBean == null) {
             return null;
         }
-
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         PartitionRef stubPartition = new PartitionRef();
         stubPartition.setUuid(partitionReferenceBean.getUuid());
         stubPartition.setId(partitionReferenceBean.getId());
-        stubPartition.setTenantId(partitionReferenceBean.getTenantId());
+        stubPartition.setTenantId(carbonContext.getTenantId());
         stubPartition.setPartitionMax(partitionReferenceBean.getPartitionMax());
         return stubPartition;
     }
