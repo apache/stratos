@@ -27,8 +27,6 @@ import org.apache.stratos.integration.tests.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
@@ -313,7 +311,7 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
         Map<String, Long> activeMembers = TopologyHandler.getInstance().getActivateddMembers();
         Map<String, Long> createdMembers = TopologyHandler.getInstance().getCreatedMembers();
         //Active member should be available at the time cluster is started to create.
-        while(!activeMembers.containsKey(firstNodeId)) {
+        while (!activeMembers.containsKey(firstNodeId)) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -325,7 +323,7 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
         }
         assertTrue(activeMembers.containsKey(firstNodeId));
 
-        while(!createdMembers.containsKey(secondNodeId)) {
+        while (!createdMembers.containsKey(secondNodeId)) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -347,7 +345,7 @@ public class GroupStartupOrderTest extends StratosTestServerManager {
         Map<String, Long> createdMembers = TopologyHandler.getInstance().getCreatedMembers();
         //Active member should be available at the time cluster is started to create.
 
-        while(!(createdMembers.containsKey(firstNodeId) && createdMembers.containsKey(firstNodeId))) {
+        while (!(createdMembers.containsKey(firstNodeId) && createdMembers.containsKey(firstNodeId))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
