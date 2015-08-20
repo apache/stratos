@@ -42,7 +42,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version>
+                <version>2.3.7</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -50,6 +50,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             !org.apache.stratos.cloud.controller.internal.*,
+                            !org.apache.stratos.cloud.controller.stub.*,
                             org.apache.stratos.cloud.controller.*,
                         </Export-Package>
                         <Private-Package>
@@ -142,11 +143,6 @@
             <version>0.9.9-RC1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>cloudstack</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.securevault</artifactId>
             <version>${wso2carbon.version}</version>
@@ -178,6 +174,11 @@
             <version>${wso2carbon.version}</version>
         </dependency>
         <!-- jclouds dependencies -->
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>cloudstack</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-core</artifactId>

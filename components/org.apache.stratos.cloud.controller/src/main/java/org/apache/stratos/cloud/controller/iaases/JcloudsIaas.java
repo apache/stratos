@@ -110,9 +110,7 @@ public abstract class JcloudsIaas extends Iaas {
         // Should have a length between 3-15
 
         this.setDynamicPayload(payload);
-        String clusterId = memberContext.getClusterId();
-        String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
-        String group = str.replaceAll("[^a-z0-9-]", "");
+        String group = getIaasProvider().getIaas().getGroupName(memberContext, payload);
 
         try {
             ComputeService computeService = getIaasProvider().getComputeService();

@@ -391,11 +391,11 @@
             <artifactId>geronimo-stax-api_1.0_spec</artifactId>
             <version>1.0.1</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>net.sf.saxon.wso2</groupId>
             <artifactId>saxon</artifactId>
             <version>8.9.0.wso2v1</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.abdera.wso2</groupId>
             <artifactId>abdera</artifactId>

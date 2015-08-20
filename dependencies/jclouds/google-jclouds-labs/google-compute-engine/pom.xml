@@ -19,83 +19,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.jclouds</groupId>
-        <artifactId>jclouds-project</artifactId>
+        <groupId>org.apache.jclouds.labs</groupId>
+        <artifactId>jclouds-labs-google</artifactId>
         <version>1.9.1</version>
     </parent>
 
     <groupId>org.apache.stratos</groupId>
-    <modelVersion>4.0.0</modelVersion>
-    <version>1.9.1</version>
-    <artifactId>jclouds-labs-google-bundle</artifactId>
+    <artifactId>google-compute-engine</artifactId>
     <name>jclouds Google Compute Engine provider</name>
     <description>jclouds components to access GoogleCompute</description>
     <packaging>bundle</packaging>
-
-    <properties>
-        <guava.osgi.version.range>[16.0.1,17.0]</guava.osgi.version.range>
-        <com.google.code.gson.osgi.version.range>[2.3.1,2.4.0)</com.google.code.gson.osgi.version.range>
-        <google.guice.imp.pkg.version.range>[3.0,4.0)</google.guice.imp.pkg.version.range>
-        <jclouds.version>1.9.1</jclouds.version>
-        <jclouds.osgi.export>
-            org.jclouds.googlecomputeengine.*; version="${jclouds.version}",
-            org.jclouds.googlecloud.*; version="${jclouds.version}",
-            org.jclouds.oauth.v2.*; version="${jclouds.version}"
-        </jclouds.osgi.export>
-        <jclouds.osgi.import>
-            org.jclouds.compute.internal;version="${jclouds.version}",
-            org.jclouds.rest.internal;version="${jclouds.version}",
-            org.jclouds*;version="${jclouds.version}",
-            *
-        </jclouds.osgi.import>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.jclouds.labs</groupId>
             <artifactId>google-compute-engine</artifactId>
-            <version>${jclouds.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-compute</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.labs</groupId>
-            <artifactId>googlecloud</artifactId>
-            <version>${jclouds.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-compute</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.labs</groupId>
-            <artifactId>oauth</artifactId>
-            <version>${jclouds.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-compute</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.9.1</version>
         </dependency>
     </dependencies>
 
@@ -125,9 +66,41 @@
                             <includeArtifactIds>google-compute-engine</includeArtifactIds>
                             <includeGroupIds>org.apache.jclouds.labs</includeGroupIds>
                             <excludeTransitive>true</excludeTransitive>
+                            <excludes>**/*.class</excludes>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            org.jclouds.googlecomputeengine.*; version="${jclouds.version}",
+                            org.jclouds.googlecomputeengine.domain.*; version="${jclouds.version}",
+                            org.jclouds.googlecomputeengine.features.*; version="${jclouds.version}",
+                            org.jclouds.googlecomputeengine.compute.*; version="${jclouds.version}",
+                            org.jclouds.googlecomputeengine.compute.options.*; version="${jclouds.version}"
+                        </Export-Package>
+                        <Private-Package>
+                        </Private-Package>
+                        <Import-Package>
+                            org.jclouds.*; version="${jclouds.version}",
+                            com.google.inject.*;version="[3.0,4.0)",
+                            *;resolution:=optional
+                        </Import-Package>
+                        <Include-Resource>
+                            {maven-resources}
+                        </Include-Resource>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -37,7 +37,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.0-alpha-4</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>
@@ -325,8 +324,8 @@
                             <publishArtifacts>true</publishArtifacts>
                             <publishArtifactRepository>true</publishArtifactRepository>
                             <featureArtifacts>
-                                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.logaggregator.feature:1.0.0
-                                </featureArtifactDef>
+                                <!--featureArtifactDef>org.wso2.carbon:org.wso2.carbon.logaggregator.feature:1.0.0
+                                </featureArtifactDef-->
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.core.feature:${carbon.platform.version}
                                 </featureArtifactDef>
@@ -360,9 +359,9 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.throttle.server.feature:${carbon.version}
                                 </featureArtifactDef>
-                                <featureArtifactDef>
+                                <!--featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.logging.mgt.feature:${project.version}
-                                </featureArtifactDef>
+                                </featureArtifactDef-->
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.security.mgt.feature:${carbon.platform.patch.version.4.2.4}
                                 </featureArtifactDef>
@@ -670,10 +669,10 @@
                                     <id>org.wso2.carbon.identity.sso.saml.feature.group</id>
                                     <version>${carbon.platform.patch.version.4.2.3}</version>
                                 </feature>
-                                <feature>
+                                <!--feature>
                                     <id>org.apache.stratos.logging.mgt.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
+                                    <version>${carbon.platform.patch.version.4.2.2}</version>
+                                </feature-->
                                 <feature>
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
                                     <version>${carbon.platform.patch.version.4.2.1}</version>
@@ -1037,10 +1036,10 @@
                                     <id>org.wso2.store.feature.group</id>
                                     <version>${store.version}</version>
                                 </feature>
-                                <feature>
+                                <!--feature>
                                     <id>org.wso2.carbon.logaggregator.feature.group</id>
                                     <version>1.0.0</version>
-                                </feature>
+                                </feature-->
                                 <feature>
                                     <id>org.wso2.carbon.webapp.mgt.feature.group</id>
                                     <version>${carbon.deployment.version}</version>

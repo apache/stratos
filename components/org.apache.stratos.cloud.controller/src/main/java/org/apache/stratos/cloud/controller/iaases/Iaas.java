@@ -171,4 +171,17 @@ public abstract class Iaas {
      * @throws InvalidMemberException
      */
     public abstract void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException, MemberTerminationFailedException;
+
+    /**
+     * Get the group name which will be used when creating a node via jclouds API
+     *
+     * @param memberContext
+     * @param payload
+     */
+    public String getGroupName(MemberContext memberContext, byte[] payload){
+        String clusterId = memberContext.getClusterId();
+        String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
+        String group = str.replaceAll("[^a-z0-9-]", "");
+        return group;
+    }
 }
