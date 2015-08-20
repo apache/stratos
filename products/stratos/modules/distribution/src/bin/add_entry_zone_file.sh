@@ -30,7 +30,7 @@ if [ -f {$zone_file} ]; then
 fi
 echo "File $zone_file exists"
 
-#appending the ZONE file
+#appending the zone file
 echo "$subdomain IN A $ip">> $zone_file
 echo "Added subdomain to the file"
 

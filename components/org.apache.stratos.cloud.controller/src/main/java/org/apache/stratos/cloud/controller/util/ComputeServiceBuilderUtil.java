@@ -92,7 +92,7 @@ public class ComputeServiceBuilderUtil {
         // try to find region
         if ((region = iaas.getProperty(CloudControllerConstants.REGION_PROPERTY)) == null) {
             // if the property, isn't specified, try to obtain from the image id
-            // image id can be in following format - {REGION}/{UUID}
+            // image id can be in following format - {region}/{UUID}
             region = (iaas.getImage() != null) && (iaas.getImage().contains("/"))
                     ? iaas.getImage().split("/")[0] : null;
         }

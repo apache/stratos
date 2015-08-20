@@ -20,18 +20,18 @@
 -->
 
 <partitions>
-    <!-- A partition should at least have a PROVIDER -->
+    <!-- A partition should at least have a provider -->
     <partition id="P1">
-        <!-- A sample PROVIDER level partition -->
+        <!-- A sample provider level partition -->
 	<provider>ec2</provider>
     </partition>
     <partition id="P2">
 	<provider>openstack</provider>
-        <!-- A sample REGION level partition -->
+        <!-- A sample region level partition -->
         <property name="region" value="region-x"/>
     </partition>
     <partition id="P3">
-        <!-- A sample ZONE level partition -->
+        <!-- A sample zone level partition -->
 	<provider>ec2</provider>
         <property name="region" value="region-y"/>
         <property name="zone" value="zone-1"/>

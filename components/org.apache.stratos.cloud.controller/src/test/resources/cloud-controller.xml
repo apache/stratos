@@ -49,7 +49,7 @@
         is not necessary [0..1]. But you can use this section to avoid specifying
         same property over and over again. -->
     <iaasProviders>
-        <!--<iaasProvider type="ec2" name="EC2 specific details"> <PROVIDER>aws-ec2</PROVIDER>
+        <!--<iaasProvider type="ec2" name="EC2 specific details"> <provider>aws-ec2</provider>
             <identity svns:secretAlias="elastic.scaler.ec2.identity">cdcd</identity>
             <credential svns:secretAlias="elastic.scaler.ec2.credential">cdccdc</credential>
             <scaleUpOrder>2</scaleUpOrder> <scaleDownOrder>1</scaleDownOrder> <property

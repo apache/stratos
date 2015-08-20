@@ -152,7 +152,7 @@ class TSSLSocket(TSocket.TSocket):
     raise TTransportException(
       type=TTransportException.UNKNOWN,
       message='Could not validate SSL certificate from '
-              'HOST "%s".  Cert=%s' % (self.host, cert))
+              'host "%s".  Cert=%s' % (self.host, cert))
 
 
 class TSSLServerSocket(TSocket.TServerSocket):

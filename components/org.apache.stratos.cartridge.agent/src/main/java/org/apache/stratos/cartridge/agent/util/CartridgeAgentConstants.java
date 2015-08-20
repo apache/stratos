@@ -60,7 +60,7 @@ public class CartridgeAgentConstants implements Serializable {
     public static final String AUTO_COMMIT = "auto.commit";
     public static final String AUTO_CHECKOUT = "auto.checkout";
     public static final String LISTEN_ADDRESS = "listen.address";
-    public static final String PROVIDER = "provider";
+    public static final String PROVIDER = "PROVIDER";
     public static final String INTERNAL = "internal";
     public static final String LB_PRIVATE_IP = "lb.private.ip";
     public static final String LB_PUBLIC_IP = "lb.public.ip";

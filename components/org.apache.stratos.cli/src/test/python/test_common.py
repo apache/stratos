@@ -61,7 +61,7 @@ class TestCommon(unittest.TestCase):
         child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "https://localhost"')
         child.expect ('Please provide the Stratos Controller URL as follows')
-        child.expect ('https://<HOST>:<port>')
+        child.expect ('https://<host>:<port>')
         child.expect (pexpect.EOF)
 
     def test_error_if_context_path_is_provided_in_stratos_url(self):
@@ -69,7 +69,7 @@ class TestCommon(unittest.TestCase):
         child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "https://localhost:1234/somecontext/"')
         child.expect ('Please provide the Stratos Controller URL as follows')
-        child.expect ('https://<HOST>:<port>')
+        child.expect ('https://<host>:<port>')
         child.expect (pexpect.EOF)
 
     def test_error_if_non_https_scheme_is_provided_in_stratos_url(self):
@@ -77,7 +77,7 @@ class TestCommon(unittest.TestCase):
         child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "http://localhost:1234"')
         child.expect ('Please provide the Stratos Controller URL as follows')
-        child.expect ('https://<HOST>:<port>')
+        child.expect ('https://<host>:<port>')
         child.expect (pexpect.EOF)
 
     def test_error_if_invalid_format_is_given_for_stratos_url(self):
@@ -86,7 +86,7 @@ class TestCommon(unittest.TestCase):
         child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided ":://"')
         child.expect ('Please provide the Stratos Controller URL as follows')
-        child.expect ('https://<HOST>:<port>')
+        child.expect ('https://<host>:<port>')
         child.expect (pexpect.EOF)
 
 if __name__ == '__main__':

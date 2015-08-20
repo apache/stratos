@@ -28,7 +28,7 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.Scope;
+import org.apache.stratos.messaging.domain.topology.Scope;
 
 import java.util.Properties;
 
@@ -46,13 +46,13 @@ public class EC2PartitionValidator implements PartitionValidator {
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
         // validate the existence of the region and zone properties.
         try {
-            if (properties.containsKey(Scope.REGION.toString())) {
-                String region = properties.getProperty(Scope.REGION.toString());
+            if (properties.containsKey(Scope.region.toString())) {
+                String region = properties.getProperty(Scope.region.toString());
 
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
-                    String message = "Invalid partition detected, invalid region. [partition-id] " + partition.getId() +
-                            ", [region] " + region;
+                    String message = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
+                            " [region] " + region;
                     log.error(message);
                     throw new InvalidPartitionException(message);
                 }
@@ -63,8 +63,8 @@ public class EC2PartitionValidator implements PartitionValidator {
                 Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
                 updatedIaas.setIaasProvider(updatedIaasProvider);
 
-                if (properties.containsKey(Scope.ZONE.toString())) {
-                    String zone = properties.getProperty(Scope.ZONE.toString());
+                if (properties.containsKey(Scope.zone.toString())) {
+                    String zone = properties.getProperty(Scope.zone.toString());
                     iaas.isValidZone(region, zone);
                     updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
                     updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
@@ -80,6 +80,7 @@ public class EC2PartitionValidator implements PartitionValidator {
             }
         } catch (Exception ex) {
             String message = "Invalid partition detected: [partition-id] " + partition.getId();
+            log.error(message, ex);
             throw new InvalidPartitionException(message, ex);
         }
     }

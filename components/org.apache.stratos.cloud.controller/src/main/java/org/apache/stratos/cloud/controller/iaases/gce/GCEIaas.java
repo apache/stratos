@@ -37,23 +37,23 @@ import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.jclouds.ContextBuilder;
+import org.jclouds.collect.IterableWithMarker;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
+import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.googlecomputeengine.GoogleComputeEngineApi;
-import org.jclouds.googlecomputeengine.compute.options.GoogleComputeEngineTemplateOptions;
-import org.jclouds.googlecomputeengine.domain.AttachDisk;
-import org.jclouds.googlecomputeengine.domain.Disk;
-import org.jclouds.googlecomputeengine.domain.Instance;
-import org.jclouds.googlecomputeengine.domain.Operation;
+import org.jclouds.googlecomputeengine.domain.*;
 import org.jclouds.googlecomputeengine.features.DiskApi;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
-import org.jclouds.googlecomputeengine.options.DiskCreationOptions;
+import org.jclouds.googlecomputeengine.features.RegionApi;
+import org.jclouds.googlecomputeengine.features.ZoneApi;
+import org.jclouds.googlecomputeengine.options.AttachDiskOptions;
+import org.jclouds.googlecomputeengine.options.AttachDiskOptions.DiskType;
 
-import java.net.URI;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,8 +61,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jclouds.util.Predicates2.retry;
 
 public class GCEIaas extends JcloudsIaas {
+
+
     private static final Log log = LogFactory.getLog(GCEIaas.class);
-    public static final int MAX_WAIT_TIME = 60; // seconds
+
+    private static final String PROJECTNAME = "projectName";
 
     public GCEIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
@@ -88,10 +91,10 @@ public class GCEIaas extends JcloudsIaas {
             throw new CloudControllerException(msg);
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Building template for Google Compute Engine IaaS");
-        }
-        TemplateBuilder templateBuilder = iaasInfo.getComputeService().templateBuilder();
+        log.info("gce buildTemplate");
+
+        TemplateBuilder templateBuilder = iaasInfo.getComputeService()
+                .templateBuilder();
 
         // set image id specified
         templateBuilder.imageId(iaasInfo.getImage());
@@ -103,7 +106,7 @@ public class GCEIaas extends JcloudsIaas {
                 if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
                         location.getId().equals(zone)) {
                     templateBuilder.locationId(location.getId());
-                    log.info("zone has been set as " + zone
+                    log.info("ZONE has been set as " + zone
                             + " with id: " + location.getId());
                     break;
                 }
@@ -114,14 +117,14 @@ public class GCEIaas extends JcloudsIaas {
             // set instance type eg: m1.large
             templateBuilder.hardwareId(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE));
         }
+
         // build the Template
         Template template = templateBuilder.build();
 
         if (zone != null) {
             if (!template.getLocation().getId().equals(zone)) {
-                log.warn("couldn't find assignable zone of id :" + zone +
-                        " in the IaaS. Hence using the default location as " +
-                        template.getLocation().getScope().toString() +
+                log.warn("couldn't find assignable ZONE of id :" + zone +
+                        " in the IaaS. Hence using the default location as " + template.getLocation().getScope().toString() +
                         " with the id " + template.getLocation().getId());
             }
         }
@@ -131,11 +134,15 @@ public class GCEIaas extends JcloudsIaas {
         // wish to assign IPs manually, it can be non-blocking.
         // is auto-assign-ip mode or manual-assign-ip mode? - default mode is
         // non-blocking
-        boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo.getProperty("autoAssignIp"));
-        template.getOptions().as(GoogleComputeEngineTemplateOptions.class).blockUntilRunning(blockUntilRunning);
+        boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
+                .getProperty("autoAssignIp"));
+        template.getOptions().as(TemplateOptions.class)
+                .blockUntilRunning(blockUntilRunning);
 
-        // this is required in order to avoid creation of additional security groups by Jclouds.
-        template.getOptions().as(GoogleComputeEngineTemplateOptions.class).inboundPorts(22, 80, 8080, 443, 8243);
+        // this is required in order to avoid creation of additional security
+        // groups by Jclouds.
+        template.getOptions().as(TemplateOptions.class)
+                .inboundPorts(22, 80, 8080, 443, 8243);
 
         if (zone != null) {
             templateBuilder.locationId(zone);
@@ -147,9 +154,8 @@ public class GCEIaas extends JcloudsIaas {
 
         for (String propertyKey : iaasInfo.getProperties().keySet()) {
             if (propertyKey.startsWith(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX)) {
-                keyValuePairTagsMap
-                        .put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
-                                iaasInfo.getProperties().get(propertyKey));
+                keyValuePairTagsMap.put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
+                        iaasInfo.getProperties().get(propertyKey));
                 template.getOptions()
                         .userMetadata(keyValuePairTagsMap);
             }
@@ -162,7 +168,7 @@ public class GCEIaas extends JcloudsIaas {
                 networks.add(ni.getNetworkUuid());
                 log.info("using network interface " + ni.getNetworkUuid());
             }
-            template.getOptions().as(GoogleComputeEngineTemplateOptions.class).networks(networks);
+            template.getOptions().as(TemplateOptions.class).networks(networks);
             log.info("using network interface " + networks);
         }
 
@@ -220,15 +226,25 @@ public class GCEIaas extends JcloudsIaas {
     @Override
     public boolean isValidRegion(String region) throws InvalidRegionException {
         IaasProvider iaasInfo = getIaasProvider();
+
         if (region == null || iaasInfo == null) {
             String msg = "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " + iaasInfo;
             log.error(msg);
             throw new InvalidRegionException(msg);
         }
+
         GoogleComputeEngineApi api = getGCEApi();
-        if (api.regions().get(region) != null) {
-            return true;
+        RegionApi regionApi = api.getRegionApiForProject(iaasInfo.getProperty(PROJECTNAME));
+
+        for (IterableWithMarker<Region> page : regionApi.list()) {
+            for (Region r : page) {
+                if (region.equalsIgnoreCase(r.getName())) {
+                    log.debug("Found a matching region: " + region);
+                    return true;
+                }
+            }
         }
+
         String msg = "Invalid region: " + region + " in the iaas: " + iaasInfo.getType();
         log.error(msg);
         throw new InvalidRegionException(msg);
@@ -239,16 +255,24 @@ public class GCEIaas extends JcloudsIaas {
         IaasProvider iaasInfo = getIaasProvider();
 
         if (zone == null || iaasInfo == null) {
-            String msg = "Zone or IaaSProvider is null. [region] " + region + ", [zone] " + zone + ", [IaaSProvider] "
-                    + iaasInfo;
+            String msg = "Zone or IaaSProvider is null: region: " + region +
+                    " zone: " + zone + " - IaaSProvider: " + iaasInfo;
             log.error(msg);
             throw new InvalidZoneException(msg);
         }
 
         GoogleComputeEngineApi api = getGCEApi();
-        if (api.zones().get(zone) != null) {
-            return true;
+        ZoneApi zoneApi = api.getZoneApiForProject(iaasInfo.getProperty(PROJECTNAME));
+
+        for (IterableWithMarker<Zone> page : zoneApi.list()) {
+            for (Zone z : page) {
+                if (zone.equalsIgnoreCase(z.getName())) {
+                    log.debug("Found a matching zone: " + zone);
+                    return true;
+                }
+            }
         }
+
         String msg = "Invalid zone: " + zone + " in the region: " + region + " and of the iaas: " + iaasInfo.getType();
         log.error(msg);
         throw new InvalidZoneException(msg);
@@ -278,23 +302,19 @@ public class GCEIaas extends JcloudsIaas {
         String diskName = "stratos-disk-" + rand.nextInt(100000);
         DiskApi diskApi = getGCEDiskApi();
         String zone = getZone();
-        log.info("Creating volume: " + diskName + " in zone: " + zone + " of size: " + sizeGB);
-        try {
-            DiskCreationOptions diskCreationOptions = new DiskCreationOptions.Builder().sizeGb(sizeGB).sourceSnapshot
-                    (new URI(snapshotId)).build();
-            Operation oper = diskApi.create(diskName, diskCreationOptions);
-            oper = waitGCEOperationDone(oper);
-            if (!oper.status().equals(Operation.Status.DONE)) {
-                log.error("Failed to create volume: " + diskName + " of size: " + sizeGB +
-                        " in zone: " + zone + " operation: " + oper);
-                return null;
-            }
-            return diskName;
+
+        log.debug("Creating volume: " + diskName + " in zone: " + zone + " of size: " + sizeGB);
+
+        Operation oper = diskApi.createInZone(diskName, sizeGB, zone);
+
+        oper = waitGCEOperationDone(oper);
+        if (oper.getStatus() != Operation.Status.DONE) {
+            log.error("Failed to create volume: " + diskName + " of size: " + sizeGB +
+                    " in zone: " + zone + " operation: " + oper);
+            return null;
         }
-        catch (Exception e) {
-            log.error("Error creating volume", e);
-        }
-        return null;
+
+        return diskName;
     }
 
     @Override
@@ -303,55 +323,64 @@ public class GCEIaas extends JcloudsIaas {
         InstanceApi instApi = getGCEInstanceApi();
         String zone = getZone();
 
-        log.info("Trying to attach volume: " + volumeId + " to instance: " + instanceId +
+        log.debug("Trying to attach volume: " + volumeId + " to instance: " + instanceId +
                 " in zone: " + zone + " at devicename: " + deviceName);
 
-        Disk disk = diskApi.get(volumeId);
+        Disk disk = diskApi.getInZone(zone, volumeId);
         if (disk == null) {
             log.error("Failed to get volume: " + volumeId + " in zone: " + zone);
             return null;
         }
+
         log.debug("Found volumeId: " + volumeId + " volume: " + disk);
-        try {
-            Operation oper =
-                    instApi.attachDisk(instanceId, AttachDisk.create(AttachDisk.Type.PERSISTENT, AttachDisk.Mode
-                            .READ_WRITE, disk.selfLink(), deviceName, true, null, false, null, null));
-            oper = waitGCEOperationDone(oper);
-            if (!oper.status().equals(Operation.Status.DONE)) {
-                log.error("Failed to attach volume: " + volumeId + " to instance: " + instanceId +
-                        " in zone: " + zone + " at device: " + deviceName + " operation: " + oper);
-                return null;
-            }
-            return volumeId;
+
+        Operation oper = instApi.attachDiskInZone(zone, instanceId,
+                new AttachDiskOptions().type(DiskType.PERSISTENT)
+                        .source(disk.getSelfLink())
+                        .mode(AttachDiskOptions.DiskMode.READ_WRITE)
+                        .deviceName(deviceName));
+        oper = waitGCEOperationDone(oper);
+        if (oper.getStatus() != Operation.Status.DONE) {
+            log.error("Failed to attach volume: " + volumeId + " to instance: " + instanceId +
+                    " in zone: " + zone + " at device: " + deviceName + " operation: " + oper);
+            return null;
         }
-        catch (Exception e) {
-            log.error("Error attaching volume", e);
-        }
-        return null;
+
+        return volumeId;
     }
 
     @Override
     public void detachVolume(String instanceId, String volumeId) {
         InstanceApi instApi = getGCEInstanceApi();
         String zone = getZone();
-        Instance inst = instApi.get(instanceId);
-        log.info("Trying to detach volume: " + volumeId + " from instance: " + instanceId + " in zone: " + zone);
+        Instance inst = instApi.getInZone(zone, instanceId);
+
+        log.debug("Trying to detach volume: " + volumeId + " from instance: " + instanceId +
+                " " + inst + " in zone: " + zone);
+
         if (inst == null) {
             log.error("Failed to find instance: " + instanceId + " in zone: " + zone);
             return;
         }
-        for (Instance.AttachedDisk disk : inst.disks()) {
-            if (disk.deviceName().equals(volumeId)) {
-                log.info("Found disk to be detached. Source: " + disk.source() + " devicename: " + disk.deviceName());
-                Operation oper = instApi.detachDisk(instanceId, disk.deviceName());
+
+        for (Instance.AttachedDisk disk : inst.getDisks()) {
+            Instance.PersistentAttachedDisk persistentDisk = (Instance.PersistentAttachedDisk) disk;
+
+            log.debug("Found disk - src: " + persistentDisk.getSourceDiskName() +
+                    " devicename: " + persistentDisk.getDeviceName());
+
+            if (persistentDisk.getSourceDiskName().equals(volumeId)) {
+                Operation oper = instApi.detachDiskInZone(zone, instanceId, persistentDisk.getDeviceName().get());
                 oper = waitGCEOperationDone(oper);
-                if (!oper.status().equals(Operation.Status.DONE)) {
+                if (oper.getStatus() != Operation.Status.DONE) {
                     log.error("Failed to detach volume: " + volumeId + " to instance: " + instanceId +
-                            " in zone: " + zone + " at device: " + disk.deviceName() + " result operation: " + oper);
+                            " in zone: " + zone + " at device: " + persistentDisk.getDeviceName() +
+                            " result operation: " + oper);
                 }
                 return;
             }
         }
+
         log.error("Cannot find volume: " + volumeId + " in instance: " + instanceId);
     }
 
@@ -359,11 +388,13 @@ public class GCEIaas extends JcloudsIaas {
     public void deleteVolume(String volumeId) {
         DiskApi diskApi = getGCEDiskApi();
         String zone = getZone();
-        log.info("Deleting volume: " + volumeId + " in zone: " + zone);
-        Operation oper = diskApi.delete(volumeId);
+
+        log.debug("Deleting volume: " + volumeId + " in zone: " + zone);
+
+        Operation oper = diskApi.deleteInZone(zone, volumeId);
 
         oper = waitGCEOperationDone(oper);
-        if (!oper.status().equals(Operation.Status.DONE)) {
+        if (oper.getStatus() != Operation.Status.DONE) {
             log.error("Failed to delete volume: " + volumeId + " in zone: " + zone +
                     " operation: " + oper);
         }
@@ -388,14 +419,19 @@ public class GCEIaas extends JcloudsIaas {
     }
 
     private DiskApi getGCEDiskApi() {
-        return getGCEApi().disksInZone(getZone());
+        IaasProvider iaasInfo = getIaasProvider();
+        String projectName = iaasInfo.getProperty(PROJECTNAME);
+        return getGCEApi().getDiskApiForProject(projectName);
     }
 
     private InstanceApi getGCEInstanceApi() {
-        return getGCEApi().instancesInZone(getZone());
+        IaasProvider iaasInfo = getIaasProvider();
+        String projectName = iaasInfo.getProperty(PROJECTNAME);
+        return getGCEApi().getInstanceApiForProject(projectName);
     }
 
     private Operation waitGCEOperationDone(Operation operation) {
+        int maxWaitTime = 15; // 15 seconds
         IaasProvider iaasInfo = getIaasProvider();
         Injector injector = ContextBuilder.newBuilder(iaasInfo.getProvider())
                 .credentials(iaasInfo.getIdentity(), iaasInfo.getCredential())
@@ -404,8 +440,9 @@ public class GCEIaas extends JcloudsIaas {
                 injector.getInstance(Key.get(new TypeLiteral<Predicate<AtomicReference<Operation>>>() {
                 }, Names.named("zone")));
         AtomicReference<Operation> operationReference = Atomics.newReference(operation);
-        retry(zoneOperationDonePredicate, MAX_WAIT_TIME, 1, SECONDS).apply(operationReference);
+        retry(zoneOperationDonePredicate, maxWaitTime, 1, SECONDS).apply(operationReference);
 
         return operationReference.get();
     }
 }
+

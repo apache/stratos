@@ -57,7 +57,7 @@
     <deployer extension=".jar" directory="transports"
               class="org.apache.axis2.deployment.TransportDeployer"/>
 
-    <!-- Following parameter will set the HOST name for the epr-->
+    <!-- Following parameter will set the host name for the epr-->
     <!--<parameter name="hostname" locked="true">myhost.com</parameter>-->
 
     <!-- ================================================= -->

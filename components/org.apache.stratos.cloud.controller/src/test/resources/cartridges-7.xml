@@ -27,7 +27,7 @@
     <cartridge type="php" version="5.1">
         <!-- Display name of this cartridge -->
         <displayName>PHP</displayName>
-        <!-- A cartridge element should add a reference to an existing IaaS PROVIDER (specified
+        <!-- A cartridge element should add a reference to an existing IaaS provider (specified
              in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
              Provider (which should have a unique "type" attribute. -->
         <iaasProvider type="openstack">
@@ -47,7 +47,7 @@
 <cartridge type="php" version="5.1">
     <!-- Display name of this cartridge -->
     <displayName>PHP</displayName>
-    <!-- A cartridge element should add a reference to an existing IaaS PROVIDER (specified
+    <!-- A cartridge element should add a reference to an existing IaaS provider (specified
          in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
          Provider (which should have a unique "type" attribute. -->
     <iaasProvider type="openstack">

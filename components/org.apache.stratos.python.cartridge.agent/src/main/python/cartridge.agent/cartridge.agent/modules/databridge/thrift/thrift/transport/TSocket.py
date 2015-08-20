@@ -50,10 +50,10 @@ class TSocket(TSocketBase):
   def __init__(self, host='localhost', port=9090, unix_socket=None):
     """Initialize a TSocket
 
-    @param host(str)  The HOST to connect to.
+    @param host(str)  The host to connect to.
     @param port(int)  The (TCP) port to connect to.
     @param unix_socket(str)  The filename of a unix socket to connect to.
-                             (HOST and port will be ignored.)
+                             (host and port will be ignored.)
     """
     self.host = host
     self.port = port

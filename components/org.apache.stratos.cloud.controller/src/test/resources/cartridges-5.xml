@@ -26,7 +26,7 @@
     <!-- You can have 1..n cartridge elements. -->
     <cartridge type="php">
 
-        <!-- A cartridge element should add a reference to an existing IaaS PROVIDER (specified
+        <!-- A cartridge element should add a reference to an existing IaaS provider (specified
              in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
              Provider (which should have a unique "type" attribute. -->
         <iaasProvider type="openstack">

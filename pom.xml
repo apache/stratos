@@ -552,7 +552,8 @@
         <carbon.platform.package.import.version.range>[4.2.0, 5.0.0)</carbon.platform.package.import.version.range>
         <carbon.platform.package.export.version>4.2.0</carbon.platform.package.export.version>
         <axis2.osgi.version>1.6.1.wso2v10</axis2.osgi.version>
-        <jclouds.version>1.9.1</jclouds.version>
+        <jclouds.version>1.8.1</jclouds.version>
+        <project.jclouds.stratos.version>1.8.1-stratosv1</project.jclouds.stratos.version>
         <kubernetes.api.version>2.2.16</kubernetes.api.version>
         <store.version>1.0.1</store.version>
     </properties>

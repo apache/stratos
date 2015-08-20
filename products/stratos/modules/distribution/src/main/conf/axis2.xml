@@ -303,19 +303,19 @@
     <!--<transportReceiver name="jms" class="org.apache.axis2.transport.jms.JMSListener">
         <parameter name="myTopicConnectionFactory">
         	<parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
-        	<parameter name="java.naming.PROVIDER.url">tcp://localhost:61616</parameter>
+        	<parameter name="java.naming.provider.url">tcp://localhost:61616</parameter>
         	<parameter name="transport.jms.ConnectionFactoryJNDIName">TopicConnectionFactory</parameter>
         </parameter>
 
         <parameter name="myQueueConnectionFactory">
         	<parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
-        	<parameter name="java.naming.PROVIDER.url">tcp://localhost:61616</parameter>
+        	<parameter name="java.naming.provider.url">tcp://localhost:61616</parameter>
         	<parameter name="transport.jms.ConnectionFactoryJNDIName">QueueConnectionFactory</parameter>
         </parameter>
 
         <parameter name="default">
         	<parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
-        	<parameter name="java.naming.PROVIDER.url">tcp://localhost:61616</parameter>
+        	<parameter name="java.naming.provider.url">tcp://localhost:61616</parameter>
         	<parameter name="transport.jms.ConnectionFactoryJNDIName">QueueConnectionFactory</parameter>
         </parameter>
     </transportReceiver>-->
@@ -324,21 +324,21 @@
     <!--transportReceiver name="jms" class="org.apache.axis2.transport.jms.JMSListener">
         <parameter name="myTopicConnectionFactory" locked="false">
             <parameter name="java.naming.factory.initial" locked="false">org.apache.qpid.jndi.PropertiesFileInitialContextFactory</parameter>
-            <parameter name="java.naming.PROVIDER.url" locked="false">repository/conf/jndi.properties</parameter>
+            <parameter name="java.naming.provider.url" locked="false">repository/conf/jndi.properties</parameter>
             <parameter name="transport.jms.ConnectionFactoryJNDIName" locked="false">TopicConnectionFactory</parameter>
             <parameter name="transport.jms.ConnectionFactoryType" locked="false">topic</parameter>
         </parameter>
 
         <parameter name="myQueueConnectionFactory" locked="false">
             <parameter name="java.naming.factory.initial" locked="false">org.apache.qpid.jndi.PropertiesFileInitialContextFactory</parameter>
-            <parameter name="java.naming.PROVIDER.url" locked="false">repository/conf/jndi.properties</parameter>
+            <parameter name="java.naming.provider.url" locked="false">repository/conf/jndi.properties</parameter>
             <parameter name="transport.jms.ConnectionFactoryJNDIName" locked="false">QueueConnectionFactory</parameter>
             <parameter name="transport.jms.ConnectionFactoryType" locked="false">queue</parameter>
         </parameter>
 
         <parameter name="default" locked="false">
             <parameter name="java.naming.factory.initial" locked="false">org.apache.qpid.jndi.PropertiesFileInitialContextFactory</parameter>
-            <parameter name="java.naming.PROVIDER.url" locked="false">repository/conf/jndi.properties</parameter>
+            <parameter name="java.naming.provider.url" locked="false">repository/conf/jndi.properties</parameter>
             <parameter name="transport.jms.ConnectionFactoryJNDIName" locked="false">QueueConnectionFactory</parameter>
             <parameter name="transport.jms.ConnectionFactoryType" locked="false">queue</parameter>
         </parameter>
@@ -348,21 +348,21 @@
     <!--transportReceiver name="jms" class="org.apache.axis2.transport.jms.JMSListener">
         <parameter name="myTopicConnectionFactory" locked="false">
            <parameter name="java.naming.factory.initial" locked="false">org.wso2.andes.jndi.PropertiesFileInitialContextFactory</parameter>
-            <parameter name="java.naming.PROVIDER.url" locked="false">repository/conf/jndi.properties</parameter>
+            <parameter name="java.naming.provider.url" locked="false">repository/conf/jndi.properties</parameter>
             <parameter name="transport.jms.ConnectionFactoryJNDIName" locked="false">TopicConnectionFactory</parameter>
             <parameter name="transport.jms.ConnectionFactoryType" locked="false">topic</parameter>
         </parameter>
 
         <parameter name="myQueueConnectionFactory" locked="false">
             <parameter name="java.naming.factory.initial" locked="false">org.wso2.andes.jndi.PropertiesFileInitialContextFactory</parameter>
-            <parameter name="java.naming.PROVIDER.url" locked="false">repository/conf/jndi.properties</parameter>
+            <parameter name="java.naming.provider.url" locked="false">repository/conf/jndi.properties</parameter>
             <parameter name="transport.jms.ConnectionFactoryJNDIName" locked="false">QueueConnectionFactory</parameter>
            <parameter name="transport.jms.ConnectionFactoryType" locked="false">queue</parameter>
         </parameter>
 
         <parameter name="default" locked="false">
             <parameter name="java.naming.factory.initial" locked="false">org.wso2.andes.jndi.PropertiesFileInitialContextFactory</parameter>
-            <parameter name="java.naming.PROVIDER.url" locked="false">repository/conf/jndi.properties</parameter>
+            <parameter name="java.naming.provider.url" locked="false">repository/conf/jndi.properties</parameter>
             <parameter name="transport.jms.ConnectionFactoryJNDIName" locked="false">QueueConnectionFactory</parameter>
             <parameter name="transport.jms.ConnectionFactoryType" locked="false">queue</parameter>
         </parameter>
@@ -403,7 +403,7 @@
         <parameter name="mail.smtp.from">wso2demomail@gmail.com</parameter>
         <parameter name="mail.smtp.user">wso2demomail</parameter>
         <parameter name="mail.smtp.password">mailpassword</parameter>
-        <parameter name="mail.smtp.HOST">smtp.gmail.com</parameter>
+        <parameter name="mail.smtp.host">smtp.gmail.com</parameter>
 
         <parameter name="mail.smtp.port">587</parameter>
         <parameter name="mail.smtp.starttls.enable">true</parameter>
@@ -641,7 +641,7 @@
         <!--
             <parameter name="mcastBindAddress">127.0.0.1</parameter>
         -->
-        <!-- The HOST name or IP address of this member -->
+        <!-- The host name or IP address of this member -->
 
         <parameter name="localMemberHost">127.0.0.1</parameter>
 

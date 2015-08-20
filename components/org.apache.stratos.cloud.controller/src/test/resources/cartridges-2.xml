@@ -26,7 +26,7 @@
          specified under iaasProvider child elements of cartridge element. -->
     <property name="ss" value="slsls"/>
 
-    <!-- A cartridge element should add a reference to an existing IaaS PROVIDER (specified
+    <!-- A cartridge element should add a reference to an existing IaaS provider (specified
          in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
          Provider (which should have a unique "type" attribute. -->
     <iaasProvider type="openstack">
