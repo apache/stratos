@@ -57,6 +57,8 @@ if (!elements) {
         }else if(elements.action == 'deploy'){
             applicationHbs = 'applicationDeploy';
             applicationPolicyData = util.RESTCalls.getApplicationPolicies();
+        }else if(elements.action == 'signup'){
+            applicationHbs = 'applicationSignup';
         }
 
     }else{

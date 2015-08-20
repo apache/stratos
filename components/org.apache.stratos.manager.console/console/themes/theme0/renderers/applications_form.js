@@ -292,6 +292,66 @@ var render = function (theme, data, meta, require) {
                 });
             break;
 
+            case "applicationSignup":
+                theme('index', {
+                    page_meta: [
+                        {
+                            partial: 'index_title',
+                            context: {
+                                page_title: 'Apache Stratos - Application Managment',
+                                page_description: 'Apache Stratos - Application Managment'
+                            }
+                        }
+                    ],
+                    header: [
+                        {
+                            partial: 'index_header',
+                            context: {
+                            }
+                        }
+                    ],
+                    sub_header: [
+                        {
+                            partial: 'index_sub_header',
+                            context: {
+                                breadcrumbPathLevelOne: data.breadcrumbPathLevelOne,
+                                breadcrumbPathLevelTwo: data.breadcrumbPathLevelTwo
+                            }
+                        }
+                    ],
+                    left_menu: [
+                        {
+                            partial: 'index_left_menu',
+                            context: {
+                                left_menu: data.left_menu
+                            }
+                        }
+                    ],
+                    right_menu_help: [
+                        {
+                            partial: 'index_right_menu_help',
+                            context: {
+
+                            }
+                        }
+                    ],
+                    content: [
+                        {
+                            partial: 'applications_signup',
+                            context: {
+                                applicationName: data.applicationName,
+                                applicationAlias: data.applicationAlias,
+                                formContext: data.breadcrumbPathLevelTwo,
+                                appName: data.appName,
+                                applicationJSON: data.applicationJSON,
+                                formTitle: data.formTitle
+                            }
+                        }
+
+                    ]
+                });
+                break;
+
             default:
                 theme('index', {
                     page_meta: [

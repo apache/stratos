@@ -123,6 +123,14 @@
                                                 id="details_list_{{applicationId}}"
                                                 data-url="{{url ""}}/applications/{{applicationId}}/" > View
                                         </button>
+                                        {{#if multiTenant}}
+                                            {{#unless signUpsExist}}
+                                                <button class="btn btn-warning btn-lg hover-signup" type="button"
+                                                        id="signup_{{applicationId}}"
+                                                        data-url="{{url ""}}/applications/{{applicationId}}/signup" > Signup
+                                                </button>
+                                            {{/unless}}
+                                        {{/if}}
                                     </div>
                                     <div class="bottom-bar-wrapper">
                                         <div class="bottom-bar">
@@ -132,7 +140,14 @@
                                                     id="details_{{applicationId}}"
                                                     data-url="{{url ""}}/applications/{{applicationId}}/" > View
                                             </button>
-
+                                            {{#if multiTenant}}
+                                                {{#unless signUpsExist}}
+                                                    <button class="btn btn-warning btn-lg hover-signup" type="button"
+                                                            id="signup_{{applicationId}}"
+                                                            data-url="{{url ""}}/applications/{{applicationId}}/signup" > Signup
+                                                    </button>
+                                                {{/unless}}
+                                            {{/if}}
                                         </div>
                                 {{else}}
                                     <div class="list-button" style="display: none;">
@@ -324,6 +339,10 @@
             });
 
             $('.general-table').on('click', '.hover-details', function (event) {
+                window.location = $(this).attr("data-url");
+            });
+
+            $('.general-table').on('click', '.hover-signup', function (event) {
                 window.location = $(this).attr("data-url");
             });
 
