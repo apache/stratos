@@ -22,6 +22,7 @@
 <thriftClientConfiguration>
     <config>
         <name>cep</name>
+        <statsPublisherEnabled>true</statsPublisherEnabled>
         <username>admin</username>
         <password>admin</password>
         <ip>localhost</ip>
@@ -29,6 +30,7 @@
     </config>
     <config>
         <name>das</name>
+        <statsPublisherEnabled>true</statsPublisherEnabled>
         <username>admin</username>
         <password>admin</password>
         <ip>localhost</ip>

@@ -37,13 +37,12 @@ public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher 
 
     private static final Log log = LogFactory.getLog(WSO2CEPHealthStatisticsPublisher.class);
 
-    private static final String STATS_PUBLISHER_ENABLED = "cep.stats.publisher.enabled";
     private static final String DATA_STREAM_NAME = "cartridge_agent_health_stats";
     private static final String VERSION = "1.0.0";
     private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
     public WSO2CEPHealthStatisticsPublisher() {
-        super(createStreamDefinition(), STATS_PUBLISHER_ENABLED, CEP_THRIFT_CLIENT_NAME);
+        super(createStreamDefinition(), CEP_THRIFT_CLIENT_NAME);
     }
 
     private static StreamDefinition createStreamDefinition() {
