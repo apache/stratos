@@ -29,7 +29,10 @@ import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
-import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
+import org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterException;
+import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException;
+import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.Property;
@@ -39,9 +42,8 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Properties;
 
 
@@ -59,8 +61,7 @@ public class CloudControllerUtil {
             }
 
             Constructor<?> c = Class.forName(iaasProvider.getClassName()).getConstructor(IaasProvider.class);
-            Iaas iaas = (Iaas) c.newInstance(iaasProvider);
-            return iaas;
+            return (Iaas) c.newInstance(iaasProvider);
         } catch (Exception e) {
             String msg = "Class [" + iaasProvider.getClassName()
                     + "] which represents the iaas of type: ["
@@ -160,14 +161,12 @@ public class CloudControllerUtil {
 
     public static String getProperty(org.apache.stratos.common.Properties properties, String key, String defaultValue) {
         Properties props = toJavaUtilProperties(properties);
-
         return getProperty(props, key, defaultValue);
     }
 
     public static String getProperty(Properties properties, String key, String defaultValue) {
         if (key != null && properties != null) {
-            for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext(); ) {
-                Entry<Object, Object> type = iterator.next();
+            for (Map.Entry<Object, Object> type : properties.entrySet()) {
                 String propName = type.getKey().toString();
                 String propValue = type.getValue().toString();
                 if (key.equals(propName)) {
@@ -244,28 +243,18 @@ public class CloudControllerUtil {
     }
 
 
-    public static void handleException(String msg, Exception e) {
-        log.error(msg, e);
-        throw new CloudControllerException(msg, e);
-    }
-
-    public static void handleException(String msg) {
-        log.error(msg);
-        throw new CloudControllerException(msg);
-    }
-
     public static String getPartitionIds(Partition[] partitions) {
         StringBuilder str = new StringBuilder("");
         for (Partition partition : partitions) {
-            str.append(partition.getUuid() + ", ");
+            str.append(partition.getUuid()).append(", ");
         }
 
         String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length() - 2);
         return "[" + partitionStr + "]";
     }
 
-    public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
-        CloudControllerContext context = CloudControllerContext.getInstance();
+    public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster)
+            throws InvalidKubernetesClusterException {
 
         if (kubernetesCluster == null) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster can not be null");
@@ -306,7 +295,8 @@ public class CloudControllerUtil {
                 for (KubernetesHost kubernetesHost : kubernetesCluster.getKubernetesHosts()) {
                     if (hostIds.contains(kubernetesHost.getHostId())) {
                         throw new InvalidKubernetesClusterException(
-                                String.format("Kubernetes host [id] %s already defined in the request", kubernetesHost.getHostId()));
+                                String.format("Kubernetes host [id] %s already defined in the request",
+                                        kubernetesHost.getHostId()));
                     }
 
                     hostIds.add(kubernetesHost.getHostId());
@@ -352,7 +342,8 @@ public class CloudControllerUtil {
         }
     }
 
-    public static void validateKubernetesMaster(KubernetesMaster kubernetesMaster) throws InvalidKubernetesMasterException {
+    public static void validateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws InvalidKubernetesMasterException {
         try {
             validateKubernetesHost(kubernetesMaster);
         } catch (InvalidKubernetesHostException e) {

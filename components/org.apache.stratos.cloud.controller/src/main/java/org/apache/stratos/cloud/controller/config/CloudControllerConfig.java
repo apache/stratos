@@ -19,8 +19,6 @@
 
 package org.apache.stratos.cloud.controller.config;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.DataPublisherConfig;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.TopologyConfig;
@@ -32,8 +30,6 @@ import java.util.List;
  * the configuration in this singleton class to be used in the runtime.
  */
 public class CloudControllerConfig {
-
-    private static final Log log = LogFactory.getLog(CloudControllerConfig.class);
 
     private static volatile CloudControllerConfig instance;
 
