@@ -147,20 +147,21 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                 new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                     }
                 }
-
-                Application application = ApplicationHolder.getApplications().getApplication(appId);
-                if (application != null) {
-                    List<String> defaultNetworkPartitions = getDefaultNetworkPartitions(application);
-                    //Checking for whether minimum application instances are there.
-                    if (defaultNetworkPartitions != null) {
-                        checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
-                    }
+                //When the application is getting un-deployed, need to avoid
+                // checking the minimum count sanctification
+                if (!isTerminating()) {
+                    Application application = ApplicationHolder.getApplications().getApplication(appId);
+                    if (application != null) {
+                        List<String> defaultNetworkPartitions = getDefaultNetworkPartitions(application);
+                        //Checking for whether minimum application instances are there.
+                        if (defaultNetworkPartitions != null) {
+                            checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
+                        }
 
                     /*//Checking for whether any application instances need to be terminated.
                     checkForApplicationInstanceTermination(application, defaultNetworkPartitions);*/
+                    }
                 }
-
-
             }
         };
         executorService.execute(monitoringRunnable);
