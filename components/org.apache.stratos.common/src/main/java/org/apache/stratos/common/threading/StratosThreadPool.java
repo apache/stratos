@@ -51,9 +51,19 @@ public class StratosThreadPool {
             synchronized (executorServiceMapLock) {
                 if (executorService == null) {
                     final BlockingQueue<Runnable> queue = new ArrayBlockingQueue(threadPoolSize);
-                    executorService =new ThreadPoolExecutor(threadPoolSize, 1000,
+                    ThreadPoolExecutor threadPool=new ThreadPoolExecutor(threadPoolSize, 1000,
                             0L, TimeUnit.MILLISECONDS,
                             queue);// Executors.newFixedThreadPool(threadPoolSize);
+                    threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            try {
+                                executor.getQueue().put(r);
+                            } catch (InterruptedException e) {
+                                log.error("Failed to add the rejected jobs to executor service blocking queue",e);
+                            }
+                        }
+                    });
+                    executorService=threadPool;
                     executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
                 }
