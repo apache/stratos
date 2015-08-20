@@ -50,21 +50,19 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
      * is parsed and assigned into ip,port,username and password fields
      *
      * @param streamDefinition      Thrift Event Stream Definition
-     * @param statsPublisherEnabled Whether thrift statistics publisher is enabled
      * @param thriftClientName      Thrift Client Name
      */
-    public ThriftStatisticsPublisher(StreamDefinition streamDefinition, String statsPublisherEnabled,
-                                     String thriftClientName) {
+    public ThriftStatisticsPublisher(StreamDefinition streamDefinition, String thriftClientName) {
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
         ThriftClientInfo thriftClientInfo = thriftClientConfig.getThriftClientInfo(thriftClientName);
 
         this.streamDefinition = streamDefinition;
+        this.enabled = thriftClientInfo.isStatsPublisherEnabled();
         this.ip = thriftClientInfo.getIp();
         this.port = thriftClientInfo.getPort();
         this.username = thriftClientInfo.getUsername();
         this.password = thriftClientInfo.getPassword();
 
-        enabled = Boolean.getBoolean(statsPublisherEnabled);
         if (enabled) {
             init();
         }

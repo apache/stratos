@@ -47,11 +47,13 @@ public class ThriftClientConfigParserTest extends TestCase {
         ThriftClientInfo dasThriftClientInfo = thriftClientConfig.getThriftClientInfo(
                 ThriftClientConfig.DAS_THRIFT_CLIENT_NAME);
 
+        assertEquals("CEP Stats Publisher not enabled",true,cepThriftClientInfo.isStatsPublisherEnabled());
         assertEquals("Incorrect Username", "admin", cepThriftClientInfo.getUsername());
         assertEquals("Incorrect Password", "1234", cepThriftClientInfo.getPassword());
         assertEquals("Incorrect IP", "192.168.10.10", cepThriftClientInfo.getIp());
         assertEquals("Incorrect Port", "9300", cepThriftClientInfo.getPort());
 
+        assertEquals("DAS Stats Publisher not enabled",true,dasThriftClientInfo.isStatsPublisherEnabled());
         assertEquals("Incorrect Username", "admin1", dasThriftClientInfo.getUsername());
         assertEquals("Incorrect Password", "12345", dasThriftClientInfo.getPassword());
         assertEquals("Incorrect IP", "192.168.10.11", dasThriftClientInfo.getIp());
