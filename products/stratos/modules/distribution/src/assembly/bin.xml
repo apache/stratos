@@ -203,7 +203,7 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry/</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
             <excludes>
                 <exclude>**/identity/**</exclude>
                 <!-- new version of mysql.sql and db2.sql is coming from WSO2-CARBON-PATCH-4.2.0-0001 patch. So excluding them-->
@@ -223,7 +223,7 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
             <includes>
                 <include>**/**.sql</include>
             </includes>
