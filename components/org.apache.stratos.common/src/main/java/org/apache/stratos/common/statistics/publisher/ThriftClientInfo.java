@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.common.statistics.publisher.wso2.cep;
+package org.apache.stratos.common.statistics.publisher;
 
 /**
  * Thrift Client Info

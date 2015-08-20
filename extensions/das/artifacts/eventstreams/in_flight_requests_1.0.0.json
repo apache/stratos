@@ -1,0 +1,28 @@
+{
+  "name": "in_flight_requests",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "time_stamp",
+      "type": "LONG"
+    },
+    {
+      "name": "cluster_id",
+      "type": "STRING"
+    },
+    {
+      "name": "cluster_instance_id",
+      "type": "STRING"
+    },
+    {
+      "name": "network_partition_id",
+      "type": "STRING"
+    },
+    {
+      "name": "in_flight_request_count",
+      "type": "DOUBLE"
+    }
+  ]
+}
