@@ -8,11 +8,11 @@
                 "alias": "my-group6-group-startup-order-test",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
-                "deploymentPolicy": "deployment-policy-group-startup-order-test",
                 "groups": [
                     {
                         "name": "group7-group-startup-order-test",
                         "alias": "my-group7-group-startup-order-test",
+                        "deploymentPolicy": "deployment-policy-group-startup-order-test",
                         "groupMinInstances": 1,
                         "groupMaxInstances": 1,
                         "cartridges": [
@@ -47,38 +47,45 @@
                                 }
                             }
                         ]
-                    }
-                ],
-                "cartridges": [
-                    {
-                        "type": "tomcat2-group-startup-order-test",
-                        "cartridgeMin": 1,
-                        "cartridgeMax": 2,
-                        "subscribableInfo": {
-                            "alias": "my-group-tom2-tomcat2-group-startup-order-test",
-                            "autoscalingPolicy": "autoscaling-policy-group-startup-order-test",
-                            "artifactRepository": {
-                                "privateRepo": false,
-                                "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
-                                "repoUsername": "",
-                                "repoPassword": ""
-                            }
-                        }
                     },
                     {
-                        "type": "tomcat3-group-startup-order-test",
-                        "cartridgeMin": 1,
-                        "cartridgeMax": 2,
-                        "subscribableInfo": {
-                            "alias": "my-group-tom2-tomcat3-group-startup-order-test",
-                            "autoscalingPolicy": "autoscaling-policy-group-startup-order-test",
-                            "artifactRepository": {
-                                "privateRepo": false,
-                                "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
-                                "repoUsername": "",
-                                "repoPassword": ""
+                        "name": "group-tom2-group-startup-order-test",
+                        "alias": "my-group6-group-tom2-group-startup-order-test",
+                        "deploymentPolicy": "deployment-policy-group-startup-order-test",
+                        "groupMinInstances": 1,
+                        "groupMaxInstances": 1,
+                        "cartridges": [
+                            {
+                                "type": "tomcat2-group-startup-order-test",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "my-group-tom2-tomcat2-group-startup-order-test",
+                                    "autoscalingPolicy": "autoscaling-policy-group-startup-order-test",
+                                    "artifactRepository": {
+                                        "privateRepo": false,
+                                        "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
+                                        "repoUsername": "",
+                                        "repoPassword": ""
+                                    }
+                                }
+                            },
+                            {
+                                "type": "tomcat3-group-startup-order-test",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "my-group-tom2-tomcat3-group-startup-order-test",
+                                    "autoscalingPolicy": "autoscaling-policy-group-startup-order-test",
+                                    "artifactRepository": {
+                                        "privateRepo": false,
+                                        "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
+                                        "repoUsername": "",
+                                        "repoPassword": ""
+                                    }
+                                }
                             }
-                        }
+                        ]
                     }
                 ]
             },
@@ -120,6 +127,21 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "my-tomcat2-group8-group-startup-order-test",
+                            "autoscalingPolicy": "autoscaling-policy-group-startup-order-test",
+                            "artifactRepository": {
+                                "privateRepo": false,
+                                "repoUrl": "https://github.com/imesh/stratos-tomcat2-applications.git",
+                                "repoUsername": "",
+                                "repoPassword": ""
+                            }
+                        }
+                    },
+                    {
+                        "type": "tomcat-group-startup-order-test",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "my-tomcat-group8-group-startup-order-test",
                             "autoscalingPolicy": "autoscaling-policy-group-startup-order-test",
                             "artifactRepository": {
                                 "privateRepo": false,

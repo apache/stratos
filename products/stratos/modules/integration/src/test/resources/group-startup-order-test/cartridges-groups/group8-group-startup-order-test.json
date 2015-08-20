@@ -9,7 +9,7 @@
         }
     ],
     "cartridges": [
-        "tomcat2-group-startup-order-test"
+        "tomcat2-group-startup-order-test","tomcat-group-startup-order-test"
     ],
     "dependencies": {
         "terminationBehaviour": "terminate-all"
