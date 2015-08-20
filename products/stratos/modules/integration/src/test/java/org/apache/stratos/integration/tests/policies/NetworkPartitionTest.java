@@ -122,7 +122,7 @@ public class NetworkPartitionTest extends StratosTestServerManager {
             List<NetworkPartitionBean> cartridgeList = (List<NetworkPartitionBean>) restClient.
                     listEntity(RestConstants.NETWORK_PARTITIONS,
                             listType, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(cartridgeList.size(), 2);
+            assertTrue(cartridgeList.size() >= 2);
 
             NetworkPartitionBean bean1 = null;
             for (NetworkPartitionBean networkPartitionBean : cartridgeList) {

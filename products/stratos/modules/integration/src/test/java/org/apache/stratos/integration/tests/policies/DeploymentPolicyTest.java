@@ -212,7 +212,7 @@ public class DeploymentPolicyTest extends StratosTestServerManager {
             List<DeploymentPolicyBean> cartridgeList = (List<DeploymentPolicyBean>) restClient.
                     listEntity(RestConstants.DEPLOYMENT_POLICIES,
                             listType, RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertEquals(cartridgeList.size(), 2);
+            assertTrue(cartridgeList.size() >= 2);
 
             DeploymentPolicyBean bean1 = null;
             for (DeploymentPolicyBean deploymentPolicyBean : cartridgeList) {

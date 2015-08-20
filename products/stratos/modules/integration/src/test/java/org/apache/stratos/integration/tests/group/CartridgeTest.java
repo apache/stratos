@@ -154,7 +154,7 @@ public class CartridgeTest extends StratosTestServerManager {
 
             List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(RestConstants.CARTRIDGES,
                     listType, RestConstants.CARTRIDGES_NAME);
-            assertEquals(cartridgeList.size(), 2);
+            assertTrue(cartridgeList.size() >= 2);
 
             CartridgeBean bean1 = null;
             for (CartridgeBean cartridgeBean : cartridgeList) {

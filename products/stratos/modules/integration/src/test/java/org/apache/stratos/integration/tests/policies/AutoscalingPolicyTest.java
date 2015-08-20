@@ -120,7 +120,7 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
             List<AutoscalePolicyBean> autoscalingPolicyList = (List<AutoscalePolicyBean>) restClient.
                     listEntity(RestConstants.AUTOSCALING_POLICIES,
                             listType, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(autoscalingPolicyList.size(), 2);
+            assertTrue(autoscalingPolicyList.size() >= 2);
 
             AutoscalePolicyBean bean1 = null;
             for (AutoscalePolicyBean autoscalePolicyBean : autoscalingPolicyList) {

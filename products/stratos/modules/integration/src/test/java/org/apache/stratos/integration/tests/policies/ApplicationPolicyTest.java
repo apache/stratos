@@ -168,7 +168,7 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             List<ApplicationPolicyBean> applicationPolicyList = (List<ApplicationPolicyBean>) restClient.
                     listEntity(RestConstants.APPLICATION_POLICIES,
                             listType, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(applicationPolicyList.size(), 2);
+            assertTrue(applicationPolicyList.size() >= 2);
 
             ApplicationPolicyBean bean1 = null;
             for (ApplicationPolicyBean applicationPolicyBean : applicationPolicyList) {

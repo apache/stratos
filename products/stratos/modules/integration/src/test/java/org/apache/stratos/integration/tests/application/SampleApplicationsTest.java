@@ -312,7 +312,8 @@ public class SampleApplicationsTest extends StratosTestServerManager {
             List<ApplicationBean> applicationList = (List<ApplicationBean>) restClient.
                     listEntity(RestConstants.APPLICATIONS,
                             listType, RestConstants.APPLICATIONS_NAME);
-            assertEquals(applicationList.size(), 2);
+            assertTrue(applicationList.size() >= 2);
+
 
             ApplicationBean bean1 = null;
             for (ApplicationBean applicationBean : applicationList) {

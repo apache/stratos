@@ -183,7 +183,7 @@ public class CartridgeGroupTest extends StratosTestServerManager {
             List<CartridgeGroupBean> cartridgeGroupList = (List<CartridgeGroupBean>) restClient.
                     listEntity(RestConstants.CARTRIDGE_GROUPS,
                             listType, RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(cartridgeGroupList.size(), 2);
+            assertTrue(cartridgeGroupList.size() >= 2);
 
             CartridgeGroupBean bean1 = null;
             for (CartridgeGroupBean cartridgeGroupBean : cartridgeGroupList) {
