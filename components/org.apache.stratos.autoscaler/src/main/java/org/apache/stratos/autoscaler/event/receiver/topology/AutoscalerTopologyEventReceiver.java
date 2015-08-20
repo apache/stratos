@@ -132,47 +132,38 @@ public class AutoscalerTopologyEventReceiver {
                     ApplicationClustersCreatedEvent applicationClustersCreatedEvent =
                             (ApplicationClustersCreatedEvent) event;
                     String appId = applicationClustersCreatedEvent.getAppId();
-                    boolean appMonitorCreationTriggered = false;
-                    int retries = 30;
-                    while (!appMonitorCreationTriggered && retries > 0) {
-                        try {
-                            //acquire read lock
-                            ApplicationHolder.acquireReadLock();
-                            //start the application monitor
-                            ApplicationContext applicationContext = AutoscalerContext.getInstance().
-                                    getApplicationContext(appId);
-                            if (applicationContext != null &&
-                                    applicationContext.getStatus().
-                                            equals(ApplicationContext.STATUS_DEPLOYED)) {
-                                if (!AutoscalerContext.getInstance().
-                                        containsApplicationPendingMonitor(appId)) {
-                                    appMonitorCreationTriggered = true;
-                                    AutoscalerUtil.getInstance().startApplicationMonitor(appId);
-                                    break;
-                                }
+                    try {
+                        //acquire read lock
+                        ApplicationHolder.acquireReadLock();
+                        //start the application monitor
+                        ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                                getApplicationContext(appId);
+                        if (applicationContext != null &&
+                                applicationContext.getStatus().
+                                        equals(ApplicationContext.STATUS_DEPLOYED)) {
+                            if (!AutoscalerContext.getInstance().
+                                    containsApplicationPendingMonitor(appId)) {
+                                AutoscalerUtil.getInstance().startApplicationMonitor(appId);
                             }
-                        } catch (Exception e) {
-                            String msg = "Error processing event " + e.getLocalizedMessage();
-                            log.error(msg, e);
-                        } finally {
-                            //release read lock
-                            ApplicationHolder.releaseReadLock();
+                        } else {
+                            String status;
+                            if(applicationContext == null) {
+                                status = null;
+                            } else {
+                                status = applicationContext.getStatus();
+                            }
+                            log.error("Error while creating the application monitor due to " +
+                                    "in-consistent persistence of [application] " +
+                                    applicationClustersCreatedEvent.getAppId() + ", " +
+                                    "the [application-context] " + applicationContext +
+                            " status of [application-context] " + status);
                         }
-
-                        try {
-                            retries--;
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-
-                    // Reason is to re-try 5 time is because application status might not become "deployed" yet, refer deployApplication API for more information.
-                    // Reason why not throwing error after 5 times is because this not the only place we trigger app-monitor creation.
-                    if (!appMonitorCreationTriggered) {
-                        String msg = String.format("Application monitor creation is not triggered on application "
-                                + "clusters created event even after 5 retries [application-id] %s. "
-                                + "Possible cause is either application context is null or application status didn't become %s yet.", appId, ApplicationContext.STATUS_DEPLOYED);
-                        log.warn(msg);
+                    } catch (Exception e) {
+                        String msg = "Error processing event " + e.getLocalizedMessage();
+                        log.error(msg, e);
+                    } finally {
+                        //release read lock
+                        ApplicationHolder.releaseReadLock();
                     }
                 } catch (ClassCastException e) {
                     String msg = "Error while casting the event " + e.getLocalizedMessage();

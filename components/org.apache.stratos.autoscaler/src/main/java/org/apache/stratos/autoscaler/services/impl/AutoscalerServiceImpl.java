@@ -245,10 +245,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // validating application policy against the application
             AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
 
-            // Create application clusters in cloud controller and send application created event
-            ApplicationBuilder.handleApplicationDeployment(application,
-                    applicationContext.getComponents().getApplicationClusterContexts());
-
             // Setting application policy id in application object
             try {
                 ApplicationHolder.acquireWriteLock();
@@ -272,7 +268,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
             AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
-            log.info("Waiting for application clusters to be created: [application-id] " + applicationId);
+            // Create application clusters in cloud controller and send application created event
+            ApplicationBuilder.handleApplicationDeployment(application,
+                    applicationContext.getComponents().getApplicationClusterContexts());
+
+            log.info("Waiting for application clusters to be created: [application-id] " +
+                    applicationId);
+
             return true;
         } catch (Exception e) {
             ApplicationContext applicationContext = RegistryManager.getInstance().
