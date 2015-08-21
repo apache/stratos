@@ -42,11 +42,19 @@ public class ThriftClientConfigParserTest extends TestCase {
         URL configFileUrl = ThriftClientConfigParserTest.class.getResource("/thrift-client-config.xml");
         System.setProperty(ThriftClientConfig.THRIFT_CLIENT_CONFIG_FILE_PATH, configFileUrl.getPath());
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
-        ThriftClientInfo thriftClientInfo = thriftClientConfig.getThriftClientInfo();
+        ThriftClientInfo cepThriftClientInfo = thriftClientConfig.getThriftClientInfo(
+                ThriftClientConfig.CEP_THRIFT_CLIENT_NAME);
+        ThriftClientInfo dasThriftClientInfo = thriftClientConfig.getThriftClientInfo(
+                ThriftClientConfig.DAS_THRIFT_CLIENT_NAME);
 
-        assertEquals("Incorrect Username", "admin", thriftClientInfo.getUsername());
-        assertEquals("Incorrect Password", "1234", thriftClientInfo.getPassword());
-        assertEquals("Incorrect IP", "192.168.10.10", thriftClientInfo.getIp());
-        assertEquals("Incorrect Port", "9300", thriftClientInfo.getPort());
+        assertEquals("Incorrect Username", "admin", cepThriftClientInfo.getUsername());
+        assertEquals("Incorrect Password", "1234", cepThriftClientInfo.getPassword());
+        assertEquals("Incorrect IP", "192.168.10.10", cepThriftClientInfo.getIp());
+        assertEquals("Incorrect Port", "9300", cepThriftClientInfo.getPort());
+
+        assertEquals("Incorrect Username", "admin1", dasThriftClientInfo.getUsername());
+        assertEquals("Incorrect Password", "12345", dasThriftClientInfo.getPassword());
+        assertEquals("Incorrect IP", "192.168.10.11", dasThriftClientInfo.getIp());
+        assertEquals("Incorrect Port", "9301", dasThriftClientInfo.getPort());
     }
 }
