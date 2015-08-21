@@ -54,7 +54,7 @@ public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher 
 
             // Set payload definition
             List<Attribute> payloadData = new ArrayList<Attribute>();
-            payloadData.add(new Attribute("time_stamp", AttributeType.LONG));
+            payloadData.add(new Attribute("timestamp", AttributeType.LONG));
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("cluster_instance_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
