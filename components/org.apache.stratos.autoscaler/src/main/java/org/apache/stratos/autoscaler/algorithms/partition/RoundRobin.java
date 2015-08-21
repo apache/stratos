@@ -93,7 +93,7 @@ public class RoundRobin implements PartitionAlgorithm {
             }
         }
 
-        if (partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
+        if (partitionContexts[selectedIndex].getNonTerminatedMemberCount() <= partitionContexts[selectedIndex].getMax()) {
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("[round-robin algorithm] [scale-down] [partition] %s has has members that" +
