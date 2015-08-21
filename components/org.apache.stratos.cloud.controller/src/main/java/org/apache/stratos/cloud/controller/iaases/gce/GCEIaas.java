@@ -64,6 +64,7 @@ import static org.jclouds.util.Predicates2.retry;
 public class GCEIaas extends JcloudsIaas {
     private static final Log log = LogFactory.getLog(GCEIaas.class);
     public static final int MAX_WAIT_TIME = 60; // seconds
+    public static final String GCE_NETWORK_PROPERTY = "networkURI";
 
     public GCEIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
@@ -134,9 +135,6 @@ public class GCEIaas extends JcloudsIaas {
         boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo.getProperty("autoAssignIp"));
         template.getOptions().as(GoogleComputeEngineTemplateOptions.class).blockUntilRunning(blockUntilRunning);
 
-        // this is required in order to avoid creation of additional security groups by Jclouds.
-        template.getOptions().as(GoogleComputeEngineTemplateOptions.class).inboundPorts(22, 80, 8080, 443, 8243);
-
         if (zone != null) {
             templateBuilder.locationId(zone);
             log.debug("setting location to " + zone);
@@ -151,19 +149,29 @@ public class GCEIaas extends JcloudsIaas {
                         .length()), iaasInfo.getProperties().get(propertyKey));
                 template.getOptions().as(GoogleComputeEngineTemplateOptions.class).userMetadata(keyValuePairTagsMap);
             }
-            log.info("usermeta data key:" + propertyKey + " value: " + iaasInfo.getProperties().get(propertyKey));
+            log.info("User defined property [key]" + propertyKey + ", [value] " +
+                    iaasInfo.getProperties().get(propertyKey));
         }
 
         if (iaasInfo.getNetworkInterfaces() != null) {
             List<String> networks = new ArrayList<String>(iaasInfo.getNetworkInterfaces().length);
             for (NetworkInterface ni : iaasInfo.getNetworkInterfaces()) {
                 networks.add(ni.getNetworkUuid());
-                log.info("using network interface " + ni.getNetworkUuid());
             }
             template.getOptions().as(GoogleComputeEngineTemplateOptions.class).networks(networks);
-            log.info("using network interface " + networks);
+            log.info("Using network interfaces: " + networks);
         }
 
+        if (iaasInfo.getProperty(GCEIaas.GCE_NETWORK_PROPERTY) != null) {
+            try {
+                URI networkURI = new URI(iaasInfo.getProperty(GCEIaas.GCE_NETWORK_PROPERTY));
+                template.getOptions().as(GoogleComputeEngineTemplateOptions.class).network(networkURI);
+                log.info("Using GCE network: " + networkURI.toString());
+            }
+            catch (Exception e) {
+                log.error("Error while adding the network", e);
+            }
+        }
         // set Template
         iaasInfo.setTemplate(template);
     }
@@ -408,10 +416,10 @@ public class GCEIaas extends JcloudsIaas {
     }
 
     @Override
-    public String getGroupName(MemberContext memberContext, byte[] payload){
+    public String getGroupName(MemberContext memberContext, byte[] payload) {
         String clusterId = memberContext.getClusterId();
         String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
-        String group = getIaasProvider().getName().substring(0, 4) + "-"  + str.replaceAll("[^a-z0-9-]", "");
+        String group = "stratos-" + str.replaceAll("[^a-z0-9-]", "");
         return group.toLowerCase();
     }
 }

@@ -40,18 +40,14 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
 
     @Override
     public boolean process(String type, String message, Object object) {
-
         Applications applications = (Applications) object;
-
         if (ApplicationInstanceCreatedEvent.class.getName().equals(type)) {
-
             if (!applications.isInitialized()) {
                 return false;
             }
-
-
-            ApplicationInstanceCreatedEvent event = (ApplicationInstanceCreatedEvent) MessagingUtil.jsonToObject(message,
-                    ApplicationInstanceCreatedEvent.class);
+            ApplicationInstanceCreatedEvent event =
+                    (ApplicationInstanceCreatedEvent) MessagingUtil.jsonToObject(message,
+                            ApplicationInstanceCreatedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationInstanceCreatedEvent");
                 return false;
@@ -60,17 +56,18 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
             ApplicationsUpdater.acquireWriteLockForApplications();
             try {
                 return doProcess(event, applications);
-
-            } finally {
+            }
+            finally {
                 ApplicationsUpdater.releaseWriteLockForApplications();
             }
-
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, applications);
             } else {
-                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process message using available message processors: [type] %s [body] %s", type,
+                        message));
             }
         }
     }
@@ -78,13 +75,18 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
     private boolean doProcess(ApplicationInstanceCreatedEvent event, Applications applications) {
 
         // check if required properties are available
-        if (event.getApplicationInstance() == null) {
-            String errorMsg = "Application instance object of application instance created event is invalid";
+        if (event.getApplicationInstance() == null || event.getApplicationId() == null) {
+            String errorMsg = "Application instance object of ApplicationInstanceCreatedEvent is invalid. " +
+                    "[ApplicationId] " + event.getApplicationId() + ", [ApplicationInstance] " +
+                    event.getApplicationInstance();
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
-
         }
-
+        if (applications == null) {
+            String errorMsg = "Error! Applications object is null";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
         ApplicationInstance applicationInstance = event.getApplicationInstance();
 
         if (applicationInstance.getInstanceId() == null || applicationInstance.getInstanceId().isEmpty()) {
@@ -97,14 +99,12 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
         // check if an Application instance with same name exists in applications instance
         if (null != applications.getApplication(event.getApplicationId()).
                 getInstanceByNetworkPartitionId(applicationInstance.getNetworkPartitionId())) {
-
-            log.warn("Application instance with id [ " + applicationInstance.getInstanceId() + " ] already exists");
-
+            log.warn("Application instance [AppInstanceId] " + applicationInstance.getInstanceId() + " already exists");
         } else {
             // add application instance to Application Topology
-            applications.getApplication(event.getApplicationId()).addInstance(applicationInstance.getInstanceId(), applicationInstance);
+            applications.getApplication(event.getApplicationId())
+                    .addInstance(applicationInstance.getInstanceId(), applicationInstance);
         }
-
         notifyEventListeners(event);
         return true;
     }
