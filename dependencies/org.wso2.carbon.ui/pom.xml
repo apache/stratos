@@ -31,6 +31,7 @@
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - UI</name>
     <description>org.wso2.carbon.ui patch version for Apache Stratos based on kernel patch0011</description>
+    <version>4.2.0-stratosv2</version>
     <url>http://wso2.org</url>
 
     <repositories>

@@ -28,7 +28,7 @@ import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.ec2.EC2PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.messaging.domain.topology.Scope;
+import org.apache.stratos.cloud.controller.util.Scope;
 
 import java.util.Properties;
 
@@ -54,8 +54,8 @@ public class CloudStackPartitionValidator implements PartitionValidator {
             Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
             updatedIaas.setIaasProvider(updatedIaasProvider);
 
-            if (properties.containsKey(Scope.zone.toString())) {
-                String zone = properties.getProperty(Scope.zone.toString());
+            if (properties.containsKey(Scope.ZONE.toString())) {
+                String zone = properties.getProperty(Scope.ZONE.toString());
                 iaas.isValidZone(null, zone);
                 updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
                 updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);

@@ -28,7 +28,7 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.messaging.domain.topology.Scope;
+import org.apache.stratos.cloud.controller.util.Scope;
 
 import java.util.Properties;
 
@@ -46,8 +46,8 @@ public class EC2PartitionValidator implements PartitionValidator {
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
         // validate the existence of the region and zone properties.
         try {
-            if (properties.containsKey(Scope.region.toString())) {
-                String region = properties.getProperty(Scope.region.toString());
+            if (properties.containsKey(Scope.REGION.toString())) {
+                String region = properties.getProperty(Scope.REGION.toString());
 
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
@@ -63,8 +63,8 @@ public class EC2PartitionValidator implements PartitionValidator {
                 Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
                 updatedIaas.setIaasProvider(updatedIaasProvider);
 
-                if (properties.containsKey(Scope.zone.toString())) {
-                    String zone = properties.getProperty(Scope.zone.toString());
+                if (properties.containsKey(Scope.ZONE.toString())) {
+                    String zone = properties.getProperty(Scope.ZONE.toString());
                     iaas.isValidZone(region, zone);
                     updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
                     updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);

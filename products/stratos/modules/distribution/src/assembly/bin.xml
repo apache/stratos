@@ -76,6 +76,7 @@
                 <exclude>**/marshalling_1.3.6.wso2v1.jar</exclude>
                 <exclude>**/jboss-transaction-api_1.1_spec-1.0.0.Final.jar</exclude>
                 <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+                <exclude>**/guice_3.0.0.wso2v1.jar</exclude>
                 <exclude>**/httpclient_4.1.1.wso2v1.jar</exclude>
                 <exclude>**/httpcore_4.1.0.wso2v1.jar</exclude>
             </excludes>

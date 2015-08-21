@@ -17,13 +17,15 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos</artifactId>
         <version>4.1.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apache-stratos</artifactId>
     <packaging>jar</packaging>
@@ -482,7 +484,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.ui.stratos.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -555,23 +557,29 @@
                         <configuration>
                             <tasks>
                                 <copy todir="target/wso2carbon-core-4.2.0/dbscripts/identity" overwrite="false">
-                                    <fileset dir="${basedir}/../p2-profile-gen/target/wso2carbon-core-4.2.0/dbscripts/identity/" />
+                                    <fileset
+                                            dir="${basedir}/../p2-profile-gen/target/wso2carbon-core-4.2.0/dbscripts/identity/"/>
                                 </copy>
                                 <path id="h2.classpath">
-                                    <path refid="maven.compile.classpath" />
+                                    <path refid="maven.compile.classpath"/>
                                 </path>
-                                <echo message="########### Adding identity , identity/application-mgt tables to WSO2Carbon DB ##############" />
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database//WSO2CARBON_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+                                <echo message="########### Adding identity , identity/application-mgt tables to WSO2Carbon DB ##############"/>
+                                <sql driver="org.h2.Driver"
+                                     url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database//WSO2CARBON_DB"
+                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
-                                        <path refid="h2.classpath" />
+                                        <path refid="h2.classpath"/>
                                     </classpath>
-                                    <fileset file="target/wso2carbon-core-4.2.0/dbscripts/identity/application-mgt/h2.sql" />
+                                    <fileset
+                                            file="target/wso2carbon-core-4.2.0/dbscripts/identity/application-mgt/h2.sql"/>
                                 </sql>
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database/WSO2CARBON_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+                                <sql driver="org.h2.Driver"
+                                     url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database/WSO2CARBON_DB"
+                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
-                                        <path refid="h2.classpath" />
+                                        <path refid="h2.classpath"/>
                                     </classpath>
-                                    <fileset file="target/wso2carbon-core-4.2.0/dbscripts/identity/h2.sql" />
+                                    <fileset file="target/wso2carbon-core-4.2.0/dbscripts/identity/h2.sql"/>
                                 </sql>
                             </tasks>
                         </configuration>
@@ -581,14 +589,14 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="target/archive-tmp" />
-                                <delete dir="target/dependency-maven-plugin-markers" />
-                                <delete dir="target/maven-archiver" />
-                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}" />
-                                <delete dir="target/shopping-cart-global-${shoppingcart.global.version}" />
-                                <delete file="target/${project.artifactId}-${project.version}.jar" />
-                                <delete dir="target/sources" />
-                                <delete dir="target/database" />
+                                <delete dir="target/archive-tmp"/>
+                                <delete dir="target/dependency-maven-plugin-markers"/>
+                                <delete dir="target/maven-archiver"/>
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
+                                <delete dir="target/shopping-cart-global-${shoppingcart.global.version}"/>
+                                <delete file="target/${project.artifactId}-${project.version}.jar"/>
+                                <delete dir="target/sources"/>
+                                <delete dir="target/database"/>
                             </tasks>
                         </configuration>
                         <goals>

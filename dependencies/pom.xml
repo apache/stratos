@@ -17,8 +17,8 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
@@ -33,10 +33,12 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>jclouds/apis/vcloud/1.8.1-stratos</module>
-	    <module>jclouds/apis/openstack-neutron/1.8.1-stratos</module>
-        <module>jclouds/apis/gce/1.8.1-stratos</module>
-        <module>jclouds/provider/aws-ec2/1.8.1-stratos</module>
+        <module>guice</module>
+        <module>guice-multibindings</module>
+        <module>guice-assistedinject</module>
+        <module>rocoto</module>
+        <module>sshj</module>
+        <module>jclouds</module>
         <module>org.wso2.carbon.ui</module>
         <module>fabric8</module>
     </modules>
