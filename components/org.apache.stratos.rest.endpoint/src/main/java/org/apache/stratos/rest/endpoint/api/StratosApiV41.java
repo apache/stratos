@@ -303,8 +303,7 @@ public class StratosApiV41 extends AbstractApi {
             //Ignore this since this is valid(cartridge is does not exist) when adding the cartridge for first time
         }
         if (cartridgeBean != null) {
-            String msg = String.format("Cartridge already exists: [tenant-id] %d [cartridge-uuid] %s [cartridge-type] %s ",
-                    tenantId, cartridgeUuid, cartridgeType);
+            String msg = String.format("Cartridge already exists: [cartridge-type] %s ", cartridgeType);
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
@@ -499,8 +498,8 @@ public class StratosApiV41 extends AbstractApi {
         groupBean = StratosApiV41Utils.getServiceGroupDefinition(cartridgeGroupBean.getName(), carbonContext.getTenantId());
 
         if (groupBean != null) {
-            String msg = String.format("Cartridge already exists: [tenant-id] %d [cartridge-uuid] %s [cartridge-type]" +
-                    "%s", tenantId, cartrideGroupUuid, cartridgeGroupBean.getName());
+            String msg = String.format("Cartridge group already exists: [cartridge-group-name] %s",
+                    cartridgeGroupBean.getName());
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, msg)).build();
@@ -969,13 +968,9 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, backendErrorMessage)).build();
         } catch (AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Application policy already exists")).build();
-
-        } catch (RestAPIException e) {
-            throw e;
+                    ResponseMessageBean.ERROR, String.format("Application policy already exists: " +
+                            "[application-policy-id] %s", applicationPolicyId))).build();
         }
-
-
     }
 
     /**
@@ -1463,7 +1458,8 @@ public class StratosApiV41 extends AbstractApi {
                     ResponseMessageBean.ERROR, "Provided Autoscaling policy is invalid")).build();
         } catch (AutoscalerServiceAutoScalingPolicyAlreadyExistExceptionException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
-                    ResponseMessageBean.ERROR, "Autoscaling policy already exists")).build();
+                    ResponseMessageBean.ERROR, String.format("Autoscaling policy already exists " +
+                    "[autoscaling-policy-id] %s", autoscalingPolicyId))).build();
         } catch (RestAPIException e) {
             throw e;
         }

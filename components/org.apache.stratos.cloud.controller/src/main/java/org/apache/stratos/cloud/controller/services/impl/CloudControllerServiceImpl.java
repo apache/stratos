@@ -38,7 +38,6 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -63,7 +62,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
     private ExecutorService executorService;
-    private int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
     public CloudControllerServiceImpl() {
         executorService = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread.pool", 50);
 
@@ -77,9 +75,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(cartridgeConfig.getUuid(), "Cartridge definition UUID is null");
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ",
-                    cartridgeConfig.getUuid(), cartridgeConfig.getType(),
-                    cartridgeConfig.getTenantId()));
+            log.info(String.format("Adding cartridge: [tenant id] %d [cartridge-uuid] %s [cartridge-type] %s ",
+                    cartridgeConfig.getTenantId(), cartridgeConfig.getUuid(), cartridgeConfig.getType()));
         }
         if (log.isDebugEnabled()) {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());
@@ -88,9 +85,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         try {
             CloudControllerUtil.extractIaaSProvidersFromCartridge(cartridgeConfig);
         } catch (Exception e) {
-            String message = String.format("Invalid cartridge definition: [cartridge-uuid] %s [cartridge-type] %s",
-                    " [tenant-id] ", cartridgeConfig.getUuid(), cartridgeConfig.getType(),
-                    cartridgeConfig.getTenantId());
+            String message = String.format("Invalid cartridge definition: " +
+                            "[cartridge-type] %s", cartridgeConfig.getType());
             log.error(message, e);
             throw new InvalidCartridgeDefinitionException(message, e);
         }
@@ -98,9 +94,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String cartridgeUuid = cartridgeConfig.getUuid();
         Cartridge existingCartridge = cloudControllerContext.getCartridge(cartridgeUuid);
         if (existingCartridge != null) {
-            String message = String.format(
-                    "Cartridge already exists: [cartridge-uuid] %s [cartridge-type] %s [tenant id] %d ", cartridgeUuid,
-                    existingCartridge.getType(), existingCartridge.getTenantId());
+            String message = String.format("Cartridge already exists: [tenant id] %d [cartridge-uuid] %s " +
+                            "[cartridge-type] %s ", existingCartridge.getTenantId(), cartridgeUuid,
+                    existingCartridge.getType());
             log.error(message);
             throw new CartridgeAlreadyExistsException(message);
         }
@@ -115,8 +111,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleServiceCreated(cartridgeList);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Successfully added cartridge: [cartridge-uuid] %s [cartridge-type] %s [tenant-id] %d ",
-                    cartridgeUuid, cartridgeConfig.getType(), cartridgeConfig.getTenantId()));
+            log.info(String.format("Successfully added cartridge: [tenant-id] %d [cartridge-uuid] %s [cartridge-type]" +
+                            " %s", cartridgeConfig.getTenantId(), cartridgeUuid, cartridgeConfig.getType()));
         }
         return true;
     }
@@ -129,7 +125,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(cartridge, "Cartridge definition is null");
 
         if (log.isInfoEnabled()) {
-            log.info("Updating cartridge: [cartridge-type] " + cartridge.getType());
+            log.info(String.format("Updating cartridge: [tenant-id] %d [cartridge-uuid] %s [cartridge-type]" +
+                    " %s", cartridge.getTenantId(), cartridge.getUuid(), cartridge.getType()));
         }
         if (log.isDebugEnabled()) {
             log.debug("Cartridge definition: " + cartridge.toString());
@@ -152,7 +149,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             copyIaasProviders(cartridge, cartridgeToBeRemoved);
         } else {
-            throw new CartridgeDefinitionNotExistsException("This cartridge definition not exists");
+            throw new CartridgeDefinitionNotExistsException("Cartridge definition not exists: [cartridge-type] " +
+                    cartridge.getType());
         }
 
         // Add cartridge to the cloud controller context and persist
@@ -161,7 +159,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // transaction ends
 
         if (log.isInfoEnabled()) {
-            log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeUuid);
+            log.info(String.format("Successfully updated cartridge: tenant-id] %d [cartridge-uuid] %s " +
+                    "[cartridge-type] %s", cartridge.getTenantId(), cartridge.getUuid(), cartridge.getType()));
         }
         return true;
     }
@@ -200,8 +199,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         removeCartridgeFromTopology(cartridge);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Successfully removed cartridge: [cartridge-uuid] %s [cartridge-type] %s " +
-                    "[tenant-id] %d", cartridge.getUuid(), cartridge.getType(), cartridge.getTenantId()));
+            log.info(String.format("Successfully removed cartridge: [tenant-id] %d [cartridge-uuid] %s " +
+                    "[cartridge-type] %s", cartridge.getTenantId(), cartridge.getUuid(), cartridge.getType()));
         }
         return true;
     }
@@ -220,13 +219,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().persist();
 
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Successfully removed cartridge: [cartridge-uuid] %s [cartridge-type] %s " +
-                            "[tenant-id] %d", cartridge.getUuid(), cartridge.getType(), cartridge.getTenantId()));
+                    log.info(String.format("Successfully removed cartridge: [tenant-id] %d [cartridge-uuid] %s " +
+                            "[cartridge-type] %s", cartridge.getTenantId(), cartridge.getUuid(), cartridge.getType()));
                 }
                 return cartridge;
             }
         }
-        String msg = "Cartridge not found: [cartridge-type] " + cartridgeUuid;
+        String msg = "Cartridge not found: [cartridge-uuid] " + cartridgeUuid;
         log.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
@@ -253,7 +252,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     public boolean removeServiceGroup(String name) throws InvalidServiceGroupException {
         if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:removeServiceGroup: " + name);
+            log.debug("Removing service group: [service-group-name] " + name);
         }
 
         ServiceGroup serviceGroup = null;
@@ -264,7 +263,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (CloudControllerContext.getInstance().getServiceGroups().remove(serviceGroup)) {
                 CloudControllerContext.getInstance().persist();
                 if (log.isInfoEnabled()) {
-                    log.info("Successfully removed the cartridge group: [group-name] " + serviceGroup);
+                    log.info(String.format("Successfully removed the cartridge group:  [service-group-name] %s", name));
                 }
                 return true;
             }
@@ -299,7 +298,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public String[] getServiceGroupSubGroups(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + name);
         }
 
         return serviceGroup.getSubGroups();
@@ -311,7 +310,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public String[] getServiceGroupCartridges(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + name);
         }
         String[] cs = serviceGroup.getCartridges();
         return cs;
@@ -321,7 +320,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public Dependencies getServiceGroupDependencies(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + name);
         }
         return serviceGroup.getDependencies();
     }
@@ -488,6 +487,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                               LoadBalancingIPType loadBalancingIPType, InstanceContext instanceContext) {
         MemberContext memberContext = new MemberContext(
                 applicationId, cartridgeType, instanceContext.getClusterId(), memberId);
+
 
         memberContext.setClusterInstanceId(instanceContext.getClusterInstanceId());
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
@@ -896,7 +896,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         CloudControllerUtil.sleep(1000);
                     }
 
-                    log.info(String.format("Unregistration of service cluster: [cluster-id] %s [application-id]",
+                    log.info(String.format("Unregistration of service cluster: [cluster-id] %s [application-id] %s",
                             clusterId_, ctxt.getApplicationUuid()));
                     deleteVolumes(ctxt);
                     onClusterRemoval(clusterId_);
@@ -929,8 +929,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                         } catch (Exception ignore) {
                                             if (log.isErrorEnabled()) {
                                                 log.error((String.format("Error while deleting volume [id] %s " +
-                                                                "[application-id]", volume.getId(), ctxt.getApplicationUuid())),
-                                                        ignore);
+                                                                "[application-id] %s", volume.getId(),
+                                                                ctxt.getApplicationUuid())), ignore);
                                             }
                                         }
                                     }
@@ -980,7 +980,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeUuid);
             if (cartridge == null) {
-                String msg = "Cartridge not found: " + cartridgeUuid;
+                String msg = "Cartridge not found: [cartridge-uuid] " + cartridgeUuid;
                 log.error(msg);
                 throw new InvalidCartridgeTypeException(msg);
             }
@@ -1020,8 +1020,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     CloudControllerContext.getInstance().addToCartridgeTypeToPartitionIdMap(cartridgeUuid, partitionId);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Partition " + partitionId + " added to the cache against cartridge: " +
-                                "[cartridge-uuid] " + cartridgeUuid);
+                        log.debug(String.format("Partition %s added to the cache against " +
+                                "cartridge: [tenant-id] %d [cartridge-uuid] %s [cartridge-type] %s", partitionId,
+                                cartridge.getTenantId(), cartridgeUuid, cartridge.getType()));
                     }
                 } catch (Exception e) {
                     String message = "Could not cache partitions against the cartridge: [cartridge-uuid] " + cartridgeUuid;
@@ -1037,8 +1038,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // persist data
             CloudControllerContext.getInstance().persist();
 
-            log.info("All partitions [" + CloudControllerUtil.getPartitionIds(networkPartition.getPartitions()) + "]" +
-                    " were validated successfully, against the cartridge: " + cartridgeUuid);
+            log.info(String.format("All partitions [%s] were validated successfully, " +
+                            "against the cartridge: [tenant-id] %d [cartridge-uuid] %s [cartridge-type] %s",
+                    CloudControllerUtil.getPartitionIds(networkPartition.getPartitions()), cartridge.getTenantId(),
+                    cartridgeUuid, cartridge.getType()));
 
             return true;
         } finally {
@@ -1061,9 +1064,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(partition, "Partition validation failed. Partition is null.");
 
         String provider = partition.getProvider();
-        String partitionId = partition.getUuid();
+        String partitionUuid = partition.getUuid();
 
-        handleNullObject(provider, "Partition [" + partitionId + "] validation failed. Partition provider is null.");
+        handleNullObject(provider, String.format("Partition validation failed. Partition provider is null. " +
+                "[partition-uuid] %s [partition-id] %s ", partitionUuid, partition.getId()));
         IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
 
         return CloudControllerServiceUtil.validatePartition(partition, iaasProvider);
@@ -1245,7 +1249,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         try {
             if (CloudControllerContext.getInstance().getKubernetesCluster(kubernetesCluster.getClusterUuid()) != null) {
-                throw new KubernetesClusterAlreadyExistsException("Kubernetes cluster already exists");
+                throw new KubernetesClusterAlreadyExistsException("Kubernetes cluster already exists: " +
+                        "[kubernetes-cluster] " + kubernetesCluster.getClusterId());
             }
         } catch (NonExistingKubernetesClusterException ignore) {
         }
@@ -1254,8 +1259,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Adding kubernetes cluster: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterUuid()));
+                log.info(String.format("Adding kubernetes cluster: [tenant-id] %d [kubernetes-cluster-uuid] %s " +
+                                "[kubernetes-cluster-id] %s", kubernetesCluster.getTenantId(),
+                        kubernetesCluster.getClusterUuid(), kubernetesCluster.getClusterId()));
             }
             CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
 
@@ -1264,8 +1270,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes cluster added successfully: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterUuid()));
+                log.info(String.format("Kubernetes cluster added successfully: [tenant-id] %d " +
+                                "[kubernetes-cluster-uuid] %s [kubernetes-cluster-id] %s",
+                        kubernetesCluster.getTenantId(), kubernetesCluster.getClusterUuid(),
+                        kubernetesCluster.getClusterId()));
             }
             return true;
         } catch (Exception e) {
@@ -1287,8 +1295,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Updating kubernetes cluster: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterUuid()));
+                log.info(String.format("Updating kubernetes cluster: [tenant-id] %d [kubernetes-cluster-uuid] %s " +
+                                "[kubernetes-cluster-id] %s", kubernetesCluster.getTenantId(),
+                        kubernetesCluster.getClusterUuid(), kubernetesCluster.getClusterId()));
             }
             CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
 
@@ -1297,8 +1306,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes cluster updated successfully: [kubernetes-cluster-id] %s",
-                        kubernetesCluster.getClusterUuid()));
+                log.info(String.format("Kubernetes cluster updated successfully: [tenant-id] %d " +
+                                "[kubernetes-cluster-uuid] %s [kubernetes-cluster-id] %s",
+                        kubernetesCluster.getTenantId(), kubernetesCluster.getClusterUuid(),
+                        kubernetesCluster.getClusterId()));
             }
             return true;
         } catch (Exception e) {
@@ -1337,7 +1348,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 kubernetesHostArrayList = new ArrayList<KubernetesHost>();
             } else {
                 if (CloudControllerContext.getInstance().kubernetesHostExists(kubernetesHost.getHostId())) {
-                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [hostname] " +
+                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [kubernetes-host-id] " +
                             kubernetesHost.getHostId());
                 }
                 kubernetesHostArrayList = new
@@ -1351,7 +1362,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes host added successfully: [id] %s", kubernetesCluster.getClusterUuid()));
+                log.info(String.format("Kubernetes host added successfully: [kubernetes-cluster-id] %s " +
+                                "[kubernetes-host-id] %s", kubernetesCluster.getClusterUuid(), kubernetesHost.getHostId()));
             }
 
             return true;
@@ -1381,7 +1393,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().removeKubernetesCluster(groupUuid);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes cluster removed successfully: [id] %s", groupUuid));
+                log.info(String.format("Kubernetes cluster removed successfully: [kubernetes-cluster-uuid] %s",
+                        groupUuid));
             }
 
             CloudControllerContext.getInstance().persist();
@@ -1412,7 +1425,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 // Kubernetes master cannot be removed
                 if (kubernetesClusterStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
-                    throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
+                    throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed " +
+                            "[kubernetes-host-id] " + kubernetesHostId);
                 }
 
                 List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
@@ -1423,7 +1437,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
                 // member count will be equal only when host object was not found
                 if (kubernetesHostList.size() == kubernetesClusterStored.getKubernetesHosts().length) {
-                    throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] " + kubernetesHostId);
+                    throw new NonExistingKubernetesHostException("Kubernetes host not found for [kubernetes-host-id] " +
+                            "" + kubernetesHostId);
                 }
                 KubernetesHost[] kubernetesHostsArray = new KubernetesHost[kubernetesHostList.size()];
                 kubernetesHostList.toArray(kubernetesHostsArray);
@@ -1432,7 +1447,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 kubernetesClusterStored.setKubernetesHosts(kubernetesHostsArray);
 
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Kubernetes host removed successfully: [id] %s", kubernetesHostId));
+                    log.info(String.format("Kubernetes host removed successfully: [kubernetes-host-id] %s", kubernetesHostId));
                 }
 
                 CloudControllerContext.getInstance().persist();
@@ -1490,7 +1505,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
             CloudControllerUtil.validateKubernetesHost(kubernetesHost);
             if (log.isInfoEnabled()) {
-                log.info("Updating Kubernetes Host: " + kubernetesHost);
+                log.info("Updating Kubernetes Host: [kubernetes-host-id] " + kubernetesHost);
             }
 
             try {
@@ -1502,7 +1517,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         kubernetesHosts[i] = kubernetesHost;
 
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Kubernetes host updated successfully: [id] %s", kubernetesHost.getHostId()));
+                            log.info(String.format("Kubernetes host updated successfully: [kubernetes-host-id] %s", kubernetesHost.getHostId()));
                         }
 
                         CloudControllerContext.getInstance().updateKubernetesCluster(kubernetesClusterStored);
@@ -1518,7 +1533,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
-        throw new NonExistingKubernetesHostException("Kubernetes host not found [id] " + kubernetesHost.getHostId());
+        throw new NonExistingKubernetesHostException("Kubernetes host not found [kubernetes-host-id] " + kubernetesHost.getHostId());
     }
 
     @Override
@@ -1530,15 +1545,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(networkPartition.getUuid(), "Network Partition Id is null");
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding network partition: [network-partition-uuid] %s",
-                    networkPartition.getUuid()));
+            log.info(String.format("Adding network partition: [tenant-id] %d [network-partition-uuid] %s " +
+                            "[network-partition-id] %s", networkPartition.getTenantId(), networkPartition.getUuid(),
+                    networkPartition.getId()));
         }
 
         String networkPartitionUuid = networkPartition.getUuid();
         if (cloudControllerContext.getNetworkPartition(networkPartitionUuid) != null) {
-            String message = "Network partition already exists: [network-partition-uuid] " + networkPartitionUuid +
-                    "[network-partition-id] " + networkPartition.getId();
-            log.error(message);
+            String logMessage = String.format("Network partition already exists: [tenant-id] %d " +
+                            "[network-partition-uuid]" +
+                            " %s [network-partition-id] %s", networkPartition.getTenantId(), networkPartition.getUuid(),
+                    networkPartition.getId());
+            String message = String.format("Network partition already exists: [network-partition-id] %s",
+                    networkPartition.getId());
+
+            log.error(logMessage);
             throw new NetworkPartitionAlreadyExistsException(message);
         }
 
@@ -1546,8 +1567,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cloudControllerContext.getNetworkPartitionForTenant(networkPartitionId,
                 networkPartition.getTenantId()) != null) {
-            String message = "Network partition already exists: [network-partition-id] " + networkPartitionId;
-            log.error(message);
+            String logMessage = String.format("Network partition already exists: [tenant-id] %d " +
+                            "[network-partition-uuid]" +
+                            " %s [network-partition-id] %s", networkPartition.getTenantId(), networkPartition.getUuid(),
+                    networkPartition.getId());
+            String message = String.format("Network partition already exists: [network-partition-id] %s",
+                    networkPartition.getId());
+            log.error(logMessage);
             throw new NetworkPartitionAlreadyExistsException(message);
         }
 
@@ -1555,9 +1581,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             for (Partition partition : networkPartition.getPartitions()) {
                 if (partition != null) {
                     if (log.isInfoEnabled()) {
-                        log.info(String.format("Validating partition: [network-partition-uuid] %s " +
-                                        "[network-partition-id] %s [partition-id] %s", networkPartitionUuid,
-                                networkPartition.getId(), partition.getUuid()));
+                        log.info(String.format("Validating partition: [tenant-id] %d[network-partition-uuid] %s " +
+                                        "[network-partition-id] %s [partition-id] %s",
+                                networkPartition.getTenantId(), networkPartitionUuid, networkPartition.getId(),
+                                partition.getUuid()));
                     }
                     // Overwrites partition provider with network partition provider
                     partition.setProvider(networkPartition.getProvider());
@@ -1566,22 +1593,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     } catch (InvalidPartitionException e) {
                         //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
                         throw new InvalidNetworkPartitionException(String.format("Network partition " +
-                                        "[network-partition-uuid] %s [network-partition-id] %s , " +
+                                        "[tenant-id] %d [network-partition-uuid] %s [network-partition-id] %s , " +
                                         "is invalid since the partition %s is invalid",
-                                networkPartition.getUuid(), networkPartition.getId(), partition.getUuid()), e);
+                                networkPartition.getTenantId(), networkPartition.getUuid(), networkPartition.getId(),
+                                partition.getUuid()), e);
                     }
                     if (log.isInfoEnabled()) {
-                        log.info(String.format("Partition validated successfully: [network-partition-uuid] %s " +
-                                        "[network-partition-id] %s [partition-id] %s", networkPartition.getUuid(),
-                                networkPartition.getId(), partition.getUuid()));
+                        log.info(String.format("Partition validated successfully: [tenant-id] %d " +
+                                        "[network-partition-uuid] %s [network-partition-id] %s [partition-id] %s",
+                                networkPartition.getTenantId(), networkPartition.getUuid(), networkPartition.getId(),
+                                partition.getUuid()));
                     }
                 }
             }
         } else {
             //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
-            throw new InvalidNetworkPartitionException(String.format("Network partition [network-partition-uuid] %s " +
-                            "[network-partition-id] %s, doesn't not have any partitions ", networkPartition.getUuid(),
-                    networkPartition.getId()));
+            throw new InvalidNetworkPartitionException(String.format("Network partition [tenant-id] %d " +
+                            "[network-partition-uuid] %s [network-partition-id] %s, doesn't not have any partitions ",
+                    networkPartition.getTenantId(), networkPartition.getUuid(), networkPartition.getId()));
         }
 
         // adding network partition to CC-Context
@@ -1589,8 +1618,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // persisting CC-Context
         CloudControllerContext.getInstance().persist();
         if (log.isInfoEnabled()) {
-            log.info(String.format("Network partition added successfully: [network-partition-uuid] %s " +
-                    "[network-partition-id] %s", networkPartition.getUuid(),networkPartition.getId()));
+            log.info(String.format("Network partition added successfully: [tenant-id] %d [network-partition-uuid] %s " +
+                    "[network-partition-id] %s", networkPartition.getTenantId(), networkPartition.getUuid(),
+                    networkPartition.getId()));
         }
         return true;
     }
@@ -1607,13 +1637,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String networkPartitionUuid = networkPartition.getUuid();
 
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Removing network partition: [network-partition-uuid] %s " +
-                            "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+                    log.info(String.format("Removing network partition: [tenant-id] %d [network-partition-uuid] %s " +
+                            "[network-partition-id] %s", networkPartition.getTenantId(), networkPartitionUuid,
+                            networkPartitionId));
                 }
                 handleNullObject(networkPartitionId, "Network Partition Id is null");
 
                 if (networkPartitionUuid == null) {
-                    String message = String.format("Network partition not found:[network-partition-id] %s", networkPartitionId);
+                    String message = String.format("Network partition not found: [network-partition-id] %s",
+                            networkPartitionId);
                     log.error(message);
                     throw new NetworkPartitionNotExistsException(message);
                 }
@@ -1622,8 +1654,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 // persisting CC-Context
                 CloudControllerContext.getInstance().persist();
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Network partition removed successfully: [network-partition-uuid] %s " +
-                            "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+                    log.info(String.format("Network partition removed successfully: [tenant-id] %d " +
+                            "[network-partition-uuid] %s [network-partition-id] %s", networkPartition.getTenantId(),
+                            networkPartitionUuid, networkPartitionId));
                 }
             } else {
                 String message = String.format("Network partition not found: [network-partition-id] %s",
@@ -1650,14 +1683,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             handleNullObject(networkPartition.getUuid(), "Network Partition Id is null");
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Updating network partition: [network-partition-id] %s", networkPartition.getUuid()));
+                log.info(String.format("Updating network partition: [tenant-id] %d [network-partition-uuid] %s " +
+                                "[network-partition-id] %s", networkPartition.getTenantId(),
+                        networkPartition.getUuid(), networkPartition.getId()));
             }
 
             String networkPartitionId = networkPartition.getId();
             String networkPartitionUuid = networkPartition.getUuid();
             if (cloudControllerContext.getNetworkPartition(networkPartitionUuid) == null) {
-                String message = String.format("Network partition not found: [network-partition-uuid] %s " +
-                        "[network-partition-id] %s", networkPartitionUuid, networkPartitionId);
+                String message = String.format("Network partition not found: [tenant-id] %d [network-partition-uuid] %s " +
+                                "[network-partition-id] %s", networkPartition.getTenantId(),
+                        networkPartition.getUuid(), networkPartition.getId());
                 log.error(message);
                 throw new NetworkPartitionNotExistsException(message);
             }
@@ -1666,17 +1702,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 for (Partition partition : networkPartition.getPartitions()) {
                     if (partition != null) {
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Validating partition: [network-partition-uuid] %s " +
-                                            "[network-partition-id] %s [partition-id] %s", networkPartitionUuid,
-                                    networkPartitionId, partition.getUuid()));
+                            log.info(String.format("Validating partition: [tenant-id] %d [network-partition-uuid] %s" +
+                                            "[network-partition-id] %s [partition-uuid] %s [partition-id] %s ",
+                                    networkPartition.getTenantId(), networkPartitionUuid, networkPartitionId,
+                                    partition.getUuid(), partition.getId()));
                         }
                         // Overwrites partition provider with network partition provider
                         partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Partition validated successfully: [network-partition-uuid] %s " +
-                                            "[network-partition-uuid] %s [partition-id] %s", networkPartitionUuid,
-                                    networkPartitionId, partition.getUuid()));
+                            log.info(String.format("Partition validated successfully: [tenant-id] %d " +
+                                            "[network-partition-uuid] %s [network-partition-id] %s [partition-uuid] " +
+                                            "%s [partition-id] %s ", networkPartition.getTenantId(),
+                                    networkPartitionUuid, networkPartitionId, partition.getUuid(), partition.getId()));
                         }
                     }
                 }
@@ -1687,8 +1725,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // persisting CC-Context
             CloudControllerContext.getInstance().persist();
             if (log.isInfoEnabled()) {
-                log.info(String.format("Network partition updated successfully: [network-partition-uuid] %s " +
-                        "[network-partition-id] %s", networkPartitionUuid, networkPartitionId));
+                log.info(String.format("Network partition updated successfully: [tenant-id] %d [network-partition-uuid] %s " +
+                                "[network-partition-id] %s", networkPartition.getTenantId(),
+                        networkPartition.getUuid(), networkPartition.getId()));
             }
             return true;
         } catch (Exception e) {
