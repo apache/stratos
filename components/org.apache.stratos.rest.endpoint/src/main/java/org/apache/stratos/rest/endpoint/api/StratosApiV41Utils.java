@@ -284,17 +284,19 @@ public class StratosApiV41Utils {
 
         // Validate whether cartridge can be removed
         if (!smServiceClient.canCartridgeBeRemoved(cartridge.getUuid())) {
-            String message = String.format("Cannot remove cartridge : [tenant-id] %d [cartridge-uuid] %s " +
+            String logMessage = String.format("Cannot remove cartridge : [tenant-id] %d [cartridge-uuid] %s " +
                             "[cartridge-type] %s since it is used in another cartridge group or an application",
                     tenantId, cartridge.getUuid(), cartridgeType);
-            log.error(message);
+            String message = String.format("Cannot remove cartridge :n[cartridge-type] %s since it is used in another" +
+                            " cartridge group or an application", cartridgeType);
+            log.error(logMessage);
             throw new RestAPIException(message);
         }
         cloudControllerServiceClient.removeCartridge(cartridge.getUuid());
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Successfully removed cartridge: [tenant-id] %d [cartridge-uuid] %s " +
-                    "[cartridge-type] %s from tenant: ", tenantId, cartridge.getUuid(), cartridgeType));
+                    "[cartridge-type] %s", tenantId, cartridge.getUuid(), cartridgeType));
         }
     }
 

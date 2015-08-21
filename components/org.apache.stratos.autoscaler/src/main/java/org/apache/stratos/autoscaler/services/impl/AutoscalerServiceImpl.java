@@ -109,12 +109,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         String autoscalePolicyId = autoscalePolicy.getId();
         if (PolicyManager.getInstance().getAutoscalePolicyById(autoscalePolicyId) != null && PolicyManager
                 .getInstance().getAutoscalePolicyById(autoscalePolicyId).getTenantId() == autoscalePolicy.getTenantId()) {
-            String logMessage = String.format("Autoscaling policy already exists: [tenant-id] %d " +
+            String message = String.format("Autoscaling policy already exists: [tenant-id] %d " +
                     "[autoscaling-policy-uuid] %s [autoscaling-policy-id] %s", autoscalePolicy.getTenantId(),
                     autoscalePolicy.getUuid(), autoscalePolicyId);
-            String message = String.format("Autoscaling policy already exists: [autoscaling-policy-id] %s",
-                    autoscalePolicyId);
-            log.error(logMessage);
+            log.error(message);
             throw new AutoScalingPolicyAlreadyExistException(message);
         }
         return PolicyManager.getInstance().addAutoscalePolicy(autoscalePolicy);
@@ -405,9 +403,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
             }
-            String logMessage = String.format("Application deployment failed: [application-uuid] %s ", applicationUuid);
-            String message = String.format("Application deployment failed: [application-id] %s", applicationUuid);
-            log.error(logMessage, e);
+            String message = String.format("Application deployment failed: [application-uuid] %s ", applicationUuid);
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
@@ -650,11 +647,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             if (!applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-                String logMessage = String.format("Application is not deployed: [tenant-id] %d " +
+                String message = String.format("Application is not deployed: [tenant-id] %d " +
                         "[application-uuid] %s [application-id] %s", applicationContext.getTenantId(),
                         applicationContext.getApplicationUuid(), applicationId);
-                String message = String.format("Application is not deployed: [application-id] %s", applicationId);
-                log.error(logMessage);
+                log.error(message);
                 throw new RuntimeException(message);
             }
             applicationContext.setStatus(ApplicationContext.STATUS_UNDEPLOYING);
@@ -697,12 +693,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             if (application.getInstanceContextCount() > 0) {
-                String logMessage = String.format("Application cannot be deleted, undeployment process is still in " +
+                String message = String.format("Application cannot be deleted, undeployment process is still in " +
                                 "progress: [tenant-id] %d [application-uuid] %s [application-id] %s",
                         applicationContext.getTenantId(), applicationContext.getApplicationUuid(), applicationId);
-                String message = String.format("Application cannot be deleted, undeployment process is still in " +
-                        "progress: [application-id] %s", applicationId);
-                log.error(logMessage);
+                log.error(message);
                 throw new RuntimeException(message);
             }
 
@@ -1026,11 +1020,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         boolean isExist = PolicyManager.getInstance().checkApplicationPolicyInTenant
                 (applicationPolicy.getId(), applicationPolicy.getTenantId());
         if (isExist) {
-            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
-            String logMessage = String.format("Application policy already exists: [tenant-id] %d " +
+            String message = String.format("Application policy already exists: [tenant-id] %d " +
                     "[application-policy-uuid] %s [application-policy-id] %s", applicationPolicy.getTenantId(),
                     applicationPolicy.getUuid(), applicationPolicy.getId());
-            log.error(logMessage);
+            log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);
         }
 
@@ -1038,11 +1031,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         if (PolicyManager.getInstance().getApplicationPolicyByUuid(applicationPolicyUuid) != null && PolicyManager
                 .getInstance().getApplicationPolicyByUuid(applicationPolicyUuid).getTenantId() == applicationPolicy
                 .getTenantId()) {
-            String message = "Application policy already exists: [application-policy-id] " + applicationPolicyId;
-            String logMessage = String.format("Application policy already exists: [tenant-id] %d " +
+            String message = String.format("Application policy already exists: [tenant-id] %d " +
                             "[application-policy-uuid] %s [application-policy-id] %s", applicationPolicy.getTenantId(),
                     applicationPolicy.getUuid(), applicationPolicy.getId());
-            log.error(logMessage);
+            log.error(message);
             throw new ApplicationPolicyAlreadyExistsException(message);
         }
 
@@ -1163,15 +1155,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 					if (networkPartitions != null) {
 						for (int i = 0; i < networkPartitions.length; i++) {
 							if (networkPartitions[i].equals(networkPartitionId)) {
-								String logMessage = String.format("Cannot remove the network partition since it is used" +
+								String message = String.format("Cannot remove the network partition since it is used" +
                                                 " in application: [tenant-id] %d [network-partition-id] %s " +
                                                 "[application-uuid] %s [application-id] %s", tenantId,
                                         networkPartitionId, applicationContext.getApplicationUuid(),
                                         applicationContext.getApplicationId());
-                                String message = String.format("Cannot remove the network partition since it is " +
-                                                "used in application: [network-partition-id] %s [application-id] %s",
-                                        networkPartitionId, applicationContext.getApplicationId());
-								log.error(logMessage);
+								log.error(message);
 								throw new PartitionValidationException(message);
 							}
 						}
@@ -1272,24 +1261,20 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         String deploymentPolicyUuid = deploymentPolicy.getUuid();
         if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyUuid) != null) {
-            String logMessage = String.format("Deployment policy already exists: [tenant-id] %d [deployment-policy-uuid]" +
+            String message = String.format("Deployment policy already exists: [tenant-id] %d [deployment-policy-uuid]" +
                             " %s [deployment-policy-id] %s ",deploymentPolicy.getTenantId(), deploymentPolicy.getUuid(),
                     deploymentPolicy.getId());
-            String message = String.format("Deployment policy already exists: [deployment-policy-id] %s ",
-                    deploymentPolicy.getId());
-            log.error(logMessage);
+            log.error(message);
             throw new DeploymentPolicyAlreadyExistsException(message);
         }
 
         String deploymentPolicyId = deploymentPolicy.getId();
         if (PolicyManager.getInstance().getDeploymentPolicyById(deploymentPolicyId) != null && PolicyManager
                 .getInstance().getDeploymentPolicyById(deploymentPolicyId).getTenantId() == deploymentPolicy.getTenantId()) {
-            String logMessage = String.format("Deployment policy already exists: [tenant-id] %d [deployment-policy-uuid]" +
+            String message = String.format("Deployment policy already exists: [tenant-id] %d [deployment-policy-uuid]" +
                             " %s [deployment-policy-id] %s ",deploymentPolicy.getTenantId(), deploymentPolicy.getUuid(),
                     deploymentPolicy.getId());
-            String message = String.format("Deployment policy already exists: [deployment-policy-id] %s ",
-                    deploymentPolicy.getId());
-            log.error(logMessage);
+            log.error(message);
             throw new DeploymentPolicyAlreadyExistsException(message);
         }
 
@@ -1329,12 +1314,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         // deployment policy should contain at least one network partition reference
         if (null == deploymentPolicy.getNetworkPartitionRefs() || deploymentPolicy.getNetworkPartitionRefs().length == 0) {
-            String logMessage = String.format("Deployment policy does not have any network partition references: " +
+            String message = String.format("Deployment policy does not have any network partition references: " +
                     "[tenant-id] %d [deployment-policy-uuid] %s [deployment-policy-id] %s",
                     deploymentPolicy.getTenantId(), deploymentPolicyUuid, deploymentPolicyId);
-            String message = String.format("Deployment policy does not have any network partition references: " +
-                    "[deployment-policy-id] %s", deploymentPolicyId);
-            log.error(logMessage);
+            log.error(message);
             throw new InvalidDeploymentPolicyException(message);
         }
 
@@ -1344,12 +1327,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             //String networkPartitionUuid = networkPartitionRef.getUuid();
             String networkPartitionId = networkPartitionRef.getId();
             if (StringUtils.isBlank(networkPartitionId)) {
-                String message = String.format("Network partition id is blank: [deployment-policy-id] %s",
-                        deploymentPolicyId);
-                String logMessage = String.format("Network partition id is blank: [tenant-id] " +
+                String message = String.format("Network partition id is blank: [tenant-id] " +
                         "%d [deployment-policy-uuid] %s [deployment-policy-id] %s", deploymentPolicy.getTenantId(),
                         deploymentPolicyUuid, deploymentPolicyId);
-                log.error(logMessage);
+                log.error(message);
                 throw new InvalidDeploymentPolicyException(message);
             }
 
@@ -1365,12 +1346,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
             }
             if (networkPartitionForTenant == null) {
-                String logMessage = String.format("Network partition not found: [tenant-id] %d " +
+                String message = String.format("Network partition not found: [tenant-id] %d " +
                                 "[deployment-policy-uuid] %s [deployment-policy-id] %s [network-partition-id] %s",
                         deploymentPolicy.getTenantId(), deploymentPolicyUuid, deploymentPolicyId, networkPartitionId);
-                String message = String.format("Network partition not found: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s", deploymentPolicyId, networkPartitionId);
-                log.error(logMessage);
+                log.error(message);
                 throw new InvalidDeploymentPolicyException(message);
             }
 
@@ -1385,15 +1364,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     }
                 }
                 if (!isPartitionFound) {
-                    String logMessage = String.format("Partition not found: [tenant-id] " +
+                    String message = String.format("Partition not found: [tenant-id] " +
                                     "%d [deployment-policy-uuid] %s [deployment-policy-id] %s [network-partition-id] " +
                                     "%s [network=partition-uuid] %s [partition-id] %s ",
                             deploymentPolicy.getTenantId(), deploymentPolicy.getUuid(), deploymentPolicyId,
                             networkPartitionRef.getUuid(), networkPartitionId, partitionRef.getId());
-                    String message = String.format("Partition not found: [deployment-policy-id] %s " +
-                                    "[network-partition-id] %s [partition-id] %s ", deploymentPolicyId,
-                            networkPartitionId, partitionRef.getId());
-                    log.error(logMessage);
+                    log.error(message);
                     throw new InvalidDeploymentPolicyException(message);
                 }
             }
@@ -1401,44 +1377,35 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // partition algorithm can't be null or empty
             String partitionAlgorithm = networkPartitionRef.getPartitionAlgo();
             if (StringUtils.isBlank(partitionAlgorithm)) {
-                String logMessage = String.format("Partition algorithm is blank: [tenant-id] %d " +
+                String message = String.format("Partition algorithm is blank: [tenant-id] %d " +
                                 "[deployment-policy-uuid] %s [deployment-policy-id] %s [network-partition-uuid] %s " +
                                 "[network-partition-id] %s [partition-algorithm] %s",
                         deploymentPolicy.getTenantId(), deploymentPolicyUuid, deploymentPolicyId,
                         networkPartitionRef.getUuid(), networkPartitionId, partitionAlgorithm);
-                String message = String.format("Partition algorithm is blank: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s [partition-algorithm] %s",
-                        deploymentPolicyId, networkPartitionId, partitionAlgorithm);
-                log.error(logMessage);
+                log.error(message);
                 throw new InvalidDeploymentPolicyException(message);
             }
 
             // partition algorithm should be either one-after-another or round-robin
             if ((!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm))
                     && (!StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm))) {
-                String logMessage = String.format("Partition algorithm is not valid: [tenant-id] %d " +
+                String message = String.format("Partition algorithm is not valid: [tenant-id] %d " +
                                 "[deployment-policy-uuid] %s [deployment-policy-id] %s [network-partition-uuid] %s " +
                                 "[network-partition-id] %s [partition-algorithm] %s", deploymentPolicy.getTenantId(),
                         deploymentPolicyUuid, deploymentPolicyId, networkPartitionRef.getUuid(), networkPartitionId,
                         partitionAlgorithm);
-                String message = String.format("Partition algorithm is not valid: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s [partition-algorithm] %s",
-                        deploymentPolicyId, networkPartitionId, partitionAlgorithm);
-                log.error(logMessage);
+                log.error(message);
                 throw new InvalidDeploymentPolicyException(message);
             }
 
             // a network partition reference should contain at least one partition reference
             PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
             if (null == partitions || partitions.length == 0) {
-                String logMessage = String.format("Network partition does not have any partition references: " +
+                String message = String.format("Network partition does not have any partition references: " +
                                 "[tenant-id] %d [deployment-policy-uuid] %s [deployment-policy-id] %s " +
                                 "[network-partition-uuid] %s [network-partition-id] %s ", deploymentPolicy.getTenantId(),
                         deploymentPolicyUuid, deploymentPolicyId, networkPartitionRef.getUuid(), networkPartitionId);
-                String message = String.format("Network partition does not have any partition references: " +
-                                "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId,
-                        networkPartitionId);
-                log.error(logMessage);
+                log.error(message);
                 throw new InvalidDeploymentPolicyException(message);
             }
         }
@@ -1461,11 +1428,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         String deploymentPolicyUuid = deploymentPolicy.getUuid();
         if (PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyUuid) == null) {
-            String logMessage = String.format("Deployment policy not exists: [tenant-id] %d [deployment-policy-uuid] " +
+            String message = String.format("Deployment policy not exists: [tenant-id] %d [deployment-policy-uuid] " +
                     "%s [deployment-policy-id] %s", deploymentPolicy.getTenantId(), deploymentPolicyUuid,
                     deploymentPolicy.getId());
-            String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicy.getId();
-            log.error(logMessage);
+            log.error(message);
             throw new DeploymentPolicyNotExistsException(message);
         }
 
