@@ -24,10 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * Utility class for Stratos thread pool
@@ -53,7 +50,20 @@ public class StratosThreadPool {
         if (executorService == null) {
             synchronized (executorServiceMapLock) {
                 if (executorService == null) {
-                    executorService = Executors.newFixedThreadPool(threadPoolSize);
+                    final BlockingQueue<Runnable> queue = new ArrayBlockingQueue(threadPoolSize);
+                    ThreadPoolExecutor threadPool=new ThreadPoolExecutor(threadPoolSize, 1000,
+                            0L, TimeUnit.MILLISECONDS,
+                            queue);// Executors.newFixedThreadPool(threadPoolSize);
+                    threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            try {
+                                executor.getQueue().put(r);
+                            } catch (InterruptedException e) {
+                                log.error("Failed to add the rejected jobs to executor service blocking queue",e);
+                            }
+                        }
+                    });
+                    executorService=threadPool;
                     executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
                 }
