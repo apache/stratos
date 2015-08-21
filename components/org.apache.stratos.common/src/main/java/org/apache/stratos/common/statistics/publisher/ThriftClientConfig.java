@@ -28,9 +28,11 @@ import org.apache.commons.lang.StringUtils;
 public class ThriftClientConfig {
 
     public static final String THRIFT_CLIENT_CONFIG_FILE_PATH = "thrift.client.config.file.path";
+    public static final String CEP_THRIFT_CLIENT_NAME = "cep";
+    public static final String DAS_THRIFT_CLIENT_NAME = "das";
 
     private static volatile ThriftClientConfig instance;
-    private ThriftClientInfo thriftClientInfo;
+    private ThriftClientInfo cepThriftClientInfo, dasThriftClientInfo;
 
     /*
     * A private Constructor prevents any other
@@ -63,19 +65,37 @@ public class ThriftClientConfig {
      * <p/>
      * This method is used to return the assigned values in ThriftClientInfo Object
      *
+     * @param thriftClientName Thrift Client Name
      * @return ThriftClientInfo object which consists of username,password,ip and port values
      */
-    public ThriftClientInfo getThriftClientInfo() {
-        return thriftClientInfo;
+    public ThriftClientInfo getThriftClientInfo(String thriftClientName) {
+        if (CEP_THRIFT_CLIENT_NAME.equals(thriftClientName)) {
+            return cepThriftClientInfo;
+        } else if (DAS_THRIFT_CLIENT_NAME.equals(thriftClientName)) {
+            return dasThriftClientInfo;
+        }
+        return null;
     }
 
     /**
-     * Parsed values will be assigned to ThriftClientInfo object. Required fields will be taken
+     * Parsed values will be assigned to dasThriftClientInfo object. Required fields will be taken
      * from thrift-client-config.xml file.
      *
-     * @param thriftClientInfo Object of the ThriftClientInfo
+     * @param thriftClientInfo DAS Thrift Client Information
      */
-    public void setThriftClientInfo(ThriftClientInfo thriftClientInfo) {
-        this.thriftClientInfo = thriftClientInfo;
+
+    public void setDASThriftClientInfo(ThriftClientInfo thriftClientInfo) {
+        this.dasThriftClientInfo = thriftClientInfo;
+    }
+
+    /**
+     * Parsed values will be assigned to cepThriftClientInfo object. Required fields will be taken
+     * from thrift-client-config.xml file.
+     *
+     * @param thriftClientInfo CEP Thrift Client Information
+     */
+
+    public void setCEPThriftClientInfo(ThriftClientInfo thriftClientInfo) {
+        this.cepThriftClientInfo = thriftClientInfo;
     }
 }

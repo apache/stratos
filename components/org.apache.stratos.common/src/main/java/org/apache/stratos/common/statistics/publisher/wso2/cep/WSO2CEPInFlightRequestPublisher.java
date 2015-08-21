@@ -42,9 +42,10 @@ public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher i
     private static final String STATS_PUBLISHER_ENABLED = "cep.stats.publisher.enabled";
     private static final String DATA_STREAM_NAME = "in_flight_requests";
     private static final String VERSION = "1.0.0";
+    private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
     public WSO2CEPInFlightRequestPublisher() {
-        super(createStreamDefinition(), STATS_PUBLISHER_ENABLED);
+        super(createStreamDefinition(), STATS_PUBLISHER_ENABLED, CEP_THRIFT_CLIENT_NAME);
     }
 
     private static StreamDefinition createStreamDefinition() {
@@ -56,7 +57,7 @@ public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher i
             List<Attribute> payloadData = new ArrayList<Attribute>();
 
             // Set payload definition
-            payloadData.add(new Attribute("time_stamp", AttributeType.LONG));
+            payloadData.add(new Attribute("timestamp", AttributeType.LONG));
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("cluster_instance_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
