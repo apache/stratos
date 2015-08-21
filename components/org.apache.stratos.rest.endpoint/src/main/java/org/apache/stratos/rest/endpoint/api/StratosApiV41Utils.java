@@ -1046,7 +1046,7 @@ public class StratosApiV41Utils {
         }
 
         ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup
-                (serviceGroupDefinition,UUID.randomUUID().toString(), tenantId);
+                (serviceGroupDefinition, cartridgeGroupUuid, tenantId);
         try {
             findCartridgesInGroupBean(serviceGroup, cartridgeTypes);
         } catch (RemoteException e) {
@@ -1279,6 +1279,36 @@ public class StratosApiV41Utils {
             throw new RestAPIException(message, e);
         }
     }
+
+    /**
+     * Get a Service Group Definition by Name
+     *
+     * @param groupName Group Name
+     * @param tenantId tenant Id
+     * @return GroupBean
+     * @throws RestAPIException
+     */
+    public static CartridgeGroupBean getOuterServiceGroupDefinition(String groupName,
+                                                                    int tenantId) throws RestAPIException {
+        if (log.isDebugEnabled()) {
+            log.debug("Reading cartridge group: [cartridge-group-name] " + groupName);
+        }
+
+        try {
+            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
+            ServiceGroup serviceGroup = asServiceClient.getOuterServiceGroupByTenant(groupName, tenantId);
+            if (serviceGroup == null) {
+                return null;
+            }
+            return ObjectConverter.convertStubServiceGroupToServiceGroupDefinition(serviceGroup);
+
+        } catch (Exception e) {
+            String message = "Could not get cartridge group: [cartridge-group-name] " + groupName;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
 
     /**
      * Get a list of GroupBeans

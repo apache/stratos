@@ -494,8 +494,9 @@ public class StratosApiV41 extends AbstractApi {
         String cartrideGroupUuid= UUID.randomUUID().toString();
         int tenantId = carbonContext.getTenantId();
 
-        CartridgeGroupBean groupBean = null;
-        groupBean = StratosApiV41Utils.getServiceGroupDefinition(cartridgeGroupBean.getName(), carbonContext.getTenantId());
+        CartridgeGroupBean groupBean;
+        groupBean = StratosApiV41Utils.getOuterServiceGroupDefinition(cartridgeGroupBean.getName(),
+                carbonContext.getTenantId());
 
         if (groupBean != null) {
             String msg = String.format("Cartridge group already exists: [cartridge-group-name] %s",

@@ -841,7 +841,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupUuid);
+            handleError("Service Group Definition not found for uuid " + serviceGroupUuid);
         }
 
         if (log.isDebugEnabled()) {

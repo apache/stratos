@@ -932,6 +932,25 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 		}
 	}
 
+    public ServiceGroup getOuterServiceGroupByTenant(String name, int tenantId) {
+        ServiceGroup outerGroup = null;
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
+        try {
+            ServiceGroup[] serviceGroups = getServiceGroupsByTenant(tenantId);
+            for (ServiceGroup serviceGroup : serviceGroups) {
+                if (serviceGroup.getName().equals(name)) {
+                    outerGroup = serviceGroup;
+                    break;
+                }
+            }
+            return outerGroup;
+        } catch (Exception e) {
+            throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
+        }
+    }
+
     public DeploymentPolicy getDeploymentPolicyByTenant(String deploymentPolicyId, int tenantId) {
         DeploymentPolicy[] deploymentPolicies = getDeploymentPolicies();
         for(DeploymentPolicy deploymentPolicy : deploymentPolicies) {
