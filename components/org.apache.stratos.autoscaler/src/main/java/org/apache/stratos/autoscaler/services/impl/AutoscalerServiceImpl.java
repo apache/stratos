@@ -907,12 +907,14 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 		}
 		try {
             ServiceGroup[] serviceGroups=getServiceGroupsByTenant(tenantId);
-            for(ServiceGroup serviceGroup:serviceGroups){
-               if(serviceGroup.getName().equals(name)){
-                   selectedGroup=serviceGroup;
-               }
-                else{
-                   ServiceGroup[] innerGroups=serviceGroup.getGroups();
+            for(ServiceGroup serviceGroup:serviceGroups) {
+                if (serviceGroup.getName().equals(name)) {
+                    selectedGroup = serviceGroup;
+                    return selectedGroup;
+                }
+            }
+            for(ServiceGroup serviceGroup:serviceGroups) {
+                ServiceGroup[] innerGroups=serviceGroup.getGroups();
                    while(innerGroups!=null){
                        for(ServiceGroup nestedGroup:innerGroups) {
                            if(nestedGroup.getName().equals(name)){
@@ -923,7 +925,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                            }
                        }
                    }
-               }
             }
             return selectedGroup;
 		} catch (Exception e) {
