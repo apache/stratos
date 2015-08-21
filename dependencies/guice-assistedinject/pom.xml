@@ -23,23 +23,20 @@
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>guice-assistedinject</artifactId>
     <packaging>bundle</packaging>
     <name>Guice Assistedinject</name>
-    <version>3.0</version>
-    <description>
-        This bundle will expose com.google.inject.assistedinject
-    </description>
+    <version>${guice.assistedinject.version}</version>
+    <description>This bundle will expose com.google.inject.assistedinject</description>
 
     <dependencies>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-            <version>3.0</version>
+            <version>${guice.assistedinject.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -53,10 +50,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>com.google.inject.assistedinject; version="3.0"</Export-Package>
+                        <Export-Package>com.google.inject.assistedinject; version="${guice.assistedinject.version}"
+                        </Export-Package>
                         <Import-Package>
                             !com.google.inject.assistedinject.*,
-                            com.google.inject.*;version="[3.0,4.0)",
+                            com.google.inject.*;version="${guice.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

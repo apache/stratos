@@ -23,23 +23,20 @@
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>guice-multibindings</artifactId>
     <packaging>bundle</packaging>
     <name>Google Guice - Extensions - MultiBindings</name>
-    <version>3.0</version>
-    <description>
-        This bundle will expose com.google.inject.multibindings
-    </description>
+    <version>${guice.multibindings.version}</version>
+    <description>This bundle will expose com.google.inject.multibindings</description>
 
     <dependencies>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
-            <version>3.0</version>
+            <version>${guice.multibindings.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -53,7 +50,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>com.google.inject.multibindings; version="3.0"</Export-Package>
+                        <Export-Package>com.google.inject.multibindings; version="${guice.multibindings.version}"
+                        </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
                         </Import-Package>

@@ -22,13 +22,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-dependents</artifactId>
+        <artifactId>stratos-dependencies-jclouds</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>openstack-common</artifactId>
-    <version>1.9.1</version>
+    <version>${jclouds.version}</version>
     <name>jclouds OpenStack Components Core</name>
     <description>jclouds Core components to access OpenStack apis</description>
     <packaging>bundle</packaging>
@@ -37,7 +36,7 @@
         <dependency>
             <groupId>org.apache.jclouds.common</groupId>
             <artifactId>openstack-common</artifactId>
-            <version>1.9.1</version>
+            <version>${jclouds.version}</version>
         </dependency>
     </dependencies>
 
@@ -53,10 +52,10 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.jclouds.openstack*;version="${project.version}";-noimport:=true</Export-Package>
+                        <Export-Package>org.jclouds.openstack*;version="${jclouds.version}";-noimport:=true</Export-Package>
                         <Import-Package>
-                            org.jclouds*;version="${project.version}",
-                            com.google.inject.*;version="[3.0,4.0)",
+                            org.jclouds*;version="${jclouds.version}",
+                            com.google.inject.*;version="${guice.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

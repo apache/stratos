@@ -23,21 +23,20 @@
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>guice</artifactId>
     <packaging>bundle</packaging>
     <name>Guice</name>
-    <version>3.0</version>
+    <version>${guice.version}</version>
     <description>This OSGi bundle wraps guice 3.0 jar files.</description>
 
     <dependencies>
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>${guice.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -51,10 +50,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>com.google.inject*;version="3.0";-split-package:=merge-first</Export-Package>
+                        <Export-Package>com.google.inject*;version="${guice.version}";-split-package:=merge-first
+                        </Export-Package>
                         <Import-Package>
-                            javax.inject;version="1",
-                            org.aopalliance*;version="[1.0,2)",
+                            javax.inject;version="${javax.inject.imp.pkg.version}",
+                            org.aopalliance*;version="${aopalliance.imp.pkg.version}",
                             com.google.inject.internal.asm.util.*;resolution:=optional,
                             *;resolution:=optional
                         </Import-Package>

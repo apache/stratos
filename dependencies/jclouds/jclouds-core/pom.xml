@@ -22,13 +22,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-dependents</artifactId>
+        <artifactId>stratos-dependencies-jclouds</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>jclouds-core</artifactId>
-    <version>1.9.1</version>
+    <version>${jclouds.version}</version>
     <name>jclouds Components Core</name>
     <packaging>bundle</packaging>
     <description>Core components to access jclouds services</description>
@@ -37,7 +36,7 @@
         <dependency>
             <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-core</artifactId>
-            <version>1.9.1</version>
+            <version>${jclouds.version}</version>
         </dependency>
     </dependencies>
 
@@ -82,10 +81,10 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.jclouds*;version="1.9.1"</Export-Package>
+                        <Export-Package>org.jclouds*;version="${jclouds.version}"</Export-Package>
                         <Import-Package>
-                            org.nnsoft.guice.rocoto*;version="[6.1,7)",
-                            com.google.inject.*;version="[3.0,4.0)",
+                            org.nnsoft.guice.rocoto*;version="${rocoto.version}",
+                            com.google.inject.*;version="${guice.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Bundle-Activator>org.jclouds.osgi.Activator</Bundle-Activator>

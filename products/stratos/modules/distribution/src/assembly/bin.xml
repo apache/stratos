@@ -198,7 +198,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/</directory>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
             <excludes>
                 <exclude>**/identity/**</exclude>
@@ -213,19 +213,13 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/</directory>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/identity</outputDirectory>
             <includes>
                 <include>**/**.sql</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
-            <includes>
-                <include>**/**.sql</include>
-            </includes>
-        </fileSet>
+
         <!-- copy cxf runtime -->
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/lib/runtimes</directory>
@@ -262,13 +256,6 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
             <includes>
                 <include>**/patch0001/*.*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
-            <includes>
-                <include>**/**.sql</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -359,6 +346,21 @@
 
         <!-- Additional configuration for kernel patches -->
         <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
+            <includes>
+                <include>**/db2.sql</include>
+                <include>**/mysql.sql</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0003/dbscripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
+            <includes>
+                <include>**/mysql_cluster.sql</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009/lib</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
             <includes>
@@ -377,13 +379,6 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
             <includes>
                 <include>**/org.wso2.ciphertool-1.0.0-wso2v2.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0003/dbscripts</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/registry</outputDirectory>
-            <includes>
-                <include>**/mysql_cluster.sql</include>
             </includes>
         </fileSet>
 

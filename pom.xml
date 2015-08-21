@@ -558,5 +558,17 @@
         <gson.version>2.3.1</gson.version>
         <carbon.deployment.version>4.2.3</carbon.deployment.version>
         <carbon.ui.stratos.version>4.2.0-stratosv2</carbon.ui.stratos.version>
+        <guice.version>3.0</guice.version>
+        <guice.assistedinject.version>3.0</guice.assistedinject.version>
+        <guice.multibindings.version>3.0</guice.multibindings.version>
+        <javax.inject.imp.pkg.version>1</javax.inject.imp.pkg.version>
+        <aopalliance.imp.pkg.version>[1.0,2)</aopalliance.imp.pkg.version>
+        <guice.imp.pkg.version>[3.0,4.0)</guice.imp.pkg.version>
+        <rocoto.version>6.1</rocoto.version>
+        <net.schmizz.sshj.version>0.8.1</net.schmizz.sshj.version>
+        <jzlib.imp.pkg.version>[1.0,2)</jzlib.imp.pkg.version>
+        <slf4j.imp.pkg.version>[1.6,2)</slf4j.imp.pkg.version>
+        <bouncycastle.imp.pkg.version>[1.45.0,2)</bouncycastle.imp.pkg.version>
+        <netty.imp.pkg.version>[3.3,4)</netty.imp.pkg.version>
     </properties>
 </project>

@@ -19,24 +19,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.jclouds.labs</groupId>
-        <artifactId>jclouds-labs-google</artifactId>
-        <version>1.9.1</version>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>google-jclouds-labs</artifactId>
+        <version>4.1.2-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.stratos</groupId>
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>oauth</artifactId>
     <name>jclouds OAuth Core</name>
     <description>jclouds components to access OAuth</description>
+    <version>${jclouds.version}</version>
     <packaging>bundle</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.jclouds.labs</groupId>
             <artifactId>oauth</artifactId>
-            <version>1.9.1</version>
+            <version>${jclouds.version}</version>
         </dependency>
     </dependencies>
 
@@ -58,7 +58,7 @@
                         </Private-Package>
                         <Import-Package>
                             org.jclouds*;version="${jclouds.version}",
-                            com.google.inject.*;version="[3.0,4.0)",
+                            com.google.inject.*;version="${guice.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Include-Resource>
