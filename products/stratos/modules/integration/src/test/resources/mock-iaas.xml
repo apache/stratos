@@ -48,13 +48,13 @@
                  stop: stop publishing statistics -->
             <pattern factor="memory-consumption" mode="continue">
                 <!-- Sample values -->
-                <sampleValues>60,70,80,90,90,90,40,60,50,60</sampleValues>
+                <sampleValues>60,60,10,10,10,10,10,10</sampleValues>
                 <!-- Duration of each sample value in seconds -->
                 <sampleDuration>60</sampleDuration>
             </pattern>
             <pattern factor="load-average" mode="continue">
                 <!-- Sample values -->
-                <sampleValues>70,70,70</sampleValues>
+                <sampleValues>60,60,10,10,10,10,10,10</sampleValues>
                 <!-- Duration of each sample value in seconds -->
                 <sampleDuration>60</sampleDuration>
             </pattern>

@@ -6,7 +6,7 @@
             {
                 "type": "c7-single-cluster-scaling-test",
                 "cartridgeMin": 2,
-                "cartridgeMax": 5,
+                "cartridgeMax": 6,
                 "subscribableInfo": {
                     "alias": "my-c7",
                     "autoscalingPolicy": "autoscaling-policy-single-cluster-scaling-test",

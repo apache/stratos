@@ -55,6 +55,7 @@ public class StratosTestServerManager extends TestServerManager {
     private final static int PORT_OFFSET = 0;
     private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
     private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
+    private static final String SCALING_DROOL_FILE = "scaling.drl";
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
     protected RestClient restClient;
@@ -162,6 +163,7 @@ public class StratosTestServerManager extends TestServerManager {
     protected void copyArtifacts(String carbonHome) throws IOException {
         copyConfigFile(carbonHome, MOCK_IAAS_XML_FILE);
         copyConfigFile(carbonHome, JNDI_PROPERTIES_FILE);
+        copyConfigFile(carbonHome, SCALING_DROOL_FILE, "repository/conf/drools");
         copyConfigFile(carbonHome, JMS_OUTPUT_ADAPTER_FILE, "repository/deployment/server/outputeventadaptors");
     }
 

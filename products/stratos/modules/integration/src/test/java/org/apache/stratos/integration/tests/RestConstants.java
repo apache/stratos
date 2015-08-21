@@ -24,6 +24,8 @@ package org.apache.stratos.integration.tests;
 public class RestConstants {
     public static final String API = "api";
     public static final String AUTOSCALING_POLICIES = "/" + API + "/autoscalingPolicies";
+    public static final String USERS = "/" + API + "/users";
+    public static final String TENANTS = "/" + API + "/tenants";
     public static final String DEPLOYMENT_POLICIES = "/" + API + "/deploymentPolicies";
     public static final String NETWORK_PARTITIONS = "/" + API + "/networkPartitions";
     public static final String CARTRIDGES = "/" + API + "/cartridges";
@@ -42,6 +44,7 @@ public class RestConstants {
     public static final String CARTRIDGES_NAME = "cartridge";
     public static final String NETWORK_PARTITIONS_PATH = "/network-partitions/mock/";
     public static final String NETWORK_PARTITIONS_NAME = "networkPartition";
+    public static final String USERS_NAME = "users";
     public static final String DEPLOYMENT_POLICIES_PATH = "/deployment-policies/";
     public static final String DEPLOYMENT_POLICIES_NAME = "deploymentPolicy";
     public static final String APPLICATIONS_PATH = "/applications/";

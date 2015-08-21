@@ -48,6 +48,8 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
     private static final String RESOURCES_PATH = "/single-cluster-scaling-test";
     private static final int CLUSTER_SCALE_UP_TIMEOUT = 180000;
+    private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 300000;
+    private int activeInstancesAfterScaleup = 0;
 
 
     @Test
@@ -111,6 +113,12 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
 
             //Verifying whether members got created using round robin algorithm
             assertClusterWithScalingup(bean.getApplicationId());
+
+            //assert scale-down
+            assertClusterWithScaleDown(bean.getApplicationId());
+
+            //Check whether cluster could scale-down upto the minimum
+            assertClusterScaleDownToMinimumCount(bean.getApplicationId());
 
             boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -227,8 +235,10 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
                             }
                         }
                     }
+
                     clusterScaleup = activeInstances > clusterDataHolder.getMinInstances();
                     if(clusterScaleup) {
+                        activeInstancesAfterScaleup = activeInstances;
                         break;
                     }
                 }
@@ -240,5 +250,116 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
         }
         assertEquals(String.format("Cluster did not get scaled up: [cluster-id] %s", clusterId),
                 clusterScaleup, true);
+    }
+
+    /**
+     * Assert application activation
+     *
+     * @param applicationName
+     */
+    private void assertClusterWithScaleDown(String applicationName) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        assertNotNull(String.format("Application is not found: [application-id] %s",
+                applicationName), application);
+        boolean clusterScaleDown = false;
+        String clusterId = null;
+        long startTime = System.currentTimeMillis();
+        while (!clusterScaleDown) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
+            for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+                String serviceName = clusterDataHolder.getServiceType();
+                clusterId = clusterDataHolder.getClusterId();
+                Service service = TopologyManager.getTopology().getService(serviceName);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                        applicationName, serviceName), service);
+
+                Cluster cluster = service.getCluster(clusterId);
+                assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                        applicationName, serviceName, clusterId), cluster);
+                for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                    int activeInstances = 0;
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
+                            if (member.getStatus().equals(MemberStatus.Active)) {
+                                activeInstances++;
+                            }
+                        }
+                    }
+
+                    if(activeInstances > activeInstancesAfterScaleup) {
+                        activeInstancesAfterScaleup = activeInstances;
+                    }
+
+                    clusterScaleDown = activeInstancesAfterScaleup - 1 == activeInstances;
+                    if(clusterScaleDown) {
+                        break;
+                    }
+
+                }
+
+                application = ApplicationManager.getApplications().getApplication(applicationName);
+                if ((System.currentTimeMillis() - startTime) > CLUSTER_SCALE_DOWN_TIMEOUT) {
+                    break;
+                }
+            }
+        }
+        assertEquals(String.format("Cluster did not get scaled up: [cluster-id] %s", clusterId),
+                clusterScaleDown, true);
+    }
+
+    /**
+     * Assert application activation
+     *
+     * @param applicationName
+     */
+    private void assertClusterScaleDownToMinimumCount(String applicationName) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        assertNotNull(String.format("Application is not found: [application-id] %s",
+                applicationName), application);
+        boolean clusterScaleDown = false;
+        String clusterId = null;
+        long startTime = System.currentTimeMillis();
+        while (!clusterScaleDown) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
+            for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+                String serviceName = clusterDataHolder.getServiceType();
+                clusterId = clusterDataHolder.getClusterId();
+                Service service = TopologyManager.getTopology().getService(serviceName);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                        applicationName, serviceName), service);
+
+                Cluster cluster = service.getCluster(clusterId);
+                assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                        applicationName, serviceName, clusterId), cluster);
+                for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                    int activeInstances = 0;
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
+                            if (member.getStatus().equals(MemberStatus.Active)) {
+                                activeInstances++;
+                            }
+                        }
+                    }
+                    clusterScaleDown = activeInstances == clusterDataHolder.getMinInstances();
+                    if(clusterScaleDown) {
+                        break;
+                    }
+                }
+                application = ApplicationManager.getApplications().getApplication(applicationName);
+                if ((System.currentTimeMillis() - startTime) > CLUSTER_SCALE_DOWN_TIMEOUT) {
+                    break;
+                }
+            }
+        }
+        assertEquals(String.format("Cluster did not get scaled up: [cluster-id] %s", clusterId),
+                clusterScaleDown, true);
     }
 }
