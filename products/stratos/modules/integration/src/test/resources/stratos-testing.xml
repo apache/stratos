@@ -26,7 +26,7 @@
             <class name="org.apache.stratos.integration.tests.users.UserTest" />
         </classes>
     </test>
-    <!--<test name="CartridgeTest">
+    <test name="CartridgeTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.group.CartridgeTest" />
         </classes>
@@ -65,13 +65,13 @@
         <classes>
             <class name="org.apache.stratos.integration.tests.application.ApplicationUpdateTest" />
         </classes>
-    </test>-->
+    </test>
     <test name="SingleClusterScalingTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest" />
         </classes>
     </test>
-    <!--<test name="ApplicationBurstingTest">
+    <test name="ApplicationBurstingTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest" />
         </classes>
@@ -90,5 +90,5 @@
         <classes>
             <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest" />
         </classes>
-    </test>-->
+    </test>
 </suite>

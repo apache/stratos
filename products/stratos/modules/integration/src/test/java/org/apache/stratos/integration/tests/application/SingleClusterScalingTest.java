@@ -48,7 +48,7 @@ public class SingleClusterScalingTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
     private static final String RESOURCES_PATH = "/single-cluster-scaling-test";
     private static final int CLUSTER_SCALE_UP_TIMEOUT = 180000;
-    private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 300000;
+    private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 360000;
     private int activeInstancesAfterScaleup = 0;
 
 
