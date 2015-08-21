@@ -42,7 +42,7 @@ public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher i
     private static final String STATS_PUBLISHER_ENABLED = "cep.stats.publisher.enabled";
     private static final String DATA_STREAM_NAME = "in_flight_requests";
     private static final String VERSION = "1.0.0";
-    public static final String CEP_THRIFT_CLIENT_NAME = "cep";
+    private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
     public WSO2CEPInFlightRequestPublisher() {
         super(createStreamDefinition(), STATS_PUBLISHER_ENABLED, CEP_THRIFT_CLIENT_NAME);
