@@ -356,7 +356,14 @@ public final class CarbonUILoginUtil {
 //            	response.sendRedirect("../../carbon/admin/login.jsp?loginStatus=false&errorCode=domain.not.specified");
 //            	return false;
 //        	}
-        	
+            String relayState = request.getParameter("RelayState");
+            if (relayState != null && relayState.endsWith("-logout")) {
+                session.setAttribute(CarbonSecuredHttpContext.LOGGED_USER, request.getParameter("username"));
+                session.setAttribute("idpSessionIndex", request.getParameter("idpSessionIndex"));
+                response.sendRedirect("/carbon/sso-acs/redirect_ajaxprocessor.jsp?logout=true");
+                return false;
+            }
+
             authenticator.authenticate(request);
             session = request.getSession();
             session.setAttribute(CarbonSecuredHttpContext.CARBON_AUTHNETICATOR, authenticator);
@@ -413,11 +420,7 @@ public final class CarbonUILoginUtil {
 				}
                 return false;
             }
-            String relayState = request.getParameter("RelayState");
-            if(relayState!= null && relayState.endsWith("-logout")){
-                response.sendRedirect("/carbon/admin/logout_action.jsp");
-                return false;
-            }
+
             if (contextPath != null) {
                 if (indexPageURL.startsWith("../..")) {
                     indexPageURL = indexPageURL.substring(5);

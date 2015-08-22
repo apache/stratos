@@ -25,7 +25,6 @@ import org.wso2.carbon.base.ServerConfiguration;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class CSRFValve extends ValveBase {
 
@@ -37,9 +36,9 @@ public class CSRFValve extends ValveBase {
     private static String RULE_PROPERTY = CSRF_VALVE_PROPERTY + ".Rule";
     private static String RULE_ALLOW = "allow";
     private static String RULE_DENY = "deny";
-    private static String[] patternList;
+    private static String[] csrfPatternList;
     private static String[] whiteList;
-    private static String rule;
+    private static String csrfRule;
     private static boolean csrfEnabled = false;
 
     /**
@@ -49,9 +48,9 @@ public class CSRFValve extends ValveBase {
 
         ServerConfiguration serverConfiguration = ServerConfiguration.getInstance();
         whiteList = serverConfiguration.getProperties(WHITE_LIST_PROPERTY);
-        patternList = serverConfiguration.getProperties(RULE_PATTERN_PROPERTY);
-        rule = serverConfiguration.getFirstProperty(RULE_PROPERTY);
-        if (whiteList.length > 0 && patternList.length > 0 && rule != null
+        csrfPatternList = serverConfiguration.getProperties(RULE_PATTERN_PROPERTY);
+        csrfRule = serverConfiguration.getFirstProperty(RULE_PROPERTY);
+        if (whiteList.length > 0 && csrfPatternList.length > 0 && csrfRule != null
                 && serverConfiguration.getFirstProperty(ENABLED_PROPERTY) != null && Boolean
                 .parseBoolean(serverConfiguration.getFirstProperty(ENABLED_PROPERTY))) {
             csrfEnabled = true;
@@ -76,30 +75,38 @@ public class CSRFValve extends ValveBase {
 
     /**
      * Validate request context with pattern
-     * @param request  Http Request
+     *
+     * @param request Http Request
      * @throws ServletException
      */
     private void validatePatterns(Request request) throws ServletException {
 
-        String context;
+        String context = request.getRequestURI().substring(request.getRequestURI().indexOf("/") + 1);
 
-        if (request.getRequestURI().indexOf("/", 2) == -1) {
-            context = request.getRequestURI().substring(request.getRequestURI().indexOf("/") + 1);
-        } else {
-            context = request.getRequestURI()
-                    .substring(request.getRequestURI().indexOf("/") + 1, request.getRequestURI().indexOf(
-                            "/", 2));
+        if (RULE_ALLOW.equals(csrfRule) && !isContextStartWithGivenPatterns(context)) {
+            validateRefererHeader(request);
+        } else if (RULE_DENY.equals(csrfRule) && isContextStartWithGivenPatterns(context)) {
+            validateRefererHeader(request);
         }
+    }
 
-        if (RULE_ALLOW.equals(rule)) {
-            if (!Arrays.asList(patternList).contains(context)) {
-                validateRefererHeader(request);
-            }
-        } else if (RULE_DENY.equals(rule)) {
-            if (Arrays.asList(patternList).contains(context)) {
-                validateRefererHeader(request);
+    /**
+     * Check whether context starts with defined pattern
+     *
+     * @param context
+     * @return
+     */
+    private boolean isContextStartWithGivenPatterns(String context) {
+
+        boolean patternMatched = false;
+
+        for (String pattern : csrfPatternList) {
+            if (context.startsWith(pattern)) {
+                patternMatched = true;
+                break;
             }
         }
+        return patternMatched;
     }
 
     /**

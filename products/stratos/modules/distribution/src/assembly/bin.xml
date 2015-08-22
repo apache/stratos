@@ -202,11 +202,12 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
             <excludes>
                 <exclude>**/identity/**</exclude>
-                <!-- Patched in WSO2-CARBON-PATCH-4.2.0-0001 and WSO2-CARBON-PATCH-4.2.0-0003
+                <!-- Patched in WSO2-CARBON-PATCH-4.2.0-0001, WSO2-CARBON-PATCH-4.2.0-0012 and WSO2-CARBON-PATCH-4.2.0-0003
                 Excluding since overwriting is not supported in assembly plugin -->
                 <exclude>mysql.sql</exclude>
                 <exclude>db2.sql</exclude>
                 <exclude>mysql_cluster.sql</exclude>
+                <exclude>oracle_rac.sql</exclude>
             </excludes>
             <includes>
                 <include>**/**.sql</include>
@@ -343,6 +344,16 @@
                 <include>**/patch0011/*.*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0012</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <excludes>
+                <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+            </excludes>
+            <includes>
+                <include>**/patch0012/*.*</include>
+            </includes>
+        </fileSet>
 
         <!-- Additional configuration for kernel patches -->
         <fileSet>
@@ -361,13 +372,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009/lib</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
-            <includes>
-                <include>**/org.wso2.carbon.server-4.2.0.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009/bin</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/bin</outputDirectory>
             <includes>
@@ -379,6 +383,20 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
             <includes>
                 <include>**/org.wso2.ciphertool-1.0.0-wso2v2.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0012/lib</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
+            <includes>
+                <include>**/org.wso2.carbon.server-4.2.0.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0012/dbscripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
+            <includes>
+                <include>**/oracle_rac.sql</include>
             </includes>
         </fileSet>
 
