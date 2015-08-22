@@ -30,7 +30,7 @@
     </config>
     <config>
         <name>das</name>
-        <statsPublisherEnabled>true</statsPublisherEnabled>
+        <statsPublisherEnabled>false</statsPublisherEnabled>
         <username>admin</username>
         <password>admin</password>
         <ip>localhost</ip>
