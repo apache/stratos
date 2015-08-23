@@ -85,10 +85,10 @@ public class PythonCartridgeAgentTest {
     private boolean eventReceiverInitiated = false;
     private TopologyEventReceiver topologyEventReceiver;
     private InstanceStatusEventReceiver instanceStatusEventReceiver;
-    private int cepPort = 7711;
+    private int cepPort = 7712;
     private BrokerService broker = new BrokerService();
     private static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "mqtt://localhost:1883";
+    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "mqtt://localhost:1884";
     private static final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
     public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
@@ -161,7 +161,7 @@ public class PythonCartridgeAgentTest {
         log.info("Starting python cartridge agent...");
         this.outputStream = executeCommand(
                 "python " + agentPath + "/agent.py > " + getResourcesFolderPath() + File.separator + ".." +
-                        File.separator + PYTHON_AGENT_DIR_NAME + File.separator + "cartridge-agent-ttttt.log");
+                        File.separator + PYTHON_AGENT_DIR_NAME + File.separator + "cartridge-agent.log");
     }
 
     /**

@@ -69,9 +69,7 @@ import java.util.concurrent.TimeUnit;
  * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 public class CloudControllerServiceComponent {
-
     private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
-
     private static final String CLOUD_CONTROLLER_COORDINATOR_LOCK = "cloud.controller.coordinator.lock";
     private static final String THREAD_POOL_ID = "cloud.controller.thread.pool";
     private static final String SCHEDULER_THREAD_POOL_ID = "cloud.controller.scheduler.thread.pool";
@@ -85,6 +83,9 @@ public class CloudControllerServiceComponent {
     private ScheduledExecutorService scheduler;
 
     protected void activate(final ComponentContext context) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating CloudControllerServiceComponent...");
+        }
         try {
             executorService = StratosThreadPool.getExecutorService(THREAD_POOL_ID, THREAD_POOL_SIZE);
             scheduler = StratosThreadPool.getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID,
@@ -124,7 +125,8 @@ public class CloudControllerServiceComponent {
                             executeCoordinatorTasks();
                         }
 
-                        componentStartUpSynchronizer.waitForWebServiceActivation("CloudControllerService");
+                        componentStartUpSynchronizer.waitForAxisServiceActivation(Component.CloudController,
+                                "CloudControllerService");
                         componentStartUpSynchronizer.setComponentStatus(Component.CloudController, true);
                         log.info("Cloud controller service component activated");
                     } catch (Exception e) {

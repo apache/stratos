@@ -79,9 +79,7 @@ import java.util.concurrent.TimeUnit;
  * cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
  */
 public class StratosManagerServiceComponent {
-
     private static final Log log = LogFactory.getLog(StratosManagerServiceComponent.class);
-
     private static final String THREAD_POOL_ID = "stratos.manager.thread.pool";
     private static final String SCHEDULER_THREAD_POOL_ID = "stratos.manager.scheduler.thread.pool";
     private static final String STRATOS_MANAGER_COORDINATOR_LOCK = "stratos.manager.coordinator.lock";
@@ -95,6 +93,9 @@ public class StratosManagerServiceComponent {
     private ScheduledExecutorService scheduler;
 
     protected void activate(final ComponentContext componentContext) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating StratosManagerServiceComponent...");
+        }
         try {
             executorService = StratosThreadPool.getExecutorService(THREAD_POOL_ID, THREAD_POOL_SIZE);
             scheduler = StratosThreadPool.getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID,
@@ -148,7 +149,8 @@ public class StratosManagerServiceComponent {
                         // Initialize application event receiver
                         initializeApplicationEventReceiver();
 
-                        componentStartUpSynchronizer.waitForWebServiceActivation("StratosManagerService");
+                        componentStartUpSynchronizer.waitForAxisServiceActivation(Component.StratosManager,
+                                "StratosManagerService");
                         componentStartUpSynchronizer.setComponentStatus(Component.StratosManager, true);
                         if (log.isInfoEnabled()) {
                             log.info("Stratos manager component is activated");

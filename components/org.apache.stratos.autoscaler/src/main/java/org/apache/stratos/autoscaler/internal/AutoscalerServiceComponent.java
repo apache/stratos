@@ -77,17 +77,17 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class AutoscalerServiceComponent {
-
     private static final Log log = LogFactory.getLog(AutoscalerServiceComponent.class);
-
     private static final String AUTOSCALER_COORDINATOR_LOCK = "AUTOSCALER_COORDINATOR_LOCK";
-
     private AutoscalerTopologyEventReceiver asTopologyReceiver;
     private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
     private ExecutorService executorService;
     private ScheduledExecutorService scheduler;
 
     protected void activate(ComponentContext componentContext) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating AutoscalerServiceComponent...");
+        }
         try {
             XMLConfiguration conf = ConfUtil.getInstance(AutoscalerConstants.COMPONENTS_CONFIG).getConfiguration();
             int threadPoolSize = conf.getInt(AutoscalerConstants.THREAD_POOL_SIZE_KEY,
@@ -136,8 +136,8 @@ public class AutoscalerServiceComponent {
                         } else {
                             executeCoordinatorTasks();
                         }
-
-                        componentStartUpSynchronizer.waitForWebServiceActivation("AutoscalerService");
+                        componentStartUpSynchronizer.waitForAxisServiceActivation(Component.Autoscaler,
+                                "AutoscalerService");
                         componentStartUpSynchronizer.setComponentStatus(Component.Autoscaler, true);
                         if (log.isInfoEnabled()) {
                             log.info("Autoscaler service component activated");

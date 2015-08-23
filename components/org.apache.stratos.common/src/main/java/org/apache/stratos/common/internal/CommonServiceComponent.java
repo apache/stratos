@@ -53,10 +53,12 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 public class CommonServiceComponent {
-
     private static Log log = LogFactory.getLog(CommonServiceComponent.class);
 
     protected void activate(ComponentContext context) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating CommonServiceComponent...");
+        }
         try {
             final BundleContext bundleContext = context.getBundleContext();
             if (CommonUtil.getStratosConfig() == null) {
@@ -80,6 +82,7 @@ public class CommonServiceComponent {
                             long startTime = System.currentTimeMillis();
                             log.info("Waiting for the hazelcast instance to be initialized...");
                             while (ServiceReferenceHolder.getInstance().getHazelcastInstance() == null) {
+                                log.info("Waiting for Hazelcast instance to be initialized...");
                                 Thread.sleep(1000);
                                 if ((System.currentTimeMillis() - startTime) >= StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT) {
                                     throw new RuntimeException("Hazelcast instance was not initialized within "
@@ -97,7 +100,6 @@ public class CommonServiceComponent {
                 thread.setName("Distributed object provider registration thread");
                 thread.start();
             } else {
-                // Register distributed object provider service
                 registerDistributedObjectProviderService(bundleContext);
                 registerComponentStartUpSynchronizer(bundleContext);
             }

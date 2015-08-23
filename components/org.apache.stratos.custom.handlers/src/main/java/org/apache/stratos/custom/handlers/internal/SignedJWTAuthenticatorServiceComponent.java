@@ -42,7 +42,6 @@ import java.util.Hashtable;
  * unbind="unsetRealmService"
  */
 public class SignedJWTAuthenticatorServiceComponent {
-
     private static final Log log = LogFactory.getLog(SignedJWTAuthenticatorServiceComponent.class);
     private static RealmService realmService = null;
     private static BundleContext bundleContext = null;
@@ -67,6 +66,9 @@ public class SignedJWTAuthenticatorServiceComponent {
     }
 
     protected void activate(ComponentContext cxt) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating SignedJWTAuthenticatorServiceComponent...");
+        }
         try {
             SignedJWTAuthenticator authenticator = new SignedJWTAuthenticator();
             SignedJWTAuthenticatorServiceComponent.setBundleContext(cxt.getBundleContext());
@@ -74,19 +76,18 @@ public class SignedJWTAuthenticatorServiceComponent {
             props.put(CarbonConstants.AUTHENTICATOR_TYPE, authenticator.getAuthenticatorName());
             cxt.getBundleContext().registerService(CarbonServerAuthenticator.class.getName(),
                     authenticator, props);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error(e.getMessage(), e);
             // throwing so that server will not start
             throw new RuntimeException("Failed to start the Signed JWT Authenticator Bundle" +
                     e.getMessage(), e);
         }
-        log.debug("Signed JWT Authenticator is activated");
+        log.info("Signed JWT Authenticator is activated");
     }
 
     protected void deactivate(ComponentContext context) {
-        if (log.isDebugEnabled()) {
-            log.debug("Signed JWT Authenticator is deactivated");
-        }
+        log.debug("Signed JWT Authenticator is deactivated");
     }
 
     protected void unsetRealmService(RealmService realmService) {

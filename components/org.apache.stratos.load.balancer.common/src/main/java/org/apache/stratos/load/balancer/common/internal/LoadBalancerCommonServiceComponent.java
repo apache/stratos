@@ -35,11 +35,13 @@ public class LoadBalancerCommonServiceComponent {
     private static final Log log = LogFactory.getLog(LoadBalancerCommonServiceComponent.class);
 
     protected void activate(ComponentContext context) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating LoadBalancerCommonServiceComponent...");
+        }
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Load Balancer Common Service bundle activated");
-            }
-        } catch (Exception e) {
+            log.debug("Load Balancer Common Service bundle activated");
+        }
+        catch (Exception e) {
             log.error("Could not activate Load Balancer Common Service bundle", e);
         }
     }

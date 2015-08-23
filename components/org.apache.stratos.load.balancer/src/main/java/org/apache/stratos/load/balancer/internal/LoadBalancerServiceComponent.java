@@ -98,6 +98,9 @@ public class LoadBalancerServiceComponent {
     private LoadBalancerStatisticsNotifier statisticsNotifier;
 
     protected void activate(ComponentContext ctxt) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating LoadBalancerServiceComponent...");
+        }
         try {
             ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
             boolean clusteringEnabled = (clusteringAgent != null);

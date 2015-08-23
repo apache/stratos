@@ -40,6 +40,9 @@ public class LoadBalancerExtensionAPIServiceComponent {
      * @param context component context
      */
     protected void activate(ComponentContext context) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating LoadBalancerExtensionAPIServiceComponent...");
+        }
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Load Balancer Extension API Service bundle activated");

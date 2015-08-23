@@ -39,11 +39,10 @@ import java.util.Map;
  * Stratos component startup synchronizer.
  */
 public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchronizer {
-
     private static final Log log = LogFactory.getLog(ComponentStartUpSynchronizerImpl.class);
-
     private static final String COMPONENT_STATUS_MAP = "stratos.component.status.map";
-    private static final String COMPONENT_STARTUP_SYNCHRONIZER_ENABLED = "stratos.component.startup.synchronizer.enabled";
+    private static final String COMPONENT_STARTUP_SYNCHRONIZER_ENABLED =
+            "stratos.component.startup.synchronizer.enabled";
     private static final String COMPONENT_ACTIVATION_CHECK_INTERVAL = "stratos.component.activation.check.interval";
     private static final String COMPONENT_ACTIVATION_TIMEOUT = "stratos.component.activation.timeout";
     private static final long DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL = 1000;
@@ -64,12 +63,12 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
 
         componentActivationCheckInterval = Long.getLong(COMPONENT_ACTIVATION_CHECK_INTERVAL,
                 DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL);
-        log.info(String.format("Component activation check interval: %s seconds",
+        log.info(String.format("Component activation check interval: %s seconds.",
                 (componentActivationCheckInterval / 1000)));
 
         componentActivationTimeout = Long.getLong(COMPONENT_ACTIVATION_TIMEOUT,
                 DEFAULT_COMPONENT_ACTIVATION_TIMEOUT);
-        log.info(String.format("Component activation timeout: %s seconds", (componentActivationTimeout / 1000)));
+        log.info(String.format("Component activation timeout: %s seconds.", (componentActivationTimeout / 1000)));
     }
 
     /**
@@ -86,17 +85,16 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
      * Set the status of a component.
      *
      * @param component
-     * @param active
+     * @param isActive
      */
     @Override
-    public void setComponentStatus(Component component, boolean active) {
-        componentStatusMap.put(component, active);
-
-        if (active) {
+    public void setComponentStatus(Component component, boolean isActive) {
+        componentStatusMap.put(component, isActive);
+        if (isActive) {
             notifyComponentActivationEventListeners(component);
-            log.info(String.format("%s activated", component));
+            log.info(String.format("%s activated.", component));
         } else {
-            log.info(String.format("%s inactivated", component));
+            log.info(String.format("%s inactivated.", component));
         }
     }
 
@@ -112,8 +110,9 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
                     ComponentActivationEventListener componentActivationEventListener =
                             (ComponentActivationEventListener) eventListener;
                     componentActivationEventListener.activated(component);
-                } catch (Exception e) {
-                    log.error("An error occurred while notifying component activation event listener", e);
+                }
+                catch (Exception e) {
+                    log.error("An error occurred while notifying component activation event listener.", e);
                 }
             }
         }
@@ -141,32 +140,28 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
      */
     @Override
     public void waitForComponentActivation(Component owner, Component component) {
-
         if (!componentStartUpSynchronizerEnabled) {
-            log.debug(String.format("Component activation check is disabled, %s did not wait for %s to be activated",
+            log.info(String.format("Component activation check is disabled, %s did not wait for %s to be activated.",
                     owner, component));
             return;
         }
-
         long startTime = System.currentTimeMillis();
-        boolean logged = false;
+        log.info(String.format("%s is set to wait for %s to be activated.", owner, component));
         while (!isComponentActive(component)) {
-            if (!logged) {
-                log.info(String.format("%s is waiting for %s to be activated...",
-                        owner, component));
-                logged = true;
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("%s is waiting for %s to be activated...", owner, component));
             }
-
             try {
                 Thread.sleep(componentActivationCheckInterval);
-            } catch (InterruptedException ignore) {
+            }
+            catch (InterruptedException ignore) {
                 throw new RuntimeException(String.format("Thread interrupted, %s could not wait for " +
-                        "%s to be activated", owner, component));
+                        "%s to be activated.", owner, component));
             }
 
             long currentTime = System.currentTimeMillis();
             if ((currentTime - startTime) > componentActivationTimeout) {
-                throw new RuntimeException(String.format("%s did not activated within %d seconds ",
+                throw new RuntimeException(String.format("%s did not activate within %d seconds.",
                         component, (componentActivationTimeout / 1000)));
             }
         }
@@ -175,31 +170,32 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
     /**
      * Wait for a web service to be activated.
      *
-     * @param serviceName
+     * @param axisServiceName
      * @throws AxisFault
      */
     @Override
-    public void waitForWebServiceActivation(String serviceName) throws AxisFault {
-
+    public void waitForAxisServiceActivation(Component owner, String axisServiceName) throws AxisFault {
         if (!componentStartUpSynchronizerEnabled) {
-            log.debug(String.format("Component activation check is disabled, did not wait for %s to be activated",
-                    serviceName));
+            log.info(String.format("Component activation check is disabled, did not wait for %s to be activated.",
+                    axisServiceName));
             return;
         }
 
         AxisConfiguration axisConfiguration = CarbonConfigurationContextFactory.getConfigurationContext()
                 .getAxisConfiguration();
-        AxisService cloudControllerService = axisConfiguration.getService(serviceName);
-        if (!cloudControllerService.isActive()) {
-            while (!cloudControllerService.isActive()) {
-                log.info(String.format("Waiting for %s web service to be activated...", serviceName));
+        AxisService axisService = axisConfiguration.getService(axisServiceName);
+        log.info(String.format("%s is set to wait for %s Axis service to be activated.", owner, axisServiceName));
+        if (!axisService.isActive()) {
+            while (!axisService.isActive()) {
+                log.info(String.format("%s is waiting for %s Axis service to be activated...", owner, axisServiceName));
                 try {
                     Thread.sleep(componentActivationCheckInterval);
-                } catch (InterruptedException ignore) {
+                }
+                catch (InterruptedException ignore) {
                     return;
                 }
             }
-            log.info(String.format("%s web service activated", serviceName));
+            log.info(String.format("%s Axis service activated.", axisServiceName));
         }
     }
 

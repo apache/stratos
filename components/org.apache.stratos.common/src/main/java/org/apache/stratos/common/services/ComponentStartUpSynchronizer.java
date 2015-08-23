@@ -35,7 +35,7 @@ public interface ComponentStartUpSynchronizer {
 
     void waitForComponentActivation(Component owner, Component component);
 
-    void waitForWebServiceActivation(String serviceName) throws AxisFault;
+    void waitForAxisServiceActivation(Component owner, String serviceName) throws AxisFault;
 
     void addEventListener(ComponentStartUpEventListener eventListener);
 }

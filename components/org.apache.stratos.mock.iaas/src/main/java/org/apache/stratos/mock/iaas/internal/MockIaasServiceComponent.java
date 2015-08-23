@@ -47,6 +47,9 @@ public class MockIaasServiceComponent {
     private static final Log log = LogFactory.getLog(MockIaasServiceComponent.class);
 
     protected void activate(final ComponentContext context) {
+        if (log.isDebugEnabled()) {
+            log.debug("Activating MockIaasServiceComponent...");
+        }
         Runnable mockIaasActivator = new Runnable() {
             @Override
             public void run() {
