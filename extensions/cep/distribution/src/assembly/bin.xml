@@ -24,17 +24,17 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
-	<fileSet>
+        <fileSet>
             <directory>../artifacts/</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
-	 <includes>                                                                                                                                                                     
+            <includes>
                 <include>**/*.xml</include>
-         </includes>
-	<excludes>
-		<exclude>pom.xml</exclude>
-		<exclude>src/**</exclude>
-	</excludes>
-        </fileSet> 
+            </includes>
+            <excludes>
+                <exclude>pom.xml</exclude>
+                <exclude>src/**</exclude>
+            </excludes>
+        </fileSet>
     </fileSets>
     <files>
         <file>
@@ -57,4 +57,3 @@
         </file>
     </files>
 </assembly>
-

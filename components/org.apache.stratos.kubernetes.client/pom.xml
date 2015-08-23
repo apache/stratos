@@ -20,19 +20,17 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
         <version>4.1.2-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.kubernetes.client</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Stratos - Kubernetes API Java Client</name>
     <description>A Java client library written for Kubernetes API</description>
-    <url>http://apache.org</url>
 
     <dependencies>
         <dependency>
@@ -43,16 +41,18 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>kubernetes-api</artifactId>
-            <version>${project.version}</version>
+            <version>${kubernetes.api.version}</version>
         </dependency>
     </dependencies>
 

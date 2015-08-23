@@ -17,8 +17,8 @@
   ~ under the License.
   -->
 
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
     <id>bin</id>
     <formats>
@@ -84,7 +84,7 @@
                 <include>start-servers.sh</include>
                 <include>clean.sh</include>
                 <include>mount-volumes.sh</include>
-		<include>member-activated.sh</include>
+                <include>member-activated.sh</include>
                 <include>member-started.sh</include>
                 <include>member-terminated.sh</include>
                 <include>member-suspended.sh</include>
@@ -121,7 +121,7 @@
             <outputDirectory>/</outputDirectory>
             <fileMode>0600</fileMode>
         </fileSet>
-	<fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/main/notice</directory>
             <outputDirectory>/</outputDirectory>
             <fileMode>0600</fileMode>
@@ -130,14 +130,14 @@
     <dependencySets>
         <dependencySet>
             <excludes>
-		<exclude>*:annotations*</exclude>
-		<exclude>*:icu4j*</exclude>
-		<exclude>*:jaxen*</exclude>
-		<exclude>*:jboss-transaction-api*</exclude>
-		<exclude>*:wrapper*</exclude>
-		<exclude>*:xom*</exclude>
-		<exclude>slf4j.wso2:slf4j</exclude>
-	    </excludes>
+                <exclude>*:annotations*</exclude>
+                <exclude>*:icu4j*</exclude>
+                <exclude>*:jaxen*</exclude>
+                <exclude>*:jboss-transaction-api*</exclude>
+                <exclude>*:wrapper*</exclude>
+                <exclude>*:xom*</exclude>
+                <exclude>slf4j.wso2:slf4j</exclude>
+            </excludes>
             <outputDirectory>/lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <scope>runtime</scope>

@@ -18,36 +18,25 @@
        under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-mgt-parent-feature</artifactId>
         <version>4.1.2-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.manager.feature</artifactId>    
+    <artifactId>org.apache.stratos.manager.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Management Composite Feature</name>
-    <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Stratos Manager</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.manager.server.feature</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>p2-feature-generation</id>
@@ -59,10 +48,14 @@
                             <id>org.apache.stratos.manager</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}</bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}
+                                </bundleDef>
                             </bundles>
                             <includedFeatures>
-                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.manager.server.feature:${project.version}</includedFeatureDef>
+                                <includedFeatureDef>
+                                    org.apache.stratos:org.apache.stratos.manager.server.feature:${project.version}
+                                </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

@@ -20,7 +20,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
@@ -52,18 +51,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <wso2carbon.version>4.2.0</wso2carbon.version>
-        <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <synapse.wso2.version>2.1.1-wso2v4</synapse.wso2.version>
-        <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
-        <google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
-        <com.google.guice.assistedinject.wso2.version>3.0.wso2v1</com.google.guice.assistedinject.wso2.version>
-        <sun.jersey.version>1.12</sun.jersey.version>
-        <gson2.version>2.2</gson2.version>
-        <google.collect.osgi.version>1.0.0.wso2v2</google.collect.osgi.version>
-        <axis2.wso2.version>1.6.1.wso2v10</axis2.wso2.version>
-        <axiom.wso2.version>1.2.11.wso2v4</axiom.wso2.version>
-    </properties>
 </project>

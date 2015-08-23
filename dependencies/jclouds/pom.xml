@@ -19,18 +19,17 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
         <version>4.1.2-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>stratos-dependencies-jclouds</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - jclouds Dependent Projects</name>
     <description>Apache Stratos jcloud dependent projects</description>
-    <url>http://apache.org</url>
 
     <modules>
         <module>google-jclouds-labs</module>

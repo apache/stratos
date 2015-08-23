@@ -16,21 +16,19 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-   <parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cep-features</artifactId>
         <version>4.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>org.apache.stratos.event.processor.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Event Processor Aggregator Feature</name>
-    <url>http://wso2.org</url>
     <description>
         This feature contains the bundles required for Event Processor feature.
     </description>
@@ -48,7 +46,6 @@
             <version>1.0.0</version>
             <type>zip</type>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -56,7 +53,6 @@
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>4-p2-feature-generation</id>
@@ -68,8 +64,7 @@
                             <id>org.apache.stratos.event.processor</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core:${carbon.version}
-                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core:${carbon.kernel.version}</importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
                                 <includedFeatureDef>

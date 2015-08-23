@@ -17,36 +17,26 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-   <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-manager-features</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-	<relativePath>../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.manager.styles.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - stratos manager admin theme</name>
-    <url>http://apache.org</url>
-    <description />
+    <description/>
 
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.manager.styles</artifactId>
-	    <version>${project.version}</version>
-            </dependency>
-        </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>p2-feature-generation</id>
@@ -64,10 +54,11 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.styles:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.styles:${project.version}
+                                </bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.ui:${carbon.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.ui:${carbon.kernel.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
@@ -75,5 +66,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

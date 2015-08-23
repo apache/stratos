@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>openstack-nova</artifactId>
-    <version>${jclouds.version}</version>
+    <version>1.9.1</version>
     <name>Apache jclouds :: OpenStack :: Nova API</name>
     <description>jclouds components to access an implementation of OpenStack Nova</description>
     <packaging>bundle</packaging>
@@ -73,7 +73,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
                 <extensions>true</extensions>
                 <inherited>true</inherited>
                 <configuration>

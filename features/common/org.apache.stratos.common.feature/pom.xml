@@ -17,20 +17,18 @@
   #  specific language governing permissions and limitations
   #  under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>common-features</artifactId>
         <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.common.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Common Composite Feature</name>
-    <url>http://apache.org</url>
     <description>This feature contains the bundles required for Common feature</description>
 
     <dependencies>
@@ -39,13 +37,13 @@
             <artifactId>org.apache.stratos.common.server.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-            </dependency>
+        </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common.ui.feature</artifactId>
+            <artifactId>org.apache.stratos.custom.handlers.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-            </dependency>
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,7 +51,6 @@
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>p2-feature-generation</id>
@@ -65,8 +62,12 @@
                             <id>org.apache.stratos.common</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.common.server.feature:${project.version}</includedFeatureDef>
-				<includedFeatureDef>org.apache.stratos:org.apache.stratos.common.ui.feature:${project.version}</includedFeatureDef>
+                                <includedFeatureDef>
+                                    org.apache.stratos:org.apache.stratos.common.server.feature:${project.version}
+                                </includedFeatureDef>
+                                <includedFeatureDef>
+                                    org.apache.stratos:org.apache.stratos.custom.handlers.feature:${project.version}
+                                </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

@@ -17,28 +17,21 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-features-parent</artifactId>
         <version>4.1.2-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>cep-features</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - CEP Features</name>
-    <url>http://apache.org</url>
 
     <modules>
         <module>org.apache.stratos.event.processor.server.feature</module>
         <module>org.apache.stratos.event.processor.feature</module>
     </modules>
-    <properties>
-        <carbon.version>4.2.0</carbon.version>
-        <siddhi.version>2.0.0-wso2v5</siddhi.version>
-        <siddhi.event.processor.version>1.0.0</siddhi.event.processor.version>
-    </properties>
-
 </project>
-
