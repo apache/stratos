@@ -32,7 +32,7 @@
 
     <profiles>
         <profile>
-            <id>default</id>
+            <id>live</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
