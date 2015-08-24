@@ -31,9 +31,19 @@
     <artifactId>org.wso2.carbon.ui</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - UI</name>
-    <description>org.wso2.carbon.ui patch version for Apache Stratos based on kernel patch0011</description>
+    <description>org.wso2.carbon.ui patch version for Apache Stratos based on kernel patch0012</description>
     <version>4.2.0-stratosv2</version>
     <url>http://wso2.org</url>
+
+    <properties>
+        <distMgmtSnapshotsName>Apache Development Snapshot Repository</distMgmtSnapshotsName>
+        <distMgmtSnapshotsUrl>https://repository.apache.org/content/repositories/snapshots</distMgmtSnapshotsUrl>
+        <organization.logo>http://www.apache.org/images/asf_logo_wide.gif</organization.logo>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
+        <gpg.useagent>true</gpg.useagent>
+        <arguments />
+    </properties>
 
     <repositories>
         <repository>
@@ -47,6 +57,19 @@
             </releases>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>apache.releases.https</id>
+            <name>Apache Release Distribution Repository</name>
+            <url>https://repository.apache.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>apache.snapshots.https</id>
+            <name>${distMgmtSnapshotsName}</name>
+            <url>${distMgmtSnapshotsUrl}</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>

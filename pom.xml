@@ -200,7 +200,6 @@
 
                                 <!-- WSDLs -->
                                 <exclude>**/*.wsdl</exclude>
-
                             </excludes>
                             <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
@@ -258,7 +257,6 @@
                                 <exclude>**/templates/*.cfg.template</exclude>
                                 <exclude>**/instrumentation.txt</exclude>
                                 <exclude>**/*json</exclude>
-
 
                                 <!-- Added following based on jclouds -->
                                 <exclude>**/src/test/resources/**/*.xml</exclude>
