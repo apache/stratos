@@ -71,17 +71,16 @@ public class ApplicationHolder {
         if (applications == null) {
             synchronized (ApplicationHolder.class) {
                 if (applications == null) {
+                    // create a new Applications object for autoscaler
+                    applications = new Applications();
+
                     // retrieve from registry
                     if (log.isDebugEnabled()) {
-                        log.debug("Trying to retrieve applications from registry...");
+                        log.debug("Loading applications persisted in registry...");
                     }
-                    applications = AutoscalerUtil.getApplications();
-                    if (applications == null) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("No applications found in registry");
-                        }
-                        // create a new Applications object
-                        applications = new Applications();
+                    applications = AutoscalerUtil.loadApplicationsFromRegistry(applications);
+                    if (applications.getApplications().isEmpty()) {
+                        log.info("No applications found in registry.");
                     }
                 }
             }

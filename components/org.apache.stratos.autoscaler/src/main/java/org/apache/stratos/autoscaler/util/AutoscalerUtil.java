@@ -80,19 +80,17 @@ public class AutoscalerUtil {
         return Holder.INSTANCE;
     }
 
-    public static Applications getApplications() {
-
-        Applications applications;
+    public static Applications loadApplicationsFromRegistry(Applications applications) {
+        if (applications == null){
+            throw new RuntimeException("Applications instance is null");
+        }
         String[] appResourcePaths = RegistryManager.getInstance().getApplicationResourcePaths();
         if (appResourcePaths != null) {
-            applications = new Applications();
             for (String appResourcePath : appResourcePaths) {
                 applications.addApplication(getApplicationFromPath(appResourcePath));
             }
-
             return applications;
         }
-
         return null;
     }
 

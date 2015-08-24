@@ -74,10 +74,10 @@ public class ApplicationBuilder {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());
         }
-        AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
-                appClusterContexts);
         ApplicationHolder.persistApplication(application);
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
+        AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+                appClusterContexts);
     }
 
     public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId,

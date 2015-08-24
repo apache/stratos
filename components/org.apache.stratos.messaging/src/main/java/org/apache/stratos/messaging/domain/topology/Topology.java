@@ -53,12 +53,6 @@ public class Topology implements Serializable {
         this.serviceMap.put(service.getServiceName(), service);
     }
 
-    public synchronized void addServices(Collection<Service> services) {
-        for (Service service : services) {
-            addService(service);
-        }
-    }
-
     public void removeService(Service service) {
         this.serviceMap.remove(service.getServiceName());
         TopologyLockHierarchy.getInstance().removeTopologyLockForService(service.getServiceName());

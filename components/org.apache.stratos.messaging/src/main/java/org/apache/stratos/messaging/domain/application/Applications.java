@@ -27,6 +27,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+  DO NOT make this a singleton
+ */
 public class Applications implements Serializable {
 
     private static Log log = LogFactory.getLog(Applications.class);
@@ -43,23 +46,23 @@ public class Applications implements Serializable {
         this.applicationMap.put(application.getUniqueIdentifier(), application);
     }
 
-    public Application getApplication(String appId) {
+    public synchronized Application getApplication(String appId) {
         return this.getApplications().get(appId);
     }
 
-    public boolean isInitialized() {
+    public synchronized boolean isInitialized() {
         return initialized;
     }
 
-    public void setInitialized(boolean initialized) {
+    public synchronized void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
 
-    public boolean applicationExists(String appId) {
+    public synchronized boolean applicationExists(String appId) {
         return this.getApplications().containsKey(appId);
     }
 
-    public Map<String, Application> getApplications() {
+    public synchronized Map<String, Application> getApplications() {
         return applicationMap;
     }
 
