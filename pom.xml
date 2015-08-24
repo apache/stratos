@@ -156,6 +156,7 @@
                                 <exclude>**/.classpath</exclude>
                                 <exclude>**/.git/**/*</exclude>
                                 <exclude>**/README.md</exclude>
+                                <exclude>**/INSTALL.md</exclude>
                                 <exclude>**/MANIFEST.MF</exclude>
                                 <exclude>**/edit_area/**/*</exclude>
                                 <exclude>**/editarea/**/*</exclude>
@@ -194,12 +195,12 @@
                                 <exclude>**/services/*ApiMetadata</exclude>
                                 <exclude>**/services/*ProviderMetadata</exclude>
                                 <exclude>**/dhtmlHistory.js</exclude>
-
                                 <!-- for ActivMQ test broker -->
                                 <exclude>**/db.data</exclude>
-
                                 <!-- WSDLs -->
                                 <exclude>**/*.wsdl</exclude>
+                                <!-- Carbon UI dependency -->
+                                <exclude>**/org.wso2.carbon.ui/**/*</exclude>
                             </excludes>
                             <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
@@ -236,6 +237,7 @@
                                 <exclude>**/.classpath</exclude>
                                 <exclude>**/.git/**/*</exclude>
                                 <exclude>**/README.md</exclude>
+                                <exclude>**/INSTALL.md</exclude>
                                 <exclude>**/MANIFEST.MF</exclude>
                                 <exclude>**/edit_area/**/*</exclude>
                                 <exclude>**/editarea/**/*</exclude>
@@ -257,6 +259,8 @@
                                 <exclude>**/templates/*.cfg.template</exclude>
                                 <exclude>**/instrumentation.txt</exclude>
                                 <exclude>**/*json</exclude>
+                                <!-- Carbon UI dependency -->
+                                <exclude>**/org.wso2.carbon.ui/**/*</exclude>
 
                                 <!-- Added following based on jclouds -->
                                 <exclude>**/src/test/resources/**/*.xml</exclude>
