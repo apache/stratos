@@ -24,6 +24,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>carbon-parent</artifactId>
         <version>4.2.0</version>
+        <relativePath></relativePath>
     </parent>
 
     <groupId>org.apache.stratos</groupId>

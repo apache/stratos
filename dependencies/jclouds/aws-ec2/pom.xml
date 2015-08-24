@@ -24,6 +24,7 @@
         <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-project</artifactId>
         <version>1.9.1</version>
+        <relativePath></relativePath>
     </parent>
 
     <groupId>org.apache.stratos</groupId>
