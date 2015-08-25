@@ -26,7 +26,7 @@
     <fileSets>
         <fileSet>
             <directory>../artifacts/</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <outputDirectory>${project.artifactId}-${project.version}</outputDirectory>
             <includes>
                 <include>**/*.xml</include>
             </includes>
@@ -39,19 +39,19 @@
     <files>
         <file>
             <source>${project.basedir}/README.md</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <outputDirectory>${project.artifactId}-${project.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>src/main/notice/NOTICE</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <outputDirectory>${project.artifactId}-${project.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>src/main/license/LICENSE</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <outputDirectory>${project.artifactId}-${project.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>

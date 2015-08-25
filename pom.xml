@@ -735,6 +735,10 @@
         <aopalliance.imp.pkg.version>[1.0,2)</aopalliance.imp.pkg.version>
         <guice.imp.pkg.version>[3.0,4.0)</guice.imp.pkg.version>
 
+        <!-- product distribution properties -->
+        <stratos.distribution.name>apache-stratos</stratos.distribution.name>
+        <load.balancer.distribution.name>apache-stratos-load-balancer</load.balancer.distribution.name>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>

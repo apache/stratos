@@ -27,7 +27,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>apache-stratos</artifactId>
+    <artifactId>stratos-distribution</artifactId>
     <packaging>jar</packaging>
     <name>Apache Stratos - Distribution</name>
     <description>Apache Stratos Manager Distribution</description>
@@ -216,6 +216,7 @@
                                     <goal>attached</goal>
                                 </goals>
                                 <configuration>
+                                    <finalName>${stratos.distribution.name}-${project.version}</finalName>
                                     <filters>
                                         <filter>${basedir}/src/assembly/filter.properties</filter>
                                     </filters>
@@ -251,6 +252,7 @@
                                     <goal>attached</goal>
                                 </goals>
                                 <configuration>
+                                    <finalName>${stratos.distribution.name}-${project.version}</finalName>
                                     <filters>
                                         <filter>${basedir}/src/assembly/filter.properties</filter>
                                     </filters>
@@ -267,12 +269,14 @@
                                     <goal>attached</goal>
                                 </goals>
                                 <configuration>
+                                    <finalName>${stratos.distribution.name}-${project.version}</finalName>
                                     <filters>
                                         <filter>${basedir}/src/assembly/filter.properties</filter>
                                     </filters>
                                     <descriptors>
                                         <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
                                     </descriptors>
+                                    <appendAssemblyId>false</appendAssemblyId>
                                 </configuration>
                             </execution>
                         </executions>
