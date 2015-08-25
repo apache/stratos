@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cloud-controller-features</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>4.1.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -91,7 +91,7 @@
                                 </bundleDef>
 
                                 <!-- Kubernetes API wrapper -->
-                                <bundleDef>org.apache.stratos:kubernetes-api:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:kubernetes-api:${kubernetes.api.version}</bundleDef>
 
                                 <!-- Forked jclouds providers -->
                                 <bundleDef>org.apache.stratos:aws-ec2:${jclouds.version}</bundleDef>

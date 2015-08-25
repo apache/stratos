@@ -2,7 +2,7 @@ Apache Stratos
 ===========================
 Apache Stratos includes polyglot language and environment support together with the ability to run on top of multiple IaaS runtimes.
 Stratos is licensed under the Apache License, Version 2.0
-The following are the key features available in Apache Stratos 4.1.1:
+The following are the key features available in Apache Stratos 4.1.2:
 
 Features
 --------
@@ -46,13 +46,13 @@ auto-scaling policies with multiple factors,i.e., requests in flight, memory con
 considered when scaling up or down. The Auto-scaler also supports scaling for non-HTTP transport.
 <br />
 For detailed information on how multi-factored auto-scaling takes place in Stratos,
-see [Autoscaler](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Autoscaler).
+see [Autoscaler](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Autoscaler).
 
 * Smart policies                                        <br />
 The Auto-scaler in Stratos uses two smart policies when making auto-scaling decisions: auto-scaling policy and deployment policy.
 The instances will be automatically spawned based on the smart policies that are applied to the application.
 <br />
-For more information on auto-scaling and deployment policy scaling policies, see [Smart Policies](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Smart+Policies).
+For more information on auto-scaling and deployment policy scaling policies, see [Smart Policies](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Smart+Policies).
 
 * Multiple IaaS support                                 <br />
 Apache Stratos is tested on the following IaaS providers: AWS EC2 and OpenStack. However, it is very easy to extend
@@ -66,7 +66,7 @@ be off-loaded to another cloud.
 * Controlling IaaS resources                            <br />
 It is possible for DevOps to define partitions in a network partition, to control IaaS resources. Thereby,
 Apache Stratos can control resources per cloud, region, and zone. Controlling of IaaS resources provide a high
-availability and solves disaster recovery concerns. For more information, see [Cloud Partitioning](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Cloud+Partitioning).
+availability and solves disaster recovery concerns. For more information, see [Cloud Partitioning](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Cloud+Partitioning).
 
 * Loosely coupled communication                         <br />
 Stratos uses the Advanced Message Queuing Protocol (AMQP) messaging technology for communication among all its components.
@@ -85,7 +85,7 @@ A cartridge is a package of code that includes a Virtual Machine (VM) image plus
 be plugged into Stratos to offer a new PaaS service. Stratos supports single tenant and multi-tenant cartridges.
 If needed, tenants can easily add their own cartridges to Stratos.
 <br />
-For more information on how Stratos uses cartridges, see [Cartridge](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Cartridge).
+For more information on how Stratos uses cartridges, see [Cartridge](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Cartridge).
 
 * Cartridge automation using Puppet                     <br />
 Cartridges can be easily configured with the use of an orchestration layer such as Puppet.
@@ -94,7 +94,7 @@ Cartridges can be easily configured with the use of an orchestration layer such 
 Stratos supports third-party load balancers (LBs), i.e, HAProxy, NGINX. Thereby, if required, users can use their own
 LB with Stratos.
 <br />
-For more information, see [Load Balancers](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Load+Balancers).
+For more information, see [Load Balancers](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Load+Balancers).
 
 * Artifact distribution coordination                    <br />
 The Artifact Distribution Coordinator is responsible for the distribution of artifacts. Artifacts can be uploaded
@@ -103,24 +103,24 @@ topology and send notifications to appropriate Cartridge instances. ADC supports
 repositories based deployment synchronization. Users are able to use their own Git repository to sync artifacts with
 a service instance.
 <br />
-For more information, see [Artifact Distribution Coordinator](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Artifact+Distribution+Coordinator).
+For more information, see [Artifact Distribution Coordinator](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Artifact+Distribution+Coordinator).
 
 * Stratos Manager Console                               <br />
 Administrators and tenants can use the Stratos Manager console, which is a web-based UI management console in Stratos,
 to interact with Stratos.
 <br />
-For more information, see [Stratos Manager](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Stratos+Manager).
+For more information, see [Stratos Manager](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Stratos+Manager).
 
 * Stratos REST API                                      <br />
 DevOps can use REST APIs to carry out various administering functions (e.g., adding a tenant, adding a cartridge, etc.).
 <br />
-For more information, see the [Stratos API Reference Guide](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Stratos+API+Reference).
+For more information, see the [Stratos API Reference Guide](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Stratos+API+Reference).
 
 * Interactive CLI Tool                                  <br />
 Command Line Interface (CLI) tool provides users an interface to interact with Stratos and manage your applications.
 <br />
-For more information, see the [CLI Tool](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+CLI+Tool) and the
-[CLI Guide](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+CLI+Guide).
+For more information, see the [CLI Tool](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+CLI+Tool) and the
+[CLI Guide](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+CLI+Guide).
 
 * Monitoring and metering                               <br />
 Apache Stratos provides centralized monitoring and metering. The level of resource utilization in Stratos is measured using metering.
@@ -129,7 +129,7 @@ Apache Stratos provides centralized monitoring and metering. The level of resour
 If required, the DevOps can enable a persistent volume for cartridges. If persistent volume is enabled, Apache Stratos
 automatically attaches a volume when a new cartridge instance is created.
 <br />
-For more information, see [Persistence Volume Mapping](https://cwiki.apache.org/confluence/display/STRATOS/4.1.1+Persistence+Volume+Mapping).
+For more information, see [Persistence Volume Mapping](https://cwiki.apache.org/confluence/display/STRATOS/4.1.2+Persistence+Volume+Mapping).
 
 * Gracefully shutdown instances                         <br />
 Before terminating an instance, when scaling down, the Auto-scaler will allow all the existing requests to the instance
