@@ -65,7 +65,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Stratos API v4.1 for Stratos 4.1.1 release.
+ * Stratos API v4.1 for Stratos 4.2.0 release.
  */
 @Path("/")
 public class StratosApiV41 extends AbstractApi {
