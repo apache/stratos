@@ -91,7 +91,7 @@
                                 </bundleDef>
 
                                 <!-- Kubernetes API wrapper -->
-                                <bundleDef>org.apache.stratos:kubernetes-api:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:kubernetes-api:${kubernetes.api.version}</bundleDef>
 
                                 <!-- Forked jclouds providers -->
                                 <bundleDef>org.apache.stratos:aws-ec2:${jclouds.version}</bundleDef>
