@@ -77,8 +77,7 @@ public class JavaCartridgeAgentTest {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
-    public static final String AGENT_NAME = "distribution.name";
-    public static final String AGENT_VERSION = "distribution.version";
+    public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.2.0-SNAPSHOT";
     private static HashMap<String, Executor> executorList;
     private static ArrayList<ServerSocket> serverSocketList;
     private final ArtifactUpdatedEvent artifactUpdatedEvent;
@@ -264,7 +263,7 @@ public class JavaCartridgeAgentTest {
             }
 
             log.info("Copying agent jar");
-            String agentJar = "org.apache.stratos.cartridge.agent-" + agentVersion + ".jar";
+            String agentJar = "org.apache.stratos.cartridge.agent-4.2.0-SNAPSHOT.jar";
             String agentJarSource = getResourcesFolderPath() + "/../" + agentJar;
             String agentJarDest = agentHome.getCanonicalPath() + "/lib/" + agentJar;
             FileUtils.copyFile(new File(agentJarSource), new File(agentJarDest));

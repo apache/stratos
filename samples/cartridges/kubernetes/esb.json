@@ -22,7 +22,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/cartridge:4.1.2",
+            "imageId": "stratos/cartridge:4.2.0",
             "networkInterfaces": [
                 {
                     "networkUuid": ""

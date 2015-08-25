@@ -49,13 +49,13 @@ RUN pip install yapsy
 # -------------------------
 WORKDIR /mnt/
 
-ADD packs/${PCA_DISTRIBUTION_NAME}.zip /mnt/${PCA_DISTRIBUTION_NAME}.zip
-RUN unzip -q /mnt/${PCA_DISTRIBUTION_NAME}.zip -d /mnt/
-RUN rm /mnt/${PCA_DISTRIBUTION_NAME}.zip
+ADD packs/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT.zip /mnt/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT.zip
+RUN unzip -q /mnt/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT.zip -d /mnt/
+RUN rm /mnt/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT.zip
 
-RUN mkdir -p /mnt/${PCA_DISTRIBUTION_NAME}/payload
+RUN mkdir -p /mnt/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT/payload
 
-RUN chmod +x /mnt/${PCA_DISTRIBUTION_NAME}/extensions/bash/*
+RUN chmod +x /mnt/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT/extensions/bash/*
 RUN mkdir -p /var/log/apache-stratos/
 RUN touch /var/log/apache-stratos/cartridge-agent-extensions.log
 

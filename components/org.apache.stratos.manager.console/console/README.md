@@ -1,5 +1,4 @@
-====================================
- Apache Stratos UXD Implemantation
+##Stratos 4.2.0 New UXD Implemantation##
 ====================================
 
 ### Features ###
