@@ -41,7 +41,6 @@ public class InstanceStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
 
     private InstanceStatusEventReceiver statusEventReceiver;
-    private boolean terminated;
     private ExecutorService executorService;
 
     public InstanceStatusTopicReceiver() {
@@ -100,10 +99,6 @@ public class InstanceStatusTopicReceiver {
             }
         });
 
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
     }
 
     public void setExecutorService(ExecutorService executorService) {

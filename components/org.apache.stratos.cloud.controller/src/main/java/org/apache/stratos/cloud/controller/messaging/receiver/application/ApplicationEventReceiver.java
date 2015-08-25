@@ -23,9 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.ApplicationDeletedEvent;
 import org.apache.stratos.messaging.event.application.ApplicationInstanceTerminatedEvent;
-import org.apache.stratos.messaging.listener.application.ApplicationDeletedEventListener;
 import org.apache.stratos.messaging.listener.application.ApplicationInstanceTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
@@ -69,7 +67,7 @@ public class ApplicationEventReceiver {
                 Application application = ApplicationManager.getApplications().
                         getApplication(instanceTerminatedEvent.getAppId());
 
-                if(application.getInstanceContextCount() == 0) {
+                if (application.getInstanceContextCount() == 0) {
                     TopologyBuilder.handleApplicationClustersRemoved(appId,
                             application.getClusterDataRecursively());
                 }
