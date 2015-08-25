@@ -501,9 +501,6 @@
                                 <featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.manager.styles.feature:${project.version}
                                 </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.tenant.activity.server.feature:${project.version}
-                                </featureArtifactDef>
                                 <!-- Mock IaaS features -->
                                 <featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.mock.iaas.api.feature:${project.version}
@@ -682,10 +679,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.captcha.mgt.server.feature.group</id>
                                     <version>${carbon.kernel.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.tenant.activity.server.feature.group</id>
-                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.manager.feature.group</id>
@@ -1210,10 +1203,6 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.messaging.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.tenant.activity.server.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
