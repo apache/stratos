@@ -89,9 +89,8 @@ public class AutoscalerUtil {
             for (String appResourcePath : appResourcePaths) {
                 applications.addApplication(getApplicationFromPath(appResourcePath));
             }
-            return applications;
         }
-        return null;
+        return applications;
     }
 
     public static Application getApplication(String appId) {
