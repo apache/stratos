@@ -395,18 +395,7 @@ class AgentGitHandler:
 
         if "Changes not staged for commit" in output:
             # there are modified files
-            modified_lines = output.split("\n\n")[2].split("\n")
-            for mod_line in modified_lines:
-                file_name = mod_line.split(":")[1].strip()
-                unstaged_files["modified"].append(file_name)
-
-        if "Untracked files" in output:
-            # there are untracked files
-            untracked_files = output.split("Untracked files:")[1].split("\n\n")[1].split("\n")
-            for unt_line in untracked_files:
-                unstaged_files["untracked"].append(unt_line.strip())
-
-        return True, unstaged_files
+            return True, unstaged_files
 
     @staticmethod
     def stage_all(repo_path):

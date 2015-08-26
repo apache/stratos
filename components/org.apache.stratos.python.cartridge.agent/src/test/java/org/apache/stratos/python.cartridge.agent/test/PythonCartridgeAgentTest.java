@@ -88,7 +88,7 @@ public class PythonCartridgeAgentTest {
     private int cepPort = 7712;
     private BrokerService broker = new BrokerService();
     private static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "mqtt://localhost:1884";
+    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "mqtt://localhost:1885";
     private static final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
     public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
@@ -256,6 +256,7 @@ public class PythonCartridgeAgentTest {
         publicRepoEvent.setClusterId(CLUSTER_ID);
         publicRepoEvent.setTenantId(TENANT_ID);
         publicRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
+        publicRepoEvent.setCommitEnabled(true);
         return publicRepoEvent;
     }
 
