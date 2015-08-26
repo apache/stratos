@@ -226,9 +226,9 @@ public class TopologyHandler {
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
                     applicationName, serviceName, clusterId), cluster);
             boolean clusterActive = false;
-
+            int activeInstances = 0;
             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
-                int activeInstances = 0;
+                activeInstances = 0;
                 for (Member member : cluster.getMembers()) {
                     if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
                         if (member.getStatus().equals(MemberStatus.Active)) {
@@ -236,16 +236,11 @@ public class TopologyHandler {
                         }
                     }
                 }
-                clusterActive = activeInstances >= clusterDataHolder.getMinInstances();
-
-                if (!clusterActive) {
-                    break;
-                }
             }
-            assertEquals(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
-                    clusterActive, true);
+            clusterActive = (activeInstances >= clusterDataHolder.getMinInstances());
+            assertTrue(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
+                    clusterActive);
         }
-
     }
 
     /**
