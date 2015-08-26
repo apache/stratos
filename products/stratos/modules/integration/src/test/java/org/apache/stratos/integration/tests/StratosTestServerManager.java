@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.stratos.common.test.TestLogAppender;
-import org.apache.stratos.integration.tests.application.SampleApplicationsTest;
 import org.apache.stratos.integration.tests.rest.IntegrationMockClient;
 import org.apache.stratos.integration.tests.rest.RestClient;
 import org.testng.annotations.AfterSuite;
@@ -39,6 +38,7 @@ import org.wso2.carbon.integration.framework.utils.TestUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 
 import static org.testng.Assert.assertNotNull;
 
@@ -46,20 +46,27 @@ import static org.testng.Assert.assertNotNull;
  * Prepare activemq, Stratos server for tests, enables mock iaas, starts servers and stop them after the tests.
  */
 public class StratosTestServerManager extends TestServerManager {
-
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
+    private static Properties integrationProperties;
+    public static final String BASE_PATH = StratosTestServerManager.class.getResource("/").getPath();
+    public static final String STRATOS_DISTRIBUTION_NAME = "distribution.path";
+    public final static String PORT_OFFSET = "carbon.port.offset";
+    public static final String ACTIVEMQ_BIND_ADDRESS = "activemq.bind.address";
+    public static final String STRATOS_ENDPOINT = "stratos.endpoint";
+    public static final String ADMIN_USERNAME = "stratos.admin.username";
+    public static final String ADMIN_PASSWORD = "stratos.admin.password";
+    public static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
+    public static final String SCALING_DROOL_FILE = "scaling.drl";
+    public static final String JNDI_PROPERTIES_FILE = "jndi.properties";
+    public static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
 
-    private final static String CARBON_ZIP = SampleApplicationsTest.class.getResource("/").getPath() +
-            "/../../../distribution/target/apache-stratos-4.1.2.zip";
-    private final static int PORT_OFFSET = 0;
-    private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
-    private static final String SCALING_DROOL_FILE = "scaling.drl";
-    private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
-    private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
+    protected String distributionName;
+    protected int portOffset;
+    protected String adminUsername;
+    protected String adminPassword;
+    protected String stratosEndpoint;
+    protected String activemqBindAddress;
     protected RestClient restClient;
-    private String endpoint = "http://localhost:9763";
-
     private BrokerService broker = new BrokerService();
     private TestLogAppender testLogAppender = new TestLogAppender();
     private ServerUtils serverUtils;
@@ -67,10 +74,34 @@ public class StratosTestServerManager extends TestServerManager {
     protected IntegrationMockClient mockIaasApiClient;
 
     public StratosTestServerManager() {
-        super(CARBON_ZIP, PORT_OFFSET);
+        super(BASE_PATH + getIntegrationTestProperty(STRATOS_DISTRIBUTION_NAME),
+                Integer.parseInt(getIntegrationTestProperty(PORT_OFFSET)));
+
+        distributionName = integrationProperties.getProperty(STRATOS_DISTRIBUTION_NAME);
+        portOffset = Integer.parseInt(integrationProperties.getProperty(PORT_OFFSET));
+        adminUsername = integrationProperties.getProperty(ADMIN_USERNAME);
+        adminPassword = integrationProperties.getProperty(ADMIN_PASSWORD);
+        stratosEndpoint = integrationProperties.getProperty(STRATOS_ENDPOINT);
+        activemqBindAddress = integrationProperties.getProperty(ACTIVEMQ_BIND_ADDRESS);
         serverUtils = new ServerUtils();
-        restClient = new RestClient(endpoint, "admin", "admin");
-        mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
+        restClient = new RestClient(stratosEndpoint, adminUsername, adminPassword);
+        mockIaasApiClient = new IntegrationMockClient(stratosEndpoint + "/mock-iaas/api");
+    }
+
+    private static String getIntegrationTestProperty(String key) {
+        if (integrationProperties == null) {
+            integrationProperties = new Properties();
+            try {
+                integrationProperties
+                        .load(StratosTestServerManager.class.getResourceAsStream("/integration-test.properties"));
+                log.info("Stratos integration properties: " + integrationProperties.toString());
+            }
+            catch (IOException e) {
+                log.error("Error loading integration-test.properties file from classpath. Please make sure that file " +
+                        "exists in classpath.", e);
+            }
+        }
+        return integrationProperties.getProperty(key);
     }
 
     @Override
@@ -86,7 +117,7 @@ public class StratosTestServerManager extends TestServerManager {
             broker.setDataDirectory(StratosTestServerManager.class.getResource("/").getPath() +
                     File.separator + ".." + File.separator + "activemq-data");
             broker.setBrokerName("testBroker");
-            broker.addConnector(ACTIVEMQ_BIND_ADDRESS);
+            broker.addConnector(activemqBindAddress);
             broker.start();
             long time2 = System.currentTimeMillis();
             log.info(String.format("ActiveMQ started in %d sec", (time2 - time1) / 1000));
@@ -112,7 +143,7 @@ public class StratosTestServerManager extends TestServerManager {
                 log.info("Stratos server setup completed");
 
                 log.info("Starting Stratos server...");
-                this.serverUtils.startServerUsingCarbonHome(carbonHome, carbonHome, "stratos", PORT_OFFSET, null);
+                this.serverUtils.startServerUsingCarbonHome(carbonHome, carbonHome, "stratos", portOffset, null);
                 FrameworkSettings.init();
 
                 while (!serverStarted()) {
