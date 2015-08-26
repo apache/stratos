@@ -27,7 +27,7 @@ from entity import *
 from ..util.log import LogFactory
 import constants
 
-SUPER_TENANT_ID = -1234
+SUPER_TENANT_ID = "-1234"
 SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
 TENANT_REPO_PATH = "/repository/tenants/"
 
