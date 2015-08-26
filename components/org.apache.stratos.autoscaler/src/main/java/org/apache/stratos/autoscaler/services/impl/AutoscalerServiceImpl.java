@@ -25,13 +25,7 @@ import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitio
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
-import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
-import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
-import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
@@ -44,7 +38,6 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -76,7 +69,6 @@ import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.registry.api.RegistryException;
 
@@ -165,8 +157,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         if (AutoscalerContext.getInstance().getApplicationContext(applicationId) == null) {
-            String message = "Application is not found as ApplicationContext. Please add application before updating it: " +
-                    "[application-id] " + applicationId;
+            String message =
+                    "Application is not found as ApplicationContext. Please add application before updating it: " +
+                            "[application-id] " + applicationId;
             log.error(message);
             throw new ApplicationDefinitionException(message);
         }
@@ -251,7 +244,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 application = ApplicationHolder.getApplications().getApplication(applicationId);
                 application.setApplicationPolicyId(applicationPolicyId);
                 ApplicationHolder.persistApplication(application);
-            } finally {
+            }
+            finally {
                 ApplicationHolder.releaseWriteLock();
             }
 
@@ -276,7 +270,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     applicationId);
 
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             ApplicationContext applicationContext = RegistryManager.getInstance().
                     getApplicationContext(applicationId);
             if (applicationContext != null) {
@@ -357,8 +352,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             applicationContext.getApplicationId()));
                 }
             }
-        } catch (Exception e) {
-            String message = "Could not add application signup: [application-id]" + applicationContext.getApplicationId();
+        }
+        catch (Exception e) {
+            String message =
+                    "Could not add application signup: [application-id]" + applicationContext.getApplicationId();
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -396,7 +393,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
 
-            ApplicationSignUp applicationSignUp[] = serviceClient.getApplicationSignUps(applicationContext.getApplicationId());
+            ApplicationSignUp applicationSignUp[] =
+                    serviceClient.getApplicationSignUps(applicationContext.getApplicationId());
             if (applicationSignUp != null) {
                 for (ApplicationSignUp appSignUp : applicationSignUp) {
                     if (appSignUp != null) {
@@ -405,7 +403,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not remove application signup(s)";
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -437,7 +436,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private void updateArtifactRepositoryList(List<ArtifactRepository> artifactRepositoryList, CartridgeContext[] cartridgeContexts) {
+    private void updateArtifactRepositoryList(List<ArtifactRepository> artifactRepositoryList,
+                                              CartridgeContext[] cartridgeContexts) {
 
         if (cartridgeContexts == null) {
             return;
@@ -445,7 +445,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         for (CartridgeContext cartridgeContext : cartridgeContexts) {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-            ArtifactRepositoryContext artifactRepositoryContext = subscribableInfoContext.getArtifactRepositoryContext();
+            ArtifactRepositoryContext artifactRepositoryContext =
+                    subscribableInfoContext.getArtifactRepositoryContext();
             if (artifactRepositoryContext != null) {
 
                 ArtifactRepository artifactRepository = new ArtifactRepository();
@@ -536,7 +537,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (log.isInfoEnabled()) {
                 log.info("Application undeployment process started: [application-id] " + applicationId);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not start application undeployment process: [application-id] " + applicationId;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -546,7 +548,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean deleteApplication(String applicationId) {
         try {
-            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+            ApplicationContext applicationContext =
+                    AutoscalerContext.getInstance().getApplicationContext(applicationId);
             Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if ((applicationContext == null) || (application == null)) {
                 String msg = String.format("Application cannot be deleted, application not found: [application-id] %s",
@@ -570,7 +573,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             ApplicationBuilder.handleApplicationRemoval(applicationId);
             log.info(String.format("Application deleted successfully: [application-id] %s", applicationId));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = String.format("Could not delete application: [application-id] %s", applicationId);
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -714,7 +718,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         try {
             RegistryManager.getInstance().updateServiceGroup(cartridgeGroup);
-        } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
+        }
+        catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
             String message = (String.format("Cannot update cartridge group: [group-name] %s",
                     cartridgeGroup.getName()));
             throw new RuntimeException(message, e);
@@ -745,7 +750,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
                 throw new CartridgeGroupNotFoundException(msg);
             }
-        } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
+        }
+        catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
             String message = "Could not remove cartridge group: " + groupName;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -759,15 +765,17 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
         try {
             return RegistryManager.getInstance().getServiceGroup(name);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
         }
     }
 
     @Override
     public String findClusterId(String applicationId, String alias) {
+        ApplicationHolder.acquireReadLock();
         try {
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
+            Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application != null) {
 
                 ClusterDataHolder clusterData = application.getClusterDataHolderRecursivelyByAlias(alias);
@@ -776,10 +784,14 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
             }
             return null;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = String.format("Could not find cluster id: [application-id] %s [alias] %s",
                     applicationId, alias);
             throw new AutoScalerException(message, e);
+        }
+        finally {
+            ApplicationHolder.releaseReadLock();
         }
     }
 
@@ -794,7 +806,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     public boolean undeployServiceGroup(String name) throws AutoScalerException {
         try {
             RegistryManager.getInstance().removeServiceGroup(name);
-        } catch (RegistryException e) {
+        }
+        catch (RegistryException e) {
             throw new AutoScalerException("Error occurred while removing the cartridge groups", e);
         }
         return true;
@@ -842,7 +855,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException, UnremovablePolicyException {
+    public boolean removeApplicationPolicy(String applicationPolicyId)
+            throws InvalidPolicyException, UnremovablePolicyException {
 
         if (removableApplicationPolicy(applicationPolicyId)) {
             return PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
@@ -873,9 +887,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         String applicationPolicyId = applicationPolicy.getId();
-        ApplicationPolicy existingApplicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+        ApplicationPolicy existingApplicationPolicy =
+                PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
         if (existingApplicationPolicy == null) {
-            String msg = String.format("No such application policy found [application-policy-id] %s", applicationPolicyId);
+            String msg =
+                    String.format("No such application policy found [application-policy-id] %s", applicationPolicyId);
             log.error(msg);
             throw new ApplicatioinPolicyNotExistsException(msg);
         }
@@ -899,16 +915,17 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         Application application;
+        ApplicationHolder.acquireReadLock();
         try {
-            ApplicationManager.acquireReadLockForApplication(applicationId);
-            application = ApplicationManager.getApplications().getApplication(applicationId);
+            application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application == null) {
                 log.warn(String.format("Could not find application, thus no members to be terminated " +
                         "[application-id] %s", applicationId));
                 return;
             }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(applicationId);
+        }
+        finally {
+            ApplicationHolder.releaseReadLock();
         }
 
         Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
@@ -920,7 +937,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             try {
                 TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
                 cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            } finally {
+            }
+            finally {
                 TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
             }
 
@@ -950,12 +968,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
                 for (String memberIdToTerminate : memberListToTerminate) {
                     try {
-                        log.info(String.format("Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
-                                "[application-id] %s", memberIdToTerminate, clusterId, application));
+                        log.info(String.format(
+                                "Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
+                                        "[application-id] %s", memberIdToTerminate, clusterId, application));
                         AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
-                    } catch (Exception e) {
-                        log.error(String.format("Forceful termination of member %s has failed, but continuing forceful " +
-                                "deletion of other members", memberIdToTerminate));
+                    }
+                    catch (Exception e) {
+                        log.error(
+                                String.format("Forceful termination of member %s has failed, but continuing forceful " +
+                                        "deletion of other members", memberIdToTerminate));
                     }
                 }
             }
@@ -1016,7 +1037,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // deployment policy should contain at least one network partition reference
-        if (null == deploymentPolicy.getNetworkPartitionRefs() || deploymentPolicy.getNetworkPartitionRefs().length == 0) {
+        if (null == deploymentPolicy.getNetworkPartitionRefs() ||
+                deploymentPolicy.getNetworkPartitionRefs().length == 0) {
             String msg = String.format("Deployment policy does not have any network partition references: " +
                     "[deployment-policy-id] %s", deploymentPolicyId);
             log.error(msg);
@@ -1088,7 +1110,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
             if (null == partitions || partitions.length == 0) {
                 String msg = String.format("Network partition does not have any partition references: "
-                        + "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId, networkPartitionId);
+                        + "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId,
+                        networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
@@ -1097,7 +1120,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException, CloudControllerConnectionException {
+            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException,
+            CloudControllerConnectionException {
 
         validateDeploymentPolicy(deploymentPolicy);
 
@@ -1137,24 +1161,30 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     if (clusterLevelNetworkPartitionContext != null) {
                         try {
                             addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
-                                    deploymentPolicy.getDeploymentPolicyID(), clusterMonitor.getClusterContext().getServiceId());
-                        } catch (RemoteException e) {
+                                    deploymentPolicy.getDeploymentPolicyID(),
+                                    clusterMonitor.getClusterContext().getServiceId());
+                        }
+                        catch (RemoteException e) {
 
-                            String message = "Connection to cloud controller failed, Cluster monitor update failed for" +
-                                    " [deployment-policy] " + deploymentPolicy.getDeploymentPolicyID();
+                            String message =
+                                    "Connection to cloud controller failed, Cluster monitor update failed for" +
+                                            " [deployment-policy] " + deploymentPolicy.getDeploymentPolicyID();
                             log.error(message);
                             throw new CloudControllerConnectionException(message, e);
-                        } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
+                        }
+                        catch (CloudControllerServiceInvalidPartitionExceptionException e) {
 
                             String message = "Invalid partition, Cluster monitor update failed for [deployment-policy] "
                                     + deploymentPolicy.getDeploymentPolicyID();
                             log.error(message);
                             throw new InvalidDeploymentPolicyException(message, e);
-                        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+                        }
+                        catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
 
-                            String message = "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
-                                    + deploymentPolicy.getDeploymentPolicyID() + " [cartridge] "
-                                    + clusterMonitor.getClusterContext().getServiceId();
+                            String message =
+                                    "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
+                                            + deploymentPolicy.getDeploymentPolicyID() + " [cartridge] "
+                                            + clusterMonitor.getClusterContext().getServiceId();
                             log.error(message);
                             throw new InvalidDeploymentPolicyException(message, e);
                         }
@@ -1168,17 +1198,20 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     private void removeOldPartitionsFromClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
                                                        NetworkPartitionRef networkPartition) {
 
-        for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
+        for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap()
+                .values()) {
 
             ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) instanceContext;
 
-            for (ClusterLevelPartitionContext clusterLevelPartitionContext : clusterInstanceContext.getPartitionCtxts()) {
+            for (ClusterLevelPartitionContext clusterLevelPartitionContext : clusterInstanceContext
+                    .getPartitionCtxts()) {
 
                 if (null == networkPartition.getPartitionRef(clusterLevelPartitionContext.getPartitionId())) {
 
                     //It has found that this partition context which is in cluster monitor is removed in updated policy
                     clusterLevelPartitionContext.setIsObsoletePartition(true);
-                    Iterator<MemberContext> memberContextIterator = clusterLevelPartitionContext.getActiveMembers().iterator();
+                    Iterator<MemberContext> memberContextIterator =
+                            clusterLevelPartitionContext.getActiveMembers().iterator();
                     while (memberContextIterator.hasNext()) {
 
                         clusterLevelPartitionContext.moveActiveMemberToTerminationPendingMembers(
@@ -1265,7 +1298,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         try {
             Collection<DeploymentPolicy> deploymentPolicies = PolicyManager.getInstance().getDeploymentPolicies();
             return deploymentPolicies.toArray(new DeploymentPolicy[deploymentPolicies.size()]);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not get deployment policies";
             log.error(message);
             throw new AutoScalerException(message, e);
