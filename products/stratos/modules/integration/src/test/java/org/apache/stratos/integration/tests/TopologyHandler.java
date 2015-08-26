@@ -183,9 +183,8 @@ public class TopologyHandler {
             }
         }
         assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
-        assertEquals(String.format("Application status did not change to %s: [application-id] %s",
-                        status.toString(), applicationName),
-                status, application.getStatus());
+        assertEquals(String.format("Application status did not change to %s: [application-id] %s", status.toString(),
+                applicationName), status, application.getStatus());
     }
 
     /**
@@ -225,9 +224,15 @@ public class TopologyHandler {
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
                     applicationName, serviceName, clusterId), cluster);
+            for (Member member : cluster.getMembers()) {
+                log.info(String.format("Member [member-id] %s found in cluster instance [cluster-instance] %s of " +
+                        "cluster [cluster-id] %s", member
+                        .getMemberId(), member.getClusterInstanceId(), member.getClusterId()));
+            }
             boolean clusterActive = false;
-            int activeInstances = 0;
+            int activeInstances;
             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                log.info("Checking for active members in cluster instance: " + instance.getInstanceId());
                 activeInstances = 0;
                 for (Member member : cluster.getMembers()) {
                     if (member.getClusterInstanceId().equals(instance.getInstanceId())) {
@@ -236,10 +241,10 @@ public class TopologyHandler {
                         }
                     }
                 }
+                clusterActive = (activeInstances >= clusterDataHolder.getMinInstances());
+                assertTrue(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
+                        clusterActive);
             }
-            clusterActive = (activeInstances >= clusterDataHolder.getMinInstances());
-            assertTrue(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
-                    clusterActive);
         }
     }
 
