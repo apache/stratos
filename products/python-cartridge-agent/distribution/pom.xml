@@ -27,7 +27,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>apache-stratos-python-cartridge-agent</artifactId>
+    <artifactId>python-cartridge-agent-distribution</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Python Cartridge Agent</name>
     <description>Apache Stratos Python Cartridge Agent Distribution</description>
@@ -45,6 +45,7 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
+                            <finalName>${python.cartridge.agent.distribution.name}-${project.version}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/bin.xml</descriptor>
                             </descriptors>

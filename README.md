@@ -2,7 +2,7 @@ Apache Stratos
 ===========================
 Apache Stratos includes polyglot language and environment support together with the ability to run on top of multiple IaaS runtimes.
 Stratos is licensed under the Apache License, Version 2.0
-The following are the key features available in Apache Stratos 4.1.2:
+The following are the key features available in Apache Stratos:
 
 Features
 --------

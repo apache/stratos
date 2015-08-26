@@ -24,7 +24,9 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../components/org.apache.stratos.python.cartridge.agent/src/main/python/cartridge.agent/cartridge.agent</directory>
+            <directory>
+                ${project.basedir}/../../../components/org.apache.stratos.python.cartridge.agent/src/main/python/cartridge.agent/cartridge.agent
+            </directory>
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>**/*</include>

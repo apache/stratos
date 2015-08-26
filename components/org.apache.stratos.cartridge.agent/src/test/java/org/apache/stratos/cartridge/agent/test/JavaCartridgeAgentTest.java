@@ -77,7 +77,8 @@ public class JavaCartridgeAgentTest {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
-    public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.1.2";
+    public static final String AGENT_NAME = "distribution.name";
+    public static final String AGENT_VERSION = "distribution.version";
     private static HashMap<String, Executor> executorList;
     private static ArrayList<ServerSocket> serverSocketList;
     private final ArtifactUpdatedEvent artifactUpdatedEvent;
@@ -87,10 +88,24 @@ public class JavaCartridgeAgentTest {
     private ByteArrayOutputStreamLocal outputStream;
     private TopologyEventReceiver topologyEventReceiver;
     private InstanceStatusEventReceiver instanceStatusEventReceiver;
+    private String agentName;
+    private String agentVersion;
+    private Properties testProperties = new Properties();
 
     public JavaCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
         this.artifactUpdatedEvent = artifactUpdatedEvent;
         this.expectedResult = expectedResult;
+        try {
+            testProperties
+                    .load(JavaCartridgeAgentTest.class.getResourceAsStream("/test.properties"));
+            agentName = testProperties.getProperty(AGENT_NAME);
+            agentVersion = testProperties.getProperty(AGENT_VERSION);
+            log.info("Java Cartridge Agent test properties: " + testProperties.toString());
+        }
+        catch (IOException e) {
+            log.error("Error loading test.properties file from classpath. Please make sure that file " +
+                    "exists in classpath.", e);
+        }
     }
 
     @BeforeClass
@@ -232,9 +247,9 @@ public class JavaCartridgeAgentTest {
     private String setupJavaAgent() {
         try {
             log.info("Setting up Java cartridge agent test setup");
-            String jcaZipSource = getResourcesFolderPath() + "/../../../../products/cartridge-agent/modules/distribution/target/" + AGENT_NAME + ".zip";
+            String jcaZipSource = getResourcesFolderPath() + "/../../../../products/cartridge-agent/modules/distribution/target/" + agentName + ".zip";
             String testHome = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/";
-            File agentHome = new File(testHome + AGENT_NAME);
+            File agentHome = new File(testHome + agentName);
             log.info("Extracting Java Cartridge Agent to test folder");
             ZipFile agentZip = new ZipFile(jcaZipSource);
             ProgressMonitor zipProgresMonitor = agentZip.getProgressMonitor();
@@ -249,7 +264,7 @@ public class JavaCartridgeAgentTest {
             }
 
             log.info("Copying agent jar");
-            String agentJar = "org.apache.stratos.cartridge.agent-4.1.2.jar";
+            String agentJar = "org.apache.stratos.cartridge.agent-" + agentVersion + ".jar";
             String agentJarSource = getResourcesFolderPath() + "/../" + agentJar;
             String agentJarDest = agentHome.getCanonicalPath() + "/lib/" + agentJar;
             FileUtils.copyFile(new File(agentJarSource), new File(agentJarDest));

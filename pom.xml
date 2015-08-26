@@ -738,6 +738,9 @@
         <!-- product distribution properties -->
         <stratos.distribution.name>apache-stratos</stratos.distribution.name>
         <load.balancer.distribution.name>apache-stratos-load-balancer</load.balancer.distribution.name>
+        <java.cartridge.agent.distribution.name>apache-stratos-cartridge-agent</java.cartridge.agent.distribution.name>
+        <python.cartridge.agent.distribution.name>apache-stratos-python-cartridge-agent
+        </python.cartridge.agent.distribution.name>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
