@@ -75,7 +75,7 @@ public class MockIaasApiClient {
         }
     }
 
-    public void terminateInstance(String instanceId) {
+    public boolean terminateInstance(String instanceId) {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Terminate instance: [instance-id] %s", instanceId));
@@ -84,7 +84,7 @@ public class MockIaasApiClient {
             HttpResponse response = restClient.doDelete(uri);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return;
+                    return false;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();

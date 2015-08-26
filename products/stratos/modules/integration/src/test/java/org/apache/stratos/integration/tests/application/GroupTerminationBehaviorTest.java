@@ -27,6 +27,7 @@ import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.apache.stratos.integration.tests.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -46,7 +47,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
     @Test
     public void testTerminationBehavior() {
         try {
-            log.info("-------------------------------Started application termination behavior test case-------------------------------");
+            log.info(
+                    "-------------------------------Started application termination behavior test case-------------------------------");
 
             String autoscalingPolicyId = "autoscaling-policy-group-termination-behavior-test";
             TopologyHandler topologyHandler = TopologyHandler.getInstance();
@@ -56,24 +58,29 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertTrue(addedScalingPolicy);
 
-            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-group-termination-behavior-test.json",
+            boolean addedC1 = restClient.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-group-termination-behavior-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC1);
 
-            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-group-termination-behavior-test.json",
+            boolean addedC2 = restClient.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-group-termination-behavior-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC2);
 
-            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-group-termination-behavior-test.json",
+            boolean addedC3 = restClient.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-group-termination-behavior-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC3);
 
-            boolean addedC4 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c4-group-termination-behavior-test.json",
+            boolean addedC4 = restClient.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c4-group-termination-behavior-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC4);
 
             boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "cartridge-groups-group-termination-behavior-test.json", RestConstants.CARTRIDGE_GROUPS,
+                            "/" + "cartridge-groups-group-termination-behavior-test.json",
+                    RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertTrue(addedG1);
 
@@ -102,7 +109,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             assertEquals(bean.getApplicationId(), "group-termination-behavior-test");
 
             boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                            "application-policy-group-termination-behavior-test.json", RestConstants.APPLICATION_POLICIES,
+                            "application-policy-group-termination-behavior-test.json",
+                    RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
             assertTrue(addAppPolicy);
 
@@ -147,11 +155,15 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             //Cluster active handling
             topologyHandler.assertClusterActivation(bean.getApplicationId());
 
-            //Terminate one member in the cluster
-            TopologyHandler.getInstance().terminateMemberFromCluster(
-                    "c3-group-termination-behavior-test",
-                    bean.getApplicationId(),
-                    mockIaasApiClient);
+            Map<String, Member> memberMap = TopologyHandler.getInstance().getMembersForCluster
+                    ("c3-group-termination-behavior-test", bean.getApplicationId());
+
+            //Terminate members in the cluster
+            for (Map.Entry<String, Member> entry : memberMap.entrySet()) {
+                String memberId = entry.getValue().getMemberId();
+                TopologyHandler.getInstance().terminateMemberInMockIaas(memberId, mockIaasApiClient);
+                TopologyHandler.getInstance().assertMemberTermination(memberId);
+            }
 
             List<String> clusterIds = new ArrayList<String>();
             clusterIds.add(clusterIdC3);
@@ -208,7 +220,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             boolean undeploy = topologyHandler.assertApplicationUndeploy("group-termination-behavior-test");
             if (!undeploy) {
                 //Need to forcefully undeploy the application
-                log.info("Force undeployment is going to start for the [application] " + "group-termination-behavior-test");
+                log.info("Force undeployment is going to start for the [application] " +
+                        "group-termination-behavior-test");
 
                 restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "group-termination-behavior-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
@@ -268,9 +281,11 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
                     "network-partition-group-termination-behavior-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
             assertTrue(removedNet);
 
-            log.info("-------------------------------Ended application termination behavior test case-------------------------------");
+            log.info(
+                    "-------------------------------Ended application termination behavior test case-------------------------------");
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error("An error occurred while handling  application termination behavior", e);
             assertTrue("An error occurred while handling  application termination behavior", false);
         }
@@ -283,7 +298,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         while (!inActiveMap.containsKey(clusterId)) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
+            }
+            catch (InterruptedException ignore) {
             }
             inActiveMap = TopologyHandler.getInstance().getInActiveMembers();
             if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -295,7 +311,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         while (!inActiveMap.containsKey(groupId)) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
+            }
+            catch (InterruptedException ignore) {
             }
             inActiveMap = TopologyHandler.getInstance().getInActiveMembers();
             if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -313,7 +330,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             while (!terminatingMembers.containsKey(clusterId)) {
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
+                }
+                catch (InterruptedException ignore) {
                 }
                 terminatingMembers = TopologyHandler.getInstance().getTerminatingMembers();
                 if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -326,7 +344,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         while (!terminatingMembers.containsKey(groupId)) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
+            }
+            catch (InterruptedException ignore) {
             }
             terminatingMembers = TopologyHandler.getInstance().getTerminatingMembers();
             if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -345,7 +364,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             while (!terminatedMembers.containsKey(clusterId)) {
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
+                }
+                catch (InterruptedException ignore) {
                 }
                 terminatedMembers = TopologyHandler.getInstance().getTerminatedMembers();
                 if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -358,7 +378,8 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         while (!terminatedMembers.containsKey(groupId)) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
+            }
+            catch (InterruptedException ignore) {
             }
             terminatedMembers = TopologyHandler.getInstance().getTerminatedMembers();
             if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -375,10 +396,11 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         Map<String, Long> activeMembers = TopologyHandler.getInstance().getActivateddMembers();
         Map<String, Long> createdMembers = TopologyHandler.getInstance().getCreatedMembers();
         //Active member should be available at the time cluster is started to create.
-        while(!activeMembers.containsKey(firstNodeId)) {
+        while (!activeMembers.containsKey(firstNodeId)) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
             activeMembers = TopologyHandler.getInstance().getActivateddMembers();
             if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {
@@ -387,10 +409,11 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
         }
         assertTrue(activeMembers.containsKey(firstNodeId));
 
-        while(!createdMembers.containsKey(secondNodeId)) {
+        while (!createdMembers.containsKey(secondNodeId)) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
             createdMembers = TopologyHandler.getInstance().getCreatedMembers();
             if ((System.currentTimeMillis() - startTime) > GROUP_INACTIVE_TIMEOUT) {

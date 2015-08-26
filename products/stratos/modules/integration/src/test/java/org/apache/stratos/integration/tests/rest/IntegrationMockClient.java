@@ -28,11 +28,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
-import org.apache.stratos.mock.iaas.client.rest.*;
 import org.apache.stratos.mock.iaas.client.rest.HttpResponse;
 import org.apache.stratos.mock.iaas.client.rest.HttpResponseHandler;
-import org.apache.stratos.mock.iaas.client.rest.RestClient;
-import org.apache.stratos.mock.iaas.domain.*;
 
 import java.net.URI;
 
@@ -58,7 +55,7 @@ public class IntegrationMockClient extends MockIaasApiClient {
         httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
     }
 
-    public void terminateInstance(String instanceId) {
+    public boolean terminateInstance(String instanceId) {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Terminate instance: [instance-id] %s", instanceId));
@@ -67,7 +64,7 @@ public class IntegrationMockClient extends MockIaasApiClient {
             org.apache.stratos.mock.iaas.client.rest.HttpResponse response = doDelete(uri);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return;
+                    return true;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
