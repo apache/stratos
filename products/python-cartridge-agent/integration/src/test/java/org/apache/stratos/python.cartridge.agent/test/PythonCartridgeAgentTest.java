@@ -40,26 +40,23 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEven
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(Parameterized.class)
 public class PythonCartridgeAgentTest {
 
     private static final Log log = LogFactory.getLog(PythonCartridgeAgentTest.class);
-
+    private static final String RESOURCES_PATH = "/suite-1";
     private static final String NEW_LINE = System.getProperty("line.separator");
     //    private static final long TIMEOUT = 1440000;
     private static final long TIMEOUT = 120000;
@@ -77,47 +74,69 @@ public class PythonCartridgeAgentTest {
 
     private static List<ServerSocket> serverSocketList;
     private static Map<String, Executor> executorList;
-    private final ArtifactUpdatedEvent artifactUpdatedEvent;
-    private final Boolean expectedResult;
+
     private boolean instanceStarted;
     private boolean instanceActivated;
     private ByteArrayOutputStreamLocal outputStream;
     private boolean eventReceiverInitiated = false;
     private TopologyEventReceiver topologyEventReceiver;
     private InstanceStatusEventReceiver instanceStatusEventReceiver;
-    private int cepPort = 7712;
     private BrokerService broker = new BrokerService();
-    private static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "mqtt://localhost:1885";
     private static final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
-    public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
-        this.artifactUpdatedEvent = artifactUpdatedEvent;
-        this.expectedResult = expectedResult;
+    private static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "activemq.amqp.bind.address";
+    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "activemq.mqtt.bind.address";
+    private static final String CEP_PORT = "cep.port";
+    private static final String DISTRIBUTION_NAME = "distribution.name";
+
+    private int cepPort;
+    private String amqpBindAddress;
+    private String mqttBindAddress;
+    private String distributionName;
+    private Properties integrationProperties;
+
+    public PythonCartridgeAgentTest() {
+        if (integrationProperties == null) {
+            integrationProperties = new Properties();
+            try {
+                integrationProperties
+                        .load(PythonCartridgeAgentTest.class.getResourceAsStream("/integration-test.properties"));
+                distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
+                amqpBindAddress = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_ADDRESS);
+                mqttBindAddress = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_ADDRESS);
+                cepPort = Integer.parseInt(integrationProperties.getProperty(CEP_PORT));
+                log.info("PCA integration properties: " + integrationProperties.toString());
+            }
+            catch (IOException e) {
+                log.error("Error loading integration-test.properties file from classpath. Please make sure that file " +
+                        "exists in classpath.", e);
+            }
+        }
     }
 
     /**
      * Setup method for test class
      */
-    @BeforeClass
+    @BeforeSuite
     public static void oneTimeSetUp() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
-        System.setProperty("jndi.properties.dir", getResourcesFolderPath());
+        System.setProperty("jndi.properties.dir", getResourcesPath());
     }
 
     /**
      * Setup method for test method testPythonCartridgeAgent
      */
-    @Before
+    @BeforeSuite
     public void setup() {
         serverSocketList = new ArrayList<ServerSocket>();
         executorList = new HashMap<String, Executor>();
         try {
-            broker.addConnector(ACTIVEMQ_AMQP_BIND_ADDRESS);
-            broker.addConnector(ACTIVEMQ_MQTT_BIND_ADDRESS);
+            broker.addConnector(amqpBindAddress);
+            broker.addConnector(mqttBindAddress);
             broker.setBrokerName("testBroker");
-            broker.setDataDirectory(PythonCartridgeAgentTest.class.getResource("/").getPath() +
-                    File.separator + ".." + File.separator + PYTHON_AGENT_DIR_NAME + File.separator + "activemq-data");
+            broker.setDataDirectory(
+                    PythonCartridgeAgentTest.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
+                            "/activemq-data");
             broker.start();
             log.info("Broker service started!");
         }
@@ -159,15 +178,15 @@ public class PythonCartridgeAgentTest {
         String agentPath = setupPythonAgent();
         log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
         log.info("Starting python cartridge agent...");
-        this.outputStream = executeCommand(
-                "python " + agentPath + "/agent.py > " + getResourcesFolderPath() + File.separator + ".." +
-                        File.separator + PYTHON_AGENT_DIR_NAME + File.separator + "cartridge-agent.log");
+        this.outputStream = executeCommand("python " + agentPath + "/agent.py > " +
+                PythonCartridgeAgentTest.class.getResource(File.separator).getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
+                "/cartridge-agent.log");
     }
 
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
-    @After
+    @AfterSuite
     public void tearDown() {
         for (Map.Entry<String, Executor> entry : executorList.entrySet()) {
             try {
@@ -219,8 +238,8 @@ public class PythonCartridgeAgentTest {
      *
      * @return
      */
-    @Parameterized.Parameters
-    public static Collection getArtifactUpdatedEventsAsParams() {
+
+    public static ArrayList<ArtifactUpdatedEvent> getArtifactUpdatedEventsAsParams() {
         ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
 
         ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
@@ -233,16 +252,11 @@ public class PythonCartridgeAgentTest {
         privateRepoEvent2.setRepoUserName("testapache2211");
         privateRepoEvent2.setRepoPassword("iF7qT+BKKPE3PGV1TeDsJA==");
 
-        return Arrays.asList(new Object[][]{
-                {publicRepoEvent, true},
-                {privateRepoEvent, true},
-                {privateRepoEvent2, true}
-        });
-
-//        return Arrays.asList(new Object[][]{
-//                {publicRepoEvent, true}
-//        });
-
+        ArrayList<ArtifactUpdatedEvent> list = new ArrayList<ArtifactUpdatedEvent>();
+        list.add(privateRepoEvent);
+        list.add(privateRepoEvent2);
+        list.add(publicRepoEvent);
+        return list;
     }
 
     /**
@@ -260,7 +274,7 @@ public class PythonCartridgeAgentTest {
         return publicRepoEvent;
     }
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeOut = TIMEOUT)
     public void testPythonCartridgeAgent() {
         Thread communicatorThread = new Thread(new Runnable() {
             @Override
@@ -294,7 +308,10 @@ public class PythonCartridgeAgentTest {
                             }
                             if (line.contains("Artifact repository found")) {
                                 // Send artifact updated event
-                                publishEvent(artifactUpdatedEvent);
+                                ArrayList<ArtifactUpdatedEvent> list = getArtifactUpdatedEventsAsParams();
+                                for (ArtifactUpdatedEvent artifactUpdatedEvent : list) {
+                                    publishEvent(artifactUpdatedEvent);
+                                }
                             }
 
                             if (line.contains("Exception in thread") || line.contains("ERROR")) {
@@ -316,7 +333,7 @@ public class PythonCartridgeAgentTest {
         }
 
         assertTrue("Instance started event was not received", instanceStarted);
-        assertTrue("Instance activated event was not received", instanceActivated == this.expectedResult);
+        assertTrue("Instance activated event was not received", instanceActivated);
     }
 
     /**
@@ -396,16 +413,18 @@ public class PythonCartridgeAgentTest {
 
         if (StringUtils.isNotBlank(output)) {
             String[] lines = output.split(NEW_LINE);
-            if (lines != null) {
-                for (String line : lines) {
-                    if (!currentOutputLines.contains(line)) {
-                        currentOutputLines.add(line);
-                        newLines.add(line);
-                    }
+            for (String line : lines) {
+                if (!currentOutputLines.contains(line)) {
+                    currentOutputLines.add(line);
+                    newLines.add(line);
                 }
             }
         }
         return newLines;
+    }
+
+    public static String getResourcesPath() {
+        return PythonCartridgeAgentTest.class.getResource("/").getPath() + "/../../src/test/resources" + RESOURCES_PATH;
     }
 
     /**
@@ -429,21 +448,26 @@ public class PythonCartridgeAgentTest {
     private String setupPythonAgent() {
         try {
             log.info("Setting up python cartridge agent...");
-            String srcAgentPath = getResourcesFolderPath() + "/../../src/main/python/cartridge.agent/cartridge.agent";
-            String destAgentPath =
-                    getResourcesFolderPath() + File.separator + ".." + File.separator + PYTHON_AGENT_DIR_NAME +
-                            "/cartridge.agent";
-            FileUtils.copyDirectory(new File(srcAgentPath), new File(destAgentPath));
 
-            String srcAgentConfPath = getResourcesFolderPath() + "/agent.conf";
+
+            String srcAgentPath = PythonCartridgeAgentTest.class.getResource("/").getPath() +
+                    "/../../../distribution/target/" + distributionName + ".zip";
+            String unzipDestPath =
+                    PythonCartridgeAgentTest.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME + "/";
+            //FileUtils.copyFile(new File(srcAgentPath), new File(destAgentPath));
+            unzip(srcAgentPath, unzipDestPath);
+            String destAgentPath = PythonCartridgeAgentTest.class.getResource("/").getPath() + "/../" +
+                    PYTHON_AGENT_DIR_NAME + "/" + distributionName;
+
+            String srcAgentConfPath = getResourcesPath() + "/agent.conf";
             String destAgentConfPath = destAgentPath + "/agent.conf";
             FileUtils.copyFile(new File(srcAgentConfPath), new File(destAgentConfPath));
 
-            String srcLoggingIniPath = getResourcesFolderPath() + "/logging.ini";
+            String srcLoggingIniPath = getResourcesPath() + "/logging.ini";
             String destLoggingIniPath = destAgentPath + "/logging.ini";
             FileUtils.copyFile(new File(srcLoggingIniPath), new File(destLoggingIniPath));
 
-            String srcPayloadPath = getResourcesFolderPath() + "/payload";
+            String srcPayloadPath = getResourcesPath() + "/payload";
             String destPayloadPath = destAgentPath + "/payload";
             FileUtils.copyDirectory(new File(srcPayloadPath), new File(destPayloadPath));
 
@@ -465,6 +489,40 @@ public class PythonCartridgeAgentTest {
         }
     }
 
+    public void unzip(String zipFilePath, String destDirectory) throws IOException {
+        File destDir = new File(destDirectory);
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+        ZipEntry entry = zipIn.getNextEntry();
+        // iterates over entries in the zip file
+        while (entry != null) {
+            String filePath = destDirectory + File.separator + entry.getName();
+            if (!entry.isDirectory()) {
+                // if the entry is a file, extracts it
+                extractFile(zipIn, filePath);
+            } else {
+                // if the entry is a directory, make the directory
+                File dir = new File(filePath);
+                dir.mkdir();
+            }
+            zipIn.closeEntry();
+            entry = zipIn.getNextEntry();
+        }
+        zipIn.close();
+    }
+
+    private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+        byte[] bytesIn = new byte[4096];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
+    }
+
     /**
      * Execute shell command
      *
@@ -477,7 +535,7 @@ public class PythonCartridgeAgentTest {
             DefaultExecutor exec = new DefaultExecutor();
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
             exec.setWorkingDirectory(new File(
-                    getResourcesFolderPath() + File.separator + ".." + File.separator + PYTHON_AGENT_DIR_NAME));
+                    PythonCartridgeAgentTest.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME));
             exec.setStreamHandler(streamHandler);
             ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
             exec.setWatchdog(watchdog);
@@ -499,16 +557,6 @@ public class PythonCartridgeAgentTest {
             log.error(outputStream.toString(), e);
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Get resources folder path
-     *
-     * @return
-     */
-    private static String getResourcesFolderPath() {
-        String path = PythonCartridgeAgentTest.class.getResource(File.separator).getPath();
-        return StringUtils.removeEnd(path, File.separator);
     }
 
     /**
