@@ -23,7 +23,7 @@
 <suite name="PythonCartridgeAgentIntegrationSuite1">
     <test name="PCATest">
         <classes>
-            <class name="org.apache.stratos.python.cartridge.agent.test.PythonCartridgeAgentTest"/>
+            <class name="org.apache.stratos.python.cartridge.agent.test.StartUpTest"/>
         </classes>
     </test>
 </suite>

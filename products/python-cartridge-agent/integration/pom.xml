@@ -72,13 +72,34 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <suiteXmlFiles>
-                                <suiteXmlFile>src/test/resources/pca-testing1.xml</suiteXmlFile>
-                            </suiteXmlFiles>
-                            <workingDirectory>${basedir}/target</workingDirectory>
-                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <suiteXmlFiles>
+                                        <suiteXmlFile>src/test/resources/pca-testing1.xml</suiteXmlFile>
+                                    </suiteXmlFiles>
+                                    <workingDirectory>${basedir}/target</workingDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>adc-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <suiteXmlFiles>
+                                        <suiteXmlFile>src/test/resources/pca-testing2.xml</suiteXmlFile>
+                                    </suiteXmlFiles>
+                                    <workingDirectory>${basedir}/target</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

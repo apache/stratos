@@ -91,6 +91,7 @@ class EventHandler:
 
             # checkout code
             subscribe_run, updated = AgentGitHandler.checkout(repo_info)
+
             # execute artifact updated extension
             plugin_values = {"ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
                              "ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
@@ -99,7 +100,10 @@ class EventHandler:
                              "ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
                              "ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
 
-            self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
+            try:
+                self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
+            except ValueError:
+                self.__log.exception("Could not execute plugins for artifact updated event.")         
 
             if subscribe_run:
                 # publish instanceActivated
@@ -109,10 +113,11 @@ class EventHandler:
                 self.on_artifact_update_scheduler_event(tenant_id)
 
             update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, False)
+            auto_commit = Config.is_commits_enabled
+            auto_checkout = Config.is_checkout_enabled
+            self.__log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s",
+                            update_artifacts, auto_commit, auto_checkout)
             if update_artifacts:
-                auto_commit = Config.is_commits_enabled
-                auto_checkout = Config.is_checkout_enabled
-
                 try:
                     update_interval = int(Config.artifact_update_interval)
                 except ValueError:
@@ -207,6 +212,7 @@ class EventHandler:
 
         if member_exists:
             Config.initialized = True
+            self.markMemberAsInitialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
         self.execute_event_extendables(constants.MEMBER_INITIALIZED_EVENT, {})
 
@@ -276,7 +282,6 @@ class EventHandler:
         service_name_in_payload = Config.service_name
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
-
         member_initialized = self.is_member_initialized_in_topology(service_name_in_payload, cluster_id_in_payload,
                                                                  member_id_in_payload)
 
@@ -476,6 +481,7 @@ class EventHandler:
             service = topology.get_service(service_name)
             cluster = service.get_cluster(cluster_id)
             found_member = cluster.get_member(member_id)
+            self.__log.debug("Found member: " + found_member.to_json())
             if found_member.status == MemberStatus.Initialized:
                 return True
 
@@ -499,6 +505,21 @@ class EventHandler:
             return False
 
         return True
+
+    def markMemberAsInitialized(self, service_name, cluster_id, member_id):
+        topology = TopologyContext.get_topology()
+        service = topology.get_service(service_name)
+        if service is None:
+            self.__log.error("Service not found in topology [service] %s" % service_name)
+            return False
+
+        cluster = service.get_cluster(cluster_id)
+        if cluster is None:
+            self.__log.error("Cluster id not found in topology [cluster] %s" % cluster_id)
+            return False
+
+        member = cluster.get_member(member_id)
+        member.status = MemberStatus.Initialized
 
     @staticmethod
     def add_common_input_values(plugin_values):

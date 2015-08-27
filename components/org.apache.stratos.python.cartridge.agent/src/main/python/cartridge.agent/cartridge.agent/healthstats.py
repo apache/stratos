@@ -124,6 +124,7 @@ class HealthStatisticsPublisher:
             cep_admin_username,
             cep_admin_password,
             self.stream_definition)
+        self.publisher.start()
 
         HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
 
