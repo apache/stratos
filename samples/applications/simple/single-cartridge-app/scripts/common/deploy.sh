@@ -37,6 +37,7 @@ network_partitions_path=`cd "${script_path}/../../../../../network-partitions/${
 deployment_policies_path=`cd "${script_path}/../../../../../deployment-policies"; pwd`
 application_policies_path=`cd "${script_path}/../../../../../application-policies"; pwd`
 tenants_path=`cd "${script_path}/../../../../../tenants"; pwd`
+kubernetes_clusters_path=`cd "${script_path}/../../../../../kubernetes-clusters"; pwd`
 
 set -e
 
@@ -52,6 +53,9 @@ curl -X POST -H "Content-Type: application/json" -d "@${tenants_path}/tenant$2.j
 echo ${autoscaling_policies_path}/autoscaling-policy-1.json
 echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${autoscaling_policies_path}/autoscaling-policy-1.json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/autoscalingPolicies
+
+echo "Adding kubernetes cluster..."
+curl -X POST -H "Content-Type: application/json" -d "@${kubernetes_clusters_path}/kubernetes-cluster-2.json" -k -u ${username}:${password} https://${host_ip}:${host_port}/api/kubernetesClusters
 
 echo "Adding network partitions..."
 curl -X POST -H "Content-Type: application/json" -d "@${network_partitions_path}/network-partition-1.json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/networkPartitions
