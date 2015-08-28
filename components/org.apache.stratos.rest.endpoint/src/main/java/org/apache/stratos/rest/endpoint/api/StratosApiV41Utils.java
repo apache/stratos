@@ -1854,8 +1854,9 @@ public class StratosApiV41Utils {
                         ApplicationBean applicationDefinition =
                                 ObjectConverter.convertStubApplicationContextToApplicationDefinition(applicationContext);
                         if(applicationDefinition.isMultiTenant()) {
+                            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
                             boolean hasSignUps = StratosManagerServiceClient.getInstance().
-                                    applicationSignUpsExist(applicationDefinition.getApplicationId());
+                                    applicationSignUpExist(applicationDefinition.getApplicationId(), tenantId);
                             applicationDefinition.setSignUpsExist(hasSignUps);
                         }
                         applicationDefinitions.add(applicationDefinition);
