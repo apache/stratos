@@ -225,9 +225,10 @@ public class TopologyHandler {
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
                     applicationName, serviceName, clusterId), cluster);
             for (Member member : cluster.getMembers()) {
-                log.info(String.format("Member [member-id] %s found in cluster instance [cluster-instance] %s of " +
-                        "cluster [cluster-id] %s", member
-                        .getMemberId(), member.getClusterInstanceId(), member.getClusterId()));
+                log.info(String.format(
+                        "Member [member-id] %s in [status] %s found in [cluster-instance] %s of [cluster-id] %s",
+                        member.getMemberId(), member.getStatus(), member.getClusterInstanceId(),
+                        member.getClusterId()));
             }
             boolean clusterActive = false;
             int activeInstances;
