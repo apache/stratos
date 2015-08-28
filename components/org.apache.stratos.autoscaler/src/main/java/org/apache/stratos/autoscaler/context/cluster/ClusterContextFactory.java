@@ -37,7 +37,7 @@ public class ClusterContextFactory {
             return null;
         }
 
-        String autoscalePolicyName = cluster.getAutoscalePolicyUuid();
+        String autoscalePolicyName = cluster.getAutoscalePolicyName();
 
         if (log.isDebugEnabled()) {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);

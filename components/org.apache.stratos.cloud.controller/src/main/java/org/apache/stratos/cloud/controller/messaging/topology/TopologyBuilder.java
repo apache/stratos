@@ -385,7 +385,7 @@ public class TopologyBuilder {
             try {
                 TopologyManager.acquireWriteLock();
                 Cluster cluster = service.removeCluster(ctxt.getClusterId());
-                deploymentPolicy = cluster.getDeploymentPolicyUuid();
+                deploymentPolicy = cluster.getDeploymentPolicyName();
                 TopologyManager.updateTopology(topology);
             } finally {
                 TopologyManager.releaseWriteLock();

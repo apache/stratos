@@ -222,7 +222,7 @@ public class ApplicationUtils {
         //basicPayloadData.setDeployment("default");//currently hard coded to default
         basicPayloadData.setMultitenant(String.valueOf(cartridge.getMultiTenant()));
         basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridge));
-        basicPayloadData.setServiceName(cartridge.getType());
+        basicPayloadData.setServiceName(cartridge.getUuid());
         basicPayloadData.setProvider(cartridge.getProvider());
 
         if (repoUrl != null) {

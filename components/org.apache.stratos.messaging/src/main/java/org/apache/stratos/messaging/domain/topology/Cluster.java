@@ -40,8 +40,8 @@ public class Cluster implements Serializable {
 
     private final String serviceName;
     private final String clusterId;
-    private final String autoscalePolicyUuid;
-    private final String deploymentPolicyUuid;
+    private final String autoscalePolicyName;
+    private final String deploymentPolicyName;
 
     private List<String> hostNames;
     private String tenantRange;
@@ -66,8 +66,8 @@ public class Cluster implements Serializable {
     public Cluster(Cluster cluster) {
         this.serviceName = cluster.getServiceName();
         this.clusterId = cluster.getClusterId();
-        this.deploymentPolicyUuid = cluster.getDeploymentPolicyUuid();
-        this.autoscalePolicyUuid = cluster.getAutoscalePolicyUuid();
+        this.deploymentPolicyName = cluster.getDeploymentPolicyName();
+        this.autoscalePolicyName = cluster.getAutoscalePolicyName();
         this.appId = cluster.getAppId();
         this.setHostNames(cluster.getHostNames());
         this.memberMap = cluster.getMemberMap();
@@ -86,8 +86,8 @@ public class Cluster implements Serializable {
                    String autoscalePolicyName, String appId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.deploymentPolicyUuid = deploymentPolicyName;
-        this.autoscalePolicyUuid = autoscalePolicyName;
+        this.deploymentPolicyName = deploymentPolicyName;
+        this.autoscalePolicyName = autoscalePolicyName;
         this.setHostNames(new ArrayList<String>());
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
@@ -154,12 +154,12 @@ public class Cluster implements Serializable {
         this.properties = properties;
     }
 
-    public String getAutoscalePolicyUuid() {
-        return autoscalePolicyUuid;
+    public String getAutoscalePolicyName() {
+        return autoscalePolicyName;
     }
 
-    public String getDeploymentPolicyUuid() {
-        return deploymentPolicyUuid;
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
     }
 
     public String getLoadBalanceAlgorithmName() {
@@ -363,8 +363,8 @@ public class Cluster implements Serializable {
     public String toString() {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
                         "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
-                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyUuid,
-                deploymentPolicyUuid, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
+                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyName,
+                deploymentPolicyName, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
                 accessUrls, kubernetesServices);
     }
 }
