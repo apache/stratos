@@ -117,6 +117,19 @@
                                     <workingDirectory>${basedir}/target</workingDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>adc-mt-tenant-user-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <suiteXmlFiles>
+                                        <suiteXmlFile>src/test/resources/pca-testing4.xml</suiteXmlFile>
+                                    </suiteXmlFiles>
+                                    <workingDirectory>${basedir}/target</workingDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
