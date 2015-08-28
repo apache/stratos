@@ -512,6 +512,10 @@ public class CloudControllerContext implements Serializable {
                 kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
     }
 
+    public void removeKubernetesClusterContext(String kubernetesClusterId){
+        kubClusterIdToKubClusterContextMap.remove(kubernetesClusterId);
+    }
+
     /**
      * Remove a registered Kubernetes cluster from registry
      */

@@ -1305,6 +1305,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             // Remove entry from information model
             CloudControllerContext.getInstance().removeKubernetesCluster(kubernetesClusterId);
+            CloudControllerContext.getInstance().removeKubernetesClusterContext(kubernetesClusterId);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes cluster removed successfully: [id] %s", kubernetesClusterId));
