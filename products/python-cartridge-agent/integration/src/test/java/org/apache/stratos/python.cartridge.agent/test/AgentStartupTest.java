@@ -35,7 +35,7 @@ import java.util.Properties;
 
 public class AgentStartupTest extends PythonAgentTestManager {
     private static final Log log = LogFactory.getLog(AgentStartupTest.class);
-    private static final int STARTUP_TIMEOUT = 30000;
+    private static final int STARTUP_TIMEOUT = 60000;
     private static final String RESOURCES_PATH = "/suite-1";
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
@@ -47,6 +47,7 @@ public class AgentStartupTest extends PythonAgentTestManager {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
+    private boolean startupTestCompleted = false;
 
     @BeforeSuite
     public void setupAgentStartupTest() {
@@ -101,6 +102,10 @@ public class AgentStartupTest extends PythonAgentTestManager {
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
                             }
+                            // TODO: properly mock the CEP server
+                            if (line.contains("Published event to thrift stream")) {
+                                startupTestCompleted = true;
+                            }
                         }
                     }
                     sleep(1000);
@@ -110,7 +115,7 @@ public class AgentStartupTest extends PythonAgentTestManager {
 
         startupTestThread.start();
 
-        while (!instanceStarted || !instanceActivated) {
+        while (!instanceStarted || !instanceActivated || !startupTestCompleted) {
             // wait until the instance activated event is received.
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);

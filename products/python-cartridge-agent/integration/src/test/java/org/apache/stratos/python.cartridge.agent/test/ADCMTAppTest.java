@@ -51,7 +51,7 @@ public class ADCMTAppTest extends PythonAgentTestManager {
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "tomcat-mt";
 
-    private static boolean hasADCTestCompleted = false;
+    private boolean hasADCTestCompleted = false;
 
     @BeforeSuite
     public void setupADCMTAppTest() {
@@ -95,7 +95,7 @@ public class ADCMTAppTest extends PythonAgentTestManager {
                             if (line.contains("Git clone executed")) {
                                 log.info("Agent has completed git clone. Asserting the operation...");
                                 assertRepoClone(getArtifactUpdatedEventForPublicRepo());
-                                //hasADCTestCompleted = true;
+                                hasADCTestCompleted = true;
                             }
                         }
                     }

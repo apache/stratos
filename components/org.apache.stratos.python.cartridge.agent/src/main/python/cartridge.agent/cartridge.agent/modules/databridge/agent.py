@@ -115,7 +115,7 @@ class ThriftEvent:
         """:type : list[T]"""
 
 
-class ThriftPublisher(Thread):
+class ThriftPublisher():
     """
     Handles publishing events to BAM/CEP through thrift using the provided address and credentials
     """
@@ -136,23 +136,21 @@ class ThriftPublisher(Thread):
         :return: ThriftPublisher object
         :rtype: ThriftPublisher
         """
-        Thread.__init__(self)
         try:
             port_number = int(port)
         except ValueError:
             raise RuntimeError("Port number for Thrift Publisher is invalid: %r" % port)
 
         self.__publisher = Publisher(ip, port_number, stream_definition)
-        #self.__publisher.defineStream(str(stream_definition))
+        self.__publisher.connect(username, password)
+        self.__publisher.defineStream(str(stream_definition))
+        ThriftPublisher.log.debug("ThriftPublisher initializing with stream definition: " + str(stream_definition))
         self.stream_definition = stream_definition
         self.stream_id = self.__publisher.streamId
         self.ip = ip
         self.port = port
         self.username = username
         self.password = password
-
-    def run(self):
-        self.__publisher.connect(self.username, self.password)
 
     def publish(self, event):
         """

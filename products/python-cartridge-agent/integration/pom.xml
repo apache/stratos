@@ -78,7 +78,7 @@
                             </excludes>
                         </configuration>
                         <executions>
-                            <!--execution>
+                            <execution>
                                 <id>default-test</id>
                                 <goals>
                                     <goal>test</goal>
@@ -103,7 +103,7 @@
                                     </suiteXmlFiles>
                                     <workingDirectory>${basedir}/target</workingDirectory>
                                 </configuration>
-                            </execution-->
+                            </execution>
                             <execution>
                                 <id>adc-mt-test</id>
                                 <goals>
@@ -195,6 +195,11 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.9.2</version>
         </dependency>
     </dependencies>
 </project>

@@ -53,7 +53,7 @@ public class ADCTest extends PythonAgentTestManager {
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "tomcat";
 
-    private static boolean hasADCTestCompleted = false;
+    private boolean hasADCTestCompleted = false;
 
     @BeforeSuite
     public void setupADCTest() {
@@ -107,7 +107,6 @@ public class ADCTest extends PythonAgentTestManager {
                                 }
                             }
                             if (line.contains("Pushed artifacts for tenant")) {
-                                // TODO: Get rid of static var
                                 log.info("ADC Test completed");
                                 hasADCTestCompleted = true;
                             }

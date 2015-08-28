@@ -50,7 +50,6 @@ class Publisher:
         self.socket.open()
         self.transport.open()
         self.sessionId = Publisher.client.connect(username, password)
-        self.streamId = Publisher.client.defineStream(self.sessionId, self.streamDef)
 
     def defineStream(self, streamDef):
         # Create Stream Definition

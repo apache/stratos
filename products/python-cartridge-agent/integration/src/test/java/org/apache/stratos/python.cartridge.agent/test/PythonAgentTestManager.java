@@ -110,8 +110,9 @@ public class PythonAgentTestManager {
 
             this.eventReceiverInitiated = true;
         }
-        // Simulate CEP server socket
-        startServerSocket(cepPort);
+        // Simulate CEP Thrift server
+        //startServerSocket(cepPort);
+        // TODO: create a mock thrift server; sockets will not work with health stats publisher
         String agentPath = setupPythonAgent(resourcePath);
         log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
         log.info("Starting python cartridge agent...");
@@ -119,6 +120,7 @@ public class PythonAgentTestManager {
                 PythonAgentTestManager.class.getResource(File.separator).getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
                 "/cartridge-agent-console.log");
     }
+
 
     protected void tearDown() {
         tearDown(null);
@@ -265,6 +267,10 @@ public class PythonAgentTestManager {
         socketThread.start();
     }
 
+
+    protected static String getResourcesPath() {
+        return PythonAgentTestManager.class.getResource("/").getPath() + "/../../src/test/resources";
+    }
 
     protected static String getResourcesPath(String resourcesPath) {
         return PythonAgentTestManager.class.getResource("/").getPath() + "/../../src/test/resources" + resourcesPath;
