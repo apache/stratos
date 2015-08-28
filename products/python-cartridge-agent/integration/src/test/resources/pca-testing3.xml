@@ -20,10 +20,10 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="PythonCartridgeAgentIntegrationSuite1">
+<suite name="PythonCartridgeAgentIntegrationSuite3">
     <test name="PCATest">
         <classes>
-            <class name="org.apache.stratos.python.cartridge.agent.test.AgentStartupTest"/>
+            <class name="org.apache.stratos.python.cartridge.agent.test.ADCMTAppTest"/>
         </classes>
     </test>
 </suite>

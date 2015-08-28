@@ -37,7 +37,7 @@ import java.util.UUID;
 
 import static junit.framework.Assert.assertTrue;
 
-public class ADCTest extends PythonTestManager {
+public class ADCTest extends PythonAgentTestManager {
     private static final Log log = LogFactory.getLog(ADCTest.class);
     private static final int ADC_TIMEOUT = 180000;
     private static final String RESOURCES_PATH = "/suite-2";
@@ -52,12 +52,11 @@ public class ADCTest extends PythonTestManager {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "tomcat";
-    private static final String SOURCE_PATH = "/tmp/stratos-pca-adc-test-app-path/";
 
     private static boolean hasADCTestCompleted = false;
 
     @BeforeSuite
-    public void setupStartUpTest() {
+    public void setupADCTest() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesPath(RESOURCES_PATH));
 
@@ -72,73 +71,16 @@ public class ADCTest extends PythonTestManager {
      * TearDown method for test method testPythonCartridgeAgent
      */
     @AfterSuite
-    public void tearDownStartUpTest() {
+    public void tearDownADCTest() {
         // TODO: app path is duplicated in Java test and payload
         tearDown(APPLICATION_PATH);
     }
 
 
     @Test(timeOut = ADC_TIMEOUT)
-    public void testPythonCartridgeAgent() {
-        Thread communicatorThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!eventReceiverInitiated) {
-                    sleep(1000);
-                }
-                List<String> outputLines = new ArrayList<String>();
-                while (!outputStream.isClosed()) {
-                    List<String> newLines = getNewLines(outputLines, outputStream.toString());
-                    if (newLines.size() > 0) {
-                        for (String line : newLines) {
-                            if (line.contains("Exception in thread") || line.contains("ERROR")) {
-                                try {
-                                    throw new RuntimeException(line);
-                                }
-                                catch (Exception e) {
-                                    log.error("ERROR found in PCA log", e);
-                                }
-                            }
-                            if (line.contains("Subscribed to 'topology/#'")) {
-                                sleep(2000);
-                                // Send complete topology event
-                                log.info("Publishing complete topology event...");
-                                Topology topology = createTestTopology();
-                                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-                                publishEvent(completeTopologyEvent);
-                                log.info("Complete topology event published");
-
-                                // Publish member initialized event
-                                log.info("Publishing member initialized event...");
-                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID
-                                );
-                                publishEvent(memberInitializedEvent);
-                                log.info("Member initialized event published");
-                            }
-
-                            // Send artifact updated event to activate the instance first
-                            if (line.contains("Artifact repository found")) {
-                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
-                                log.info("Artifact updated event published");
-                            }
-                            log.info(line);
-                        }
-                    }
-                    sleep(100);
-                }
-            }
-        });
-        communicatorThread.start();
-
-        while (!instanceActivated) {
-            // wait until the instance activated event is received.
-            sleep(1000);
-        }
-        assertTrue("Instance started event was not received", instanceStarted);
-        assertTrue("Instance activated event was not received", instanceActivated);
-
+    public void testADC() {
+        startCommunicatorThread();
+        assertAgentActivation();
         Thread adcTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -171,7 +113,7 @@ public class ADCTest extends PythonTestManager {
                             }
                         }
                     }
-                    sleep(100);
+                    sleep(1000);
                 }
             }
         });
@@ -181,7 +123,58 @@ public class ADCTest extends PythonTestManager {
             // wait until the instance activated event is received.
             sleep(1000);
         }
-        assertTrue("ADC Test failed", hasADCTestCompleted);
+    }
+
+    private void assertAgentActivation() {
+        Thread startupTestThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!eventReceiverInitiated) {
+                    sleep(1000);
+                }
+                List<String> outputLines = new ArrayList<String>();
+                while (!outputStream.isClosed()) {
+                    List<String> newLines = getNewLines(outputLines, outputStream.toString());
+                    if (newLines.size() > 0) {
+                        for (String line : newLines) {
+                            if (line.contains("Subscribed to 'topology/#'")) {
+                                sleep(2000);
+                                // Send complete topology event
+                                log.info("Publishing complete topology event...");
+                                Topology topology = createTestTopology();
+                                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
+                                publishEvent(completeTopologyEvent);
+                                log.info("Complete topology event published");
+
+                                // Publish member initialized event
+                                log.info("Publishing member initialized event...");
+                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
+                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
+                                        PARTITION_ID
+                                );
+                                publishEvent(memberInitializedEvent);
+                                log.info("Member initialized event published");
+                            }
+
+                            // Send artifact updated event to activate the instance first
+                            if (line.contains("Artifact repository found")) {
+                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
+                                log.info("Artifact updated event published");
+                            }
+                            log.info(line);
+                        }
+                    }
+                    sleep(1000);
+                }
+            }
+        });
+        startupTestThread.start();
+
+        while (!instanceStarted || !instanceActivated) {
+            // wait until the instance activated event is received.
+            // this will assert whether instance got activated within timeout period; no need for explicit assertions
+            sleep(2000);
+        }
     }
 
     private void assertRepoClone(ArtifactUpdatedEvent artifactUpdatedEvent) {
@@ -190,18 +183,7 @@ public class ADCTest extends PythonTestManager {
                 file.exists());
     }
 
-    private void assertRepoPush(ArtifactUpdatedEvent artifactUpdatedEvent) {
-        File file = new File(APPLICATION_PATH + "/test1.txt");
-        assertTrue("Git clone failed for repo [url] " + artifactUpdatedEvent.getRepoURL(), file.exists());
 
-    }
-
-    /**
-     * This method returns a collection of {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent}
-     * objects as parameters to the test
-     *
-     * @return
-     */
     public static ArtifactUpdatedEvent getArtifactUpdatedEventForPublicRepo() {
         ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
         publicRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
@@ -216,12 +198,6 @@ public class ADCTest extends PythonTestManager {
         return privateRepoEvent;
     }
 
-    /**
-     * Creates an {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent} object with a public
-     * repository URL
-     *
-     * @return
-     */
     private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
         ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
         artifactUpdatedEvent.setClusterId(CLUSTER_ID);

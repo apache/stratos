@@ -35,14 +35,15 @@ import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.io.*;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class PythonTestManager {
+public class PythonAgentTestManager {
     protected final Properties integrationProperties = new Properties();
-    private static final Log log = LogFactory.getLog(PythonTestManager.class);
+    private static final Log log = LogFactory.getLog(PythonAgentTestManager.class);
     protected BrokerService broker = new BrokerService();
 
     public final long TIMEOUT = 180000;
@@ -53,7 +54,7 @@ public class PythonTestManager {
     public static final String DISTRIBUTION_NAME = "distribution.name";
     protected final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
-    protected List<ServerSocket> serverSocketList = new ArrayList<ServerSocket>();
+    protected Map<Integer, ServerSocket> serverSocketMap = new HashMap<>();
     protected Map<String, Executor> executorList = new HashMap<String, Executor>();
 
     protected int cepPort;
@@ -115,7 +116,7 @@ public class PythonTestManager {
         log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
         log.info("Starting python cartridge agent...");
         this.outputStream = executeCommand("python " + agentPath + "/agent.py > " +
-                PythonTestManager.class.getResource(File.separator).getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
+                PythonAgentTestManager.class.getResource(File.separator).getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
                 "/cartridge-agent-console.log");
     }
 
@@ -138,7 +139,9 @@ public class PythonTestManager {
             catch (Exception ignore) {
             }
         }
-        for (ServerSocket serverSocket : serverSocketList) {
+        // wait until everything cleans up to avoid connection errors
+        sleep(1000);
+        for (ServerSocket serverSocket : serverSocketMap.values()) {
             try {
                 log.info("Stopping socket server: " + serverSocket.getLocalSocketAddress());
                 serverSocket.close();
@@ -153,14 +156,11 @@ public class PythonTestManager {
         }
         catch (Exception ignore) {
         }
-
         this.instanceStatusEventReceiver.terminate();
         this.topologyEventReceiver.terminate();
 
         this.instanceActivated = false;
         this.instanceStarted = false;
-        // wait until everything cleans up to avoid connection errors
-        sleep(1000);
         try {
             broker.stop();
         }
@@ -169,10 +169,10 @@ public class PythonTestManager {
         }
     }
 
-    public PythonTestManager() {
+    public PythonAgentTestManager() {
         try {
             integrationProperties
-                    .load(PythonTestManager.class.getResourceAsStream("/integration-test.properties"));
+                    .load(PythonAgentTestManager.class.getResourceAsStream("/integration-test.properties"));
             distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
             amqpBindAddress = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_ADDRESS);
             mqttBindAddress = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_ADDRESS);
@@ -190,10 +190,37 @@ public class PythonTestManager {
         broker.addConnector(mqttBindAddress);
         broker.setBrokerName("testBroker");
         broker.setDataDirectory(
-                PythonTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
+                PythonAgentTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
                         "/activemq-data");
         broker.start();
         log.info("Broker service started!");
+    }
+
+    protected void startCommunicatorThread() {
+        Thread communicatorThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<String> outputLines = new ArrayList<String>();
+                while (!outputStream.isClosed()) {
+                    List<String> newLines = getNewLines(outputLines, outputStream.toString());
+                    if (newLines.size() > 0) {
+                        for (String line : newLines) {
+                            if (line.contains("Exception in thread") || line.contains("ERROR")) {
+                                try {
+                                    throw new RuntimeException(line);
+                                }
+                                catch (Exception e) {
+                                    log.error("ERROR found in PCA log", e);
+                                }
+                            }
+                            log.info(line);
+                        }
+                    }
+                    sleep(100);
+                }
+            }
+        });
+        communicatorThread.start();
     }
 
     /**
@@ -205,16 +232,33 @@ public class PythonTestManager {
         Thread socketThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    ServerSocket serverSocket = new ServerSocket(port);
-                    serverSocketList.add(serverSocket);
-                    log.info("Server socket started on port: " + port);
-                    serverSocket.accept();
-                }
-                catch (IOException e) {
-                    String message = "Could not start server socket: [port] " + port;
-                    log.error(message, e);
-                    throw new RuntimeException(message, e);
+                while (true) { // do this infinitely until test is complete
+                    try {
+                        ServerSocket serverSocket = new ServerSocket(port);
+                        serverSocketMap.put(port, serverSocket);
+                        log.info("Server socket started on port: " + port);
+                        Socket socket = serverSocket.accept();
+                        log.info("Client connected to [port] " + port);
+
+                        InputStream is = socket.getInputStream();
+                        byte[] buffer = new byte[1024];
+                        int read;
+                        while (true) {
+                            if (socket.isClosed()) {
+                                log.info("Socket for [port] " + port + " has been closed.");
+                                break;
+                            }
+                            if ((read = is.read(buffer)) != -1) {
+                                String output = new String(buffer, 0, read);
+                                log.info("Message received for [port] " + port + ", [message] " + output);
+                            }
+                        }
+                    }
+                    catch (IOException e) {
+                        String message = "Could not start server socket: [port] " + port;
+                        log.error(message, e);
+                        throw new RuntimeException(message, e);
+                    }
                 }
             }
         });
@@ -223,7 +267,7 @@ public class PythonTestManager {
 
 
     protected static String getResourcesPath(String resourcesPath) {
-        return PythonTestManager.class.getResource("/").getPath() + "/../../src/test/resources" + resourcesPath;
+        return PythonAgentTestManager.class.getResource("/").getPath() + "/../../src/test/resources" + resourcesPath;
     }
 
     /**
@@ -236,13 +280,13 @@ public class PythonTestManager {
             log.info("Setting up python cartridge agent...");
 
 
-            String srcAgentPath = PythonTestManager.class.getResource("/").getPath() +
+            String srcAgentPath = PythonAgentTestManager.class.getResource("/").getPath() +
                     "/../../../distribution/target/" + distributionName + ".zip";
             String unzipDestPath =
-                    PythonTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME + "/";
+                    PythonAgentTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME + "/";
             //FileUtils.copyFile(new File(srcAgentPath), new File(destAgentPath));
             unzip(srcAgentPath, unzipDestPath);
-            String destAgentPath = PythonTestManager.class.getResource("/").getPath() + "/../" +
+            String destAgentPath = PythonAgentTestManager.class.getResource("/").getPath() + "/../" +
                     PYTHON_AGENT_DIR_NAME + "/" + distributionName;
 
             String srcAgentConfPath = getResourcesPath(resourcesPath) + "/agent.conf";
@@ -321,7 +365,7 @@ public class PythonTestManager {
             DefaultExecutor exec = new DefaultExecutor();
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
             exec.setWorkingDirectory(new File(
-                    PythonTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME));
+                    PythonAgentTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME));
             exec.setStreamHandler(streamHandler);
             ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
             exec.setWatchdog(watchdog);

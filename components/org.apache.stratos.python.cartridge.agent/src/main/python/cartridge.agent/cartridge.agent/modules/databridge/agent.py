@@ -142,7 +142,7 @@ class ThriftPublisher(Thread):
         except ValueError:
             raise RuntimeError("Port number for Thrift Publisher is invalid: %r" % port)
 
-        self.__publisher = Publisher(ip, port_number)
+        self.__publisher = Publisher(ip, port_number, stream_definition)
         #self.__publisher.defineStream(str(stream_definition))
         self.stream_definition = stream_definition
         self.stream_id = self.__publisher.streamId

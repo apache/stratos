@@ -1,96 +1,128 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
+package org.apache.stratos.python.cartridge.agent.test;/*
+ * Licensed to the Apache Software Foundation (ASF) under one 
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * 
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * KIND, either express or implied.  See the License for the 
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.python.cartridge.agent.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertTrue;
 
-public class StartUpTest extends PythonTestManager {
-    private static final Log log = LogFactory.getLog(StartUpTest.class);
-    private static final int STARTUP_TIMEOUT = 30000;
-    private static final String RESOURCES_PATH = "/suite-1";
-    private static final String CLUSTER_ID = "php.php.domain";
-    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
-    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
-    private static final String APP_ID = "application-1";
-    private static final String MEMBER_ID = "php.member-1";
+public class ADCMTAppTest extends PythonAgentTestManager {
+    private static final Log log = LogFactory.getLog(ADCMTAppTest.class);
+    private static final int ADC_TIMEOUT = 180000;
+    private static final String RESOURCES_PATH = "/suite-3";
+    private static final String APPLICATION_PATH = "/tmp/pca-test-suite-3";
+    private static final String CLUSTER_ID = "tomcat.domain";
+    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-3";
+    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-3";
+    private static final String APP_ID = "application-3";
+    private static final String MEMBER_ID = "tomcat.member-1";
     private static final String CLUSTER_INSTANCE_ID = "cluster-1-instance-1";
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
-    private static final String SERVICE_NAME = "php";
-    private static final String SOURCE_PATH = "/tmp/stratos-pca-startup-test-app-path/";
+    private static final String SERVICE_NAME = "tomcat-mt";
 
+    private static boolean hasADCTestCompleted = false;
 
     @BeforeSuite
-    public void setupStartUpTest() {
+    public void setupADCMTAppTest() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesPath(RESOURCES_PATH));
 
         // start Python agent with configurations provided in resource path
         setup(RESOURCES_PATH);
-    }
 
+        // Simulate server socket
+        startServerSocket(8080);
+    }
 
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
     @AfterSuite
-    public void tearDownStartUpTest() {
-        tearDown();
+    public void tearDownADCMTAppTest() {
+        // TODO: app path is duplicated in Java test and payload
+        tearDown(APPLICATION_PATH);
     }
 
-    @Test(timeOut = STARTUP_TIMEOUT)
-    public void testPythonCartridgeAgent() {
-        Thread communicatorThread = new Thread(new Runnable() {
+    @Test(timeOut = ADC_TIMEOUT)
+    public void testADCForMTApps() {
+        startCommunicatorThread();
+        assertAgentActivation();
+        Thread adcTestThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                log.info("Running ADC MT Test thread...");
+                // Send artifact updated event
+                publishEvent(getArtifactUpdatedEventForPublicRepo());
+                log.info("Publishing artifact updated event for repo: " +
+                        getArtifactUpdatedEventForPublicRepo().getRepoURL());
+
+                List<String> outputLines = new ArrayList<String>();
+                while (!outputStream.isClosed() && !hasADCTestCompleted) {
+                    List<String> newLines = getNewLines(outputLines, outputStream.toString());
+                    if (newLines.size() > 0) {
+                        for (String line : newLines) {
+                            if (line.contains("Git clone executed")) {
+                                log.info("Agent has completed git clone. Asserting the operation...");
+                                assertRepoClone(getArtifactUpdatedEventForPublicRepo());
+                                //hasADCTestCompleted = true;
+                            }
+                        }
+                    }
+                    sleep(1000);
+                }
+            }
+        });
+        adcTestThread.start();
+
+        while (!hasADCTestCompleted) {
+            // wait until the instance activated event is received.
+            sleep(1000);
+        }
+    }
+
+    private void assertAgentActivation() {
+        Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!eventReceiverInitiated) {
-                    sleep(2000);
+                    sleep(1000);
                 }
                 List<String> outputLines = new ArrayList<String>();
                 while (!outputStream.isClosed()) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
-                            if (line.contains("Exception in thread") || line.contains("ERROR")) {
-                                try {
-                                    throw new RuntimeException(line);
-                                }
-                                catch (Exception e) {
-                                    log.error("ERROR found in PCA log", e);
-                                }
-                            }
                             if (line.contains("Subscribed to 'topology/#'")) {
                                 sleep(2000);
                                 // Send complete topology event
@@ -108,37 +140,47 @@ public class StartUpTest extends PythonTestManager {
                                 );
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
-
-                                // Simulate server socket
-                                startServerSocket(8080);
                             }
-                            /*
+
+                            // Send artifact updated event to activate the instance first
                             if (line.contains("Artifact repository found")) {
-                                // Send artifact updated event
-                                ArrayList<ArtifactUpdatedEvent> list = getArtifactUpdatedEventsAsParams();
-                                for (ArtifactUpdatedEvent artifactUpdatedEvent : list) {
-                                    publishEvent(artifactUpdatedEvent);
-                                }
-                            }*/
+                                publishEvent(getArtifactUpdatedEventForPublicRepo());
+                                log.info("Artifact updated event published");
+                            }
                             log.info(line);
                         }
                     }
-                    sleep(100);
+                    sleep(1000);
                 }
             }
         });
+        startupTestThread.start();
 
-        communicatorThread.start();
-
-        while (!instanceActivated) {
+        while (!instanceStarted || !instanceActivated) {
             // wait until the instance activated event is received.
+            // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);
         }
-
-        assertTrue("Instance started event was not received", instanceStarted);
-        assertTrue("Instance activated event was not received", instanceActivated);
     }
 
+    private ArtifactUpdatedEvent getArtifactUpdatedEventForPublicRepo() {
+        ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
+        publicRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
+        return publicRepoEvent;
+    }
+
+    private void assertRepoClone(ArtifactUpdatedEvent artifactUpdatedEvent) {
+        File file = new File(APPLICATION_PATH + "/repository/deployment/server/test1.txt");
+        assertTrue("Git clone failed for repo [url] " + artifactUpdatedEvent.getRepoURL(),
+                file.exists());
+    }
+
+    private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
+        ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
+        artifactUpdatedEvent.setClusterId(CLUSTER_ID);
+        artifactUpdatedEvent.setTenantId(TENANT_ID);
+        return artifactUpdatedEvent;
+    }
 
     /**
      * Create test topology

@@ -31,7 +31,7 @@ from thrift.protocol import TBinaryProtocol
 class Publisher:
     client = None
 
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, stream_definition):
         # Make SSL socket
         self.socket = TSSLSocket.TSSLSocket(ip, port, False)
         # Buffering is critical. Raw sockets are very slow
@@ -40,8 +40,7 @@ class Publisher:
         self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
         self.sessionId = None
         self.streamId = None
-
-        # self.event_num = 0
+        self.streamDef = stream_definition
 
     def connect(self, username, password):
         # Create a client to use the protocol encoder
@@ -51,6 +50,7 @@ class Publisher:
         self.socket.open()
         self.transport.open()
         self.sessionId = Publisher.client.connect(username, password)
+        self.streamId = Publisher.client.defineStream(self.sessionId, self.streamDef)
 
     def defineStream(self, streamDef):
         # Create Stream Definition
