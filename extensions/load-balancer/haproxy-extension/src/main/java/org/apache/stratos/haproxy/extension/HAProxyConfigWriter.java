@@ -31,6 +31,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collection;
 
 /**
  * HAProxy load balancer configuration writer.
@@ -65,7 +66,7 @@ public class HAProxyConfigWriter {
 
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
-                createConfig(service, cluster, frontendCollection, backendCollection);
+                createConfig(cluster, frontendCollection, backendCollection);
             }
         }
 
@@ -106,14 +107,18 @@ public class HAProxyConfigWriter {
         }
     }
 
-    private void createConfig(Service service, Cluster cluster, StringBuilder frontendCollection,
+    private void createConfig(Cluster cluster, StringBuilder frontendCollection,
                               StringBuilder backendCollection) {
 
-        if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
-            throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
+        if((cluster.getMembers() == null) || (cluster.getMembers().size() == 0)) {
+            return;
         }
 
-        for (Port port : service.getPorts()) {
+        // Find port mappings
+        Member firstMember = (Member) cluster.getMembers().toArray()[0];
+        Collection<Port> ports = firstMember.getPorts();
+
+        for (Port port : ports) {
             // Frontend block start
             String protocol = port.getProtocol();
             String frontendId = protocol + "_" + port.getValue() + "_frontend";
