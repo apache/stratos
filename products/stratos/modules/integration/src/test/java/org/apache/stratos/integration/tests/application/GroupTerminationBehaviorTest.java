@@ -160,11 +160,6 @@ public class GroupTerminationBehaviorTest extends StratosTestServerManager {
             clusterIds.add(clusterIdC4);
             clusterIds.add(clusterIdC2);
 
-            assertGroupInactive(groupId, clusterIdC3);
-
-            assertTerminatingOfNodes(groupId, clusterIds);
-
-            assertTerminationOfNodes(groupId, clusterIds);
 
             //Application active handling
             topologyHandler.assertApplicationStatus(bean.getApplicationId(),
