@@ -62,10 +62,7 @@ public class NginxConfigWriter {
 
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
-                if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
-                    throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
-                }
-                generateConfigurationForCluster(cluster, service.getPorts(), configurationBuilder);
+                generateConfigurationForCluster(cluster, configurationBuilder);
             }
         }
 
@@ -127,10 +124,17 @@ public class NginxConfigWriter {
      *     }
      * }
      * @param cluster
-     * @param ports
      * @param text
      */
-    private void generateConfigurationForCluster(Cluster cluster, Collection<Port> ports, StringBuilder text) {
+    private void generateConfigurationForCluster(Cluster cluster, StringBuilder text) {
+
+        if((cluster.getMembers() == null) || (cluster.getMembers().size() == 0)) {
+            return;
+        }
+
+        // Find port mappings
+        Member firstMember = (Member) cluster.getMembers().toArray()[0];
+        Collection<Port> ports = firstMember.getPorts();
 
         for (Port port : ports) {
             for (String hostname : cluster.getHostNames()) {
