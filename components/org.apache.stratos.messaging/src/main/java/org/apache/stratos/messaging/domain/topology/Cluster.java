@@ -38,7 +38,7 @@ public class Cluster implements Serializable {
 
     private static final long serialVersionUID = -361960242360176077L;
 
-    private final String serviceUuid;
+    private final String serviceName;
     private final String clusterId;
     private final String autoscalePolicyUuid;
     private final String deploymentPolicyUuid;
@@ -64,7 +64,7 @@ public class Cluster implements Serializable {
     private List<KubernetesService> kubernetesServices;
 
     public Cluster(Cluster cluster) {
-        this.serviceUuid = cluster.getServiceUuid();
+        this.serviceName = cluster.getServiceName();
         this.clusterId = cluster.getClusterId();
         this.deploymentPolicyUuid = cluster.getDeploymentPolicyUuid();
         this.autoscalePolicyUuid = cluster.getAutoscalePolicyUuid();
@@ -84,7 +84,7 @@ public class Cluster implements Serializable {
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
                    String autoscalePolicyName, String appId) {
-        this.serviceUuid = serviceName;
+        this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.deploymentPolicyUuid = deploymentPolicyName;
         this.autoscalePolicyUuid = autoscalePolicyName;
@@ -96,8 +96,8 @@ public class Cluster implements Serializable {
         this.kubernetesServices = new ArrayList<KubernetesService>();
     }
 
-    public String getServiceUuid() {
-        return serviceUuid;
+    public String getServiceName() {
+        return serviceName;
     }
 
     public String getClusterId() {
@@ -363,7 +363,7 @@ public class Cluster implements Serializable {
     public String toString() {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
                         "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
-                        "accessUrls=%s, kubernetesServices=%s]", serviceUuid, clusterId, autoscalePolicyUuid,
+                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyUuid,
                 deploymentPolicyUuid, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
                 accessUrls, kubernetesServices);
     }

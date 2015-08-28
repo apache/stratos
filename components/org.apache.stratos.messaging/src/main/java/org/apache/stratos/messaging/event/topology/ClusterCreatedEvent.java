@@ -37,7 +37,7 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "ClusterCreatedEvent [serviceName=" + cluster.getServiceUuid() + ", " +
+        return "ClusterCreatedEvent [serviceName=" + cluster.getServiceName() + ", " +
                 "application=" + cluster.getAppId() + " , cluster= " + cluster.getClusterId() + " ]";
     }
 

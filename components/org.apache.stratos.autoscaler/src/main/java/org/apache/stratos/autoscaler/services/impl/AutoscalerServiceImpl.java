@@ -1238,7 +1238,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if(cluster != null) {
                 Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
                 for (ClusterInstance clusterInstance : allClusterInstances) {
-                    ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId, cluster.getServiceUuid(),
+                    ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId, cluster.getServiceName(),
                             clusterId, clusterInstance.getInstanceId());
                 }
 

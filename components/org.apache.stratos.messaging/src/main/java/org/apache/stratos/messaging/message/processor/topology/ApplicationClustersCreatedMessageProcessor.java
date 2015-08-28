@@ -73,7 +73,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
         List<Cluster> clusters = event.getClusterList();
 
         for (Cluster cluster : clusters) {
-            String serviceUuid = cluster.getServiceUuid();
+            String serviceUuid = cluster.getServiceName();
             String clusterId = cluster.getClusterId();
             TopologyUpdater.acquireWriteLockForService(serviceUuid);
             try {

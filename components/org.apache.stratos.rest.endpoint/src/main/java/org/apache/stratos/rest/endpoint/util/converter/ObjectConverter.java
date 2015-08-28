@@ -644,7 +644,7 @@ public class ObjectConverter {
         ClusterBean clusterBean = new
                 ClusterBean();
         clusterBean.setAlias(alias);
-        clusterBean.setServiceName(cluster.getServiceUuid());
+        clusterBean.setServiceName(cluster.getServiceName());
         clusterBean.setClusterId(cluster.getClusterId());
         clusterBean.setLbCluster(cluster.isLbCluster());
         clusterBean.setTenantRange(cluster.getTenantRange());
@@ -702,7 +702,7 @@ public class ObjectConverter {
                                                                           Cluster cluster, String alias) {
         ClusterInstanceBean clusterInstanceBean = new ClusterInstanceBean();
         clusterInstanceBean.setAlias(alias);
-        clusterInstanceBean.setServiceName(cluster.getServiceUuid());
+        clusterInstanceBean.setServiceName(cluster.getServiceName());
         clusterInstanceBean.setClusterId(cluster.getClusterId());
         clusterInstanceBean.setInstanceId(instanceId);
         clusterInstanceBean.setParentInstanceId(instanceId);

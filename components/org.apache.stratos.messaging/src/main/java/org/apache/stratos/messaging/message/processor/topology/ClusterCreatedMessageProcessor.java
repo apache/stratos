@@ -52,7 +52,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
             // Parse complete message and build event
             ClusterCreatedEvent event = (ClusterCreatedEvent) MessagingUtil.jsonToObject(message, ClusterCreatedEvent.class);
-            String serviceName = event.getCluster().getServiceUuid();
+            String serviceName = event.getCluster().getServiceName();
             TopologyUpdater.acquireWriteLockForService(serviceName);
             try {
                 return doProcess(event, topology);
@@ -73,7 +73,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess(ClusterCreatedEvent event, Topology topology) {
         Cluster cluster = event.getCluster();
-        String serviceName = cluster.getServiceUuid();
+        String serviceName = cluster.getServiceName();
         String clusterId = cluster.getClusterId();
 
         // Apply service filter

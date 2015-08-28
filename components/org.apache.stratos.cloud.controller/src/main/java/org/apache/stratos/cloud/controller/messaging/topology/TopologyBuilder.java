@@ -188,9 +188,9 @@ public class TopologyBuilder {
         try {
             Topology topology = TopologyManager.getTopology();
             for (Cluster cluster : appClusters) {
-                Service service = topology.getService(cluster.getServiceUuid());
+                Service service = topology.getService(cluster.getServiceName());
                 if (service == null) {
-                    log.error("Service " + cluster.getServiceUuid()
+                    log.error("Service " + cluster.getServiceName()
                             + " not found in Topology, unable to create Application cluster");
                 } else {
                     service.addCluster(cluster);
@@ -204,7 +204,7 @@ public class TopologyBuilder {
 
         log.debug("Creating cluster port mappings: [application-id] " + appUuid);
         for (Cluster cluster : appClusters) {
-            String cartridgeUuid = cluster.getServiceUuid();
+            String cartridgeUuid = cluster.getServiceName();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeUuid);
             if (cartridge == null) {
                 throw new CloudControllerException("Cartridge not found: [cartridge-uuid] " + cartridgeUuid);

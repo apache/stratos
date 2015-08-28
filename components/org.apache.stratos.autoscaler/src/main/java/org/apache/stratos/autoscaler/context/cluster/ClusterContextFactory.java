@@ -43,7 +43,7 @@ public class ClusterContextFactory {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
 
-        return new ClusterContext(cluster.getClusterId(), cluster.getServiceUuid(),
+        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(),
                 autoscalePolicyName, hasScalingDependents,
                 deploymentPolicyId);
     }

@@ -116,7 +116,7 @@ public class ClusterMonitor extends Monitor {
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
-        this.serviceUuid = cluster.getServiceUuid();
+        this.serviceUuid = cluster.getServiceName();
         this.monitoringStarted = new AtomicBoolean(false);
         this.hasScalingDependents = hasScalingDependents;
         this.deploymentPolicyId = deploymentPolicyId;
@@ -1450,11 +1450,11 @@ public class ClusterMonitor extends Monitor {
                             cluster.getClusterId()));
                 }
             } else {
-                createClusterInstance(cluster.getServiceUuid(), cluster.getClusterId(), null, parentInstanceId, partitionId,
+                createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
                         parentMonitorInstance.getNetworkPartitionUuid());
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
-                            "[cluster-id] %s", appId, cluster.getServiceUuid(), cluster.getClusterId()));
+                            "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
                 }
             }
             return true;

@@ -312,7 +312,7 @@ public class ClusterContext extends AbstractClusterContext {
         ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
                 partition3,
                 clusterInstance.getNetworkPartitionUuid(), this.deploymentPolicyId);
-        clusterLevelPartitionContext.setServiceName(cluster.getServiceUuid());
+        clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
 
         //add members to partition Context
