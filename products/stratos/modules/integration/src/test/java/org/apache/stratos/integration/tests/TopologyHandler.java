@@ -241,6 +241,8 @@ public class TopologyHandler {
                         }
                     }
                 }
+                log.info("Active instance count of " + activeInstances + " found for [cluster-instance] " + instance
+                        .getInstanceId() + " with [min-count] " + clusterDataHolder.getMinInstances());
                 clusterActive = (activeInstances >= clusterDataHolder.getMinInstances());
                 assertTrue(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
                         clusterActive);
