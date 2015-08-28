@@ -72,11 +72,7 @@ public class LVSConfigWriter {
 		String state;
 		for (Service service : topology.getServices()) {
 			for (Cluster cluster : service.getClusters()) {
-				if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
-					throw new RuntimeException(
-							String.format("No ports found in service: %s", service.getServiceName()));
-				}
-				generateConfigurationForCluster(cluster, service.getPorts(), configurationBuilder, virtualIPBuilder,
+				generateConfigurationForCluster(cluster, configurationBuilder, virtualIPBuilder,
 				                                virtualIPsForServices, scheduleAlgo,isKeepAlived);
 			}
 		}
@@ -144,12 +140,20 @@ public class LVSConfigWriter {
 	 * }
 	 *
 	 * @param cluster
-	 * @param ports
 	 * @param text
 	 */
-	private void generateConfigurationForCluster(Cluster cluster, Collection<Port> ports, StringBuilder text,
+	private void generateConfigurationForCluster(Cluster cluster, StringBuilder text,
 	                                             StringBuilder virtualIPs, String virtualIPsForServices,
 	                                             String scheduleAlgo,boolean isKeepAlived) {
+
+		if((cluster.getMembers() == null) || (cluster.getMembers().size() == 0)) {
+			return;
+		}
+
+		// Find port mappings
+		Member firstMember = (Member) cluster.getMembers().toArray()[0];
+		Collection<Port> ports = firstMember.getPorts();
+
 		String commandClear = "ipvsadm --clear";
 		try {
 			CommandUtils.executeCommand(commandClear);
