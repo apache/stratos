@@ -40,6 +40,7 @@ public class ThriftClientConfigParser {
      * Fields to be read from the thrift-client-config.xml file
      */
     private static final String NAME_ELEMENT = "name";
+    private static final String STATS_PUBLISHER_ENABLED = "statsPublisherEnabled";
     private static final String USERNAME_ELEMENT = "username";
     private static final String PASSWORD_ELEMENT = "password";
     private static final String IP_ELEMENT = "ip";
@@ -79,6 +80,7 @@ public class ThriftClientConfigParser {
             SecretResolver secretResolver = SecretResolverFactory.create(document, false);
 
             String nameValuesStr = null;
+            boolean statsPublisherEnabled;
             String userNameValuesStr = null;
             String passwordValueStr = null;
             String ipValuesStr = null;
@@ -93,11 +95,9 @@ public class ThriftClientConfigParser {
                 OMElement thriftClientConfig = (OMElement) thriftClientIterator.next();
                 Iterator thriftClientConfigIterator = thriftClientConfig.getChildElements();
                 ThriftClientInfo thriftClientInfo = new ThriftClientInfo();
-                log.info("Client Config: " + thriftClientConfigIterator.toString());
 
                 while (thriftClientConfigIterator.hasNext()) {
                     OMElement thriftClientConfigElement = (OMElement) thriftClientConfigIterator.next();
-                    log.info("Client Config Element: " + thriftClientConfigElement);
 
                     if (NAME_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {
                         nameValuesStr = thriftClientConfigElement.getText();
@@ -106,6 +106,11 @@ public class ThriftClientConfigParser {
                         } else if (DAS_NAME_ELEMENT.equals(nameValuesStr)) {
                             dasThriftClientInfo = thriftClientInfo;
                         }
+                    }
+
+                    if (STATS_PUBLISHER_ENABLED.equals(thriftClientConfigElement.getQName().getLocalPart())) {
+                        statsPublisherEnabled = Boolean.parseBoolean(thriftClientConfigElement.getText());
+                        thriftClientInfo.setStatsPublisherEnabled(statsPublisherEnabled);
                     }
 
                     if (USERNAME_ELEMENT.equals(thriftClientConfigElement.getQName().getLocalPart())) {

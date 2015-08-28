@@ -23,11 +23,19 @@ package org.apache.stratos.common.statistics.publisher;
  * Thrift Client Info
  */
 public class ThriftClientInfo {
+    private boolean statsPublisherEnabled;
     private String username;
     private String password;
     private String ip;
     private String port;
 
+    public boolean isStatsPublisherEnabled() {
+        return statsPublisherEnabled;
+    }
+
+    public void setStatsPublisherEnabled(boolean statsPublisherEnabled) {
+        this.statsPublisherEnabled = statsPublisherEnabled;
+    }
 
     public String getUsername() {
         return username;
