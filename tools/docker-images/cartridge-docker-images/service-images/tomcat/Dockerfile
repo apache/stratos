@@ -58,7 +58,7 @@ RUN chmod +x /tmp/env && \
 #------------------------
 # Copy Tomcat related PCA plugins
 #-----------------------
-ADD packs/plugins /mnt/plugins
+ADD plugins /mnt/plugins
 
 
 EXPOSE 8080
