@@ -435,31 +435,31 @@
         <!-- cep -->
         <!--creating an empty input event adaptors directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/artifacts/inputeventadaptors</directory>
+            <directory>../../../../extensions/modules/cep/artifacts/inputeventadaptors</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/inputeventadaptors
             </outputDirectory>
         </fileSet>
         <!--creating an empty output event adaptors directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/artifacts/outputeventadaptors</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/outputeventadaptors</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/outputeventadaptors
             </outputDirectory>
         </fileSet>
         <!--creating an empty event builders directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/artifacts/eventbuilders</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/eventbuilders</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/eventbuilders
             </outputDirectory>
         </fileSet>
         <!--creating an empty event formatters directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/artifacts/eventformatters</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/eventformatters</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/eventformatters
             </outputDirectory>
         </fileSet>
         <!--creating an empty execution plans directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/artifacts/executionplans</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/executionplans</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/executionplans
             </outputDirectory>
         </fileSet>
@@ -603,7 +603,7 @@
             <filtered>true</filtered>
         </file>
         <file>
-            <source>../../../../extensions/cep/artifacts/streamdefinitions/stream-manager-config.xml</source>
+            <source>../../../../extensions/cep/modules/artifacts/streamdefinitions/stream-manager-config.xml</source>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
