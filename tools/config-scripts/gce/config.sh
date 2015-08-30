@@ -36,7 +36,6 @@ CURL=`which curl`
 HOSTSFILE=/etc/hosts
 DATE=`date +%d%m%y%S`
 RANDOMNUMBER="`${TR} -c -d 0-9 < /dev/urandom | ${HEAD} -c 4`${DATE}"
-LOCKFILE=/mnt/apache-stratos-cartridge-agent-4.2.0/wso2carbon.lck
 
 function valid_ip()
 {

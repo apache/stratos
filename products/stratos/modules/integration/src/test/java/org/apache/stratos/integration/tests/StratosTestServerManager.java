@@ -47,15 +47,25 @@ import static org.testng.Assert.assertNotNull;
  */
 public class StratosTestServerManager extends TestServerManager {
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
+    private static Properties integrationProperties;
+    public static final String BASE_PATH = StratosTestServerManager.class.getResource("/").getPath();
+    public static final String STRATOS_DISTRIBUTION_NAME = "distribution.path";
+    public final static String PORT_OFFSET = "carbon.port.offset";
+    public static final String ACTIVEMQ_BIND_ADDRESS = "activemq.bind.address";
+    public static final String STRATOS_ENDPOINT = "stratos.endpoint";
+    public static final String ADMIN_USERNAME = "stratos.admin.username";
+    public static final String ADMIN_PASSWORD = "stratos.admin.password";
+    public static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
+    public static final String SCALING_DROOL_FILE = "scaling.drl";
+    public static final String JNDI_PROPERTIES_FILE = "jndi.properties";
+    public static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
 
-    private final static String CARBON_ZIP = SampleApplicationsTest.class.getResource("/").getPath() +
-            "/../../../distribution/target/apache-stratos-4.2.0-SNAPSHOT.zip";
-    private final static int PORT_OFFSET = 0;
-    private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
-    private static final String SCALING_DROOL_FILE = "scaling.drl";
-    private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
-    private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
+    protected String distributionName;
+    protected int portOffset;
+    protected String adminUsername;
+    protected String adminPassword;
+    protected String stratosEndpoint;
+    protected String activemqBindAddress;
     protected RestClient restClient;
     private BrokerService broker = new BrokerService();
     private TestLogAppender testLogAppender = new TestLogAppender();

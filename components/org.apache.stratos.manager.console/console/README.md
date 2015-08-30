@@ -1,4 +1,4 @@
-##Stratos 4.2.0 New UXD Implemantation##
+##Stratos UXD##
 ====================================
 
 ### Features ###
