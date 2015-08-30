@@ -32,8 +32,7 @@
     <description>Apache Stratos Extensions</description>
 
     <modules>
-        <module>cep/stratos-cep-extension</module>
-        <module>cep/distribution/</module>
+        <module>cep</module>
         <module>load-balancer</module>
     </modules>
 </project>
