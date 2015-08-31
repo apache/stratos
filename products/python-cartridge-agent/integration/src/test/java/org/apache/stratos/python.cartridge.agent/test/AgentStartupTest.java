@@ -35,8 +35,8 @@ import java.util.Properties;
 
 public class AgentStartupTest extends PythonAgentTestManager {
     private static final Log log = LogFactory.getLog(AgentStartupTest.class);
-    private static final int STARTUP_TIMEOUT = 60000;
-    private static final String RESOURCES_PATH = "/suite-1";
+    private static final int STARTUP_TIMEOUT = 120000;
+    private static final String SUITE_NAME = "suite-1";
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
@@ -52,10 +52,10 @@ public class AgentStartupTest extends PythonAgentTestManager {
     @BeforeSuite
     public void setupAgentStartupTest() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
-        System.setProperty("jndi.properties.dir", getResourcesPath(RESOURCES_PATH));
+        System.setProperty("jndi.properties.dir", getResourcesPath(SUITE_NAME));
 
         // start Python agent with configurations provided in resource path
-        setup(RESOURCES_PATH);
+        setup(SUITE_NAME);
 
         // Simulate server socket
         startServerSocket(8080);

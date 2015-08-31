@@ -36,6 +36,9 @@
                 <directory>src/test/resources/test-conf</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>src/test/resources/common</directory>
+            </resource>
         </resources>
     </build>
 
@@ -158,42 +161,42 @@
             <artifactId>commons-exec</artifactId>
             <version>1.0.1</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.1.1</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2-client</artifactId>
             <version>${axis2.wso2.version}</version>
-        </dependency>
-        <dependency>
+        </dependency-->
+        <!--dependency>
             <groupId>org.apache.httpcomponents.wso2</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.3.0.wso2v1</version>
-        </dependency>
-        <dependency>
+        </dependency-->
+        <!--dependency>
             <groupId>org.apache.httpcomponents.wso2</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.2.5.wso2v1</version>
-        </dependency>
-        <dependency>
+        </dependency-->
+        <!--dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
+        </dependency-->
+        <!--dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
             <version>0.13.wso2v8</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-all</artifactId>
@@ -208,11 +211,40 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.wso2.carbon</groupId>
+                    <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon</groupId>
+                    <artifactId>org.wso2.carbon.databridge.commons.thrift</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon</groupId>
+                    <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>0.9.2</version>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.databridge.receiver.thrift</artifactId>
+            <version>${carbon.analytics.common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.databridge.receiver.binary</artifactId>
+            <version>${carbon.analytics.common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.databridge.core</artifactId>
+            <version>${carbon.analytics.common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+            <version>${carbon.analytics.common.version}</version>
         </dependency>
     </dependencies>
 </project>

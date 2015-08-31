@@ -21,7 +21,7 @@ sys.path.append("gen")
 
 from gen.ThriftSecureEventTransmissionService import ThriftSecureEventTransmissionService
 from gen.Data.ttypes import ThriftEventBundle
-
+from ...util.log import LogFactory
 from thrift.transport import TSSLSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
@@ -30,6 +30,7 @@ from thrift.protocol import TBinaryProtocol
 # Define publisher class
 class Publisher:
     client = None
+    log = LogFactory().get_log(__name__)
 
     def __init__(self, ip, port, stream_definition):
         # Make SSL socket
@@ -72,7 +73,6 @@ class Publisher:
 
 
 class EventBundle:
-
     def __init__(self):
         self.__sessionId = ""
         self.__eventNum = 0

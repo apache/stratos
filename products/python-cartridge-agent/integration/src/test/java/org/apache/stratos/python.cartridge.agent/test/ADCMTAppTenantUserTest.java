@@ -38,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
 public class ADCMTAppTenantUserTest extends PythonAgentTestManager {
     private static final Log log = LogFactory.getLog(ADCMTAppTenantUserTest.class);
     private static final int ADC_TIMEOUT = 180000;
-    private static final String RESOURCES_PATH = "/suite-4";
+    private static final String SUITE_NAME = "suite-4";
     private static final String APPLICATION_PATH = "/tmp/pca-test-suite-4";
     private static final String CLUSTER_ID = "tomcat.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-4";
@@ -56,10 +56,10 @@ public class ADCMTAppTenantUserTest extends PythonAgentTestManager {
     @BeforeSuite
     public void setupADCMTAppTest() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
-        System.setProperty("jndi.properties.dir", getResourcesPath(RESOURCES_PATH));
+        System.setProperty("jndi.properties.dir", getResourcesPath(SUITE_NAME));
 
         // start Python agent with configurations provided in resource path
-        setup(RESOURCES_PATH);
+        setup(SUITE_NAME);
 
         // Simulate server socket
         startServerSocket(8080);

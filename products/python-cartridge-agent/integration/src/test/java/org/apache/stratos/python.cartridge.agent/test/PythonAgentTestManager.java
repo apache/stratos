@@ -43,6 +43,7 @@ import java.util.zip.ZipInputStream;
 
 public class PythonAgentTestManager {
     protected final Properties integrationProperties = new Properties();
+    public static final String PATH_SEP = File.separator;
     private static final Log log = LogFactory.getLog(PythonAgentTestManager.class);
     protected BrokerService broker = new BrokerService();
 
@@ -51,6 +52,7 @@ public class PythonAgentTestManager {
     public static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "activemq.amqp.bind.address";
     public static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "activemq.mqtt.bind.address";
     public static final String CEP_PORT = "cep.port";
+    public static final String CEP_SSL_PORT = "cep.ssl.port";
     public static final String DISTRIBUTION_NAME = "distribution.name";
     protected final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
@@ -58,6 +60,7 @@ public class PythonAgentTestManager {
     protected Map<String, Executor> executorList = new HashMap<String, Executor>();
 
     protected int cepPort;
+    protected int cepSSLPort;
     protected String amqpBindAddress;
     protected String mqttBindAddress;
     protected String distributionName;
@@ -68,6 +71,7 @@ public class PythonAgentTestManager {
     protected boolean instanceStarted;
     protected boolean instanceActivated;
     protected ByteArrayOutputStreamLocal outputStream;
+    private ThriftTestServer thriftTestServer;
 
     /**
      * Setup method for test method testPythonCartridgeAgent
@@ -110,15 +114,33 @@ public class PythonAgentTestManager {
 
             this.eventReceiverInitiated = true;
         }
-        // Simulate CEP Thrift server
-        //startServerSocket(cepPort);
-        // TODO: create a mock thrift server; sockets will not work with health stats publisher
+
+        // Start Thrift server to emulate CEP
+        thriftTestServer = new ThriftTestServer();
+        try {
+            File file = new File(getResourcesPath("common") + PATH_SEP + "stratos-health-stream-def.json");
+            FileInputStream fis = new FileInputStream(file);
+            byte[] data = new byte[(int) file.length()];
+            fis.read(data);
+            fis.close();
+            String str = new String(data, "UTF-8");
+            if (str.equals("")) {
+                log.warn("Stream definition of health stat stream is empty. Thrift server will not function properly");
+            }
+            thriftTestServer.addStreamDefinition(str, -1234);
+            // start with non-ssl port; test server will automatically bind to ssl port
+            thriftTestServer.start(cepPort);
+            log.info("Started Thrift server with stream definition: " + str);
+        }
+        catch (Exception e) {
+            log.error("Could not start Thrift test server", e);
+        }
+
+
         String agentPath = setupPythonAgent(resourcePath);
         log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
         log.info("Starting python cartridge agent...");
-        this.outputStream = executeCommand("python " + agentPath + "/agent.py > " +
-                PythonAgentTestManager.class.getResource(File.separator).getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
-                "/cartridge-agent-console.log");
+        this.outputStream = executeCommand("python " + agentPath + PATH_SEP + "agent.py");
     }
 
 
@@ -151,6 +173,14 @@ public class PythonAgentTestManager {
             catch (IOException ignore) {
             }
         }
+        try {
+            if (thriftTestServer != null) {
+                thriftTestServer.stop();
+            }
+        }
+        catch (Exception e) {
+            log.error("Could not stop Thrift test server", e);
+        }
 
         try {
             log.info("Deleting source checkout folder...");
@@ -174,11 +204,12 @@ public class PythonAgentTestManager {
     public PythonAgentTestManager() {
         try {
             integrationProperties
-                    .load(PythonAgentTestManager.class.getResourceAsStream("/integration-test.properties"));
+                    .load(PythonAgentTestManager.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
             distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
             amqpBindAddress = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_ADDRESS);
             mqttBindAddress = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_ADDRESS);
             cepPort = Integer.parseInt(integrationProperties.getProperty(CEP_PORT));
+            cepSSLPort = Integer.parseInt(integrationProperties.getProperty(CEP_SSL_PORT));
             log.info("PCA integration properties: " + integrationProperties.toString());
         }
         catch (IOException e) {
@@ -192,8 +223,8 @@ public class PythonAgentTestManager {
         broker.addConnector(mqttBindAddress);
         broker.setBrokerName("testBroker");
         broker.setDataDirectory(
-                PythonAgentTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME +
-                        "/activemq-data");
+                PythonAgentTestManager.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
+                        PYTHON_AGENT_DIR_NAME + PATH_SEP + "activemq-data");
         broker.start();
         log.info("Broker service started!");
     }
@@ -215,7 +246,7 @@ public class PythonAgentTestManager {
                                     log.error("ERROR found in PCA log", e);
                                 }
                             }
-                            log.info(line);
+                            log.info("[PCA] " + line);
                         }
                     }
                     sleep(100);
@@ -269,11 +300,13 @@ public class PythonAgentTestManager {
 
 
     protected static String getResourcesPath() {
-        return PythonAgentTestManager.class.getResource("/").getPath() + "/../../src/test/resources";
+        return PythonAgentTestManager.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
+                ".." + PATH_SEP + "src" + PATH_SEP + "test" + PATH_SEP + "resources";
     }
 
     protected static String getResourcesPath(String resourcesPath) {
-        return PythonAgentTestManager.class.getResource("/").getPath() + "/../../src/test/resources" + resourcesPath;
+        return PythonAgentTestManager.class.getResource(PATH_SEP).getPath() + ".." + PATH_SEP + ".." +
+                PATH_SEP + "src" + PATH_SEP + "test" + PATH_SEP + "resources" + PATH_SEP + resourcesPath;
     }
 
     /**
@@ -286,29 +319,31 @@ public class PythonAgentTestManager {
             log.info("Setting up python cartridge agent...");
 
 
-            String srcAgentPath = PythonAgentTestManager.class.getResource("/").getPath() +
-                    "/../../../distribution/target/" + distributionName + ".zip";
+            String srcAgentPath = PythonAgentTestManager.class.getResource(PATH_SEP).getPath() +
+                    PATH_SEP + ".." + PATH_SEP + ".." + PATH_SEP + ".." + PATH_SEP + "distribution" + PATH_SEP +
+                    "target" + PATH_SEP + distributionName + ".zip";
             String unzipDestPath =
-                    PythonAgentTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME + "/";
+                    PythonAgentTestManager.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
+                            PYTHON_AGENT_DIR_NAME + PATH_SEP;
             //FileUtils.copyFile(new File(srcAgentPath), new File(destAgentPath));
             unzip(srcAgentPath, unzipDestPath);
-            String destAgentPath = PythonAgentTestManager.class.getResource("/").getPath() + "/../" +
-                    PYTHON_AGENT_DIR_NAME + "/" + distributionName;
+            String destAgentPath = PythonAgentTestManager.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." +
+                    PATH_SEP + PYTHON_AGENT_DIR_NAME + PATH_SEP + distributionName;
 
-            String srcAgentConfPath = getResourcesPath(resourcesPath) + "/agent.conf";
-            String destAgentConfPath = destAgentPath + "/agent.conf";
+            String srcAgentConfPath = getResourcesPath(resourcesPath) + PATH_SEP + "agent.conf";
+            String destAgentConfPath = destAgentPath + PATH_SEP + "agent.conf";
             FileUtils.copyFile(new File(srcAgentConfPath), new File(destAgentConfPath));
 
-            String srcLoggingIniPath = getResourcesPath(resourcesPath) + "/logging.ini";
-            String destLoggingIniPath = destAgentPath + "/logging.ini";
+            String srcLoggingIniPath = getResourcesPath(resourcesPath) + PATH_SEP + "logging.ini";
+            String destLoggingIniPath = destAgentPath + PATH_SEP + "logging.ini";
             FileUtils.copyFile(new File(srcLoggingIniPath), new File(destLoggingIniPath));
 
-            String srcPayloadPath = getResourcesPath(resourcesPath) + "/payload";
-            String destPayloadPath = destAgentPath + "/payload";
+            String srcPayloadPath = getResourcesPath(resourcesPath) + PATH_SEP + "payload";
+            String destPayloadPath = destAgentPath + PATH_SEP + "payload";
             FileUtils.copyDirectory(new File(srcPayloadPath), new File(destPayloadPath));
 
             log.info("Changing extension scripts permissions");
-            File extensionsPath = new File(destAgentPath + "/extensions/bash");
+            File extensionsPath = new File(destAgentPath + PATH_SEP + "extensions" + PATH_SEP + "bash");
             File[] extensions = extensionsPath.listFiles();
             for (File extension : extensions) {
                 extension.setExecutable(true);
@@ -371,7 +406,8 @@ public class PythonAgentTestManager {
             DefaultExecutor exec = new DefaultExecutor();
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
             exec.setWorkingDirectory(new File(
-                    PythonAgentTestManager.class.getResource("/").getPath() + "/../" + PYTHON_AGENT_DIR_NAME));
+                    PythonAgentTestManager.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
+                            PYTHON_AGENT_DIR_NAME));
             exec.setStreamHandler(streamHandler);
             ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
             exec.setWatchdog(watchdog);
