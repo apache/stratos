@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.util;
 
 import com.google.common.net.InetAddresses;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
@@ -188,17 +187,6 @@ public class CloudControllerUtil {
         return getProperty(props, key);
     }
 
-    public static org.apache.stratos.common.Properties addProperty(org.apache.stratos.common.Properties properties,
-                                                                   String key, String value) {
-        Property property = new Property();
-        property.setName(key);
-        property.setValue(value);
-
-        org.apache.stratos.common.Properties newProperties = new org.apache.stratos.common.Properties();
-        newProperties.setProperties(ArrayUtils.add(properties.getProperties(), property));
-        return newProperties;
-    }
-
     /**
      * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
      *
@@ -349,15 +337,6 @@ public class CloudControllerUtil {
         } catch (InvalidKubernetesHostException e) {
             throw new InvalidKubernetesMasterException(e.getMessage());
         }
-    }
-
-    public static String getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType loadBalancingIPType) {
-        if (loadBalancingIPType == LoadBalancingIPType.Private) {
-            return CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE;
-        } else if (loadBalancingIPType == LoadBalancingIPType.Public) {
-            return CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIC;
-        }
-        return null;
     }
 
     public static LoadBalancingIPType getLoadBalancingIPTypeEnumFromString(String loadBalancingIPType) {
