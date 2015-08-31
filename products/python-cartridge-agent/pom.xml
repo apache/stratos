@@ -32,7 +32,7 @@
     <description>Apache Stratos Python Cartridge Agent Product</description>
 
     <modules>
-        <module>distribution</module>
-        <module>integration</module>
+        <module>modules/distribution</module>
+
     </modules>
 </project>
