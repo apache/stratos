@@ -53,28 +53,30 @@
                   <class name="org.apache.stratos.integration.tests.policies.AutoscalingPolicyTest" />
               </classes>
           </test>
-
-          <test name="SampleApplicationsTest">
+           <test name="SampleApplicationsTest">
+               <classes>
+                   <class name="org.apache.stratos.integration.tests.application.SampleApplicationsTest" />
+               </classes>
+           </test>
+          <test name="ApplicationBurstingTest">
               <classes>
-                  <class name="org.apache.stratos.integration.tests.application.SampleApplicationsTest" />
+                  <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest" />
               </classes>
           </test>
-
            <test name="SingleClusterScalingTest">
-                <classes>
-                   <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest"/>
-                </classes>
+               <classes>
+                   <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest" />
+               </classes>
+           </test>
+           <test name="PartitionRoundRobinClusterTest">
+               <classes>
+                   <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest" />
+               </classes>
            </test>
 
-    <!--
-
-           <test name="ApplicationBurstingTest">
-               <classes>
-                  <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest" />
-               </classes>
-             </test>
-
-     -->
-
-
+            <test name="GroupTerminationBehaviorTest">
+                <classes>
+                    <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest" />
+             </classes>
+    </test>
 </suite>
