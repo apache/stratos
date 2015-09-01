@@ -30,7 +30,6 @@
     <packaging>jar</packaging>
     <name>Apache Stratos - Cartridge Agent</name>
     <description>Apache Stratos Cartridge Agent</description>
-    <url>http://apache.org</url>
 
     <build>
         <plugins>
@@ -92,7 +91,6 @@
         <dependency>
             <groupId>org.eclipse.jgit.wso2</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <!--version>2.1.0.wso2v1</version-->
             <version>2.3.1.wso2v2</version>
         </dependency>
         <dependency>

@@ -40,7 +40,7 @@
     <!--
        Product Version
     -->
-    <Version>${product.version}</Version>
+    <Version>${project.version}</Version>
 
     <!--
        Host name or IP address of the machine hosting this server

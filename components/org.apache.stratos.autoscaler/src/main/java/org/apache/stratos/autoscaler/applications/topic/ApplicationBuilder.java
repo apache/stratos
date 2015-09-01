@@ -74,7 +74,6 @@ public class ApplicationBuilder {
                     application.getUniqueIdentifier());
         }
         ApplicationHolder.persistApplication(application);
-        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
         AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                 appClusterContexts);
     }

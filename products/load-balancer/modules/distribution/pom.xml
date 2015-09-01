@@ -28,7 +28,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>apache-stratos-load-balancer</artifactId>
+    <artifactId>load-balancer-distribution</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Load Balancer - Distribution</name>
     <description>Apache Stratos Load Balancer Distribution</description>
@@ -144,6 +144,7 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
+                            <finalName>${load.balancer.distribution.name}-${project.version}</finalName>
                             <filters>
                                 <filter>${basedir}/src/main/assembly/filter.properties</filter>
                             </filters>

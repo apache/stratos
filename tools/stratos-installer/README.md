@@ -1,4 +1,5 @@
-Apache Stratos 4.2.0 Installer
+------------------------------
+Apache Stratos Installer
 ------------------------------
 
 Stratos-Installer is a tool to install Stratos in Single JVM as well as in distributed setup.

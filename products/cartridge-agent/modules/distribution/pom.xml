@@ -27,8 +27,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>apache-stratos-cartridge-agent</artifactId>
-    <name>Apache Stratos - Cartridge Agent Distribution</name>
+    <artifactId>java-cartridge-agent-distribution</artifactId>
+    <name>Apache Stratos - Java Cartridge Agent Distribution</name>
 
     <dependencies>
         <dependency>
@@ -55,6 +55,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>${java.cartridge.agent.distribution.name}-${project.version}</finalName>
                     <descriptors>
                         <descriptor>src/main/assembly/bin.xml</descriptor>
                     </descriptors>

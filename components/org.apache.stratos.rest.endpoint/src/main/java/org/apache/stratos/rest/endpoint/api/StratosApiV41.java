@@ -70,7 +70,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Stratos API v4.1 for Stratos 4.2.0 release.
+ * Stratos API v4.1
  */
 @Path("/")
 public class StratosApiV41 extends AbstractApi {

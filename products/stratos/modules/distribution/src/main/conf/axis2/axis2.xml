@@ -71,12 +71,8 @@
     <!--the directory in which modules are deployed inside axis2 repository-->
     <parameter name="ModulesDirectory">axis2modules</parameter>
 
-    <parameter name="userAgent" locked="true">
-        @product.name@-@product.version@
-    </parameter>
-    <parameter name="server" locked="true">
-        @product.name@-@product.version@
-    </parameter>
+    <parameter name="userAgent" locked="true">${product.name}-${project.version}</parameter>
+    <parameter name="server" locked="true">${product.name}-${project.version}</parameter>
 
     <!-- ========================================================================-->
 

@@ -449,6 +449,21 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.receiver.thrift</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.receiver.binary</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.core</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -678,6 +693,7 @@
         <carbon.platform.patch.version.4.2.6>4.2.6</carbon.platform.patch.version.4.2.6>
         <carbon.platform.patch.version.4.2.7>4.2.7</carbon.platform.patch.version.4.2.7>
         <carbon.platform.patch.version.4.2.8>4.2.8</carbon.platform.patch.version.4.2.8>
+        <carbon.analytics.common.version>5.0.0</carbon.analytics.common.version>
 
         <!-- 3rd party library versions -->
         <synapse.wso2.feature.version>2.1.2-wso2v3</synapse.wso2.feature.version>
@@ -734,6 +750,13 @@
         <carbon.platform.package.import.version.range>[4.2.0, 5.0.0)</carbon.platform.package.import.version.range>
         <aopalliance.imp.pkg.version>[1.0,2)</aopalliance.imp.pkg.version>
         <guice.imp.pkg.version>[3.0,4.0)</guice.imp.pkg.version>
+
+        <!-- product distribution properties -->
+        <stratos.distribution.name>apache-stratos</stratos.distribution.name>
+        <load.balancer.distribution.name>apache-stratos-load-balancer</load.balancer.distribution.name>
+        <java.cartridge.agent.distribution.name>apache-stratos-cartridge-agent</java.cartridge.agent.distribution.name>
+        <python.cartridge.agent.distribution.name>apache-stratos-python-cartridge-agent
+        </python.cartridge.agent.distribution.name>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

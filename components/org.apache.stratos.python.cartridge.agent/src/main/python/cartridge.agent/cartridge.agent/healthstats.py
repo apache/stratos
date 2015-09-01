@@ -66,7 +66,7 @@ class HealthStatisticsPublisherManager(Thread):
                 self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
                 self.publisher.publish_load_average(cartridge_stats.load_avg)
             except ThriftReceiverOfflineException:
-                self.log.error("Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
+                self.log.exception("Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
                 self.publisher = HealthStatisticsPublisher()
 
         self.publisher.publisher.disconnect()

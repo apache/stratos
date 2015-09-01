@@ -16,6 +16,7 @@
 # under the License.
 
 from thrift.publisher import *
+from threading import Thread
 from thrift.gen.Exception.ttypes import ThriftSessionExpiredException
 from ..util.log import *
 from exception import ThriftReceiverOfflineException
@@ -114,7 +115,7 @@ class ThriftEvent:
         """:type : list[T]"""
 
 
-class ThriftPublisher:
+class ThriftPublisher():
     """
     Handles publishing events to BAM/CEP through thrift using the provided address and credentials
     """
@@ -140,10 +141,10 @@ class ThriftPublisher:
         except ValueError:
             raise RuntimeError("Port number for Thrift Publisher is invalid: %r" % port)
 
-        self.__publisher = Publisher(ip, port_number)
+        self.__publisher = Publisher(ip, port_number, stream_definition)
         self.__publisher.connect(username, password)
         self.__publisher.defineStream(str(stream_definition))
-
+        ThriftPublisher.log.debug("ThriftPublisher initializing with stream definition: " + str(stream_definition))
         self.stream_definition = stream_definition
         self.stream_id = self.__publisher.streamId
         self.ip = ip

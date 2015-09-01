@@ -38,20 +38,6 @@ public class TopologyManager {
     private TopologyManager() {
     }
 
-    public static void acquireReadLock() {
-        lock.acquireReadLock();
-        if (log.isDebugEnabled()) {
-            log.debug("Read lock acquired");
-        }
-    }
-
-    public static void releaseReadLock() {
-        lock.releaseReadLock();
-        if (log.isDebugEnabled()) {
-            log.debug("Read lock released");
-        }
-    }
-
     public static void acquireWriteLock() {
         lock.acquireWriteLock();
         if (log.isDebugEnabled()) {
@@ -92,7 +78,7 @@ public class TopologyManager {
     /**
      * Update in-memory topology and persist it in registry.
      *
-     * @param topology_
+     * @param topology_ Topology
      */
     public static void updateTopology(Topology topology_) {
         synchronized (TopologyManager.class) {

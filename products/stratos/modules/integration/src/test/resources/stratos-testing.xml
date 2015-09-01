@@ -21,7 +21,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="StratosIntegrationSuite">
-
+ <!--
    <test name="CartridgeTest">
        <classes>
            <class name="org.apache.stratos.integration.tests.group.CartridgeTest" />
@@ -78,5 +78,5 @@
         <classes>
             <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest" />
         </classes>
-    </test>
+    </test>-->
 </suite>

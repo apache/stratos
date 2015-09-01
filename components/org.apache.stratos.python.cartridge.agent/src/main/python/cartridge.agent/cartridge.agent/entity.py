@@ -16,7 +16,7 @@
 # under the License.
 
 import constants
-
+import json
 
 class Topology:
     """
@@ -412,6 +412,9 @@ class Member:
     def add_ports(self, ports):
         for port in ports:
             self.add_port(port)
+
+    def to_json(self):
+        return "{memberId: " + self.member_id + ", status: " + self.status + "}"
 
 
 class KubernetesService:

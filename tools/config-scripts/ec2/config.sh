@@ -33,7 +33,7 @@ CP=`which cp`
 MV=`which mv`
 
 HOSTSFILE=/etc/hosts
-LOCKFILE=/mnt/apache-stratos-cartridge-agent-4.2.0/wso2carbon.lck
+LOCKFILE=/mnt/apache-stratos-cartridge-agent/wso2carbon.lck
 DATE=`date +%d%m%y%S`
 RANDOMNUMBER="`${TR} -c -d 0-9 < /dev/urandom | ${HEAD} -c 4`${DATE}"
 
@@ -89,10 +89,6 @@ if [[ $answer = y ]] ; then
 	ARGS=("-n${NODEID}" "-d${DOMAIN}" "-s${PUPPET_IP}")
 	${ECHO} "\nRunning puppet installation with arguments: ${ARGS[@]}"
 	/root/bin/puppetinstall/puppetinstall "${ARGS[@]}"
-	#check for java agent lock file
-	if [ -e ${LOCKFILE} ]; then
-	${RM} ${LOCKFILE}
-	fi
 
 	${GREP} -q '/root/bin/init.sh > /tmp/puppet_log' /etc/rc.local || ${SED} -i 's/exit 0$/\/root\/bin\/init.sh \> \/tmp\/puppet_log\nexit 0/' /etc/rc.local
 	${RM} -rf /tmp/*
