@@ -21,342 +21,240 @@ package org.apache.stratos.integration.tests.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.apache.stratos.integration.tests.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
 
-import java.util.Map;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
+
+
 
 /**
  * Handling the startup order of the group
  */
 public class GroupStartupOrderTest extends StratosTestServerManager {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
-    private static final String RESOURCES_PATH = "/group-startup-order-test";
-    private static final int GROUP_ACTIVE_TIMEOUT = 300000;
-    private static final int NODES_START_PARALLEL_TIMEOUT = 30000;
-
+    private static final String RESOURCES_PATH = "/application-bursting-test";
 
     @Test
-    public void testTerminationBehavior() {
+    public void testApplicationBusting() {
         try {
-            log.info("-------------------------------Started application startup order test case-------------------------------");
+            log.info("-------------------------------Started application Bursting test case-------------------------------");
 
-            String autoscalingPolicyId = "autoscaling-policy-group-startup-order-test";
-            TopologyHandler topologyHandler = TopologyHandler.getInstance();
+            String autoscalingPolicyId = "autoscaling-policy-application-bursting-test";
 
-            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+            boolean addedScalingPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertTrue(addedScalingPolicy);
+            assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-group-startup-order-test.json",
+            boolean addedC1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC1);
+            assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-group-startup-order-test.json",
+            boolean addedC2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC2);
+            assertEquals(addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "stratos-lb-group-startup-order-test.json",
+            boolean addedC3 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC3);
+            assertEquals(addedC3, true);
 
-            boolean addedC5 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat1-group-startup-order-test.json",
+
+            boolean addedC5 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat1-group-startup-order-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC5);
 
-            boolean addedC6 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat2-group-startup-order-test.json",
+            boolean addedC6 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat2-group-startup-order-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC6);
 
-            boolean addedC7 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat3-group-startup-order-test.json",
+            boolean addedC7 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat3-group-startup-order-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC7);
 
-            boolean addedC8 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-group-startup-order-test.json",
+            boolean addedC8 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-group-startup-order-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertTrue(addedC8);
 
-            boolean addedG2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean addedG1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                            "/" + "esb-php-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
+                    RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertEquals(addedG1, true);
+
+            CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClientTenant1.
+                    getEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
+                            CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
+            assertEquals(beanG1.getName(), "esb-php-group-application-bursting-test");
+
+            boolean addedG2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "group6-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertTrue(addedG2);
 
-            boolean addedG3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean addedG3 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "group8-group-startup-order-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertTrue(addedG3);
 
-            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-group-startup-order-test-1.json",
+            boolean addedN1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            "network-partition-application-bursting-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertTrue(addedN1);
+            assertEquals(addedN1, true);
 
-            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                            "deployment-policy-group-startup-order-test.json",
+
+            boolean addedN2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            "network-partition-application-bursting-test-2.json",
+                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(addedN2, true);
+
+            boolean addedDep = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+                            "deployment-policy-application-bursting-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertTrue(addedDep);
+            assertEquals(addedDep, true);
 
-            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                            "group-startup-order-test.json", RestConstants.APPLICATIONS,
+            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+                            "app-bursting-single-cartriddge-group.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(added);
+            assertEquals(added, true);
 
-            ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                    "group-startup-order-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertEquals(bean.getApplicationId(), "group-startup-order-test");
+            ApplicationBean bean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
+                    "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+            assertEquals(bean.getApplicationId(), "application-bursting-test");
 
-            boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                            "application-policy-group-startup-order-test.json", RestConstants.APPLICATION_POLICIES,
+            boolean addAppPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+                            "application-policy-application-bursting-test.json", RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
-            assertTrue(addAppPolicy);
+            assertEquals(addAppPolicy, true);
+
+            ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClientTenant1.getEntity(
+                    RestConstants.APPLICATION_POLICIES,
+                    "application-policy-application-bursting-test", ApplicationPolicyBean.class,
+                    RestConstants.APPLICATION_POLICIES_NAME);
 
             //deploy the application
-            String resourcePath = RestConstants.APPLICATIONS + "/" + "group-startup-order-test" +
-                    RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-group-startup-order-test";
-            boolean deployed = restClient.deployEntity(resourcePath,
+            String resourcePath = RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
+                    RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-application-bursting-test";
+            boolean deployed = restClientTenant1.deployEntity(resourcePath,
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(deployed);
-
-            String group6 = topologyHandler.generateId(bean.getApplicationId(),
-                    "my-group6-group-startup-order-test", bean.getApplicationId() + "-1");
-
-            String group8 = topologyHandler.generateId(bean.getApplicationId(),
-                    "my-group8-group-startup-order-test", bean.getApplicationId() + "-1");
-
-            String lb = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-stratos-lb-group-startup-order-test");
-
-            String tomcat = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-tomcat-group-startup-order-test");
-
-            assertCreationOfNodes(lb, tomcat);
-
-            assertCreationOfNodes(tomcat, group6);
-
-            assertCreationOfNodesInParallel(group6, group8);
-
-            assertCreationOfNodes(tomcat, group8);
-
-            String group7 = topologyHandler.generateId(bean.getApplicationId(),
-                    "my-group7-group-startup-order-test", bean.getApplicationId() + "-1");
-
-            String groupTom2 = topologyHandler.generateId(bean.getApplicationId(),
-                    "my-group6-group-tom2-group-startup-order-test", bean.getApplicationId() + "-1");
-
-            assertCreationOfNodesInParallel(group7, groupTom2);
-
-            String group7Tomcat = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-group7-tomcat-group-startup-order-test");
-
-            String group7Tomcat1 = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-group7-tomcat1-group-startup-order-test");
-
-            assertCreationOfNodes(group7Tomcat, group7Tomcat1);
-
-            String groupTom2Tomcat2 = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-group-tom2-tomcat2-group-startup-order-test");
-
-            String groupTom2Tomcat3 = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-group-tom2-tomcat3-group-startup-order-test");
-
-            assertCreationOfNodes(groupTom2Tomcat2, groupTom2Tomcat3);
-
-            String group8Tomcat2 = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-tomcat2-group8-group-startup-order-test");
-
-            String group8Tomcat = topologyHandler.
-                    getClusterIdFromAlias(bean.getApplicationId(),
-                            "my-tomcat-group8-group-startup-order-test");
-
-            assertCreationOfNodesInParallel(group8Tomcat2, group8Tomcat);
+            assertEquals(deployed, true);
 
             //Application active handling
-            topologyHandler.assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active);
+            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+                    ApplicationStatus.Active, tenant1Id);
+
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(bean.getApplicationId(),tenant2Id);
 
             //Group active handling
-            topologyHandler.assertGroupActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenant1Id);
 
             //Cluster active handling
-            topologyHandler.assertClusterActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
 
-            boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
-                    "group6-group-startup-order-test",
+            boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertFalse(removedGroup);
+            assertEquals(removedGroup, false);
 
-            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
-                    "group8-group-startup-order-test",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertFalse(removedGroup);
-
-            boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+            boolean removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertFalse(removedAuto);
+            assertEquals(removedAuto, false);
 
-            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-group-startup-order-test-1",
+            boolean removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    "network-partition-application-bursting-test-1",
                     RestConstants.NETWORK_PARTITIONS_NAME);
             //Trying to remove the used network partition
-            assertFalse(removedNet);
+            assertEquals(removedNet, false);
 
-            boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-group-startup-order-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertFalse(removedDep);
+            boolean removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+                    "deployment-policy-application-bursting-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+            assertEquals(removedDep, false);
 
             //Un-deploying the application
-            String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "group-startup-order-test" +
+            String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                     RestConstants.APPLICATIONS_UNDEPLOY;
 
-            boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
+            boolean unDeployed = restClientTenant1.undeployEntity(resourcePathUndeploy,
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(unDeployed);
+            assertEquals(unDeployed, true);
 
-            boolean undeploy = topologyHandler.assertApplicationUndeploy("group-startup-order-test");
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", tenant1Id);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
-                log.info("Force undeployment is going to start for the [application] " + "group-startup-order-test");
+                log.info("Force undeployment is going to start for the [application] " + "application-bursting-test");
 
-                restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "group-startup-order-test" +
+                restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("group-startup-order-test");
-                assertTrue(String.format("Forceful undeployment failed for the application %s",
-                        "group-startup-order-test"), forceUndeployed);
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", tenant1Id);
+                assertEquals(String.format("Forceful undeployment failed for the application %s",
+                        "application-bursting-test"), forceUndeployed, true);
 
             }
 
-            boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "group-startup-order-test",
+            boolean removed = restClientTenant1.removeEntity(RestConstants.APPLICATIONS, "application-bursting-test",
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(removed);
+            assertEquals(removed, true);
 
-            ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                    "group-startup-order-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertNull(beanRemoved);
+            ApplicationBean beanRemoved = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
+                    "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+            assertEquals(beanRemoved, null);
 
-            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
-                    "group6-group-startup-order-test",
+            removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertTrue(removedGroup);
+            assertEquals(removedGroup, true);
 
-            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
-                    "group8-group-startup-order-test",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertTrue(removedGroup);
-
-            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "stratos-lb-group-startup-order-test",
+            boolean removedC1 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "esb-application-bursting-test",
                     RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC1);
+            assertEquals(removedC1, true);
 
-            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat-group-startup-order-test",
+            boolean removedC2 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "php-application-bursting-test",
                     RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC2);
+            assertEquals(removedC2, true);
 
-            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat1-group-startup-order-test",
+            boolean removedC3 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "tomcat-application-bursting-test",
                     RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC3);
+            assertEquals(removedC3, true);
 
-            boolean removedC4 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat2-group-startup-order-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC4);
-
-            boolean removedC5 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat3-group-startup-order-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC5);
-
-            removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+            removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertTrue(removedAuto);
+            assertEquals(removedAuto, true);
 
-            removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-group-startup-order-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertTrue(removedDep);
+            removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+                    "deployment-policy-application-bursting-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+            assertEquals(removedDep, true);
 
-            removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-group-startup-order-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertFalse(removedNet);
+            removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    "network-partition-application-bursting-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(removedNet, false);
 
-            boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                    "application-policy-group-startup-order-test", RestConstants.APPLICATION_POLICIES_NAME);
-            assertTrue(removeAppPolicy);
+            boolean removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    "network-partition-application-bursting-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(removedN2, false);
 
-            removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-group-startup-order-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertTrue(removedNet);
+            boolean removeAppPolicy = restClientTenant1.removeEntity(RestConstants.APPLICATION_POLICIES,
+                    "application-policy-application-bursting-test", RestConstants.APPLICATION_POLICIES_NAME);
+            assertEquals(removeAppPolicy, true);
 
-            log.info("-------------------------------Ended application termination behavior test case-------------------------------");
+            removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    "network-partition-application-bursting-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(removedNet, true);
+
+            removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    "network-partition-application-bursting-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
+            assertEquals(removedN2, true);
+
+            log.info("-------------------------------Ended application bursting test case-------------------------------");
 
         } catch (Exception e) {
-            log.error("An error occurred while handling  application termination behavior", e);
-            assertTrue("An error occurred while handling  application termination behavior", false);
+            log.error("An error occurred while handling  application bursting", e);
+            assertTrue("An error occurred while handling  application bursting", false);
         }
-    }
-
-    private void assertCreationOfNodes(String firstNodeId, String secondNodeId) {
-        //group1 started first, then cluster started later
-        long startTime = System.currentTimeMillis();
-        Map<String, Long> activeMembers = TopologyHandler.getInstance().getActivateddMembers();
-        Map<String, Long> createdMembers = TopologyHandler.getInstance().getCreatedMembers();
-        //Active member should be available at the time cluster is started to create.
-        while (!activeMembers.containsKey(firstNodeId)) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            activeMembers = TopologyHandler.getInstance().getActivateddMembers();
-            if ((System.currentTimeMillis() - startTime) > GROUP_ACTIVE_TIMEOUT) {
-                break;
-            }
-        }
-        assertTrue(activeMembers.containsKey(firstNodeId));
-
-        while (!createdMembers.containsKey(secondNodeId)) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            createdMembers = TopologyHandler.getInstance().getCreatedMembers();
-            if ((System.currentTimeMillis() - startTime) > GROUP_ACTIVE_TIMEOUT) {
-                break;
-            }
-        }
-
-        assertTrue(createdMembers.containsKey(secondNodeId));
-
-        assertTrue(createdMembers.get(secondNodeId) > activeMembers.get(firstNodeId));
-    }
-
-    private void assertCreationOfNodesInParallel(String firstNodeId, String secondNodeId) {
-        //group1 started first, then cluster started later
-        long startTime = System.currentTimeMillis();
-        Map<String, Long> createdMembers = TopologyHandler.getInstance().getCreatedMembers();
-        //Active member should be available at the time cluster is started to create.
-
-        while (!(createdMembers.containsKey(firstNodeId) && createdMembers.containsKey(firstNodeId))) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            createdMembers = TopologyHandler.getInstance().getCreatedMembers();
-            if ((System.currentTimeMillis() - startTime) > NODES_START_PARALLEL_TIMEOUT) {
-                break;
-            }
-        }
-        assertTrue(createdMembers.containsKey(firstNodeId));
-        assertTrue(createdMembers.containsKey(firstNodeId));
-
     }
 }

@@ -27,17 +27,10 @@ import java.util.List;
 @XmlRootElement
 public class PartitionBean {
 
-    private String id;
+    private String uuid;
+	private String id;
     private String description;
     private List<PropertyBean> property;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getDescription() {
         return description;
@@ -54,4 +47,12 @@ public class PartitionBean {
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

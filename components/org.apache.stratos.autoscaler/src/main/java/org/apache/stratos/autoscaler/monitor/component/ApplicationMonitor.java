@@ -78,7 +78,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             TopologyInConsistentException {
         super(application);
 
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_ID, 100);
         this.executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
 
@@ -147,27 +147,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                 new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
                     }
                 }
-                //When the application is getting un-deployed, need to avoid
-                // checking the minimum count sanctification
-                if (!isTerminating()) {
-                    Application application = ApplicationHolder.getApplications().getApplication(appId);
-                    if (application != null) {
-                        List<String> defaultNetworkPartitions = getDefaultNetworkPartitions(application);
-                        //Checking for whether minimum application instances are there.
-                        if (defaultNetworkPartitions != null) {
-                            checkForMinimumApplicationInstances(application, defaultNetworkPartitions);
-                        }
-
-                    /*//Checking for whether any application instances need to be terminated.
-                    checkForApplicationInstanceTermination(application, defaultNetworkPartitions);*/
-                    }
-                }
             }
         };
         executorService.execute(monitoringRunnable);
     }
 
-    private void handleScalingMaxOut(ParentInstanceContext instanceContext,
+    private void handleScalingMaxOut(InstanceContext instanceContext,
                                      NetworkPartitionContext networkPartitionContext) {
         if (((NetworkPartitionContext) networkPartitionContext).getPendingInstancesCount() == 0) {
             //handling the application bursting only when there are no pending instances found
@@ -264,95 +249,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
 
         }
-    }
-
-    public List<String> getDefaultNetworkPartitions(Application application) {
-        //Minimum check, Need to get the network partition
-        NetworkPartitionAlgorithmContext algorithmContext = AutoscalerContext.getInstance().
-                getNetworkPartitionAlgorithmContext(appId);
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().
-                getApplicationPolicy(application.getApplicationPolicyId());
-        List<String> defaultNetworkPartitions = null;
-
-        if (applicationPolicy != null) {
-            String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
-            if (log.isDebugEnabled()) {
-                String msg = String.format("Network partition algorithm is %s [application-id] %s",
-                        networkPartitionAlgorithmName, appId);
-                log.debug(msg);
-            }
-
-            NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(
-                    networkPartitionAlgorithmName);
-            if (algorithm == null) {
-                String msg = String.format("Couldn't create network partition algorithm " +
-                        "[application-id] %s", appId);
-                log.error(msg);
-                throw new RuntimeException(msg);
-            }
-
-
-            // Check whether the network-partition of the application
-            // instance belongs to default set of network-partitions.
-            // If it is default set, then application instance cannot be terminated.
-            defaultNetworkPartitions = algorithm.
-                    getDefaultNetworkPartitions(algorithmContext);
-        }
-
-        return defaultNetworkPartitions;
-    }
-
-    private void checkForMinimumApplicationInstances(Application application,
-                                                     List<String> defaultNetworkPartitions) {
-        List<String> instanceIds = new ArrayList<String>();
-        for (String networkPartitionId : defaultNetworkPartitions) {
-            if (!networkPartitionContextsMap.containsKey(networkPartitionId)) {
-                String instanceId;
-                log.info("Detected a newly updated [network-partition] " + networkPartitionId +
-                        " for [application] " + appId + ". Hence new application instance " +
-                        "creation is going to start now!");
-                NetworkPartitionContext context =
-                        new NetworkPartitionContext(networkPartitionId);
-                //If application instances found in the ApplicationsTopology,
-                // then have to add them first before creating new one
-                ApplicationInstance appInstance = (ApplicationInstance) application.
-                        getInstanceByNetworkPartitionId(context.getId());
-                if (appInstance != null) {
-                    log.warn("The [application] " + appId + " already has the " +
-                            "[application-instance] " + appInstance.getInstanceId() + " for the " +
-                            "[network-partition] " + networkPartitionId);
-                    return;
-                }
-                instanceId = handleApplicationInstanceCreation(application, context, null);
-                instanceIds.add(instanceId);
-
-            }
-        }
-        //Starting the dependencies
-        if (!instanceIds.isEmpty()) {
-            startDependency(application, instanceIds);
-        }
-
-    }
-
-    private void checkForApplicationInstanceTermination(Application application,
-                                                        List<String> defaultNetworkPartitions) {
-
-        for (NetworkPartitionContext networkPartitionContext : networkPartitionContextsMap.values()) {
-            String nPartitionId = networkPartitionContext.getId();
-            if (!defaultNetworkPartitions.contains(nPartitionId)) {
-                log.info("The [application] " + appId + " runtime cannot be in [network-partition] "
-                        + nPartitionId + " as it is removed from the [application-policy]...!");
-                for (InstanceContext instanceContext : networkPartitionContext.
-                        getInstanceIdToInstanceContextMap().values()) {
-                    //Handling application instance termination
-                    ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
-                            instanceContext.getId());
-                }
-
-            }
-        }
-
     }
 
 
@@ -489,6 +385,20 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     /**
+     * This will start the minimum dependencies
+     *
+     * @param application the application which used to create monitors
+     * @return whether monitor created or not
+     * @throws TopologyInConsistentException
+     * @throws PolicyValidationException
+     */
+    public boolean startMinimumDependencies(Application application)
+            throws TopologyInConsistentException, PolicyValidationException {
+
+        return createInstanceAndStartDependency(application);
+    }
+
+    /**
      * Utility to create application instance by parsing the deployment policy for a monitor
      *
      * @param application the application
@@ -508,7 +418,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     getApplicationPolicy(application.getApplicationPolicyId());
             if (applicationPolicy == null) {
                 String msg = String.format("Application policy not found in registry or " +
-                        "in-memory [application-id] %s", appId);
+                        "in-memory [application-id] %s [application-policy-id] %s", appId,application.getApplicationPolicyId());
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
@@ -546,9 +456,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 return false;
             }
 
-            for (String networkPartitionIds : nextNetworkPartitions) {
+            for (String networkPartitionUuids : nextNetworkPartitions) {
                 NetworkPartitionContext context =
-                        new NetworkPartitionContext(networkPartitionIds);
+                        new NetworkPartitionContext(networkPartitionUuids);
                 //If application instances found in the ApplicationsTopology,
                 // then have to add them first before creating new one
                 ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -567,7 +477,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 }
                 instanceIds.add(instanceId);
                 log.info("Application instance has been added for the [network partition] " +
-                        networkPartitionIds + " [appInstanceId] " + instanceId);
+                        networkPartitionUuids + " [appInstanceId] " + instanceId);
             }
 
             //Find whether any other instances exists in cluster
@@ -576,7 +486,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             for (ApplicationInstance instance : instanceMap.values()) {
                 if (!instanceIds.contains(instance.getInstanceId())) {
                     NetworkPartitionContext context =
-                            new NetworkPartitionContext(instance.getNetworkPartitionId());
+                            new NetworkPartitionContext(instance.getNetworkPartitionUuid());
                     //If application instances found in the ApplicationsTopology,
                     // then have to add them first before creating new one
                     ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -585,13 +495,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     handleApplicationInstanceCreation(application, context, appInstance);
                     instanceIds.add(instance.getInstanceId());
                     log.info("Burst Application instance has been added in the restart for " +
-                            "the [network partition] " + instance.getNetworkPartitionId() +
+                            "the [network partition] " + instance.getNetworkPartitionUuid() +
                             " [appInstanceId] " + instance.getInstanceId());
                 }
             }
-            if (!instanceIds.isEmpty()) {
-                startDependency(application, instanceIds);
-            }
+
+            startDependency(application, instanceIds);
 
         } catch (Exception e) {
             log.error(String.format("Application instance creation failed [applcaition-id] %s", appId), e);
@@ -662,7 +571,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 getApplicationPolicy(application.getApplicationPolicyId());
         if (applicationPolicy == null) {
             String msg = String.format("Application policy not found in registry or in-memory " +
-                    "[application-id] %s", appId);
+                    "[application-id] %s [application-policy-id] %s ", appId, application.getApplicationPolicyId());
             log.error(msg);
             throw new RuntimeException(msg);
         }

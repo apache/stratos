@@ -71,7 +71,7 @@ public class IntegrationMockClient extends MockIaasApiClient {
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
-                    org.apache.stratos.mock.iaas.domain.ErrorResponse errorResponse = gson.fromJson(response.getContent(), org.apache.stratos.mock.iaas.domain.ErrorResponse.class);
+                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
                     if (errorResponse != null) {
                         throw new RuntimeException(errorResponse.getErrorMessage());
                     }

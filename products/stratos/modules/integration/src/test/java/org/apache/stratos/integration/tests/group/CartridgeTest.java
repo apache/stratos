@@ -19,7 +19,6 @@
 
 package org.apache.stratos.integration.tests.group;
 
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.PropertyBean;
@@ -27,10 +26,6 @@ import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 import static junit.framework.Assert.*;
 
@@ -48,15 +43,15 @@ public class CartridgeTest extends StratosTestServerManager {
 
         try {
             String cartridgeType = "c0-cartridge-test";
-            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + ".json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(added);
-            CartridgeBean bean = (CartridgeBean) restClient.
+            assertEquals(added, true);
+            CartridgeBean bean = (CartridgeBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(bean.getCategory(), "Application");
-            assertEquals(bean.getHost(), "qmog.cisco.com");
+
             for (PropertyBean property : bean.getProperty()) {
                 if (property.getName().equals("payload_parameter.CEP_IP")) {
                     assertEquals(property.getValue(), "octl.qmog.cisco.com");
@@ -80,13 +75,15 @@ public class CartridgeTest extends StratosTestServerManager {
                     assertEquals(property.getValue(), "61616");
                 }
             }
-
-
-            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+            bean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertNull("Cartridge exists in other tenant", bean);
+            boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
                             cartridgeType + "-v1.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(updated);
-            CartridgeBean updatedBean = (CartridgeBean) restClient.
+            assertEquals(updated, true);
+            CartridgeBean updatedBean = (CartridgeBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
             assertEquals(updatedBean.getType(), "c0-cartridge-test");
@@ -116,84 +113,79 @@ public class CartridgeTest extends StratosTestServerManager {
                 }
             }
 
-            boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
-                    RestConstants.CARTRIDGES_NAME);
-            assertTrue(removed);
-
-            CartridgeBean beanRemoved = (CartridgeBean) restClient.
+            bean = (CartridgeBean) restClientTenant2.
                     getEntity(RestConstants.CARTRIDGES, cartridgeType,
                             CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertNull(beanRemoved);
+            assertNull("Cartridge exists in other tenant", bean);
+
+            added = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+                            cartridgeType + ".json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertEquals(added, true);
+
+            updated = restClientTenant2.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
+                            cartridgeType + "-v1.json",
+                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+            assertEquals(updated, true);
+
+            updatedBean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(updatedBean.getType(), "c0-cartridge-test");
+            assertEquals(updatedBean.getCategory(), "Data");
+            assertEquals(updatedBean.getHost(), "qmog.cisco.com12");
+            for (PropertyBean property : updatedBean.getProperty()) {
+                if (property.getName().equals("payload_parameter.CEP_IP")) {
+                    assertEquals(property.getValue(), "octl.qmog.cisco.com123");
+                } else if (property.getName().equals("payload_parameter.CEP_ADMIN_PASSWORD")) {
+                    assertEquals(property.getValue(), "admin123");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_IP")) {
+                    assertEquals(property.getValue(), "octl.qmog.cisco.com123");
+                } else if (property.getName().equals("payload_parameter.QTCM_NETWORK_COUNT")) {
+                    assertEquals(property.getValue(), "3");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_ADMIN_PASSWORD")) {
+                    assertEquals(property.getValue(), "admin123");
+                } else if (property.getName().equals("payload_parameter.QTCM_DNS_SEGMENT")) {
+                    assertEquals(property.getValue(), "test123");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_SECURE_PORT")) {
+                    assertEquals(property.getValue(), "7712");
+                } else if (property.getName().equals("payload_parameter.MONITORING_SERVER_PORT")) {
+                    assertEquals(property.getValue(), "7612");
+                } else if (property.getName().equals("payload_parameter.CEP_PORT")) {
+                    assertEquals(property.getValue(), "7612");
+                } else if (property.getName().equals("payload_parameter.MB_PORT")) {
+                    assertEquals(property.getValue(), "61617");
+                }
+            }
+            boolean removed = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
+                    RestConstants.CARTRIDGES_NAME);
+            assertEquals(removed, true);
+
+            bean = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertNotNull("Cartridge not exists in other tenant", bean);
+
+            CartridgeBean beanRemoved = (CartridgeBean) restClientTenant1.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(beanRemoved, null);
+
+            removed = restClientTenant2.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
+                    RestConstants.CARTRIDGES_NAME);
+            assertEquals(removed, true);
+
+            beanRemoved = (CartridgeBean) restClientTenant2.
+                    getEntity(RestConstants.CARTRIDGES, cartridgeType,
+                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+            assertEquals(beanRemoved, null);
+
+
 
             log.info("---------------------------Ended Cartridge test case-------------------------");
         } catch (Exception e) {
             log.error("An error occurred while handling RESTConstants.CARTRIDGES_PATH", e);
             assertTrue("An error occurred while handling RESTConstants.CARTRIDGES_PATH", false);
-        }
-    }
-
-    @Test
-    public void testCartridgeList() {
-        log.info("--------------------Started Cartridge list test case-----------------------------");
-
-        try {
-            String cartridgeType1 = "c1-cartridge-test";
-            String cartridgeType2 = "c2-cartridge-test";
-            boolean added1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
-                            cartridgeType1 + ".json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(added1);
-
-            boolean added2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
-                            cartridgeType2 + ".json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(added2);
-
-            Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
-            }.getType();
-
-            List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(RestConstants.CARTRIDGES,
-                    listType, RestConstants.CARTRIDGES_NAME);
-            assertTrue(cartridgeList.size() >= 2);
-
-            CartridgeBean bean1 = null;
-            for (CartridgeBean cartridgeBean : cartridgeList) {
-                if (cartridgeBean.getType().equals(cartridgeType1)) {
-                    bean1 = cartridgeBean;
-                }
-            }
-            assertNotNull(bean1);
-
-            CartridgeBean bean2 = null;
-            for (CartridgeBean cartridgeBean : cartridgeList) {
-                if (cartridgeBean.getType().equals(cartridgeType1)) {
-                    bean2 = cartridgeBean;
-                }
-            }
-            assertNotNull(bean2);
-
-            boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType1,
-                    RestConstants.CARTRIDGES_NAME);
-            assertTrue(removed);
-
-            CartridgeBean beanRemoved = (CartridgeBean) restClient.
-                    getEntity(RestConstants.CARTRIDGES, cartridgeType1,
-                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertEquals(beanRemoved, null);
-
-            removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType2,
-                    RestConstants.CARTRIDGES_NAME);
-            assertTrue(removed);
-
-            beanRemoved = (CartridgeBean) restClient.
-                    getEntity(RestConstants.CARTRIDGES, cartridgeType2,
-                            CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
-            assertNull(beanRemoved);
-
-            log.info("---------------------------Ended Cartridge list test case-------------------------");
-        } catch (Exception e) {
-            log.error("An error occurred while handling Cartridges list", e);
-            assertTrue("An error occurred while handling Cartridges list", false);
         }
     }
 }

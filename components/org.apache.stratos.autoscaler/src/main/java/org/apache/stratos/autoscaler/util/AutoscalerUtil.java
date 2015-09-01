@@ -48,6 +48,7 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -124,7 +125,7 @@ public class AutoscalerUtil {
             try {
                 Topology topology = TopologyManager.getTopology();
                 if (topology != null) {
-                    Service service = topology.getService(holder.getServiceType());
+                    Service service = topology.getService(holder.getServiceUuid());
                     if (service != null) {
                         //If one cluster of the application presents,
                         // then we can assume that all there clusters are there
@@ -259,6 +260,65 @@ public class AutoscalerUtil {
         return toCommonProperties(properties);
     }
 
+
+    private class ApplicationMonitorAdder implements Runnable {
+        private String applicationId;
+
+        public ApplicationMonitorAdder(String applicationId) {
+            this.applicationId = applicationId;
+        }
+
+        public void run() {
+            long startTime = System.currentTimeMillis();
+            long endTime = startTime;
+            int retries = 5;
+            boolean success = false;
+            ApplicationMonitor applicationMonitor = null;
+            while (!success && retries != 0) {
+
+                try {
+                    startTime = System.currentTimeMillis();
+                    log.info("Starting monitor: [application] " + applicationId);
+                    try {
+                        applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
+                    } catch (PolicyValidationException e) {
+                        String msg = "Monitor creation failed: [application] " + applicationId;
+                        log.warn(msg, e);
+                        retries--;
+                    }
+                    success = true;
+                    endTime = System.currentTimeMillis();
+                } catch (DependencyBuilderException e) {
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
+                }
+            }
+
+            if (applicationMonitor == null) {
+                String msg = "Monitor creation failed, even after retrying for 5 times: "
+                        + "[application] " + applicationId;
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+            AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+            autoscalerContext.removeApplicationPendingMonitor(applicationId);
+            autoscalerContext.removeAppMonitor(applicationId);
+            autoscalerContext.addAppMonitor(applicationMonitor);
+
+            long startupTime = ((endTime - startTime) / 1000);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
+                                "[startup-time] %d seconds", applicationMonitor.getId(),
+                        applicationMonitor.getStartupDependencyTree(), startupTime));
+            }
+        }
+    }
+
     public static Monitor.MonitorType findMonitorType(ApplicationChildContext context) {
         if (context instanceof GroupChildContext) {
             return Monitor.MonitorType.Group;
@@ -318,8 +378,8 @@ public class AutoscalerUtil {
                 if (deploymentPolicy != null) {
                     for (NetworkPartitionRef networkPartition : deploymentPolicy.getNetworkPartitionRefs()) {
                         if (networkPartition != null) {
-                            if (!networkPartitionIds.contains(networkPartition.getId())) {
-                                networkPartitionIds.add(networkPartition.getId());
+                            if (!networkPartitionIds.contains(networkPartition.getUuid())) {
+                                networkPartitionIds.add(networkPartition.getUuid());
                             }
                         }
                     }
@@ -336,16 +396,16 @@ public class AutoscalerUtil {
     /**
      * Get deployment policy ids referred in an application.
      *
-     * @param applicationId the application id
+     * @param applicationUuid the application uuid
      * @return list of deployment policy ids
      */
-    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationId) {
+    public static List<String> getDeploymentPolicyIdsReferredInApplication(String applicationUuid) {
 
-        if (applicationId == null || StringUtils.isBlank(applicationId)) {
+        if (applicationUuid == null || StringUtils.isBlank(applicationUuid)) {
             return null;
         }
 
-        Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+        Application application = ApplicationHolder.getApplications().getApplication(applicationUuid);
         if (application == null) {
             return null;
         }
@@ -358,7 +418,7 @@ public class AutoscalerUtil {
         List<String> deploymentPolicyIds = new ArrayList<String>();
 
         for (Map.Entry<String, String> entry : aliasToDeploymentPolicyIdMap.entrySet()) {
-            if (!deploymentPolicyIds.contains(entry.getValue())) {
+            if (!deploymentPolicyIds.contains(entry.getValue())&& entry.getValue()!=null) {
                 deploymentPolicyIds.add(entry.getValue());
             }
         }
@@ -437,7 +497,7 @@ public class AutoscalerUtil {
                 if (cartridgeContext != null) {
                     aliasToDeploymentPolicyIdMap.put(
                             cartridgeContext.getSubscribableInfoContext().getAlias(),
-                            cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy());
+                            cartridgeContext.getSubscribableInfoContext().getDeploymentPolicyUuid());
                 }
             }
         }
@@ -455,16 +515,16 @@ public class AutoscalerUtil {
                         getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(aliasToDeploymentPolicyIdMap, groupContext.getGroupContexts());
                     } else {
                         // if group have a deployment policy, it is the same for all the children
-                        String deploymentPolicyId = groupContext.getDeploymentPolicy();
-                        aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyId);
+                        String deploymentPolicyUuid = groupContext.getDeploymentPolicyUuid();
+                        aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyUuid);
                         if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
                             setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap,
-                                    deploymentPolicyId,
+                                    deploymentPolicyUuid,
                                     groupContext.getCartridgeContexts());
                         }
                         if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
                             setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap,
-                                    deploymentPolicyId,
+                                    deploymentPolicyUuid,
                                     groupContext.getGroupContexts());
                         }
 
@@ -527,7 +587,7 @@ public class AutoscalerUtil {
         }
 
         // application policy id can't be null
-        if (applicationPolicy.getId() == null || StringUtils.isBlank(applicationPolicy.getId())) {
+        if (applicationPolicy.getUuid() == null || StringUtils.isBlank(applicationPolicy.getUuid())) {
             String msg = "Invalid Application Policy: Application policy id null or empty";
             log.error(msg);
             throw new InvalidApplicationPolicyException(msg);
@@ -575,10 +635,20 @@ public class AutoscalerUtil {
             }
 
             // network partitions should be added already
-            if (null == CloudControllerServiceClient.getInstance().
-                    getNetworkPartition(networkPartitionId)) {
+            NetworkPartition[] networkPartitions = CloudControllerServiceClient.getInstance().getNetworkPartitions();
+            NetworkPartition networkPartitionForTenant = null;
+            if (networkPartitions != null) {
+                for (NetworkPartition networkPartition : networkPartitions) {
+                    if (applicationPolicy.getTenantId() == networkPartition.getTenantId() && networkPartition.getId()
+                            .equals(networkPartitionId)) {
+                        networkPartitionForTenant = networkPartition;
+                    }
+                }
+            }
+            if (networkPartitionForTenant == null) {
                 String msg = String.format("Network partition not found: [network-partition-id]  %s in " +
-                        "[application-policy-id] %s", networkPartitionId, applicationPolicy.getId());
+                        "[application-policy-uuid] %s [application-policy-id] %s", networkPartitionId,
+                        applicationPolicy.getUuid(), applicationPolicy.getId());
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -595,11 +665,14 @@ public class AutoscalerUtil {
                 if (networkPartitionGroupsPropertyValue != null) {
                     String[] networkPartitionGroups = networkPartitionGroupsPropertyValue.
                             split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER);
+                    String[] networkPartitionGroupsUuid=null;
                     if (networkPartitionGroups != null) {
+                        int i=0;
                         for (String networkPartitionIdsString : networkPartitionGroups) {
                             networkPartitionIds = networkPartitionIdsString.
                                     split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
-                            if (networkPartitionIds != null) {
+                             if (networkPartitionIds != null) {
+                                 networkPartitionGroupsUuid=new String[networkPartitionGroups.length];
                                 for (String networkPartitionId : networkPartitionIds) {
                                     // network-partition-id can't be null or empty
                                     if (null == networkPartitionId || networkPartitionId.isEmpty()) {
@@ -611,53 +684,58 @@ public class AutoscalerUtil {
                                     }
 
                                     // network partitions should be added already
-                                    if (null == CloudControllerServiceClient.getInstance().
-                                            getNetworkPartition(networkPartitionId)) {
+                                    NetworkPartition networkPartition=    CloudControllerServiceClient.getInstance().
+                                            getNetworkPartitionByTenant(networkPartitionId,applicationPolicy.getTenantId());
+                                    if (null ==networkPartition) {
                                         String msg = String.format("Invalid Application Policy: "
                                                 + "Network partition not found for " +
                                                 "[network-partition-id] : %s", networkPartitionId);
                                         log.error(msg);
                                         throw new InvalidApplicationPolicyException(msg);
                                     }
+                                    else{
+                                         networkPartitionGroupsUuid[i] =networkPartition.getUuid();
+                                    }
                                 }
                             }
                         }
                         // populating network partition groups in application policy
-                        applicationPolicy.setNetworkPartitionGroups(networkPartitionGroups);
+                        applicationPolicy.setNetworkPartitionGroups(networkPartitionGroupsUuid);
                     }
                 }
             }
         }
     }
 
+
     /**
      * Validates an application policy against the application
      *
-     * @param applicationId
-     * @param applicationPolicyId
+     * @param applicationUuid
+     * @param applicationPolicyUuid
      * @throws ApplicatioinPolicyNotExistsException
      * @throws InvalidApplicationPolicyException
      */
-    public static void validateApplicationPolicyAgainstApplication(String applicationId, String applicationPolicyId)
+    public static void validateApplicationPolicyAgainstApplication(String applicationUuid, String applicationPolicyUuid)
             throws ApplicatioinPolicyNotExistsException, InvalidApplicationPolicyException {
 
-        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicyByUuid(applicationPolicyUuid);
         if (applicationPolicy == null) {
-            String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyId);
+            String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyUuid);
             log.error(msg);
             throw new ApplicatioinPolicyNotExistsException(msg);
         }
 
-        String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
+        String[] networkPartitionUuids = applicationPolicy.getNetworkPartitionsUuid();
 
-        for (String applicationPolicyNetworkPartitionerence : networkPartitionIds) {
-            String networkPartitionId = applicationPolicyNetworkPartitionerence;
+        for (String applicationPolicyNetworkPartitionreference : networkPartitionUuids) {
+            String networkPartitionUuid = applicationPolicyNetworkPartitionreference;
             // validate application policy against the given application
-            if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
+            if (!isAppUsingNetworkPartitionId(applicationUuid, networkPartitionUuid)) {
                 String msg = String.format("Invalid Application Policy: "
                                 + "Network partition [network-partition-id] %s is not used in application [application-id] %s. "
                                 + "Hence application bursting will fail. Either remove %s from application policy or make all the cartridges available in %s",
-                        networkPartitionId, applicationId, networkPartitionId, networkPartitionId);
+                        networkPartitionUuid, applicationUuid, networkPartitionUuid, networkPartitionUuid);
                 log.error(msg);
                 throw new InvalidApplicationPolicyException(msg);
             }
@@ -667,12 +745,12 @@ public class AutoscalerUtil {
     /**
      * Validate whether all the deployment policies used in the application are using the same network partitions of Application policy
      */
-    private static boolean isAppUsingNetworkPartitionId(String applicationId, String networkPartitionId) {
-        if (applicationId == null || StringUtils.isBlank(applicationId)
-                || networkPartitionId == null || StringUtils.isBlank(networkPartitionId)) {
+    private static boolean isAppUsingNetworkPartitionId(String applicationUuid, String networkPartitionUuid) {
+        if (applicationUuid == null || StringUtils.isBlank(applicationUuid)
+                || networkPartitionUuid == null || StringUtils.isBlank(networkPartitionUuid)) {
             return false;
         }
-        List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.getDeploymentPolicyIdsReferredInApplication(applicationId);
+        List<String> deploymentPolicyIdsReferredInApplication = AutoscalerUtil.getDeploymentPolicyIdsReferredInApplication(applicationUuid);
         if (deploymentPolicyIdsReferredInApplication == null) {
             return false;
         }
@@ -684,8 +762,8 @@ public class AutoscalerUtil {
                 if (deploymentPolicyInApp != null) {
                     for (NetworkPartitionRef networkPartitionOfDeploymentPolicy : deploymentPolicyInApp.getNetworkPartitionRefs()) {
                         if (networkPartitionOfDeploymentPolicy != null) {
-                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getId().
-                                    equals(networkPartitionId)) {
+                            if (networkPartitionOfDeploymentPolicy != null && networkPartitionOfDeploymentPolicy.getUuid().
+                                    equals(networkPartitionUuid)) {
                                 referencesOfNetworkPartition++;
                             }
                         }
@@ -955,62 +1033,5 @@ public class AutoscalerUtil {
         private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
     }
 
-    private class ApplicationMonitorAdder implements Runnable {
-        private String applicationId;
-
-        public ApplicationMonitorAdder(String applicationId) {
-            this.applicationId = applicationId;
-        }
-
-        public void run() {
-            long startTime = System.currentTimeMillis();
-            long endTime = startTime;
-            int retries = 5;
-            boolean success = false;
-            ApplicationMonitor applicationMonitor = null;
-            while (!success && retries != 0) {
-
-                try {
-                    startTime = System.currentTimeMillis();
-                    log.info("Starting monitor: [application] " + applicationId);
-                    try {
-                        applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
-                    } catch (PolicyValidationException e) {
-                        String msg = "Monitor creation failed: [application] " + applicationId;
-                        log.warn(msg, e);
-                        retries--;
-                    }
-                    success = true;
-                    endTime = System.currentTimeMillis();
-                } catch (DependencyBuilderException e) {
-                    String msg = "Monitor creation failed: [application] " + applicationId;
-                    log.warn(msg, e);
-                    retries--;
-                } catch (TopologyInConsistentException e) {
-                    String msg = "Monitor creation failed: [application] " + applicationId;
-                    log.warn(msg, e);
-                    retries--;
-                }
-            }
-
-            if (applicationMonitor == null) {
-                String msg = "Monitor creation failed, even after retrying for 5 times: "
-                        + "[application] " + applicationId;
-                log.error(msg);
-                throw new RuntimeException(msg);
-            }
-            AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
-            autoscalerContext.removeApplicationPendingMonitor(applicationId);
-            autoscalerContext.removeAppMonitor(applicationId);
-            autoscalerContext.addAppMonitor(applicationMonitor);
-
-            long startupTime = ((endTime - startTime) / 1000);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
-                                "[startup-time] %d seconds", applicationMonitor.getId(),
-                        applicationMonitor.getStartupDependencyTree(), startupTime));
-            }
-        }
-    }
 
 }

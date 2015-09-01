@@ -1,0 +1,77 @@
+{
+  "name": "g-sc-G4",
+  "dependencies": {
+    "terminationBehaviour": "terminate-none",
+    "startupOrders": [
+      {
+        "aliases": [
+          "group.g-G3-1x0",
+          "cartridge.c1-1x0"
+        ]
+      }
+    ]
+  },
+  "cartridges": [
+    "c1"
+  ],
+  "groups": [
+    {
+      "name": "g-G3",
+      "dependencies": {
+        "terminationBehaviour": "terminate-dependents",
+        "startupOrders": [
+          {
+            "aliases": [
+              "group.g-G2-1x0",
+              "cartridge.c2-1x0"
+            ]
+          }
+        ]
+      },
+      "cartridges": [
+        "c2"
+      ],
+      "groups": [
+          {
+              "name": "g-G2",
+              "dependencies": {
+                  "terminationBehaviour": "terminate-dependents",
+                  "startupOrders": [
+                      {
+                          "aliases": [
+                              "group.g-G1-1x0",
+                              "cartridge.c3-1x0"
+                          ]
+                      }
+                  ]
+              },
+              "cartridges": [
+                  "c3"
+              ],
+              "groups": [
+                  {
+                      "name": "g-G1",
+                      "dependencies": {
+                          "terminationBehaviour": "terminate-all",
+                          "startupOrders": [
+                              {
+                                  "aliases": [
+                                      "cartridge.c4-1x0",
+                                      "cartridge.c5-1x0"
+                                  ]
+                              }
+                          ]
+                      },
+                      "cartridges": [
+                          "c4",
+                          "c5"
+                      ],
+                      "groups": [
+                      ]
+                  }
+              ]
+          }
+      ]
+    }
+  ]
+}

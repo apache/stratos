@@ -46,11 +46,23 @@ public class Applications implements Serializable {
         this.applicationMap.put(application.getUniqueIdentifier(), application);
     }
 
-    public synchronized Application getApplication(String appId) {
-        return this.getApplications().get(appId);
+    public synchronized Application getApplication(String applicationUuid) {
+        return this.getApplications().get(applicationUuid);
     }
 
-    public synchronized boolean isInitialized() {
+    public synchronized Application getApplicationByTenant(String applicationId, int tenantId) {
+        if(getApplications() != null) {
+            for (Application application : this.getApplications().values()) {
+                if (application.getId().equals(applicationId) && application.getTenantId() == tenantId) {
+                    return application;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public boolean isInitialized() {
         return initialized;
     }
 

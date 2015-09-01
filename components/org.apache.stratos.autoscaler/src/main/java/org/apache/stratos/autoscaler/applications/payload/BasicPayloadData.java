@@ -36,6 +36,7 @@ public class BasicPayloadData implements Serializable {
     private String appId;
     private String groupName;
     private String serviceName;
+    private String serviceType;
     private String clusterId;
     private String hostName;
     private int tenantId;
@@ -72,6 +73,8 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append("GROUP_NAME=" + getGroupName());
         payloadBuilder.append(",");
         payloadBuilder.append("SERVICE_NAME=" + getServiceName());
+        payloadBuilder.append(",");
+        payloadBuilder.append("SERVICE_TYPE=" + getServiceType());
         payloadBuilder.append(",");
         payloadBuilder.append("HOST_NAME=" + getHostName());
         payloadBuilder.append(",");
@@ -410,5 +413,13 @@ public class BasicPayloadData implements Serializable {
 
     public void setLvsVirtualIP(String lvsVirtualIP) {
         this.lvsVirtualIP = lvsVirtualIP;
+    }
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
     }
 }

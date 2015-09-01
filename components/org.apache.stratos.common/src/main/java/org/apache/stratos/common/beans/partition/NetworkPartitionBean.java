@@ -26,7 +26,6 @@ import java.util.List;
 
 @XmlRootElement
 public class NetworkPartitionBean {
-
     private String id;
     private String provider;
     private List<PartitionBean> partitions;

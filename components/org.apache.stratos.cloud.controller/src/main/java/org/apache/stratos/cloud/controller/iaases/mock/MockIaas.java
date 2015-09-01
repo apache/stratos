@@ -62,7 +62,7 @@ public class MockIaas extends Iaas {
                 memberContext.getMemberId(),
                 memberContext.getClusterInstanceId(),
                 memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId()
+                memberContext.getPartition().getUuid()
         );
         setDynamicPayload(payload);
         MockInstanceMetadata mockInstanceMetadata = apiClient.startInstance(mockInstanceContext);

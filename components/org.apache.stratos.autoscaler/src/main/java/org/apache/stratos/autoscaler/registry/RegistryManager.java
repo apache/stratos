@@ -162,7 +162,7 @@ public class RegistryManager {
     }
 
     public void persistDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getDeploymentPolicyID();
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getUuid();
         persist(deploymentPolicy, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy written to registry: %s", deploymentPolicy.toString()));
@@ -173,14 +173,14 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
+                    AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getUuid();
             persist(autoscalePolicy, resourcePath);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
-                        autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
+                        autoscalePolicy.getUuid(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
             }
         } catch (AutoScalerException e) {
-            String message = "Unable to persist autoscaler policy [autoscaler-policy-id] " + autoscalePolicy.getId();
+            String message = "Unable to persist autoscaler policy [autoscaler-policy-id] " + autoscalePolicy.getUuid();
             log.error(message, e);
             throw e;
         } finally {
@@ -264,10 +264,10 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationContext.getApplicationId();
+                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationContext.getApplicationUuid();
             persist(applicationContext, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug("Application context [" + applicationContext.getApplicationId() + "] " +
+                log.debug("Application context [" + applicationContext.getApplicationUuid() + "] " +
                         "persisted successfully in the autoscaler registry");
             }
         } finally {
@@ -336,13 +336,13 @@ public class RegistryManager {
     public void persistServiceGroup(ServiceGroup servicegroup) {
         try {
             startTenantFlow();
-            if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
+            if (servicegroup == null || StringUtils.isEmpty(servicegroup.getUuid())) {
                 throw new IllegalArgumentException("Cartridge group or group name can not be null");
             }
-            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + servicegroup.getName();
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + servicegroup.getUuid();
             persist(servicegroup, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Persisted cartridge group %s at path %s", servicegroup.getName(), resourcePath));
+                log.debug(String.format("Persisted cartridge group %s at path %s", servicegroup.getUuid(), resourcePath));
             }
         } finally {
             endTenantFlow();
@@ -352,29 +352,29 @@ public class RegistryManager {
 
     public void updateServiceGroup(ServiceGroup serviceGroup) throws InvalidServiceGroupException, RegistryException {
         try {
-            if (serviceGroup == null || StringUtils.isEmpty(serviceGroup.getName())) {
+            if (serviceGroup == null || StringUtils.isEmpty(serviceGroup.getUuid())) {
                 throw new IllegalArgumentException("Cartridge group or group name cannot be null");
             }
-            if (getServiceGroup(serviceGroup.getName()) == null) {
+            if (getServiceGroup(serviceGroup.getUuid()) == null) {
                 throw new InvalidServiceGroupException(String.format("Cartridge group does not exist: " +
-                        "[cartridge-group] %s", serviceGroup.getName()));
+                        "[cartridge-group] %s", serviceGroup.getUuid()));
             }
 
             persistServiceGroup(serviceGroup);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Updated cartridge group: [group-name] %s", serviceGroup.getName()));
+                log.debug(String.format("Updated cartridge group: [group-name] %s", serviceGroup.getUuid()));
             }
         } catch (Exception e) {
             String message = (String.format("Unable to update cartridge group [group-name] %s",
-                    serviceGroup.getName()));
+                    serviceGroup.getUuid()));
             log.error(message, e);
             throw new RegistryException(message, e);
         }
     }
 
-    public boolean serviceGroupExist(String serviceGroupName) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + serviceGroupName;
+    public boolean serviceGroupExist(String serviceGroupUuid) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + serviceGroupUuid;
         return resourceExist(resourcePath);
     }
 
@@ -400,7 +400,7 @@ public class RegistryManager {
                                 asPolicy = (AutoscalePolicy) dataObj;
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Autoscaler policy read from registry: [id] %s [name] %s [description] %s",
-                                            asPolicy.getId(), asPolicy.getDisplayName(), asPolicy.getDescription()));
+                                            asPolicy.getUuid(), asPolicy.getDisplayName(), asPolicy.getDescription()));
                                 }
                                 asPolicyList.add(asPolicy);
                             } else {
@@ -537,10 +537,10 @@ public class RegistryManager {
         }
     }
 
-    public ServiceGroup getServiceGroup(String name) throws Exception {
+    public ServiceGroup getServiceGroup(String uuid) throws Exception {
         try {
             startTenantFlow();
-            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + name;
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + uuid;
             Object serializedObj = instance.retrieve(resourcePath);
             ServiceGroup group = null;
             if (serializedObj != null) {
@@ -559,6 +559,18 @@ public class RegistryManager {
         } finally {
             endTenantFlow();
         }
+    }
+
+    public ServiceGroup getServiceGroup(String name, int tenantId) throws Exception {
+        ServiceGroup[] serviceGroups = getServiceGroups();
+        if (serviceGroups != null) {
+            for (ServiceGroup serviceGroup : serviceGroups) {
+                if (serviceGroup.getName().equals(name) && (serviceGroup.getTenantId() == tenantId)) {
+                    return serviceGroup;
+                }
+            }
+        }
+        return null;
     }
 
     public ServiceGroup[] getServiceGroups() {
@@ -633,20 +645,20 @@ public class RegistryManager {
                     policyID;
             delete(resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Autoscaler policy deleted from registry: [id]", policyID));
+                log.debug(String.format("Autoscaler policy deleted from registry: %s [id]", policyID));
             }
         } finally {
             endTenantFlow();
         }
     }
 
-    public void removeDeploymentPolicy(String deploymentPolicyID) {
+    public void removeDeploymentPolicy(String deploymentPolicyId) {
         String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" +
-                deploymentPolicyID;
+                deploymentPolicyId;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy deleted from registry: [id] %s",
-                    deploymentPolicyID));
+                    deploymentPolicyId));
         }
     }
 
@@ -682,10 +694,10 @@ public class RegistryManager {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
-                    AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getId();
+                    AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getUuid();
             persist(applicationPolicy, resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getId()));
+                log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getUuid()));
             }
         } finally {
             endTenantFlow();

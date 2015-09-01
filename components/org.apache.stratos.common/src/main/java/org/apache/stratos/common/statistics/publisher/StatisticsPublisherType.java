@@ -23,5 +23,5 @@ package org.apache.stratos.common.statistics.publisher;
  * Statistics publisher type enumneration.
  */
 public enum StatisticsPublisherType {
-    WSO2CEP
+    WSO2CEP, WSO2DAS
 }

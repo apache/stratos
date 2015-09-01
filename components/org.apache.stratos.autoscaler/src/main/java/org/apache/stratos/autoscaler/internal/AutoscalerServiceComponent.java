@@ -40,7 +40,6 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
-import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.Component;
@@ -77,8 +76,11 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class AutoscalerServiceComponent {
+
     private static final Log log = LogFactory.getLog(AutoscalerServiceComponent.class);
+
     private static final String AUTOSCALER_COORDINATOR_LOCK = "AUTOSCALER_COORDINATOR_LOCK";
+
     private AutoscalerTopologyEventReceiver asTopologyReceiver;
     private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
     private ExecutorService executorService;
@@ -136,6 +138,7 @@ public class AutoscalerServiceComponent {
                         } else {
                             executeCoordinatorTasks();
                         }
+
                         componentStartUpSynchronizer.waitForAxisServiceActivation(Component.Autoscaler,
                                 "AutoscalerService");
                         componentStartUpSynchronizer.setComponentStatus(Component.Autoscaler, true);
@@ -209,9 +212,6 @@ public class AutoscalerServiceComponent {
             NetworkPartitionAlgorithmContext algorithmContext = networkPartitionAlgoCtxtIterator.next();
             AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
         }
-
-        //Adding application context from registry
-        AutoscalerUtil.readApplicationContextsFromRegistry();
 
         //starting the processor chain
         ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();

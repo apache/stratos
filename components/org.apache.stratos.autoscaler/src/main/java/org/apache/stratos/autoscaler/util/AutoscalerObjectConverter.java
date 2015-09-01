@@ -62,7 +62,7 @@ public class AutoscalerObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.Partition cloudControllerPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
 
-        cloudControllerPartition.setId(partition.getId());
+        cloudControllerPartition.setId(partition.getUuid());
         cloudControllerPartition.setDescription(partition.getDescription());
         cloudControllerPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
         cloudControllerPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
@@ -120,8 +120,9 @@ public class AutoscalerObjectConverter {
     public static PartitionRef convertCCPartitionToPartition(org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition) {
 
         PartitionRef partition = new PartitionRef();
-
-        partition.setId(ccPartition.getId());
+		partition.setId(ccPartition.getId());
+        partition.setUuid(ccPartition.getUuid());
+	    partition.setTenantId(ccPartition.getTenantId());
         partition.setDescription(ccPartition.getDescription());
         partition.setProperties(convertCCPropertiesToProperties(ccPartition.getProperties()));
 

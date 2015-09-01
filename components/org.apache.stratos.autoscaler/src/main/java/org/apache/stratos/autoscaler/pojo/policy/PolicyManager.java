@@ -55,6 +55,23 @@ public class PolicyManager {
 
     private static Map<String, ApplicationPolicy> applicationPolicyListMap;
 
+    public Collection<DeploymentPolicy> getDeploymentPolicies() {
+        return deploymentPolicyListMap.values();
+    }
+
+    /* An instance of a PolicyManager is created when the class is loaded.
+     * Since the class is loaded only once, it is guaranteed that an object of
+     * PolicyManager is created only once. Hence it is singleton.
+     */
+
+    private static class InstanceHolder {
+        private static final PolicyManager INSTANCE = new PolicyManager();
+    }
+
+    public static PolicyManager getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
     private PolicyManager() {
         // Initialize distributed object provider
         DistributedObjectProvider distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
@@ -63,58 +80,51 @@ public class PolicyManager {
         applicationPolicyListMap = distributedObjectProvider.getMap(APPLICATION_ID_TO_APPLICATION_POLICY_MAP);
     }
 
-    /* An instance of a PolicyManager is created when the class is loaded.
-     * Since the class is loaded only once, it is guaranteed that an object of
-     * PolicyManager is created only once. Hence it is singleton.
-     */
-
-    public static PolicyManager getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    public Collection<DeploymentPolicy> getDeploymentPolicies() {
-        return deploymentPolicyListMap.values();
-    }
-
     // Add the policy to information model and persist.
     public boolean addAutoscalePolicy(AutoscalePolicy policy) throws AutoScalingPolicyAlreadyExistException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding autoscaling policy: [id] %s", policy.getId()));
+            log.info(String.format("Adding autoscaling policy: [tenant-id] %d [autoscaling policy-uuid] %s " +
+                    "[autoscaling policy-id] " +
+                    "%s", policy.getTenantId(), policy.getUuid(), policy.getId()));
         }
-        if (StringUtils.isEmpty(policy.getId())) {
+        if (StringUtils.isEmpty(policy.getUuid())) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
         this.addASPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is added successfully: [id] %s", policy.getId()));
+            log.info(String.format("Autoscaling policy: [tenant-id] %d [autoscaling-policy-uuid] %s " +
+                    "[autoscaling-policy-id] %s added successfully", policy.getTenantId(), policy.getUuid(),
+                    policy.getId()));
         }
         return true;
     }
 
     public boolean updateAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
-        if (StringUtils.isEmpty(policy.getId())) {
+        if (StringUtils.isEmpty(policy.getUuid())) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
         this.updateASPolicyInInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is updated successfully: [id] %s", policy.getId()));
+            log.info(String.format("Autoscaling policy updated successfully: [tenant-id] %d [autoscaling policy-uuid]" +
+                    " %s [autoscaling policy-id] %s", policy.getTenantId(), policy.getUuid(), policy.getId()));
         }
         return true;
     }
 
-    public boolean removeAutoscalePolicy(String policyID) {
-        if (StringUtils.isEmpty(policyID)) {
+    public boolean removeAutoscalePolicy(String policyId) {
+        if (StringUtils.isEmpty(policyId)) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
-        this.removeASPolicyInInformationModel(policyID);
-        RegistryManager.getInstance().removeAutoscalerPolicy(policyID);
+        this.removeASPolicyInInformationModel(policyId);
+        RegistryManager.getInstance().removeAutoscalerPolicy(policyId);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is removed successfully: [id] %s", policyID));
+            log.info(String.format("Autoscaling policy removed successfully: [autoscaling-policy-id] %s", policyId));
         }
         return true;
     }
+
 
     /**
      * Add deployment policy to in memory map and persist.
@@ -127,40 +137,45 @@ public class PolicyManager {
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is added successfully: [deployment-policy-id] %s",
-                    policy.getDeploymentPolicyID()));
+            log.info(String.format("Deployment policy added successfully: [tenant-id] %d [deployment-policy-uuid] %s " +
+                            "[deployment-policy-id] %s", policy.getTenantId(), policy.getUuid(), policy.getId()));
         }
     }
 
     /**
-     * Retrieve deployment policies from registy and add it to in memory model
+     * Retrieve deployment policies from registry and add it to in memory model
      *
      * @param deploymentPolicy
      * @throws InvalidDeploymentPolicyException
      */
     public void addDeploymentPolicyToInformationModel(DeploymentPolicy deploymentPolicy)
             throws InvalidDeploymentPolicyException {
-        if (!deploymentPolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+        if (!deploymentPolicyListMap.containsKey(deploymentPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
+                log.debug(String.format("Adding deployment policy [tenant-id] %d [deployment-policy-uuid] %s " +
+                                "deployment-policy-id] %s: ", deploymentPolicy.getTenantId(),
+                        deploymentPolicy.getUuid(), deploymentPolicy.getId()));
             }
-            deploymentPolicyListMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
+            deploymentPolicyListMap.put(deploymentPolicy.getUuid(), deploymentPolicy);
         } else {
-            String errMsg = "Specified deployment policy [" +
-                    deploymentPolicy.getDeploymentPolicyID() + "] already exists";
+            String errMsg = String.format("Deployment policy already exists: [tenant-id] %d [deployment-policy-uuid] " +
+                            "%s [deployment-policy-id] %s", deploymentPolicy.getTenantId(),
+                    deploymentPolicy.getUuid(), deploymentPolicy.getId());
             log.error(errMsg);
             throw new InvalidDeploymentPolicyException(errMsg);
         }
     }
 
     public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
+        if (StringUtils.isEmpty(policy.getUuid())) {
             throw new AutoScalerException("Deployment policy id cannot be empty");
         }
         this.updateDeploymentPolicyInInformationModel(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getDeploymentPolicyID()));
+            log.info(String.format("Deployment policy updated successfully: [tenant-id] %d [deployment-policy-uuid] " +
+                            "%s [deployment-policy-id] %s", policy.getTenantId(),
+                    policy.getUuid(), policy.getId()));
         }
         return true;
     }
@@ -168,58 +183,66 @@ public class PolicyManager {
     /**
      * Remove deployment policy from in memory map and registry.
      *
-     * @param deploymentPolicyID
+     * @param deploymentPolicyId Deployment policy Id
      * @throws InvalidPolicyException
      */
-    public void removeDeploymentPolicy(String deploymentPolicyID) {
-        removeDeploymentPolicyFromMap(deploymentPolicyID);
-        RegistryManager.getInstance().removeDeploymentPolicy(deploymentPolicyID);
+    public void removeDeploymentPolicy(String deploymentPolicyId) {
+        removeDeploymentPolicyFromMap(deploymentPolicyId);
+        RegistryManager.getInstance().removeDeploymentPolicy(deploymentPolicyId);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is removed successfully: [deployment-policy-id] %s",
-                    deploymentPolicyID));
+            log.info(String.format("Deployment policy removed successfully: [deployment-policy-id] %s",
+                    deploymentPolicyId));
         }
     }
 
     public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws AutoScalingPolicyAlreadyExistException {
-        if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
+        if (!autoscalePolicyListMap.containsKey(asPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding autoscaling policy: " + asPolicy.getId());
+                log.debug(String.format("Adding autoscaling policy: [tenant-id] %d [autoscaling-policy-uuid] " +
+                        "%s " +
+                        "[autoscaling-policy-id] %s", asPolicy.getTenantId(), asPolicy.getUuid(), asPolicy.getId()));
             }
-            autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
+            autoscalePolicyListMap.put(asPolicy.getUuid(), asPolicy);
         } else {
-            String errMsg = "Specified autoscaling policy [" + asPolicy.getId() + "] already exists";
+            String errMsg = String.format("Specified autoscaling policy already exists: [tenant-id] %d " +
+                    "[autoscaling-policy-uuid] %s [autoscaling-policy-id] %s", asPolicy.getTenantId(),
+                    asPolicy.getUuid(), asPolicy.getId());
             log.error(errMsg);
             throw new AutoScalingPolicyAlreadyExistException(errMsg);
         }
     }
 
     public void updateASPolicyInInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
-        if (autoscalePolicyListMap.containsKey(asPolicy.getId())) {
+        if (autoscalePolicyListMap.containsKey(asPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Updating autoscaling policy: " + asPolicy.getId());
+                log.debug(String.format("Updating autoscaling policy: [tenant-id] %d [autoscaling-policy-uuid] %s " +
+                                "[autoscaling-policy-id] %s", asPolicy.getTenantId(), asPolicy.getUuid(),
+                        asPolicy.getId()));
             }
-            autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
+            autoscalePolicyListMap.put(asPolicy.getUuid(), asPolicy);
         }
     }
 
     public void updateDeploymentPolicyInInformationModel(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
-        if (deploymentPolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+        if (deploymentPolicyListMap.containsKey(deploymentPolicy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Updating deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
+                log.debug(String.format("Updating deployment policy: [tenant-id] %d [deployment-policy-uuid] " +
+                                "%s [deployment-policy-id] %s", deploymentPolicy.getTenantId(),
+                        deploymentPolicy.getUuid(), deploymentPolicy.getId()));
             }
-            deploymentPolicyListMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
+            deploymentPolicyListMap.put(deploymentPolicy.getUuid(), deploymentPolicy);
         }
     }
 
-    public void removeASPolicyInInformationModel(String policyID) throws PolicyDoesNotExistException {
-        if (autoscalePolicyListMap.containsKey(policyID)) {
+    public void removeASPolicyInInformationModel(String policyId) throws PolicyDoesNotExistException {
+        if (autoscalePolicyListMap.containsKey(policyId)) {
             if (log.isDebugEnabled()) {
-                log.debug("Updating autoscaling policy: " + policyID);
+                log.debug("Removing autoscaling policy: [autoscaling-policy-id] " + policyId);
             }
-            autoscalePolicyListMap.remove(policyID);
+            autoscalePolicyListMap.remove(policyId);
         } else {
-            throw new PolicyDoesNotExistException("No such policy ID [" + policyID + "] exists");
+            throw new PolicyDoesNotExistException("No such policy exists: [autoscaling-policy-id] " + policyId);
         }
     }
 
@@ -230,7 +253,8 @@ public class PolicyManager {
             }
             applicationPolicyListMap.remove(applicationPolicyId);
         } else {
-            throw new InvalidPolicyException(String.format("Application policy not found: [application-policy-id] %s", applicationPolicyId));
+            throw new InvalidPolicyException(String.format("Application policy not found: [application-policy-id] " +
+                    "%s", applicationPolicyId));
         }
     }
 
@@ -264,24 +288,43 @@ public class PolicyManager {
     /**
      * Returns the autoscale policy to which the specified id is mapped or null
      *
-     * @param id
+     * @param uuid Autoscale policy UUID
      * @return
      */
-    public AutoscalePolicy getAutoscalePolicy(String id) {
-        return autoscalePolicyListMap.get(id);
+    public AutoscalePolicy getAutoscalePolicy(String uuid) {
+        return autoscalePolicyListMap.get(uuid);
     }
 
+    /**
+     * Returns the autoscale policy to which the specified id is mapped or null
+     *
+     * @param id Autoscle policy Id
+     * @return
+     */
+    public AutoscalePolicy getAutoscalePolicyById(String id) {
+        AutoscalePolicy autoscalePolicy = null;
+        for (AutoscalePolicy autoscalePolicy1 : getAutoscalePolicyList()) {
+            if (autoscalePolicy1.getId().equals(id)) {
+                autoscalePolicy = autoscalePolicy1;
+            }
+        }
+        return autoscalePolicy;
+    }
+
+
     private void addDeploymentPolicyToPolicyListMap(DeploymentPolicy policy) {
-        if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
+        if (StringUtils.isEmpty(policy.getUuid())) {
             throw new RuntimeException("Application id is not found in the deployment policy");
         }
-        if (!deploymentPolicyListMap.containsKey(policy.getDeploymentPolicyID())) {
+        if (!deploymentPolicyListMap.containsKey(policy.getUuid())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding deployment policy: [deployment-policy-id] " + policy.getDeploymentPolicyID());
+                log.debug(String.format("Adding deployment policy: [tenant-id] %d [deployment-policy-uuid] %s " +
+                        "[deployment-policy-id] %s ", policy.getTenantId(), policy.getUuid(), policy.getId()));
             }
-            deploymentPolicyListMap.put(policy.getDeploymentPolicyID(), policy);
+            deploymentPolicyListMap.put(policy.getUuid(), policy);
         } else {
-            String errMsg = "Deployment policy already exists: [deployment-policy-id] " + policy.getDeploymentPolicyID();
+            String errMsg = String.format("Deployment policy already exists: [tenant-id] %d [deployment-policy-uuid] " +
+                    "%s [deployment-policy-id] %s ", policy.getTenantId(), policy.getUuid(), policy.getId());
             log.error(errMsg);
         }
     }
@@ -294,9 +337,9 @@ public class PolicyManager {
 
     public void updateDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
         if (log.isDebugEnabled()) {
-            log.debug("Updating deployment policy: " + policy.getDeploymentPolicyID());
+            log.debug("Updating deployment policy: " + policy.getUuid());
         }
-        deploymentPolicyListMap.put(policy.getDeploymentPolicyID(), policy);
+        deploymentPolicyListMap.put(policy.getUuid(), policy);
     }
 
     /**
@@ -334,25 +377,43 @@ public class PolicyManager {
     /**
      * Returns the deployment policy to which the specified id is mapped or null
      *
-     * @param id
+     * @param uuid UUID of the deployment policy
      * @return
      */
-    public DeploymentPolicy getDeploymentPolicy(String id) {
-        return deploymentPolicyListMap.get(id);
+    public DeploymentPolicy getDeploymentPolicy(String uuid) {
+        return deploymentPolicyListMap.get(uuid);
+    }
+
+    /**
+     * Returns the deployment policy to which the specified id is mapped or null
+     *
+     * @param id Id of the deployment policy
+     * @return
+     */
+    public DeploymentPolicy getDeploymentPolicyById(String id) {
+        DeploymentPolicy deploymentPolicy = null;
+        for (DeploymentPolicy deploymentPolicy1 : getDeploymentPolicies()) {
+            if (deploymentPolicy1.getId().equals(id)) {
+                deploymentPolicy = deploymentPolicy1;
+            }
+        }
+        return deploymentPolicy;
     }
 
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidApplicationPolicyException {
-        String applicationPolicyId = applicationPolicy.getId();
+        String applicationPolicyUuid = applicationPolicy.getUuid();
         if (log.isInfoEnabled()) {
-            log.info(String.format("Adding application policy : [application-policy-id] %s", applicationPolicyId));
+            log.info(String.format("Adding application policy : [tenant-id] %d  [application-policy-uuid] %s " +
+                    "[application-policy-id] %s", applicationPolicy.getTenantId(), applicationPolicyUuid,
+                    applicationPolicy.getId()));
         }
         this.addApplicationPolicyToInformationModel(applicationPolicy);
         RegistryManager.getInstance().persistApplicationPolicy(applicationPolicy);
 
         if (log.isInfoEnabled()) {
-            log.info(String
-                    .format("Application policy is added successfully: [application-policy-id] %s",
-                            applicationPolicyId));
+            log.info(String.format("Application policy added successfully: [tenant-id] %d [application-policy-uuid] %s " +
+                            "[application-policy-id] %s", applicationPolicy.getTenantId(), applicationPolicyUuid,
+                    applicationPolicy.getId()));
         }
 
     }
@@ -364,21 +425,26 @@ public class PolicyManager {
         this.removeApplicationPolicyInInformationModel(applicationPolicyId);
         RegistryManager.getInstance().removeApplicationPolicy(applicationPolicyId);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Application policy is removed successfully: [id] %s", applicationPolicyId));
+            log.info(String.format("Application policy removed successfully: [application-policy-id] %s",
+                    applicationPolicyId));
         }
         return true;
     }
 
     public void addApplicationPolicyToInformationModel(ApplicationPolicy applicationPolicy)
             throws InvalidApplicationPolicyException {
-        String applicationPolicyId = applicationPolicy.getId();
-        if (!applicationPolicyListMap.containsKey(applicationPolicyId)) {
+        String applicationPolicyUuid = applicationPolicy.getUuid();
+        if (!applicationPolicyListMap.containsKey(applicationPolicyUuid)) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding application policy : " + applicationPolicyId);
+                log.debug(String.format("Adding application policy: [tenant-id] %d  [application-policy-uuid] %s " +
+                                "[application-policy-id] %s", applicationPolicy.getTenantId(), applicationPolicyUuid,
+                        applicationPolicy.getId()));
             }
-            applicationPolicyListMap.put(applicationPolicyId, applicationPolicy);
+            applicationPolicyListMap.put(applicationPolicyUuid, applicationPolicy);
         } else {
-            String errMsg = "Application policy already exists : " + applicationPolicyId;
+            String errMsg = String.format("Application policy already exists : [tenant-id] %d  " +
+                            "[application-policy-uuid] %s [application-policy-id] %s",
+                    applicationPolicy.getTenantId(), applicationPolicyUuid, applicationPolicy.getId());
             log.error(errMsg);
             throw new InvalidApplicationPolicyException(errMsg);
         }
@@ -388,39 +454,75 @@ public class PolicyManager {
     /**
      * Retruns an ApplicationPolicy of a given application
      *
-     * @param applicationPolicyId
+     * @param applicationPolicyId Application policy Id
      * @return
      */
     public ApplicationPolicy getApplicationPolicy(String applicationPolicyId) {
         return applicationPolicyListMap.get(applicationPolicyId);
     }
 
-    public void updateApplicationPolicyInInformationModel(ApplicationPolicy applicationPolicy) {
-        if (applicationPolicyListMap.containsKey(applicationPolicy.getId())) {
-            if (log.isDebugEnabled()) {
-                log.debug("Updating application policy: " + applicationPolicy.getId());
+    /**
+     * Returns the application policy to which the specified id is mapped or null
+     *
+     * @param uuid Id of the deployment policy
+     * @return
+     */
+    public ApplicationPolicy getApplicationPolicyByUuid(String uuid) {
+        ApplicationPolicy applicationPolicy = null;
+        for (ApplicationPolicy applicationPolicy1 : getApplicationPolicies()) {
+            if (applicationPolicy1.getUuid().equals(uuid)) {
+                applicationPolicy = applicationPolicy1;
             }
-            applicationPolicyListMap.put(applicationPolicy.getId(), applicationPolicy);
+        }
+        return applicationPolicy;
+    }
+
+    public void updateApplicationPolicyInInformationModel(ApplicationPolicy applicationPolicy) {
+        if (applicationPolicyListMap.containsKey(applicationPolicy.getUuid())) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Updating application policy: [tenant-id] %d  [application-policy-uuid] %s " +
+                                "[application-policy-id] %s", applicationPolicy.getTenantId(), applicationPolicy.getUuid(),
+                        applicationPolicy.getId()));
+            }
+            applicationPolicyListMap.put(applicationPolicy.getUuid(), applicationPolicy);
         }
     }
 
     public boolean updateApplicationPolicy(ApplicationPolicy applicationPolicy) {
-        if (StringUtils.isEmpty(applicationPolicy.getId())) {
+        if (StringUtils.isEmpty(applicationPolicy.getUuid())) {
             throw new AutoScalerException("Application policy id cannot be empty");
         }
         this.updateApplicationPolicyInInformationModel(applicationPolicy);
         RegistryManager.getInstance().persistApplicationPolicy(applicationPolicy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Application policy is updated successfully: [id] %s", applicationPolicy.getId()));
+            log.info(String.format("Application policyupdated successfully: [id] %s", applicationPolicy.getUuid()));
         }
         return true;
     }
 
+    /**
+     * Returns the application policy to which the specified id is mapped or null
+     *
+     * @return List of all application policies
+     */
     public ApplicationPolicy[] getApplicationPolicies() {
         return applicationPolicyListMap.values().toArray(new ApplicationPolicy[0]);
     }
 
-    private static class InstanceHolder {
-        private static final PolicyManager INSTANCE = new PolicyManager();
+    /**
+     * Checks whether application policy exists in the tenant
+     * @param applicationPolicyId application policy id
+     * @param tenantId tenant id
+     * @return boolean value
+     */
+    public Boolean checkApplicationPolicyInTenant(String applicationPolicyId, int tenantId) {
+        ApplicationPolicy[] applicationPolicies = getApplicationPolicies();
+        for (ApplicationPolicy applicationPolicy1 : applicationPolicies) {
+            if (applicationPolicy1.getId().equals(applicationPolicyId) && applicationPolicy1.getTenantId() ==
+                    tenantId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

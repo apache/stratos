@@ -33,6 +33,8 @@ global java.lang.String clusterId;
 global Integer roundedRequiredInstanceCount;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global java.lang.String algorithmName;
+global java.lang.Boolean isPrimary;
+global java.util.List primaryMembers;
 
 rule "Dependent Scaling Rule"
 dialect "mvel"
@@ -82,7 +84,9 @@ dialect "mvel"
 
                         log.info("[dependency-scale] [scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                         log.debug("[dependency-scale] [scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                        delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId());
+                        long scalingTime = System.currentTimeMillis();
+                        String scalingReason = "Dependency scaling";
+                        delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary,scalingReason,scalingTime);
                         count++;
                     } else {
                         partitionsAvailable = false;
@@ -128,6 +132,8 @@ dialect "mvel"
 
                     for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
 
+						if( !primaryMembers.contains(memberStatsContext.getMemberId()) ) {
+
                             LoadAverage loadAverage = memberStatsContext.getLoadAverage();
                             log.debug("[dependency-scale] [scale-down] " + " [cluster] "
                                 + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
@@ -156,6 +162,9 @@ dialect "mvel"
                                 selectedMemberStatsContext = memberStatsContext;
                                 lowestOverallLoad = overallLoad;
                             }
+
+
+					    }
 
                     }
                     if(selectedMemberStatsContext != null) {

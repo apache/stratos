@@ -213,7 +213,20 @@ public interface CloudControllerService {
      * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
      *                                                                                  cartridge with this type.
      */
-    Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException;
+    public Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException;
+    /**
+     * This method will return the information regarding the given cartridge, if present.
+     * Else this will return <code>null</code>.
+     *
+     * @param cartridgeType type of the cartridge.
+     * @param tenantId tenant id.
+     *
+     * @return {@link org.apache.stratos.cloud.controller.domain.Cartridge} of the given cartridge type or
+     * <code>null</code>.
+     * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
+     *                                                                                  cartridge with this type.
+     */
+    Cartridge getCartridgeByTenant(String cartridgeType,int tenantId) throws CartridgeNotFoundException;
 
     /**
      * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.domain
@@ -259,15 +272,25 @@ public interface CloudControllerService {
     /**
      * Retrieves registered Kubernetes clusters.
      */
-    public KubernetesCluster[] getKubernetesClusters();
+    public KubernetesCluster[] getKubernetesClusters(int tenantId);
 
     /**
-     * Retrieves Kubernetes cluster for given Kubernetes cluster ID.
+     * Retrieves Kubernetes cluster for given Kubernetes cluster UUID.
      *
-     * @param kubernetesClusterId
+     * @param kubernetesClusterUuid
      */
-    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId)
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterUuid)
             throws NonExistingKubernetesClusterException;
+
+    /**
+     * Retrieves Kubernetes cluster for given Kubernetes cluster ID and tenant id
+     * @param kubernetesClusterId
+     * @param tenantId
+     * @return
+     * @throws NonExistingKubernetesClusterException
+     */
+    public KubernetesCluster getKubernetesClusterByTenant(String kubernetesClusterId, int tenantId) throws
+            NonExistingKubernetesClusterException;
 
     /**
      * Retrieves Kubernetes Master for given Kubernetes cluster ID.
@@ -306,11 +329,11 @@ public interface CloudControllerService {
     /**
      * Add a Kubernetes host to a Kubernetes cluster.
      *
-     * @param groupId
+     * @param groupUuid
      * @param kubernetesHost
      * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException
      */
-    public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
+    public boolean addKubernetesHost(String groupUuid, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException,
             NonExistingKubernetesClusterException;
 
@@ -327,10 +350,10 @@ public interface CloudControllerService {
     /**
      * Remove a Kubernetes host.
      *
-     * @param groupId
+     * @param groupUuid
      * @throws NonExistingKubernetesClusterException
      */
-    public boolean removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException;
+    public boolean removeKubernetesCluster(String groupUuid) throws NonExistingKubernetesClusterException;
 
     /**
      * Update a Kubernetes host.
@@ -364,7 +387,8 @@ public interface CloudControllerService {
      * @param networkPartitionId
      * @throws NetworkPartitionNotExistsException
      */
-    public boolean removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException;
+    public boolean removeNetworkPartition(String networkPartitionId,
+                                          int tenantId) throws NetworkPartitionNotExistsException;
 
     /**
      * Update network partition
@@ -380,6 +404,13 @@ public interface CloudControllerService {
      * @return
      */
     public NetworkPartition[] getNetworkPartitions();
+
+    /**
+     * Get network partitions by tenant
+     *@param tenantId tenant id
+     * @return
+     */
+    public NetworkPartition[] getNetworkPartitionsByTenant(int tenantId);
 
     /**
      * Get network partition by network partition id
@@ -399,5 +430,20 @@ public interface CloudControllerService {
      * Returns the available Iaas Providers
      */
     public String[] getIaasProviders();
+
+    /**
+     * Get cartridges for tenant
+     *
+     * @param tenantId tenant id
+     */
+    public Cartridge[] getCartridgesByTenant(int tenantId);
+
+    /**
+     * Get cartridges for tenant
+     *
+     * @param networkPartitionUuid network partition uuid
+     * @param tenantId tenant id
+     */
+    public NetworkPartition getNetworkPartitionByTenant(String networkPartitionUuid, int tenantId);
 
 }

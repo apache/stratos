@@ -35,7 +35,7 @@ public class TenantTest extends StratosTestServerManager {
     @Test
     public void addUser() {
         String tenantId = "tenant-1";
-        boolean addedUser1 = restClient.addEntity(RESOURCES_PATH + "/" +
+        boolean addedUser1 = restClientAdmin.addEntity(RESOURCES_PATH + "/" +
                         tenantId + ".json",
                 RestConstants.USERS, RestConstants.USERS_NAME);
         assertTrue(addedUser1);

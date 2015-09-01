@@ -28,8 +28,10 @@ public class SubscribableInfoContext implements Serializable {
     private static final long serialVersionUID = -6874644941002783034L;
 
     private String alias;
-    private String deploymentPolicy;
-    private String autoscalingPolicy;
+	private String deploymentPolicy;
+	private String autoscalingPolicy;
+    private String deploymentPolicyUuid;
+    private String autoscalingPolicyUuid;
     private int minMembers;
     private int maxMembers;
     private String[] dependencyAliases;
@@ -47,20 +49,20 @@ public class SubscribableInfoContext implements Serializable {
         this.alias = alias;
     }
 
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
+    public String getDeploymentPolicyUuid() {
+        return deploymentPolicyUuid;
     }
 
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
+    public void setDeploymentPolicyUuid(String deploymentPolicyUuid) {
+        this.deploymentPolicyUuid = deploymentPolicyUuid;
     }
 
-    public String getAutoscalingPolicy() {
-        return autoscalingPolicy;
+    public String getAutoscalingPolicyUuid() {
+        return autoscalingPolicyUuid;
     }
 
-    public void setAutoscalingPolicy(String autoscalingPolicy) {
-        this.autoscalingPolicy = autoscalingPolicy;
+    public void setAutoscalingPolicyUuid(String autoscalingPolicyUuid) {
+        this.autoscalingPolicyUuid = autoscalingPolicyUuid;
     }
 
     public String[] getDependencyAliases() {
@@ -111,11 +113,27 @@ public class SubscribableInfoContext implements Serializable {
         this.persistenceContext = persistenceContext;
     }
 
-    public String getLvsVirtualIP() {
+   public String getLvsVirtualIP() {
         return lvsVirtualIP;
     }
 
     public void setLvsVirtualIP(String lvsVirtualIP) {
         this.lvsVirtualIP = lvsVirtualIP;
     }
+
+	public String getDeploymentPolicy() {
+		return deploymentPolicy;
+	}
+
+	public void setDeploymentPolicy(String deploymentPolicy) {
+		this.deploymentPolicy = deploymentPolicy;
+	}
+
+	public String getAutoscalingPolicy() {
+		return autoscalingPolicy;
+	}
+
+	public void setAutoscalingPolicy(String autoscalingPolicy) {
+		this.autoscalingPolicy = autoscalingPolicy;
+	}
 }

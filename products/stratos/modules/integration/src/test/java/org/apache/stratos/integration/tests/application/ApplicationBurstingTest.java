@@ -29,7 +29,8 @@ import org.apache.stratos.integration.tests.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * This will handle the application bursting test cases
@@ -43,66 +44,66 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
     public void testApplicationBusting() {
         try {
             log.info("-------------------------------Started application Bursting test case-------------------------------");
-            TopologyHandler topologyHandler = TopologyHandler.getInstance();
+
             String autoscalingPolicyId = "autoscaling-policy-application-bursting-test";
 
-            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+            boolean addedScalingPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                             + "/" + autoscalingPolicyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertTrue(addedScalingPolicy);
+            assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
+            boolean addedC1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC1);
+            assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
+            boolean addedC2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC2);
+            assertEquals(addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
+            boolean addedC3 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertTrue(addedC3);
+            assertEquals(addedC3, true);
 
-            boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+            boolean addedG1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
                             "/" + "esb-php-group-application-bursting-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertTrue(addedG1);
+            assertEquals(addedG1, true);
 
-            CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClient.
+            CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClientTenant1.
                     getEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
                             CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(beanG1.getName(), "esb-php-group-application-bursting-test");
 
-            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-bursting-test-1.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertTrue(addedN1);
+            assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-bursting-test-2.json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertTrue(addedN2);
+            assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+            boolean addedDep = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                             "deployment-policy-application-bursting-test.json",
                     RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertTrue(addedDep);
+            assertEquals(addedDep, true);
 
-            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                             "app-bursting-single-cartriddge-group.json", RestConstants.APPLICATIONS,
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(added);
+            assertEquals(added, true);
 
-            ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
+            ApplicationBean bean = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
                     "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(bean.getApplicationId(), "application-bursting-test");
 
-            boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addAppPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             "application-policy-application-bursting-test.json", RestConstants.APPLICATION_POLICIES,
                     RestConstants.APPLICATION_POLICIES_NAME);
-            assertTrue(addAppPolicy);
+            assertEquals(addAppPolicy, true);
 
-            ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient.getEntity(
+            ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClientTenant1.getEntity(
                     RestConstants.APPLICATION_POLICIES,
                     "application-policy-application-bursting-test", ApplicationPolicyBean.class,
                     RestConstants.APPLICATION_POLICIES_NAME);
@@ -110,111 +111,111 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
             //deploy the application
             String resourcePath = RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                     RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-application-bursting-test";
-            boolean deployed = restClient.deployEntity(resourcePath,
+            boolean deployed = restClientTenant1.deployEntity(resourcePath,
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(deployed);
+            assertEquals(deployed, true);
 
             //Application active handling
-            topologyHandler.assertApplicationStatus(bean.getApplicationId(),
-                    ApplicationStatus.Active);
+            TopologyHandler.getInstance().assertApplicationStatus(bean.getApplicationId(),
+                    ApplicationStatus.Active, tenant1Id);
 
             //Group active handling
-            topologyHandler.assertGroupActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertGroupActivation(bean.getApplicationId(), tenant1Id);
 
             //Cluster active handling
-            topologyHandler.assertClusterActivation(bean.getApplicationId());
+            TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
 
-            boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
+            boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertFalse(removedGroup);
+            assertEquals(removedGroup, false);
 
-            boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+            boolean removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertFalse(removedAuto);
+            assertEquals(removedAuto, false);
 
-            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-bursting-test-1",
                     RestConstants.NETWORK_PARTITIONS_NAME);
             //Trying to remove the used network partition
-            assertFalse(removedNet);
+            assertEquals(removedNet, false);
 
-            boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+            boolean removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     "deployment-policy-application-bursting-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertFalse(removedDep);
+            assertEquals(removedDep, false);
 
             //Un-deploying the application
             String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                     RestConstants.APPLICATIONS_UNDEPLOY;
 
-            boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
+            boolean unDeployed = restClientTenant1.undeployEntity(resourcePathUndeploy,
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(unDeployed);
+            assertEquals(unDeployed, true);
 
-            boolean undeploy = topologyHandler.assertApplicationUndeploy("application-bursting-test");
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", tenant1Id);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "application-bursting-test");
 
-                restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
+                restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("application-bursting-test");
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", tenant1Id);
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
-                        "application-bursting-test"), forceUndeployed);
+                        "application-bursting-test"), forceUndeployed, true);
 
             }
 
-            boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "application-bursting-test",
+            boolean removed = restClientTenant1.removeEntity(RestConstants.APPLICATIONS, "application-bursting-test",
                     RestConstants.APPLICATIONS_NAME);
-            assertTrue(removed);
+            assertEquals(removed, true);
 
-            ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
+            ApplicationBean beanRemoved = (ApplicationBean) restClientTenant1.getEntity(RestConstants.APPLICATIONS,
                     "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertNull(beanRemoved);
+            assertEquals(beanRemoved, null);
 
-            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
+            removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertTrue(removedGroup);
+            assertEquals(removedGroup, true);
 
-            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "esb-application-bursting-test",
+            boolean removedC1 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "esb-application-bursting-test",
                     RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC1);
+            assertEquals(removedC1, true);
 
-            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "php-application-bursting-test",
+            boolean removedC2 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "php-application-bursting-test",
                     RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC2);
+            assertEquals(removedC2, true);
 
-            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat-application-bursting-test",
+            boolean removedC3 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "tomcat-application-bursting-test",
                     RestConstants.CARTRIDGES_NAME);
-            assertTrue(removedC3);
+            assertEquals(removedC3, true);
 
-            removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+            removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertTrue(removedAuto);
+            assertEquals(removedAuto, true);
 
-            removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
+            removedDep = restClientTenant1.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                     "deployment-policy-application-bursting-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertTrue(removedDep);
+            assertEquals(removedDep, true);
 
-            removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-bursting-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertFalse(removedNet);
+            assertEquals(removedNet, false);
 
-            boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-bursting-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertFalse(removedN2);
+            assertEquals(removedN2, false);
 
-            boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
+            boolean removeAppPolicy = restClientTenant1.removeEntity(RestConstants.APPLICATION_POLICIES,
                     "application-policy-application-bursting-test", RestConstants.APPLICATION_POLICIES_NAME);
-            assertTrue(removeAppPolicy);
+            assertEquals(removeAppPolicy, true);
 
-            removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-bursting-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertTrue(removedNet);
+            assertEquals(removedNet, true);
 
-            removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-bursting-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertTrue(removedN2);
+            assertEquals(removedN2, true);
 
             log.info("-------------------------------Ended application bursting test case-------------------------------");
 

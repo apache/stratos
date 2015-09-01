@@ -72,10 +72,11 @@ public class PythonCartridgeAgentTest {
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
-    private static final String SERVICE_NAME = "php";
-    public static final String SOURCE_PATH = "/tmp/stratos-pca-test-app-path/";
+  	private static final String SERVICE_NAME = "php";
+    public static final String SOURCE_PATH = "/tmp/java.lang.Stringstratos-pca-test-app-path/";
+	private static final String  CARTRIDGE_UUID ="uuid" ;
 
-    private static List<ServerSocket> serverSocketList;
+	private static List<ServerSocket> serverSocketList;
     private static Map<String, Executor> executorList;
     private final ArtifactUpdatedEvent artifactUpdatedEvent;
     private final Boolean expectedResult;
@@ -361,7 +362,7 @@ public class PythonCartridgeAgentTest {
      */
     private Topology createTestTopology() {
         Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
+        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant,CARTRIDGE_UUID);
         topology.addService(service);
 
         Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,

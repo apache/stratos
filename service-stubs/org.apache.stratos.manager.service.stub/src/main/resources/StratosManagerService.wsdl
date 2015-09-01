@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.services.manager.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax21="http://exception.manager.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.manager.stratos.apache.org">
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://signup.application.domain.messaging.stratos.apache.org/xsd">
-            <xs:complexType name="DomainMapping">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="contextPath" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="ApplicationSignUp">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
@@ -30,29 +20,31 @@
                     <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="DomainMapping">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="contextPath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax24="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax22="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
             <xs:import namespace="http://exception.manager.stratos.apache.org/xsd"/>
             <xs:import namespace="http://signup.application.domain.messaging.stratos.apache.org/xsd"/>
-            <xs:element name="StratosManagerServiceArtifactDistributionCoordinatorException">
+            <xs:element name="canCartirdgeGroupBeRemoved">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ArtifactDistributionCoordinatorException" nillable="true" type="ax21:ArtifactDistributionCoordinatorException"/>
+                        <xs:element minOccurs="0" name="cartridgeGroupUuid" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="notifyArtifactUpdatedEventForSignUp">
+            <xs:element name="canCartirdgeGroupBeRemovedResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="notifyArtifactUpdatedEventForRepository">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -60,6 +52,51 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="ApplicationSignUpException" nillable="true" type="ax21:ApplicationSignUpException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addApplicationSignUp">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationSignUp" nillable="true" type="ax23:ApplicationSignUp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeApplicationSignUp">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationSignUp">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationSignUpResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="applicationSignUpExist">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="applicationSignUpExistResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -77,31 +114,31 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="canCartridgeBeRemoved">
+            <xs:element name="getApplicationSignUps">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="canCartridgeBeRemovedResponse">
+            <xs:element name="getApplicationSignUpsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="canCartirdgeGroupBeRemoved">
+            <xs:element name="StratosManagerServiceArtifactDistributionCoordinatorException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="ArtifactDistributionCoordinatorException" nillable="true" type="ax21:ArtifactDistributionCoordinatorException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="canCartirdgeGroupBeRemovedResponse">
+            <xs:element name="notifyArtifactUpdatedEventForRepository">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -116,70 +153,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="domainMapping" nillable="true" type="ax23:DomainMapping"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addUsedCartridgesInCartridgeGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeUsedCartridgesInCartridgeGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addUsedCartridgesInApplications">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeUsedCartridgesInApplications">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addUsedCartridgeGroupsInCartridgeSubGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeSubGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeSubGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addUsedCartridgeGroupsInApplications">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeUsedCartridgeGroupsInApplications">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -207,71 +180,98 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addApplicationSignUp">
+            <xs:element name="addUsedCartridgesInCartridgeGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationSignUp" nillable="true" type="ax23:ApplicationSignUp"/>
+                        <xs:element minOccurs="0" name="cartridgeGroupUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="applicationSignUpExist">
+            <xs:element name="removeUsedCartridgesInCartridgeGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="cartridgeGroupUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNamesUuid" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="applicationSignUpExistResponse">
+            <xs:element name="addUsedCartridgesInApplications">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeUsedCartridgesInApplications">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartridgeBeRemoved">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeUuid" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartridgeBeRemovedResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeApplicationSignUp">
+            <xs:element name="addUsedCartridgeGroupsInCartridgeSubGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeSubGroupUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeUsedCartridgeGroupsInCartridgeSubGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeSubGroupUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addUsedCartridgeGroupsInApplications">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeUsedCartridgeGroupsInApplications">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationUuid" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="notifyArtifactUpdatedEventForSignUp">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUp">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUpResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUps">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUpsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.manager.stratos.apache.org/xsd">
-            <xs:complexType name="ArtifactDistributionCoordinatorException">
+            <xs:complexType name="ApplicationSignUpException">
                 <xs:sequence/>
             </xs:complexType>
-            <xs:complexType name="ApplicationSignUpException">
+            <xs:complexType name="ArtifactDistributionCoordinatorException">
                 <xs:sequence/>
             </xs:complexType>
             <xs:complexType name="DomainMappingException">
@@ -279,15 +279,6 @@
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
-    <wsdl:message name="applicationSignUpExistRequest">
-        <wsdl:part name="parameters" element="ns:applicationSignUpExist"/>
-    </wsdl:message>
-    <wsdl:message name="applicationSignUpExistResponse">
-        <wsdl:part name="parameters" element="ns:applicationSignUpExistResponse"/>
-    </wsdl:message>
-    <wsdl:message name="StratosManagerServiceApplicationSignUpException">
-        <wsdl:part name="parameters" element="ns:StratosManagerServiceApplicationSignUpException"/>
-    </wsdl:message>
     <wsdl:message name="addUsedCartridgeGroupsInApplicationsRequest">
         <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInApplications"/>
     </wsdl:message>
@@ -296,6 +287,15 @@
     </wsdl:message>
     <wsdl:message name="canCartridgeBeRemovedResponse">
         <wsdl:part name="parameters" element="ns:canCartridgeBeRemovedResponse"/>
+    </wsdl:message>
+    <wsdl:message name="applicationSignUpExistRequest">
+        <wsdl:part name="parameters" element="ns:applicationSignUpExist"/>
+    </wsdl:message>
+    <wsdl:message name="applicationSignUpExistResponse">
+        <wsdl:part name="parameters" element="ns:applicationSignUpExistResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StratosManagerServiceApplicationSignUpException">
+        <wsdl:part name="parameters" element="ns:StratosManagerServiceApplicationSignUpException"/>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpsRequest">
         <wsdl:part name="parameters" element="ns:getApplicationSignUps"/>
@@ -373,17 +373,17 @@
         <wsdl:part name="parameters" element="ns:addApplicationSignUp"/>
     </wsdl:message>
     <wsdl:portType name="StratosManagerServicePortType">
-        <wsdl:operation name="applicationSignUpExist">
-            <wsdl:input message="ns:applicationSignUpExistRequest" wsaw:Action="urn:applicationSignUpExist"/>
-            <wsdl:output message="ns:applicationSignUpExistResponse" wsaw:Action="urn:applicationSignUpExistResponse"/>
-            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:applicationSignUpExistStratosManagerServiceApplicationSignUpException"/>
-        </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInApplications">
             <wsdl:input message="ns:addUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInApplications"/>
         </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <wsdl:input message="ns:canCartridgeBeRemovedRequest" wsaw:Action="urn:canCartridgeBeRemoved"/>
             <wsdl:output message="ns:canCartridgeBeRemovedResponse" wsaw:Action="urn:canCartridgeBeRemovedResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="applicationSignUpExist">
+            <wsdl:input message="ns:applicationSignUpExistRequest" wsaw:Action="urn:applicationSignUpExist"/>
+            <wsdl:output message="ns:applicationSignUpExistResponse" wsaw:Action="urn:applicationSignUpExistResponse"/>
+            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:applicationSignUpExistStratosManagerServiceApplicationSignUpException"/>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <wsdl:input message="ns:getApplicationSignUpsRequest" wsaw:Action="urn:getApplicationSignUps"/>
@@ -457,6 +457,18 @@
     </wsdl:portType>
     <wsdl:binding name="StratosManagerServiceSoap11Binding" type="ns:StratosManagerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="applicationSignUpExist">
+            <soap:operation soapAction="urn:applicationSignUpExist" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
+                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <soap:operation soapAction="urn:canCartridgeBeRemoved" style="document"/>
             <wsdl:input>
@@ -471,18 +483,6 @@
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
-        </wsdl:operation>
-        <wsdl:operation name="applicationSignUpExist">
-            <soap:operation soapAction="urn:applicationSignUpExist" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
-            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <soap:operation soapAction="urn:getApplicationSignUps" style="document"/>
@@ -640,6 +640,18 @@
     </wsdl:binding>
     <wsdl:binding name="StratosManagerServiceSoap12Binding" type="ns:StratosManagerServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="applicationSignUpExist">
+            <soap12:operation soapAction="urn:applicationSignUpExist" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
+                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <soap12:operation soapAction="urn:canCartridgeBeRemoved" style="document"/>
             <wsdl:input>
@@ -654,18 +666,6 @@
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
-        </wsdl:operation>
-        <wsdl:operation name="applicationSignUpExist">
-            <soap12:operation soapAction="urn:applicationSignUpExist" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
-            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <soap12:operation soapAction="urn:getApplicationSignUps" style="document"/>
@@ -823,6 +823,15 @@
     </wsdl:binding>
     <wsdl:binding name="StratosManagerServiceHttpBinding" type="ns:StratosManagerServicePortType">
         <http:binding verb="POST"/>
+        <wsdl:operation name="applicationSignUpExist">
+            <http:operation location="applicationSignUpExist"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
             <http:operation location="canCartridgeBeRemoved"/>
             <wsdl:input>
@@ -837,15 +846,6 @@
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-        </wsdl:operation>
-        <wsdl:operation name="applicationSignUpExist">
-            <http:operation location="applicationSignUpExist"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
             <http:operation location="getApplicationSignUps"/>

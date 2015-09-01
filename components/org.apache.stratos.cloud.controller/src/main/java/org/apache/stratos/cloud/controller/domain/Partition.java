@@ -36,11 +36,13 @@ public class Partition implements Serializable {
      * provider should match with an IaasProvider type.
      */
     private String provider;
-    private String id;
+    private String uuid;
+	private String id;
     private String description;
     private boolean isPublic;
     private Properties properties = new Properties();
     private int partitionMax;
+	private int tenantId;
 
     /**
      * Gets the value of the id property.
@@ -48,18 +50,18 @@ public class Partition implements Serializable {
      * @return possible object is
      * {@link String }
      */
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
     /**
      * Sets the value of the id property.
      *
-     * @param id allowed object is
+     * @param uuid allowed object is
      *           {@link String }
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     /**
@@ -126,13 +128,13 @@ public class Partition implements Serializable {
 
     @Override
     public String toString() {
-        return "Partition [id=" + id + ", description=" + description + ", isPublic=" + isPublic
+        return "Partition [id=" + uuid + ", description=" + description + ", isPublic=" + isPublic
                 + ", provider=" + provider + ", properties=" + properties + "]";
     }
 
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof Partition) {
-            return this.id.equals(((Partition) obj).getId());
+            return this.uuid.equals(((Partition) obj).getUuid());
         }
         return false;
 
@@ -140,7 +142,7 @@ public class Partition implements Serializable {
 
     @Override
     public int hashCode() {
-        return this.id.hashCode();
+        return this.uuid.hashCode();
     }
 
     public int getPartitionMax() {
@@ -150,4 +152,20 @@ public class Partition implements Serializable {
     public void setPartitionMax(int partitionMax) {
         this.partitionMax = partitionMax;
     }
+
+	public int getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(int tenantId) {
+		this.tenantId = tenantId;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

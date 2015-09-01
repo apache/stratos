@@ -29,7 +29,9 @@ import org.apache.stratos.common.test.TestLogAppender;
 import org.apache.stratos.integration.tests.application.SampleApplicationsTest;
 import org.apache.stratos.integration.tests.rest.IntegrationMockClient;
 import org.apache.stratos.integration.tests.rest.RestClient;
+import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
 import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
@@ -40,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -54,10 +57,18 @@ public class StratosTestServerManager extends TestServerManager {
     private final static int PORT_OFFSET = 0;
     private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
     private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
-    private static final String SCALING_DROOL_FILE = "scaling.drl";
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
     private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
-    protected RestClient restClient;
+    private static final String SUPER_ADMIN_USERNAME = "admin";
+    private static final String SUPER_ADMIN_PASSWD = "admin";
+    private static final String TENANT1_USER_NAME = "admin@test1.com";
+    private static final String TENANT1_PASSWD = "admin123";
+    private static final String TENANT2_USER_NAME = "admin@test2.com";
+    private static final String TENANT2_PASSWD = "admin123";
+
+    protected RestClient restClientAdmin;
+    protected RestClient restClientTenant1;
+    protected RestClient restClientTenant2;
     private String endpoint = "http://localhost:9763";
 
     private BrokerService broker = new BrokerService();
@@ -65,12 +76,17 @@ public class StratosTestServerManager extends TestServerManager {
     private ServerUtils serverUtils;
     private String carbonHome;
     protected IntegrationMockClient mockIaasApiClient;
+    protected int tenant1Id;
+    protected int tenant2Id;
 
     public StratosTestServerManager() {
         super(CARBON_ZIP, PORT_OFFSET);
         serverUtils = new ServerUtils();
-        restClient = new RestClient(endpoint, "admin", "admin");
+        restClientAdmin=new RestClient(endpoint, SUPER_ADMIN_USERNAME, SUPER_ADMIN_PASSWD);
+        restClientTenant1 = new RestClient(endpoint, TENANT1_USER_NAME, TENANT1_PASSWD);
+        restClientTenant2 = new RestClient(endpoint, TENANT2_USER_NAME, TENANT2_PASSWD);
         mockIaasApiClient = new IntegrationMockClient(endpoint + "/mock-iaas/api");
+
     }
 
     @Override
@@ -127,6 +143,7 @@ public class StratosTestServerManager extends TestServerManager {
 
                 long time4 = System.currentTimeMillis();
                 log.info(String.format("Stratos server started in %d sec", (time4 - time3) / 1000));
+                tenantCreation();
                 return carbonHome;
             }
         }
@@ -162,7 +179,6 @@ public class StratosTestServerManager extends TestServerManager {
     protected void copyArtifacts(String carbonHome) throws IOException {
         copyConfigFile(carbonHome, MOCK_IAAS_XML_FILE);
         copyConfigFile(carbonHome, JNDI_PROPERTIES_FILE);
-        copyConfigFile(carbonHome, SCALING_DROOL_FILE, "repository/conf/drools");
         copyConfigFile(carbonHome, JMS_OUTPUT_ADAPTER_FILE, "repository/deployment/server/outputeventadaptors");
     }
 
@@ -197,5 +213,23 @@ public class StratosTestServerManager extends TestServerManager {
             }
         }
         return false;
+    }
+
+
+    private void tenantCreation(){
+        log.info("Added tenants to the testing suit");
+        boolean addedTenant1=restClientAdmin.addEntity(RestConstants.TENANT1_RESOURCE,RestConstants.TENANT_API,RestConstants.TENANTS_NAME);
+        assertEquals(addedTenant1,true);
+        boolean addedTenant2=restClientAdmin.addEntity(RestConstants.TENANT2_RESOURCE,RestConstants.TENANT_API,RestConstants.TENANTS_NAME);
+        assertEquals(addedTenant2,true);
+
+    }
+
+    @BeforeClass
+    public void getTenantDetails(){
+        Tenant tenant1=(Tenant)restClientAdmin.getEntity(RestConstants.TENANT_API,RestConstants.TENANT1_GET_RESOURCE,Tenant.class,RestConstants.TENANTS_NAME);
+        tenant1Id=tenant1.getTenantId();
+        Tenant tenant2=(Tenant)restClientAdmin.getEntity(RestConstants.TENANT_API,RestConstants.TENANT2_GET_RESOURCE,Tenant.class,RestConstants.TENANTS_NAME);
+        tenant2Id=tenant2.getTenantId();
     }
 }

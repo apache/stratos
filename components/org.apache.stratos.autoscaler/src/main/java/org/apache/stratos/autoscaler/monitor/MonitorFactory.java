@@ -42,8 +42,6 @@ import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -220,22 +218,22 @@ public class MonitorFactory {
 
         //Retrieving the Cluster from Topology
         String clusterId = context.getId();
-        String serviceName = context.getServiceName();
+        String serviceUuid = context.getServiceUuid();
         Cluster cluster;
         //acquire read lock for the service and cluster
-        TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
+        TopologyManager.acquireReadLockForCluster(serviceUuid, clusterId);
         try {
             Topology topology = TopologyManager.getTopology();
-            Service service = topology.getService(serviceName);
+            Service service = topology.getService(serviceUuid);
             if (service == null) {
-                String msg = String.format("Service not found in topology: [service] %s", serviceName);
+                String msg = String.format("Service not found in topology: [service] %s", serviceUuid);
                 throw new RuntimeException(msg);
             }
 
             cluster = service.getCluster(clusterId);
             if (cluster == null) {
                 String msg = String.format("Cluster not found in topology: [service] %s [cluster] %s",
-                        serviceName, clusterId);
+                        serviceUuid, clusterId);
                 throw new RuntimeException(msg);
             }
             //Find whether any other instances exists in group
@@ -268,12 +266,12 @@ public class MonitorFactory {
                     try {
 
                         CloudControllerServiceClient.getInstance().
-                                validateNetworkPartitionOfDeploymentPolicy(serviceName,
-                                        networkPartitionRef.getId());
+                                validateNetworkPartitionOfDeploymentPolicy(serviceUuid,
+                                        networkPartitionRef.getUuid());
                     } catch (Exception e) {
                         String msg = String.format("Error while validating deployment policy " +
                                         "from cloud controller [network-partition-id] %s",
-                                networkPartitionRef.getId());
+                                networkPartitionRef.getUuid());
                         log.error(msg, e);
                         throw new RuntimeException(msg, e);
                     }
@@ -320,7 +318,7 @@ public class MonitorFactory {
 
             return clusterMonitor;
         } finally {
-            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
+            TopologyManager.releaseReadLockForCluster(serviceUuid, clusterId);
         }
     }
 

@@ -144,7 +144,7 @@ public class CloudControllerUtil {
                         iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
                     }
 
-                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getType(), iaasProvider);
+                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getUuid(), iaasProvider);
                 }
             }
         }
@@ -257,7 +257,7 @@ public class CloudControllerUtil {
     public static String getPartitionIds(Partition[] partitions) {
         StringBuilder str = new StringBuilder("");
         for (Partition partition : partitions) {
-            str.append(partition.getId() + ", ");
+            str.append(partition.getUuid() + ", ");
         }
 
         String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length() - 2);
@@ -270,17 +270,17 @@ public class CloudControllerUtil {
         if (kubernetesCluster == null) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster can not be null");
         }
-        if (StringUtils.isEmpty(kubernetesCluster.getClusterId())) {
+        if (StringUtils.isEmpty(kubernetesCluster.getClusterUuid())) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster groupId can not be empty");
         }
 
         if (kubernetesCluster.getKubernetesMaster() == null) {
             throw new InvalidKubernetesClusterException("Mandatory field master has not been set " +
-                    "for the Kubernetes cluster [id] " + kubernetesCluster.getClusterId());
+                    "for the Kubernetes cluster [id] " + kubernetesCluster.getClusterUuid());
         }
         if (kubernetesCluster.getPortRange() == null) {
             throw new InvalidKubernetesClusterException("Mandatory field portRange has not been set " +
-                    "for the Kubernetes cluster [id] " + kubernetesCluster.getClusterId());
+                    "for the Kubernetes cluster [id] " + kubernetesCluster.getClusterUuid());
         }
 
         // Port range validation
@@ -290,7 +290,7 @@ public class CloudControllerUtil {
                 kubernetesCluster.getPortRange().getLower() < CloudControllerConstants.PORT_RANGE_MIN ||
                 kubernetesCluster.getPortRange().getUpper() < kubernetesCluster.getPortRange().getLower()) {
             throw new InvalidKubernetesClusterException("Port range is invalid in kubernetes cluster " +
-                    "[kubenetes-cluster-id] " + kubernetesCluster.getClusterId() + " " +
+                    "[kubenetes-cluster-id] " + kubernetesCluster.getClusterUuid() + " " +
                     " [valid-min] " + CloudControllerConstants.PORT_RANGE_MIN + " [valid-max] " +
                     CloudControllerConstants.PORT_RANGE_MAX);
         }

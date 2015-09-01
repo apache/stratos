@@ -27,7 +27,8 @@ import java.util.List;
 public class CartridgeGroupReferenceBean implements Serializable {
 
     private static final long serialVersionUID = 7261380706841894892L;
-
+    private String uuid;
+    private int tenantId;
     private String name;
     private String alias;
     private int groupMinInstances;
@@ -35,6 +36,22 @@ public class CartridgeGroupReferenceBean implements Serializable {
     private String deploymentPolicy;
     private List<CartridgeReferenceBean> cartridges;
     private List<CartridgeGroupReferenceBean> groups;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public String getName() {
         return name;
