@@ -43,24 +43,28 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
     @Test
     public void testApplicationBusting() {
         try {
-            log.info("-------------------------------Started application Bursting test case-------------------------------");
+            log.info("----------------------------Started application Bursting test case----------------------------");
 
             String autoscalingPolicyId = "autoscaling-policy-application-bursting-test";
 
-            boolean addedScalingPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                            + "/" + autoscalingPolicyId + ".json",
-                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+            boolean addedScalingPolicy =
+                    restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
+                                    + "/" + autoscalingPolicyId + ".json",
+                            RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
+            boolean addedC1 = restClientTenant1.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC1, true);
 
-            boolean addedC2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
+            boolean addedC2 = restClientTenant1.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC2, true);
 
-            boolean addedC3 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
+            boolean addedC3 = restClientTenant1.addEntity(
+                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat-application-bursting-test.json",
                     RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
             assertEquals(addedC3, true);
 
@@ -84,9 +88,10 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(addedN2, true);
 
-            boolean addedDep = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                            "deployment-policy-application-bursting-test.json",
-                    RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
+            boolean addedDep =
+                    restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+                                    "deployment-policy-application-bursting-test.json",
+                            RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
             assertEquals(addedDep, true);
 
             boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
@@ -98,9 +103,11 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(bean.getApplicationId(), "application-bursting-test");
 
-            boolean addAppPolicy = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                            "application-policy-application-bursting-test.json", RestConstants.APPLICATION_POLICIES,
-                    RestConstants.APPLICATION_POLICIES_NAME);
+            boolean addAppPolicy =
+                    restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+                                    "application-policy-application-bursting-test.json",
+                            RestConstants.APPLICATION_POLICIES,
+                            RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(addAppPolicy, true);
 
             ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClientTenant1.getEntity(
@@ -125,8 +132,9 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
             //Cluster active handling
             TopologyHandler.getInstance().assertClusterActivation(bean.getApplicationId(), tenant1Id);
 
-            boolean removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
+            boolean removedGroup = restClientTenant1
+                    .removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
+                            RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(removedGroup, false);
 
             boolean removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
@@ -151,7 +159,8 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(unDeployed, true);
 
-            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", tenant1Id);
+            boolean undeploy = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test",
+                    tenant1Id);
             if (!undeploy) {
                 //Need to forcefully undeploy the application
                 log.info("Force undeployment is going to start for the [application] " + "application-bursting-test");
@@ -159,7 +168,8 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                 restClientTenant1.undeployEntity(RestConstants.APPLICATIONS + "/" + "application-bursting-test" +
                         RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy("application-bursting-test", tenant1Id);
+                boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy(
+                        "application-bursting-test", tenant1Id);
                 assertEquals(String.format("Forceful undeployment failed for the application %s",
                         "application-bursting-test"), forceUndeployed, true);
 
@@ -173,20 +183,24 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     "application-bursting-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(beanRemoved, null);
 
-            removedGroup = restClientTenant1.removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
+            removedGroup = restClientTenant1
+                    .removeEntity(RestConstants.CARTRIDGE_GROUPS, "esb-php-group-application-bursting-test",
+                            RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(removedGroup, true);
 
-            boolean removedC1 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "esb-application-bursting-test",
-                    RestConstants.CARTRIDGES_NAME);
+            boolean removedC1 =
+                    restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "esb-application-bursting-test",
+                            RestConstants.CARTRIDGES_NAME);
             assertEquals(removedC1, true);
 
-            boolean removedC2 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "php-application-bursting-test",
-                    RestConstants.CARTRIDGES_NAME);
+            boolean removedC2 =
+                    restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "php-application-bursting-test",
+                            RestConstants.CARTRIDGES_NAME);
             assertEquals(removedC2, true);
 
-            boolean removedC3 = restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "tomcat-application-bursting-test",
-                    RestConstants.CARTRIDGES_NAME);
+            boolean removedC3 =
+                    restClientTenant1.removeEntity(RestConstants.CARTRIDGES, "tomcat-application-bursting-test",
+                            RestConstants.CARTRIDGES_NAME);
             assertEquals(removedC3, true);
 
             removedAuto = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
@@ -217,12 +231,12 @@ public class ApplicationBurstingTest extends StratosTestServerManager {
                     "network-partition-application-bursting-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
             assertEquals(removedN2, true);
 
-            log.info("-------------------------------Ended application bursting test case-------------------------------");
+            log.info("----------------------------Ended application bursting test case----------------------------");
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error("An error occurred while handling  application bursting", e);
             assertTrue("An error occurred while handling  application bursting", false);
         }
     }
 }
-
