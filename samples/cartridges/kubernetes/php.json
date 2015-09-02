@@ -12,7 +12,7 @@
         {
             "name": "http-80",
             "protocol": "http",
-            "port": "80",
+            "port": "22",
             "proxyPort": "8281",
             "kubernetesPortType":"NodePort"
         }
@@ -23,7 +23,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/php:4.1.",
+            "imageId": "stratos/php:4.1.2",
             "networkInterfaces": [
             ],
             "property": [
