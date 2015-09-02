@@ -86,9 +86,9 @@
             <class name="org.apache.stratos.integration.tests.application.GroupStartupOrderTest"/>
         </classes>
     </test>
-    <test name="GroupTerminationBehaviorTest">
+    <!--test name="GroupTerminationBehaviorTest">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest"/>
         </classes>
-    </test>
+    </test-->
 </suite>
