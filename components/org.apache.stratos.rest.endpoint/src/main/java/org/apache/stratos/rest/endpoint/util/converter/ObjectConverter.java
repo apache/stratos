@@ -20,6 +20,8 @@
 package org.apache.stratos.rest.endpoint.util.converter;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
@@ -69,6 +71,8 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 public class ObjectConverter {
+
+    private static final Log log = LogFactory.getLog(ObjectConverter.class);
 
     public static final String CLUSTER_PROPERTY = "cluster";
 
@@ -700,7 +704,7 @@ public class ObjectConverter {
     }
 
     public static ClusterInstanceBean convertClusterToClusterInstanceBean(String instanceId,
-                                                                          Cluster cluster, String alias) {
+                                                                          Cluster cluster, String alias) throws RestAPIException {
         ClusterInstanceBean clusterInstanceBean = new ClusterInstanceBean();
         clusterInstanceBean.setAlias(alias);
         clusterInstanceBean.setServiceName(cluster.getServiceName());
@@ -721,8 +725,24 @@ public class ObjectConverter {
                 MemberBean memberBean = new MemberBean();
                 memberBean.setClusterId(member.getClusterId());
                 memberBean.setLbClusterId(member.getLbClusterId());
-                memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
-                memberBean.setPartitionId(member.getPartitionId());
+                NetworkPartition netWorkPartition=null;
+                try {
+                    netWorkPartition= CloudControllerServiceClient.getInstance().getNetworkPartition(member.getNetworkPartitionId());
+                } catch (RemoteException e) {
+                    log.error("Error when getting the network partition");
+                    throw new RestAPIException(e);
+                }
+
+                if(netWorkPartition!=null) {
+                   memberBean.setNetworkPartitionId(netWorkPartition.getId());
+                   Partition[] partition = netWorkPartition.getPartitions();
+                   for(int i=0;i<partition.length;i++){
+                       if(partition[i].getUuid().equals(member.getPartitionId())){
+                           memberBean.setPartitionId(partition[i].getId());
+                       }
+                   }
+                }
+
                 memberBean.setMemberId(member.getMemberId());
                 memberBean.setClusterInstanceId(member.getClusterInstanceId());
                 memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());

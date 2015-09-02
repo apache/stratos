@@ -2098,7 +2098,7 @@ public class StratosApiV41Utils {
      * @param application             Application
      */
     private static void addGroupsInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,
-                                                                    Application application) {
+                                                                    Application application) throws RestAPIException {
         Collection<Group> groups = application.getGroups();
         if (groups != null && !groups.isEmpty()) {
             for (Group group : groups) {
@@ -2120,7 +2120,7 @@ public class StratosApiV41Utils {
      * @param application             Application
      */
     private static void addClustersInstancesToApplicationInstanceBean(
-            ApplicationInstanceBean applicationInstanceBean, Application application) {
+            ApplicationInstanceBean applicationInstanceBean, Application application) throws RestAPIException {
 
         Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
         if (topLevelClusterDataMap != null) {
@@ -2150,7 +2150,7 @@ public class StratosApiV41Utils {
      */
     private static void addClustersInstancesToGroupInstanceBean(
             GroupInstanceBean groupInstanceBean,
-            Group group) {
+            Group group) throws RestAPIException {
         Map<String, ClusterDataHolder> topLevelClusterDataMap = group.getClusterDataMap();
         if (topLevelClusterDataMap != null && !topLevelClusterDataMap.isEmpty()) {
             for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
@@ -2177,7 +2177,7 @@ public class StratosApiV41Utils {
      * @param group             Group
      * @param groupInstanceBean GroupInstanceBean
      */
-    private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
+    private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) throws RestAPIException {
         Collection<Group> subgroups = group.getGroups();
         addClustersInstancesToGroupInstanceBean(groupInstanceBean, group);
         if (subgroups != null && !subgroups.isEmpty()) {
