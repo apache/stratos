@@ -36,6 +36,8 @@ import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionC
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 
 /**
@@ -43,10 +45,12 @@ import org.apache.stratos.common.constants.StratosConstants;
  */
 public class RuleTasksDelegator {
 
-    private static final Log log = LogFactory.getLog(RuleTasksDelegator.class);
     private static boolean arspiIsSet = false;
 
-    public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative, int timeInterval) {
+    private static final Log log = LogFactory.getLog(RuleTasksDelegator.class);
+
+    public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative,
+                                                 int timeInterval) {
         double predictedValue;
 //        s = u * t + 0.5 * a * t * t
         if (log.isDebugEnabled()) {
@@ -61,7 +65,8 @@ public class RuleTasksDelegator {
 
     public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float rifThreshold) {
 
-        if (rifThreshold > 0) {
+        if (rifThreshold != 0) {
+
             float requiredNumberOfInstances = rifPredictedValue / rifThreshold;
             return (int) Math.ceil(requiredNumberOfInstances);
         } else {
@@ -171,12 +176,22 @@ public class RuleTasksDelegator {
      * @param clusterMonitorPartitionContext Cluster monitor partition context
      * @param clusterId                      Cluster id
      * @param clusterInstanceId              Instance id
+     * @param isPrimary                      Is a primary member
+     * @param autoscalingReason              scaling reason for member
+     * @param scalingTime                    scaling time
      */
     public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId,
-                              String clusterInstanceId) {
+                              String clusterInstanceId, boolean isPrimary, String autoscalingReason, long scalingTime) {
 
         try {
             String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
+            String nwPartitionUuid = null;
+            NetworkPartition[] networkPartitionList = CloudControllerServiceClient.getInstance().getNetworkPartitions();
+            for (int i = 0; i < networkPartitionList.length; i++) {
+                if (networkPartitionList[i].getUuid().equals(nwPartitionId)) {
+                    nwPartitionUuid = networkPartitionList[i].getUuid();
+                }
+            }
 
             // Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition;
@@ -194,14 +209,16 @@ public class RuleTasksDelegator {
                             .startInstance(clusterMonitorPartitionContext.getPartition(),
                                     clusterId,
                                     clusterInstanceId, clusterMonitorPartitionContext.getNetworkPartitionId(),
-                                    minimumCountOfNetworkPartition);
+                                    isPrimary,
+                                    minimumCountOfNetworkPartition, autoscalingReason, scalingTime);
             if (memberContext != null) {
                 ClusterLevelPartitionContext partitionContext = clusterInstanceContext.
                         getPartitionCtxt(clusterMonitorPartitionContext.getPartitionId());
                 partitionContext.addPendingMember(memberContext);
                 partitionContext.addMemberStatsContext(new MemberStatsContext(memberContext.getMemberId()));
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
+                    log.debug(String.format("Pending member added, [member] %s [partition] %s",
+                            memberContext.getMemberId(),
                             memberContext.getPartition().getId()));
                 }
 
@@ -240,7 +257,8 @@ public class RuleTasksDelegator {
         clusterMonitor.sendScalingOverMaxEvent(networkPartitionId, instanceId);
     }
 
-    public void delegateScalingDownBeyondMinNotification(String clusterId, String networkPartitionId, String instanceId) {
+    public void delegateScalingDownBeyondMinNotification(String clusterId, String networkPartitionId,
+                                                         String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Scaling down lower min notification is going to the [parentInstance] " + instanceId);
         }
@@ -263,8 +281,8 @@ public class RuleTasksDelegator {
                 clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
 
-                log.info(String.format("[scale-down] Moving pending member to termination pending list [member id] %s " +
-                                "[partition] %s [network partition] %s", memberId,
+                log.info(String.format("[scale-down] Moving pending member to termination pending list " +
+                                "[member id] %s " + "[partition] %s [network partition] %s", memberId,
                         clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
@@ -275,7 +293,8 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateTerminateDependency(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
+    public void delegateTerminateDependency(ClusterLevelPartitionContext clusterMonitorPartitionContext,
+                                            String memberId) {
         try {
             //calling SM to send the instance notification event.
             if (log.isDebugEnabled()) {
@@ -360,7 +379,8 @@ public class RuleTasksDelegator {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();
                 float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();
-                float memberMemoryConsumptionSecondDerivative = memberStatsContext.getMemoryConsumption().getSecondDerivative();
+                float memberMemoryConsumptionSecondDerivative =
+                        memberStatsContext.getMemoryConsumption().getSecondDerivative();
 
                 double memberPredictedMemoryConsumption = getPredictedValueForNextMinute(memberMemoryConsumptionAverage,
                         memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);

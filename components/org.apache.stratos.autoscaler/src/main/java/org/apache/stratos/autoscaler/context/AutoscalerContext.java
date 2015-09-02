@@ -153,10 +153,12 @@ public class AutoscalerContext {
     }
 
     public void addApplicationContext(ApplicationContext applicationContext) {
-        applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        applicationContextMap.put(applicationContext.getApplicationUuid(), applicationContext);
+        RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 
     public ApplicationContext removeApplicationContext(String applicationId) {
+        RegistryManager.getInstance().removeApplicationContext(applicationId);
         return applicationContextMap.remove(applicationId);
     }
 
@@ -164,12 +166,23 @@ public class AutoscalerContext {
         return applicationContextMap.get(applicationId);
     }
 
+    public ApplicationContext getApplicationContextByTenant(String applicationId, int tenantId) {
+        ApplicationContext applicationContext = null;
+        for (ApplicationContext applicationContext1 : getApplicationContexts()) {
+            if (applicationContext1.getTenantId() == tenantId && applicationContext1.getApplicationId().equals
+                    (applicationId)) {
+                applicationContext = applicationContext1;
+            }
+        }
+        return applicationContext;
+    }
+
     public Collection<ApplicationContext> getApplicationContexts() {
         return applicationContextMap.values();
     }
 
     public void updateApplicationContext(ApplicationContext applicationContext) {
-        applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        applicationContextMap.put(applicationContext.getApplicationUuid(), applicationContext);
         RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 

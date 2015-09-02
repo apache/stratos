@@ -44,6 +44,8 @@ global org.apache.stratos.autoscaler.context.AutoscalerContext context;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
+global java.lang.Boolean isPrimary;
+global Integer primaryMemberCount;
 global java.lang.String algorithmName;
 
 rule "Minimum Rule"
@@ -57,13 +59,20 @@ dialect "mvel"
         eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " Non terminated member count: " + clusterInstanceContext.getNonTerminatedMemberCount()))
         eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " Minimum member count: " + clusterInstanceContext.getMinInstanceCount()))
 
-        eval ( (clusterInstanceContext.getNonTerminatedMemberCount() < clusterInstanceContext.getMinInstanceCount()))
+        eval ( (isPrimary && (primaryMemberCount < clusterInstanceContext.getMinInstanceCount())) || ( !isPrimary && (clusterInstanceContext.getNonTerminatedMemberCount() < clusterInstanceContext.getMinInstanceCount())) )
 
     then
 
         int additionalInstances = 0;
-        additionalInstances = clusterInstanceContext.getMinInstanceCount() - clusterInstanceContext.getNonTerminatedMemberCount();
-        log.debug("[min-check] true [non terminated member count] " + clusterInstanceContext.getNonTerminatedMemberCount()+ " [cluster] " + clusterId);
+        if(isPrimary){
+
+            additionalInstances = clusterInstanceContext.getMinInstanceCount() - primaryMemberCount;
+            log.debug("[min-check] true [primary] true [primary member count] " + primaryMemberCount + " [cluster] " + clusterId);
+        } else {
+
+            additionalInstances = clusterInstanceContext.getMinInstanceCount() - clusterInstanceContext.getNonTerminatedMemberCount();
+            log.debug("[min-check] true [primary] false [non terminated member count] " + clusterInstanceContext.getNonTerminatedMemberCount()+ " [cluster] " + clusterId);
+        }
 
         int count = 0;
         boolean partitionsAvailable = true;
@@ -75,11 +84,14 @@ dialect "mvel"
 
                 log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterId);
                 log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId);
-                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId());
+                long scalingTime = System.currentTimeMillis();
+                String scalingReason = "Scaling up to fulfil minimum count, [Cluster Min Members] "+clusterInstanceContext.getMinInstanceCount()+" [Additional instances to be created] " + additionalInstances;
+                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary,scalingReason,scalingTime);
+
 
                 count++;
             } else {
-                log.warn("[min-check] Partition is not available to fulfil minimum count!" + " [cluster] " + clusterId);
+
                 partitionsAvailable = false;
             }
         }

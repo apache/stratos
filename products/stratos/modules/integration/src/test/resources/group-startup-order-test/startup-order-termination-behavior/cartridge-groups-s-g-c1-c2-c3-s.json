@@ -1,0 +1,26 @@
+{
+  "name": "s-g-c1-c2-c3-s",
+  "dependencies": {
+    "terminationBehaviour": "terminate-none",
+    "startupOrders": [
+      {
+        "aliases": [
+          "cartridge.c3-0x0",
+          "cartridge.c2-0x0"
+        ]
+      },
+      {
+        "aliases": [
+          "cartridge.c2-0x0",
+          "cartridge.c1-0x0"
+        ]
+      }
+    ]
+  },
+  "cartridges": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "groups": []
+}

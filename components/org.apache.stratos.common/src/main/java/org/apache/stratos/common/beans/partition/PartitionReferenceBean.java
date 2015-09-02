@@ -27,17 +27,18 @@ import java.util.List;
 @XmlRootElement
 public class PartitionReferenceBean {
 
-    private String id;
+    private String uuid;
+	private String id;
     private String description;
     private List<PropertyBean> property;
     private int partitionMax;
 
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getDescription() {
@@ -63,4 +64,12 @@ public class PartitionReferenceBean {
     public void setPartitionMax(int partitionMax) {
         this.partitionMax = partitionMax;
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

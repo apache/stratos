@@ -20,7 +20,8 @@
 package org.apache.stratos.common.test;
 
 import junit.framework.TestCase;
-import org.apache.stratos.common.statistics.publisher.wso2.cep.ThriftClientConfig;
+import org.apache.stratos.common.statistics.publisher.ThriftClientConfig;
+import org.apache.stratos.common.statistics.publisher.ThriftClientInfo;
 import org.junit.Test;
 
 import java.net.URL;
@@ -41,11 +42,21 @@ public class ThriftClientConfigParserTest extends TestCase {
         URL configFileUrl = ThriftClientConfigParserTest.class.getResource("/thrift-client-config.xml");
         System.setProperty(ThriftClientConfig.THRIFT_CLIENT_CONFIG_FILE_PATH, configFileUrl.getPath());
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
-        thriftClientConfig.getThriftClientInfo();
+        ThriftClientInfo cepThriftClientInfo = thriftClientConfig.getThriftClientInfo(
+                ThriftClientConfig.CEP_THRIFT_CLIENT_NAME);
+        ThriftClientInfo dasThriftClientInfo = thriftClientConfig.getThriftClientInfo(
+                ThriftClientConfig.DAS_THRIFT_CLIENT_NAME);
 
-        assertEquals("Incorrect Password", "admin", thriftClientConfig.getThriftClientInfo().getUsername());
-        assertEquals("Incorrect Password", "1234", thriftClientConfig.getThriftClientInfo().getPassword());
-        assertEquals("Incorrect IP", "192.168.10.10", thriftClientConfig.getThriftClientInfo().getIp());
-        assertEquals("Incorrect Port", "9300", thriftClientConfig.getThriftClientInfo().getPort());
+        assertEquals("CEP Stats Publisher not enabled",true,cepThriftClientInfo.isStatsPublisherEnabled());
+        assertEquals("Incorrect Username", "admin", cepThriftClientInfo.getUsername());
+        assertEquals("Incorrect Password", "1234", cepThriftClientInfo.getPassword());
+        assertEquals("Incorrect IP", "192.168.10.10", cepThriftClientInfo.getIp());
+        assertEquals("Incorrect Port", "9300", cepThriftClientInfo.getPort());
+
+        assertEquals("DAS Stats Publisher not enabled",true,dasThriftClientInfo.isStatsPublisherEnabled());
+        assertEquals("Incorrect Username", "admin1", dasThriftClientInfo.getUsername());
+        assertEquals("Incorrect Password", "12345", dasThriftClientInfo.getPassword());
+        assertEquals("Incorrect IP", "192.168.10.11", dasThriftClientInfo.getIp());
+        assertEquals("Incorrect Port", "9301", dasThriftClientInfo.getPort());
     }
 }

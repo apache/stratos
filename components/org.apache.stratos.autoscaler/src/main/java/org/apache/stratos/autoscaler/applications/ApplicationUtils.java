@@ -37,11 +37,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ApplicationUtils {
+    private static final Log log = LogFactory.getLog(ApplicationUtils.class);
+
     public static final String TOKEN_PAYLOAD_PARAM_NAME = "TOKEN";
     public static final String DEPLOYMENT = "DEPLOYMENT";
     private static final String PORT_SEPARATOR="|";
     public static final String PAYLOAD_PARAMETER = "payload_parameter.";
-    private static final Log log = LogFactory.getLog(ApplicationUtils.class);
     public static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
     public static boolean isAliasValid(String alias) {
@@ -261,7 +262,8 @@ public class ApplicationUtils {
         basicPayloadData.setMultitenant(String.valueOf(cartridge.getMultiTenant()));
         basicPayloadData.setPorts(createPortsToPayloadString(cartridge));
         basicPayloadData.setPortMappings(createPortMappingsToPayloadString(cartridge));
-        basicPayloadData.setServiceName(cartridge.getType());
+        basicPayloadData.setServiceName(cartridge.getUuid());
+        basicPayloadData.setServiceType(cartridge.getType());
         basicPayloadData.setProvider(cartridge.getProvider());
         basicPayloadData.setLvsVirtualIP(lvsVirtualIP);
 

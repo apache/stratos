@@ -428,9 +428,9 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         this.deploymentPolicy = deploymentPolicy;
     }
 
-    public String getNextInstanceId(String alias) {
+    public String getNextInstanceId(String appUuid) {
         int nextSequence = instanceIdSequence.incrementAndGet();
-        String instanceId = alias + "-" + nextSequence;
+        String instanceId = appUuid + "-" + nextSequence;
         return instanceId;
     }
 

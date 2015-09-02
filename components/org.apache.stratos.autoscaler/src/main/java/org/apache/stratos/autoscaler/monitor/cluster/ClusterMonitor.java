@@ -84,21 +84,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ClusterMonitor extends Monitor {
 
-    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private final ScheduledExecutorService scheduler;
     private final ExecutorService executorService;
+
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;
     protected String serviceType;
     protected String clusterId;
     // future to cancel it when destroying monitors
     private ScheduledFuture<?> schedulerFuture;
+    protected String serviceUuid;
     private AtomicBoolean monitoringStarted;
+
     private Cluster cluster;
     private int monitoringIntervalMilliseconds;
     //has scaling dependents
     private boolean hasScalingDependents;
     private boolean groupScalingEnabledSubtree;
+
+    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
+    private boolean hasPrimary;
     private String deploymentPolicyId;
 
 
@@ -113,31 +118,10 @@ public class ClusterMonitor extends Monitor {
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
-        this.serviceType = cluster.getServiceName();
+        this.serviceUuid = cluster.getServiceName();
         this.monitoringStarted = new AtomicBoolean(false);
         this.hasScalingDependents = hasScalingDependents;
         this.deploymentPolicyId = deploymentPolicyId;
-    }
-
-    private static void createClusterInstance(String serviceType,
-                                              String clusterId, String alias, String instanceId,
-                                              String partitionId, String networkPartitionId) {
-
-        try {
-            CloudControllerServiceClient.getInstance().createClusterInstance(
-                    serviceType, clusterId, alias, instanceId, partitionId,
-                    networkPartitionId);
-        } catch (RemoteException e) {
-            String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId
-                    + "] instance-id [" + instanceId + "] service-type [" + serviceType + "]"
-                    + "] alias [" + alias + "] partition-id [" + partitionId + "]"
-                    + "] network-parition-id [" + networkPartitionId + "]"
-                    + " .Reason [" + e.getMessage() + "]";
-            log.error(msg);
-            throw new RuntimeException(msg, e);
-        }
-
-
     }
 
     @Override
@@ -227,7 +211,7 @@ public class ClusterMonitor extends Monitor {
     }
 
     public String getServiceId() {
-        return serviceType;
+        return serviceUuid;
     }
 
     protected int getRoundedInstanceCount(float requiredInstances, float fraction) {
@@ -263,6 +247,27 @@ public class ClusterMonitor extends Monitor {
     public boolean groupScalingEnabledSubtree() {
 
         return groupScalingEnabledSubtree;
+    }
+
+    private static void createClusterInstance(String serviceUuid,
+                                              String clusterId, String alias, String instanceId,
+                                              String partitionId, String networkPartitionId) {
+
+        try {
+            CloudControllerServiceClient.getInstance().createClusterInstance(
+                    serviceUuid, clusterId, alias, instanceId, partitionId,
+                    networkPartitionId);
+        } catch (RemoteException e) {
+            String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId
+                    + "] instance-id [" + instanceId + "] service-type [" + serviceUuid + "]"
+                    + "] alias [" + alias + "] partition-id [" + partitionId + "]"
+                    + "] network-parition-id [" + networkPartitionId + "]"
+                    + " .Reason [" + e.getMessage() + "]";
+            log.error(msg);
+            throw new RuntimeException(msg, e);
+        }
+
+
     }
 
     public void handleAverageLoadAverageEvent(
@@ -306,6 +311,25 @@ public class ClusterMonitor extends Monitor {
         }
     }
 
+    private boolean isPrimaryMember(MemberContext memberContext) {
+        Properties props = AutoscalerObjectConverter.convertCCPropertiesToProperties(memberContext.getProperties());
+        if (log.isDebugEnabled()) {
+            log.debug(" Properties [" + props + "] ");
+        }
+        if (props != null && props.getProperties() != null) {
+            for (Property prop : props.getProperties()) {
+                if (prop.getName().equals("PRIMARY")) {
+                    if (Boolean.parseBoolean(prop.getValue())) {
+                        log.debug("Adding member id [" + memberContext.getMemberId() + "] " +
+                                "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public synchronized void monitor() {
 
         try {
@@ -331,8 +355,31 @@ public class ClusterMonitor extends Monitor {
                                     log.debug(String.format("Cluster monitor is running: [application-id] %s [cluster-id]: " +
                                             "%s", getAppId(), getClusterId()));
                                 }
+                                // store primary members in the cluster instance context
+                                List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
 
+                                for (ClusterLevelPartitionContext partitionContext :
+                                        instanceContext.getPartitionCtxts()) {
+
+                                    // get active primary members in this cluster instance context
+                                    for (MemberContext memberContext : partitionContext.getActiveMembers()) {
+                                        if (isPrimaryMember(memberContext)) {
+                                            primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                                        }
+                                    }
+
+                                    // get pending primary members in this cluster instance context
+                                    for (MemberContext memberContext : partitionContext.getPendingMembers()) {
+                                        if (isPrimaryMember(memberContext)) {
+                                            primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                                        }
+                                    }
+                                }
+
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("primaryMemberCount",
+                                        primaryMemberListInClusterInstance.size());
                                 instanceContext.getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 //FIXME when parent chosen the partition
                                 String paritionAlgo = instanceContext.getPartitionAlgorithm();
 
@@ -347,7 +394,14 @@ public class ClusterMonitor extends Monitor {
                                 instanceContext.setMinCheckFactHandle(evaluate(instanceContext.
                                                 getMinCheckKnowledgeSession(),
                                         instanceContext.getMinCheckFactHandle(), instanceContext));
+
+
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("primaryMemberCount",
+                                        primaryMemberListInClusterInstance.size());
                                 instanceContext.getMaxCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                                instanceContext.getMaxCheckKnowledgeSession().setGlobal("primaryMembers",
+                                        primaryMemberListInClusterInstance);
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running max check for cluster instance %s ",
                                             instanceContext.getId() + " for the cluster: " + clusterId));
@@ -381,11 +435,20 @@ public class ClusterMonitor extends Monitor {
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("algorithmName", paritionAlgo);
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
                                             clusterContext.getAutoscalePolicy());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("arspiReset",
                                             averageRequestServedPerInstanceReset);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("primaryMembers",
+                                            primaryMemberListInClusterInstance);
+
+                                    if (log.isDebugEnabled()) {
+                                        log.debug(String.format("Running scale check for [cluster instance context] %s ",
+                                                instanceContext.getId()));
+                                        log.debug(" Primary members : " + primaryMemberListInClusterInstance);
+                                    }
 
                                     instanceContext.setScaleCheckFactHandle(evaluate(
                                             instanceContext.getScaleCheckKnowledgeSession()
@@ -405,25 +468,6 @@ public class ClusterMonitor extends Monitor {
                         executorService.execute(monitoringRunnable);
                     }
 
-                    if (instance.getStatus() == ClusterStatus.Terminating) {
-                        //Move active members to Termination pending
-                        if (instanceContext.getActiveMembers() > 0) {
-                            //Sending cluster cleanup event
-                            InstanceNotificationPublisher.getInstance().
-                                    sendInstanceCleanupEventForCluster(clusterId,
-                                            instance.getInstanceId());
-                            moveMembersToTerminatingPending(networkPartitionContext.getId(),
-                                    instance.getInstanceId());
-                        }
-
-                        if (instanceContext.getPendingMemberCount() > 0) {
-                            //Terminating the pending members
-                            terminatePendingMembers(networkPartitionContext.getId(),
-                                    instance.getInstanceId());
-                        }
-
-                    }
-
                     for (final ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
                         Runnable monitoringRunnable = new Runnable() {
                             @Override
@@ -437,7 +481,7 @@ public class ClusterMonitor extends Monitor {
                                         && partitionContext.getTerminationPendingMembers().size() == 0
                                         && partitionContext.getObsoletedMembers().size() == 0) {
 
-                                    instanceContext.removePartitionCtxt(partitionContext.getPartition().getId());
+                                    instanceContext.removePartitionCtxt(partitionContext.getPartition().getUuid());
                                 }
                             }
                         };
@@ -478,13 +522,21 @@ public class ClusterMonitor extends Monitor {
     @Override
     public void destroy() {
         //shutting down the scheduler
-        if (schedulerFuture != null) {
-            schedulerFuture.cancel(true);
-        }
+        schedulerFuture.cancel(true);
 
         if (log.isDebugEnabled()) {
             log.debug("ClusterMonitor task has been stopped " + this.toString());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ClusterMonitor [clusterId=" + getClusterId() +
+                ", hasPrimary=" + hasPrimary + " ]";
+    }
+
+    public void setHasPrimary(boolean hasPrimary) {
+        this.hasPrimary = hasPrimary;
     }
 
     @Override
@@ -493,26 +545,17 @@ public class ClusterMonitor extends Monitor {
     }
 
     @Override
-    public void onParentStatusEvent(final MonitorStatusEvent statusEvent) {
-        Runnable monitoringRunnable = new Runnable() {
-            @Override
-            public void run() {
-                String instanceId = statusEvent.getInstanceId();
-                // send the ClusterTerminating event
-                if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-                        ApplicationStatus.Terminating) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster terminating event for [application] " + appId +
-                                " [cluster] " + getClusterId() + " [instance] " + instanceId);
-                    }
-                    ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(getAppId(),
-                            getServiceId(), getClusterId(), instanceId);
-                }
+    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
+        String instanceId = statusEvent.getInstanceId();
+        // send the ClusterTerminating event
+        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                ApplicationStatus.Terminating) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing Cluster terminating event for [application] " + appId +
+                        " [cluster] " + this.getClusterId() + " [instance] " + instanceId);
             }
-
-        };
-        executorService.execute(monitoringRunnable);
-
+            ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
+        }
     }
 
     @Override
@@ -541,6 +584,28 @@ public class ClusterMonitor extends Monitor {
         ClusterInstanceContext clusterInstanceContext =
                 getClusterInstanceContext(scalingEvent.getNetworkPartitionId(), instanceId);
 
+
+        // store primary members in the cluster instance context
+        List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
+
+        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts()) {
+
+            // get active primary members in this cluster instance context
+            for (MemberContext memberContext : partitionContext.getActiveMembers()) {
+                if (isPrimaryMember(memberContext)) {
+                    primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                }
+            }
+
+            // get pending primary members in this cluster instance context
+            for (MemberContext memberContext : partitionContext.getPendingMembers()) {
+                if (isPrimaryMember(memberContext)) {
+                    primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                }
+            }
+        }
+
+
         //TODO get min instance count from instance context
         float requiredInstanceCount = clusterInstanceContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
         int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount,
@@ -550,6 +615,8 @@ public class ClusterMonitor extends Monitor {
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
         clusterInstanceContext.setDependentScaleCheckFactHandle(evaluate(
                 clusterInstanceContext.getDependentScaleCheckKnowledgeSession()
                 , clusterInstanceContext.getDependentScaleCheckFactHandle(), clusterInstanceContext));
@@ -744,11 +811,9 @@ public class ClusterMonitor extends Monitor {
                         float averageRequestsInFlight = value * clusterInstanceContext.getActiveMemberCount() /
                                 totalActiveMemberCount;
                         clusterInstanceContext.setAverageRequestsInFlight(averageRequestsInFlight);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Calculated average RIF: [cluster] %s [cluster-instance] %s " +
-                                            "[network-partition] %s [average-rif] %s", clusterId,
-                                    clusterInstanceContext.getId(), networkPartitionId, averageRequestsInFlight));
-                        }
+                        log.debug(String.format("Calculated average RIF: [cluster] %s [cluster-instance] %s " +
+                                        "[network-partition] %s [average-rif] %s", clusterId,
+                                clusterInstanceContext.getId(), networkPartitionId, averageRequestsInFlight));
                     }
                 }
             } else {
@@ -1493,7 +1558,7 @@ public class ClusterMonitor extends Monitor {
                 }
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
-                        parentMonitorInstance.getNetworkPartitionId());
+                        parentMonitorInstance.getNetworkPartitionUuid());
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
                             "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));

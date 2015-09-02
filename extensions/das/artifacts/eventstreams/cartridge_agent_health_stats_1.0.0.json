@@ -1,0 +1,40 @@
+{
+  "name": "cartridge_agent_health_stats",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "time_stamp",
+      "type": "LONG"
+    },
+    {
+      "name": "cluster_id",
+      "type": "STRING"
+    },
+    {
+      "name": "cluster_instance_id",
+      "type": "STRING"
+    },
+    {
+      "name": "network_partition_id",
+      "type": "STRING"
+    },
+    {
+      "name": "member_id",
+      "type": "STRING"
+    },
+    {
+      "name": "partition_id",
+      "type": "STRING"
+    },
+    {
+      "name": "health_description",
+      "type": "STRING"
+    },
+    {
+      "name": "value",
+      "type": "DOUBLE"
+    }
+  ]
+}

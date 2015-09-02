@@ -25,11 +25,14 @@ import java.io.Serializable;
 
 public class ApplicationContext implements Serializable {
 
+    private static final long serialVersionUID = 6704036501869668646L;
+
     public static final String STATUS_CREATED = "Created";
     public static final String STATUS_DEPLOYED = "Deployed";
     public static final String STATUS_UNDEPLOYING = "Undeploying";
-    private static final long serialVersionUID = 6704036501869668646L;
-    private String applicationId;
+
+    private String applicationUuid;
+	private String applicationId;
     private String alias;
     private boolean multiTenant;
     private String name;
@@ -44,12 +47,12 @@ public class ApplicationContext implements Serializable {
     public ApplicationContext() {
     }
 
-    public String getApplicationId() {
-        return applicationId;
+    public String getApplicationUuid() {
+        return applicationUuid;
     }
 
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
+    public void setApplicationUuid(String applicationUuid) {
+        this.applicationUuid = applicationUuid;
     }
 
     public String getAlias() {
@@ -132,4 +135,12 @@ public class ApplicationContext implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+	public String getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(String applicationId) {
+		this.applicationId = applicationId;
+	}
 }

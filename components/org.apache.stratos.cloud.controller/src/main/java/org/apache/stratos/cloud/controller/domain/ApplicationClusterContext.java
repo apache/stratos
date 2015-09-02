@@ -26,7 +26,7 @@ public class ApplicationClusterContext {
     // cluster id
     private String clusterId;
     // cartridge type
-    private String cartridgeType;
+    private String cartridgeUuid;
     // payload as a String
     private String textPayload;
     // host name
@@ -59,12 +59,12 @@ public class ApplicationClusterContext {
         this.clusterId = clusterId;
     }
 
-    public String getCartridgeType() {
-        return cartridgeType;
+    public String getCartridgeUuid() {
+        return cartridgeUuid;
     }
 
-    public void setCartridgeType(String cartridgeType) {
-        this.cartridgeType = cartridgeType;
+    public void setCartridgeUuid(String cartridgeUuid) {
+        this.cartridgeUuid = cartridgeUuid;
     }
 
     public String getTextPayload() {
@@ -127,12 +127,12 @@ public class ApplicationClusterContext {
 
         ApplicationClusterContext that = (ApplicationClusterContext) other;
 
-        return this.cartridgeType.equals(that.cartridgeType) &&
+        return this.cartridgeUuid.equals(that.cartridgeUuid) &&
                 this.clusterId.equals(that.clusterId);
     }
 
     public int hashCode() {
-        return this.cartridgeType.hashCode() + this.clusterId.hashCode();
+        return this.cartridgeUuid.hashCode() + this.clusterId.hashCode();
     }
 
     public Properties getProperties() {

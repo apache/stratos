@@ -33,12 +33,12 @@ public interface KubernetesAPIClientInterface {
     /**
      * Create pod.
      *
-     * @param podId                id of the pod
-     * @param podLabel             pod label
-     * @param dockerImage          docker image name
-     * @param cpu                  number of cpu cores
-     * @param memory               memory allocation in mega bytes
-     * @param ports                ports to be opened
+     * @param podId id of the pod
+     * @param podLabel pod label
+     * @param dockerImage docker image name
+     * @param cpu number of cpu cores
+     * @param memory memory allocation in mega bytes
+     * @param ports ports to be opened
      * @param environmentVariables environment variables
      * @throws KubernetesClientException
      */
@@ -80,6 +80,7 @@ public interface KubernetesAPIClientInterface {
      * @param serviceType
      * @param containerPortName
      * @param containerPort
+     * @param publicIPs
      * @param sessionAffinity
      * @throws KubernetesClientException
      */

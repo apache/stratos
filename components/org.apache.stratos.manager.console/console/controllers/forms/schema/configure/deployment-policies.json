@@ -12,7 +12,7 @@
         "id": {
             "id": "root/id",
             "type": "string",
-            "title":"Deployment Policy ID"
+            "title":"Deployment Policy Id"
         },
         "networkPartitions": {
             "id": "root/networkPartitions",

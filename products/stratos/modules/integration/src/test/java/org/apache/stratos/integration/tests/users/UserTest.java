@@ -45,7 +45,7 @@ public class UserTest extends StratosTestServerManager {
         try {
             log.info("-------------------------------Started users test case-------------------------------");
             String userId = "user-1";
-            boolean addedUser1 = restClient.addEntity(RESOURCES_PATH + "/" +
+            boolean addedUser1 = restClientAdmin.addEntity(RESOURCES_PATH + "/" +
                             userId + ".json",
                     RestConstants.USERS, RestConstants.USERS_NAME);
             assertTrue(addedUser1);
@@ -53,7 +53,7 @@ public class UserTest extends StratosTestServerManager {
             Type listType = new TypeToken<ArrayList<UserInfoBean>>() {
             }.getType();
 
-            List<UserInfoBean> userInfoBeanList = (List<UserInfoBean>) restClient.listEntity(RestConstants.USERS,
+            List<UserInfoBean> userInfoBeanList = (List<UserInfoBean>) restClientAdmin.listEntity(RestConstants.USERS,
                     listType, RestConstants.USERS_NAME);
 
             UserInfoBean bean1 = null;
@@ -69,12 +69,12 @@ public class UserTest extends StratosTestServerManager {
             assertEquals(bean1.getLastName(), "Myers");
             assertEquals(bean1.getCredential(), "kim12345");*/
 
-            boolean updatedUser1 = restClient.updateEntity(RESOURCES_PATH + "/" +
+            boolean updatedUser1 = restClientAdmin.updateEntity(RESOURCES_PATH + "/" +
                             userId + "-v1.json",
                     RestConstants.USERS, RestConstants.USERS_NAME);
             assertTrue(updatedUser1);
 
-            userInfoBeanList = (List<UserInfoBean>) restClient.listEntity(RestConstants.USERS,
+            userInfoBeanList = (List<UserInfoBean>) restClientAdmin.listEntity(RestConstants.USERS,
                     listType, RestConstants.USERS_NAME);
 
             for (UserInfoBean userInfoBean : userInfoBeanList) {
@@ -89,11 +89,11 @@ public class UserTest extends StratosTestServerManager {
             assertEquals(bean1.getLastName(), "Myersn");
             assertEquals(bean1.getCredential(), "kim123456");*/
 
-            boolean removedUser1 = restClient.removeEntity(RestConstants.USERS,
+            boolean removedUser1 = restClientAdmin.removeEntity(RestConstants.USERS,
                             userId, RestConstants.USERS_NAME);
             assertTrue(removedUser1);
 
-            userInfoBeanList = (List<UserInfoBean>) restClient.listEntity(RestConstants.USERS,
+            userInfoBeanList = (List<UserInfoBean>) restClientAdmin.listEntity(RestConstants.USERS,
                     listType, RestConstants.USERS_NAME);
 
             bean1 = null;

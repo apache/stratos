@@ -25,9 +25,12 @@ import java.io.Serializable;
 public class ApplicationPolicy implements Serializable {
 
     private static final long serialVersionUID = -2851334419121310395L;
+    private String uuid;
     private String id;
+    private int tenantId;
     private String algorithm;
     private String[] networkPartitions;
+	private String[] networkPartitionsUuid;
     private Properties properties;
     // if networkPartitionGroups property is set, we are populating following variable.
     private String[] networkPartitionGroups;
@@ -38,6 +41,22 @@ public class ApplicationPolicy implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getAlgorithm() {
@@ -71,4 +90,12 @@ public class ApplicationPolicy implements Serializable {
     public void setNetworkPartitionGroups(String[] networkPartitionGroups) {
         this.networkPartitionGroups = networkPartitionGroups;
     }
+
+	public String[] getNetworkPartitionsUuid() {
+		return networkPartitionsUuid;
+	}
+
+	public void setNetworkPartitionsUuid(String[] networkPartitionsUuid) {
+		this.networkPartitionsUuid = networkPartitionsUuid;
+	}
 }

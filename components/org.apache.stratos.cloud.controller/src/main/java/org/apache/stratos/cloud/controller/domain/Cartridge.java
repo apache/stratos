@@ -37,6 +37,7 @@ public class Cartridge implements Serializable {
     private transient static final Log log = LogFactory.getLog(Cartridge.class);
     private static final long serialVersionUID = 6637409027085059072L;
 
+	private String uuid;
     private String type;
     private String hostName;
     private String provider;
@@ -52,6 +53,7 @@ public class Cartridge implements Serializable {
     private AppType[] appTypeMappings;
     private String loadBalancingIPType;
     private String[] metadataKeys;
+	private int tenantId;
 
     private boolean isPublic;
 
@@ -305,4 +307,20 @@ public class Cartridge implements Serializable {
                 + ", properties=" + properties
                 + "]";
     }
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public int getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(int tenantId) {
+		this.tenantId = tenantId;
+	}
 }

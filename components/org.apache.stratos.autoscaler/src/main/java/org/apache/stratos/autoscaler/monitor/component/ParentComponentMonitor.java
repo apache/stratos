@@ -660,7 +660,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         int noOfInstancesOfRequiredStatus = 0;
         for (String childInstanceId : groupInstances) {
             GroupInstance childGroupInstance = (GroupInstance) monitor.getInstance(childInstanceId);
-            networkPartitionId = childGroupInstance.getNetworkPartitionId();
+            networkPartitionId = childGroupInstance.getNetworkPartitionUuid();
             if (childGroupInstance.getStatus() == requiredStatus) {
                 noOfInstancesOfRequiredStatus++;
             }

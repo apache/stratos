@@ -40,7 +40,7 @@ public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+        String[] networkPartitions = applicationPolicy.getNetworkPartitionsUuid();
         if (networkPartitions == null || networkPartitions.length == 0) {
             return null;
         }
@@ -61,7 +61,7 @@ public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+        String[] networkPartitions = applicationPolicy.getNetworkPartitionsUuid();
         if (networkPartitions == null || networkPartitions.length == 0) {
             return null;
         }

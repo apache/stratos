@@ -182,12 +182,12 @@ public class StratosManagerServiceClient {
     /**
      * Adds the used cartridges in cartridge groups to cache.
      *
-     * @param cartridgeGroupName the cartridge group name
-     * @param cartridgeNames     the cartridge names
+     * @param cartridgeGroupUuid the cartridge group uuid
+     * @param cartridgeUuids     the cartridge uuids
      * @throws RemoteException the remote exception
      */
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws RemoteException {
-        stub.addUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeUuids) throws RemoteException {
+        stub.addUsedCartridgesInCartridgeGroups(cartridgeGroupUuid, cartridgeUuids);
     }
 
     /**
@@ -226,12 +226,12 @@ public class StratosManagerServiceClient {
     /**
      * Validates whether a cartridge can be removed.
      *
-     * @param cartridgeName the cartridge name
+     * @param cartridgeNameUuid the cartridge name
      * @return true, if successful
      * @throws RemoteException the remote exception
      */
-    public boolean canCartridgeBeRemoved(String cartridgeName) throws RemoteException {
-        return stub.canCartridgeBeRemoved(cartridgeName);
+    public boolean canCartridgeBeRemoved(String cartridgeNameUuid) throws RemoteException {
+        return stub.canCartridgeBeRemoved(cartridgeNameUuid);
     }
 
     /**
@@ -281,11 +281,11 @@ public class StratosManagerServiceClient {
     /**
      * Validates whether a cartridge group can be removed.
      *
-     * @param cartridgeGroupName the cartridge group name
+     * @param cartridgeGroupUuid the cartridge group name
      * @return true, if successful
      * @throws RemoteException the remote exception
      */
-    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupName) throws RemoteException {
-        return stub.canCartirdgeGroupBeRemoved(cartridgeGroupName);
+    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupUuid) throws RemoteException {
+        return stub.canCartirdgeGroupBeRemoved(cartridgeGroupUuid);
     }
 }

@@ -46,7 +46,7 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
             log.debug("Partition validation started for " + partition + " of " + cartridge);
         }
         String provider = partition.getProvider();
-        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProvider(cartridge.getType(), provider);
+        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProvider(cartridge.getUuid(), provider);
 
         IaasProvider updatedIaasProvider =
                 CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(partition, iaasProvider);

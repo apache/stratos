@@ -129,80 +129,80 @@ public interface StratosManagerService {
     /**
      * Adds the used cartridges in cartridge groups to cache structure.
      *
-     * @param cartridgeGroupName the cartridge group name
+     * @param cartridgeGroupUuid the cartridge group name
      * @param cartridgeNames     the cartridge names
      */
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames);
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNames);
 
     /**
      * Removes the used cartridges in cartridge groups from cache structure.
      *
-     * @param cartridgeGroupName the cartridge group name
-     * @param cartridgeNames     the cartridge names
+     * @param cartridgeGroupUuid the cartridge group UUID
+     * @param cartridgeNamesUuid     the cartridge names
      */
-    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames);
+    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeNamesUuid);
 
     /**
      * Adds the used cartridges in applications to cache structure.
      *
-     * @param applicationName the application name
+     * @param applicationUuid the application name
      * @param cartridgeNames  the cartridge names
      */
-    public void addUsedCartridgesInApplications(String applicationName, String[] cartridgeNames);
+    public void addUsedCartridgesInApplications(String applicationUuid, String[] cartridgeNames);
 
     /**
      * Removes the used cartridges in applications from cache structure.
      *
-     * @param applicationName the application name
+     * @param applicationUuid the application UUID
      * @param cartridgeNames  the cartridge names
      */
-    public void removeUsedCartridgesInApplications(String applicationName, String[] cartridgeNames);
+    public void removeUsedCartridgesInApplications(String applicationUuid, String[] cartridgeNames);
 
     /**
      * Verifies whether a cartridge can be removed.
      *
-     * @param cartridgeName the cartridge name
+     * @param cartridgeUuid the cartridge name
      * @return true, if successful
      */
-    public boolean canCartridgeBeRemoved(String cartridgeName);
+    public boolean canCartridgeBeRemoved(String cartridgeUuid);
 
     /**
      * Adds the used cartridge groups in cartridge sub groups to cache structure.
      *
-     * @param cartridgeSubGroupName the cartridge sub group name
+     * @param cartridgeSubGroupUuid the cartridge sub group name
      * @param cartridgeGroupNames   the cartridge group names
      */
-    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames);
+    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupUuid, String[] cartridgeGroupNames);
 
     /**
      * Removes the used cartridge groups in cartridge sub groups from cache structure.
      *
-     * @param cartridgeSubGroupName the cartridge sub group name
+     * @param cartridgeSubGroupUuid the cartridge sub group name
      * @param cartridgeGroupNames   the cartridge group names
      */
-    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames);
+    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupUuid, String[] cartridgeGroupNames);
 
     /**
      * Adds the used cartridge groups in applications to cache structure.
      *
-     * @param applicationName     the application name
+     * @param applicationUuid     the application name
      * @param cartridgeGroupNames the cartridge group names
      */
-    public void addUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames);
+    public void addUsedCartridgeGroupsInApplications(String applicationUuid, String[] cartridgeGroupNames);
 
     /**
      * Removes the used cartridge groups in applications from cache structure.
      *
-     * @param applicationName     the application name
+     * @param applicationUuid     the application name
      * @param cartridgeGroupNames the cartridge group names
      */
-    public void removeUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames);
+    public void removeUsedCartridgeGroupsInApplications(String applicationUuid, String[] cartridgeGroupNames);
 
     /**
      * Verifies whether a cartridge group can be removed.
      *
-     * @param cartridgeGroupName the cartridge group name
+     * @param cartridgeGroupUuid the cartridge group name
      * @return true, if successful
      */
-    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupName);
+    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupUuid);
 }

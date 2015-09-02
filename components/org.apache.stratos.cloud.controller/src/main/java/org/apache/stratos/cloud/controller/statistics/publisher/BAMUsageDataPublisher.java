@@ -52,12 +52,31 @@ public class BAMUsageDataPublisher {
     private static StreamDefinition streamDefinition;
     private static final String cloudControllerEventStreamVersion = "1.0.0";
 
+    /**
+     * Publish events to BAM
+     *
+     * @param memberId          member id
+     * @param partitionId       partition id
+     * @param networkId         network partition id
+     * @param clusterId         cluster id
+     * @param clusterInstanceId cluster instance id
+     * @param serviceName       service name
+     * @param status            member status
+     * @param timeStamp         time
+     * @param autoscalingReason scaling reason related to member
+     * @param scalingTime       scaling time
+     * @param metadata          meta-data
+     */
     public static void publish(String memberId,
                                String partitionId,
                                String networkId,
                                String clusterId,
+                               String clusterInstanceId,
                                String serviceName,
                                String status,
+                               Long timeStamp,
+                               String autoscalingReason,
+                               Long scalingTime,
                                InstanceMetadata metadata) {
         if (!CloudControllerConfig.getInstance().isBAMDataPublisherEnabled()) {
             return;
@@ -79,16 +98,23 @@ public class BAMUsageDataPublisher {
         MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
         String cartridgeType = memberContext.getCartridgeType();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
+        String instanceType = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridgeType,
+                partitionId).getProperty(CloudControllerConstants.INSTANCE_TYPE);
 
         //Construct the data to be published
         List<Object> payload = new ArrayList<Object>();
         // Payload values
+        payload.add(timeStamp);
         payload.add(memberId);
         payload.add(serviceName);
         payload.add(clusterId);
+        payload.add(clusterInstanceId);
         payload.add(handleNull(memberContext.getLbClusterId()));
         payload.add(handleNull(partitionId));
         payload.add(handleNull(networkId));
+        payload.add(handleNull(instanceType));
+        payload.add(handleNull(autoscalingReason));
+        payload.add(handleNull(scalingTime));
         if (cartridge != null) {
             payload.add(handleNull(String.valueOf(cartridge.isMultiTenant())));
         } else {
@@ -129,12 +155,14 @@ public class BAMUsageDataPublisher {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Publishing BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()));
+                log.debug(String.format("Publishing BAM event: [stream] %s [version] %s", streamDefinition.getName(),
+                        streamDefinition.getVersion()));
             }
             dataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
         } catch (AgentException e) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Could not publish BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()), e);
+                log.error(String.format("Could not publish BAM event: [stream] %s [version] %s",
+                        streamDefinition.getName(), streamDefinition.getVersion()), e);
             }
         }
     }
@@ -151,12 +179,17 @@ public class BAMUsageDataPublisher {
         streamDefinition.setDescription("Instances booted up by the Cloud Controller");
         // Payload definition
         List<Attribute> payloadData = new ArrayList<Attribute>();
+        payloadData.add(new Attribute(CloudControllerConstants.TIME_STAMP, AttributeType.LONG));
         payloadData.add(new Attribute(CloudControllerConstants.MEMBER_ID_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.CARTRIDGE_TYPE_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.CLUSTER_ID_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CloudControllerConstants.CLUSTER_INSTANCE_ID_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.LB_CLUSTER_ID_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.PARTITION_ID_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.NETWORK_ID_COL, AttributeType.STRING));
+        payloadData.add(new Attribute(CloudControllerConstants.INSTANCE_TYPE, AttributeType.STRING));
+        payloadData.add(new Attribute(CloudControllerConstants.SCALING_REASON, AttributeType.STRING));
+        payloadData.add(new Attribute(CloudControllerConstants.SCALING_TIME, AttributeType.LONG));
         payloadData.add(new Attribute(CloudControllerConstants.IS_MULTI_TENANT_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.IAAS_COL, AttributeType.STRING));
         payloadData.add(new Attribute(CloudControllerConstants.STATUS_COL, AttributeType.STRING));
@@ -207,6 +240,13 @@ public class BAMUsageDataPublisher {
     private static String handleNull(String val) {
         if (val == null) {
             return "";
+        }
+        return val;
+    }
+
+    private static Long handleNull(Long val) {
+        if (val == null) {
+            return -1L;
         }
         return val;
     }
