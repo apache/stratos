@@ -435,7 +435,7 @@
         <!-- cep -->
         <!--creating an empty input event adaptors directory-->
         <fileSet>
-            <directory>../../../../extensions/modules/cep/artifacts/inputeventadaptors</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/inputeventadaptors</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/inputeventadaptors
             </outputDirectory>
         </fileSet>
