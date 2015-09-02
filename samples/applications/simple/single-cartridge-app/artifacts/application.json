@@ -14,7 +14,7 @@
                     "deploymentPolicy": "deployment-policy-1",
                     "artifactRepository": {
                         "privateRepo": false,
-                        "repoUrl": "",
+                        "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
                         "repoUsername": "",
                         "repoPassword": ""
                     }
