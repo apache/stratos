@@ -39,19 +39,19 @@ import org.wso2.carbon.integration.framework.utils.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Properties;
 
+import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 /**
  * Prepare activemq, Stratos server for tests, enables mock iaas, starts servers and stop them after the tests.
  */
 public class StratosTestServerManager extends TestServerManager {
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
-    private static Properties integrationProperties;
-    public static final String BASE_PATH = StratosTestServerManager.class.getResource("/").getPath();
+    public static final String PATH_SEP = File.separator;
+    public static final String BASE_PATH = StratosTestServerManager.class.getResource(PATH_SEP).getPath();
+    public static final String CARBON_CONF_PATH = "repository" + PATH_SEP + "conf";
     public static final String STRATOS_DISTRIBUTION_NAME = "distribution.path";
     public final static String PORT_OFFSET = "carbon.port.offset";
     public static final String ACTIVEMQ_BIND_ADDRESS = "activemq.bind.address";
@@ -62,11 +62,13 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String TENANT1_PASSWD = "stratos.tenant1.password";
     private static final String TENANT2_USER_NAME = "stratos.tenant2.username";
     private static final String TENANT2_PASSWD = "stratos.tenant2.password";
-    public static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
-    public static final String SCALING_DROOL_FILE = "scaling.drl";
-    public static final String JNDI_PROPERTIES_FILE = "jndi.properties";
-    public static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
+    public static final String MOCK_IAAS_XML_FILENAME = "mock-iaas.xml";
+    public static final String SCALING_DROOL_FILENAME = "scaling.drl";
+    public static final String JNDI_PROPERTIES_FILENAME = "jndi.properties";
+    public static final String JMS_OUTPUT_ADAPTER_FILENAME = "JMSOutputAdaptor.xml";
+    private static final String LOG4J_PROPERTIES_FILENAME = "log4j.properties";
 
+    private static Properties integrationProperties;
     protected String distributionName;
     protected int portOffset;
     protected String adminUsername;
@@ -81,7 +83,6 @@ public class StratosTestServerManager extends TestServerManager {
     private BrokerService broker = new BrokerService();
     private TestLogAppender testLogAppender = new TestLogAppender();
     private ServerUtils serverUtils;
-    private String carbonHome;
     protected IntegrationMockClient mockIaasApiClient;
     protected RestClient restClientTenant1;
     protected RestClient restClientTenant2;
@@ -158,7 +159,7 @@ public class StratosTestServerManager extends TestServerManager {
             if (carbonZip == null) {
                 throw new IllegalArgumentException("carbon zip file is null");
             } else {
-                carbonHome = this.serverUtils.setUpCarbonHome(carbonZip);
+                String carbonHome = this.serverUtils.setUpCarbonHome(carbonZip);
                 TestUtil.copySecurityVerificationService(carbonHome);
                 this.copyArtifacts(carbonHome);
                 log.info("Stratos server setup completed");
@@ -236,24 +237,28 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     protected void copyArtifacts(String carbonHome) throws IOException {
-        copyConfigFile(carbonHome, MOCK_IAAS_XML_FILE);
-        copyConfigFile(carbonHome, JNDI_PROPERTIES_FILE);
-        copyConfigFile(carbonHome, SCALING_DROOL_FILE, "repository/conf/drools");
-        copyConfigFile(carbonHome, JMS_OUTPUT_ADAPTER_FILE, "repository/deployment/server/outputeventadaptors");
+        String commonResourcesPath = BASE_PATH + PATH_SEP + ".." + PATH_SEP + ".." + PATH_SEP + "src" + PATH_SEP +
+                "test" + PATH_SEP + "resources" + PATH_SEP + "common";
+        copyConfigFile(carbonHome, commonResourcesPath, MOCK_IAAS_XML_FILENAME, CARBON_CONF_PATH);
+        copyConfigFile(carbonHome, commonResourcesPath, JNDI_PROPERTIES_FILENAME, CARBON_CONF_PATH);
+        copyConfigFile(carbonHome, commonResourcesPath, LOG4J_PROPERTIES_FILENAME, CARBON_CONF_PATH);
+        //copyConfigFile(carbonHome, commonResourcesPath, SCALING_DROOL_FILENAME, CARBON_CONF_PATH + PATH_SEP +
+        //      "drools");
+        copyConfigFile(carbonHome, commonResourcesPath, JMS_OUTPUT_ADAPTER_FILENAME,
+                "repository" + PATH_SEP + "deployment" + PATH_SEP + "server" + PATH_SEP + "outputeventadaptors");
     }
 
-    private void copyConfigFile(String carbonHome, String sourceFilePath) throws IOException {
-        copyConfigFile(carbonHome, sourceFilePath, "repository/conf");
-    }
+    private void copyConfigFile(String carbonHome, String filePath, String fileName, String destinationFolder)
+            throws
+            IOException {
 
-    private void copyConfigFile(String carbonHome, String sourceFilePath, String destinationFolder) throws IOException {
-        log.info("Copying file: " + sourceFilePath);
-        URL fileURL = getClass().getResource("/" + sourceFilePath);
-        assertNotNull(fileURL);
-        File srcFile = new File(fileURL.getFile());
-        File destFile = new File(carbonHome + "/" + destinationFolder + "/" + sourceFilePath);
+        String fileAbsPath = filePath + PATH_SEP + fileName;
+        log.info("Copying file: " + fileAbsPath);
+        File srcFile = new File(fileAbsPath);
+        assertTrue(srcFile.exists());
+        File destFile = new File(carbonHome + PATH_SEP + destinationFolder + PATH_SEP + fileName);
         FileUtils.copyFile(srcFile, destFile);
-        log.info(sourceFilePath + " file copied");
+        log.info("Copying file [source] " + srcFile.getAbsolutePath() + " to [dest] " + destFile.getAbsolutePath());
     }
 
     private boolean serverStopped() {
