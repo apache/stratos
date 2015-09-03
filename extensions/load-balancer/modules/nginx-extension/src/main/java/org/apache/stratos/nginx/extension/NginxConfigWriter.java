@@ -32,7 +32,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -62,26 +61,31 @@ public class NginxConfigWriter {
 
         StringBuilder configurationBuilder = new StringBuilder();
 
-        List<String> availableProtocols = new ArrayList<>();
+        List<Port> availablePorts = new ArrayList<Port>();
 
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
                 if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
                     throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
                 }
-                for(Port port : service.getPorts()) {
-                    if(!availableProtocols.contains(port.getProtocol())) {
-                        availableProtocols.add(port.getProtocol());
+                for (Port port : service.getPorts()) {
+                    for(Port availablePort : availablePorts) {
+                        if ((!availablePort.getProtocol().equals(port.getProtocol())) ||
+                                (availablePort.getProtocol().equals(port.getProtocol()) &&
+                                        availablePort.getProxy() != port.getProxy())) {
+                            availablePorts.add(port);
+                        }
                     }
                 }
             }
         }
-        for(String protocol1 : availableProtocols) {
-            if(log.isDebugEnabled()) {
-                log.debug("Available protocols : " + protocol1 + "\n");
+        for (Port port1 : availablePorts) {
+            if (log.isDebugEnabled()) {
+                log.debug("Available protocols : " + port1.getProtocol() + " proxy val: " +
+                        port1.getProxy() + "\n");
             }
         }
-        for(String protocol : availableProtocols) {
+        for (Port availPort : availablePorts) {
             // Start transport block
             configurationBuilder.append("http").append(" {").append(NEW_LINE);
             configurationBuilder.append(TAB).append("server_names_hash_bucket_size ").
@@ -94,14 +98,15 @@ public class NginxConfigWriter {
                                 service.getServiceName()));
                     }
                     Port selectedPort = null;
-                    for(Port port : service.getPorts()) {
-                        if(port.getProtocol().equals(protocol)) {
+                    for (Port port : service.getPorts()) {
+                        if ((port.getProtocol().equals(availPort.getProtocol())) &&
+                                (port.getProxy() == availPort.getProxy())) {
                             selectedPort = port;
                         }
                     }
 
-                    if(selectedPort != null) {
-                        if(log.isDebugEnabled()) {
+                    if (selectedPort != null) {
+                        if (log.isDebugEnabled()) {
                             log.debug("The selected Port for cluster: " + cluster.getClusterId()
                                     + " is " + selectedPort.getValue() + " " +
                                     selectedPort.getProtocol() + " " + selectedPort.getProxy());
@@ -111,7 +116,7 @@ public class NginxConfigWriter {
                 }
             }
             configurationBuilder.append("}").append(NEW_LINE);
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("The generated niginx.conf is: \n" + configurationBuilder.toString());
             }
             // End transport block
@@ -155,26 +160,27 @@ public class NginxConfigWriter {
 
     /**
      * Generate configuration for a cluster with the following format:
-     *
+     * <p/>
      * <transport> {
-     *     upstream <cluster-hostname> {
-     *         server <hostname>:<port>;
-     *         server <hostname>:<port>;
-     *     }
-     *     server {
-     *         listen <proxy-port>;
-     *         server_name <cluster-hostname>;
-     *         location / {
-     *             proxy_pass    http://<cluster-hostname>
-     *         }
-     *         location /nginx_status {
-     *            stub_status on;
-     *            access_log off;
-     *            allow 127.0.0.1;
-     *            deny all;
-     *         }
-     *     }
+     * upstream <cluster-hostname> {
+     * server <hostname>:<port>;
+     * server <hostname>:<port>;
      * }
+     * server {
+     * listen <proxy-port>;
+     * server_name <cluster-hostname>;
+     * location / {
+     * proxy_pass    http://<cluster-hostname>
+     * }
+     * location /nginx_status {
+     * stub_status on;
+     * access_log off;
+     * allow 127.0.0.1;
+     * deny all;
+     * }
+     * }
+     * }
+     *
      * @param cluster
      * @param port
      * @param text
@@ -196,7 +202,7 @@ public class NginxConfigWriter {
             // Start server block
             text.append(NEW_LINE);
             text.append(TAB).append("server {").append(NEW_LINE);
-            if(port.getProtocol().equals("https")) {
+            if (port.getProtocol().equals("https")) {
                 text.append(TAB).append(TAB).append("listen ").append(port.getProxy()).append(" ssl;").append(NEW_LINE);
             } else {
                 text.append(TAB).append(TAB).append("listen ").append(port.getProxy()).append(";").append(NEW_LINE);
@@ -204,7 +210,7 @@ public class NginxConfigWriter {
             text.append(TAB).append(TAB).append("server_name ").append(hostname).append(";").append(NEW_LINE);
 
             text.append(TAB).append(TAB).append("location / {").append(NEW_LINE);
-            if(port.getProtocol().equals("https")) {
+            if (port.getProtocol().equals("https")) {
                 text.append(TAB).append(TAB).append(TAB).append("proxy_pass").append(TAB)
                         .append("https://").append(hostname).append(";").append(NEW_LINE);
             } else {
@@ -220,10 +226,10 @@ public class NginxConfigWriter {
             text.append(TAB).append(TAB).append(TAB).append("deny all;").append(NEW_LINE);
             text.append(TAB).append(TAB).append("}").append(NEW_LINE);
 
-            if(port.getProtocol().equals("https")) {
+            if (port.getProtocol().equals("https")) {
                 text.append(TAB).append(TAB).append("ssl on;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("ssl_certificate ").append(System.getProperty("nginx.cert.path")).append (";").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("ssl_certificate_key ").append(System.getProperty("nginx.key.path")).append (";").append(NEW_LINE);
+                text.append(TAB).append(TAB).append("ssl_certificate ").append(System.getProperty("nginx.cert.path")).append(";").append(NEW_LINE);
+                text.append(TAB).append(TAB).append("ssl_certificate_key ").append(System.getProperty("nginx.key.path")).append(";").append(NEW_LINE);
             }
 
             text.append(TAB).append("}").append(NEW_LINE);
