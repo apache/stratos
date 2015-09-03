@@ -296,6 +296,10 @@ public class AutoscalerUtil {
                     String msg = "Monitor creation failed: [application] " + applicationId;
                     log.warn(msg, e);
                     retries--;
+                } catch (Exception e){
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
                 }
             }
 
