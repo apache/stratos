@@ -30,6 +30,9 @@ properties="-Dnginx.private.ip=127.0.0.1
             -Dtemplates.path=${script_path}/../templates
             -Dtemplates.name=nginx.cfg.template
             -Dscripts.path=${script_path}/../scripts
+            -Dnginx.cert.path=/etc/nginx/ssl/server.cert
+            -Dnginx.key.path=/etc/nginx/ssl/server.key
+            -Dnginx.server.names.hash.bucket.size=128
             -Dconf.file.path=/tmp/nginx.cfg
             -Dstats.socket.file.path=/tmp/nginx-stats.socket
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
