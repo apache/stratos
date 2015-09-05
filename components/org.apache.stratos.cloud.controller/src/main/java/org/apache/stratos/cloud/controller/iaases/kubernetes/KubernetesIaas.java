@@ -408,7 +408,7 @@ public class KubernetesIaas extends Iaas {
         // Create pod
         long podSeqNo = kubernetesClusterContext.getPodSeqNo().incrementAndGet();
         String podId = "pod" + "-" + podSeqNo;
-        String podLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
+        String podLabel = KubernetesIaasUtil.fixSpecialCharactersAndLength(clusterId);
         String dockerImage = iaasProvider.getImage();
         List<EnvVar> environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
@@ -510,7 +510,7 @@ public class KubernetesIaas extends Iaas {
 
                 // Find next service sequence no
                 long serviceSeqNo = kubernetesClusterContext.getServiceSeqNo().incrementAndGet();
-                String serviceId = KubernetesIaasUtil.fixSpecialCharacters("service" + "-" + (serviceSeqNo));
+                String serviceId = KubernetesIaasUtil.fixSpecialCharactersAndLength("service" + "-" + (serviceSeqNo));
                 String serviceLabel = DigestUtils.md5Hex(clusterId);
 
                 if (log.isInfoEnabled()) {
