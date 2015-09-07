@@ -108,6 +108,9 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
+    public static final String KUBERNETES_SERVICE_TYPE_NODEPORT = "NodePort";
+    public static final String KUBERNETES_SERVICE_TYPE_CLUSTERIP = "ClusterIP";
+    public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
     public static final int SUPER_TENANT_ID = -1234;
 
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
@@ -134,6 +137,14 @@ public class StratosApiV41Utils {
                         cartridgeBean.getType()));
             }
 
+            boolean isKubernetesIaasProviderAvailable = false;
+
+            for (IaasProviderBean providers : iaasProviders) {
+                if (providers.getType().equals(KUBERNETES_IAAS_PROVIDER)) {
+                    isKubernetesIaasProviderAvailable = true;
+                }
+            }
+
             for (PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
                 if (StringUtils.isBlank(portMapping.getName())) {
                     portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
@@ -143,6 +154,21 @@ public class StratosApiV41Utils {
                                 cartridgeUuid, cartridgeBean.getType(), portMapping.getName()));
                     }
                 }
+
+                String type = portMapping.getKubernetesPortType();
+
+                if (isKubernetesIaasProviderAvailable) {
+                    if (type == null) {
+                        throw new RestAPIException((String.format("Type is not found in portmapping: %s - Possible " +
+                                        "values - %s and %s", portMapping.getName(), KUBERNETES_SERVICE_TYPE_NODEPORT,
+                                KUBERNETES_SERVICE_TYPE_CLUSTERIP)));
+                    } else if (!type.equals(KUBERNETES_SERVICE_TYPE_NODEPORT) && !type.equals(KUBERNETES_SERVICE_TYPE_CLUSTERIP)) {
+                        throw new RestAPIException((String.format("Type is not found in portmapping: %s - Possible " +
+                                        "values - %s and %s", portMapping.getName(), KUBERNETES_SERVICE_TYPE_NODEPORT,
+                                KUBERNETES_SERVICE_TYPE_CLUSTERIP)));
+                    }
+                }
+
             }
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean, cartridgeUuid, tenantId);
