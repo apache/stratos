@@ -81,7 +81,7 @@ public class AutoscalerUtil {
     }
 
     public static Applications loadApplicationsFromRegistry(Applications applications) {
-        if (applications == null){
+        if (applications == null) {
             throw new RuntimeException("Applications instance is null");
         }
         String[] appResourcePaths = RegistryManager.getInstance().getApplicationResourcePaths();
@@ -970,7 +970,6 @@ public class AutoscalerUtil {
             ApplicationMonitor applicationMonitor = null;
             try {
                 while (!success && retries != 0) {
-
                     try {
                         startTime = System.currentTimeMillis();
                         log.info("Starting monitor: [application] " + applicationId);
@@ -1011,7 +1010,7 @@ public class AutoscalerUtil {
                                     "[startup-time] %d seconds", applicationMonitor.getId(),
                             applicationMonitor.getStartupDependencyTree(), startupTime));
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 String msg = "Monitor creation failed: [application] " + applicationId;
                 log.error(msg, e);
             }
