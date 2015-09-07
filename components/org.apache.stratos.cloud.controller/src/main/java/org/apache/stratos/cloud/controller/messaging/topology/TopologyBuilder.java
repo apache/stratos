@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPubl
 import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -44,6 +45,8 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -857,8 +860,37 @@ public class TopologyBuilder {
             try {
                 TopologyManager.acquireWriteLock();
                 List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
-                cluster.setKubernetesServices(kubernetesServices);
 
+            if (kubernetesServices != null) {
+
+                try {
+                    // Generate access URLs for kubernetes services
+                    for (KubernetesService kubernetesService : kubernetesServices) {
+
+                        if (kubernetesService.getServiceType().equals(KubernetesConstants.NODE_PORT)) {
+                            // Public IP = Kubernetes minion public IP
+                            String[] publicIPs = kubernetesService.getPublicIPs();
+                            if ((publicIPs != null) && (publicIPs.length > 0)) {
+                                for (String publicIP : publicIPs) {
+                                    // There can be a String array with null values
+                                    if (publicIP != null) {
+                                        // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
+                                        URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
+                                                kubernetesService.getPort(), null, null, null);
+                                        cluster.addAccessUrl(accessURL.toString());
+                                        clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
+                                    } else {
+                                        log.error(String.format("Could not create access URL for [Kubernetes-service] %s , " +
+                                                "since Public IP is not available", kubernetesService.getId()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (URISyntaxException e) {
+                    log.error("Could not create access URLs for Kubernetes services", e);
+                }
+            }
 
                 ClusterInstance context = cluster.getInstanceContexts(clusterStatusClusterActivatedEvent.getInstanceId());
                 if (context == null) {

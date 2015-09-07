@@ -65,6 +65,7 @@ import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.exception.InvalidEmailException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
@@ -158,14 +159,13 @@ public class StratosApiV41Utils {
                 String type = portMapping.getKubernetesPortType();
 
                 if (isKubernetesIaasProviderAvailable) {
-                    if (type == null) {
-                        throw new RestAPIException((String.format("Type is not found in portmapping: %s - Possible " +
-                                        "values - %s and %s", portMapping.getName(), KUBERNETES_SERVICE_TYPE_NODEPORT,
-                                KUBERNETES_SERVICE_TYPE_CLUSTERIP)));
-                    } else if (!type.equals(KUBERNETES_SERVICE_TYPE_NODEPORT) && !type.equals(KUBERNETES_SERVICE_TYPE_CLUSTERIP)) {
-                        throw new RestAPIException((String.format("Type is not found in portmapping: %s - Possible " +
-                                        "values - %s and %s", portMapping.getName(), KUBERNETES_SERVICE_TYPE_NODEPORT,
-                                KUBERNETES_SERVICE_TYPE_CLUSTERIP)));
+                    if (type == null || type.equals("")) {
+                        portMapping.setKubernetesPortType(KubernetesConstants.NODE_PORT);
+                    } else if (!type.equals(KubernetesConstants.NODE_PORT) && !type.equals
+                            (KubernetesConstants.CLUSTER_IP)) {
+                        throw new RestAPIException((String.format("Kubernetes" +
+                                        "PortType is invalid : %s - Possible values - %s and %s", portMapping.getName(),
+                                KubernetesConstants.NODE_PORT, KubernetesConstants.CLUSTER_IP)));
                     }
                 }
 
