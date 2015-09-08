@@ -969,7 +969,7 @@ public class AutoscalerUtil {
             boolean success = false;
             ApplicationMonitor applicationMonitor = null;
             try {
-                while (!success && retries != 0) {
+                while ((!success && retries != 0)) {
                     try {
                         startTime = System.currentTimeMillis();
                         log.info("Starting monitor: [application] " + applicationId);
