@@ -81,6 +81,7 @@ import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.stratos.common.exception.StratosException;
@@ -106,6 +107,9 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
+
+    private static final String METADATA_REG_PATH = "metadata/";
+
 
     /**
      * Add New Cartridge
@@ -1896,6 +1900,14 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
             try {
                 autoscalerServiceClient.undeployApplication(applicationId, force);
+
+                try {
+                    clearMetadata(applicationId);
+                } catch (RegistryException e) {
+                    String message = "Could not remove application metadata: [application-id] " + applicationId;
+                    log.error(message, e);
+                    throw new RestAPIException(message, e);
+                }
             } catch (RemoteException e) {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
                 log.error(message, e);
@@ -1907,6 +1919,29 @@ public class StratosApiV41Utils {
             }
         }
     }
+
+    private static void clearMetadata(String applicationId) throws RegistryException {
+
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+        String resourcePath = METADATA_REG_PATH + applicationId;
+        Registry registry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getRegistry(RegistryType.SYSTEM_GOVERNANCE);
+        try {
+            registry.beginTransaction();
+            if (registry.resourceExists(resourcePath)) {
+                registry.delete(resourcePath);
+                registry.commitTransaction();
+                log.info(String.format("Application metadata removed: [application-id] %s", applicationId));
+            }
+        } catch (RegistryException e) {
+            registry.rollbackTransaction();
+            throw e;
+        }
+    }
+
 
     /**
      * Get Application Runtime

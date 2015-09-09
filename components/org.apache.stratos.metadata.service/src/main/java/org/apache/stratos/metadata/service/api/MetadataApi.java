@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadata.service.definition.Property;
 import org.apache.stratos.metadata.service.exception.RestAPIException;
-import org.apache.stratos.metadata.service.registry.CarbonRegistry;
+import org.apache.stratos.metadata.service.registry.MetadataApiRegistry;
 import org.apache.stratos.metadata.service.registry.DataStore;
 import org.wso2.carbon.registry.api.RegistryException;
 
@@ -44,7 +44,7 @@ public class MetadataApi {
      * Meta data admin configuration loading
      */
     public MetadataApi() {
-        registry = new CarbonRegistry();
+        registry = new MetadataApiRegistry();
     }
 
     @GET
