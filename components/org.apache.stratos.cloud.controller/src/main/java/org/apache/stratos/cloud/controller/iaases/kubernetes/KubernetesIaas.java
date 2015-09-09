@@ -233,7 +233,7 @@ public class KubernetesIaas extends Iaas {
             updateMemberContext(memberContext, pod, kubernetesCluster);
 
             log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s " +
-                            "[pod] %s [cpu] %d [memory] %d MB",
+                            "[pod] %s [cpu] %s [memory] %s",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(),
                     memberContext.getMemberId(), memberContext.getKubernetesPodId(),
                     memberContext.getInstanceMetadata().getCpu(), memberContext.getInstanceMetadata().getRam()));
@@ -416,14 +416,14 @@ public class KubernetesIaas extends Iaas {
         List<ContainerPort> ports = KubernetesIaasUtil.convertPortMappings(Arrays.asList(cartridge.getPortMappings()));
 
         log.info(String.format("Starting pod: [application] %s [cartridge] %s [member] %s " +
-                        "[cpu] %d [memory] %d MB",
+                        "[cpu] %s [memory] %s",
                 memberContext.getApplicationId(), memberContext.getCartridgeType(),
                 memberContext.getMemberId(), cpu, memory));
 
         kubernetesApi.createPod(podId, podLabel, dockerImage, cpu, memory, ports, environmentVariables);
 
         log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s " +
-                        "[pod] %s [pod-label] %s [cpu] %d [memory] %d MB",
+                        "[pod] %s [pod-label] %s [cpu] %s [memory] %s",
                 memberContext.getApplicationId(), memberContext.getCartridgeType(),
                 memberContext.getMemberId(), podId, podLabel, cpu, memory));
 
