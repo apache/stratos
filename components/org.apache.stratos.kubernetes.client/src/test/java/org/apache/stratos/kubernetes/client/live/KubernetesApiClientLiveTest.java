@@ -48,8 +48,8 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
     public void testPodCreation() throws Exception {
         log.info("Testing pod creation...");
 
-        createPod("stratos-test-pod-1", "stratos-test-pod", "http-1", 1, 512);
-        createPod("stratos-test-pod-2", "stratos-test-pod", "http-1", 2, 512);
+        createPod("stratos-test-pod-1", "stratos-test-pod", "http-1", "1", "512Mi");
+        createPod("stratos-test-pod-2", "stratos-test-pod", "http-1", "2", "4Gi");
 
         deletePod("stratos-test-pod-1");
         deletePod("stratos-test-pod-2");
@@ -75,8 +75,8 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
 
         createService(serviceId, serviceName, SERVICE_PORT, serviceType, containerPortName, containerPort, minionPublicIPs);
 
-        createPod("stratos-test-pod-3", serviceName, containerPortName, 1, 512);
-        createPod("stratos-test-pod-4", serviceName, containerPortName, 2, 512);
+        createPod("stratos-test-pod-3", serviceName, containerPortName, "1", "512");
+        createPod("stratos-test-pod-4", serviceName, containerPortName, "2", "512");
 
         if (testServiceSocket) {
             // test service accessibility

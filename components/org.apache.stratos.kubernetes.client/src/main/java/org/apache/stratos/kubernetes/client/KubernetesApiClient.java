@@ -55,16 +55,16 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     @Override
-    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory, List<ContainerPort> ports,
+    public void createPod(String podId, String podLabel, String dockerImage, String cpu, String memory, List<ContainerPort> ports,
                           List<EnvVar> environmentVariables)
             throws KubernetesClientException {
 
         try {
-            int memoryInMB = 1024 * 1024 * memory;
+
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Creating kubernetes pod: [pod-id] %s [pod-name] %s [docker-image] %s " +
-                                "[cpu] %d [memory] %d MB [ports] %s",
-                        podId, podLabel, dockerImage, cpu, memoryInMB, ports));
+                                "[cpu] %s [memory] %s [ports] %s",
+                        podId, podLabel, dockerImage, cpu, memory, ports));
             }
 
             // Create pod definition
@@ -93,8 +93,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             // Set resource limits
             ResourceRequirements resources = new ResourceRequirements();
             Map<String, Quantity> limits = new HashMap<String, Quantity>();
-            limits.put(KubernetesConstants.RESOURCE_CPU, new Quantity(String.valueOf(cpu)));
-            limits.put(KubernetesConstants.RESOURCE_MEMORY, new Quantity(String.valueOf(memoryInMB)));
+            limits.put(KubernetesConstants.RESOURCE_CPU, new Quantity(cpu));
+            limits.put(KubernetesConstants.RESOURCE_MEMORY, new Quantity(memory));
             resources.setLimits(limits);
             containerTemplate.setResources(resources);
 

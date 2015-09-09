@@ -124,7 +124,7 @@ public class AbstractLiveTest extends TestCase {
         log.info("Kubernetes resources cleaned");
     }
 
-    protected void createPod(String podId, String podName, String containerPortName, int cpu, int memory)
+    protected void createPod(String podId, String podName, String containerPortName, String cpu, String memory)
             throws KubernetesClientException {
 
         log.info("Creating pod: [pod] " + podId);
@@ -141,11 +141,10 @@ public class AbstractLiveTest extends TestCase {
         assertEquals(1, containers.size());
 
         Map<String, Quantity> limits = containers.get(0).getResources().getLimits();
-        int memoryInMb = memory * 1024 * 1024;
 
         log.info("Verifying container resource limits...");
-        assertEquals(String.valueOf(cpu), limits.get(KubernetesConstants.RESOURCE_CPU).getAmount());
-        assertEquals(String.valueOf(memoryInMb), limits.get(KubernetesConstants.RESOURCE_MEMORY).getAmount());
+        assertEquals(cpu, limits.get(KubernetesConstants.RESOURCE_CPU).getAmount());
+        assertEquals(memory, limits.get(KubernetesConstants.RESOURCE_MEMORY).getAmount());
         log.info("Container resource limits verified successfully");
 
         if (testPodActivation) {
