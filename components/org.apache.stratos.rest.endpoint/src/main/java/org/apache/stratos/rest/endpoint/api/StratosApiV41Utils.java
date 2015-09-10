@@ -65,6 +65,7 @@ import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.exception.InvalidEmailException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
@@ -108,6 +109,9 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_DEPLOYED = "Deployed";
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
+    public static final String KUBERNETES_SERVICE_TYPE_NODEPORT = "NodePort";
+    public static final String KUBERNETES_SERVICE_TYPE_CLUSTERIP = "ClusterIP";
+    public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
     public static final int SUPER_TENANT_ID = -1234;
 
     private static final Log log = LogFactory.getLog(StratosApiV41Utils.class);
@@ -134,6 +138,14 @@ public class StratosApiV41Utils {
                         cartridgeBean.getType()));
             }
 
+            boolean isKubernetesIaasProviderAvailable = false;
+
+            for (IaasProviderBean providers : iaasProviders) {
+                if (providers.getType().equals(KUBERNETES_IAAS_PROVIDER)) {
+                    isKubernetesIaasProviderAvailable = true;
+                }
+            }
+
             for (PortMappingBean portMapping : cartridgeBean.getPortMapping()) {
                 if (StringUtils.isBlank(portMapping.getName())) {
                     portMapping.setName(portMapping.getProtocol() + "-" + portMapping.getPort());
@@ -143,6 +155,20 @@ public class StratosApiV41Utils {
                                 cartridgeUuid, cartridgeBean.getType(), portMapping.getName()));
                     }
                 }
+
+                String type = portMapping.getKubernetesPortType();
+
+                if (isKubernetesIaasProviderAvailable) {
+                    if (type == null || type.equals("")) {
+                        portMapping.setKubernetesPortType(KubernetesConstants.NODE_PORT);
+                    } else if (!type.equals(KubernetesConstants.NODE_PORT) && !type.equals
+                            (KubernetesConstants.CLUSTER_IP)) {
+                        throw new RestAPIException((String.format("Kubernetes" +
+                                        "PortType is invalid : %s - Possible values - %s and %s", portMapping.getName(),
+                                KubernetesConstants.NODE_PORT, KubernetesConstants.CLUSTER_IP)));
+                    }
+                }
+
             }
 
             Cartridge cartridgeConfig = createCartridgeConfig(cartridgeBean, cartridgeUuid, tenantId);

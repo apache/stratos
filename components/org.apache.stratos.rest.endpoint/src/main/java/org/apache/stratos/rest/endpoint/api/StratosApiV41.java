@@ -291,10 +291,12 @@ public class StratosApiV41 extends AbstractApi {
             CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-        String cartridgeUuid = UUID.randomUUID().toString();
+
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
+
+        String cartridgeUuid =  cartridgeType + "~" +UUID.randomUUID().toString();
 
         CartridgeBean cartridgeBean = null;
         try {

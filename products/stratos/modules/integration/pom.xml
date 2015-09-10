@@ -111,13 +111,11 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
+        <testResources>
+            <testResource>
                 <directory>src/test/resources/test-conf</directory>
                 <filtering>true</filtering>
-            </resource>
-        </resources>
-        <testResources>
+            </testResource>
             <testResource>
                 <directory>src/test/resources/common</directory>
                 <includes>

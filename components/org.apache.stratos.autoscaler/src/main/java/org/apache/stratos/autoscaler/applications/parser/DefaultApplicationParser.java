@@ -729,7 +729,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
-        String[] startupOrders = getStartupOrderForGroup(groupCtxt.getUuid(), serviceGroup);
+        String[] startupOrders = getStartupOrderForGroup(groupCtxt.getName(), serviceGroup);
         Set<StartupOrder> setStartUpOrder = null;
         if (startupOrders != null) {
             setStartUpOrder = ParserUtils.convertStartupOrder(startupOrders, groupCtxt);
@@ -741,7 +741,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
         }
 
-        String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getUuid(), serviceGroup);
+        String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
         if (scaleDependents != null) {
             dependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scaleDependents, groupCtxt));
         } else {
@@ -751,7 +751,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
         }
 
-        dependencyOrder.setTerminationBehaviour(getTerminationBehaviour(groupCtxt.getUuid(), serviceGroup));
+        dependencyOrder.setTerminationBehaviour(getTerminationBehaviour(groupCtxt.getName(), serviceGroup));
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, Map<String, ClusterDataHolder>> clusterDataMap;
@@ -793,21 +793,21 @@ public class DefaultApplicationParser implements ApplicationParser {
      * Find the startup order
      *
      * @param serviceGroup GroupContext with Group defintion information
-     * @param serviceGroupUuid Group Uuid
+     * @param serviceGroupName Group Uuid
      * @return Set of Startup Orders which are defined in the Group
      * @throws ApplicationDefinitionException
      */
-    private String[] getStartupOrderForGroup(String serviceGroupUuid, ServiceGroup serviceGroup) throws
+    private String[] getStartupOrderForGroup(String serviceGroupName, ServiceGroup serviceGroup) throws
             ApplicationDefinitionException {
 
-        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupUuid);
+            handleError(String.format("Service Group Definition not found for [uuid] %s [service name] %s" , serviceGroupName, serviceGroup.getName()));
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("parsing application ... getStartupOrderForGroup: " + serviceGroupUuid);
+            log.debug(String.format("parsing application ... getStartupOrderForGroup: [uuid] %s [service name] %s" , serviceGroupName, serviceGroup.getName()));
         }
 
         assert nestedServiceGroup != null;
@@ -836,16 +836,16 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return Set of Startup Orders which are defined in the Group
      * @throws ApplicationDefinitionException
      */
-    private String[] getScaleDependentForGroup(String serviceGroupUuid, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+    private String[] getScaleDependentForGroup(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for uuid " + serviceGroupUuid);
+            handleError(String.format("Service Group Definition not found for [uuid] %s [service name] %s" , serviceGroupName,serviceGroup.getName()));
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("parsing application ... getScaleDependentForGroup: " + serviceGroupUuid);
+            log.debug(String.format("parsing application ... getScaleDependentForGroup: [uuid] %s [service name] %s" , serviceGroupName,serviceGroup.getName()));
         }
 
         assert nestedServiceGroup != null;
@@ -870,16 +870,16 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Get kill behaviour related to a Group
      *
-     * @param serviceGroupUuid Group Uuid
+     * @param serviceGroupName Group Uuid
      * @return String indicating the kill behavior
      * @throws ApplicationDefinitionException if an error occurs
      */
-    private String getTerminationBehaviour(String serviceGroupUuid, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+    private String getTerminationBehaviour(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupUuid, serviceGroup);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 
         if (nestedServiceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupUuid);
+            handleError(String.format("Service Group Definition not found for [uuid] %s [service name] %s" , serviceGroupName, serviceGroup.getName()));
         }
 
         assert nestedServiceGroup != null;
@@ -891,13 +891,13 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     }
 
-    private ServiceGroup getNestedServiceGroup(String serviceGroupUuid, ServiceGroup serviceGroup) {
-        if (serviceGroup.getUuid().equals(serviceGroupUuid)) {
+    private ServiceGroup getNestedServiceGroup(String serviceGroupName, ServiceGroup serviceGroup) {
+        if (serviceGroup.getName().equals(serviceGroupName)) {
             return serviceGroup;
         } else if (serviceGroup.getGroups() != null) {
             ServiceGroup[] groups = serviceGroup.getGroups();
             for (ServiceGroup sg : groups) {
-                return getNestedServiceGroup(serviceGroupUuid, sg);
+                return getNestedServiceGroup(serviceGroupName, sg);
             }
         }
         return null;

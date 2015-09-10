@@ -80,7 +80,8 @@ public class MockHealthStatistics {
      * @return
      */
     public int getStatistics(String cartridgeType, MockScalingFactor scalingFactor) throws NoStatisticsFoundException {
-        Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
+        String[] cartridgeDetails=cartridgeType.split("~");
+        Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeDetails[0]);
         if (factorValueMap != null) {
             if (factorValueMap.containsKey(scalingFactor.toString())) {
                 return factorValueMap.get(scalingFactor.toString());

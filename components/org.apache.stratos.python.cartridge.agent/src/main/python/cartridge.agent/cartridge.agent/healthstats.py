@@ -19,6 +19,7 @@ from threading import Thread
 import multiprocessing
 
 import psutil
+import time
 
 from modules.databridge.agent import *
 from config import Config
@@ -139,6 +140,7 @@ class HealthStatisticsPublisher:
         stream_def.description = HealthStatisticsPublisherManager.STREAM_DESCRIPTION
 
         # stream_def.add_payloaddata_attribute()
+        stream_def.add_payloaddata_attribute("timestamp", StreamDefinition.LONG)
         stream_def.add_payloaddata_attribute("cluster_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("cluster_instance_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("network_partition_id", StreamDefinition.STRING)
@@ -156,6 +158,7 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
+        event.payloadData.append(int(round(time.time() * 1000)))
         event.payloadData.append(Config.cluster_id)
         event.payloadData.append(Config.cluster_instance_id)
         event.payloadData.append(Config.network_partition_id)
@@ -180,6 +183,7 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
+        event.payloadData.append(int(round(time.time() * 1000)))
         event.payloadData.append(Config.cluster_id)
         event.payloadData.append(Config.cluster_instance_id)
         event.payloadData.append(Config.network_partition_id)
