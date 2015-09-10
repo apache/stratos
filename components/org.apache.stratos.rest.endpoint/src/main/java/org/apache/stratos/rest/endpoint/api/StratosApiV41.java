@@ -50,6 +50,7 @@ import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.exception.*;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -1072,7 +1073,7 @@ public class StratosApiV41 extends AbstractApi {
     public Response addApplicationSignUp(
             @PathParam("applicationId") String applicationId, ApplicationSignUpBean applicationSignUpBean)
             throws RestAPIException {
-        StratosApiV41Utils.addApplicationSignUp(applicationId, applicationSignUpBean);
+        StratosApiV41Utils.addApplicationSignUp(applicationId, applicationSignUpBean, CarbonContext.getThreadLocalCarbonContext().getTenantId());
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationId).build();
         return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Successfully signed up for: [application] %s", applicationId))).build();
@@ -1122,9 +1123,66 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/stratos/applicationSignUps/manage")
     public Response removeApplicationSignUp(
             @PathParam("applicationId") String applicationId) throws RestAPIException {
-        StratosApiV41Utils.removeApplicationSignUp(applicationId);
+        StratosApiV41Utils.removeApplicationSignUp(applicationId, CarbonContext.getThreadLocalCarbonContext().getTenantId());
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Application sign up removed successfully: [application] %s", applicationId))).build();
+    }
+
+    /**
+     * Signs up for an application.
+     *
+     * @param applicationId         the application id
+     * @param applicationSignUpBean the application sign up bean
+     * @return 200 if application sign up was successfull
+     * @throws RestAPIException the rest api exception
+     */
+    @POST
+    @Path("/applications/{applicationId}/signup/{tenantDomain}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/stratos/applicationSignUps/manage")
+    public Response addApplicationSignUpForTenant(
+            @PathParam("applicationId") String applicationId, ApplicationSignUpBean applicationSignUpBean, @PathParam("tenantDomain") String tenantDomain)
+            throws RestAPIException {
+        int contextTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (contextTenantId == -1234) {
+            TenantInfoBean tenantInfo = StratosApiV41Utils.getTenantByDomain(tenantDomain);
+            StratosApiV41Utils.addApplicationSignUp(applicationId, applicationSignUpBean, tenantInfo.getTenantId());
+            URI url = uriInfo.getAbsolutePathBuilder().path(applicationId).build();
+            return Response.created(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Successfully signed up for: [application] %s", applicationId))).build();
+        } else {
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "This method not allowed")).build();
+        }
+
+    }
+
+
+    /**
+     * Removes the application sign up.
+     *
+     * @param applicationId the application id
+     * @return 200 if specified application sign up is removed
+     * @throws RestAPIException the rest api exception
+     */
+    @DELETE
+    @Path("/applications/{applicationId}/signup/{tenantDomain}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/stratos/applicationSignUps/manage")
+    public Response removeApplicationSignUpForTenant(
+            @PathParam("applicationId") String applicationId, @PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+        int contextTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (contextTenantId == -1234) {
+            TenantInfoBean tenantInfo = StratosApiV41Utils.getTenantByDomain(tenantDomain);
+            StratosApiV41Utils.removeApplicationSignUp(applicationId, tenantInfo.getTenantId());
+            return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                    String.format("Application sign up removed successfully: [application] %s", applicationId))).build();
+        } else {
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ResponseMessageBean(
+                    ResponseMessageBean.ERROR, "This method not allowed")).build();
+        }
     }
 
     /**

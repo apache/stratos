@@ -2420,9 +2420,10 @@ public class StratosApiV41Utils {
      *
      * @param applicationId         applicationId
      * @param applicationSignUpBean ApplicationSignUpBean
+     * @param tenantId
      * @throws RestAPIException
      */
-    public static void addApplicationSignUp(String applicationId, ApplicationSignUpBean applicationSignUpBean)
+    public static void addApplicationSignUp(String applicationId, ApplicationSignUpBean applicationSignUpBean, int tenantId)
             throws RestAPIException {
 
         if (StringUtils.isBlank(applicationId)) {
@@ -2452,8 +2453,6 @@ public class StratosApiV41Utils {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding applicationBean signup: [application-id] %s", applicationId));
             }
-
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(
                     applicationSignUpBean);
@@ -2570,9 +2569,10 @@ public class StratosApiV41Utils {
      * Remove Application SignUp
      *
      * @param applicationId applicationId
+     * @param tenantId
      * @throws RestAPIException
      */
-    public static void removeApplicationSignUp(String applicationId) throws RestAPIException {
+    public static void removeApplicationSignUp(String applicationId, int tenantId) throws RestAPIException {
         if (StringUtils.isBlank(applicationId)) {
             throw new RestAPIException("Application id is null");
         }
@@ -2585,8 +2585,6 @@ public class StratosApiV41Utils {
         if (!application.isMultiTenant()) {
             throw new RestAPIException("Application singups not available for single-tenant applications");
         }
-
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
@@ -3272,7 +3270,7 @@ public class StratosApiV41Utils {
      * @return TenantInfoBean
      * @throws Exception
      */
-    public static org.apache.stratos.common.beans.TenantInfoBean getTenantByDomain(String tenantDomain) throws Exception {
+    public static org.apache.stratos.common.beans.TenantInfoBean getTenantByDomain(String tenantDomain) throws RestAPIException {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
 
@@ -3283,7 +3281,7 @@ public class StratosApiV41Utils {
             String msg = "Error in retrieving the tenant id for the tenant domain: " +
                     tenantDomain + ".";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg, e);
         }
         Tenant tenant;
         try {
@@ -3291,7 +3289,7 @@ public class StratosApiV41Utils {
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant from the tenant manager.";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg, e);
         }
 
         TenantInfoBean bean;
@@ -3303,10 +3301,16 @@ public class StratosApiV41Utils {
             return null;
         }
 
-        // retrieve first and last names from the UserStoreManager
-        bean.setFirstName(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
-        bean.setLastName(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
-
+        try {
+            // retrieve first and last names from the UserStoreManager
+            bean.setFirstName(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+            bean.setLastName(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+        }
+        catch(UserStoreException e){
+                String msg = "Error in retrieving the tenant from the tenant manager.";
+                log.error(msg, e);
+                throw new RestAPIException(msg, e);
+        }
         return bean;
     }
 
