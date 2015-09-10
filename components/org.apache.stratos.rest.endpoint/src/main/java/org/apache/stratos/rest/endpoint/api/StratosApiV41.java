@@ -1129,10 +1129,11 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Signs up for an application.
+     * Signs up for an application on behalf of tenant.
      *
      * @param applicationId         the application id
      * @param applicationSignUpBean the application sign up bean
+     * @param tenantDomain the tenant domain
      * @return 200 if application sign up was successfull
      * @throws RestAPIException the rest api exception
      */
@@ -1160,9 +1161,10 @@ public class StratosApiV41 extends AbstractApi {
 
 
     /**
-     * Removes the application sign up.
+     * Removes the application sign up on behalf of tenant.
      *
      * @param applicationId the application id
+     * @param tenantDomain the tenant domain
      * @return 200 if specified application sign up is removed
      * @throws RestAPIException the rest api exception
      */
