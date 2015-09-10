@@ -39,6 +39,7 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.exception.application.UnremovableApplicationException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -63,6 +64,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.NetworkPartitionRef;
 import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -464,7 +466,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    public boolean undeployApplication(String applicationId, boolean force) {
+    public boolean undeployApplication(String applicationId, boolean force) throws RemoteException,
+            StratosManagerServiceApplicationSignUpExceptionException, UnremovableApplicationException {
 
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
         ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
@@ -474,39 +477,58 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     "hence returning", applicationId));
             return false;
         }
-        if (!force) {
-            // Graceful un-deployment flow
-            if (appMonitor.isTerminating()) {
-                log.info("Application monitor is already in terminating, graceful " +
-                        "un-deployment is has already been attempted thus not invoking again");
-                return false;
-            } else {
-                log.info(String.format("Gracefully un-deploying the [application] %s ", applicationId));
-                appMonitor.setTerminating(true);
-                undeployApplicationGracefully(applicationId);
-            }
-        } else {
-            // force un-deployment flow
-            if (appMonitor.isTerminating()) {
 
-                if (appMonitor.isForce()) {
-                    log.warn(String.format("Force un-deployment is already in progress, " +
-                            "hence not invoking again " +
-                            "[application-id] %s", applicationId));
+        boolean applicationSignUpExists =false;
+
+        ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
+        if(applicationContext.isMultiTenant()){
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            ApplicationSignUp applicationSignUps[] = serviceClient.getApplicationSignUps(applicationId);
+
+            if (applicationSignUps != null) {
+                applicationSignUpExists = true;
+            }
+        }
+
+        if (!applicationSignUpExists) {
+            if (!force) {
+                // Graceful un-deployment flow
+                if (appMonitor.isTerminating()) {
+                    log.info("Application monitor is already in terminating, graceful " +
+                            "un-deployment is has already been attempted thus not invoking again");
                     return false;
                 } else {
-                    log.info(String.format("Previous graceful un-deployment is in progress for " +
-                                    "[application-id] %s , thus  terminating instances directly",
-                            applicationId));
-                    appMonitor.setForce(true);
-                    terminateAllMembersAndClustersForcefully(applicationId);
+                    log.info(String.format("Gracefully un-deploying the [application] %s ", applicationId));
+                    appMonitor.setTerminating(true);
+                    undeployApplicationGracefully(applicationId);
                 }
             } else {
-                log.info(String.format("Forcefully un-deploying the application " + applicationId));
-                appMonitor.setTerminating(true);
-                appMonitor.setForce(true);
-                undeployApplicationGracefully(applicationId);
+                // force un-deployment flow
+                if (appMonitor.isTerminating()) {
+
+                    if (appMonitor.isForce()) {
+                        log.warn(String.format("Force un-deployment is already in progress, " +
+                                "hence not invoking again " +
+                                "[application-id] %s", applicationId));
+                        return false;
+                    } else {
+                        log.info(String.format("Previous graceful un-deployment is in progress for " +
+                                        "[application-id] %s , thus  terminating instances directly",
+                                applicationId));
+                        appMonitor.setForce(true);
+                        terminateAllMembersAndClustersForcefully(applicationId);
+                    }
+                } else {
+                    log.info(String.format("Forcefully un-deploying the application " + applicationId));
+                    appMonitor.setTerminating(true);
+                    appMonitor.setForce(true);
+                    undeployApplicationGracefully(applicationId);
+                }
             }
+        } else {
+            String msg = "Application could not undeploy since it has application signups";
+            log.error(msg);
+            throw new UnremovableApplicationException(msg);
         }
         return true;
     }

@@ -152,7 +152,10 @@ public class AutoscalerServiceClient {
     }
 
     public void undeployApplication(String applicationId, boolean force) throws
-            AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
+            AutoscalerServiceApplicationDefinitionExceptionException, RemoteException,
+            AutoscalerServiceRemoteExceptionException,
+            AutoscalerServiceStratosManagerServiceApplicationSignUpExceptionExceptionException,
+            AutoscalerServiceUnremovableApplicationExceptionException {
         stub.undeployApplication(applicationId, force);
     }
 

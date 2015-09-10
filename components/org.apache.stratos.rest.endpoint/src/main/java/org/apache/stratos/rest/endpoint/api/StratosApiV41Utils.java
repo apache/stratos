@@ -1896,12 +1896,15 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
             try {
                 autoscalerServiceClient.undeployApplication(applicationId, force);
-            } catch (RemoteException e) {
+            } catch (RemoteException | AutoscalerServiceApplicationDefinitionExceptionException
+                    | AutoscalerServiceRemoteExceptionException |
+                    AutoscalerServiceStratosManagerServiceApplicationSignUpExceptionExceptionException e) {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
-                String message = "Could not undeploy application: [application-id] " + applicationId;
+            } catch (AutoscalerServiceUnremovableApplicationExceptionException e) {
+                String message = "Could not undeploy application: [application-id] " + applicationId + " since it has" +
+                        " application signups";
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
