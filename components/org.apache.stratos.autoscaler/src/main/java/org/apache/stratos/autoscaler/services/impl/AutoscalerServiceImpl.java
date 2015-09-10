@@ -200,6 +200,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         //updating the applicationContext
         AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
+        //Send application Updated event
+        ApplicationsEventPublisher.sendApplicationUpdated(application);
+
         if (log.isInfoEnabled()) {
             log.info(String.format("Application updated successfully: [application-id] %s",
                     applicationId));
