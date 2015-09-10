@@ -144,6 +144,10 @@ RESTCalls = new function(){
         return this.send("POST","/applications/"+applicationId+"/signup",signupJSON);
     };
 
+   this.removeSignupApplication = function(applicationId){
+        return this.send("DELETE","/applications/"+applicationId+"/signup");
+    };
+
     this.forceUndeployApplication = function(applicationId){
         return this.send("POST","/applications/"+applicationId+"/undeploy?force=true",{});
     };

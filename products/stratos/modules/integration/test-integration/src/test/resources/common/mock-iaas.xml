@@ -1,0 +1,123 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<mock-iaas enabled="true">
+    <health-statistics>
+        <cartridge type="tomcat">
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20,30,40,50,60,70,50,40,30,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>
+        <cartridge type="c7-single-cluster-scaling-test">
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>60,60,10,10,10,10,10,10</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>60,60,10,10,10,10,10,10</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>
+        <cartridge type="c7-partition-round-robin-test">
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="stop">
+                <!-- Sample values -->
+                <sampleValues>20,20,20,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>30</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="stop">
+                <!-- Sample values -->
+                <sampleValues>20,20,20,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>30</sampleDuration>
+            </pattern>
+        </cartridge>
+        <!--<cartridge type="c3-group-termination-behavior-test">
+            &lt;!&ndash; factor:memory-consumption|load-average|requests-in-flight&ndash;&gt;
+            &lt;!&ndash; mode:loop|continue|stop &ndash;&gt;
+            &lt;!&ndash; Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics &ndash;&gt;
+            <pattern factor="memory-consumption" mode="stop">
+                &lt;!&ndash; Sample values &ndash;&gt;
+                <sampleValues>20,20,20,</sampleValues>
+                &lt;!&ndash; Duration of each sample value in seconds &ndash;&gt;
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="stop">
+                &lt;!&ndash; Sample values &ndash;&gt;
+                <sampleValues>20,20,20</sampleValues>
+                &lt;!&ndash; Duration of each sample value in seconds &ndash;&gt;
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>-->
+        <cartridge type="php">
+            <!-- factor:memory-consumption|load-average|requests-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20,30,40,50,60,70,50,40,30,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>
+    </health-statistics>
+</mock-iaas>

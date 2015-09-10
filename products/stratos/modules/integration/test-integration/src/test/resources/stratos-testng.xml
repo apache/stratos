@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="StratosIntegrationSuite">
+    <listeners>
+        <listener class-name="org.wso2.carbon.automation.engine.testlisteners.TestExecutionListener"/>
+        <listener class-name="org.wso2.carbon.automation.engine.testlisteners.TestSuiteListener"/>
+        <listener class-name="org.wso2.carbon.automation.engine.testlisteners.TestTransformerListener"/>
+        <listener class-name="org.wso2.carbon.automation.engine.testlisteners.TestManagerListener"/>
+        <listener class-name="org.wso2.carbon.automation.engine.testlisteners.TestReportListener"/>
+    </listeners>
+    <test name="UserTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.users.UserTest"/>
+        </classes>
+    </test>
+    <test name="CartridgeTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.group.CartridgeTest"/>
+        </classes>
+    </test>
+    <test name="CartridgeGroupTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.group.CartridgeGroupTest"/>
+        </classes>
+    </test>
+    <test name="NetworkPartitionTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.policies.NetworkPartitionTest"/>
+        </classes>
+    </test>
+    <test name="ApplicationPolicyTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.policies.ApplicationPolicyTest"/>
+        </classes>
+    </test>
+    <test name="DeploymentPolicyTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.policies.DeploymentPolicyTest"/>
+        </classes>
+    </test>
+    <test name="AutoscalingPolicyTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.policies.AutoscalingPolicyTest"/>
+        </classes>
+    </test>
+    <test name="SampleApplicationsTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.SampleApplicationsTest"/>
+        </classes>
+    </test>
+    <test name="ApplicationUpdateTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.ApplicationUpdateTest"/>
+        </classes>
+    </test>
+    <test name="SingleClusterScalingTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest"/>
+        </classes>
+    </test>
+    <test name="ApplicationBurstingTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest"/>
+        </classes>
+    </test>
+    <test name="PartitionRoundRobinClusterTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest"/>
+        </classes>
+    </test>
+    <test name="GroupStartupOrderTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.GroupStartupOrderTest"/>
+        </classes>
+    </test>
+    <!--test name="GroupTerminationBehaviorTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest"/>
+        </classes>
+    </test-->
+</suite>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -16,23 +17,11 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos</artifactId>
-        <version>4.1.3-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
 
-    <artifactId>stratos-integration</artifactId>
-    <packaging>pom</packaging>
-    <name>Apache Stratos - Integration Aggregation Module</name>
-    <description>Apache Stratos - Integration Aggregation Module</description>
-
-    <modules>
-        <module>test-common</module>
-        <module>test-integration</module>
-    </modules>
-</project>
+<!-- Apache thrift client configuration for publishing statistics to WSO2 CEP -->
+<thriftClientConfiguration>
+    <username>admin</username>
+    <password>admin</password>
+    <ip>localhost</ip>
+    <port>THRIFT_DYNAMIC_PORT</port>
+</thriftClientConfiguration>
