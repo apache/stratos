@@ -124,12 +124,17 @@
                                                 data-url="{{url ""}}/applications/{{applicationId}}/" > View
                                         </button>
                                         {{#if multiTenant}}
-                                            {{#unless signUpsExist}}
+                                            {{#if signUpsExist}}
+                                                <button class="btn btn-warning btn-lg hover-remove-signup" type="button"
+                                                        id="{{applicationId}}"
+                                                        data-appid='{{applicationName}}' >Remove Signup
+                                                </button>
+                                            {{else}}
                                                 <button class="btn btn-warning btn-lg hover-signup" type="button"
                                                         id="signup_{{applicationId}}"
                                                         data-url="{{url ""}}/applications/{{applicationId}}/signup" > Signup
                                                 </button>
-                                            {{/unless}}
+                                            {{/if}}
                                         {{/if}}
                                     </div>
                                     <div class="bottom-bar-wrapper">
@@ -141,12 +146,17 @@
                                                     data-url="{{url ""}}/applications/{{applicationId}}/" > View
                                             </button>
                                             {{#if multiTenant}}
-                                                {{#unless signUpsExist}}
+                                                {{#if signUpsExist}}
+                                                    <button class="btn btn-warning btn-lg hover-remove-signup" type="button"
+                                                            id="{{applicationId}}"
+                                                            data-appid='{{applicationName}}' >Remove Signup
+                                                    </button>
+                                                {{else}}
                                                     <button class="btn btn-warning btn-lg hover-signup" type="button"
                                                             id="signup_{{applicationId}}"
                                                             data-url="{{url ""}}/applications/{{applicationId}}/signup" > Signup
                                                     </button>
-                                                {{/unless}}
+                                                {{/if}}
                                             {{/if}}
                                         </div>
                                 {{else}}
@@ -472,4 +482,48 @@
             ]
         });
     });
+
+      $('.general-table').on('click', '.hover-remove-signup', function (event) {
+
+        var payload =$(this).attr("id");
+        noty({
+            layout: 'bottomRight',
+            type: 'warning',
+            text: 'Are you sure you want to remove signup for application: <strong>'+$(this).attr("id") + "</strong> ?",
+            buttons: [
+                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                    var formtype = 'unsignupapplication';
+                    $noty.close();
+
+                    $.ajax({
+                        type: "POST",
+                        url: caramel.context + "/controllers/applications/application_requests.jag",
+                        dataType: 'json',
+                        data: { "applicationId": payload, "formtype": formtype },
+                        success: function (data) {
+                            if (data.status == 'error') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                            } else if (data.status == 'warning') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                            } else {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                            }
+                            window.setTimeout(function(){
+                                location.reload();
+                            }, 1000);
+                        }
+                    }).always(function () {
+
+                    });
+
+                }
+                },
+                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                    $noty.close();
+                }
+                }
+            ]
+        });
+    });
+
 </script>
