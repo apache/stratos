@@ -17,9 +17,11 @@
 package org.apache.stratos.integration.common;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.automation.engine.exceptions.AutomationFrameworkException;
@@ -36,7 +38,11 @@ import org.wso2.carbon.automation.extensions.servers.utils.ServerLogReader;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +63,13 @@ public class StratosTestServerManager extends TestServerManager {
     public static final String IDENTITY_FILENAME = "identity.xml";
     private static final String LOG4J_PROPERTIES_FILENAME = "log4j.properties";
     private static final String THRIFT_CLIENT_CONFIG_FILENAME = "thrift-client-config.xml";
+    private int activeMQDynamicPort;
+    private int stratosSecureDynamicPort;
+    private int stratosDynamicPort;
+    private int thriftDynamicPort;
+    private int thriftSecureDynamicPort;
+    private String webAppURL;
+    private String webAppURLHttps;
 
     public StratosTestServerManager(AutomationContext context) {
         super(context);
@@ -117,10 +130,13 @@ public class StratosTestServerManager extends TestServerManager {
     public void configureServer() throws AutomationFrameworkException {
         try {
             log.info("Configuring server using CARBON_HOME: " + carbonHome);
-            copyArtifacts(carbonHome);
+            copyArtifacts();
+
+            // set truststores and jndi.properties path
+            setSystemproperties();
         }
         catch (IOException e) {
-            log.error("Could not configure Stratos server", e);
+            throw new AutomationFrameworkException("Could not configure Stratos server", e);
         }
     }
 
@@ -128,24 +144,24 @@ public class StratosTestServerManager extends TestServerManager {
         super.stopServer();
     }
 
-    protected void copyArtifacts(String carbonHome) throws IOException {
+    protected void copyArtifacts() throws IOException {
         String commonResourcesPath = Util.getCommonResourcesFolderPath();
-        copyConfigFile(carbonHome, commonResourcesPath, MOCK_IAAS_XML_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, JNDI_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, LOG4J_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, CLOUD_CONTROLLER_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, AUTOSCALER_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, CARTRIDGE_CONFIG_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, IDENTITY_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, THRIFT_CLIENT_CONFIG_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(carbonHome, commonResourcesPath, SCALING_DROOL_FILENAME,
+        copyConfigFile(commonResourcesPath, MOCK_IAAS_XML_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, JNDI_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, LOG4J_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, CLOUD_CONTROLLER_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, AUTOSCALER_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, CARTRIDGE_CONFIG_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, IDENTITY_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, THRIFT_CLIENT_CONFIG_FILENAME, Util.CARBON_CONF_PATH);
+        copyConfigFile(commonResourcesPath, SCALING_DROOL_FILENAME,
                 Util.CARBON_CONF_PATH + PATH_SEP + "drools");
-        copyConfigFile(carbonHome, commonResourcesPath, JMS_OUTPUT_ADAPTER_FILENAME,
+        copyConfigFile(commonResourcesPath, JMS_OUTPUT_ADAPTER_FILENAME,
                 "repository" + PATH_SEP + "deployment" + PATH_SEP + "server" + PATH_SEP + "outputeventadaptors");
 
     }
 
-    private void copyConfigFile(String carbonHome, String filePath, String fileName, String destinationFolder)
+    private void copyConfigFile(String filePath, String fileName, String destinationFolder)
             throws IOException {
         assertNotNull(carbonHome, "CARBON_HOME is null");
         String fileAbsPath = filePath + PATH_SEP + fileName;
@@ -155,6 +171,94 @@ public class StratosTestServerManager extends TestServerManager {
         File destFile = new File(carbonHome + PATH_SEP + destinationFolder + PATH_SEP + fileName);
         FileUtils.copyFile(srcFile, destFile);
         log.info("Copying file [source] " + srcFile.getAbsolutePath() + " to [dest] " + destFile.getAbsolutePath());
+
+        // replace placeholders with dynamic values
+        String content = IOUtils.toString(new FileInputStream(destFile), StandardCharsets.UTF_8.displayName());
+        content = content.replaceAll(Util.ACTIVEMQ_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(activeMQDynamicPort));
+        content = content.replaceAll(Util.STRATOS_SECURE_DYNAMIC_PORT_PLACEHOLDER,
+                String.valueOf(stratosSecureDynamicPort));
+        content = content.replaceAll(Util.STRATOS_DYNAMIC_PORT_PLACEHOLDER,
+                String.valueOf(stratosDynamicPort));
+        content = content.replaceAll(Util.THRIFT_SECURE_DYNAMIC_PORT_PLACEHOLDER,
+                String.valueOf(thriftSecureDynamicPort));
+        content = content.replaceAll(Util.THRIFT_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(thriftDynamicPort));
+        IOUtils.write(content, new FileOutputStream(destFile), StandardCharsets.UTF_8.displayName());
+    }
+
+    public void setSystemproperties() throws AutomationFrameworkException {
+        URL resourceUrl = getClass().getResource(File.separator + "keystores" + File.separator
+                + "products" + File.separator + "wso2carbon.jks");
+        System.setProperty("javax.net.ssl.trustStore", resourceUrl.getPath());
+        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+        log.info("trustStore set to " + resourceUrl.getPath());
+
+        // Set jndi.properties.dir system property for initializing event receivers
+        System.setProperty("jndi.properties.dir", carbonHome + PATH_SEP + Util.CARBON_CONF_PATH);
+        try {
+            String autoscalerServiceURL = webAppURLHttps + "/services/AutoscalerService";
+            System.setProperty(StratosConstants.AUTOSCALER_SERVICE_URL, autoscalerServiceURL);
+            log.info("Autoscaler service URL set to " + autoscalerServiceURL);
+        }
+        catch (Exception e) {
+            throw new AutomationFrameworkException("Could not set autoscaler service URL system property", e);
+        }
+    }
+
+    public int getActiveMQDynamicPort() {
+        return activeMQDynamicPort;
+    }
+
+    public void setActiveMQDynamicPort(int activeMQDynamicPort) {
+        this.activeMQDynamicPort = activeMQDynamicPort;
+    }
+
+    public int getStratosSecureDynamicPort() {
+        return stratosSecureDynamicPort;
+    }
+
+    public void setStratosSecureDynamicPort(int stratosSecureDynamicPort) {
+        this.stratosSecureDynamicPort = stratosSecureDynamicPort;
+    }
+
+    public int getStratosDynamicPort() {
+        return stratosDynamicPort;
+    }
+
+    public void setStratosDynamicPort(int stratosDynamicPort) {
+        this.stratosDynamicPort = stratosDynamicPort;
+    }
+
+    public int getThriftDynamicPort() {
+        return thriftDynamicPort;
+    }
+
+    public void setThriftDynamicPort(int thriftDynamicPort) {
+        this.thriftDynamicPort = thriftDynamicPort;
+    }
+
+    public int getThriftSecureDynamicPort() {
+        return thriftSecureDynamicPort;
+    }
+
+    public void setThriftSecureDynamicPort(int thriftSecureDynamicPort) {
+        this.thriftSecureDynamicPort = thriftSecureDynamicPort;
+    }
+
+    public String getWebAppURL() {
+        return webAppURL;
+    }
+
+    public String getWebAppURLHttps() {
+        return webAppURLHttps;
+    }
+
+    public void setWebAppURL(String webAppURL) {
+        this.webAppURL = webAppURL;
+    }
+
+    public void setWebAppURLHttps(String webAppURLHttps) {
+        this.webAppURLHttps = webAppURLHttps;
     }
 }
 

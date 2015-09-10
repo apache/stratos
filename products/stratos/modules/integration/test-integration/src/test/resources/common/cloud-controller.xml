@@ -75,7 +75,7 @@
             <provider>mock</provider>
             <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>
-            <property name="api.endpoint" value="https://localhost:9543/mock-iaas/api"/>
+            <property name="api.endpoint" value="https://localhost:STRATOS_SECURE_DYNAMIC_PORT/mock-iaas/api"/>
         </iaasProvider>
     </iaasProviders>
 </cloudController>

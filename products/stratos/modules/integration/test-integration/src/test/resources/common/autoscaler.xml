@@ -21,19 +21,19 @@
     <autoscaler>
         <cloudController>
             <hostname>localhost</hostname>
-            <port>9543</port>
+            <port>STRATOS_SECURE_DYNAMIC_PORT</port>
             <!-- CC client timout in ms -->
             <clientTimeout>300000</clientTimeout>
         </cloudController>
         <stratosManager>
             <hostname>localhost</hostname>
-            <port>9543</port>
+            <port>STRATOS_SECURE_DYNAMIC_PORT</port>
             <!-- SM client timeout in ms -->
             <clientTimeout>300000</clientTimeout>
         </stratosManager>
 	<identity>
                 <hostname>localhost</hostname>
-                <port>9543</port>                    
+                <port>STRATOS_SECURE_DYNAMIC_PORT</port>
                 <clientTimeout>300000</clientTimeout>
         </identity>
         <member>

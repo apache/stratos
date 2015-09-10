@@ -31,15 +31,15 @@ import org.wso2.carbon.automation.engine.extensions.ExecutionListenerExtension;
 import org.wso2.carbon.automation.extensions.ExtensionConstants;
 
 import java.io.File;
+import java.net.URI;
 
 import static org.testng.Assert.assertNotNull;
 
 public class StratosServerExtension extends ExecutionListenerExtension {
     private static final Log log = LogFactory.getLog(StratosServerExtension.class);
-    public static final String PATH_SEP = File.separator;
     private TestLogAppender testLogAppender;
-    private StratosTestServerManager carbonTestServerManager;
-    private BrokerService broker;
+    private static StratosTestServerManager stratosTestServerManager;
+    private static BrokerService broker;
 
     @Override
     public void initiate() throws AutomationFrameworkException {
@@ -51,65 +51,78 @@ public class StratosServerExtension extends ExecutionListenerExtension {
     public void onExecutionStart() throws AutomationFrameworkException {
         Logger.getRootLogger().addAppender(testLogAppender);
         Logger.getRootLogger().setLevel(Level.INFO);
-        try {
-            String activemqBindAddress = getParameters().get(Util.ACTIVEMQ_BIND_ADDRESS);
-            long time1 = System.currentTimeMillis();
-            log.info("Starting ActiveMQ...");
-            broker.setDataDirectory(StratosServerExtension.class.getResource(File.separator).getPath() +
-                    File.separator + ".." + File.separator + "activemq-data");
-            broker.setBrokerName("testBroker");
-            broker.addConnector(activemqBindAddress);
-            broker.start();
-            long time2 = System.currentTimeMillis();
-            log.info(String.format("ActiveMQ started in %d sec", (time2 - time1) / 1000));
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Could not start ActiveMQ", e);
-        }
+        int activeMQDynamicPort = startActiveMQServer();
+        startStratosServer(activeMQDynamicPort);
+    }
 
+    private void startStratosServer(int activeMQDynamicPort) throws AutomationFrameworkException {
         try {
             log.info("Setting up Stratos server...");
             AutomationContext stratosAutomationCtx =
                     new AutomationContext("STRATOS", "stratos-001", TestUserMode.SUPER_TENANT_ADMIN);
-            String stratosBackendURL = stratosAutomationCtx.getContextUrls().getWebAppURL();
-            //if port offset is not set, setting it to 0
-            if (getParameters().get(ExtensionConstants.SERVER_STARTUP_PORT_OFFSET_COMMAND) == null) {
-                getParameters().put(ExtensionConstants.SERVER_STARTUP_PORT_OFFSET_COMMAND, "0");
+            String stratosInitPortOffsetStr =
+                    getParameters().get(ExtensionConstants.SERVER_STARTUP_PORT_OFFSET_COMMAND);
+            if (stratosInitPortOffsetStr == null) {
+                throw new AutomationFrameworkException("Port offset not found in automation.xml");
             }
-            carbonTestServerManager =
+            int stratosInitPortOffset = Integer.parseInt(stratosInitPortOffsetStr);
+            int stratosInitSecurePort = Util.STRATOS_DEFAULT_SECURE_PORT + stratosInitPortOffset;
+            int stratosInitPort = Util.STRATOS_DEFAULT_PORT + stratosInitPortOffset;
+            int thriftInitPort = Util.THRIFT_DEFAULT_PORT + stratosInitPortOffset;
+            int thriftInitSecurePort = Util.THRIFT_DEFAULT_SECURE_PORT + stratosInitPortOffset;
+            int rmiRegistryPort = Util.STRATOS_DEFAULT_RMI_REGISTRY_PORT + stratosInitPortOffset;
+            int rmiServerPort = Util.STRATOS_DEFAULT_RMI_SERVER_PORT + stratosInitPortOffset;
+
+            while (!Util.isPortAvailable(stratosInitPort) || !Util.isPortAvailable(stratosInitSecurePort) ||
+                    !Util.isPortAvailable(thriftInitPort) || !Util.isPortAvailable(thriftInitSecurePort) ||
+                    !Util.isPortAvailable(rmiRegistryPort) || !Util.isPortAvailable(rmiServerPort)) {
+                stratosInitPortOffset++;
+                stratosInitSecurePort++;
+                stratosInitPort++;
+                thriftInitPort++;
+                thriftInitSecurePort++;
+                rmiRegistryPort++;
+                rmiServerPort++;
+            }
+            getParameters()
+                    .put(ExtensionConstants.SERVER_STARTUP_PORT_OFFSET_COMMAND, String.valueOf(stratosInitPortOffset));
+            stratosTestServerManager =
                     new StratosTestServerManager(stratosAutomationCtx, System.getProperty(Util.CARBON_ZIP_KEY),
                             getParameters());
+            stratosTestServerManager.setStratosDynamicPort(stratosInitPort);
+            stratosTestServerManager.setStratosSecureDynamicPort(stratosInitSecurePort);
+            stratosTestServerManager.setThriftDynamicPort(thriftInitPort);
+            stratosTestServerManager.setThriftSecureDynamicPort(thriftInitSecurePort);
+            stratosTestServerManager.setActiveMQDynamicPort(activeMQDynamicPort);
+            stratosTestServerManager.setWebAppURL("http://localhost:" + stratosInitPort);
+            stratosTestServerManager.setWebAppURLHttps("https://localhost:" + stratosInitSecurePort);
 
-            log.info("Stratos server port offset: " + carbonTestServerManager.getPortOffset());
-            log.info("Stratos backend URL: " + stratosBackendURL);
-
+            log.info("Stratos server dynamic port offset: " + stratosTestServerManager.getPortOffset());
+            log.info("Stratos dynamic backend URL: " + stratosTestServerManager.getWebAppURL());
+            log.info("Stratos secure dynamic backend URL: " + stratosTestServerManager.getWebAppURLHttps());
             long time3 = System.currentTimeMillis();
-            String carbonHome = carbonTestServerManager.startServer();
+            String carbonHome = stratosTestServerManager.startServer();
             assertNotNull(carbonHome, "CARBON_HOME is null");
-
             while (!serverStarted()) {
                 log.info("Waiting for topology to be initialized...");
                 Thread.sleep(5000);
             }
-
             while (!mockServiceStarted()) {
                 log.info("Waiting for mock service to be initialized...");
                 Thread.sleep(1000);
             }
-
             long time4 = System.currentTimeMillis();
             log.info(String.format("Stratos server started in %d sec", (time4 - time3) / 1000));
-
         }
         catch (Exception e) {
-            throw new RuntimeException("Could not start Stratos server", e);
+            throw new AutomationFrameworkException("Could not start Stratos server", e);
         }
     }
 
     @Override
     public void onExecutionFinish() throws AutomationFrameworkException {
         try {
-            carbonTestServerManager.stopServer();
+            stratosTestServerManager.stopServer();
             log.info("Stopped Stratos server");
         }
         catch (Exception e) {
@@ -122,6 +135,36 @@ public class StratosServerExtension extends ExecutionListenerExtension {
         }
         catch (Exception e) {
             log.error("Could not stop ActiveMQ server", e);
+        }
+    }
+
+    private int startActiveMQServer() throws AutomationFrameworkException {
+        try {
+            String activemqBindAddress = getParameters().get(Util.ACTIVEMQ_BIND_ADDRESS);
+            if (activemqBindAddress == null) {
+                throw new AutomationFrameworkException("ActiveMQ bind address not found in automation.xml");
+            }
+            URI givenURI = new URI(activemqBindAddress);
+            int initAMQPort = givenURI.getPort();
+            // dynamically pick an open port starting from initial port given in automation.xml
+            while (!Util.isPortAvailable(initAMQPort)) {
+                initAMQPort++;
+            }
+            URI dynamicURL = new URI(givenURI.getScheme(), givenURI.getUserInfo(), givenURI.getHost(), initAMQPort,
+                    givenURI.getPath(), givenURI.getQuery(), givenURI.getFragment());
+            long time1 = System.currentTimeMillis();
+            log.info("Starting ActiveMQ with dynamic bind address: " + dynamicURL.toString());
+            broker.setDataDirectory(StratosServerExtension.class.getResource(File.separator).getPath() +
+                    File.separator + ".." + File.separator + "activemq-data");
+            broker.setBrokerName("testBroker");
+            broker.addConnector(dynamicURL.toString());
+            broker.start();
+            long time2 = System.currentTimeMillis();
+            log.info(String.format("ActiveMQ started in %d sec", (time2 - time1) / 1000));
+            return initAMQPort;
+        }
+        catch (Exception e) {
+            throw new AutomationFrameworkException("Could not start ActiveMQ", e);
         }
     }
 
@@ -141,5 +184,13 @@ public class StratosServerExtension extends ExecutionListenerExtension {
             }
         }
         return false;
+    }
+
+    public static StratosTestServerManager getStratosTestServerManager() {
+        return stratosTestServerManager;
+    }
+
+    public static BrokerService getBroker() {
+        return broker;
     }
 }

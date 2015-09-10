@@ -61,8 +61,8 @@
 	</Identity>
 
 	<OpenID>
-		<OpenIDServerUrl>https://localhost:9543/openidserver</OpenIDServerUrl>
-		<OpenIDUserPattern>https://localhost:9543/openid/</OpenIDUserPattern>
+		<OpenIDServerUrl>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/openidserver</OpenIDServerUrl>
+		<OpenIDUserPattern>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/openid/</OpenIDUserPattern>
 		<!-- If the users must be prompted for approval -->
 		<OpenIDSkipUserConsent>false</OpenIDSkipUserConsent>
 		<!-- Expiry time of the OpenID RememberMe token in minutes -->
@@ -79,9 +79,9 @@
 	</OpenID>
 
 	<OAuth>
-		<RequestTokenUrl>https://localhost:9543/oauth/request-token</RequestTokenUrl>
-		<AccessTokenUrl>https://localhost:9543/oauth/access-token</AccessTokenUrl>
-		<AuthorizeUrl>https://localhost:9543/oauth/authorize-url</AuthorizeUrl>
+		<RequestTokenUrl>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/oauth/request-token</RequestTokenUrl>
+		<AccessTokenUrl>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/oauth/access-token</AccessTokenUrl>
+		<AuthorizeUrl>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/oauth/authorize-url</AuthorizeUrl>
 		<!-- Default validity period for Authorization Code in seconds -->
 		<AuthorizationCodeDefaultValidityPeriod>300</AuthorizationCodeDefaultValidityPeriod>
 		<!-- Default validity period for user access tokens in seconds -->
@@ -175,7 +175,7 @@
 		</SAML2Grant>
                 <OpenIDConnect>
                          <IDTokenBuilder>org.wso2.carbon.identity.openidconnect.DefaultIDTokenBuilder</IDTokenBuilder>
-                         <IDTokenIssuerID>https://localhost:9543/oauth2endpoints/token</IDTokenIssuerID>
+                         <IDTokenIssuerID>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/oauth2endpoints/token</IDTokenIssuerID>
                          <IDTokenSubjectClaim>http://wso2.org/claims/givenname</IDTokenSubjectClaim>
                          <IDTokenCustomClaimsCallBackHandler>org.wso2.carbon.identity.openidconnect.SAMLAssertionClaimsCallback</IDTokenCustomClaimsCallBackHandler>
                          <IDTokenExpiration>-1</IDTokenExpiration>
@@ -203,7 +203,7 @@
 
 	<SSOService>
 		<EntityId>localhost</EntityId>
-		<IdentityProviderURL>https://localhost:9543/samlsso</IdentityProviderURL>
+		<IdentityProviderURL>https://localhost:STRATOS_SECURE_DYNAMIC_PORT/samlsso</IdentityProviderURL>
 		<SingleLogoutRetryCount>5</SingleLogoutRetryCount>
 		<SingleLogoutRetryInterval>60000</SingleLogoutRetryInterval> <!-- in milli seconds -->
 		<TenantPartitioningEnabled>false</TenantPartitioningEnabled>
