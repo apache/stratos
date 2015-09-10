@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.messaging.topology;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -455,7 +456,7 @@ public class TopologyBuilder {
                 Cluster cluster = service.getCluster(memberContext.getClusterId());
                 String clusterId = cluster.getClusterId();
                 ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-                List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+                List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
 
                 if (kubernetesServices != null) {
                     cluster.setKubernetesServices(kubernetesServices);
@@ -481,7 +482,7 @@ public class TopologyBuilder {
         }
     }
 
-    private static int findKubernetesServicePort(String clusterId, List<KubernetesService> kubernetesServices,
+    private static int findKubernetesServicePort(String clusterId, Collection<KubernetesService> kubernetesServices,
                                                  PortMapping portMapping) {
         for (KubernetesService kubernetesService : kubernetesServices) {
             if (kubernetesService.getProtocol().equals(portMapping.getProtocol())) {
@@ -606,7 +607,7 @@ public class TopologyBuilder {
                     List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                     String clusterId = cluster.getClusterId();
                     ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-                    List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+                    Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
 
                     for (PortMapping portMapping : portMappings) {
                         if (kubernetesServices != null) {
@@ -853,7 +854,7 @@ public class TopologyBuilder {
                         clusterStatusClusterActivatedEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
-            List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+            Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
 
             if (kubernetesServices != null) {
                

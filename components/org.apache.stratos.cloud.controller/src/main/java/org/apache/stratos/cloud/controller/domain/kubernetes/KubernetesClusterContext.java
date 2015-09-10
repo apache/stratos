@@ -21,10 +21,10 @@ package org.apache.stratos.cloud.controller.domain.kubernetes;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
+import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -33,28 +33,28 @@ import java.util.concurrent.atomic.AtomicLong;
 public class KubernetesClusterContext implements Serializable {
 
     private static final long serialVersionUID = -802025758806195791L;
+
     private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
 
-    // id of the Kubernetes cluster
     private String kubernetesClusterId;
     private int upperPort;
     private int lowerPort;
-    // kubernetes master ip
     private String masterIp;
     private String masterPort;
-    // available list of ports
-    private List<Integer> servicePorts;
-    // kubernetes client API instance
+    private List<Integer> servicePortSequence;
+    private Map<String, KubernetesService> kubernetesServices;
     private transient KubernetesApiClient kubApi;
     private AtomicLong serviceSeqNo;
     private AtomicLong podSeqNo;
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
-        servicePorts = new ArrayList<Integer>();
+        this.servicePortSequence = new ArrayList<>();
+        this.kubernetesServices = new HashMap<>();
+
         this.lowerPort = lowerPort;
         this.upperPort = upperPort;
         // Generate the ports
-        generateServicePorts(lowerPort, upperPort);
+        initializeServicePortSequence(lowerPort, upperPort);
         this.kubernetesClusterId = id;
         this.masterIp = masterIp;
         this.masterPort = masterPort;
@@ -77,31 +77,56 @@ public class KubernetesClusterContext implements Serializable {
     }
 
     public List<Integer> getServicePorts() {
-        return servicePorts;
+        return servicePortSequence;
     }
 
     public void setServicePorts(List<Integer> servicePorts) {
-        this.servicePorts = servicePorts;
+        this.servicePortSequence = servicePorts;
     }
 
+    /***
+     * Get next available service port.
+     * @return
+     */
     public int getNextServicePort() {
-        if (servicePorts.isEmpty()) {
+        if (servicePortSequence.isEmpty()) {
             return -1;
         }
-        return servicePorts.remove(0);
+        return servicePortSequence.remove(0);
     }
 
+    /**
+     * Deallocate a service port by adding it again to the sequence.
+     * @param port
+     */
     public void deallocatePort(int port) {
-        if (!servicePorts.contains(port)) {
-            servicePorts.add(port);
-            // TODO Sort elements
+        if (!servicePortSequence.contains(port)) {
+            servicePortSequence.add(port);
+            Collections.sort(servicePortSequence);
         }
     }
 
-    private void generateServicePorts(int lowerPort, int upperPort) {
+    /**
+     * Initialize service port sequence according to the given port range.
+     * @param lowerPort
+     * @param upperPort
+     */
+    private void initializeServicePortSequence(int lowerPort, int upperPort) {
         for (int port = lowerPort; port <= upperPort; port++) {
-            servicePorts.add(port);
+            servicePortSequence.add(port);
         }
+    }
+
+    public void addKubernetesService(KubernetesService service) {
+        kubernetesServices.put(service.getId(), service);
+    }
+
+    public void removeKubernetesService(String serviceName) {
+        kubernetesServices.remove(serviceName);
+    }
+
+    public Collection<KubernetesService> getKubernetesServices() {
+        return kubernetesServices.values();
     }
 
     public String getMasterIp() {
@@ -151,7 +176,7 @@ public class KubernetesClusterContext implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((servicePorts == null) ? 0 : servicePorts.hashCode());
+        result = prime * result + ((servicePortSequence == null) ? 0 : servicePortSequence.hashCode());
         result = prime * result + ((kubernetesClusterId == null) ? 0 : kubernetesClusterId.hashCode());
         result = prime * result + lowerPort;
         result = prime * result + ((masterIp == null) ? 0 : masterIp.hashCode());
@@ -169,10 +194,10 @@ public class KubernetesClusterContext implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         KubernetesClusterContext other = (KubernetesClusterContext) obj;
-        if (servicePorts == null) {
-            if (other.servicePorts != null)
+        if (servicePortSequence == null) {
+            if (other.servicePortSequence != null)
                 return false;
-        } else if (!servicePorts.equals(other.servicePorts))
+        } else if (!servicePortSequence.equals(other.servicePortSequence))
             return false;
         if (kubernetesClusterId == null) {
             if (other.kubernetesClusterId != null)

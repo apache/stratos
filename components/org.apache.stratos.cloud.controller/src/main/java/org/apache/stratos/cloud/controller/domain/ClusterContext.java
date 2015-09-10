@@ -23,7 +23,9 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holds runtime data of a Cluster.
@@ -44,12 +46,13 @@ public class ClusterContext implements Serializable {
     // on an unregistration.
     private long timeoutInMillis;
     private Properties properties;
-    private List<KubernetesService> kubernetesServices;
+    private Map<String, KubernetesService> kubernetesServices;
     private String kubernetesClusterId;
 
     public ClusterContext(String applicationId, String cartridgeType, String clusterId, String payload, String hostName,
                           boolean isLbCluster, Properties properties) {
 
+        this.kubernetesServices = new HashMap<>();
         this.applicationId = applicationId;
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -115,12 +118,16 @@ public class ClusterContext implements Serializable {
         this.properties = properties;
     }
 
-    public List<KubernetesService> getKubernetesServices() {
-        return kubernetesServices;
+    public Collection<KubernetesService> getKubernetesServices() {
+        return kubernetesServices.values();
     }
 
-    public void setKubernetesServices(List<KubernetesService> kubernetesServices) {
-        this.kubernetesServices = kubernetesServices;
+    public void addKubernetesService(KubernetesService kubernetesService) {
+        this.kubernetesServices.put(kubernetesService.getId(), kubernetesService);
+    }
+
+    public void removeKubernetesService(String serviceName) {
+        kubernetesServices.remove(serviceName);
     }
 
     public void setKubernetesClusterId(String kubernetesClusterId) {
