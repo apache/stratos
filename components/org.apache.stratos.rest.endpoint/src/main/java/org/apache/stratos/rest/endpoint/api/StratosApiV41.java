@@ -1300,6 +1300,14 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
 
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+        int tenantId= CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (applicationDefinition.isMultiTenant() && (tenantId != -1234)) {
+            String message = String.format(
+                    "Multi-tenant applications can only be deployed by super tenant: [application-id] %s",
+                    applicationId);
+            log.error(message);
+            throw new RestAPIException(message);
+        }
         if (applicationDefinition == null) {
             String message = String.format("Application does not exist [application-id] %s", applicationId);
             log.error(message);
@@ -1313,6 +1321,7 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.CONFLICT).entity(new ResponseMessageBean(
                     ResponseMessageBean.ERROR, message)).build();
         }
+
         StratosApiV41Utils.undeployApplication(applicationId, force);
         return Response.accepted().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Application undeploy process started successfully: [application-id] %s",
