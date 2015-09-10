@@ -19,10 +19,7 @@
 
 package org.apache.stratos.cloud.controller.iaases.kubernetes;
 
-import io.fabric8.kubernetes.api.model.ContainerPort;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -46,10 +43,7 @@ import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -500,18 +494,27 @@ public class KubernetesIaas extends Iaas {
                 .getClusterPortMappings(clusterContext.getApplicationId(), clusterId);
 
         if (clusterPortMappings != null) {
-            for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
+            String serviceLabel = DigestUtils.md5Hex(clusterId);
+            if(log.isDebugEnabled()) {
+                log.debug("Retrieving existing kubernetes services...");
+            }
+            List<Service> services = kubernetesApi.getServices();
 
+            for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                 // Skip if already created
                 int containerPort = clusterPortMapping.getPort();
-                if (kubernetesServiceExist(kubernetesServices, containerPort)) {
+                if (kubernetesServiceExist(services, serviceLabel, containerPort)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Kubernetes service already exists: [kubernetes-cluster] %s " +
+                                "[cluster] %s [service-label] %s [container-port] %d ",
+                                kubernetesCluster.getClusterId(), clusterId, serviceLabel, containerPort));
+                    }
                     continue;
                 }
 
                 // Find next service sequence no
                 long serviceSeqNo = kubernetesClusterContext.getServiceSeqNo().incrementAndGet();
                 String serviceId = KubernetesIaasUtil.fixSpecialCharacters("service" + "-" + (serviceSeqNo));
-                String serviceLabel = DigestUtils.md5Hex(clusterId);
 
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Creating kubernetes service: [cluster] %s [service] %s [service-label] %s " +
@@ -584,10 +587,22 @@ public class KubernetesIaas extends Iaas {
         CloudControllerContext.getInstance().persist();
     }
 
-    private boolean kubernetesServiceExist(List<KubernetesService> kubernetesServices, int port) {
-        for (KubernetesService kubernetesService : kubernetesServices) {
-            if (kubernetesService.getContainerPort() == port) {
-                return true;
+    /**
+     * Returns true if a kubernetes service exists with the given container port
+     * @param services
+     * @param serviceLabel
+     * @param containerPort
+     * @return
+     */
+    private boolean kubernetesServiceExist(List<Service> services, String serviceLabel, int containerPort) {
+        for(Service service : services) {
+            Map<String, String> labels = service.getMetadata().getLabels();
+            if((labels != null) && (labels.get(KubernetesConstants.LABEL_NAME).equals(serviceLabel))) {
+                for (ServicePort port : service.getSpec().getPorts()) {
+                    if (port.getPort() == containerPort) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
