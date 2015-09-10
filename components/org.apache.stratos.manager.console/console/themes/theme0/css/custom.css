@@ -214,7 +214,7 @@ a.btn:hover {
 }
 
 button.hover-unsubscribe, button.hover-details, button.hover-delete,button.hover-delete-group, button.b-top,
-button.hover-undeploy, button.hover-signup{
+button.hover-undeploy, button.hover-signup, button.hover-remove-signup{
     margin-top: .7em;
 }
 
