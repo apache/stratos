@@ -1908,7 +1908,6 @@ public class StratosApiV41Utils {
                     log.error(message, e);
                     throw new RestAPIException(message, e);
                 }
-            } catch (RemoteException e) {
             } catch (RemoteException | AutoscalerServiceApplicationDefinitionExceptionException
                     | AutoscalerServiceRemoteExceptionException |
                     AutoscalerServiceStratosManagerServiceApplicationSignUpExceptionExceptionException e) {
