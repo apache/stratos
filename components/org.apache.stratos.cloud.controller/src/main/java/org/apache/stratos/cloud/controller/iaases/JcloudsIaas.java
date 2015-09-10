@@ -158,7 +158,7 @@ public abstract class JcloudsIaas extends Iaas {
         instanceMetadata.setLoginPort(nodeMetadata.getLoginPort());
         if (nodeMetadata.getHardware() != null) {
             instanceMetadata.setHypervisor(nodeMetadata.getHardware().getHypervisor());
-            instanceMetadata.setRam(nodeMetadata.getHardware().getRam());
+            instanceMetadata.setRam(String.valueOf(nodeMetadata.getHardware().getRam()));
         }
         if (nodeMetadata.getOperatingSystem() != null) {
             instanceMetadata.setOperatingSystemName(nodeMetadata.getOperatingSystem().getName());

@@ -233,7 +233,7 @@ public class KubernetesIaas extends Iaas {
             updateMemberContext(memberContext, pod, kubernetesCluster);
 
             log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s " +
-                            "[pod] %s [cpu] %d [memory] %d MB",
+                            "[pod] %s [cpu] %s [memory] %s",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(),
                     memberContext.getMemberId(), memberContext.getKubernetesPodId(),
                     memberContext.getInstanceMetadata().getCpu(), memberContext.getInstanceMetadata().getRam()));
@@ -384,15 +384,15 @@ public class KubernetesIaas extends Iaas {
         }
 
         // Set default values to zero to avoid cpu and memory restrictions
-        int cpu = Integer.getInteger(KUBERNETES_CONTAINER_CPU_DEFAULT, 0);
-        int memory = Integer.getInteger(KUBERNETES_CONTAINER_MEMORY_DEFAULT, 0);
+        String cpu = System.getProperty(KUBERNETES_CONTAINER_CPU_DEFAULT, "0");
+        String memory = System.getProperty(KUBERNETES_CONTAINER_MEMORY_DEFAULT, "0");
         Property cpuProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_CPU);
         if (cpuProperty != null) {
-            cpu = Integer.parseInt(cpuProperty.getValue());
+            cpu = cpuProperty.getValue();
         }
         Property memoryProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_MEMORY);
         if (memoryProperty != null) {
-            memory = Integer.parseInt(memoryProperty.getValue());
+            memory = memoryProperty.getValue();
         }
 
         IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getType(), partition.getId());
@@ -416,14 +416,14 @@ public class KubernetesIaas extends Iaas {
         List<ContainerPort> ports = KubernetesIaasUtil.convertPortMappings(Arrays.asList(cartridge.getPortMappings()));
 
         log.info(String.format("Starting pod: [application] %s [cartridge] %s [member] %s " +
-                        "[cpu] %d [memory] %d MB",
+                        "[cpu] %s [memory] %s",
                 memberContext.getApplicationId(), memberContext.getCartridgeType(),
                 memberContext.getMemberId(), cpu, memory));
 
         kubernetesApi.createPod(podId, podLabel, dockerImage, cpu, memory, ports, environmentVariables);
 
         log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s " +
-                        "[pod] %s [pod-label] %s [cpu] %d [memory] %d MB",
+                        "[pod] %s [pod-label] %s [cpu] %s [memory] %s",
                 memberContext.getApplicationId(), memberContext.getCartridgeType(),
                 memberContext.getMemberId(), podId, podLabel, cpu, memory));
 

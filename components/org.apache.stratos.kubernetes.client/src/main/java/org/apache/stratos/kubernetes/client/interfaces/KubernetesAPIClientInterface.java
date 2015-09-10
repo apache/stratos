@@ -42,7 +42,7 @@ public interface KubernetesAPIClientInterface {
      * @param environmentVariables environment variables
      * @throws KubernetesClientException
      */
-    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory,
+    public void createPod(String podId, String podLabel, String dockerImage, String cpu, String memory,
                           List<ContainerPort> ports, List<EnvVar> environmentVariables)
             throws KubernetesClientException;
 

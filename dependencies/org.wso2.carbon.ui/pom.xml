@@ -298,7 +298,7 @@
                             <updateReleaseInfo>true</updateReleaseInfo>
                         </configuration>
                     </plugin>
-                    <plugin>
+                    <!--plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <executions>
@@ -312,7 +312,7 @@
                         <configuration>
                             <skipSource>true</skipSource>
                         </configuration>
-                    </plugin>
+                    </plugin-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>

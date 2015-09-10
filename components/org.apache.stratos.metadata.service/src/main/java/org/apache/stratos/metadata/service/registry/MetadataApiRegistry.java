@@ -38,14 +38,14 @@ import java.util.*;
  * Carbon registry implementation
  */
 
-public class CarbonRegistry implements DataStore {
+public class MetadataApiRegistry implements DataStore {
 
     private static final String mainResource = "metadata/";
-    private static Log log = LogFactory.getLog(CarbonRegistry.class);
+    private static Log log = LogFactory.getLog(MetadataApiRegistry.class);
     @Context
     HttpServletRequest httpServletRequest;
 
-    public CarbonRegistry() {
+    public MetadataApiRegistry() {
     }
 
     public List<Property> getApplicationProperties(String applicationName) throws RegistryException {
