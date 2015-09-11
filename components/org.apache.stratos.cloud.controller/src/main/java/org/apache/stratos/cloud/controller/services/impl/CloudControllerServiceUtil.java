@@ -52,7 +52,7 @@ public class CloudControllerServiceUtil {
      * Update the topology, publish statistics to BAM, remove member context
      * and persist cloud controller context.
      *
-     * @param memberContext
+     * @param memberContext MemberContext of the Member
      */
     public static void executeMemberTerminationPostProcess(MemberContext memberContext) {
         if (memberContext == null) {
@@ -86,8 +86,7 @@ public class CloudControllerServiceUtil {
     }
 
     public static boolean isValidIpAddress(String ip) {
-        boolean isValid = InetAddresses.isInetAddress(ip);
-        return isValid;
+        return InetAddresses.isInetAddress(ip);
     }
 
     public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider)

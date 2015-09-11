@@ -50,10 +50,13 @@ public class CloudControllerConfigParser {
      */
     public static void parse(OMElement documentElement) throws MalformedConfigurationFileException {
 
-        extractIaasProviders(documentElement, AxiomXpathParserUtil.getMatchingNodes(documentElement, CloudControllerConstants.IAAS_PROVIDER_XPATH));
-        extractDataPublisherConfig(documentElement, AxiomXpathParserUtil.getElement(FILE_NAME, documentElement, CloudControllerConstants.DATA_PUBLISHER_ELEMENT,
+        extractIaasProviders(documentElement, AxiomXpathParserUtil.getMatchingNodes(
+                documentElement, CloudControllerConstants.IAAS_PROVIDER_XPATH));
+        extractDataPublisherConfig(documentElement, AxiomXpathParserUtil.getElement(
+                FILE_NAME, documentElement, CloudControllerConstants.DATA_PUBLISHER_ELEMENT,
                 CloudControllerConstants.DATA_PUBLISHER_XPATH));
-        extractTopologySyncConfig(documentElement, AxiomXpathParserUtil.getElement(FILE_NAME, documentElement, CloudControllerConstants.TOPOLOGY_SYNC_ELEMENT,
+        extractTopologySyncConfig(documentElement, AxiomXpathParserUtil.getElement(
+                FILE_NAME, documentElement, CloudControllerConstants.TOPOLOGY_SYNC_ELEMENT,
                 CloudControllerConstants.TOPOLOGY_SYNC_XPATH));
     }
 
@@ -132,22 +135,26 @@ public class CloudControllerConfigParser {
             }
 
             // set cassandra info
-            childElement = AxiomXpathParserUtil.getFirstChildElement(element, CloudControllerConstants.CASSANDRA_INFO_ELEMENT);
+            childElement = AxiomXpathParserUtil.getFirstChildElement(element,
+                    CloudControllerConstants.CASSANDRA_INFO_ELEMENT);
 
             if (childElement != null) {
                 // set connection url
-                elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.CONNECTION_URL_ELEMENT);
+                elt = AxiomXpathParserUtil.getFirstChildElement(childElement,
+                        CloudControllerConstants.CONNECTION_URL_ELEMENT);
                 if (elt != null) {
                     dataPublisherConfig.setCassandraConnUrl(elt.getText());
                 }
 
                 // set user name
-                elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.USER_NAME_ELEMENT);
+                elt = AxiomXpathParserUtil.getFirstChildElement(childElement,
+                        CloudControllerConstants.USER_NAME_ELEMENT);
                 if (elt != null) {
                     dataPublisherConfig.setCassandraUser(elt.getText());
                 }
                 // set password
-                elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.PASSWORD_ELEMENT);
+                elt = AxiomXpathParserUtil.getFirstChildElement(childElement,
+                        CloudControllerConstants.PASSWORD_ELEMENT);
                 if (elt != null) {
                     String password = AxiomXpathParserUtil.resolveSecret(documentElement, elt);
                     if (password == null) {

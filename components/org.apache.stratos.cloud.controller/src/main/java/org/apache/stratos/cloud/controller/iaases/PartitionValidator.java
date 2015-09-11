@@ -34,7 +34,7 @@ public interface PartitionValidator {
      *
      * @param iaasProvider {@link IaasProvider}
      */
-    public abstract void setIaasProvider(IaasProvider iaasProvider);
+    void setIaasProvider(IaasProvider iaasProvider);
 
     /**
      * Validate the given properties for its existent in this partition.
@@ -44,5 +44,5 @@ public interface PartitionValidator {
      * @return cloned and modified {@link IaasProvider} which maps to the given partition.
      * @throws InvalidPartitionException if at least one property is evaluated to be invalid.
      */
-    public abstract IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException;
+    IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException;
 }
