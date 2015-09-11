@@ -48,7 +48,6 @@ import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -458,7 +457,7 @@ public class TopologyBuilder {
                 ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
                 List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
 
-                if (kubernetesServices != null) {
+                if (!kubernetesServices.isEmpty()) {
                     cluster.setKubernetesServices(kubernetesServices);
                 }
 
@@ -610,7 +609,7 @@ public class TopologyBuilder {
                     Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
 
                     for (PortMapping portMapping : portMappings) {
-                        if (kubernetesServices != null) {
+                        if (!kubernetesServices.isEmpty()) {
                             portValue = findKubernetesServicePort(clusterId, kubernetesServices, portMapping);
                         } else {
                             portValue = portMapping.getPort();
