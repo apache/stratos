@@ -47,7 +47,7 @@ public class GroupTerminationBehaviorTest extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/group-termination-behavior-test";
     private static final int GROUP_INACTIVE_TIMEOUT = 180000;
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment", "failed"})
     public void testTerminationBehavior() {
         try {
             log.info("----------------------Started application termination behavior test case----------------------");

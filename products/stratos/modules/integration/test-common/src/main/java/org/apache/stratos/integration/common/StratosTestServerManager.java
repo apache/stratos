@@ -101,7 +101,6 @@ public class StratosTestServerManager extends TestServerManager {
         this.carbonZip = carbonZip;
     }
 
-    // TODO: get rid of this method once startup script issue is fixed in automation engine
     public String startServer() throws AutomationFrameworkException, IOException, XPathExpressionException {
         if (this.carbonHome == null) {
             if (this.carbonZip == null) {

@@ -40,7 +40,7 @@ public class ApplicationUpdateTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(ApplicationUpdateTest.class);
     private static final String RESOURCES_PATH = "/application-update-test";
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testDeployApplication() {
         try {
             log.info("-------------------------Started application runtime update test case-------------------------");

@@ -44,7 +44,7 @@ public class CartridgeTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(CartridgeTest.class);
     private static final String RESOURCES_PATH = "/cartridge-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.deployment", "smoke"})
     public void testCartridge() {
         log.info("--------------------Started Cartridge test case-----------------------------");
 
@@ -135,7 +135,7 @@ public class CartridgeTest extends StratosIntegrationTest {
         }
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.deployment", "smoke"})
     public void testCartridgeList() {
         log.info("--------------------Started Cartridge list test case-----------------------------");
 

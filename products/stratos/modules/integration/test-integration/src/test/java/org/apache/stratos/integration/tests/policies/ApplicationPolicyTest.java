@@ -44,7 +44,7 @@ public class ApplicationPolicyTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(ApplicationPolicyTest.class);
     private static final String RESOURCES_PATH = "/application-policy-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
     public void testApplicationPolicy() {
         try {
             String applicationPolicyId = "application-policy-application-policy-test";
@@ -140,7 +140,7 @@ public class ApplicationPolicyTest extends StratosIntegrationTest {
         }
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
     public void testApplicationPolicyList() {
         try {
             String applicationPolicyId1 = "application-policy-application-policy-test-1";

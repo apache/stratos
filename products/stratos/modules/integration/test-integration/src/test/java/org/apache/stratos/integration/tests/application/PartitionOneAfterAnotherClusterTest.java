@@ -50,7 +50,7 @@ public class PartitionOneAfterAnotherClusterTest extends StratosIntegrationTest 
     private static final String RESOURCES_PATH = "/partition-round-robin-cluster-test";
 
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment", "failed"})
     public void testDeployApplication() {
         try {
             log.info("-----------------------Started Partition One after another test case-----------------------");

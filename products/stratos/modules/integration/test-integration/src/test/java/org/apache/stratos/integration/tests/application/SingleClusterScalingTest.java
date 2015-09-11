@@ -53,7 +53,7 @@ public class SingleClusterScalingTest extends StratosIntegrationTest {
     private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 360000;
     private int activeInstancesAfterScaleup = 0;
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testDeployApplication() {
         try {
             log.info("------------------------Started application Bursting test case----------------------");

@@ -39,7 +39,7 @@ public class UserTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(UserTest.class);
     private static final String RESOURCES_PATH = "/user-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"user.management", "smoke"})
     public void addUser() {
         try {
             log.info("-------------------------------Started users test case-------------------------------");

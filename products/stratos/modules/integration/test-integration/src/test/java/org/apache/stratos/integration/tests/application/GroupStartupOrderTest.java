@@ -44,7 +44,7 @@ public class GroupStartupOrderTest extends StratosIntegrationTest {
     private static final int NODES_START_PARALLEL_TIMEOUT = 30000;
 
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testTerminationBehavior() {
         try {
             log.info("----------------------Started application startup order test case------------------------");

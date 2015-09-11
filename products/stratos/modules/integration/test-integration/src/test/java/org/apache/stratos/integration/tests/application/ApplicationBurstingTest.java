@@ -42,7 +42,7 @@ public class ApplicationBurstingTest extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/application-bursting-test";
 
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testApplicationBusting() {
         try {
             log.info("----------------------------Started application Bursting test case----------------------------");

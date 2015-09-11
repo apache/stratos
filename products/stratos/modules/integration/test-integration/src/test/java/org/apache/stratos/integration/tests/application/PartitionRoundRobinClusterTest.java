@@ -48,7 +48,7 @@ public class PartitionRoundRobinClusterTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
     private static final String RESOURCES_PATH = "/partition-round-robin-cluster-test";
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testDeployApplication() {
         try {
             log.info("------------------------Started application Bursting test case-----------------------");

@@ -44,7 +44,7 @@ public class NetworkPartitionTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(NetworkPartitionTest.class);
     private static final String RESOURCES_PATH = "/network-partition-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
     public void testNetworkPartition() {
         try {
             String networkPartitionId = "network-partition-network-partition-test";
@@ -100,7 +100,7 @@ public class NetworkPartitionTest extends StratosIntegrationTest {
         }
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
     public void testNetworkPartitionList() {
         try {
             String networkPartitionId1 = "network-partition-network-partition-test-1";

@@ -31,7 +31,7 @@ import static junit.framework.Assert.assertTrue;
 public class TenantTest extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/user-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"user.management", "smoke", "disabled"})
     public void addUser() {
         String tenantId = "tenant-1";
         boolean addedUser1 = restClient.addEntity(RESOURCES_PATH + "/" +

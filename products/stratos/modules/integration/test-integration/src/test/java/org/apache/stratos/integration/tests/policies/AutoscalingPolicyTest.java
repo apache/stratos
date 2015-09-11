@@ -39,7 +39,7 @@ public class AutoscalingPolicyTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(AutoscalingPolicyTest.class);
     private static final String RESOURCES_PATH = "/autoscaling-policy-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
     public void testAutoscalingPolicy() {
         log.info("-------------------------Started autoscaling policy test case-------------------------");
         String policyId = "autoscaling-policy-autoscaling-policy-test";
@@ -95,7 +95,7 @@ public class AutoscalingPolicyTest extends StratosIntegrationTest {
         }
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT)
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
     public void testAutoscalingPolicyList() {
         log.info("-------------------------Started autoscaling policy list test case-------------------------");
         String policyId1 = "autoscaling-policy-autoscaling-policy-test-1";

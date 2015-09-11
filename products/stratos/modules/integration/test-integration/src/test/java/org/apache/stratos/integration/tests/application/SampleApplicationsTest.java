@@ -45,7 +45,7 @@ public class SampleApplicationsTest extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
     private static final String RESOURCES_PATH = "/sample-applications-test";
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testApplication() {
         log.info("-------------------------------Started application test case-------------------------------");
         try {
@@ -252,7 +252,7 @@ public class SampleApplicationsTest extends StratosIntegrationTest {
         }
     }
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT)
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testApplicationList() {
         log.info("-------------------------------Started application listtest case-------------------------------");
         try {
