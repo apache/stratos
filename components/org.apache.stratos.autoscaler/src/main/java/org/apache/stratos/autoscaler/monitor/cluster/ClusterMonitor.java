@@ -1503,7 +1503,7 @@ public class ClusterMonitor extends Monitor {
     }
 
     public boolean createInstanceOnDemand(String instanceId) {
-        Cluster cluster = TopologyManager.getTopology().getService(this.serviceType).
+        Cluster cluster = TopologyManager.getTopology().getService(this.serviceUuid).
                 getCluster(this.clusterId);
         try {
             return createInstance(instanceId, cluster);

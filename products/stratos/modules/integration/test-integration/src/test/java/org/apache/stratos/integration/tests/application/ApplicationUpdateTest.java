@@ -90,9 +90,9 @@ public class ApplicationUpdateTest extends StratosIntegrationTest {
 
             testApplicationRuntimeForTenant(restClientTenant2, tenant2Id, autoscalingPolicyId);
 
-            //testApplicationUndeplymentForTenant(restClientTenant1, tenant1Id, autoscalingPolicyId);
+            testApplicationUndeplymentForTenant(restClientTenant1, tenant1Id, autoscalingPolicyId);
 
-            //TopologyHandler.getInstance().assertApplicationForNonAvailability(applicationId, tenant1Id);
+            TopologyHandler.getInstance().assertApplicationForNonAvailability(applicationId, tenant1Id);
 
             testApplicationUndeplymentForTenant(restClientTenant2, tenant2Id, autoscalingPolicyId);
 

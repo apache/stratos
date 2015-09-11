@@ -60,7 +60,8 @@ public class MockHealthStatistics {
      * @param value
      */
     public void addStatistics(String cartridgeType, MockScalingFactor scalingFactor, Integer value) {
-        Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
+        String[] cartridgeDetails = cartridgeType.split("~");
+        Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeDetails[0]);
         if (factorValueMap == null) {
             synchronized (MockHealthStatistics.class) {
                 if (factorValueMap == null) {
@@ -100,7 +101,8 @@ public class MockHealthStatistics {
      * @param scalingFactor
      */
     public void removeStatistics(String cartridgeType, MockScalingFactor scalingFactor) {
-        Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
+        String[] cartridgeDetails = cartridgeType.split("~");
+        Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeDetails[0]);
         if (factorValueMap != null) {
             if (factorValueMap.containsKey(scalingFactor.toString())) {
                 factorValueMap.remove(scalingFactor.toString());
