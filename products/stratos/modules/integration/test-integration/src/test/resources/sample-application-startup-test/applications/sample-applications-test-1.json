@@ -1,0 +1,24 @@
+{
+    "alias": "sample-applications-test-1",
+    "applicationId": "sample-applications-test-1",
+    "components": {
+      "cartridges": [
+        {
+          "type": "c1-sample-applications-test",
+          "cartridgeMin": 3,
+          "cartridgeMax": 5,
+          "subscribableInfo": {
+            "alias": "c1-1x0-sample-applications-test",
+            "autoscalingPolicy": "autoscaling-policy-sample-applications-test",
+            "deploymentPolicy": "deployment-policy-sample-applications-test",
+            "artifactRepository": {
+              "privateRepo": false,
+              "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+              "repoUsername": "",
+              "repoPassword": ""
+            }
+          }
+        }
+      ]
+    }
+}

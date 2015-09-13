@@ -80,11 +80,13 @@ public class RestClient {
             postRequest.setEntity(input);
 
             String userPass = getUsernamePassword();
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+            String basicAuth =
+                    "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             postRequest.addHeader("Authorization", basicAuth);
 
             return httpClient.execute(postRequest, new HttpResponseHandler());
-        } finally {
+        }
+        finally {
             releaseConnection(postRequest);
         }
     }
@@ -103,11 +105,13 @@ public class RestClient {
             getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
             String userPass = getUsernamePassword();
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+            String basicAuth =
+                    "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             getRequest.addHeader("Authorization", basicAuth);
 
             return httpClient.execute(getRequest, new HttpResponseHandler());
-        } finally {
+        }
+        finally {
             releaseConnection(getRequest);
         }
     }
@@ -118,10 +122,12 @@ public class RestClient {
             httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
             String userPass = getUsernamePassword();
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+            String basicAuth =
+                    "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             httpDelete.addHeader("Authorization", basicAuth);
             return httpClient.execute(httpDelete, new HttpResponseHandler());
-        } finally {
+        }
+        finally {
             releaseConnection(httpDelete);
         }
     }
@@ -136,10 +142,12 @@ public class RestClient {
             input.setContentType("application/json");
             putRequest.setEntity(input);
             String userPass = getUsernamePassword();
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+            String basicAuth =
+                    "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             putRequest.addHeader("Authorization", basicAuth);
             return httpClient.execute(putRequest, new HttpResponseHandler());
-        } finally {
+        }
+        finally {
             releaseConnection(putRequest);
         }
     }
@@ -171,7 +179,8 @@ public class RestClient {
             String msg = "An unknown error occurred while trying to add ";
             log.error(msg + entityName);
             throw new RuntimeException(msg + entityName);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not add " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -198,7 +207,8 @@ public class RestClient {
             String msg = "An unknown error occurred while trying to deploy ";
             log.error(msg + entityName);
             throw new RuntimeException(msg + entityName);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not deploy  " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -225,7 +235,8 @@ public class RestClient {
             String msg = "An unknown error occurred while trying to undeploy ";
             log.error(msg + entityName);
             throw new RuntimeException(msg + entityName);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not deploy  " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -255,7 +266,8 @@ public class RestClient {
             String msg = "An unknown error occurred while getting the " + entityName;
             log.error(msg);
             throw new RuntimeException(msg);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not get " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -284,21 +296,30 @@ public class RestClient {
             String msg = "An unknown error occurred while getting the " + entityName;
             log.error(msg);
             throw new RuntimeException(msg);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not get " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
 
-    public boolean removeEntity(String resourcePath, String identifier, String entityName) {
-        try {
-            URI uri = new URIBuilder(this.endPoint + "/" + resourcePath + "/" + identifier).build();
-            HttpResponse response = doDelete(uri);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else if (response.getContent().contains("it is used") || response.getContent().contains("in use")) {
+    public boolean removeEntity(String resourcePath, String identifier, String entityName) throws Exception {
+
+        URI uri = new URIBuilder(this.endPoint + "/" + resourcePath + "/" + identifier).build();
+        HttpResponse response = doDelete(uri);
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(),
+                        ErrorResponse.class);
+                log.error("Error response while removing entity [identifier] " + identifier + ", [entity name] " +
+                        entityName + ", [error] " + errorResponse.getErrorMessage() + ", [error code] " + errorResponse
+                        .getErrorCode());
+                /*else if (response.getContent().contains("it is used") || response.getContent().contains("in use")) {
                     return false;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
@@ -308,16 +329,11 @@ public class RestClient {
                     if (errorResponse != null) {
                         throw new RuntimeException(errorResponse.getErrorMessage());
                     }
-                }
+                }*/
+                return false;
             }
-            String msg = "An unknown error occurred while removing the " + entityName;
-            log.error(msg);
-            throw new RuntimeException(msg);
-        } catch (Exception e) {
-            String message = "Could not remove  " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
         }
+        throw new Exception("No response received from back-end.");
     }
 
     public boolean updateEntity(String filePath, String resourcePath, String entityName) {
@@ -342,7 +358,8 @@ public class RestClient {
             String msg = "An unknown error occurred while trying to update ";
             log.error(msg + entityName);
             throw new RuntimeException(msg + entityName);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = "Could not update " + entityName;
             log.error(message, e);
             throw new RuntimeException(message, e);

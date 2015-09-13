@@ -69,6 +69,7 @@
                         </resource>
                     </webResources>
                     <warName>api</warName>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
         </plugins>
