@@ -43,13 +43,15 @@ public class KubernetesClusterContext implements Serializable {
     private String masterPort;
     private List<Integer> servicePortSequence;
     private Map<String, KubernetesService> kubernetesServices;
+    private Map<String, AtomicLong> serviceSeqNoMap;
+    private Map<String, AtomicLong> podSeqNoMap;
     private transient KubernetesApiClient kubApi;
-    private AtomicLong serviceSeqNo;
-    private AtomicLong podSeqNo;
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
         this.servicePortSequence = new ArrayList<>();
         this.kubernetesServices = new HashMap<>();
+        this.serviceSeqNoMap = new HashMap<>();
+        this.podSeqNoMap = new HashMap<>();
 
         this.lowerPort = lowerPort;
         this.upperPort = upperPort;
@@ -59,9 +61,6 @@ public class KubernetesClusterContext implements Serializable {
         this.masterIp = masterIp;
         this.masterPort = masterPort;
         this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
-        this.serviceSeqNo = new AtomicLong();
-        this.podSeqNo = new AtomicLong();
-
     }
 
     private String getEndpoint(String ip, String port) {
@@ -164,12 +163,18 @@ public class KubernetesClusterContext implements Serializable {
         this.lowerPort = lowerPort;
     }
 
-    public AtomicLong getServiceSeqNo() {
-        return serviceSeqNo;
+    public AtomicLong getServiceSeqNo(String applicationId) {
+        if(!serviceSeqNoMap.containsKey(applicationId)) {
+            serviceSeqNoMap.put(applicationId, new AtomicLong());
+        }
+        return serviceSeqNoMap.get(applicationId);
     }
 
-    public AtomicLong getPodSeqNo() {
-        return podSeqNo;
+    public AtomicLong getPodSeqNo(String applicationId) {
+        if(!podSeqNoMap.containsKey(applicationId)) {
+            podSeqNoMap.put(applicationId, new AtomicLong());
+        }
+        return podSeqNoMap.get(applicationId);
     }
 
     @Override
