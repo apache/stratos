@@ -69,6 +69,7 @@ import org.apache.stratos.manager.user.management.StratosUserManagerUtils;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -107,7 +108,7 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
-
+    public static final String APPLICATION_STATUS_ACTIVE = "Active";
     private static final String METADATA_REG_PATH = "metadata/";
 
 
@@ -2440,8 +2441,8 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application not found: [application-id] " + applicationId);
         }
 
-        if (!APPLICATION_STATUS_DEPLOYED.equals(applicationBean.getStatus())) {
-            throw new RestAPIException("Application has not been deployed: [application-id] " + applicationId);
+        if (!ApplicationStatus.Active.equals(application.getStatus())) {
+            throw new RestAPIException("Application has not been activated: [application-id] " + applicationId);
         }
 
         if (!applicationBean.isMultiTenant()) {
