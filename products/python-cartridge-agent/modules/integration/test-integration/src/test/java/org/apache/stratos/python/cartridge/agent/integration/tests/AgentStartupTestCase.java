@@ -36,7 +36,7 @@ import java.util.Properties;
 
 public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final Log log = LogFactory.getLog(AgentStartupTestCase.class);
-    private static final int STARTUP_TIMEOUT = 120000;
+    private static final int STARTUP_TIMEOUT = 180000;
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
