@@ -335,6 +335,21 @@ public class PythonAgentIntegrationTest {
             String destPayloadPath = destAgentPath + PATH_SEP + "payload";
             FileUtils.copyDirectory(new File(srcPayloadPath), new File(destPayloadPath));
 
+            // copy extensions directory if it exists
+            String srcExtensionPath = getTestCaseResourcesPath() + PATH_SEP + "extensions" + PATH_SEP + "bash";
+            File extensionsDirFile = new File(srcExtensionPath);
+            if (extensionsDirFile.exists()) {
+                FileUtils.copyDirectory(extensionsDirFile,
+                        new File(destAgentPath + PATH_SEP + "extensions" + PATH_SEP + "bash"));
+            }
+
+            // copy plugins directory if it exists
+            String srcPluginPath = getTestCaseResourcesPath() + PATH_SEP + "extensions" + PATH_SEP + "py";
+            File pluginsDirFile = new File(srcPluginPath);
+            if (pluginsDirFile.exists()) {
+                FileUtils.copyDirectory(pluginsDirFile, new File(destAgentPath + PATH_SEP + "plugins"));
+            }
+
             File extensionsPath = new File(destAgentPath + PATH_SEP + "extensions" + PATH_SEP + "bash");
             File[] extensions = extensionsPath.listFiles();
             log.info("Changing extension scripts permissions in: " + extensionsPath.getAbsolutePath());

@@ -23,8 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
+import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -36,7 +38,7 @@ import java.util.Properties;
 
 public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final Log log = LogFactory.getLog(AgentStartupTestCase.class);
-    private static final int STARTUP_TIMEOUT = 180000;
+    private static final int STARTUP_TIMEOUT = 300000;
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
@@ -48,6 +50,8 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
     private boolean startupTestCompleted = false;
+    private boolean topologyContextTestCompleted = false;
+    private Topology topology = createTestTopology();
 
     public AgentStartupTestCase() throws IOException {
     }
@@ -74,7 +78,8 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         tearDown();
     }
 
-    @Test(timeOut = STARTUP_TIMEOUT)
+    @Test(timeOut = STARTUP_TIMEOUT, description = "Test PCA initialization, activation, health stat publishing and " +
+            "topology context update", groups = {"smoke"})
     public void testPythonCartridgeAgent() {
         startCommunicatorThread();
         Thread startupTestThread = new Thread(new Runnable() {
@@ -92,7 +97,6 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                                 sleep(2000);
                                 // Send complete topology event
                                 log.info("Publishing complete topology event...");
-                                Topology topology = createTestTopology();
                                 CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
                                 publishEvent(completeTopologyEvent);
                                 log.info("Complete topology event published");
@@ -106,9 +110,14 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
                             }
-                            // TODO: properly mock the CEP server
+
                             if (line.contains("Published event to thrift stream")) {
                                 startupTestCompleted = true;
+                            }
+
+                            // assert topology context update
+                            if (line.contains("Topology context update test passed!")) {
+                                topologyContextTestCompleted = true;
                             }
                         }
                     }
@@ -119,7 +128,20 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
 
         startupTestThread.start();
 
-        while (!instanceStarted || !instanceActivated || !startupTestCompleted) {
+        instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                log.info("Publishing complete topology with a new member...");
+                Member newMember = new Member(SERVICE_NAME, CLUSTER_ID, "new-member", CLUSTER_INSTANCE_ID,
+                        NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
+                topology.getService(SERVICE_NAME).getCluster(CLUSTER_ID).addMember(newMember);
+                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
+                publishEvent(completeTopologyEvent);
+                log.info("Complete topology event published with new member");
+            }
+        });
+
+        while (!instanceStarted || !instanceActivated || !startupTestCompleted || !topologyContextTestCompleted) {
             // wait until the instance activated event is received.
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);
