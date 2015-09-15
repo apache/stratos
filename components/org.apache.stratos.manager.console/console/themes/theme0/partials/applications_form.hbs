@@ -113,52 +113,118 @@
                             </div>
                             <h2 class="truncate">{{applicationId}} </h2>
 
-                            <div class="toggle-menu-description">{{description}} {{status}}</div>
-                            {{#ifCond status "!=" "Created"}}
-                                {{#ifCond status "==" "Deployed"}}
-                                    <div class="list-button" style="display: none;">
-                                        <button class="btn btn-danger btn-lg hover-undeploy" type="button"
-                                                id="{{applicationId}}"> Undeploy</button>
-                                        <button class="btn btn-info btn-lg hover-details" type="button"
-                                                id="details_list_{{applicationId}}"
-                                                data-url="{{url ""}}/applications/{{applicationId}}/" > View
-                                        </button>
-                                        {{#if multiTenant}}
-                                            {{#if signUpsExist}}
-                                                <button class="btn btn-warning btn-lg hover-remove-signup" type="button"
-                                                        id="{{applicationId}}"
-                                                        data-appid='{{applicationName}}' >Remove Signup
-                                                </button>
-                                            {{else}}
-                                                <button class="btn btn-warning btn-lg hover-signup" type="button"
-                                                        id="signup_{{applicationId}}"
-                                                        data-url="{{url ""}}/applications/{{applicationId}}/signup" > Signup
-                                                </button>
-                                            {{/if}}
+                        <div class="toggle-menu-description">{{description}} {{status}}</div>
+                        {{#ifCond status "!=" "Created"}}
+                            {{#ifCond status "==" "Deployed"}}
+                                <div class="list-button" style="display: none;">
+                                    <button class="btn btn-danger btn-lg hover-undeploy"
+                                            type="button"
+                                            id="{{applicationId}}"> Undeploy
+                                    </button>
+                                    <button class="btn btn-info btn-lg hover-details" type="button"
+                                            id="details_list_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/{{applicationId}}/">View
+                                    </button>
+                                    {{#if multiTenant}}
+                                        {{#if signUpsExist}}
+                                            <button class="btn btn-warning btn-lg hover-remove-signup"
+                                                    type="button"
+                                                    id="{{applicationId}}"
+                                                    data-appid='{{applicationName}}'>Remove Signup
+                                            </button>
+                                        {{else}}
+                                            <button class="btn btn-warning btn-lg hover-signup disabled"
+                                                    type="button"
+                                                    id="signup_{{applicationId}}"
+                                                    data-url="{{url ""}}/applications/{{applicationId}}/signup">Signup
+                                            </button>
                                         {{/if}}
-                                    </div>
-                                    <div class="bottom-bar-wrapper">
-                                        <div class="bottom-bar">
-                                            <button class="btn btn-danger btn-lg hover-undeploy" type="button"
-                                                    id="{{applicationId}}"> Undeploy</button>
+                                    {{/if}}
+                                </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-danger btn-lg hover-undeploy"
+                                            type="button"
+                                            id="{{applicationId}}"> Undeploy
+                                    </button>
+                                    <button class="btn btn-info btn-lg hover-details" type="button"
+                                            id="details_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/{{applicationId}}/">
+                                        View
+                                    </button>
+                                    {{#if multiTenant}}
+                                        {{#if signUpsExist}}
+                                            <button class="btn btn-warning btn-lg hover-remove-signup"
+                                                    type="button"
+                                                    id="{{applicationId}}"
+                                                    data-appid='{{applicationName}}'>Remove Signup
+                                            </button>
+                                        {{else}}
+                                            <button class="btn btn-warning btn-lg hover-signup disabled"
+                                                    type="button"
+                                                    id="signup_{{applicationId}}"
+                                                    data-url="{{url ""}}/applications/{{applicationId}}/signup">
+                                                Signup
+                                            </button>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                            {{else}}
+                                {{#ifCond status "==" "Active"}}
+                                        <div class="list-button" style="display: none;">
+                                            <button class="btn btn-danger btn-lg hover-undeploy"
+                                                    type="button"
+                                                    id="{{applicationId}}"> Undeploy
+                                            </button>
                                             <button class="btn btn-info btn-lg hover-details" type="button"
-                                                    id="details_{{applicationId}}"
-                                                    data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                                    id="details_list_{{applicationId}}"
+                                                    data-url="{{url ""}}/applications/{{applicationId}}/">
+                                                View
                                             </button>
                                             {{#if multiTenant}}
                                                 {{#if signUpsExist}}
-                                                    <button class="btn btn-warning btn-lg hover-remove-signup" type="button"
+                                                    <button class="btn btn-warning btn-lg hover-remove-signup"
+                                                            type="button"
                                                             id="{{applicationId}}"
-                                                            data-appid='{{applicationName}}' >Remove Signup
+                                                            data-appid='{{applicationName}}'>Remove Signup
                                                     </button>
                                                 {{else}}
-                                                    <button class="btn btn-warning btn-lg hover-signup" type="button"
+                                                    <button class="btn btn-warning btn-lg hover-signup"
+                                                            type="button"
                                                             id="signup_{{applicationId}}"
-                                                            data-url="{{url ""}}/applications/{{applicationId}}/signup" > Signup
+                                                            data-url="{{url ""}}/applications/{{applicationId}}/signup">
+                                                        Signup
                                                     </button>
                                                 {{/if}}
                                             {{/if}}
                                         </div>
+                                    <div class="bottom-bar-wrapper">
+                                    <div class="bottom-bar">
+                                        <button class="btn btn-danger btn-lg hover-undeploy"
+                                                type="button"
+                                                id="{{applicationId}}"> Undeploy
+                                        </button>
+                                        <button class="btn btn-info btn-lg hover-details" type="button"
+                                                id="details_{{applicationId}}"
+                                                data-url="{{url ""}}/applications/{{applicationId}}/">
+                                            View
+                                        </button>
+                                    {{#if multiTenant}}
+                                        {{#if signUpsExist}}
+                                                <button class="btn btn-warning btn-lg hover-remove-signup"
+                                                        type="button"
+                                                        id="{{applicationId}}"
+                                                        data-appid='{{applicationName}}'>Remove Signup
+                                                </button>
+                                        {{else}}
+                                                <button class="btn btn-warning btn-lg hover-signup"
+                                                        type="button"
+                                                        id="signup_{{applicationId}}"
+                                                        data-url="{{url ""}}/applications/{{applicationId}}/signup">
+                                                    Signup
+                                                </button>
+                                        {{/if}}
+                                    {{/if}}
                                 {{else}}
                                     <div class="list-button" style="display: none;">
                                         <button class="btn btn-info btn-lg hover-details" type="button"
@@ -168,50 +234,60 @@
                                     </div>
                                     <div class="bottom-bar-wrapper">
                                     <div class="bottom-bar">
-                                        <button class="btn btn-info btn-lg hover-details" type="button"
+                                        <button class="btn btn-info btn-lg hover-details"
+                                                type="button"
                                                 id="details_{{applicationId}}"
-                                                data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                                data-url="{{url ""}}/applications/{{applicationId}}/">
+                                            View
                                         </button>
                                     </div>
                                 {{/ifCond}}
-                                </div>
-                            {{else}}
-                                <div class="list-button" style="display: none;">
-                                    <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                            id="{{applicationId}}" data-alias="{{alias}}"> Delete</button>
-                                    <button class="btn btn-info btn-lg hover-details" type="button"
-                                            id="details_list_{{applicationId}}"
-                                            data-url="{{url ""}}/applications/{{applicationId}}/view" > View
-                                    </button>
-                                    <button class="btn btn-warning btn-lg hover-details" type="button"
-                                            id="details_{{applicationId}}"
-                                            data-url="{{url ""}}/applications/{{applicationId}}/deploy" > Deploy
-                                    </button>
-                                </div>
-                                <div class="bottom-bar-wrapper">
-                                    <div class="bottom-bar">
-                                        <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                                id="{{applicationId}}" data-alias="{{alias}}"> Delete</button>
-                                        <button class="btn btn-info btn-lg hover-details" type="button"
-                                                id="details_{{applicationId}}"
-                                                data-url="{{url ""}}/applications/{{applicationId}}/view" > View
-                                        </button>
-                                        <button class="btn btn-warning btn-lg hover-details" type="button"
-                                                id="details_{{applicationId}}"
-                                                data-url="{{url ""}}/applications/{{applicationId}}/deploy" > Deploy
-                                        </button>
-
-                                    </div>
-                                </div>
                             {{/ifCond}}
                         </div>
+                        {{else}}
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                        id="{{applicationId}}" data-alias="{{alias}}"> Delete
+                                </button>
+                                <button class="btn btn-info btn-lg hover-details" type="button"
+                                        id="details_list_{{applicationId}}"
+                                        data-url="{{url ""}}/applications/{{applicationId}}/view">
+                                    View
+                                </button>
+                                <button class="btn btn-warning btn-lg hover-details" type="button"
+                                        id="details_{{applicationId}}"
+                                        data-url="{{url ""}}/applications/{{applicationId}}/deploy">
+                                    Deploy
+                                </button>
+                            </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                            id="{{applicationId}}" data-alias="{{alias}}"> Delete
+                                    </button>
+                                    <button class="btn btn-info btn-lg hover-details" type="button"
+                                            id="details_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/{{applicationId}}/view">
+                                        View
+                                    </button>
+                                    <button class="btn btn-warning btn-lg hover-details"
+                                            type="button"
+                                            id="details_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/{{applicationId}}/deploy">
+                                        Deploy
+                                    </button>
+
+                                </div>
+                            </div>
+                        {{/ifCond}}
+                    </div>
                     {{/each}}
                 {{/ifCond}}
             </div>
+            </div>
         </div>
-    </div>
 {{/if}}
-<script>
+    <script>
 
     $(document).ready(function () {
         //handled Ajax base session expire issue

@@ -48,6 +48,7 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -55,12 +56,15 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.*;
 
 public class ObjectConverter {
+
+    private static final String APPLICATION_STATUS_ACTIVE = "Active";
 
     public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
             CartridgeBean cartridgeBean) {
@@ -1147,15 +1151,18 @@ public class ObjectConverter {
         if (applicationContext == null) {
             return null;
         }
-
+        Application application = ApplicationManager.getApplications().getApplication(applicationContext.getApplicationId());
         ApplicationBean applicationDefinition = new ApplicationBean();
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setAlias(applicationContext.getAlias());
         applicationDefinition.setMultiTenant(applicationContext.getMultiTenant());
         applicationDefinition.setName(applicationContext.getName());
         applicationDefinition.setDescription(applicationContext.getDescription());
-        applicationDefinition.setStatus(applicationContext.getStatus());
-
+        if (application.getStatus().name().equals(APPLICATION_STATUS_ACTIVE)) {
+            applicationDefinition.setStatus(application.getStatus().name());
+        } else {
+            applicationDefinition.setStatus(applicationContext.getStatus());
+        }
         // convert and set components
         if (applicationContext.getComponents() != null) {
             applicationDefinition.setComponents(new ComponentBean());
