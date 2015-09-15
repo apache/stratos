@@ -129,8 +129,6 @@ public class MetadataApiRegistry implements DataStore {
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-            //registry.beginTransaction();
             Resource nodeResource = null;
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
@@ -186,22 +184,32 @@ public class MetadataApiRegistry implements DataStore {
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        registry.beginTransaction();
-        Resource nodeResource;
-        if (registry.resourceExists(resourcePath)) {
-            nodeResource = registry.get(resourcePath);
-        } else {
-            log.warn(String.format("Registry [resource] %s not found ", resourcePath));
-            return false;
+        try {
+            registry.beginTransaction();
+            Resource nodeResource;
+            if (registry.resourceExists(resourcePath)) {
+                nodeResource = registry.get(resourcePath);
+            } else {
+                log.warn(String.format("Registry [resource] %s not found ", resourcePath));
+                return false;
+            }
+            nodeResource.removePropertyValue(propertyName, valueToRemove);
+            registry.put(resourcePath, nodeResource);
+            registry.commitTransaction();
+
+            log.info(String.format("Application %s property %s value %s is removed from metadata ",
+                    applicationId, propertyName, valueToRemove));
+            return true;
+        }catch (Exception e){
+            try {
+                registry.rollbackTransaction();
+            } catch (RegistryException e1) {
+                if (log.isErrorEnabled()) {
+                    log.error("Could not rollback transaction", e1);
+                }
+            }
+            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         }
-        nodeResource.removePropertyValue(propertyName, valueToRemove);
-        registry.put(resourcePath, nodeResource);
-        registry.commitTransaction();
-
-        log.info(String.format("Application %s property %s value %s is removed from metadata ",
-                applicationId, propertyName, valueToRemove));
-
-        return true;
     }
 
     /**
@@ -259,19 +267,27 @@ public class MetadataApiRegistry implements DataStore {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-        Registry registry;
+        Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
-        registry = getRegistry();
-        registry.beginTransaction();
-        if (registry.resourceExists(resourcePath)) {
-            registry.delete(resourcePath);
+        try {
+            registry.beginTransaction();
+            if (registry.resourceExists(resourcePath)) {
+                registry.delete(resourcePath);
+                log.info(String.format("Application [application-id ] properties removed from registry %s",
+                        applicationId));
+            }
             registry.commitTransaction();
-            log.info(String.format("Application [application-id ] properties removed from registry %s", applicationId));
             return true;
+        }catch (Exception e){
+            try {
+                registry.rollbackTransaction();
+            } catch (RegistryException e1) {
+                if (log.isErrorEnabled()) {
+                    log.error("Could not rollback transaction", e1);
+                }
+            }
+            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         }
-
-        return false;
     }
 
     public boolean removePropertyFromApplication(String applicationId, String propertyName)

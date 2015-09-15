@@ -65,23 +65,24 @@ public class RegistryManager {
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
             registry.beginTransaction();
-
             Resource nodeResource = registry.newResource();
             nodeResource.setContent(serializeToByteArray(serializableObject));
             registry.put(resourcePath, nodeResource);
-
             registry.commitTransaction();
-
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Resource persisted successfully in registry: [resource-path] %s",
                         resourcePath));
             }
         } catch (Exception e) {
+            try {
+                registry.rollbackTransaction();
+            } catch (Exception e1){
+                if (log.isErrorEnabled()) {
+                    log.error("Could not rollback transaction", e1);
+                }
+            }
             String msg = "Failed to persist resource in registry: " + resourcePath;
-            registry.rollbackTransaction();
-            log.error(msg, e);
             throw new RegistryException(msg, e);
         }
     }
@@ -132,10 +133,10 @@ public class RegistryManager {
                 registry.rollbackTransaction();
             } catch (RegistryException e1) {
                 if (log.isErrorEnabled()) {
-                    log.error("Could not rollback transaction", e);
+                    log.error("Could not rollback transaction", e1);
                 }
             }
-            log.error("Could not remove registry resource: [resource-path] " + resourcePath);
+            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         }
     }
 
