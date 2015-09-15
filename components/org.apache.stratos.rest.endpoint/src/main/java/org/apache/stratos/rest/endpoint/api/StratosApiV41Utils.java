@@ -108,7 +108,6 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
-    public static final String APPLICATION_STATUS_ACTIVE = "Active";
     private static final String METADATA_REG_PATH = "metadata/";
 
 
