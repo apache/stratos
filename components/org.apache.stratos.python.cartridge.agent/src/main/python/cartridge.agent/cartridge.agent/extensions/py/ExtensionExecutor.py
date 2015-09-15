@@ -51,7 +51,7 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
         """
         log = LogFactory().get_log(__name__)
 
-        working_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
+        working_dir = os.path.abspath(os.path.dirname(__file__))
         command = working_dir[:-2] + "bash/" + bash_file
         current_env_vars = os.environ.copy()
         extension_values.update(current_env_vars)

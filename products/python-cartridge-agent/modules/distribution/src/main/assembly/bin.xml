@@ -25,12 +25,15 @@
     <fileSets>
         <fileSet>
             <directory>
-                ${project.basedir}/../../../components/org.apache.stratos.python.cartridge.agent/src/main/python/cartridge.agent/cartridge.agent
+                ${project.basedir}/../../../../components/org.apache.stratos.python.cartridge.agent/src/main/python/cartridge.agent/cartridge.agent
             </directory>
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
+            <excludes>
+                <exclude>**/*.pyc</exclude>
+            </excludes>
             <fileMode>0755</fileMode>
         </fileSet>
     </fileSets>

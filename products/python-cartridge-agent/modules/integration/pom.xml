@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -7,7 +8,7 @@
   ~ "License"); you may not use this file except in compliance
   ~ with the License.  You may obtain a copy of the License at
   ~
-  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~     http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing,
   ~ software distributed under the License is distributed on an
@@ -16,7 +17,6 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -27,193 +27,13 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>python-agent-integration</artifactId>
-    <packaging>jar</packaging>
-    <name>Python Cartridge Agent - Integration Tests</name>
+    <artifactId>python-cartridge-agent-integration</artifactId>
+    <packaging>pom</packaging>
+    <name>Apache Stratos - Python Cartridge Agent Integration Aggregator</name>
+    <description>Apache Stratos Python Cartridge Agent Integration Aggregator</description>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/test/resources/test-conf</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/*</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>live</id>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/test/resources/test-conf</directory>
-                        <filtering>true</filtering>
-                    </resource>
-                </resources>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/*</exclude>
-                            </excludes>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>default-test</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <suiteXmlFiles>
-                                        <suiteXmlFile>src/test/resources/pca-testing1.xml</suiteXmlFile>
-                                    </suiteXmlFiles>
-                                    <workingDirectory>${basedir}/target</workingDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>adc-test</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <suiteXmlFiles>
-                                        <suiteXmlFile>src/test/resources/pca-testing2.xml</suiteXmlFile>
-                                    </suiteXmlFiles>
-                                    <workingDirectory>${basedir}/target</workingDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>adc-mt-test</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <suiteXmlFiles>
-                                        <suiteXmlFile>src/test/resources/pca-testing3.xml</suiteXmlFile>
-                                    </suiteXmlFiles>
-                                    <workingDirectory>${basedir}/target</workingDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>adc-mt-tenant-user-test</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <suiteXmlFiles>
-                                        <suiteXmlFile>src/test/resources/pca-testing4.xml</suiteXmlFile>
-                                    </suiteXmlFiles>
-                                    <workingDirectory>${basedir}/target</workingDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-exec</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2-client</artifactId>
-            <version>${axis2.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.3.0.wso2v1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.5.wso2v1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.andes.wso2</groupId>
-            <artifactId>andes-client</artifactId>
-            <version>0.13.wso2v8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-all</artifactId>
-            <version>5.10.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-mqtt</artifactId>
-            <version>5.10.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>0.9.2</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>test-common</module>
+        <module>test-integration</module>
+    </modules>
 </project>
