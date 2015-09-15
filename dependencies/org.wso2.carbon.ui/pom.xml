@@ -263,7 +263,7 @@
                     <!-- Create a source-release artifact that contains the fully buildable
                          project directory source structure. This is the artifact which is
                          the official subject of any release vote. -->
-                    <plugin>
+                    <!--plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <dependencies>
                             <dependency>
@@ -288,7 +288,7 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin-->
                     <!-- We want to deploy the artifact to a staging location for perusal -->
                     <plugin>
                         <inherited>true</inherited>
