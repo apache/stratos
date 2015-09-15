@@ -35,6 +35,10 @@ import java.net.URI;
 
 import static org.testng.Assert.assertNotNull;
 
+/*
+ * Extension class for Carbon automation engine to start ActiveMQ and Stratos server. This extension will check for
+ * available ports in runtime and start the servers with port offsets to avoid conflicts.
+ */
 public class StratosServerExtension extends ExecutionListenerExtension {
     private static final Log log = LogFactory.getLog(StratosServerExtension.class);
     private TestLogAppender testLogAppender;

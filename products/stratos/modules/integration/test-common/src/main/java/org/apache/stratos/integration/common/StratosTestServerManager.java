@@ -50,6 +50,10 @@ import java.util.Set;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+/*
+ * Manager class implementation for Carbon automation engine. It will copy the artifacts needed by Stratos and set the
+ * relevant ports in configuration files in the runtime.
+ */
 public class StratosTestServerManager extends TestServerManager {
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
     public static final String PATH_SEP = File.separator;

@@ -21,4 +21,4 @@
 # --------------------------------------------------------------
 #
 set -e
-mvn clean install -DsuiteFile=src/test/resources/test-suite-smoke.xml
+mvn clean test -DsuiteFile=src/test/resources/test-suite-smoke.xml
