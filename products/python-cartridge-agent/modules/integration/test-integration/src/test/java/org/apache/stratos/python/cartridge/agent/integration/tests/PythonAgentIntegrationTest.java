@@ -73,7 +73,7 @@ public class PythonAgentIntegrationTest {
     protected boolean instanceStarted;
     protected boolean instanceActivated;
     protected ByteArrayOutputStreamLocal outputStream;
-    private ThriftTestServer thriftTestServer;
+    protected ThriftTestServer thriftTestServer;
 
     /**
      * Setup method for test method testPythonCartridgeAgent
