@@ -1903,7 +1903,7 @@ public class StratosApiV41Utils {
 
                 try {
                     clearMetadata(applicationId);
-                } catch (RegistryException e) {
+                } catch (RestAPIException e) {
                     String message = "Could not remove application metadata: [application-id] " + applicationId;
                     log.error(message, e);
                     throw new RestAPIException(message, e);
