@@ -69,7 +69,7 @@ class HealthStatisticsPublisherManager(Thread):
                 self.log.exception("Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
                 self.publisher = HealthStatisticsPublisher()
 
-        self.publisher.publisher.disconnect()
+        self.publisher.disconnect_publisher()
 
 
 class HealthStatisticsPublisher:
@@ -94,38 +94,44 @@ class HealthStatisticsPublisher:
         return conf_value
 
     def __init__(self):
-        self.ports = []
-        cep_port = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_PORT)
-        self.ports.append(cep_port)
 
-        cep_ip = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_IP)
-
-        cartridgeagentutils.wait_until_ports_active(
-            cep_ip,
-            self.ports,
-            int(Config.read_property("port.check.timeout", critical=False)))
-
-        cep_active = cartridgeagentutils.check_ports_active(
-            cep_ip,
-            self.ports)
-
-        if not cep_active:
-            raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
-
+        self.publishers = []
         cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
         cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+        # 1.1.1.1:1883,2.2.2.2:1883
+        cep_urls = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_URLS);
+        cep_urls = cep_urls.split(',')
+        for cep_url in cep_urls:
+            self.ports = []
+            cep_ip = cep_url.split(':')[0]
+            cep_port = cep_url.split(':')[1]
+            self.ports.append(cep_port)
+            cartridgeagentutils.wait_until_ports_active(
+                cep_ip,
+                self.ports,
+                int(Config.read_property("port.check.timeout", critical=False)))
 
-        self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
-        HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
+            cep_active = cartridgeagentutils.check_ports_active(
+                cep_ip,
+                self.ports)
 
-        self.publisher = ThriftPublisher(
-            cep_ip,
-            cep_port,
-            cep_admin_username,
-            cep_admin_password,
-            self.stream_definition)
+            if not cep_active:
+                raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
 
-        HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
+
+            self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
+            HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
+
+            publisher = ThriftPublisher(
+                cep_ip,
+                cep_port,
+                cep_admin_username,
+                cep_admin_password,
+                self.stream_definition)
+
+            self.publishers.append(publisher)
+
+            HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
 
     @staticmethod
     def create_stream_definition():
@@ -171,7 +177,7 @@ class HealthStatisticsPublisher:
                                                 event.payloadData,
                                                 self.stream_definition.version))
 
-        self.publisher.publish(event)
+        self.publish_event(self.publishers, event)
 
     def publish_load_average(self, load_avg):
         """
@@ -195,8 +201,15 @@ class HealthStatisticsPublisher:
                                                 event.payloadData,
                                                 self.stream_definition.version))
 
-        self.publisher.publish(event)
+        self.publish_event(event)
 
+    def publish_event(self, event):
+        for publisher in self.publishers:
+            publisher.publish(event)
+
+    def disconnect_publisher(self, publishers):
+        for publisher in self.publishers:
+            publisher.disconnect()
 
 class DefaultHealthStatisticsReader:
     """
