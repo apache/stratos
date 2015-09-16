@@ -23,7 +23,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * are getting activated. Kill the mock instance and check whether
  */
 public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
-    private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
+    private static final Log log = LogFactory.getLog(SampleApplicationStartupTestCase.class);
     private static final String RESOURCES_PATH = "/sample-application-startup-test";
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT, description = "Application startup, activation and faulty member " +

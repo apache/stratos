@@ -47,7 +47,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
  */
 public class SingleClusterScalingTest extends StratosIntegrationTest {
-    private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
+    private static final Log log = LogFactory.getLog(SingleClusterScalingTest.class);
     private static final String RESOURCES_PATH = "/single-cluster-scaling-test";
     private static final int CLUSTER_SCALE_UP_TIMEOUT = 180000;
     private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 360000;

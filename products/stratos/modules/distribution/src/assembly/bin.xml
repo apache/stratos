@@ -48,8 +48,12 @@
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
                 <exclude>**/dbscripts/**</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
+                <exclude>**/repository/conf/security/authenticators.xml</exclude>
                 <exclude>**/repository/conf/axis2/axis2.xml</exclude>
+                <exclude>**/repository/conf/axis2/axis2_client.xml</exclude>
+                <exclude>**/repository/conf/axis2/tenant-axis2.xml</exclude>
                 <exclude>**/repository/conf/registry.xml</exclude>
+                <exclude>**/repository/conf/user-mgt.xml</exclude>
                 <exclude>**/repository/conf/log4j.properties</exclude>
                 <exclude>**/repository/conf/data-bridge/**</exclude>
                 <exclude>**/repository/resources/security/client-truststore.jks</exclude>

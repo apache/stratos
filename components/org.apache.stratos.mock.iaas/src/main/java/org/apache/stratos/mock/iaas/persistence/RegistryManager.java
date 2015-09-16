@@ -73,10 +73,14 @@ public class RegistryManager implements PersistenceManager {
                         resourcePath));
             }
         } catch (Exception e) {
-            String msg = "Failed to persist resource in registry: " + resourcePath;
-            registry.rollbackTransaction();
-            log.error(msg, e);
-            throw new RegistryException(msg, e);
+            try {
+                registry.rollbackTransaction();
+            } catch (RegistryException e1) {
+                if (log.isErrorEnabled()) {
+                    log.error("Could not rollback transaction", e1);
+                }
+            }
+            throw new RegistryException("Failed to persist resource in registry: [resource-path] " + resourcePath, e);
         }
     }
 
@@ -128,10 +132,10 @@ public class RegistryManager implements PersistenceManager {
                 registry.rollbackTransaction();
             } catch (RegistryException e1) {
                 if (log.isErrorEnabled()) {
-                    log.error("Could not rollback transaction", e);
+                    log.error("Could not rollback transaction", e1);
                 }
             }
-            log.error("Could not remove registry resource: [resource-path] " + resourcePath);
+            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         }
     }
 

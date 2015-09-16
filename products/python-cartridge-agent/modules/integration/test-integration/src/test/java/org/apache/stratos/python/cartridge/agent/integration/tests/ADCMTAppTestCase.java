@@ -40,7 +40,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class ADCMTAppTestCase extends PythonAgentIntegrationTest {
     private static final Log log = LogFactory.getLog(ADCMTAppTestCase.class);
-    private static final int ADC_TIMEOUT = 180000;
+    private static final int ADC_TIMEOUT = 300000;
     private static final String APPLICATION_PATH = "/tmp/ADCMTAppTestCase";
     private static final String CLUSTER_ID = "tomcat.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-3";

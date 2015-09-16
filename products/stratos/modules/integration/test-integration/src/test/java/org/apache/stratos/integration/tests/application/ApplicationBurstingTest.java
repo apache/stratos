@@ -38,7 +38,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * This will handle the application bursting test cases
  */
 public class ApplicationBurstingTest extends StratosIntegrationTest {
-    private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
+    private static final Log log = LogFactory.getLog(ApplicationBurstingTest.class);
     private static final String RESOURCES_PATH = "/application-bursting-test";
 
 
