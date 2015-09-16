@@ -31,10 +31,12 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.*;
 import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
@@ -44,10 +46,12 @@ import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -57,6 +61,7 @@ import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.Group;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -1015,6 +1020,39 @@ public class AutoscalerUtil {
                 log.error(msg, e);
             }
         }
+    }
+
+
+    public static void handleForceTermination(Collection<Monitor> monitors, Monitor parentMonitor, String applicationId) {
+        Iterator<Monitor> monitorsIter = monitors.iterator();
+        while(monitorsIter.hasNext()) {
+            Monitor monitor = monitorsIter.next();
+            monitor.destroy();
+            Iterator<Instance> instances = monitor.getInstances().iterator();
+            while(instances.hasNext()) {
+                Instance instance = instances.next();
+                if (monitor instanceof GroupMonitor) {
+                    ApplicationBuilder.handleGroupInstanceTerminatedEvent(applicationId,
+                            monitor.getId(), instance.getInstanceId());
+                } else {
+                    ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId,
+                            ((ClusterMonitor) monitor).getServiceId(), monitor.getId(), instance.getInstanceId());
+                }
+            }
+            if(monitor instanceof ParentComponentMonitor) {
+                ParentComponentMonitor pMonitor = (ParentComponentMonitor)parentMonitor;
+                if (!monitor.hasInstance()) {
+                    (pMonitor).removeMonitor(monitor.getId());
+                }
+                Collection<Monitor> childMonitors = pMonitor.
+                        getAliasToActiveChildMonitorsMap().values();
+                if(!childMonitors.isEmpty()) {
+                    handleForceTermination(childMonitors, monitor, applicationId);
+                }
+            }
+
+        }
+
     }
 
 }

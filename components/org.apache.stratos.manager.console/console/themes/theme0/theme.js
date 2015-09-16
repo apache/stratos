@@ -106,6 +106,14 @@ var engine = require('caramel').engine('handlebars', (function () {
                 return "";
             });
 
+            Handlebars.registerHelper('isSuperTenant', function (action, options) {
+                if (caramel.meta().session.get("TENANT_ID") != undefined) {
+                    if (caramel.meta().session.get("TENANT_ID") == -1234) {
+                        return true;
+                    }
+                }
+                return "";
+            });
         }
     }
 }()));
