@@ -27,7 +27,12 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
+import org.apache.stratos.integration.common.TopologyHandler;
+import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.application.Group;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -134,13 +139,30 @@ public class ApplicationUpdateTest extends StratosIntegrationTest {
                     RestConstants.APPLICATIONS_NAME);
             assertEquals(updated, true);
 
-            topologyHandler.assertGroupInstanceCount(bean.getApplicationId(), "group3-application-update-test", 2);
-
-            topologyHandler.assertClusterMinMemberCount(bean.getApplicationId(), 2);
-
             ApplicationBean updatedBean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
                     "g-sc-G123-1-application-update-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
             assertEquals(updatedBean.getApplicationId(), "g-sc-G123-1-application-update-test");
+
+            //Need to validate whether the updated taken into the applications Topology
+            Application application = ApplicationManager.getApplications().
+                    getApplication(bean.getApplicationId());
+
+            Group group = application.getGroupRecursively("group3-application-update-test");
+            assertEquals(group.getGroupMaxInstances(), 3);
+            assertEquals(group.getGroupMinInstances(), 2);
+            log.info("Application update is successfully done for [application] " +
+                    bean.getApplicationId() + " [group] " + group.getUniqueIdentifier());
+
+            ClusterDataHolder clusterDataHolder = application.
+                    getClusterDataHolderRecursivelyByAlias("c3-1x0-application-update-test");
+            assertEquals(clusterDataHolder.getMaxInstances(), 3);
+            assertEquals(clusterDataHolder.getMinInstances(), 2);
+            log.info("Application update is successfully done for [application] " +
+                    bean.getApplicationId() + " [Cluster] " + clusterDataHolder.getClusterId());
+
+            topologyHandler.assertGroupInstanceCount(bean.getApplicationId(), "group3-application-update-test", 2);
+
+            topologyHandler.assertClusterMinMemberCount(bean.getApplicationId(), 2);
 
             boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-application-update-test",
                     RestConstants.CARTRIDGE_GROUPS_NAME);

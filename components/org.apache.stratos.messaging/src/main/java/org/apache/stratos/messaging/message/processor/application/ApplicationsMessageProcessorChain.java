@@ -39,6 +39,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     private ApplicationInstanceCreatedMessageProcessor applicationInstanceCreatedMessageProcessor;
     private ApplicationInstanceActivatedMessageProcessor applicationActivatedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
+    private ApplicationUpdatedMessageProcessor applicationUpdatedMessageProcessor;
     private ApplicationDeletedMessageProcessor applicationDeletedMessageProcessor;
     private ApplicationInstanceInactivatedMessageProcessor applicationInactivatedMessageProcessor;
     private ApplicationInstanceTerminatedMessageProcessor applicationTerminatedMessageProcessor;
@@ -66,6 +67,9 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
         applicationInstanceCreatedMessageProcessor = new ApplicationInstanceCreatedMessageProcessor();
         add(applicationInstanceCreatedMessageProcessor);
+
+        applicationUpdatedMessageProcessor = new ApplicationUpdatedMessageProcessor();
+        add(applicationUpdatedMessageProcessor);
 
         applicationActivatedMessageProcessor = new ApplicationInstanceActivatedMessageProcessor();
         add(applicationActivatedMessageProcessor);
@@ -112,6 +116,8 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
             applicationInstanceCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationUndeployedEventListener) {
+            applicationUpdatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationDeletedEventListener) {
             applicationDeletedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationInstanceActivatedEventListener) {

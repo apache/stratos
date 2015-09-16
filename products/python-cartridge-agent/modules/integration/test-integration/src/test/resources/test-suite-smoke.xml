@@ -21,7 +21,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="PythonCartridgeAgentSmokeTestSuite">
-    <test name="all" preserve-order="true" parallel="false">
+    <test name="smoke" preserve-order="true" parallel="false">
         <groups>
             <run>
                 <include name="smoke"/>

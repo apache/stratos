@@ -40,11 +40,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThriftTestServer {
-    Logger log = Logger.getLogger(ThriftTestServer.class);
-    ThriftDataReceiver thriftDataReceiver;
-    InMemoryStreamDefinitionStore streamDefinitionStore;
-    AtomicInteger numberOfEventsReceived;
-    RestarterThread restarterThread;
+    private Logger log = Logger.getLogger(ThriftTestServer.class);
+    private ThriftDataReceiver thriftDataReceiver;
+    private InMemoryStreamDefinitionStore streamDefinitionStore;
+    private AtomicInteger numberOfEventsReceived;
+    private RestarterThread restarterThread;
+    private DataBridge databridge;
 
     public void startTestServer() throws DataBridgeException, InterruptedException {
         ThriftTestServer thriftTestServer = new ThriftTestServer();
@@ -76,7 +77,7 @@ public class ThriftTestServer {
         DataPublisherTestUtil.setKeyStoreParams();
         streamDefinitionStore = getStreamDefinitionStore();
         numberOfEventsReceived = new AtomicInteger(0);
-        DataBridge databridge = new DataBridge(new AuthenticationHandler() {
+        databridge = new DataBridge(new AuthenticationHandler() {
             @Override
             public boolean authenticate(String userName,
                                         String password) {
@@ -110,23 +111,20 @@ public class ThriftTestServer {
         thriftDataReceiver = new ThriftDataReceiver(receiverPort, databridge);
 
         databridge.subscribe(new AgentCallback() {
-            int totalSize = 0;
-
-            public void definedStream(StreamDefinition streamDefinition,
-                                      int tenantId) {
-                log.info("StreamDefinition " + streamDefinition);
+            @Override
+            public void definedStream(StreamDefinition streamDefinition, int tenantId) {
+                log.info("StreamDefinition defined:" + streamDefinition);
             }
 
             @Override
             public void removeStream(StreamDefinition streamDefinition, int tenantId) {
-                log.info("StreamDefinition remove " + streamDefinition);
+                log.info("StreamDefinition removed: " + streamDefinition);
             }
 
             @Override
             public void receive(List<Event> eventList, Credentials credentials) {
                 numberOfEventsReceived.addAndGet(eventList.size());
-                log.info("Received events : " + numberOfEventsReceived);
-//                log.info("eventListSize=" + eventList.size() + " eventList " + eventList + " for username " + credentials.getUsername());
+                log.info("Number of received events: " + numberOfEventsReceived);
             }
 
         });
@@ -211,5 +209,17 @@ public class ThriftTestServer {
             }
 
         }
+    }
+
+    public ThriftDataReceiver getThriftDataReceiver() {
+        return thriftDataReceiver;
+    }
+
+    public RestarterThread getRestarterThread() {
+        return restarterThread;
+    }
+
+    public DataBridge getDatabridge() {
+        return databridge;
     }
 }

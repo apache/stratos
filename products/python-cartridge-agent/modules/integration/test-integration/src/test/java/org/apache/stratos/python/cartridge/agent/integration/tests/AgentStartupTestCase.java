@@ -30,6 +30,9 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEv
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.databridge.commons.Credentials;
+import org.wso2.carbon.databridge.commons.StreamDefinition;
+import org.wso2.carbon.databridge.core.AgentCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,12 +54,13 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final String SERVICE_NAME = "php";
     private boolean startupTestCompleted = false;
     private boolean topologyContextTestCompleted = false;
+    private boolean thriftTestCompleted = false;
     private Topology topology = createTestTopology();
 
     public AgentStartupTestCase() throws IOException {
     }
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setupAgentStartupTest() throws Exception {
         log.info("Setting up AgentStartupTestCase");
         // Set jndi.properties.dir system property for initializing event publishers and receivers
@@ -73,7 +77,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDownAgentStartupTest() {
         tearDown();
     }
@@ -82,6 +86,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
             "topology context update", groups = {"smoke"})
     public void testPythonCartridgeAgent() {
         startCommunicatorThread();
+        subscribeToThriftDatabridge();
         Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -141,13 +146,37 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
             }
         });
 
-        while (!instanceStarted || !instanceActivated || !startupTestCompleted || !topologyContextTestCompleted) {
+        while (!instanceStarted || !instanceActivated || !startupTestCompleted || !topologyContextTestCompleted ||
+                !thriftTestCompleted) {
             // wait until the instance activated event is received.
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);
         }
     }
 
+    private void subscribeToThriftDatabridge() {
+        thriftTestServer.getDatabridge().subscribe(new AgentCallback() {
+            @Override
+            public void definedStream(StreamDefinition streamDefinition, int tenantId) {
+                // ignore
+            }
+
+            @Override
+            public void removeStream(StreamDefinition streamDefinition, int tenantId) {
+                // ignore
+            }
+
+            @Override
+            public void receive(List<org.wso2.carbon.databridge.commons.Event> eventList, Credentials credentials) {
+                log.info("Event list size: " + eventList.size());
+                log.info("Recent events received: " + eventList);
+                // if the list contains an event that means PCA was able to successfully publish health stats
+                if (eventList.size() > 0) {
+                    thriftTestCompleted = true;
+                }
+            }
+        });
+    }
 
     /**
      * Create test topology
