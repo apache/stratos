@@ -109,11 +109,10 @@ public class RegistryManager {
                 registryService.rollbackTransaction();
             } catch (RegistryException e1) {
                 if (log.isErrorEnabled()) {
-                    log.error("Could not rollback transaction", e);
+                    log.error("Could not rollback transaction", e1);
                 }
             }
             String message = "Could not delete resource at " + resourcePath;
-            log.error(message);
             throw new AutoScalerException(message, e);
         }
     }
@@ -143,10 +142,8 @@ public class RegistryManager {
 
         try {
             registryService.beginTransaction();
-
             Resource nodeResource = registryService.newResource();
             nodeResource.setContent(Serializer.serializeToByteArray(dataObj));
-
             registryService.put(resourcePath, nodeResource);
             registryService.commitTransaction();
         } catch (Exception e) {

@@ -45,7 +45,7 @@ import static org.testng.AssertJUnit.assertNotNull;
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
  */
 public class PartitionRoundRobinClusterTest extends StratosIntegrationTest {
-    private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
+    private static final Log log = LogFactory.getLog(PartitionRoundRobinClusterTest.class);
     private static final String RESOURCES_PATH = "/partition-round-robin-cluster-test";
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})

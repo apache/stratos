@@ -249,13 +249,14 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_member_suspended_event(event_obj)
 
     def on_complete_topology(self, msg):
+        event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
         if not TopologyContext.topology.initialized:
             self.__log.debug("Complete topology event received")
-            event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
             TopologyContext.update(event_obj.topology)
             self.__event_handler.on_complete_topology_event(event_obj)
         else:
-            self.__log.debug("Complete topology event updating task disabled")
+            TopologyContext.update(event_obj.topology)
+            self.__log.debug("Topology context updated [topology] %r" % event_obj.topology.json_str)
 
     def on_member_started(self, msg):
         self.__log.debug("Member started event received: %r" % msg.payload)

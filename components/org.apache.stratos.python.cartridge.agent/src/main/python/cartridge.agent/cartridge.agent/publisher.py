@@ -104,7 +104,7 @@ def publish_instance_activated_event(health_stat_plugin):
             log.info("Instance activated event published")
             log.info("Starting health statistics notifier")
 
-            health_stat_publishing_enabled = Config.read_property(constants.CEP_PUBLISHER_ENABLED, False)
+            health_stat_publishing_enabled = Config.read_property(constants.CEP_PUBLISHER_ENABLED, True)
 
             if health_stat_publishing_enabled:
                 interval_default = 15  # seconds

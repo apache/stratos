@@ -1903,7 +1903,7 @@ public class StratosApiV41Utils {
 
                 try {
                     clearMetadata(applicationId);
-                } catch (RegistryException e) {
+                } catch (RestAPIException e) {
                     String message = "Could not remove application metadata: [application-id] " + applicationId;
                     log.error(message, e);
                     throw new RestAPIException(message, e);
@@ -1923,7 +1923,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    private static void clearMetadata(String applicationId) throws RegistryException {
+    private static void clearMetadata(String applicationId) throws RestAPIException {
 
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
@@ -1936,12 +1936,18 @@ public class StratosApiV41Utils {
             registry.beginTransaction();
             if (registry.resourceExists(resourcePath)) {
                 registry.delete(resourcePath);
-                registry.commitTransaction();
                 log.info(String.format("Application metadata removed: [application-id] %s", applicationId));
             }
+            registry.commitTransaction();
         } catch (RegistryException e) {
-            registry.rollbackTransaction();
-            throw e;
+            try {
+                registry.rollbackTransaction();
+            }
+            catch (RegistryException e1) {
+                log.error("Could not rollback transaction", e1);
+            }
+            throw new RestAPIException(String.format("Application metadata removed: [application-id] %s",
+                    applicationId), e);
         }
     }
 

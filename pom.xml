@@ -774,6 +774,7 @@
         <carbon.deployment.version>4.2.3</carbon.deployment.version>
         <carbon.automation.version>4.4.2</carbon.automation.version>
         <carbon.automationutils.version>4.4.2</carbon.automationutils.version>
+        <carbon.analytics.common.version>5.0.0</carbon.analytics.common.version>
         <carbon.ui.stratos.version>4.2.0-stratosv2</carbon.ui.stratos.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.platform.patch.version.4.2.1>4.2.1</carbon.platform.patch.version.4.2.1>

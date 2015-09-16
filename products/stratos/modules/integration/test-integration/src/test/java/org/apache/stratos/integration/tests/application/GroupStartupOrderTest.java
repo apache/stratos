@@ -38,7 +38,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * Handling the startup order of the group
  */
 public class GroupStartupOrderTest extends StratosIntegrationTest {
-    private static final Log log = LogFactory.getLog(SampleApplicationsTest.class);
+    private static final Log log = LogFactory.getLog(GroupStartupOrderTest.class);
     private static final String RESOURCES_PATH = "/group-startup-order-test";
     private static final int GROUP_ACTIVE_TIMEOUT = 300000;
     private static final int NODES_START_PARALLEL_TIMEOUT = 30000;

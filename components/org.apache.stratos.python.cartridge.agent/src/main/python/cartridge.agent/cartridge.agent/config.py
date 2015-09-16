@@ -18,11 +18,12 @@
 import ConfigParser
 import os
 
+from yapsy.PluginManager import PluginManager
+
 from modules.util.log import LogFactory
 from exception import ParameterNotFoundException
 import constants
 from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin, IHealthStatReaderPlugin
-from yapsy.PluginManager import PluginManager
 
 
 class Config:
@@ -134,18 +135,20 @@ class Config:
         :rtype: ConfigParser.SafeConfigParser()
         """
 
-        conf_file_path = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/agent.conf"
+        conf_file_path = os.path.abspath(os.path.dirname(__file__)) + "/agent.conf"
         Config.log.debug("Config file path : %r" % conf_file_path)
 
         properties = ConfigParser.SafeConfigParser()
         properties.read(conf_file_path)
 
         # set calculated values
-        param_file = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/payload/launch-params"
+        param_file = os.path.abspath(os.path.dirname(__file__)) + "/payload/launch-params"
+        Config.log.debug("param_file: %r" % param_file)
         properties.set("agent", constants.PARAM_FILE_PATH, param_file)
-        plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/plugins"
+        plugins_dir = os.path.abspath(os.path.dirname(__file__)) + "/plugins"
+        Config.log.debug("plugins_dir: %r" % plugins_dir)
         properties.set("agent", constants.PLUGINS_DIR, plugins_dir)
-        plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/extensions/py"
+        plugins_dir = os.path.abspath(os.path.dirname(__file__)) + "/extensions/py"
         properties.set("agent", constants.EXTENSIONS_DIR, plugins_dir)
 
         return properties
@@ -264,7 +267,7 @@ class Config:
             Config.application_id = Config.read_property(constants.APPLICATION_ID)
             Config.service_name = Config.read_property(constants.SERVICE_NAME)
             Config.cluster_id = Config.read_property(constants.CLUSTER_ID)
-            Config.ports = Config.read_property(constants.PORTS).replace("'","").split("|")
+            Config.ports = Config.read_property(constants.PORTS).replace("'", "").split("|")
             Config.is_multiTenant = Config.read_property(constants.MULTITENANT)
             Config.tenant_id = Config.read_property(constants.TENANT_ID)
 
