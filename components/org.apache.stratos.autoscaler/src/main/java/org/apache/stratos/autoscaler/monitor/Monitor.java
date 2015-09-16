@@ -22,6 +22,7 @@ import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract class for the monitoring functionality in Autoscaler.
@@ -38,7 +39,7 @@ public abstract class Monitor implements EventHandler, Runnable {
     //monitors map, key=InstanceId and value=ClusterInstance/GroupInstance/ApplicationInstance
     protected Map<String, Instance> instanceIdToInstanceMap;
     public Monitor() {
-        this.instanceIdToInstanceMap = new HashMap<String, Instance>();
+        this.instanceIdToInstanceMap = new ConcurrentHashMap<String, Instance>();
     }
 
     /**

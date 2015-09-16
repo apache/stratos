@@ -41,8 +41,10 @@ import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPol
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.application.UnremovableApplicationException;
 import org.apache.stratos.autoscaler.exception.policy.*;
+import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -70,6 +72,7 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Artifac
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -251,8 +254,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 application = ApplicationHolder.getApplications().getApplication(applicationId);
                 application.setApplicationPolicyId(applicationPolicyId);
                 ApplicationHolder.persistApplication(application);
-            }
-            finally {
+            } finally {
                 ApplicationHolder.releaseWriteLock();
             }
 
@@ -277,8 +279,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     applicationId);
 
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ApplicationContext applicationContext = RegistryManager.getInstance().
                     getApplicationContext(applicationId);
             if (applicationContext != null) {
@@ -359,8 +360,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             applicationContext.getApplicationId()));
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message =
                     "Could not add application signup: [application-id]" + applicationContext.getApplicationId();
             log.error(message, e);
@@ -410,8 +410,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = "Could not remove application signup(s)";
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -481,10 +480,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             return false;
         }
 
-        boolean applicationSignUpExists =false;
+        boolean applicationSignUpExists = false;
 
         ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
-        if(applicationContext.isMultiTenant()){
+        if (applicationContext.isMultiTenant()) {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
             ApplicationSignUp applicationSignUps[] = serviceClient.getApplicationSignUps(applicationId);
 
@@ -564,8 +563,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (log.isInfoEnabled()) {
                 log.info("Application undeployment process started: [application-id] " + applicationId);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = "Could not start application undeployment process: [application-id] " + applicationId;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -600,8 +598,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             ApplicationBuilder.handleApplicationRemoval(applicationId);
             log.info(String.format("Application deleted successfully: [application-id] %s", applicationId));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = String.format("Could not delete application: [application-id] %s", applicationId);
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -745,8 +742,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         try {
             RegistryManager.getInstance().updateServiceGroup(cartridgeGroup);
-        }
-        catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
+        } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
             String message = (String.format("Cannot update cartridge group: [group-name] %s",
                     cartridgeGroup.getName()));
             throw new RuntimeException(message, e);
@@ -777,8 +773,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
                 throw new CartridgeGroupNotFoundException(msg);
             }
-        }
-        catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
+        } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
             String message = "Could not remove cartridge group: " + groupName;
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -792,8 +787,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
         try {
             return RegistryManager.getInstance().getServiceGroup(name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
         }
     }
@@ -811,13 +805,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 }
             }
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = String.format("Could not find cluster id: [application-id] %s [alias] %s",
                     applicationId, alias);
             throw new AutoScalerException(message, e);
-        }
-        finally {
+        } finally {
             ApplicationHolder.releaseReadLock();
         }
     }
@@ -833,8 +825,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     public boolean undeployServiceGroup(String name) throws AutoScalerException {
         try {
             RegistryManager.getInstance().removeServiceGroup(name);
-        }
-        catch (RegistryException e) {
+        } catch (RegistryException e) {
             throw new AutoScalerException("Error occurred while removing the cartridge groups", e);
         }
         return true;
@@ -950,65 +941,101 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         "[application-id] %s", applicationId));
                 return;
             }
-        }
-        finally {
+        } finally {
             ApplicationHolder.releaseReadLock();
         }
 
-        Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
-        for (ClusterDataHolder clusterDataHolder : allClusters) {
-            String serviceType = clusterDataHolder.getServiceType();
-            String clusterId = clusterDataHolder.getClusterId();
+        //Stopping the application monitor thread
+        ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
+                getAppMonitor(applicationId);
+        if (applicationMonitor != null) {
+            applicationMonitor.destroy();
 
-            Cluster cluster;
-            try {
-                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            }
-            finally {
-                TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
-            }
+            if (applicationMonitor.hasInstance()) {
+                Map<String, Monitor> monitors = applicationMonitor.
+                        getAliasToActiveChildMonitorsMap();
+                AutoscalerUtil.handleForceTermination(monitors.values(),
+                        applicationMonitor, applicationId);
 
-            //If there are no members in cluster Instance, send cluster Terminated Event
-            //Stopping the cluster monitor thread
-            ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
-                    getClusterMonitor(clusterId);
-            if (clusterMonitor != null) {
-                clusterMonitor.destroy();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster monitor cannot be found for [application] %s " +
-                            "[cluster] %s", applicationId, clusterId));
-                }
-            }
-            if (cluster != null) {
-                Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
-                for (ClusterInstance clusterInstance : allClusterInstances) {
-                    ClusterStatusEventPublisher.sendClusterTerminatedEvent(applicationId, cluster.getServiceName(),
-                            clusterId, clusterInstance.getInstanceId());
+                Collection<Instance> applicationInstances = applicationMonitor.getInstances();
+                for (Instance instance : applicationInstances) {
+                    ApplicationBuilder.handleApplicationInstanceTerminatedEvent(applicationId,
+                            instance.getInstanceId());
                 }
 
-                List<String> memberListToTerminate = new LinkedList<String>();
-                for (Member member : cluster.getMembers()) {
-                    memberListToTerminate.add(member.getMemberId());
-                }
+                Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
+                for (ClusterDataHolder clusterDataHolder : allClusters) {
+                    String serviceType = clusterDataHolder.getServiceType();
+                    String clusterId = clusterDataHolder.getClusterId();
 
-                for (String memberIdToTerminate : memberListToTerminate) {
+                    Cluster cluster;
                     try {
-                        log.info(String.format(
-                                "Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
-                                        "[application-id] %s", memberIdToTerminate, clusterId, application));
-                        AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
+                        TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                        cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                    } finally {
+                        TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
                     }
-                    catch (Exception e) {
-                        log.error(
-                                String.format("Forceful termination of member %s has failed, but continuing forceful " +
-                                        "deletion of other members", memberIdToTerminate));
-                    }
-                }
-            }
 
+                    //If there are no members in cluster Instance, send cluster Terminated Event
+                    //Stopping the cluster monitor thread
+                    ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
+                            getClusterMonitor(clusterId);
+                    if (clusterMonitor != null) {
+                        clusterMonitor.destroy();
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Cluster monitor cannot be found for [application] %s " +
+                                    "[cluster] %s", applicationId, clusterId));
+                        }
+                    }
+                    if (cluster != null) {
+                        Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
+
+                        if (allClusterInstances.isEmpty() && clusterMonitor != null) {
+                            AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
+                        }
+
+                        List<String> memberListToTerminate = new LinkedList<String>();
+                        for (Member member : cluster.getMembers()) {
+                            memberListToTerminate.add(member.getMemberId());
+                        }
+
+                        for (String memberIdToTerminate : memberListToTerminate) {
+                            try {
+                                log.info(String.format(
+                                        "Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s " +
+                                                "[application-id] %s", memberIdToTerminate, clusterId, application));
+                                AutoscalerCloudControllerClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
+                            } catch (Exception e) {
+                                log.error(
+                                        String.format("Forceful termination of member %s has failed, but continuing forceful " +
+                                                "deletion of other members", memberIdToTerminate));
+                            }
+                        }
+                    }
+
+                }
+            } else {
+                //There is no application instances. Need to directly un-deploy the application
+                // stopping application thread
+                ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                        getApplicationContext(applicationId);
+                applicationMonitor.destroy();
+                AutoscalerContext.getInstance().removeAppMonitor(applicationId);
+                // Remove network partition algorithm context
+                AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
+                // update application status in application context
+                applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
+                AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+                RegistryManager.getInstance().persistApplicationContext(applicationContext);
+
+                log.info("Application un-deployed successfully: [application-id] " + applicationId);
+            }
         }
+
+
+
+
 
     }
 
@@ -1137,7 +1164,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
             if (null == partitions || partitions.length == 0) {
                 String msg = String.format("Network partition does not have any partition references: "
-                        + "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId,
+                                + "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId,
                         networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
@@ -1190,23 +1217,20 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             addNewPartitionsToClusterMonitor(clusterLevelNetworkPartitionContext, networkPartition,
                                     deploymentPolicy.getDeploymentPolicyID(),
                                     clusterMonitor.getClusterContext().getServiceId());
-                        }
-                        catch (RemoteException e) {
+                        } catch (RemoteException e) {
 
                             String message =
                                     "Connection to cloud controller failed, Cluster monitor update failed for" +
                                             " [deployment-policy] " + deploymentPolicy.getDeploymentPolicyID();
                             log.error(message);
                             throw new CloudControllerConnectionException(message, e);
-                        }
-                        catch (CloudControllerServiceInvalidPartitionExceptionException e) {
+                        } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
 
                             String message = "Invalid partition, Cluster monitor update failed for [deployment-policy] "
                                     + deploymentPolicy.getDeploymentPolicyID();
                             log.error(message);
                             throw new InvalidDeploymentPolicyException(message, e);
-                        }
-                        catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+                        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
 
                             String message =
                                     "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
@@ -1325,8 +1349,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         try {
             Collection<DeploymentPolicy> deploymentPolicies = PolicyManager.getInstance().getDeploymentPolicies();
             return deploymentPolicies.toArray(new DeploymentPolicy[deploymentPolicies.size()]);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = "Could not get deployment policies";
             log.error(message);
             throw new AutoScalerException(message, e);

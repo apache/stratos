@@ -1062,4 +1062,8 @@ public abstract class ParentComponentMonitor extends Monitor {
             return stringBuilder.toString();
         }
     }
+
+    public void removeMonitor(String id) {
+        this.aliasToActiveChildMonitorsMap.remove(id);
+    }
 }

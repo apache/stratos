@@ -24,16 +24,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeGroupBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
-<<<<<<< HEAD:products/stratos/modules/integration/test-integration/src/test/java/org/apache/stratos/integration/tests/application/ApplicationUpdateTest.java
 import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
-=======
-import org.apache.stratos.integration.tests.RestConstants;
-import org.apache.stratos.integration.tests.StratosTestServerManager;
-import org.apache.stratos.integration.tests.TopologyHandler;
+import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.messaging.domain.application.Application;
->>>>>>> Support application update in the Applications Topology:products/stratos/modules/integration/src/test/java/org/apache/stratos/integration/tests/application/ApplicationUpdateTest.java
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.Group;
