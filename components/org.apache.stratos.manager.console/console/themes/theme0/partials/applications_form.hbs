@@ -200,16 +200,20 @@
                                         </div>
                                     <div class="bottom-bar-wrapper">
                                     <div class="bottom-bar">
-                                        <button class="btn btn-danger btn-lg hover-undeploy"
-                                                type="button"
-                                                id="{{applicationId}}"> Undeploy
-                                        </button>
+
                                         <button class="btn btn-info btn-lg hover-details" type="button"
                                                 id="details_{{applicationId}}"
                                                 data-url="{{url ""}}/applications/{{applicationId}}/">
                                             View
                                         </button>
                                     {{#if multiTenant}}
+                                        {{#if isSuperTenant}}
+                                            <button class="btn btn-danger btn-lg hover-undeploy"
+                                                    type="button"
+                                                    id="{{applicationId}}"> Undeploy
+                                            </button>
+                                        {{/if}}
+
                                         {{#if signUpsExist}}
                                                 <button class="btn btn-warning btn-lg hover-remove-signup"
                                                         type="button"
@@ -230,6 +234,10 @@
                                         <button class="btn btn-info btn-lg hover-details" type="button"
                                                 id="details_list_{{applicationId}}"
                                                 data-url="{{url ""}}/applications/{{applicationId}}/" > View
+                                        </button>
+                                        <button class="btn btn-danger btn-lg hover-undeploy"
+                                                type="button"
+                                                id="{{applicationId}}"> Undeploy
                                         </button>
                                     </div>
                                     <div class="bottom-bar-wrapper">
