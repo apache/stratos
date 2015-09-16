@@ -99,7 +99,7 @@ class HealthStatisticsPublisher:
         cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
         cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
         # 1.1.1.1:1883,2.2.2.2:1883
-        cep_urls = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_URLS);
+        cep_urls = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_URLS)
         cep_urls = cep_urls.split(',')
         for cep_url in cep_urls:
             self.ports = []
@@ -131,7 +131,8 @@ class HealthStatisticsPublisher:
 
             self.publishers.append(publisher)
 
-            HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
+            HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized. %r %r",
+                                                cep_ip, cep_port)
 
     @staticmethod
     def create_stream_definition():
@@ -177,7 +178,7 @@ class HealthStatisticsPublisher:
                                                 event.payloadData,
                                                 self.stream_definition.version))
 
-        self.publish_event(self.publishers, event)
+        self.publish_event(event)
 
     def publish_load_average(self, load_avg):
         """
