@@ -59,7 +59,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
     public ADCTestCase() throws IOException {
     }
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setupADCTest() throws Exception {
         log.info("Setting up ADCTestCase");
         // Set jndi.properties.dir system property for initializing event publishers and receivers
@@ -75,7 +75,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDownADCTest() {
         // TODO: app path is duplicated in Java test and payload
         tearDown(APPLICATION_PATH);

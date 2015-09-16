@@ -60,7 +60,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     public AgentStartupTestCase() throws IOException {
     }
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setupAgentStartupTest() throws Exception {
         log.info("Setting up AgentStartupTestCase");
         // Set jndi.properties.dir system property for initializing event publishers and receivers
@@ -77,7 +77,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDownAgentStartupTest() {
         tearDown();
     }
