@@ -66,7 +66,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
 
         // start Python agent with configurations provided in resource path
-        super.setup();
+        super.setup(ADC_TIMEOUT);
 
         // Simulate server socket
         startServerSocket(8080);
@@ -82,13 +82,17 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
     }
 
 
-    @Test(timeOut = ADC_TIMEOUT)
-    public void testADC() {
+    @Test(timeOut = ADC_TIMEOUT, groups = {"smoke"})
+    public void testADC() throws Exception {
         startCommunicatorThread();
         assertAgentActivation();
         Thread adcTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                String artifactFileName = "pca-live-" + UUID.randomUUID();
+                File file = new File(APPLICATION_PATH + File.separator + artifactFileName);
+                boolean fileCreated = false;
+                boolean fileDeleted = false;
                 log.info("Running ADC Test thread...");
                 // Send artifact updated event
                 publishEvent(getArtifactUpdatedEventForPrivateRepo());
@@ -103,17 +107,28 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                             if (line.contains("Git clone executed")) {
                                 log.info("Agent has completed git clone. Asserting the operation...");
                                 assertRepoClone(getArtifactUpdatedEventForPrivateRepo());
-                                File file = new File(APPLICATION_PATH + "/pca-live-" + UUID.randomUUID());
+
                                 try {
-                                    file.createNewFile();
+                                    if (!file.createNewFile()) {
+                                        throw new RuntimeException("Could not create [file] " + file.getAbsolutePath());
+                                    }
+                                    fileCreated = true;
                                 }
                                 catch (IOException e) {
                                     log.error("Could not create file", e);
                                 }
                             }
-                            if (line.contains("Pushed artifacts for tenant")) {
+                            if (fileCreated && line.contains("Pushed artifacts for tenant")) {
                                 log.info("ADC Test completed");
-                                hasADCTestCompleted = true;
+                                if (!file.delete()) {
+                                    throw new RuntimeException("Could not delete [file] " + file.getAbsolutePath());
+                                }
+                                fileDeleted = true;
+                            }
+                            if (fileDeleted && line.contains("Git pull rebase executed in checkout job")) {
+                                if (!file.exists()) {
+                                    hasADCTestCompleted = true;
+                                }
                             }
                         }
                     }
@@ -165,7 +180,6 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                                 publishEvent(getArtifactUpdatedEventForPrivateRepo());
                                 log.info("Artifact updated event published");
                             }
-                            log.info(line);
                         }
                     }
                     sleep(1000);

@@ -49,7 +49,6 @@ public class PythonAgentIntegrationTest {
     private static final Log log = LogFactory.getLog(PythonAgentIntegrationTest.class);
     protected BrokerService broker;
 
-    public final long TIMEOUT = 5 * 60000;
     public static final String NEW_LINE = System.getProperty("line.separator");
     public static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "activemq.amqp.bind.address";
     public static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "activemq.mqtt.bind.address";
@@ -78,7 +77,7 @@ public class PythonAgentIntegrationTest {
     /**
      * Setup method for test method testPythonCartridgeAgent
      */
-    protected void setup() throws Exception {
+    protected void setup(int timeout) throws Exception {
         // start ActiveMQ test server
         startBroker();
 
@@ -134,7 +133,7 @@ public class PythonAgentIntegrationTest {
         String agentPath = setupPythonAgent();
         log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
         log.info("Starting python cartridge agent...");
-        this.outputStream = executeCommand("python " + agentPath + PATH_SEP + "agent.py");
+        this.outputStream = executeCommand("python " + agentPath + PATH_SEP + "agent.py", timeout);
     }
 
 
@@ -408,7 +407,7 @@ public class PythonAgentIntegrationTest {
      *
      * @param commandText
      */
-    protected ByteArrayOutputStreamLocal executeCommand(final String commandText) {
+    protected ByteArrayOutputStreamLocal executeCommand(final String commandText, int timeout) {
         final ByteArrayOutputStreamLocal outputStream = new ByteArrayOutputStreamLocal();
         try {
             CommandLine commandline = CommandLine.parse(commandText);
@@ -418,7 +417,7 @@ public class PythonAgentIntegrationTest {
                     PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
                             PYTHON_AGENT_DIR_NAME));
             exec.setStreamHandler(streamHandler);
-            ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
+            ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
             exec.setWatchdog(watchdog);
             exec.execute(commandline, new ExecuteResultHandler() {
                 @Override

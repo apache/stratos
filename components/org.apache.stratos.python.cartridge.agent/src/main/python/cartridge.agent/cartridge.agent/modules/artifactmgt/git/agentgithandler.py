@@ -162,14 +162,22 @@ class AgentGitHandler:
     @staticmethod
     def pull(git_repo):
         # git reset to make sure no uncommitted changes are present before the pull, no conflicts will occur
-        AgentGitHandler.execute_git_command(["reset", "--hard"], git_repo.local_repo_path)
+        (output, errors) = AgentGitHandler.execute_git_command(["status"], git_repo.local_repo_path)
+        AgentGitHandler.log.info("Executed git status with output: %r" % output)
+
+        # check if modified files are present
+        modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
+        if modified:
+            AgentGitHandler.log.info("Unstaged files exist in working directory. Aborting Git pull...")
+            return
 
         # HEAD before pull
         (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
 
         try:
             repo = Repo(git_repo.local_repo_path)
-            repo.remotes.origin.pull()
+            output = repo.remotes.origin.pull(rebase=True)
+            AgentGitHandler.log.info("Git pull rebase executed in checkout job")
             if repo.is_dirty():
                 raise GitRepositorySynchronizationException("Git pull operation left the repository in dirty state")
         except (GitCommandError, GitRepositorySynchronizationException) as e:
@@ -321,7 +329,7 @@ class AgentGitHandler:
         git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
         if git_repo is None:
             # not cloned yet
-            raise GitRepositorySynchronizationException("Not a valid repository to push from. Aborting")
+            AgentGitHandler.log.error("Not a valid repository to push from. Aborting Git push...")
 
         # Get initial HEAD so in case if push fails it can be reverted to this hash
         # This way, commit and push becomes an single operation. No intermediate state will be left behind.
@@ -367,6 +375,11 @@ class AgentGitHandler:
         # push to remote
         try:
             repo = Repo(git_repo.local_repo_path)
+            
+            # pull and rebase before pushing to remote repo
+            output = repo.remotes.origin.pull(rebase=True)
+            AgentGitHandler.log.info("Git pull rebase executed before pushing to remote")
+
             push_info = repo.remotes.origin.push()
             if str(push_info[0].summary) is "[rejected] (fetch first)":
                 # need to pull
@@ -480,23 +493,25 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
         self.repo_info = repo_info
         self.auto_checkout = auto_checkout
         self.auto_commit = auto_commit
+        self.invocation_count = 0
 
     def execute_task(self):
-        if self.auto_checkout:
-            try:
-                self.log.debug("Running checkout job")
-                AgentGitHandler.checkout(self.repo_info)
-                # TODO: run updated scheduler extension
-            except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto checkout task failed: %s" % e.get_message())
+        self.invocation_count += 1
 
         if self.auto_commit:
             try:
-                self.log.debug("Running commit job")
+                self.log.debug("Running commit job # %s" % self.invocation_count)
                 AgentGitHandler.push(self.repo_info)
             except GitRepositorySynchronizationException as e:
                 self.log.exception("Auto commit failed: %s" % e.get_message())
 
+        if self.auto_checkout:
+            try:
+                self.log.debug("Running checkout job # %s" % self.invocation_count)
+                AgentGitHandler.checkout(self.repo_info)
+                # TODO: run updated scheduler extension
+            except GitRepositorySynchronizationException as e:
+                self.log.exception("Auto checkout task failed: %s" % e.get_message())
 
 class GitRepository:
     """
