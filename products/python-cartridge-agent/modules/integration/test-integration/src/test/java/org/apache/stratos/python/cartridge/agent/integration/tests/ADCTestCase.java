@@ -32,12 +32,15 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
 import static junit.framework.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertFalse;
 
 public class ADCTestCase extends PythonAgentIntegrationTest {
     private static final Log log = LogFactory.getLog(ADCTestCase.class);
@@ -64,6 +67,25 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
         log.info("Setting up ADCTestCase");
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
+
+        // create a dummy directory structure in Git clone path to create a conflicting default artifacts scenario
+        File tempWorkDir = new File(APPLICATION_PATH);
+        if (!tempWorkDir.mkdir()) {
+            throw new Exception("Could not create dir at " + tempWorkDir.getAbsolutePath());
+        }
+        File dummyDir = new File(APPLICATION_PATH + File.separator + "do_not_delete");
+        File dummyFile = new File(APPLICATION_PATH + File.separator + "do_not_delete" + File.separator +
+                "do_not_delete");
+
+        if (!dummyDir.mkdir()) {
+            throw new Exception("Could not create dir at " + dummyDir.getAbsolutePath());
+        }
+        if (!dummyFile.createNewFile()) {
+            throw new Exception("Could not create file at " + dummyFile.getAbsolutePath());
+        }
+        // write some dummy string which should get replaced by remote repo's version
+        String msg = "This should not be visible";
+        Files.write(Paths.get(dummyFile.getAbsolutePath()), msg.getBytes());
 
         // start Python agent with configurations provided in resource path
         super.setup(ADC_TIMEOUT);
@@ -93,6 +115,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                 File file = new File(APPLICATION_PATH + File.separator + artifactFileName);
                 boolean fileCreated = false;
                 boolean fileDeleted = false;
+                boolean repoCloned = false;
                 log.info("Running ADC Test thread...");
                 // Send artifact updated event
                 publishEvent(getArtifactUpdatedEventForPrivateRepo());
@@ -107,26 +130,32 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                             if (line.contains("Git clone executed")) {
                                 log.info("Agent has completed git clone. Asserting the operation...");
                                 assertRepoClone(getArtifactUpdatedEventForPrivateRepo());
-
+                                repoCloned = true;
+                            }
+                            if (repoCloned && !fileCreated) {
                                 try {
                                     if (!file.createNewFile()) {
                                         throw new RuntimeException("Could not create [file] " + file.getAbsolutePath());
                                     }
                                     fileCreated = true;
+                                    continue;
                                 }
                                 catch (IOException e) {
                                     log.error("Could not create file", e);
                                 }
                             }
-                            if (fileCreated && line.contains("Pushed artifacts for tenant")) {
-                                log.info("ADC Test completed");
+                            if (fileCreated && line.contains("ArtifactUpdateTask completed") && !fileDeleted) {
                                 if (!file.delete()) {
                                     throw new RuntimeException("Could not delete [file] " + file.getAbsolutePath());
                                 }
                                 fileDeleted = true;
+                                continue;
                             }
-                            if (fileDeleted && line.contains("Git pull rebase executed in checkout job")) {
-                                if (!file.exists()) {
+                            // assert whether file deletion commit was pushed to remote repo
+                            if (fileDeleted && line.contains("ArtifactUpdateTask completed") && !hasADCTestCompleted) {
+                                boolean fileExists = new File(file.getAbsolutePath()).exists();
+                                assertFalse("Deleted file has not been pushed to remote repo", fileExists);
+                                if (!fileExists) {
                                     hasADCTestCompleted = true;
                                 }
                             }
@@ -142,6 +171,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
             // wait until the instance activated event is received.
             sleep(1000);
         }
+        log.info("ADC Test completed");
     }
 
     private void assertAgentActivation() {

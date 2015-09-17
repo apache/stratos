@@ -20,6 +20,7 @@ import subprocess
 import shutil
 import time
 import os
+import tempfile
 from git import *
 
 import constants
@@ -28,7 +29,7 @@ from ...util.log import LogFactory
 from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ...artifactmgt.repository import Repository
 from exception import GitRepositorySynchronizationException
-
+from distutils.dir_util import copy_tree
 
 class AgentGitHandler:
     """
@@ -69,7 +70,7 @@ class AgentGitHandler:
                     AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
                                               git_repo.tenant_id, git_repo.repo_url)
                 except GitRepositorySynchronizationException as e:
-                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %s" % e.get_message())
+                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %s" % e)
 
             else:
                 # not a valid repository, might've been corrupted. do a re-clone
@@ -94,8 +95,9 @@ class AgentGitHandler:
                 AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
             except GitRepositorySynchronizationException as e:
-                AgentGitHandler.log.warn("Warning: Git clone operation failed. Retrying...")
+                AgentGitHandler.log.error("Git clone operation failed: %s" % e)
                 # If first git clone is failed, execute retry_clone operation
+                AgentGitHandler.log.info("Retrying Git clone operation...")
                 AgentGitHandler.retry_clone(git_repo)
 
         return subscribe_run, updated
@@ -198,30 +200,29 @@ class AgentGitHandler:
 
     @staticmethod
     def clone(git_repo):
-        if os.path.isdir(git_repo.local_repo_path) and os.listdir(git_repo.local_repo_path) != []:
-            # delete and recreate local repo path if not empty dir
-            AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
-            GitUtils.delete_folder_tree(git_repo.local_repo_path)
-            GitUtils.create_dir(git_repo.local_repo_path)
-
         try:
-            Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)
+            # create a temporary location to clone
+            temp_repo_path = os.path.join(tempfile.gettempdir(), "pca-temp-" + git_repo.tenant_id)
+            if os.path.isdir(temp_repo_path) and os.listdir(temp_repo_path) != []:
+                GitUtils.delete_folder_tree(temp_repo_path)
+                GitUtils.create_dir(temp_repo_path)
+            # clone the repo to a temporary location first to avoid conflicts
+            Repo.clone_from(git_repo.repo_url, temp_repo_path)
+
+            # move the cloned dir to application path
+            copy_tree(temp_repo_path, git_repo.local_repo_path)
+
             AgentGitHandler.add_repo(git_repo)
             AgentGitHandler.log.info("Git clone operation for tenant %s successful" % git_repo.tenant_id)
             return git_repo
         except GitCommandError as e:
-            raise GitRepositorySynchronizationException("Error while cloning repository: %s" % e)
+            raise GitRepositorySynchronizationException("Error while cloning repository for tenant %s: %s" % (
+                git_repo.tenant_id, e))
 
     @staticmethod
     def retry_clone(git_repo):
         """Retry 'git clone' operation for defined number of attempts with defined intervals
         """
-        if os.path.isdir(git_repo.local_repo_path) and os.listdir(git_repo.local_repo_path) != []:
-            # delete and recreate local repo path if not empty dir
-            AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
-            GitUtils.delete_folder_tree(git_repo.local_repo_path)
-            GitUtils.create_dir(git_repo.local_repo_path)
-
         git_clone_successful = False
         # Read properties from agent.conf
         max_retry_attempts = int(Config.read_property(constants.ARTIFACT_CLONE_RETRIES, 5))
@@ -232,19 +233,17 @@ class AgentGitHandler:
         while git_clone_successful is False and retry_attempts < max_retry_attempts:
             try:
                 retry_attempts += 1
-                Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)
-                AgentGitHandler.add_repo(git_repo)
+                AgentGitHandler.clone(git_repo)
                 AgentGitHandler.log.info(
                     "Retrying attempt to git clone operation for tenant %s successful" % git_repo.tenant_id)
                 git_clone_successful = True
-
             except GitCommandError as e:
-                AgentGitHandler.log.warn("Retrying git clone attempt %s failed" % retry_attempts)
+                AgentGitHandler.log.warn("Retrying git clone attempt %s failed: %s" % (retry_attempts, e))
                 if retry_attempts < max_retry_attempts:
                     time.sleep(retry_interval)
-                    pass
                 else:
-                    raise GitRepositorySynchronizationException("Error while retrying git clone: %s" % e)
+                    raise GitRepositorySynchronizationException("All attempts failed while retrying git clone: %s"
+                                                                % e)
 
     @staticmethod
     def add_repo(git_repo):
@@ -456,7 +455,7 @@ class AgentGitHandler:
         try:
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
         except GitRepositorySynchronizationException as e:
-            AgentGitHandler.log.exception("Repository folder not deleted: %s" % e.get_message())
+            AgentGitHandler.log.exception("Repository folder not deleted: %s" % e)
 
         AgentGitHandler.clear_repo(tenant_id)
         AgentGitHandler.log.info("git repository deleted for tenant %s" % git_repo.tenant_id)
@@ -503,7 +502,7 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
                 self.log.debug("Running commit job # %s" % self.invocation_count)
                 AgentGitHandler.push(self.repo_info)
             except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto commit failed: %s" % e.get_message())
+                self.log.exception("Auto commit failed: %s" % e)
 
         if self.auto_checkout:
             try:
@@ -511,7 +510,8 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
                 AgentGitHandler.checkout(self.repo_info)
                 # TODO: run updated scheduler extension
             except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto checkout task failed: %s" % e.get_message())
+                self.log.exception("Auto checkout task failed: %s" % e)
+        self.log.debug("ArtifactUpdateTask completed # %s" % self.invocation_count)
 
 
 class GitRepository:
