@@ -109,7 +109,7 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
     private static final String METADATA_REG_PATH = "metadata/";
-    private static final int MAX_APPLICATION_ID_LENGTH = 20;
+    private static final int MAX_APPLICATION_ID_LENGTH = 40;
 
 
     /**
