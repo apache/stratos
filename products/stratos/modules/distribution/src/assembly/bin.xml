@@ -509,7 +509,7 @@
         <dependencySet>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/lib</outputDirectory>
             <includes>
-                <include>org.apache.stratos:org.apache.stratos.cep.extension:jar</include>
+                <include>org.apache.stratos:org.apache.stratos.cep300.extension:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
