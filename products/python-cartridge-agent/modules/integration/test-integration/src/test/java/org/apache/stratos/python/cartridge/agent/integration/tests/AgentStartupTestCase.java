@@ -41,7 +41,7 @@ import java.util.Properties;
 
 public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final Log log = LogFactory.getLog(AgentStartupTestCase.class);
-    private static final int STARTUP_TIMEOUT = 300000;
+    private static final int STARTUP_TIMEOUT = 5 * 60000;
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
@@ -67,7 +67,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
 
         // start Python agent with configurations provided in resource path
-        super.setup();
+        super.setup(STARTUP_TIMEOUT);
 
         // Simulate server socket
         startServerSocket(8080);

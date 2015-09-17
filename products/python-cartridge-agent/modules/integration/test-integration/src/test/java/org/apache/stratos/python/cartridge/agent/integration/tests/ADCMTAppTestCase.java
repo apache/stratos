@@ -65,7 +65,7 @@ public class ADCMTAppTestCase extends PythonAgentIntegrationTest {
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
 
         // start Python agent with configurations provided in resource path
-        super.setup();
+        super.setup(ADC_TIMEOUT);
 
         // Simulate server socket
         startServerSocket(8080);
@@ -153,7 +153,6 @@ public class ADCMTAppTestCase extends PythonAgentIntegrationTest {
                                 publishEvent(getArtifactUpdatedEventForPublicRepo());
                                 log.info("Artifact updated event published");
                             }
-                            log.info(line);
                         }
                     }
                     sleep(1000);
