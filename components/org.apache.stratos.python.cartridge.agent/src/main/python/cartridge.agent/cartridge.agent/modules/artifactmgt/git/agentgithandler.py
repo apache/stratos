@@ -16,17 +16,17 @@
 # under the License.
 
 from threading import current_thread
-import os
 import subprocess
 import shutil
-import constants
 import time
+import os
 from git import *
 
+import constants
 from config import Config
-from ... util.log import LogFactory
-from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
-from ... artifactmgt.repository import Repository
+from ...util.log import LogFactory
+from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
+from ...artifactmgt.repository import Repository
 from exception import GitRepositorySynchronizationException
 
 
@@ -163,7 +163,6 @@ class AgentGitHandler:
     def pull(git_repo):
         # git reset to make sure no uncommitted changes are present before the pull, no conflicts will occur
         (output, errors) = AgentGitHandler.execute_git_command(["status"], git_repo.local_repo_path)
-        AgentGitHandler.log.info("Executed git status with output: %r" % output)
 
         # check if modified files are present
         modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
@@ -176,7 +175,8 @@ class AgentGitHandler:
 
         try:
             repo = Repo(git_repo.local_repo_path)
-            output = repo.remotes.origin.pull(rebase=True)
+            (output, errors) = AgentGitHandler.execute_git_command(["pull", "--rebase", "origin", "master"],
+                                                                   git_repo.local_repo_path)
             AgentGitHandler.log.info("Git pull rebase executed in checkout job")
             if repo.is_dirty():
                 raise GitRepositorySynchronizationException("Git pull operation left the repository in dirty state")
@@ -300,17 +300,19 @@ class AgentGitHandler:
                     # both username and password are in the url, check and return as is
                     credential_split = at_split[0].split(":")
                     if credential_split[0] is repo_info.repo_username and \
-                            credential_split[1] is repo_info.repo_password:
+                                    credential_split[1] is repo_info.repo_password:
                         # credentialed url with provided credentials, return as is
                         return repo_info.repo_url
                     else:
                         # credentials wrong, need to replace
-                        return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
+                        return str(url_split[
+                                       0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
                                    at_split[1])
                 else:
                     # only username is provided, need to include password
-                    return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                               at_split[1])
+                    return str(
+                        url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
+                        at_split[1])
             else:
                 # no credentials in the url, need to include username and password
                 return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
@@ -375,9 +377,10 @@ class AgentGitHandler:
         # push to remote
         try:
             repo = Repo(git_repo.local_repo_path)
-            
+
             # pull and rebase before pushing to remote repo
-            output = repo.remotes.origin.pull(rebase=True)
+            (output, errors) = AgentGitHandler.execute_git_command(["pull", "--rebase", "origin", "master"],
+                                                                   git_repo.local_repo_path)
             AgentGitHandler.log.info("Git pull rebase executed before pushing to remote")
 
             push_info = repo.remotes.origin.push()
@@ -403,8 +406,6 @@ class AgentGitHandler:
     @staticmethod
     def has_modified_files(repo_path):
         (output, errors) = AgentGitHandler.execute_git_command(["status"], repo_path=repo_path)
-        AgentGitHandler.log.debug("Git status output: %s", str(output))
-
         if "nothing to commit" in output:
             return False
         else:
@@ -473,13 +474,12 @@ class AgentGitHandler:
         :exception: RuntimeError
         """
         os_env = os.environ.copy()
-
         command.insert(0, "/usr/bin/git")
+        AgentGitHandler.log.info("Executing Git command: %s" % command)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env, cwd=repo_path)
-        output, errors = p.communicate()
-        if len(errors) > 0:
-            raise RuntimeError("Git Command execution failed: %s" % errors)
-
+        (output, errors) = p.communicate()
+        AgentGitHandler.log.info("Git command [output] %s" % str(output))
+        AgentGitHandler.log.info("Git command [errors] %s" % str(errors))
         return output, errors
 
 
@@ -512,6 +512,7 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
                 # TODO: run updated scheduler extension
             except GitRepositorySynchronizationException as e:
                 self.log.exception("Auto checkout task failed: %s" % e.get_message())
+
 
 class GitRepository:
     """
@@ -559,7 +560,7 @@ class GitUtils:
         except OSError as e:
             raise GitRepositorySynchronizationException("Directory creating failed in [%s]. " % e)
 
-        # return False
+            # return False
 
     @staticmethod
     def delete_folder_tree(path):
