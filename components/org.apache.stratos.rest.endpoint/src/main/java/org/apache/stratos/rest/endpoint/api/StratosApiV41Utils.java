@@ -109,7 +109,6 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
     private static final String METADATA_REG_PATH = "metadata/";
-    private static final int MAX_APPLICATION_ID_LENGTH = 40;
 
 
     /**
@@ -1365,11 +1364,6 @@ public class StratosApiV41Utils {
 
         if (StringUtils.isBlank(appDefinition.getApplicationId())) {
             String message = "Please specify the application name";
-            log.error(message);
-            throw new ApplicationAlreadyExistException(message);
-        }
-        if(StringUtils.length(appDefinition.getApplicationId())> MAX_APPLICATION_ID_LENGTH){
-            String message = String.format("Application ID length is too long.(Application ID maximum length %d characters", MAX_APPLICATION_ID_LENGTH);
             log.error(message);
             throw new ApplicationAlreadyExistException(message);
         }

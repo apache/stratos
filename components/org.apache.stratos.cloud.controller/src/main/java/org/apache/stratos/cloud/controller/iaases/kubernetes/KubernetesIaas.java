@@ -64,8 +64,8 @@ public class KubernetesIaas extends Iaas {
     private static final String KUBERNETES_SERVICE_SESSION_AFFINITY = "KUBERNETES_SERVICE_SESSION_AFFINITY";
     private static final String KUBERNETES_CONTAINER_CPU_DEFAULT = "kubernetes.container.cpu.default";
     private static final String KUBERNETES_CONTAINER_MEMORY_DEFAULT = "kubernetes.container.memory.default";
-    public static final String POD_ID_PREFIX = "p";
-    public static final String SERVICE_NAME_PREFIX = "s";
+    public static final String POD_ID_PREFIX = "pod";
+    public static final String SERVICE_NAME_PREFIX = "service";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
