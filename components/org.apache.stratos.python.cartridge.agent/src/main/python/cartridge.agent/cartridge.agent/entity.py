@@ -507,7 +507,6 @@ class TopologyContext:
     @staticmethod
     def update(topology):
         TopologyContext.topology = topology
-        TopologyContext.topology.initialized = True
 
 
 class Tenant:

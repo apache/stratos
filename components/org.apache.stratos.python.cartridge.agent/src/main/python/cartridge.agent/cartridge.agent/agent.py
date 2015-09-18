@@ -218,11 +218,12 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_initialized(self, msg):
         self.__log.debug("Member initialized event received: %r" % msg.payload)
+        event_obj = MemberInitializedEvent.create_from_json(msg.payload)
 
         if not TopologyContext.topology.initialized:
             return
 
-        self.__event_handler.on_member_initialized_event()
+        self.__event_handler.on_member_initialized_event(event_obj)
 
     def on_member_activated(self, msg):
         self.__log.debug("Member activated event received: %r" % msg.payload)
@@ -251,12 +252,13 @@ class CartridgeAgent(threading.Thread):
     def on_complete_topology(self, msg):
         event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
         if not TopologyContext.topology.initialized:
-            self.__log.debug("Complete topology event received")
+            self.__log.debug("Topology initialized from complete topology event")
             TopologyContext.update(event_obj.topology)
+            TopologyContext.topology.initialized = True
             self.__event_handler.on_complete_topology_event(event_obj)
         else:
             TopologyContext.update(event_obj.topology)
-            self.__log.debug("Topology context updated [topology] %r" % event_obj.topology.json_str)
+            self.__log.debug("Topology context updated with [topology] %r" % event_obj.topology.json_str)
 
     def on_member_started(self, msg):
         self.__log.debug("Member started event received: %r" % msg.payload)

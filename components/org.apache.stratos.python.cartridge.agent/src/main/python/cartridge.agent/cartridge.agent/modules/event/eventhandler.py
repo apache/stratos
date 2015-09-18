@@ -175,15 +175,17 @@ class EventHandler:
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
 
-        member_initialized = self.is_member_initialized_in_topology(
-            service_name_in_payload,
-            cluster_id_in_payload,
-            member_id_in_payload)
+        if not Config.initialized:
+            member_initialized = self.is_member_initialized_in_topology(
+                service_name_in_payload,
+                cluster_id_in_payload,
+                member_id_in_payload)
 
-        self.__log.debug("Member initialized %s", member_initialized)
-        if member_initialized:
-            # Set cartridge agent as initialized since member is available and it is in initialized state
-            Config.initialized = True
+            if member_initialized:
+                # Set cartridge agent as initialized since member is available and it is in initialized state
+                Config.initialized = True
+                self.__log.info("Member initialized [member id] %s, [cluster-id] %s, [service] %s",
+                                (member_id_in_payload, cluster_id_in_payload, service_name_in_payload))
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
@@ -199,26 +201,28 @@ class EventHandler:
 
         self.execute_event_extendables(constants.COMPLETE_TOPOLOGY_EVENT, plugin_values)
 
-    def on_member_initialized_event(self):
+    def on_member_initialized_event(self, member_initialized_event):
         """
          Member initialized event is sent by cloud controller once volume attachment and
          ip address allocation is completed successfully
         :return:
         """
         self.__log.debug("Processing Member initialized event...")
-
         service_name_in_payload = Config.service_name
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
 
-        member_exists = self.member_exists_in_topology(service_name_in_payload, cluster_id_in_payload,
-                                                       member_id_in_payload)
-
-        self.__log.debug("Member exists: %s" % member_exists)
-
-        if member_exists:
-            Config.initialized = True
-            self.markMemberAsInitialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+        if not Config.initialized and member_id_in_payload == member_initialized_event.member_id:
+            member_exists = self.member_exists_in_topology(service_name_in_payload, cluster_id_in_payload,
+                                                           member_id_in_payload)
+            self.__log.debug("Member exists: %s" % member_exists)
+            if member_exists:
+                Config.initialized = True
+                self.markMemberAsInitialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+                self.__log.info("Instance marked as initialized on member initialized event")
+            else:
+                raise Exception("Member [member-id] %s not found in topology while processing member initialized "
+                                "event. [Topology] %s" % (member_id_in_payload, TopologyContext.get_topology()))
 
         self.execute_event_extendables(constants.MEMBER_INITIALIZED_EVENT, {})
 
@@ -379,10 +383,10 @@ class EventHandler:
         """
         try:
             input_values = EventHandler.add_common_input_values(input_values)
-            input_values["EVENT"] = event
         except Exception as e:
             self.__log.error("Error while adding common input values for event extendables: %s" % e)
-
+        input_values["EVENT"] = event
+        self.__log.info("Executing extensions for [event] %s with [input values] %s" % (event, input_values))
         # Execute the extension
         self.execute_extension_for_event(event, input_values)
         # Execute the plugins
