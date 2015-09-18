@@ -48,9 +48,10 @@ class EventHandler:
     def create_dummy_interface(self):
         self.__log.debug("Processing lvs dummy interface creation...")
         lvs_vip = Config.lvs_virtual_ip.split("|")
-        self.__log.debug("LVS dummy interface creation values %s %s " %(lvs_vip[0], lvs_vip[1]) )
+        self.__log.debug("LVS dummy interface creation values %s %s " % (lvs_vip[0], lvs_vip[1]))
         self.execute_event_extendables(constants.CREATE_LVS_DUMMY_INTERFACE,
-                                       {"EVENT": constants.CREATE_LVS_DUMMY_INTERFACE, "LVS_DUMMY_VIRTUAL_IP": lvs_vip[0],
+                                       {"EVENT": constants.CREATE_LVS_DUMMY_INTERFACE,
+                                        "LVS_DUMMY_VIRTUAL_IP": lvs_vip[0],
                                         "LVS_SUBNET_MASK": lvs_vip[1]})
 
     def on_instance_activated_event(self):
@@ -103,7 +104,7 @@ class EventHandler:
             try:
                 self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
             except ValueError:
-                self.__log.exception("Could not execute plugins for artifact updated event.")         
+                self.__log.exception("Could not execute plugins for artifact updated event: %s" % ValueError)
 
             if subscribe_run:
                 # publish instanceActivated
@@ -121,7 +122,7 @@ class EventHandler:
                 try:
                     update_interval = int(Config.artifact_update_interval)
                 except ValueError:
-                    self.__log.exception("Invalid artifact sync interval specified.")
+                    self.__log.exception("Invalid artifact sync interval specified: %s" % ValueError)
                     update_interval = 10
 
                 self.__log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
@@ -186,7 +187,12 @@ class EventHandler:
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
+        if service is None:
+            raise Exception("Service not found in topology [service] %s" % service_name_in_payload)
+
         cluster = service.get_cluster(cluster_id_in_payload)
+        if cluster is None:
+            raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id_in_payload)
 
         plugin_values = {"TOPOLOGY_JSON": json.dumps(topology.json_str),
                          "MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
@@ -283,7 +289,7 @@ class EventHandler:
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
         member_initialized = self.is_member_initialized_in_topology(service_name_in_payload, cluster_id_in_payload,
-                                                                 member_id_in_payload)
+                                                                    member_id_in_payload)
 
         if not member_initialized:
             self.__log.error("Member has not initialized, failed to execute start server event")
@@ -419,8 +425,8 @@ class EventHandler:
                 extension_thread.join()
             else:
                 self.__log.debug("No extensions registered for event %s" % event)
-        except OSError:
-            self.__log.warn("No extension was found for event %s" % event)
+        except OSError as e:
+            self.__log.warn("No extension was found for event %s: %s" % (event, e))
         except Exception as e:
             self.__log.exception("Error while executing extension for event %s: %s" % (event, e))
 
@@ -479,25 +485,31 @@ class EventHandler:
         if self.member_exists_in_topology(service_name, cluster_id, member_id):
             topology = TopologyContext.get_topology()
             service = topology.get_service(service_name)
-            cluster = service.get_cluster(cluster_id)
-            found_member = cluster.get_member(member_id)
-            self.__log.debug("Found member: " + found_member.to_json())
-            if found_member.status == MemberStatus.Initialized:
-                return True
+            if service is None:
+                raise Exception("Service not found in topology [service] %s" % service_name)
 
+            cluster = service.get_cluster(cluster_id)
+            if cluster is None:
+                raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
+
+            member = cluster.get_member(member_id)
+            if member is None:
+                raise Exception("Member id not found in topology [member] %s" % member_id)
+
+            self.__log.info("Found member: " + member.to_json())
+            if member.status == MemberStatus.Initialized:
+                return True
         return False
 
     def member_exists_in_topology(self, service_name, cluster_id, member_id):
         topology = TopologyContext.get_topology()
         service = topology.get_service(service_name)
         if service is None:
-            self.__log.error("Service not found in topology [service] %s" % service_name)
-            return False
+            raise Exception("Service not found in topology [service] %s" % service_name)
 
         cluster = service.get_cluster(cluster_id)
         if cluster is None:
-            self.__log.error("Cluster id not found in topology [cluster] %s" % cluster_id)
-            return False
+            raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
 
         activated_member = cluster.get_member(member_id)
         if activated_member is None:
@@ -510,15 +522,15 @@ class EventHandler:
         topology = TopologyContext.get_topology()
         service = topology.get_service(service_name)
         if service is None:
-            self.__log.error("Service not found in topology [service] %s" % service_name)
-            return False
+            raise Exception("Service not found in topology [service] %s" % service_name)
 
         cluster = service.get_cluster(cluster_id)
         if cluster is None:
-            self.__log.error("Cluster id not found in topology [cluster] %s" % cluster_id)
-            return False
+            raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
 
         member = cluster.get_member(member_id)
+        if member is None:
+            raise Exception("Member id not found in topology [member] %s" % member_id)
         member.status = MemberStatus.Initialized
 
     @staticmethod
@@ -543,14 +555,20 @@ class EventHandler:
         plugin_values["LB_IP"] = lb_private_ip if lb_private_ip is not None else Config.lb_private_ip
         plugin_values["LB_PUBLIC_IP"] = lb_public_ip if lb_public_ip is not None else Config.lb_public_ip
 
-
-
         topology = TopologyContext.get_topology()
         if topology.initialized:
             service = topology.get_service(Config.service_name)
+            if service is None:
+                raise Exception("Service not found in topology [service] %s" % Config.service_name)
+
             cluster = service.get_cluster(Config.cluster_id)
-            member_id_in_payload = Config.member_id
-            member = cluster.get_member(member_id_in_payload)
+            if cluster is None:
+                raise Exception("Cluster id not found in topology [cluster] %s" % Config.cluster_id)
+
+            member = cluster.get_member(Config.member_id)
+            if member is None:
+                raise Exception("Member id not found in topology [member] %s" % Config.member_id)
+
             EventHandler.add_properties(service.properties, plugin_values, "SERVICE_PROPERTY")
             EventHandler.add_properties(cluster.properties, plugin_values, "CLUSTER_PROPERTY")
             EventHandler.add_properties(member.properties, plugin_values, "MEMBER_PROPERTY")
