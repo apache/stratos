@@ -43,15 +43,17 @@ public class KubernetesClusterContext implements Serializable {
     private String masterPort;
     private List<Integer> servicePortSequence;
     private Map<String, KubernetesService> kubernetesServices;
-    private Map<String, AtomicLong> serviceSeqNoMap;
-    private Map<String, AtomicLong> podSeqNoMap;
+    private AtomicLong serviceSeqNo;
+    private AtomicLong podSeqNo;
     private transient KubernetesApiClient kubApi;
+    public static final long MAX_POD_ID = 99999999999999L;
+    public static final long MAX_SERVICE_ID = 99999999999999L;
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
         this.servicePortSequence = new ArrayList<>();
         this.kubernetesServices = new HashMap<>();
-        this.serviceSeqNoMap = new HashMap<>();
-        this.podSeqNoMap = new HashMap<>();
+        serviceSeqNo = new AtomicLong(0);
+        podSeqNo = new AtomicLong(0);
 
         this.lowerPort = lowerPort;
         this.upperPort = upperPort;
@@ -85,6 +87,7 @@ public class KubernetesClusterContext implements Serializable {
 
     /***
      * Get next available service port.
+     *
      * @return
      */
     public int getNextServicePort() {
@@ -96,6 +99,7 @@ public class KubernetesClusterContext implements Serializable {
 
     /**
      * Deallocate a service port by adding it again to the sequence.
+     *
      * @param port
      */
     public void deallocatePort(int port) {
@@ -107,6 +111,7 @@ public class KubernetesClusterContext implements Serializable {
 
     /**
      * Initialize service port sequence according to the given port range.
+     *
      * @param lowerPort
      * @param upperPort
      */
@@ -163,18 +168,20 @@ public class KubernetesClusterContext implements Serializable {
         this.lowerPort = lowerPort;
     }
 
-    public AtomicLong getServiceSeqNo(String applicationId) {
-        if(!serviceSeqNoMap.containsKey(applicationId)) {
-            serviceSeqNoMap.put(applicationId, new AtomicLong());
+    public long getNextServiceSeqNo() {
+        // reset before we hit the max character length for Kub service id
+        if (serviceSeqNo.get() > MAX_SERVICE_ID) {
+            serviceSeqNo.set(0);
         }
-        return serviceSeqNoMap.get(applicationId);
+        return serviceSeqNo.incrementAndGet();
     }
 
-    public AtomicLong getPodSeqNo(String applicationId) {
-        if(!podSeqNoMap.containsKey(applicationId)) {
-            podSeqNoMap.put(applicationId, new AtomicLong());
+    public long getNextPodSeqNo() {
+        // reset before we hit the max character length for Kub pod id
+        if (podSeqNo.get() > MAX_POD_ID) {
+            podSeqNo.set(0);
         }
-        return podSeqNoMap.get(applicationId);
+        return podSeqNo.incrementAndGet();
     }
 
     @Override
@@ -192,37 +199,50 @@ public class KubernetesClusterContext implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         KubernetesClusterContext other = (KubernetesClusterContext) obj;
         if (servicePortSequence == null) {
-            if (other.servicePortSequence != null)
+            if (other.servicePortSequence != null) {
                 return false;
-        } else if (!servicePortSequence.equals(other.servicePortSequence))
+            }
+        } else if (!servicePortSequence.equals(other.servicePortSequence)) {
             return false;
+        }
         if (kubernetesClusterId == null) {
-            if (other.kubernetesClusterId != null)
+            if (other.kubernetesClusterId != null) {
                 return false;
-        } else if (!kubernetesClusterId.equals(other.kubernetesClusterId))
+            }
+        } else if (!kubernetesClusterId.equals(other.kubernetesClusterId)) {
             return false;
-        if (lowerPort != other.lowerPort)
+        }
+        if (lowerPort != other.lowerPort) {
             return false;
+        }
         if (masterIp == null) {
-            if (other.masterIp != null)
+            if (other.masterIp != null) {
                 return false;
-        } else if (!masterIp.equals(other.masterIp))
+            }
+        } else if (!masterIp.equals(other.masterIp)) {
             return false;
+        }
         if (masterPort == null) {
-            if (other.masterPort != null)
+            if (other.masterPort != null) {
                 return false;
-        } else if (!masterPort.equals(other.masterPort))
+            }
+        } else if (!masterPort.equals(other.masterPort)) {
             return false;
-        if (upperPort != other.upperPort)
+        }
+        if (upperPort != other.upperPort) {
             return false;
+        }
         return true;
     }
 }
