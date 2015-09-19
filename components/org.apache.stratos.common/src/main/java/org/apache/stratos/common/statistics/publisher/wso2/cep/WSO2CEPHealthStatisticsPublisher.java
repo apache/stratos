@@ -22,6 +22,7 @@ package org.apache.stratos.common.statistics.publisher.wso2.cep;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -32,15 +33,16 @@ import java.util.List;
 /**
  * Health statistics publisher for publishing statistics to WSO2 CEP.
  */
-public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher implements HealthStatisticsPublisher {
+public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher implements HealthStatisticsPublisher {
 
     private static final Log log = LogFactory.getLog(WSO2CEPHealthStatisticsPublisher.class);
 
+    private static final String STATS_PUBLISHER_ENABLED = "cep.stats.publisher.enabled";
     private static final String DATA_STREAM_NAME = "cartridge_agent_health_stats";
     private static final String VERSION = "1.0.0";
 
     public WSO2CEPHealthStatisticsPublisher() {
-        super(createStreamDefinition());
+        super(createStreamDefinition(), STATS_PUBLISHER_ENABLED);
     }
 
     private static StreamDefinition createStreamDefinition() {
@@ -70,19 +72,21 @@ public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher
     /**
      * Publish health statistics to cep.
      *
-     * @param clusterId
-     * @param clusterInstanceId
-     * @param networkPartitionId
-     * @param memberId
-     * @param partitionId
-     * @param health
-     * @param value
+     * @param clusterId          Cluster id of the member
+     * @param clusterInstanceId  Cluster instance id of the member
+     * @param networkPartitionId Network partition id of the member
+     * @param memberId           Member id
+     * @param partitionId        Partition id of the member
+     * @param health             Health type: memory_consumption | load_average
+     * @param value              Health type value
      */
     @Override
-    public void publish(String clusterId, String clusterInstanceId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
+    public void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
+                        String memberId, String partitionId, String health, double value) {
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",
-                    clusterId, networkPartitionId, partitionId, memberId, health, value));
+            log.debug(String.format("Publishing health statistics: [cluster] %s [cluster-instance] %s " +
+                            "[network-partition] %s [partition] %s [member] %s [health] %s [value] %d",
+                    clusterId, clusterInstanceId, networkPartitionId, partitionId, memberId, health, value));
         }
         // Set payload values
         List<Object> payload = new ArrayList<Object>();
