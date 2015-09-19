@@ -19,7 +19,6 @@
 package org.apache.stratos.cloud.controller.messaging.topology;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -1065,9 +1064,9 @@ public class TopologyBuilder {
                 // Remove kubernetes services if available
                 ClusterContext clusterContext =
                         CloudControllerContext.getInstance().getClusterContext(event.getClusterId());
-                if (StringUtils.isNotBlank(clusterContext.getKubernetesClusterId())) {
-                    KubernetesIaas.removeKubernetesServices(event.getAppId(), event.getClusterId());
-                }
+
+                KubernetesIaas.removeKubernetesServices(clusterContext);
+
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",

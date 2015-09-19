@@ -47,7 +47,6 @@ public class ClusterContext implements Serializable {
     private long timeoutInMillis;
     private Properties properties;
     private Map<String, KubernetesService> kubernetesServices;
-    private String kubernetesClusterId;
 
     public ClusterContext(String applicationId, String cartridgeType, String clusterId, String payload, String hostName,
                           boolean isLbCluster, Properties properties) {
@@ -130,11 +129,4 @@ public class ClusterContext implements Serializable {
         kubernetesServices.remove(serviceName);
     }
 
-    public void setKubernetesClusterId(String kubernetesClusterId) {
-        this.kubernetesClusterId = kubernetesClusterId;
-    }
-
-    public String getKubernetesClusterId() {
-        return kubernetesClusterId;
-    }
 }

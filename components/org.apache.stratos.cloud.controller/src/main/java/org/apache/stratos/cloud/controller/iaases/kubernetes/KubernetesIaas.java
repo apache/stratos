@@ -44,7 +44,10 @@ import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -181,7 +184,7 @@ public class KubernetesIaas extends Iaas {
             }
 
             String kubernetesClusterId = partition.getKubernetesClusterId();
-            clusterContext.setKubernetesClusterId(kubernetesClusterId);
+
             KubernetesCluster kubernetesCluster = CloudControllerContext.getInstance().
                     getKubernetesCluster(kubernetesClusterId);
             handleNullObject(kubernetesCluster, "kubernetes cluster not found: " +
@@ -218,7 +221,7 @@ public class KubernetesIaas extends Iaas {
 
             // Create kubernetes services for port mappings
             KubernetesApiClient kubernetesApi = kubernetesClusterContext.getKubApi();
-            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster, kubernetesClusterContext);
+            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster, kubernetesClusterContext,memberContext);
 
             // Create pod
             createPod(clusterContext, memberContext, kubernetesApi, kubernetesClusterContext);
@@ -460,7 +463,7 @@ public class KubernetesIaas extends Iaas {
      */
     private void createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
                                           KubernetesCluster kubernetesCluster,
-                                          KubernetesClusterContext kubernetesClusterContext)
+                                          KubernetesClusterContext kubernetesClusterContext,MemberContext memberContext)
             throws KubernetesClientException {
 
         String applicationId = clusterContext.getApplicationId();
@@ -558,6 +561,7 @@ public class KubernetesIaas extends Iaas {
 
                 String kubernetesServiceType = service.getSpec().getType();
                 kubernetesService.setServiceType(kubernetesServiceType);
+                kubernetesService.setKubernetesClusterId(memberContext.getPartition().getKubernetesClusterId());
 
                 if (kubernetesServiceType.equals(KubernetesConstants.NODE_PORT)) {
                     kubernetesService.setPort(service.getSpec().getPorts().get(0).getNodePort());
@@ -755,22 +759,21 @@ public class KubernetesIaas extends Iaas {
             handleNullObject(clusterContext, "Could not terminate containers, cluster not found: [cluster-id] "
                     + clusterId);
 
-            String kubernetesClusterId = clusterContext.getKubernetesClusterId();
-            handleNullObject(kubernetesClusterId, "Could not terminate containers, kubernetes cluster id not found: " +
-                    "[cluster-id] " + clusterId);
-
-            KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
-                    getKubernetesClusterContext(kubernetesClusterId);
-            handleNullObject(kubClusterContext, "Could not terminate containers, kubernetes cluster not found: " +
-                    "[kubernetes-cluster-id] " + kubernetesClusterId);
-
-            KubernetesApiClient kubApi = kubClusterContext.getKubApi();
-
             // Remove kubernetes services
             List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
             if (kubernetesServices != null) {
                 for (KubernetesService kubernetesService : kubernetesServices) {
                     try {
+                        String kubernetesClusterId=kubernetesService.getKubernetesClusterId();
+                        handleNullObject(kubernetesClusterId, "Could not terminate containers, kubernetes cluster id not found: " +
+                                "[cluster-id] " + clusterId);
+                        KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
+                                getKubernetesClusterContext(kubernetesClusterId);
+                        handleNullObject(kubClusterContext, "Could not terminate containers, kubernetes cluster not found: " +
+                                "[kubernetes-cluster-id] " + kubernetesClusterId);
+
+                        KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+
                         String serviceId = kubernetesService.getId();
                         kubApi.deleteService(serviceId);
 
@@ -957,41 +960,33 @@ public class KubernetesIaas extends Iaas {
     /**
      * Remove kubernetes services if available for application cluster.
      *
-     * @param applicationId
-     * @param clusterId
+     * @param clusterContext
+     *
      */
-    public static void removeKubernetesServices(String applicationId, String clusterId) {
-
-        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+    public static void removeKubernetesServices(ClusterContext clusterContext) {
 
         if (clusterContext != null) {
-            String kubernetesClusterId = clusterContext.getKubernetesClusterId();
+            ArrayList<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
 
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(kubernetesClusterId)) {
+            for (KubernetesService kubernetesService : kubernetesServices) {
                 KubernetesClusterContext kubernetesClusterContext =
-                        CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
+                        CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesService.getKubernetesClusterId());
+                KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
+                String serviceId = kubernetesService.getId();
+                log.info(String.format("Deleting kubernetes service: [application-id] %s " +
+                        "[service-id] %s", clusterContext.getApplicationId(), serviceId));
 
-                if (kubernetesClusterContext != null) {
-                    KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
-                    ArrayList<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
-
-                    for (KubernetesService kubernetesService : kubernetesServices) {
-                        String serviceId = kubernetesService.getId();
-                        log.info(String.format("Deleting kubernetes service: [application-id] %s " +
-                                "[service-id] %s", applicationId, serviceId));
-
-                        try {
-                            kubernetesApiClient.deleteService(serviceId);
-                            kubernetesClusterContext.deallocatePort(kubernetesService.getPort());
-                            kubernetesClusterContext.removeKubernetesService(serviceId);
-                            clusterContext.removeKubernetesService(serviceId);
-                        } catch (KubernetesClientException e) {
-                            log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
-                                    "[service-id] %s", applicationId, serviceId));
-                        }
-                    }
+                try {
+                    kubernetesApiClient.deleteService(serviceId);
+                    kubernetesClusterContext.deallocatePort(kubernetesService.getPort());
+                    kubernetesClusterContext.removeKubernetesService(serviceId);
+                    clusterContext.removeKubernetesService(serviceId);
+                } catch (KubernetesClientException e) {
+                    log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
+                            "[service-id] %s", clusterContext.getApplicationId(), serviceId));
                 }
             }
         }
+
     }
 }
