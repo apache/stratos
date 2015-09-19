@@ -19,7 +19,7 @@
 #
 # --------------------------------------------------------------
 
-FROM stratos/base-image:4.1.2
+FROM stratos/base-image:4.1.3
 MAINTAINER dev@stratos.apache.org
 
 ENV JDK_VERSION 1.7.0_80
