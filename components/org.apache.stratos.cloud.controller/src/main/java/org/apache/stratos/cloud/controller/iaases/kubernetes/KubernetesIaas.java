@@ -133,7 +133,7 @@ public class KubernetesIaas extends Iaas {
     @Override
     public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException,
             InvalidMemberException, MemberTerminationFailedException {
-        terminateContainer(memberContext.getMemberId());
+        terminateContainer(memberContext);
     }
 
     /**
@@ -788,7 +788,7 @@ public class KubernetesIaas extends Iaas {
             if (memberContexts != null) {
                 for (MemberContext memberContext : memberContexts) {
                     try {
-                        MemberContext memberContextRemoved = terminateContainer(memberContext.getMemberId());
+                        MemberContext memberContextRemoved = terminateContainer(memberContext);
                         memberContextsRemoved.add(memberContextRemoved);
                     } catch (MemberTerminationFailedException e) {
                         String message = "Could not terminate container: [member-id] " + memberContext.getMemberId();
@@ -810,33 +810,31 @@ public class KubernetesIaas extends Iaas {
     /**
      * Terminate a container by member id
      *
-     * @param memberId
+     * @param memberContext
      * @return
      * @throws MemberTerminationFailedException
      */
-    public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {
+    public MemberContext terminateContainer(MemberContext memberContext) throws MemberTerminationFailedException {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
-            handleNullObject(memberId, "Could not terminate container, member id is null");
+            handleNullObject(memberContext, "Could not terminate container, member context not found");
 
-            MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
-            handleNullObject(memberContext, "Could not terminate container, member context not found: [member-id] " + memberId);
+            Partition partition = memberContext.getPartition();
+            if (partition == null) {
+                String message = String.format("Partition not found in member context: [member] %s " , memberContext.getMemberId());
 
-            String clusterId = memberContext.getClusterId();
-            handleNullObject(clusterId, "Could not terminate container, cluster id is null: [member-id] " + memberId);
+                log.error(message);
+                throw new RuntimeException(message);
+            }
 
-            ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(clusterContext, String.format("Could not terminate container, cluster context not found: " +
-                    "[cluster-id] %s [member-id] %s", clusterId, memberId));
-
-            String kubernetesClusterId = clusterContext.getKubernetesClusterId();
+            String kubernetesClusterId = memberContext.getPartition().getKubernetesClusterId();
             handleNullObject(kubernetesClusterId, String.format("Could not terminate container, kubernetes cluster " +
-                    "context id is null: [cluster-id] %s [member-id] %s", clusterId, memberId));
+                    "context id is null: [partition-id] %s [member-id] %s", partition.getId(), memberContext.getMemberId()));
 
             KubernetesClusterContext kubernetesClusterContext = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
             handleNullObject(kubernetesClusterContext, String.format("Could not terminate container, kubernetes cluster " +
-                    "context not found: [cluster-id] %s [member-id] %s", clusterId, memberId));
+                    "context not found: [partition-id] %s [member-id] %s", partition.getId(), memberContext.getMemberId()));
             KubernetesApiClient kubApi = kubernetesClusterContext.getKubApi();
 
             try {
