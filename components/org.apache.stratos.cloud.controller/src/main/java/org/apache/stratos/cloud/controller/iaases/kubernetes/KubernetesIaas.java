@@ -221,7 +221,8 @@ public class KubernetesIaas extends Iaas {
 
             // Create kubernetes services for port mappings
             KubernetesApiClient kubernetesApi = kubernetesClusterContext.getKubApi();
-            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster, kubernetesClusterContext,memberContext);
+            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster, kubernetesClusterContext,
+                    memberContext);
 
             // Create pod
             createPod(clusterContext, memberContext, kubernetesApi, kubernetesClusterContext);
@@ -474,8 +475,8 @@ public class KubernetesIaas extends Iaas {
      * @throws KubernetesClientException
      */
     private void createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
-                                          KubernetesCluster kubernetesCluster,
-                                          KubernetesClusterContext kubernetesClusterContext)
+                                          KubernetesCluster kubernetesCluster, KubernetesClusterContext
+                                                  kubernetesClusterContext, MemberContext memberContext)
             throws KubernetesClientException {
         String clusterId = clusterContext.getClusterId();
         String cartridgeType = clusterContext.getCartridgeType();
@@ -782,13 +783,15 @@ public class KubernetesIaas extends Iaas {
             if (kubernetesServices != null) {
                 for (KubernetesService kubernetesService : kubernetesServices) {
                     try {
-                        String kubernetesClusterId=kubernetesService.getKubernetesClusterId();
-                        handleNullObject(kubernetesClusterId, "Could not terminate containers, kubernetes cluster id not found: " +
-                                "[cluster-id] " + clusterId);
+                        String kubernetesClusterId = kubernetesService.getKubernetesClusterId();
+                        handleNullObject(kubernetesClusterId,
+                                "Could not terminate containers, kubernetes cluster id not found: " +
+                                        "[cluster-id] " + clusterId);
                         KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
                                 getKubernetesClusterContext(kubernetesClusterId);
-                        handleNullObject(kubClusterContext, "Could not terminate containers, kubernetes cluster not found: " +
-                                "[kubernetes-cluster-id] " + kubernetesClusterId);
+                        handleNullObject(kubClusterContext,
+                                "Could not terminate containers, kubernetes cluster not found: " +
+                                        "[kubernetes-cluster-id] " + kubernetesClusterId);
 
                         KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 
@@ -1001,7 +1004,6 @@ public class KubernetesIaas extends Iaas {
 
             for (KubernetesService kubernetesService : kubernetesServices) {
                 KubernetesClusterContext kubernetesClusterContext =
-<<<<<<< HEAD
                         CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesService.getKubernetesClusterId());
                 KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
                 String serviceId = kubernetesService.getId();
@@ -1016,31 +1018,6 @@ public class KubernetesIaas extends Iaas {
                 } catch (KubernetesClientException e) {
                     log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
                             "[service-id] %s", clusterContext.getApplicationId(), serviceId));
-=======
-                        CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-
-                if (kubernetesClusterContext != null) {
-                    KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
-                    ArrayList<KubernetesService> kubernetesServices =
-                            Lists.newArrayList(clusterContext.getKubernetesServices());
-
-                    for (KubernetesService kubernetesService : kubernetesServices) {
-                        String serviceId = kubernetesService.getId();
-                        log.info(String.format("Deleting kubernetes service: [application-id] %s " +
-                                "[service-id] %s", applicationId, serviceId));
-
-                        try {
-                            kubernetesApiClient.deleteService(serviceId);
-                            kubernetesClusterContext.deallocatePort(kubernetesService.getPort());
-                            kubernetesClusterContext.removeKubernetesService(serviceId);
-                            clusterContext.removeKubernetesService(serviceId);
-                        }
-                        catch (KubernetesClientException e) {
-                            log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
-                                    "[service-id] %s", applicationId, serviceId));
-                        }
-                    }
->>>>>>> Set labels for identification when creating K8s pods and services
                 }
             }
         }
