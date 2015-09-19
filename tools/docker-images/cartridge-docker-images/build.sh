@@ -22,7 +22,7 @@ set -e
 
 prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
-pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent/distribution/"; pwd`
+pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent/modules/distribution/"; pwd`
 
 pushd ${pca_distribution_path}
 mvn clean install -Dmaven.test.skip=true
