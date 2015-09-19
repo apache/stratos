@@ -20,7 +20,6 @@
  */
 package org.apache.stratos.kubernetes.client.live;
 
-import io.fabric8.kubernetes.api.model.Pod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
@@ -28,6 +27,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Notes:
@@ -47,9 +48,13 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
     @Test
     public void testPodCreation() throws Exception {
         log.info("Testing pod creation...");
+        Map<String, String> podLabels1 = new HashMap<>();
+        podLabels1.put("applicationId", "my-application-1");
+        createPod("stratos-test-pod-1", "stratos-test-pod", podLabels1, "http-1", "1", "512Mi");
 
-        createPod("stratos-test-pod-1", "stratos-test-pod", "http-1", "1", "512Mi");
-        createPod("stratos-test-pod-2", "stratos-test-pod", "http-1", "2", "4Gi");
+        Map<String, String> podLabels2 = new HashMap<>();
+        podLabels2.put("applicationId", "my-application-2");
+        createPod("stratos-test-pod-2", "stratos-test-pod", podLabels2, "http-1", "2", "4Gi");
 
         deletePod("stratos-test-pod-1");
         deletePod("stratos-test-pod-2");
@@ -73,10 +78,19 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
         String containerPortName = "http-1";
         String serviceType = "NodePort";
 
-        createService(serviceId, serviceName, SERVICE_PORT, serviceType, containerPortName, containerPort, minionPublicIPs);
+        Map<String, String> serviceLabels1 = new HashMap<>();
+        serviceLabels1.put("applicationId", "my-application-1");
+        createService(serviceId, serviceName, serviceLabels1, SERVICE_PORT, serviceType, containerPortName,
+                containerPort,
+                minionPublicIPs);
 
-        createPod("stratos-test-pod-3", serviceName, containerPortName, "1", "512");
-        createPod("stratos-test-pod-4", serviceName, containerPortName, "2", "512");
+        Map<String, String> podLabels1 = new HashMap<>();
+        podLabels1.put("applicationId", "my-application-3");
+        createPod("stratos-test-pod-3", serviceName, podLabels1, containerPortName, "1", "512");
+
+        Map<String, String> podLabels2 = new HashMap<>();
+        podLabels2.put("applicationId", "my-application-4");
+        createPod("stratos-test-pod-4", serviceName, podLabels2, containerPortName, "2", "512");
 
         if (testServiceSocket) {
             // test service accessibility

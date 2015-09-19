@@ -977,6 +977,7 @@ public class KubernetesIaas extends Iaas {
 
             for (KubernetesService kubernetesService : kubernetesServices) {
                 KubernetesClusterContext kubernetesClusterContext =
+<<<<<<< HEAD
                         CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesService.getKubernetesClusterId());
                 KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
                 String serviceId = kubernetesService.getId();
@@ -991,6 +992,29 @@ public class KubernetesIaas extends Iaas {
                 } catch (KubernetesClientException e) {
                     log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
                             "[service-id] %s", clusterContext.getApplicationId(), serviceId));
+=======
+                        CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
+
+                if (kubernetesClusterContext != null) {
+                    KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
+                    ArrayList<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
+
+                    for (KubernetesService kubernetesService : kubernetesServices) {
+                        String serviceId = kubernetesService.getId();
+                        log.info(String.format("Deleting kubernetes service: [application-id] %s " +
+                                "[service-id] %s", applicationId, serviceId));
+
+                        try {
+                            kubernetesApiClient.deleteService(serviceId);
+                            kubernetesClusterContext.deallocatePort(kubernetesService.getPort());
+                            kubernetesClusterContext.removeKubernetesService(serviceId);
+                            clusterContext.removeKubernetesService(serviceId);
+                        } catch (KubernetesClientException e) {
+                            log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
+                                    "[service-id] %s", applicationId, serviceId));
+                        }
+                    }
+>>>>>>> Set labels for identification when creating K8s pods and services
                 }
             }
         }

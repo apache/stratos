@@ -54,11 +54,10 @@
                         </Private-Package>
                         <Import-Package>
                             !org.apache.stratos.cloud.controller.*,
-                            org.apache.commons.logging,
-                            org.apache.commons.io.*,
+                            org.apache.commons.*,
                             org.wso2.carbon.utils.*,
-                            org.apache.stratos.kubernetes.client; version="${project.version}",
-                            org.apache.stratos.kubernetes.client.exceptions; version="${project.version}",
+                            org.apache.stratos.common.*; version="${project.version}",
+                            org.apache.stratos.kubernetes.client.*; version="${project.version}",
                             org.jclouds.aws.ec2.*; version=${jclouds.version},
                             org.jclouds.ec2.*; version=${jclouds.version},
                             org.jclouds.compute.*; version=${jclouds.version},
