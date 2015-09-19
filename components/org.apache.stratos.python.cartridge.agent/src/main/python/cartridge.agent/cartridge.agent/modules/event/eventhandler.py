@@ -184,7 +184,7 @@ class EventHandler:
             if member_initialized:
                 # Set cartridge agent as initialized since member is available and it is in initialized state
                 Config.initialized = True
-                self.__log.info("Member initialized [member id] %s, [cluster-id] %s, [service] %s",
+                self.__log.info("Member initialized [member id] %s, [cluster-id] %s, [service] %s" %
                                 (member_id_in_payload, cluster_id_in_payload, service_name_in_payload))
 
         topology = complete_topology_event.get_topology()
