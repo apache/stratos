@@ -28,11 +28,11 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Handling users
  */
-public class TenantTest extends StratosIntegrationTest {
+public class TenantTestCase extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/user-test";
 
     @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"user.management", "smoke", "disabled"})
-    public void addUser() {
+    public void addUser() throws Exception {
         String tenantId = "tenant-1";
         boolean addedUser1 = restClient.addEntity(RESOURCES_PATH + "/" +
                         tenantId + ".json",

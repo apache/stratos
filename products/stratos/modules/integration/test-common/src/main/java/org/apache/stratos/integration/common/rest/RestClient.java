@@ -158,154 +158,108 @@ public class RestClient {
         }
     }
 
-    public boolean addEntity(String filePath, String resourcePath, String entityName) {
-        try {
-            String content = getJsonStringFromFile(filePath);
-            URI uri = new URIBuilder(this.endPoint + resourcePath).build();
+    public boolean addEntity(String filePath, String resourcePath, String entityName) throws Exception {
+        String content = getJsonStringFromFile(filePath);
+        URI uri = new URIBuilder(this.endPoint + resourcePath).build();
 
-            HttpResponse response = doPost(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
+        HttpResponse response = doPost(uri, content);
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                if (errorResponse != null) {
+                    throw new RuntimeException(errorResponse.getErrorMessage());
                 }
             }
-            String msg = "An unknown error occurred while trying to add ";
-            log.error(msg + entityName);
-            throw new RuntimeException(msg + entityName);
         }
-        catch (Exception e) {
-            String message = "Could not add " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        throw new Exception("Null response received. Could not add entity [entity name] " + entityName);
     }
 
-    public boolean deployEntity(String resourcePath, String entityName) {
-        try {
-            URI uri = new URIBuilder(this.endPoint + resourcePath).build();
+    public boolean deployEntity(String resourcePath, String entityName) throws Exception {
+        URI uri = new URIBuilder(this.endPoint + resourcePath).build();
 
-            HttpResponse response = doPost(uri, "");
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
+        HttpResponse response = doPost(uri, "");
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                if (errorResponse != null) {
+                    throw new RuntimeException(errorResponse.getErrorMessage());
                 }
             }
-            String msg = "An unknown error occurred while trying to deploy ";
-            log.error(msg + entityName);
-            throw new RuntimeException(msg + entityName);
         }
-        catch (Exception e) {
-            String message = "Could not deploy  " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        throw new Exception("Null response received. Could not deploy entity [entity name] " + entityName);
     }
 
-    public boolean undeployEntity(String resourcePath, String entityName) {
-        try {
-            URI uri = new URIBuilder(this.endPoint + resourcePath).build();
+    public boolean undeployEntity(String resourcePath, String entityName) throws Exception {
+        URI uri = new URIBuilder(this.endPoint + resourcePath).build();
 
-            HttpResponse response = doPost(uri, "");
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
+        HttpResponse response = doPost(uri, "");
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                if (errorResponse != null) {
+                    throw new RuntimeException(errorResponse.getErrorMessage());
                 }
             }
-            String msg = "An unknown error occurred while trying to undeploy ";
-            log.error(msg + entityName);
-            throw new RuntimeException(msg + entityName);
         }
-        catch (Exception e) {
-            String message = "Could not deploy  " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        throw new Exception("Null response received. Could not undeploy entity [entity name] " + entityName);
     }
 
     public Object getEntity(String resourcePath, String identifier, Class responseJsonClass,
-                            String entityName) {
-        try {
-            URI uri = new URIBuilder(this.endPoint + resourcePath + "/" + identifier).build();
-            HttpResponse response = doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), responseJsonClass);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(),
-                            ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
+                            String entityName) throws Exception {
+        URI uri = new URIBuilder(this.endPoint + resourcePath + "/" + identifier).build();
+        HttpResponse response = doGet(uri);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return gson.fromJson(response.getContent(), responseJsonClass);
+            } else if (response.getStatusCode() == 404) {
+                return null;
+            } else {
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(),
+                        ErrorResponse.class);
+                if (errorResponse != null) {
+                    throw new RuntimeException(errorResponse.getErrorMessage());
                 }
             }
-            String msg = "An unknown error occurred while getting the " + entityName;
-            log.error(msg);
-            throw new RuntimeException(msg);
         }
-        catch (Exception e) {
-            String message = "Could not get " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        throw new Exception("Null response received. Could not get entity [entity name] " + entityName);
     }
 
-    public Object listEntity(String resourcePath, Type type, String entityName) {
-        try {
-            URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-            HttpResponse response = doGet(uri);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return gson.fromJson(response.getContent(), type);
-                } else if (response.getStatusCode() == 404) {
-                    return null;
-                } else {
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(),
-                            ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
+    public Object listEntity(String resourcePath, Type type, String entityName) throws Exception {
+        URI uri = new URIBuilder(this.endPoint + resourcePath).build();
+        HttpResponse response = doGet(uri);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return gson.fromJson(response.getContent(), type);
+            } else if (response.getStatusCode() == 404) {
+                return null;
+            } else {
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(),
+                        ErrorResponse.class);
+                if (errorResponse != null) {
+                    throw new RuntimeException(errorResponse.getErrorMessage());
                 }
             }
-            String msg = "An unknown error occurred while getting the " + entityName;
-            log.error(msg);
-            throw new RuntimeException(msg);
         }
-        catch (Exception e) {
-            String message = "Could not get " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        throw new Exception("Null response received. Could not get entity [entity name] " + entityName);
     }
 
     public boolean removeEntity(String resourcePath, String identifier, String entityName) throws Exception {
-
         URI uri = new URIBuilder(this.endPoint + "/" + resourcePath + "/" + identifier).build();
         HttpResponse response = doDelete(uri);
         if (response != null) {
@@ -319,51 +273,31 @@ public class RestClient {
                 log.error("Error response while removing entity [identifier] " + identifier + ", [entity name] " +
                         entityName + ", [error] " + errorResponse.getErrorMessage() + ", [error code] " + errorResponse
                         .getErrorCode());
-                /*else if (response.getContent().contains("it is used") || response.getContent().contains("in use")) {
-                    return false;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(),
-                            ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
-                }*/
                 return false;
             }
         }
-        throw new Exception("No response received from back-end.");
+        throw new Exception("Null response received. Could not remove entity [entity name] " + entityName);
     }
 
-    public boolean updateEntity(String filePath, String resourcePath, String entityName) {
-        try {
-            String content = getJsonStringFromFile(filePath);
-            URI uri = new URIBuilder(this.endPoint + resourcePath).build();
+    public boolean updateEntity(String filePath, String resourcePath, String entityName) throws Exception {
+        String content = getJsonStringFromFile(filePath);
+        URI uri = new URIBuilder(this.endPoint + resourcePath).build();
 
-            HttpResponse response = doPut(uri, content);
-            if (response != null) {
-                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return true;
-                } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    ErrorResponse errorResponse = gson.fromJson(response.getContent(),
-                            ErrorResponse.class);
-                    if (errorResponse != null) {
-                        throw new RuntimeException(errorResponse.getErrorMessage());
-                    }
+        HttpResponse response = doPut(uri, content);
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ErrorResponse errorResponse = gson.fromJson(response.getContent(),
+                        ErrorResponse.class);
+                if (errorResponse != null) {
+                    throw new RuntimeException(errorResponse.getErrorMessage());
                 }
             }
-            String msg = "An unknown error occurred while trying to update ";
-            log.error(msg + entityName);
-            throw new RuntimeException(msg + entityName);
         }
-        catch (Exception e) {
-            String message = "Could not update " + entityName;
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
+        throw new Exception("Null response received. Could not update entity [entity name] " + entityName);
     }
 
     /**
