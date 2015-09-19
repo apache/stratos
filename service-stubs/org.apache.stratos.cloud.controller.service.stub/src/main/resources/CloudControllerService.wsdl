@@ -1152,7 +1152,7 @@
                     <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="instanceMetadata" nillable="true" type="ax23:InstanceMetadata"/>
                     <xs:element minOccurs="0" name="kubernetesPodId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="kubernetesPodLabel" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="kubernetesPodName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="loadBalancingIPType" nillable="true" type="ax212:LoadBalancingIPType"/>
                     <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>

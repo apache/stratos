@@ -271,8 +271,8 @@ public class MemberContext implements Serializable {
         return kubernetesPodId;
     }
 
-    public void setKubernetesPodName(String kubernetesPodLabel) {
-        this.kubernetesPodName = kubernetesPodLabel;
+    public void setKubernetesPodName(String kubernetesPodName) {
+        this.kubernetesPodName = kubernetesPodName;
     }
 
     public String getKubernetesPodName() {
