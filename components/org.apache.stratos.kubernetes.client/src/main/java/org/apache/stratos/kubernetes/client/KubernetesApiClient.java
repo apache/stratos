@@ -48,6 +48,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param podId                Identifier of the pod
      * @param podName              Pod name to be used by the pod label
      * @param podLabels            Map of labels to be applied to the pod
+     * @param annotations          Map of annotations to be applied to the pod
      * @param dockerImage          Docker image to be used by the pod
      * @param cpu                  Number of cpu cores
      * @param memory               Memory allocation in megabytes
@@ -157,6 +158,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param serviceId         Service id
      * @param serviceName       Service name to be used by the label name
      * @param serviceLabels     Service labels map
+     * @param annotations       Map of annotations to be applied to the service
      * @param servicePort       Port to be exposed by the kubernetes node
      * @param containerPortName Container port name defined in the port label
      * @param containerPort     Container port

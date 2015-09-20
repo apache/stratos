@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.domain.kubernetes.PortRange;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -433,14 +434,15 @@ public class KubernetesIaas extends Iaas {
                 memberContext.getMemberId(), cpu, memory));
 
         Map<String, String> podLabels = new HashMap<>();
-        podLabels.put("md5Hex-memberId", DigestUtils.md5Hex(memberContext.getMemberId()));
+        podLabels
+                .put(CloudControllerConstants.MD5_HEX_MEMBER_ID_LABEL, DigestUtils.md5Hex(memberContext.getMemberId()));
 
         Map<String, String> podAnnotations = new HashMap<>();
-        podAnnotations.put("memberId", memberContext.getMemberId());
-        podAnnotations.put("cartridgeType", memberContext.getCartridgeType());
-        podAnnotations.put("applicationId", memberContext.getApplicationId());
-        podAnnotations.put("clusterId", memberContext.getClusterId());
-        podAnnotations.put("clusterInstanceId", memberContext.getClusterInstanceId());
+        podAnnotations.put(CloudControllerConstants.MEMBER_ID_LABEL, memberContext.getMemberId());
+        podAnnotations.put(CloudControllerConstants.CARTRIDGE_TYPE_LABEL, memberContext.getCartridgeType());
+        podAnnotations.put(CloudControllerConstants.APPLICATION_ID_LABEL, memberContext.getApplicationId());
+        podAnnotations.put(CloudControllerConstants.CLUSTER_ID_LABEL, memberContext.getClusterId());
+        podAnnotations.put(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL, memberContext.getClusterInstanceId());
 
         kubernetesApi.createPod(podId, podName, podLabels, podAnnotations, dockerImage, cpu, memory, ports,
                 environmentVariables);
@@ -547,19 +549,26 @@ public class KubernetesIaas extends Iaas {
                 String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(clusterPortMapping);
 
                 Map<String, String> serviceLabels = new HashMap<>();
-                serviceLabels.put("applicationId", DigestUtils.md5Hex(clusterContext.getApplicationId()));
-                serviceLabels.put("clusterId", DigestUtils.md5Hex(clusterContext.getClusterId()));
+                serviceLabels.put(CloudControllerConstants.MD5_HEX_APPLICATION_ID_LABEL,
+                        DigestUtils.md5Hex(clusterContext.getApplicationId()));
+                serviceLabels.put(CloudControllerConstants.MD5_HEX_CLUSTER_ID_LABEL,
+                        DigestUtils.md5Hex(clusterContext.getClusterId()));
 
                 Map<String, String> serviceAnnotations = new HashMap<>();
-                serviceAnnotations.put("applicationId", clusterContext.getApplicationId());
-                serviceAnnotations.put("clusterId", clusterContext.getClusterId());
-                serviceAnnotations.put("name", clusterPortMapping.getName());
-                serviceAnnotations.put("protocol", clusterPortMapping.getProtocol());
-                serviceAnnotations.put("serviceType", clusterPortMapping.getKubernetesServiceType());
-                serviceAnnotations.put("portType", clusterPortMapping.getKubernetesPortType());
-                serviceAnnotations.put("servicePort", String.valueOf(clusterPortMapping.getKubernetesServicePort()));
-                serviceAnnotations.put("port", String.valueOf(clusterPortMapping.getPort()));
-                serviceAnnotations.put("proxyPort", String.valueOf(clusterPortMapping.getProxyPort()));
+                serviceAnnotations
+                        .put(CloudControllerConstants.APPLICATION_ID_LABEL, clusterContext.getApplicationId());
+                serviceAnnotations.put(CloudControllerConstants.CLUSTER_ID_LABEL, clusterContext.getClusterId());
+                serviceAnnotations.put(CloudControllerConstants.PROTOCOL_LABEL, clusterPortMapping.getProtocol());
+                serviceAnnotations.put(CloudControllerConstants.SERVICE_TYPE_LABEL,
+                        clusterPortMapping.getKubernetesServiceType());
+                serviceAnnotations
+                        .put(CloudControllerConstants.PORT_TYPE_LABEL, clusterPortMapping.getKubernetesPortType());
+                serviceAnnotations.put(CloudControllerConstants.SERVICE_PORT_LABEL, String.valueOf(clusterPortMapping
+                        .getKubernetesServicePort()));
+                serviceAnnotations
+                        .put(CloudControllerConstants.PORT_LABEL, String.valueOf(clusterPortMapping.getPort()));
+                serviceAnnotations.put(CloudControllerConstants.PROXY_PORT_LABEL,
+                        String.valueOf(clusterPortMapping.getProxyPort()));
 
                 kubernetesApi.createService(serviceId, serviceName, serviceLabels, serviceAnnotations, servicePort,
                         serviceType, containerPortName, containerPort, sessionAffinity);
@@ -1028,7 +1037,7 @@ public class KubernetesIaas extends Iaas {
                 }
                 catch (KubernetesClientException e) {
                     log.error(String.format("Could not delete kubernetes service: [application-id] %s " +
-                            "[service-id] %s", clusterContext.getApplicationId(), serviceId));
+                            "[service-id] %s", clusterContext.getApplicationId(), serviceId), e);
                 }
             }
         }

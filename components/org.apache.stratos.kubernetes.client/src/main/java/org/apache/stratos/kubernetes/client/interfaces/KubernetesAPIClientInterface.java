@@ -38,6 +38,7 @@ public interface KubernetesAPIClientInterface {
      * @param podId                id of the pod
      * @param podName              pod label
      * @param podLabels            Map of labels to be applied to the pod
+     * @param annotations          Map of annotations to be applied to the pod
      * @param dockerImage          docker image name
      * @param cpu                  number of cpu cores
      * @param memory               memory allocation in mega bytes
@@ -78,17 +79,18 @@ public interface KubernetesAPIClientInterface {
     /**
      * Create service.
      *
-     * @param serviceId
-     * @param serviceName
-     * @param podLabels
-     * @param servicePort
-     * @param serviceType
-     * @param containerPortName
-     * @param containerPort
-     * @param sessionAffinity
+     * @param serviceId         id of the service
+     * @param serviceName       service name
+     * @param serviceLabels     labels to be applied to the service
+     * @param annotations       Map of annotations to be applied to the service
+     * @param servicePort       port to be used in the node
+     * @param serviceType       port type to be used when creating the service
+     * @param containerPortName port name
+     * @param containerPort     port to be used in the container
+     * @param sessionAffinity   session affinity policy to be used when routing requests to this service
      * @throws KubernetesClientException
      */
-    public void createService(String serviceId, String serviceName, Map<String, String> podLabels, Map<String,
+    public void createService(String serviceId, String serviceName, Map<String, String> serviceLabels, Map<String,
             String> annotations, int servicePort, String serviceType, String containerPortName, int containerPort,
                               String sessionAffinity)
             throws KubernetesClientException;

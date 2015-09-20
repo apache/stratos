@@ -93,35 +93,44 @@ public final class CloudControllerConstants {
     public static final String USER_NAME_ELEMENT = "userName";
     public static final String PASSWORD_ELEMENT = "password";
     public static final String CLOUD_CONTROLLER_EVENT_STREAM = "org.apache.stratos.cloud.controller";
-    public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM
-            .replaceAll("[/.]", "_");
 
     /**
-     * column names
+     * domain attribute names
      */
     public static final String PAYLOAD_PREFIX = "payload_";
-    public static final String MEMBER_ID_COL = "memberId";
-    public static final String CARTRIDGE_TYPE_COL = "cartridgeType";
-    public static final String CLUSTER_ID_COL = "clusterId";
-    public static final String PARTITION_ID_COL = "partitionId";
-    public static final String NETWORK_ID_COL = "networkId";
-    public static final String ALIAS_COL = "alias";
-    public static final String TENANT_RANGE_COL = "tenantRange";
-    public static final String IS_MULTI_TENANT_COL = "isMultiTenant";
-    public static final String IAAS_COL = "iaas";
-    public static final String STATUS_COL = "status";
-    public static final String HOST_NAME_COL = "hostName";
-    public static final String HYPERVISOR_COL = "hypervisor";
-    public static final String RAM_COL = "ram";
-    public static final String IMAGE_ID_COL = "imageId";
-    public static final String LOGIN_PORT_COL = "loginPort";
-    public static final String OS_NAME_COL = "osName";
-    public static final String OS_VERSION_COL = "osVersion";
-    public static final String OS_ARCH_COL = "osArch";
-    public static final String OS_BIT_COL = "is64bitOS";
-    public static final String PRIV_IP_COL = "privateIPAddresses";
-    public static final String PUB_IP_COL = "publicIPAddresses";
-    public static final String ALLOCATE_IP_COL = "allocateIPAddresses";
+    public static final String APPLICATION_ID_LABEL = "applicationId";
+    public static final String MEMBER_ID_LABEL = "memberId";
+    public static final String MD5_HEX_APPLICATION_ID_LABEL = "md5Hex-applicationId";
+    public static final String MD5_HEX_MEMBER_ID_LABEL = "md5Hex-memberId";
+    public static final String CARTRIDGE_TYPE_LABEL = "cartridgeType";
+    public static final String SERVICE_TYPE_LABEL = "serviceType";
+    public static final String MD5_HEX_CLUSTER_ID_LABEL = "md5Hex-clusterId";
+    public static final String CLUSTER_ID_LABEL = "clusterId";
+    public static final String CLUSTER_INSTANCE_ID_LABEL = "clusterInstanceId";
+    public static final String PARTITION_ID_LABEL = "partitionId";
+    public static final String NETWORK_ID_LABEL = "networkId";
+    public static final String ALIAS_LABEL = "alias";
+    public static final String TENANT_RANGE_LABEL = "tenantRange";
+    public static final String IS_MULTI_TENANT_LABEL = "isMultiTenant";
+    public static final String IAAS_LABEL = "iaas";
+    public static final String STATUS_LABEL = "status";
+    public static final String HOST_NAME_LABEL = "hostName";
+    public static final String HYPERVISOR_LABEL = "hypervisor";
+    public static final String RAM_LABEL = "ram";
+    public static final String IMAGE_ID_LABEL = "imageId";
+    public static final String LOGIN_PORT_LABEL = "loginPort";
+    public static final String OS_NAME_LABEL = "osName";
+    public static final String OS_VERSION_LABEL = "osVersion";
+    public static final String OS_ARCH_LABEL = "osArch";
+    public static final String OS_BIT_LABEL = "is64bitOS";
+    public static final String PRIV_IP_LABEL = "privateIPAddresses";
+    public static final String PUB_IP_LABEL = "publicIPAddresses";
+    public static final String ALLOCATE_IP_LABEL = "allocateIPAddresses";
+    public static final String PORT_LABEL = "port";
+    public static final String PROTOCOL_LABEL = "protocol";
+    public static final String SERVICE_PORT_LABEL = "servicePort";
+    public static final String PROXY_PORT_LABEL = "proxyPort";
+    public static final String PORT_TYPE_LABEL = "portType";
 
     /**
      * Properties
@@ -273,7 +282,7 @@ public final class CloudControllerConstants {
     public static final String BLOCK_UNTIL_RUNNING = "blockUntilRunning";
     public static final String INSTANCE_TYPE = "instanceType";
     public static final String ASSOCIATE_PUBLIC_IP_ADDRESS = "associatePublicIpAddress";
-    public static final String LB_CLUSTER_ID_COL = "lbclusterId";
+    public static final String LB_CLUSTER_ID_LABEL = "lbclusterId";
     public static final String NETWORK_INTERFACES = "networkInterfaces";
     public static final String NETWORK_FIXED_IP = "fixedIp";
     public static final String NETWORK_PORT = "portUuid";
