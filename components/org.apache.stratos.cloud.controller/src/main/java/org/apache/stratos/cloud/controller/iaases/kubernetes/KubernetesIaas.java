@@ -524,7 +524,11 @@ public class KubernetesIaas extends Iaas {
             for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                 // Skip if already created
                 int containerPort = clusterPortMapping.getPort();
-                if (kubernetesServiceExist(kubernetesServices, containerPort)) {
+                KubernetesService existingService = findKubernetesService(kubernetesServices, containerPort);
+                if ((existingService != null) && serviceExistsInCluster(
+                        existingService.getId(), kubernetesClusterContext,
+                        memberContext, clusterPortMapping.getName())) {
+
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Kubernetes service already exists: [kubernetes-cluster] %s " +
                                         "[cluster] %s [service-name] %s [container-port] %d ",
@@ -629,6 +633,39 @@ public class KubernetesIaas extends Iaas {
         }
     }
 
+    /**
+     * Check a given kubernetes service exists in kubernetes cluster
+     * @param serviceId
+     * @param kubernetesClusterContext
+     * @param memberContext
+     * @param portName
+     * @return
+     * @throws KubernetesClientException
+     */
+    private boolean serviceExistsInCluster(String serviceId, KubernetesClusterContext kubernetesClusterContext,
+                                           MemberContext memberContext, String portName)
+            throws KubernetesClientException {
+
+        KubernetesApiClient kubernetesApi = kubernetesClusterContext.getKubApi();
+        Service service = kubernetesApi.getService(serviceId);
+
+        if(service != null) {
+            Map<String, String> annotations = service.getMetadata().getAnnotations();
+            String applicationIdLabel = annotations.get(CloudControllerConstants.APPLICATION_ID_LABEL);
+            String clusterInstanceIdLabel = annotations.get(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL);
+            String portNameLabel = annotations.get(CloudControllerConstants.PORT_NAME_LABEL);
+
+            return (StringUtils.isNotEmpty(applicationIdLabel) &&
+                    StringUtils.isNotEmpty(clusterInstanceIdLabel) &&
+                    StringUtils.isNotEmpty(portNameLabel) &&
+                    applicationIdLabel.equals(memberContext.getApplicationId()) &&
+                    clusterInstanceIdLabel.equals(memberContext.getClusterInstanceId()) &&
+                    portNameLabel.equals(portName)
+            );
+        }
+        return false;
+    }
+
     private String trimLabel(String key, String value) {
         if(StringUtils.isNotEmpty(value) && (value.length() > KubernetesConstants.MAX_LABEL_LENGTH)) {
             String trimmed = value.substring(0, KubernetesConstants.MAX_LABEL_LENGTH - 2);
@@ -659,19 +696,19 @@ public class KubernetesIaas extends Iaas {
     }
 
     /**
-     * Returns true if a kubernetes service exists with the given container port
+     * Find a kubernetes service by container port
      *
      * @param services
      * @param containerPort
      * @return
      */
-    private boolean kubernetesServiceExist(Collection<KubernetesService> services, int containerPort) {
+    private KubernetesService findKubernetesService(Collection<KubernetesService> services, int containerPort) {
         for (KubernetesService service : services) {
             if (service.getContainerPort() == containerPort) {
-                return true;
+                return service;
             }
         }
-        return false;
+        return null;
     }
 
     /**
