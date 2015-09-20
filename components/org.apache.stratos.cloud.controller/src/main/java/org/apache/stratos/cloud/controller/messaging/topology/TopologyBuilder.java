@@ -61,7 +61,7 @@ public class TopologyBuilder {
         Service service;
         Topology topology = TopologyManager.getTopology();
         if (cartridgeList == null) {
-            log.warn(String.format("Cartridge list is empty"));
+            log.warn("Cartridge list is empty");
             return;
         }
 
@@ -183,7 +183,7 @@ public class TopologyBuilder {
                         cluster.getClusterId(), portMapping.getName(), portMapping.getProtocol(), portMapping.getPort(),
                         portMapping.getProxyPort());
                 if (portMapping.getKubernetesPortType() != null) {
-                    clusterPortMapping.setKubernetesServiceType(portMapping.getKubernetesPortType());
+                    clusterPortMapping.setKubernetesPortType(portMapping.getKubernetesPortType());
                 }
                 CloudControllerContext.getInstance().addClusterPortMapping(clusterPortMapping);
                 log.debug("Cluster port mapping created: " + clusterPortMapping.toString());

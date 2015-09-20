@@ -103,7 +103,7 @@ public final class CloudControllerConstants {
     public static final String MD5_HEX_APPLICATION_ID_LABEL = "md5Hex-applicationId";
     public static final String MD5_HEX_MEMBER_ID_LABEL = "md5Hex-memberId";
     public static final String CARTRIDGE_TYPE_LABEL = "cartridgeType";
-    public static final String SERVICE_TYPE_LABEL = "serviceType";
+    public static final String PORT_TYPE_LABEL = "portType";
     public static final String MD5_HEX_CLUSTER_ID_LABEL = "md5Hex-clusterId";
     public static final String CLUSTER_ID_LABEL = "clusterId";
     public static final String CLUSTER_INSTANCE_ID_LABEL = "clusterInstanceId";
@@ -130,7 +130,6 @@ public final class CloudControllerConstants {
     public static final String PROTOCOL_LABEL = "protocol";
     public static final String SERVICE_PORT_LABEL = "servicePort";
     public static final String PROXY_PORT_LABEL = "proxyPort";
-    public static final String PORT_TYPE_LABEL = "portType";
 
     /**
      * Properties

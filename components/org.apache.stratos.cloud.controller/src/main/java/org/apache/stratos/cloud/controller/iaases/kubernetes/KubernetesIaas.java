@@ -545,7 +545,7 @@ public class KubernetesIaas extends Iaas {
 
                 // Create kubernetes service for port mapping
                 int servicePort = clusterPortMapping.getKubernetesServicePort();
-                String serviceType = clusterPortMapping.getKubernetesServiceType();
+                String serviceType = clusterPortMapping.getKubernetesPortType();
                 String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(clusterPortMapping);
 
                 Map<String, String> serviceLabels = new HashMap<>();
@@ -559,10 +559,8 @@ public class KubernetesIaas extends Iaas {
                         .put(CloudControllerConstants.APPLICATION_ID_LABEL, clusterContext.getApplicationId());
                 serviceAnnotations.put(CloudControllerConstants.CLUSTER_ID_LABEL, clusterContext.getClusterId());
                 serviceAnnotations.put(CloudControllerConstants.PROTOCOL_LABEL, clusterPortMapping.getProtocol());
-                serviceAnnotations.put(CloudControllerConstants.SERVICE_TYPE_LABEL,
-                        clusterPortMapping.getKubernetesServiceType());
-                serviceAnnotations
-                        .put(CloudControllerConstants.PORT_TYPE_LABEL, clusterPortMapping.getKubernetesPortType());
+                serviceAnnotations.put(CloudControllerConstants.PORT_TYPE_LABEL,
+                        clusterPortMapping.getKubernetesPortType());
                 serviceAnnotations.put(CloudControllerConstants.SERVICE_PORT_LABEL, String.valueOf(clusterPortMapping
                         .getKubernetesServicePort()));
                 serviceAnnotations
@@ -592,10 +590,10 @@ public class KubernetesIaas extends Iaas {
                 kubernetesService.setProtocol(clusterPortMapping.getProtocol());
                 kubernetesService.setPortName(clusterPortMapping.getName());
 
-                String kubernetesServiceType = service.getSpec().getType();
-                kubernetesService.setServiceType(kubernetesServiceType);
+                String kubernetesPortType = service.getSpec().getType();
+                kubernetesService.setServiceType(kubernetesPortType);
 
-                if (kubernetesServiceType.equals(KubernetesConstants.NODE_PORT)) {
+                if (kubernetesPortType.equals(KubernetesConstants.NODE_PORT)) {
                     kubernetesService.setPort(service.getSpec().getPorts().get(0).getNodePort());
                 } else {
                     kubernetesService.setPort(service.getSpec().getPorts().get(0).getPort());
@@ -683,14 +681,14 @@ public class KubernetesIaas extends Iaas {
                                 portMapping.getName()));
                     }
 
-                    if (clusterPortMapping.getKubernetesServiceType() == null) {
+                    if (clusterPortMapping.getKubernetesPortType() == null) {
                         throw new CloudControllerException(String.format("Kubernetes service type not " +
                                         "found [application-id] %s [cluster-id] %s [cartridge] %s", applicationId,
                                 clusterId, cartridge));
                     }
 
                     String serviceType = portMapping.getKubernetesPortType();
-                    clusterPortMapping.setKubernetesServiceType(serviceType);
+                    clusterPortMapping.setKubernetesPortType(serviceType);
 
                     // If kubernetes service port is already set, skip setting a new one
                     if (clusterPortMapping.getKubernetesServicePort() == 0) {
@@ -729,7 +727,7 @@ public class KubernetesIaas extends Iaas {
                     portMappingStrBuilder.append(String.format("NAME:%s|PROTOCOL:%s|PORT:%d|PROXY_PORT:%d|TYPE:%s",
                             clusterPortMapping.getName(), clusterPortMapping.getProtocol(),
                             clusterPortMapping.getKubernetesServicePort(), clusterPortMapping.getProxyPort(),
-                            clusterPortMapping.getKubernetesServiceType()));
+                            clusterPortMapping.getKubernetesPortType()));
 
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Kubernetes service port generated: [application-id] %s " +
