@@ -18,30 +18,30 @@
 # Stratos base node
 node 'base' {
 
-  #essential variables
-  $package_repo         = 'http://10.4.128.7'
-  $local_package_dir    = '/mnt/packs'
-  $mb_url		= 'tcp://127.0.0.1:1883'
-  $mb_type		= 'activemq' #in wso2 mb case, value should be 'wso2mb'
-  $cep_ip               = '127.0.0.1'
-  $cep_port             = '7711'
-  $cep_username       ='admin'
-  $cep_password       ='admin'
-  $truststore_password  = 'wso2carbon'
-  $java_distribution	= 'jdk-7u80-linux-x64.tar.gz'
-  $java_name		= 'jdk1.7.0_80'
-  $member_type_ip       = 'private'
-  $lb_httpPort          = '80'
-  $lb_httpsPort         = '443'
-  $tomcat_version       = '7.0.52'
-  $enable_log_publisher = 'false'
-  $bam_ip		= '127.0.0.1'
-  $bam_port		= '7611'
-  $bam_secure_port	= '7711'
-  $bam_username		= 'admin'
-  $bam_password		= 'admin'
-  #metadata_service_url should be 'https://SM-IP:SM-Port'
-  $metadata_service_url = 'https://127.0.0.1:9443'
+#essential variables
+  $package_repo              = 'http://10.4.128.7'
+  $local_package_dir         = '/mnt/packs'
+  $mb_url                    = 'tcp://127.0.0.1:1883'
+  $mb_type                   = 'activemq' #in wso2 mb case, value should be 'wso2mb'
+  $cep_urls                  = '127.0.0.1:7711'   # comma separated list of CEP URLs
+  $cep_ip                    = '127.0.0.1'
+  $cep_port                  = '7711'
+  $cep_username              = 'admin'
+  $cep_password              = 'admin'
+  $truststore_password       = 'wso2carbon'
+  $java_distribution         = 'jdk-7u80-linux-x64.tar.gz'
+  $java_name                 = 'jdk1.7.0_80'
+  $member_type_ip            = 'private'
+  $lb_httpPort               = '80'
+  $lb_httpsPort              = '443'
+  $tomcat_version            = '7.0.52'
+  $enable_log_publisher      = 'false'
+  $bam_ip                    = '127.0.0.1'
+  $bam_port                  = '7611'
+  $bam_secure_port           = '7711'
+  $bam_username              = 'admin'
+  $bam_password              = 'admin'
+  $metadata_service_url      = 'https://127.0.0.1:9443' #metadata_service_url should be 'https://SM-IP:SM-Port'
 
-  require stratos_base 
+  require stratos_base
 }
