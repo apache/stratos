@@ -56,7 +56,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     @Override
-    public void createPod(String podId, String podName, Map<String, String> podLabels, String dockerImage, String cpu,
+    public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
+                          String dockerImage, String cpu,
                           String memory, List<ContainerPort> ports, List<EnvVar> environmentVariables)
             throws KubernetesClientException {
 
@@ -75,6 +76,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             pod.setMetadata(new ObjectMeta());
             pod.getMetadata().setName(podId);
             pod.getMetadata().setLabels(podLabels);
+            pod.getMetadata().setAnnotations(annotations);
 
             // Set container template
             Container containerTemplate = new Container();
@@ -163,8 +165,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     @Override
-    public void createService(String serviceId, String serviceName, Map<String, String> serviceLabels, int servicePort,
-                              String serviceType, String containerPortName, int containerPort, String sessionAffinity)
+    public void createService(String serviceId, String serviceName, Map<String, String> serviceLabels, Map<String,
+            String> annotations, int servicePort, String serviceType, String containerPortName, int containerPort,
+                              String sessionAffinity)
             throws KubernetesClientException {
 
         try {
@@ -179,12 +182,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             Service service = new Service();
             service.setSpec(new ServiceSpec());
             service.setMetadata(new ObjectMeta());
-
             service.setApiVersion(Service.ApiVersion.V_1);
             service.setKind(KubernetesConstants.KIND_SERVICE);
-
             service.getMetadata().setName(serviceId);
             service.getSpec().setSessionAffinity(sessionAffinity);
+            service.getMetadata().setAnnotations(annotations);
 
             if (serviceType.equals(KubernetesConstants.NODE_PORT)) {
                 service.getSpec().setType(KubernetesConstants.NODE_PORT);

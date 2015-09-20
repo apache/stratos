@@ -45,8 +45,9 @@ public interface KubernetesAPIClientInterface {
      * @param environmentVariables environment variables
      * @throws KubernetesClientException
      */
-    public void createPod(String podId, String podName, Map<String, String> podLabels, String dockerImage, String cpu,
-                          String memory, List<ContainerPort> ports, List<EnvVar> environmentVariables)
+    public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
+                          String dockerImage, String cpu, String memory, List<ContainerPort> ports,
+                          List<EnvVar> environmentVariables)
             throws KubernetesClientException;
 
     /**
@@ -87,8 +88,9 @@ public interface KubernetesAPIClientInterface {
      * @param sessionAffinity
      * @throws KubernetesClientException
      */
-    public void createService(String serviceId, String serviceName, Map<String, String> podLabels, int servicePort,
-                              String serviceType, String containerPortName, int containerPort, String sessionAffinity)
+    public void createService(String serviceId, String serviceName, Map<String, String> podLabels, Map<String,
+            String> annotations, int servicePort, String serviceType, String containerPortName, int containerPort,
+                              String sessionAffinity)
             throws KubernetesClientException;
 
     /**
