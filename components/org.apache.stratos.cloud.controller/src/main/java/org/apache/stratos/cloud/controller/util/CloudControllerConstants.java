@@ -309,4 +309,5 @@ public final class CloudControllerConstants {
     public static final String LOADBALANCING_IP_TYPE_PRIVATE = "private";
     public static final String LOADBALANCING_IP_TYPE_PUBLIC = "public";
 
+    public static final String PORT_NAME_LABEL = "portName";
 }

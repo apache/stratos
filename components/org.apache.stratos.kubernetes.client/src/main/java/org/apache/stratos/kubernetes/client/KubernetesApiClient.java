@@ -213,7 +213,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
             // Set service selector
             Map<String, String> selector = new HashMap<String, String>();
-            selector.put(KubernetesConstants.LABEL_NAME, serviceName);
+            selector.put(KubernetesConstants.SERVICE_SELECTOR_LABEL, serviceName);
             service.getSpec().setSelector(selector);
 
             // Invoke the api to create the service

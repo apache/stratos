@@ -434,15 +434,23 @@ public class KubernetesIaas extends Iaas {
                 memberContext.getMemberId(), cpu, memory));
 
         Map<String, String> podLabels = new HashMap<>();
-        podLabels
-                .put(CloudControllerConstants.MD5_HEX_MEMBER_ID_LABEL, DigestUtils.md5Hex(memberContext.getMemberId()));
+        podLabels.put(KubernetesConstants.SERVICE_SELECTOR_LABEL, podName);
+
+        podLabels.put(CloudControllerConstants.APPLICATION_ID_LABEL,
+                trimLabel(CloudControllerConstants.APPLICATION_ID_LABEL, memberContext.getApplicationId()));
+
+        podLabels.put(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL,
+                trimLabel(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL, memberContext.getClusterInstanceId()));
+
+        podLabels.put(CloudControllerConstants.MEMBER_ID_LABEL,
+                trimLabel(CloudControllerConstants.MEMBER_ID_LABEL, memberContext.getMemberId()));
 
         Map<String, String> podAnnotations = new HashMap<>();
-        podAnnotations.put(CloudControllerConstants.MEMBER_ID_LABEL, memberContext.getMemberId());
-        podAnnotations.put(CloudControllerConstants.CARTRIDGE_TYPE_LABEL, memberContext.getCartridgeType());
         podAnnotations.put(CloudControllerConstants.APPLICATION_ID_LABEL, memberContext.getApplicationId());
+        podAnnotations.put(CloudControllerConstants.CARTRIDGE_TYPE_LABEL, memberContext.getCartridgeType());
         podAnnotations.put(CloudControllerConstants.CLUSTER_ID_LABEL, memberContext.getClusterId());
         podAnnotations.put(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL, memberContext.getClusterInstanceId());
+        podAnnotations.put(CloudControllerConstants.MEMBER_ID_LABEL, memberContext.getMemberId());
 
         kubernetesApi.createPod(podId, podName, podLabels, podAnnotations, dockerImage, cpu, memory, ports,
                 environmentVariables);
@@ -531,13 +539,11 @@ public class KubernetesIaas extends Iaas {
                         KubernetesIaasUtil.fixSpecialCharacters(prepareServiceName(serviceSeqNo));
                 while (kubernetesApi.getService(serviceId) != null) {
                     serviceSeqNo = kubernetesClusterContext.getNextServiceSeqNo();
-                    serviceId =
-                            KubernetesIaasUtil.fixSpecialCharacters(prepareServiceName(serviceSeqNo));
+                    serviceId = KubernetesIaasUtil.fixSpecialCharacters(prepareServiceName(serviceSeqNo));
                 }
 
                 if (log.isInfoEnabled()) {
-                    log.info(
-                            String.format("Creating kubernetes service: [cluster] %s [service-id] %s [service-name] " +
+                    log.info(String.format("Creating kubernetes service: [cluster] %s [service-id] %s [service-name] " +
                                             "%s " + "[protocol] %s [service-port] %d [container-port] %s", clusterId,
                                     serviceId, serviceName, clusterPortMapping.getProtocol(),
                                     clusterPortMapping.getKubernetesServicePort(), containerPort));
@@ -549,15 +555,20 @@ public class KubernetesIaas extends Iaas {
                 String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(clusterPortMapping);
 
                 Map<String, String> serviceLabels = new HashMap<>();
-                serviceLabels.put(CloudControllerConstants.MD5_HEX_APPLICATION_ID_LABEL,
-                        DigestUtils.md5Hex(clusterContext.getApplicationId()));
-                serviceLabels.put(CloudControllerConstants.MD5_HEX_CLUSTER_ID_LABEL,
-                        DigestUtils.md5Hex(clusterContext.getClusterId()));
+                serviceLabels.put(CloudControllerConstants.APPLICATION_ID_LABEL,
+                        trimLabel(CloudControllerConstants.APPLICATION_ID_LABEL, clusterContext.getApplicationId()));
+
+                serviceLabels.put(CloudControllerConstants.CLUSTER_ID_LABEL,
+                        trimLabel(CloudControllerConstants.CLUSTER_ID_LABEL, clusterContext.getClusterId()));
+
+                serviceLabels.put(CloudControllerConstants.PORT_NAME_LABEL,
+                        trimLabel(CloudControllerConstants.PORT_NAME_LABEL, clusterPortMapping.getName()));
 
                 Map<String, String> serviceAnnotations = new HashMap<>();
                 serviceAnnotations
                         .put(CloudControllerConstants.APPLICATION_ID_LABEL, clusterContext.getApplicationId());
                 serviceAnnotations.put(CloudControllerConstants.CLUSTER_ID_LABEL, clusterContext.getClusterId());
+                serviceAnnotations.put(CloudControllerConstants.PORT_NAME_LABEL, clusterPortMapping.getName());
                 serviceAnnotations.put(CloudControllerConstants.PROTOCOL_LABEL, clusterPortMapping.getProtocol());
                 serviceAnnotations.put(CloudControllerConstants.PORT_TYPE_LABEL,
                         clusterPortMapping.getKubernetesPortType());
@@ -578,7 +589,7 @@ public class KubernetesIaas extends Iaas {
 
                 Service service = kubernetesApi.getService(serviceId);
                 if (service == null) {
-                    throw new KubernetesClientException("Kubernetes service not found: [service-id] " + serviceId);
+                    throw new KubernetesClientException("Kubernetes service was not created: [service] " + serviceId);
                 }
 
                 KubernetesService kubernetesService = new KubernetesService();
@@ -613,6 +624,16 @@ public class KubernetesIaas extends Iaas {
                 }
             }
         }
+    }
+
+    private String trimLabel(String key, String value) {
+        if(StringUtils.isNotEmpty(value) && (value.length() > KubernetesConstants.MAX_LABEL_LENGTH)) {
+            String trimmed = value.substring(0, KubernetesConstants.MAX_LABEL_LENGTH - 2);
+            log.warn(String.format("Kubernetes label trimmed: [key] %s [original] %s [trimmed] %s",
+                    key, value, trimmed));
+            return trimmed;
+        }
+        return value;
     }
 
     private String prepareServiceName(long serviceSeqNo) {
