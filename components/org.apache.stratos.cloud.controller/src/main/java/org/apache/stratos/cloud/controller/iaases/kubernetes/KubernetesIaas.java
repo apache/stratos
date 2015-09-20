@@ -606,6 +606,7 @@ public class KubernetesIaas extends Iaas {
 
                 String kubernetesPortType = service.getSpec().getType();
                 kubernetesService.setServiceType(kubernetesPortType);
+                kubernetesService.setKubernetesClusterId(memberContext.getPartition().getKubernetesClusterId());
 
                 if (kubernetesPortType.equals(KubernetesConstants.NODE_PORT)) {
                     kubernetesService.setPort(service.getSpec().getPorts().get(0).getNodePort());
