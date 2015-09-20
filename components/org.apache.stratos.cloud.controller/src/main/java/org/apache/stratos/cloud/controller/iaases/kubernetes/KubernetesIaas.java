@@ -558,8 +558,9 @@ public class KubernetesIaas extends Iaas {
                 serviceLabels.put(CloudControllerConstants.APPLICATION_ID_LABEL,
                         trimLabel(CloudControllerConstants.APPLICATION_ID_LABEL, clusterContext.getApplicationId()));
 
-                serviceLabels.put(CloudControllerConstants.CLUSTER_ID_LABEL,
-                        trimLabel(CloudControllerConstants.CLUSTER_ID_LABEL, clusterContext.getClusterId()));
+                serviceLabels.put(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL,
+                        trimLabel(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL,
+                                memberContext.getClusterInstanceId()));
 
                 serviceLabels.put(CloudControllerConstants.PORT_NAME_LABEL,
                         trimLabel(CloudControllerConstants.PORT_NAME_LABEL, clusterPortMapping.getName()));
@@ -568,6 +569,8 @@ public class KubernetesIaas extends Iaas {
                 serviceAnnotations
                         .put(CloudControllerConstants.APPLICATION_ID_LABEL, clusterContext.getApplicationId());
                 serviceAnnotations.put(CloudControllerConstants.CLUSTER_ID_LABEL, clusterContext.getClusterId());
+                serviceAnnotations.put(CloudControllerConstants.CLUSTER_INSTANCE_ID_LABEL,
+                        memberContext.getClusterInstanceId());
                 serviceAnnotations.put(CloudControllerConstants.PORT_NAME_LABEL, clusterPortMapping.getName());
                 serviceAnnotations.put(CloudControllerConstants.PROTOCOL_LABEL, clusterPortMapping.getProtocol());
                 serviceAnnotations.put(CloudControllerConstants.PORT_TYPE_LABEL,
