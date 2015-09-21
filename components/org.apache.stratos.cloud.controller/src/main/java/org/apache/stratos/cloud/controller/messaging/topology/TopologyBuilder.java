@@ -454,7 +454,7 @@ public class TopologyBuilder {
                 Cluster cluster = service.getCluster(memberContext.getClusterId());
                 String clusterId = cluster.getClusterId();
                 ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-                List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
+                List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices(memberContext.getClusterInstanceId()));
 
                 if (!kubernetesServices.isEmpty()) {
                     cluster.setKubernetesServices(kubernetesServices);
@@ -605,7 +605,7 @@ public class TopologyBuilder {
                     List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                     String clusterId = cluster.getClusterId();
                     ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-                    Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+                    Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices(instanceActivatedEvent.getClusterInstanceId());
 
                     for (PortMapping portMapping : portMappings) {
                         if (!kubernetesServices.isEmpty()) {
@@ -852,7 +852,7 @@ public class TopologyBuilder {
                         clusterStatusClusterActivatedEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
-            Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+            Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices(clusterStatusClusterActivatedEvent.getInstanceId());
 
             if (kubernetesServices != null) {
                

@@ -519,7 +519,7 @@ public class KubernetesIaas extends Iaas {
 
         if (clusterPortMappings != null) {
             String serviceName = DigestUtils.md5Hex(clusterId);
-            Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+            Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices(memberContext.getClusterInstanceId());
 
             for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                 // Skip if already created
@@ -620,7 +620,7 @@ public class KubernetesIaas extends Iaas {
 
                 kubernetesService.setContainerPort(containerPort);
 
-                clusterContext.addKubernetesService(kubernetesService);
+                clusterContext.addKubernetesService(memberContext.getClusterInstanceId(),kubernetesService);
                 CloudControllerContext.getInstance().persist();
 
                 if (log.isInfoEnabled()) {
@@ -856,7 +856,7 @@ public class KubernetesIaas extends Iaas {
                     + clusterId);
 
             // Remove kubernetes services
-            List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getKubernetesServices());
+            List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getAllKubernetesServicesForCluster());
             if (kubernetesServices != null) {
                 for (KubernetesService kubernetesService : kubernetesServices) {
                     try {
@@ -1076,7 +1076,7 @@ public class KubernetesIaas extends Iaas {
 
         if (clusterContext != null) {
             ArrayList<KubernetesService> kubernetesServices =
-                    Lists.newArrayList(clusterContext.getKubernetesServices());
+                    Lists.newArrayList(clusterContext.getAllKubernetesServicesForCluster());
 
             for (KubernetesService kubernetesService : kubernetesServices) {
                 KubernetesClusterContext kubernetesClusterContext =
