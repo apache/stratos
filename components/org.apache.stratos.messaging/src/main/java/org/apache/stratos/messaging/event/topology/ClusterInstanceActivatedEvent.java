@@ -18,11 +18,12 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.event.Event;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Cluster activated event will be sent by Autoscaler
@@ -33,14 +34,14 @@ public class ClusterInstanceActivatedEvent extends Event {
     private final String clusterId;
     private String appId;
     private String instanceId;
-    private List<String> accessUrls;
+    private Map<String,List<String>> accessUrls;
 
     public ClusterInstanceActivatedEvent(String appId, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.appId = appId;
         this.instanceId = instanceId;
-        this.accessUrls = new ArrayList<String>();
+        this.accessUrls = new HashMap<>();
     }
 
     public String getServiceName() {
@@ -65,20 +66,21 @@ public class ClusterInstanceActivatedEvent extends Event {
         return instanceId;
     }
 
-    public List<String> getAccessUrls() {
-        return accessUrls;
+    public List<String> getAccessUrls(String instanceClusterId) {
+        return accessUrls.get(instanceClusterId);
     }
 
-    public void setAccessUrls(List<String> accessUrls) {
+    public void setAccessUrls(Map<String, List<String>> accessUrls) {
         this.accessUrls = accessUrls;
     }
 
-    public void addAccessUrl(String accessUrl) {
-        if (accessUrls == null) {
-            accessUrls = new ArrayList<String>();
+    public void addAccessUrl(String clusterInstanceId,String accessUrl) {
+        List<String> strAccessUrl=accessUrls.get(clusterInstanceId);
+        if (strAccessUrl == null) {
+            strAccessUrl = new ArrayList<String>();
         }
-        if (!accessUrls.contains(accessUrl)) {
-            accessUrls.add(accessUrl);
+        if (!strAccessUrl.contains(accessUrl)) {
+            strAccessUrl.add(accessUrl);
         }
     }
 }

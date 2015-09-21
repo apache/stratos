@@ -61,7 +61,7 @@ public class Cluster implements Serializable {
     private Properties properties;
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
-    private List<String> accessUrls;
+    private Map<String,List<String>> accessUrls;
     private List<KubernetesService> kubernetesServices;
 
     public Cluster(Cluster cluster) {
@@ -79,7 +79,7 @@ public class Cluster implements Serializable {
         this.tenantRange = cluster.getTenantRange();
         this.setLbCluster(cluster.isLbCluster());
         this.setKubernetesCluster(cluster.isKubernetesCluster());
-        this.accessUrls = cluster.getAccessUrls();
+        this.accessUrls = cluster.getAccessUrlsMap();
         this.kubernetesServices = cluster.getKubernetesServices();
     }
 
@@ -93,7 +93,7 @@ public class Cluster implements Serializable {
         this.memberMap = new ConcurrentHashMap<String, Member>();
         this.appId = appId;
         this.setInstanceIdToInstanceContextMap(new ConcurrentHashMap<String, ClusterInstance>());
-        this.accessUrls = new ArrayList<String>();
+        this.accessUrls = new HashMap<>();
         this.kubernetesServices = new ArrayList<KubernetesService>();
     }
 
@@ -334,20 +334,29 @@ public class Cluster implements Serializable {
         return this.instanceIdToInstanceContextMap.values();
     }
 
-    public List<String> getAccessUrls() {
+    public Map<String,List<String>> getAccessUrlsMap() {
         return accessUrls;
     }
 
-    public void setAccessUrls(List<String> accessUrls) {
-        this.accessUrls = accessUrls;
+    public List<String> getAccessUrls(String clusterInstanceId) {
+        return accessUrls.get(clusterInstanceId);
     }
 
-    public void addAccessUrl(String accessUrl) {
-        if (accessUrls == null) {
-            accessUrls = new ArrayList<String>();
+    public void setAccessUrls(String instanceClusterId,List<String> accessUrlSet) {
+        this.accessUrls.put(instanceClusterId, accessUrlSet);
+    }
+
+    public void setAccessUrlsMap(Map<String,List<String>> accessUrls) {
+        this.accessUrls=accessUrls;
+    }
+
+    public void addAccessUrl(String clusterInstanceId,String accessUrl) {
+        List<String> strAccessUrl = accessUrls.get(clusterInstanceId);
+        if (strAccessUrl == null) {
+            strAccessUrl = new ArrayList<String>();
         }
-        if (!accessUrls.contains(accessUrl)) {
-            accessUrls.add(accessUrl);
+        if (!strAccessUrl.contains(accessUrl)) {
+            strAccessUrl.add(accessUrl);
         }
     }
 
