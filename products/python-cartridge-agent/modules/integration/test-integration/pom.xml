@@ -28,7 +28,7 @@
 
     <artifactId>python-agent-test-integration</artifactId>
     <packaging>jar</packaging>
-    <name>Python Cartridge Agent - Integration Tests</name>
+    <name>Apache Stratos - PCA - Integration Tests</name>
 
     <build>
         <resources>

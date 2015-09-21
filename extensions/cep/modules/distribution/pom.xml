@@ -29,7 +29,7 @@
 
     <artifactId>apache-stratos-cep-artifacts</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos CEP artifacts</name>
+    <name>Apache Stratos - CEP Artifacts</name>
     <description>Apache Stratos CEP artifacts</description>
 
     <profiles>

@@ -28,7 +28,7 @@
 
     <artifactId>org.apache.stratos.python.cartridge.agent.integration.common</artifactId>
     <packaging>jar</packaging>
-    <name>Python Cartridge Agent - Integration Common Module</name>
+    <name>Apache Stratos - PCA - Integration Common Module</name>
 
     <dependencies>
         <dependency>
