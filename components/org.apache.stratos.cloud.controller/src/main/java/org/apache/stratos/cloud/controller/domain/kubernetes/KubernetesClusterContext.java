@@ -21,10 +21,11 @@ package org.apache.stratos.cloud.controller.domain.kubernetes;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
-import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -42,7 +43,7 @@ public class KubernetesClusterContext implements Serializable {
     private String masterIp;
     private String masterPort;
     private List<Integer> servicePortSequence;
-    private Map<String, KubernetesService> kubernetesServices;
+
     private AtomicLong serviceSeqNo;
     private AtomicLong podSeqNo;
     private transient KubernetesApiClient kubApi;
@@ -51,7 +52,6 @@ public class KubernetesClusterContext implements Serializable {
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
         this.servicePortSequence = new ArrayList<>();
-        this.kubernetesServices = new HashMap<>();
         serviceSeqNo = new AtomicLong(0);
         podSeqNo = new AtomicLong(0);
 
@@ -119,18 +119,6 @@ public class KubernetesClusterContext implements Serializable {
         for (int port = lowerPort; port <= upperPort; port++) {
             servicePortSequence.add(port);
         }
-    }
-
-    public void addKubernetesService(KubernetesService service) {
-        kubernetesServices.put(service.getId(), service);
-    }
-
-    public void removeKubernetesService(String serviceName) {
-        kubernetesServices.remove(serviceName);
-    }
-
-    public Collection<KubernetesService> getKubernetesServices() {
-        return kubernetesServices.values();
     }
 
     public String getMasterIp() {
