@@ -257,7 +257,6 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     @Override
     protected void restoreState(Object[] data) {
         window.restoreState(data);
-        window.restoreState((Object[]) data[0]);
         window.reSchedule();
     }
 

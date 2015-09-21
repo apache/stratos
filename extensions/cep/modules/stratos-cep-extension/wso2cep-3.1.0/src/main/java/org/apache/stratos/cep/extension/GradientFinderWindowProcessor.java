@@ -209,7 +209,6 @@ public class GradientFinderWindowProcessor extends WindowProcessor implements Ru
     @Override
     protected void restoreState(Object[] data) {
         window.restoreState(data);
-        window.restoreState((Object[]) data[0]);
         oldEventList = ((ArrayList<RemoveEvent>) data[1]);
         newEventList = ((ArrayList<InEvent>) data[2]);
         window.reSchedule();
