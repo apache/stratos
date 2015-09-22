@@ -31,17 +31,17 @@
 
         ;WITH MemberCount as
         (select application_id, cluster_id, cluster_alias,
-        count(case when member_status='Created' and timestamp &gt; current_time(null)-60000 and
+        count(case when member_status='Created' and timestamp &gt; current_time(null)-10000 and
         timestamp&lt;= current_time(null) then 1 else NULL end) as created_instance_count,
-        count(case when member_status='Initialized' and timestamp &gt; current_time(null)-60000 and
+        count(case when member_status='Initialized' and timestamp &gt; current_time(null)-10000 and
         timestamp&lt;= current_time(null) then 1 else NULL end) as initialized_instance_count,
-        count(case when member_status='Active' and timestamp &gt; current_time(null)-60000 and
+        count(case when member_status='Active' and timestamp &gt; current_time(null)-10000 and
         timestamp&lt;= current_time(null) then 1 else NULL end) as active_instance_count,
-        count(case when member_status='Terminated' and timestamp &gt; current_time(null)-60000 and
+        count(case when member_status='Terminated' and timestamp &gt; current_time(null)-10000 and
         timestamp&lt;= current_time(null) then 1 else NULL end) as terminated_instance_count
         from memberstatus group by application_id, cluster_id, cluster_alias)
         INSERT INTO table member_count
-        select current_time(null)-60000, current_time(null), application_id, cluster_id, cluster_alias,
+        select current_time(null), application_id, cluster_id, cluster_alias,
         created_instance_count,initialized_instance_count,active_instance_count,
         terminated_instance_count from MemberCount;
 
@@ -51,5 +51,5 @@
         INSERT OVERWRITE TABLE member_status_new select timestamp, application_id, cluster_id, member_id,
         member_status from memberstatus;
     </Script>
-    <CronExpression>59 * * * * ?</CronExpression>
+    <CronExpression>0 1/6 * * * ?</CronExpression>
 </Analytics>
