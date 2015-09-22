@@ -48,7 +48,6 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -717,7 +716,15 @@ public class ObjectConverter {
                 clusterInstanceBean.getMember().add(memberBean);
             }
         }
-        clusterInstanceBean.setAccessUrls(cluster.getAccessUrls());
+
+        List<String> accessUrls=new LinkedList<>();
+        List<KubernetesServiceBean> kubServices=clusterInstanceBean.getKubernetesServices();
+        if(kubServices!=null) {
+            for (int i = 0; i < kubServices.size(); i++) {
+                accessUrls.add(kubServices.get(i).getAccessUrl());
+            }
+            clusterInstanceBean.setAccessUrls(accessUrls);
+        }
         for (String hostname : cluster.getHostNames()) {
             clusterInstanceBean.getHostNames().add(hostname);
         }
@@ -754,6 +761,7 @@ public class ObjectConverter {
                 kubernetesServiceBean.setProtocol(kubernetesService.getProtocol());
                 kubernetesServiceBean.setPort(kubernetesService.getPort());
                 kubernetesServiceBean.setContainerPort(kubernetesService.getContainerPort());
+                kubernetesServiceBean.setAccessUrl(kubernetesService.getAccessUrl());
 
                 kubernetesServiceBeans.add(kubernetesServiceBean);
             }

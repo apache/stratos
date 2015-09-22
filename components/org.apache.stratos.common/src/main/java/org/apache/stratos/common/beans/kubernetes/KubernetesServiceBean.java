@@ -33,6 +33,7 @@ public class KubernetesServiceBean {
     private String protocol;
     private int port;
     private int containerPort;
+    private String accessUrl;
 
     public String getId() {
         return id;
@@ -80,5 +81,13 @@ public class KubernetesServiceBean {
 
     public int getContainerPort() {
         return containerPort;
+    }
+
+    public String getAccessUrl() {
+        return accessUrl;
+    }
+
+    public void setAccessUrl(String accessUrl) {
+        this.accessUrl = accessUrl;
     }
 }
