@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+-->
+<project name="stratos-metering-service" default="zip" basedir=".">
+
+    <property name="project-name" value="${ant.project.name}"/>
+    <property name="target-dir" value="target"/>
+
+    <property name="stratos_metering_service_dir" value="stratos-metering-service"/>
+
+    <target name="clean">
+        <delete dir="${target-dir}"/>
+    </target>
+
+    <target name="pre-configure">
+        <mkdir dir="${target-dir}"/>
+        <copy file="README.md" todir="${target-dir}"/>
+    </target>
+
+    <target name="zip" depends="clean,pre-configure">
+        <zip destfile="${target-dir}/${stratos_metering_service_dir}.car">
+            <zipfileset dir="${stratos_metering_service_dir}"/>
+        </zip>
+    </target>
+
+</project>
+

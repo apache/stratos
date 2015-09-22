@@ -1,0 +1,8 @@
+{
+    "id": "single-column",
+    "title": "Single Column",
+    "description": "This is a layout generated through single-column.io",
+    "thumbnail": "store://layout/single-column/index.png",
+    "url": "store://layout/single-column/index.hbs"
+}
+

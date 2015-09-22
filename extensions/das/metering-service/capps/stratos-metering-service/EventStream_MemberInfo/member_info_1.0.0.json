@@ -1,0 +1,76 @@
+{
+  "name": "member_info",
+  "version": "1.0.0",
+  "nickName": "Member Information",
+  "description": "Member Information",
+  "payloadData": [
+    {
+      "name": "member_id",
+      "type": "STRING"
+    },
+    {
+      "name": "instance_type",
+      "type": "STRING"
+    },
+    {
+      "name": "scaling_decision_id",
+      "type": "STRING"
+    },
+    {
+      "name": "is_multi_tenant",
+      "type": "STRING"
+    },
+    {
+      "name": "private_IP_addresses",
+      "type": "STRING"
+    },
+    {
+      "name": "public_IP_addresses",
+      "type": "STRING"
+    },
+    {
+      "name": "allocated_IP_addresses",
+      "type": "STRING"
+    },
+    {
+      "name": "host_name",
+      "type": "STRING"
+    },
+    {
+      "name": "hypervisor",
+      "type": "STRING"
+    },
+    {
+      "name": "cpu",
+      "type": "STRING"
+    },
+    {
+      "name": "ram",
+      "type": "STRING"
+    },
+    {
+      "name": "image_id",
+      "type": "STRING"
+    },
+    {
+      "name": "login_port",
+      "type": "INT"
+    },
+    {
+      "name": "os_name",
+      "type": "STRING"
+    },
+    {
+      "name": "os_version",
+      "type": "STRING"
+    },
+    {
+      "name": "os_architecture",
+      "type": "STRING"
+    },
+    {
+      "name": "is_64bit_os",
+      "type": "BOOL"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "name": "scaling_decision",
+  "version": "1.0.0",
+  "nickName": "Member Information",
+  "description": "Member Information",
+  "payloadData": [
+    {
+      "name": "timestamp",
+      "type": "LONG"
+    },
+    {
+      "name": "scaling_decision_id",
+      "type": "STRING"
+    },
+    {
+      "name": "cluster_id",
+      "type": "STRING"
+    },
+    {
+      "name": "min_instance_count",
+      "type": "INT"
+    },
+    {
+      "name": "max_instance_count",
+      "type": "INT"
+    },
+    {
+      "name": "rif_predicted",
+      "type": "INT"
+    },
+    {
+      "name": "rif_threshold",
+      "type": "INT"
+    },
+    {
+      "name": "rif_required_instances",
+      "type": "INT"
+    },
+    {
+      "name": "mc_predicted",
+      "type": "INT"
+    },
+    {
+      "name": "mc_threshold",
+      "type": "INT"
+    },
+    {
+      "name": "mc_required_instances",
+      "type": "INT"
+    },
+    {
+      "name": "la_predicted",
+      "type": "INT"
+    },
+    {
+      "name": "la_threshold",
+      "type": "INT"
+    },
+    {
+      "name": "la_required_instances",
+      "type": "INT"
+    },
+    {
+      "name": "required_instance_count",
+      "type": "INT"
+    },
+    {
+      "name": "active_instance_count",
+      "type": "INT"
+    },
+    {
+      "name": "additional_instance_count",
+      "type": "INT"
+    },
+    {
+      "name": "scaling_reason",
+      "type": "STRING"
+    }
+  ]
+}

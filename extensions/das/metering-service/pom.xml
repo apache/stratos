@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -17,23 +17,22 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <artifactId>stratos-das-extension</artifactId>
         <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-parent</artifactId>
         <version>4.1.3</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>stratos-extensions</artifactId>
+    <artifactId>apache-stratos-metering-service</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Extensions</name>
-    <description>Apache Stratos Extensions</description>
-
+    <name>Apache Stratos - Metering Service</name>
+    <description>Apache Stratos Metering Service</description>
     <modules>
-        <module>cep</module>
-        <module>load-balancer</module>
-        <module>das</module>
+        <module>spark-udfs</module>
+        <module>capps</module>
     </modules>
 </project>
