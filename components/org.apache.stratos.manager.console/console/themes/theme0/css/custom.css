@@ -234,3 +234,10 @@ div#textform>div>h3 {
 h3.panel-title {
     color: #999;
 }
+
+button.show-usage {
+    float: right;
+    margin-bottom: 5px;
+    font-size: 14px;
+    padding: 5px 8px;
+}
