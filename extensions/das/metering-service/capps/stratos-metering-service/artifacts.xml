@@ -46,11 +46,11 @@
         <dependency artifact="Gadget_Member_Information" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="Gadget_Member_Status" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <!--<dependency artifact="Gadget_Member_Status_Filter" version="1.0.0" include="true"-->
-                    <!--serverRole="DataAnalyticsServer"/>-->
+        <dependency artifact="Gadget_Member_Status_Filter" version="1.0.0" include="true"
+                    serverRole="DataAnalyticsServer"/>
         <dependency artifact="Gadget_Member_Details_Filter" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="Layout" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-        <!--<dependency artifact="Dashboard" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>-->
+        <dependency artifact="Dashboard" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
 </artifacts>

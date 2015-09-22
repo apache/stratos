@@ -1,7 +1,7 @@
 {
   "id": "stratos-metering-dashboard",
   "title": "Stratos Metering Dashboard",
-  "description": "",
+  "description": "This dashboard is to show metering data.",
   "permissions": {
     "viewers": [],
     "editors": [
@@ -18,23 +18,23 @@
         "description": "This is a layout generated through single-column.io",
         "thumbnail": "store://layout/single-column/index.png",
         "url": "store://layout/single-column/index.hbs",
-        "content": "<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+        "content": "<!--\n\n Licensed to the Apache Software Foundation (ASF) under one\n or more contributor license agreements.  See the NOTICE file\n distributed with this work for additional information\n regarding copyright ownership.  The ASF licenses this file\n to you under the Apache License, Version 2.0 (the\n \"License\"); you may not use this file except in compliance\n with the License.  You may obtain a copy of the License at\n\n   http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing,\n software distributed under the License is distributed on an\n \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n KIND, either express or implied.  See the License for the\n specific language governing permissions and limitations\n under the License.\n\n-->\n<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
       },
       "content": {
         "a": [
           {
-            "id": "liapi55xcknpnwmi",
+            "id": "ehng97cyk3kxogvi",
             "content": {
-              "id": "member-status-filter",
+              "id": "Member_Status_Filter",
               "title": "Member Status Filter",
-              "type": "widget",
-              "thumbnail": "store://widget/member-status-filter/index.png",
+              "type": "gadget",
+              "thumbnail": "store://gadget/Member_Status_Filter/index.png",
               "data": {
-                "url": "store://widget/member-status-filter/index.xml"
+                "url": "store://gadget/Member_Status_Filter/index.xml"
               },
               "styles": {
                 "title": "",
-                "height": "150",
+                "height": "100",
                 "borders": false,
                 "titlePosition": "left"
               },
@@ -55,7 +55,7 @@
         ],
         "b": [
           {
-            "id": "ss75s4fyx168ncdi",
+            "id": "q1pf6m8s5bq08uxr",
             "content": {
               "id": "Member_Count",
               "title": "Member Count",
@@ -70,7 +70,7 @@
                   "description": "Used to filter based on state",
                   "on": [
                     {
-                      "from": "liapi55xcknpnwmi",
+                      "from": "ehng97cyk3kxogvi",
                       "event": "member-status-filter"
                     }
                   ]
@@ -82,7 +82,7 @@
                 }
               },
               "styles": {
-                "title": "Member Count",
+                "title": "",
                 "height": "400",
                 "borders": true,
                 "titlePosition": "left"
@@ -109,7 +109,7 @@
         ],
         "c": [
           {
-            "id": "th1pzcad50mmfgvi",
+            "id": "qf9lnn9oiv1pds4i",
             "content": {
               "id": "Member_Update",
               "title": "Member Status",
@@ -124,7 +124,7 @@
                   "description": "Used to filter based on state",
                   "on": [
                     {
-                      "from": "liapi55xcknpnwmi",
+                      "from": "ehng97cyk3kxogvi",
                       "event": "member-status-filter"
                     }
                   ]
@@ -136,8 +136,8 @@
                 }
               },
               "styles": {
-                "title": "Member Status",
-                "height": "600",
+                "title": "",
+                "height": "800",
                 "borders": true,
                 "titlePosition": "left"
               },
@@ -172,24 +172,24 @@
         "description": "This is a layout generated through single-column.io",
         "thumbnail": "store://layout/single-column/index.png",
         "url": "store://layout/single-column/index.hbs",
-        "content": "<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+        "content": "<!--\n\n Licensed to the Apache Software Foundation (ASF) under one\n or more contributor license agreements.  See the NOTICE file\n distributed with this work for additional information\n regarding copyright ownership.  The ASF licenses this file\n to you under the Apache License, Version 2.0 (the\n \"License\"); you may not use this file except in compliance\n with the License.  You may obtain a copy of the License at\n\n   http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing,\n software distributed under the License is distributed on an\n \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n KIND, either express or implied.  See the License for the\n specific language governing permissions and limitations\n under the License.\n\n-->\n<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
       },
       "content": {
         "a": [
           {
-            "id": "vdf3ksfj3q22csor",
+            "id": "8zgl65uoackgldi",
             "content": {
-              "id": "member-details-filter",
+              "id": "Member_Details_Filter",
               "title": "Member Details Filter",
-              "type": "widget",
-              "thumbnail": "store://widget/member-details-filter/index.png",
+              "type": "gadget",
+              "thumbnail": "store://gadget/Member_Details_Filter/index.png",
               "data": {
-                "url": "store://widget/member-details-filter/index.xml"
+                "url": "store://gadget/Member_Details_Filter/index.xml"
               },
               "styles": {
                 "title": "",
                 "height": "100",
-                "borders": true,
+                "borders": false,
                 "titlePosition": "left"
               },
               "notify": {
@@ -209,7 +209,7 @@
         ],
         "b": [
           {
-            "id": "svre8cc97s4z33di",
+            "id": "hoqfz4b6z91nstt9",
             "content": {
               "id": "Member_Details",
               "title": "Member Details",
@@ -224,7 +224,7 @@
                   "description": "Used to filter based on state",
                   "on": [
                     {
-                      "from": "vdf3ksfj3q22csor",
+                      "from": "8zgl65uoackgldi",
                       "event": "member-details-filter"
                     }
                   ]
@@ -235,7 +235,7 @@
                 }
               },
               "styles": {
-                "title": "Member Details",
+                "title": "",
                 "height": "800",
                 "borders": true,
                 "titlePosition": "left"
