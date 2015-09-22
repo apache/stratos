@@ -870,9 +870,8 @@ public class TopologyBuilder {
                                         // Using type URI since only http, https, ftp, file, jar protocols are supported in URL
                                         URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
                                                 kubernetesService.getPort(), null, null, null);
-                                        cluster.addAccessUrl(clusterInstanceActivatedEvent.getInstanceId(),accessURL.toString());
-
-                                        clusterInstanceActivatedEvent.addAccessUrl(clusterInstanceActivatedEvent.getInstanceId(),accessURL.toString());
+                                        cluster.addAccessUrl(accessURL.toString());
+                                        clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
                                     } else {
                                         log.error(String.format("Could not create access URL for [Kubernetes-service] %s , " +
                                                 "since Public IP is not available", kubernetesService.getId()));
