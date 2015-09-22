@@ -158,6 +158,7 @@ public class StratosConstants {
     public static final String MAX_CHECK_DROOL_FILE = "maxcheck.drl";
     public static final String OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
+    public static final String SCALING_DECISION_ID = "SCALING_DECISION_ID";
 
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;

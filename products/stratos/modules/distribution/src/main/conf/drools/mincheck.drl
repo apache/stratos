@@ -37,6 +37,10 @@ import org.apache.commons.logging.Log;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
+import java.util.UUID;
+import org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher;
+import org.apache.stratos.autoscaler.statistics.publisher.AutoscalerPublisherFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.pojo.policy.PolicyManager manager;
@@ -67,6 +71,21 @@ dialect "mvel"
 
         int count = 0;
         boolean partitionsAvailable = true;
+        String scalingDecisionId = clusterId + "-" + UUID.randomUUID().toString();
+        long scalingTime = System.currentTimeMillis();
+        String scalingReason = "MIN";
+        ScalingDecisionPublisher scalingDecisionPublisher = AutoscalerPublisherFactory.createScalingDecisionPublisher(StatisticsPublisherType.WSO2DAS);
+        if (scalingDecisionPublisher.isEnabled()) {
+        log.debug("Publishing scaling decision to DAS");
+        scalingDecisionPublisher.publish(scalingTime, scalingDecisionId, clusterId,
+                                 clusterInstanceContext.getMinInstanceCount(),
+                                 clusterInstanceContext.getMaxInstanceCount(),
+                                 0, 0, 0, 0, 0, 0,0, 0, 0,
+                                 clusterInstanceContext.getMinInstanceCount(), 0,
+                                 additionalInstances, scalingReason);
+        } else {
+            log.warn("Scaling decision publisher is not enabled");
+        }
         while(count != additionalInstances && partitionsAvailable){
 
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)partitionAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
@@ -75,8 +94,7 @@ dialect "mvel"
 
                 log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterId);
                 log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId);
-                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId());
-
+                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), scalingDecisionId);
                 count++;
             } else {
                 log.warn("[min-check] Partition is not available to fulfil minimum count!" + " [cluster] " + clusterId);

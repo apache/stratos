@@ -45,12 +45,10 @@ import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiv
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
-import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -328,8 +326,8 @@ public class ClusterMonitor extends Monitor {
                             public void run() {
 
                                 if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Cluster monitor is running: [application-id] %s [cluster-id]: " +
-                                            "%s", getAppId(), getClusterId()));
+                                    log.debug(String.format("Cluster monitor is running: [application-id] " +
+                                            "%s [cluster-id]: %s", getAppId(), getClusterId()));
                                 }
 
                                 instanceContext.getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
@@ -698,8 +696,8 @@ public class ClusterMonitor extends Monitor {
         Float floatValue = averageRequestsServingCapabilityEvent.getValue();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Average Requests Served per Instance event: [cluster] %s [network-partition] %s [value] %s",
-                    clusterId, networkPartitionId, floatValue));
+            log.debug(String.format("Average Requests Served per Instance event: [cluster] %s [network-partition] %s " +
+                    "[value] %s", clusterId, networkPartitionId, floatValue));
         }
 
         ClusterInstanceContext clusterLevelNetworkPartitionContext = getClusterInstanceContext(
@@ -1231,7 +1229,8 @@ public class ClusterMonitor extends Monitor {
                     // active members
 
                     if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
-                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s", partitionContext.getPartitionId(), getAppId()));
+                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s" +
+                                " [application-id] %s", partitionContext.getPartitionId(), getAppId()));
                         partitionContext.terminateAllRemainingInstances();
                     }
 
@@ -1301,7 +1300,8 @@ public class ClusterMonitor extends Monitor {
                         }
 
                         if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
-                            log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s", partitionContext.getPartitionId(), getAppId()));
+                            log.info(String.format("Terminating all remaining members of partition [partition-id] %s " +
+                                    "[application-id] %s", partitionContext.getPartitionId(), getAppId()));
                             partitionContext.terminateAllRemainingInstances();
                         }
                         //Need to terminate pending members

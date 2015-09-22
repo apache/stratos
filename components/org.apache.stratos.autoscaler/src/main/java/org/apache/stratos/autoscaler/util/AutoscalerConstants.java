@@ -118,4 +118,23 @@ public final class AutoscalerConstants {
     public static final String IDENTITY_APPLICATION_SERVICE_SFX = "services/IdentityApplicationManagementService";
     public static final String TOKEN_ENDPOINT_SFX = "oauth2/token";
     public static final String TERMINATE_DEPENDENTS = "terminate-dependents";
+    //scaling decision payload values
+    public static final String TIMESTAMP = "timestamp";
+    public static final String SCALING_DECISION_ID = "scaling_decision_id";
+    public static final String CLUSTER_ID = "cluster_id";
+    public static final String MIN_INSTANCE_COUNT = "min_instance_count";
+    public static final String MAX_INSTANCE_COUNT = "max_instance_count";
+    public static final String RIF_PREDICTED = "rif_predicted";
+    public static final String RIF_THRESHOLD = "rif_threshold";
+    public static final String RIF_REQUIRED_INSTANCES = "rif_required_instances";
+    public static final String MC_PREDICTED = "mc_predicted";
+    public static final String MC_THRESHOLD = "mc_threshold";
+    public static final String MC_REQUIRED_INSTANCES = "mc_required_instances";
+    public static final String LA_PREDICTED = "la_predicted";
+    public static final String LA_THRESHOLD = "la_threshold";
+    public static final String LA_REQUIRED_INSTANCES = "la_required_instances";
+    public static final String REQUIRED_INSTANCE_COUNT = "required_instance_count";
+    public static final String ACTIVE_INSTANCE_COUNT = "active_instance_count";
+    public static final String ADDITIONAL_INSTANCE_COUNT = "additional_instance_count";
+    public static final String SCALING_REASON = "scaling_reason";
 }

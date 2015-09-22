@@ -31,9 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
 import java.util.Properties;
 
@@ -49,7 +47,7 @@ public class CloudControllerServiceUtil {
     }
 
     /**
-     * Update the topology, publish statistics to BAM, remove member context
+     * Update the topology, publish statistics to DAS, remove member context
      * and persist cloud controller context.
      *
      * @param memberContext
@@ -65,15 +63,6 @@ public class CloudControllerServiceUtil {
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
                 memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
                 partitionId, memberContext.getMemberId());
-
-        // Publish statistics to BAM
-        BAMUsageDataPublisher.publish(memberContext.getMemberId(),
-                partitionId,
-                memberContext.getNetworkPartitionId(),
-                memberContext.getClusterId(),
-                memberContext.getCartridgeType(),
-                MemberStatus.Terminated.toString(),
-                null);
 
         // Remove member context
         CloudControllerContext.getInstance().removeMemberContext(memberContext.getClusterId(), memberContext.getMemberId());

@@ -46,8 +46,8 @@ public class AutoscalerServiceClient {
                 StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
                 System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT);
 
-        String autosclaerConnectionTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT) == null ?
-                StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
+        String autosclaerConnectionTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT)
+                == null ? StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
                 System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT);
 
         try {
@@ -123,7 +123,8 @@ public class AutoscalerServiceClient {
 
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy)
             throws RemoteException,
-            AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException, AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
+            AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException,
+            AutoscalerServiceApplicationPolicyAlreadyExistsExceptionException {
         stub.addApplicationPolicy(applicationPolicy);
     }
 
@@ -142,7 +143,8 @@ public class AutoscalerServiceClient {
     }
 
     public void removeApplicationPolicy(String applicationPolicyId)
-            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceUnremovablePolicyExceptionException {
+            throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException,
+            AutoscalerServiceUnremovablePolicyExceptionException {
         stub.removeApplicationPolicy(applicationPolicyId);
     }
 
@@ -191,8 +193,8 @@ public class AutoscalerServiceClient {
         stub.addServiceGroup(serviceGroup);
     }
 
-    public void updateServiceGroup(ServiceGroup serviceGroup) throws AutoscalerServiceInvalidServiceGroupExceptionException,
-            RemoteException {
+    public void updateServiceGroup(ServiceGroup serviceGroup)
+            throws AutoscalerServiceInvalidServiceGroupExceptionException, RemoteException {
         stub.updateServiceGroup(serviceGroup);
     }
 
@@ -212,14 +214,16 @@ public class AutoscalerServiceClient {
 
     public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             AutoscalerServiceRemoteExceptionException,
-            AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException {
+            AutoscalerServiceInvalidDeploymentPolicyExceptionException,
+            AutoscalerServiceDeploymentPolicyAlreadyExistsExceptionException {
         stub.addDeployementPolicy(deploymentPolicy);
     }
 
     public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             AutoscalerServiceDeploymentPolicyNotExistsExceptionException,
             AutoscalerServiceInvalidDeploymentPolicyExceptionException, AutoscalerServiceRemoteExceptionException,
-            AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceCloudControllerConnectionExceptionException {
+            AutoscalerServiceInvalidPolicyExceptionException,
+            AutoscalerServiceCloudControllerConnectionExceptionException {
         stub.updateDeploymentPolicy(deploymentPolicy);
     }
 

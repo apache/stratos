@@ -264,7 +264,8 @@ public class CloudControllerUtil {
         return "[" + partitionStr + "]";
     }
 
-    public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
+    public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster)
+            throws InvalidKubernetesClusterException {
         CloudControllerContext context = CloudControllerContext.getInstance();
 
         if (kubernetesCluster == null) {
@@ -306,7 +307,8 @@ public class CloudControllerUtil {
                 for (KubernetesHost kubernetesHost : kubernetesCluster.getKubernetesHosts()) {
                     if (hostIds.contains(kubernetesHost.getHostId())) {
                         throw new InvalidKubernetesClusterException(
-                                String.format("Kubernetes host [id] %s already defined in the request", kubernetesHost.getHostId()));
+                                String.format("Kubernetes host [id] %s already defined in the request",
+                                        kubernetesHost.getHostId()));
                     }
 
                     hostIds.add(kubernetesHost.getHostId());
@@ -320,7 +322,8 @@ public class CloudControllerUtil {
         }
     }
 
-    private static void validateKubernetesHosts(KubernetesHost[] kubernetesHosts) throws InvalidKubernetesHostException {
+    private static void validateKubernetesHosts(KubernetesHost[] kubernetesHosts)
+            throws InvalidKubernetesHostException {
         if (kubernetesHosts == null || kubernetesHosts.length == 0) {
             return;
         }
@@ -352,7 +355,8 @@ public class CloudControllerUtil {
         }
     }
 
-    public static void validateKubernetesMaster(KubernetesMaster kubernetesMaster) throws InvalidKubernetesMasterException {
+    public static void validateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws InvalidKubernetesMasterException {
         try {
             validateKubernetesHost(kubernetesMaster);
         } catch (InvalidKubernetesHostException e) {
@@ -375,5 +379,9 @@ public class CloudControllerUtil {
         } else {
             return LoadBalancingIPType.Private;
         }
+    }
+
+    public static String getAliasFromClusterId(String clusterId) {
+        return StringUtils.substringBefore(StringUtils.substringAfter(clusterId, "."), ".");
     }
 }

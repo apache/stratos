@@ -75,8 +75,8 @@ public class AutoscalerCloudControllerClient {
 
     public synchronized MemberContext startInstance(PartitionRef partition,
                                                     String clusterId, String clusterInstanceId,
-                                                    String networkPartitionId,
-                                                    int minMemberCount) throws SpawningException {
+                                                    String networkPartitionId, int minMemberCount,
+                                                    String scalingDecisionId) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: " +
@@ -102,8 +102,11 @@ public class AutoscalerCloudControllerClient {
             Property minCountProp = new Property();
             minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
-
             memberContextProps.addProperty(minCountProp);
+            Property scalingDecisionIdProp = new Property();
+            scalingDecisionIdProp.setName(StratosConstants.SCALING_DECISION_ID);
+            scalingDecisionIdProp.setValue(String.valueOf(scalingDecisionId));
+            memberContextProps.addProperty(scalingDecisionIdProp);
             instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 
             long startTime = System.currentTimeMillis();
