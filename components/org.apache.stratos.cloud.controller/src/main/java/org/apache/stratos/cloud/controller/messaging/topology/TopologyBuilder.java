@@ -1065,7 +1065,7 @@ public class TopologyBuilder {
                 ClusterContext clusterContext =
                         CloudControllerContext.getInstance().getClusterContext(event.getClusterId());
 
-                KubernetesIaas.removeKubernetesServices(clusterContext);
+                KubernetesIaas.removeKubernetesServices(clusterContext, context.getInstanceId());
 
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +

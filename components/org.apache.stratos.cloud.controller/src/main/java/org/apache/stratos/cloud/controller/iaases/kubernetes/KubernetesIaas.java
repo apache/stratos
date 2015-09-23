@@ -519,7 +519,8 @@ public class KubernetesIaas extends Iaas {
 
         if (clusterPortMappings != null) {
             String serviceName = DigestUtils.md5Hex(clusterId);
-            Collection<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices(memberContext.getClusterInstanceId());
+            Collection<KubernetesService> kubernetesServices =
+                    clusterContext.getKubernetesServices(memberContext.getClusterInstanceId());
 
             for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
                 // Skip if already created
@@ -698,14 +699,18 @@ public class KubernetesIaas extends Iaas {
     /**
      * Find a kubernetes service by container port
      *
-     * @param services
+     * @param kubernetesServices
      * @param containerPort
      * @return
      */
-    private KubernetesService findKubernetesService(Collection<KubernetesService> services, int containerPort) {
-        for (KubernetesService service : services) {
-            if (service.getContainerPort() == containerPort) {
-                return service;
+    private KubernetesService findKubernetesService(Collection<KubernetesService> kubernetesServices,
+                                                    int containerPort) {
+
+        if(kubernetesServices != null) {
+            for (KubernetesService kubernetesService : kubernetesServices) {
+                if (kubernetesService.getContainerPort() == containerPort) {
+                    return kubernetesService;
+                }
             }
         }
         return null;
@@ -836,79 +841,6 @@ public class KubernetesIaas extends Iaas {
             }
         }
         return null;
-    }
-
-    /**
-     * Terminate all the containers belong to a cluster by cluster id.
-     *
-     * @param clusterId
-     * @return
-     * @throws InvalidClusterException
-     */
-    public MemberContext[] terminateContainers(String clusterId)
-            throws InvalidClusterException {
-        Lock lock = null;
-        try {
-            lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
-
-            ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(clusterContext, "Could not terminate containers, cluster not found: [cluster-id] "
-                    + clusterId);
-
-            // Remove kubernetes services
-            List<KubernetesService> kubernetesServices = Lists.newArrayList(clusterContext.getAllKubernetesServicesForCluster());
-            if (kubernetesServices != null) {
-                for (KubernetesService kubernetesService : kubernetesServices) {
-                    try {
-                        String kubernetesClusterId = kubernetesService.getKubernetesClusterId();
-                        handleNullObject(kubernetesClusterId,
-                                "Could not terminate containers, kubernetes cluster id not found: " +
-                                        "[cluster-id] " + clusterId);
-                        KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
-                                getKubernetesClusterContext(kubernetesClusterId);
-                        handleNullObject(kubClusterContext,
-                                "Could not terminate containers, kubernetes cluster not found: " +
-                                        "[kubernetes-cluster-id] " + kubernetesClusterId);
-
-                        KubernetesApiClient kubApi = kubClusterContext.getKubApi();
-
-                        String serviceId = kubernetesService.getId();
-                        kubApi.deleteService(serviceId);
-
-                        kubClusterContext.deallocatePort(kubernetesService.getPort());
-                        clusterContext.removeKubernetesService(serviceId);
-                    }
-                    catch (KubernetesClientException e) {
-                        log.error("Could not remove kubernetes service: [cluster-id] " + clusterId, e);
-                    }
-                }
-            }
-
-            List<MemberContext> memberContextsRemoved = new ArrayList<MemberContext>();
-            List<MemberContext> memberContexts =
-                    CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
-            if (memberContexts != null) {
-                for (MemberContext memberContext : memberContexts) {
-                    try {
-                        MemberContext memberContextRemoved = terminateContainer(memberContext);
-                        memberContextsRemoved.add(memberContextRemoved);
-                    }
-                    catch (MemberTerminationFailedException e) {
-                        String message = "Could not terminate container: [member-id] " + memberContext.getMemberId();
-                        log.error(message);
-                    }
-                }
-            }
-
-            // Persist changes
-            CloudControllerContext.getInstance().persist();
-            return memberContextsRemoved.toArray(new MemberContext[memberContextsRemoved.size()]);
-        }
-        finally {
-            if (lock != null) {
-                CloudControllerContext.getInstance().releaseWriteLock(lock);
-            }
-        }
     }
 
     /**
@@ -1071,12 +1003,13 @@ public class KubernetesIaas extends Iaas {
      * Remove kubernetes services if available for application cluster.
      *
      * @param clusterContext
+     * @param clusterInstanceId
      */
-    public static void removeKubernetesServices(ClusterContext clusterContext) {
+    public static void removeKubernetesServices(ClusterContext clusterContext, String clusterInstanceId) {
 
         if (clusterContext != null) {
             ArrayList<KubernetesService> kubernetesServices =
-                    Lists.newArrayList(clusterContext.getAllKubernetesServicesForCluster());
+                    Lists.newArrayList(clusterContext.getKubernetesServices(clusterInstanceId));
 
             for (KubernetesService kubernetesService : kubernetesServices) {
                 KubernetesClusterContext kubernetesClusterContext =
@@ -1090,7 +1023,7 @@ public class KubernetesIaas extends Iaas {
                 try {
                     kubernetesApiClient.deleteService(serviceId);
                     kubernetesClusterContext.deallocatePort(kubernetesService.getPort());
-                    clusterContext.removeKubernetesService(serviceId);
+                    clusterContext.removeKubernetesService(clusterInstanceId, serviceId);
                 }
                 catch (KubernetesClientException e) {
                     log.error(String.format("Could not delete kubernetes service: [application-id] %s " +

@@ -44,12 +44,12 @@ public class ClusterContext implements Serializable {
     // on an unregistration.
     private long timeoutInMillis;
     private Properties properties;
-    private Map<String, Map<String,KubernetesService>> kubernetesServices;
+    private Map<String, Map<String,KubernetesService>> clusterInstanceToKubernetesServicesMap;
 
     public ClusterContext(String applicationId, String cartridgeType, String clusterId, String payload, String hostName,
                           boolean isLbCluster, Properties properties) {
 
-        this.kubernetesServices = new HashMap<>();
+        this.clusterInstanceToKubernetesServicesMap = new HashMap<>();
         this.applicationId = applicationId;
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -116,38 +116,27 @@ public class ClusterContext implements Serializable {
     }
 
     public Collection<KubernetesService> getKubernetesServices(String clusterInstanceId) {
-        Collection<KubernetesService> arrayKubernetesList = new ArrayList<>();
-        if (kubernetesServices.get(clusterInstanceId) != null) {
-            arrayKubernetesList = kubernetesServices.get(clusterInstanceId).values();
+        Map<String, KubernetesService> kubernetesServicesMap =
+                clusterInstanceToKubernetesServicesMap.get(clusterInstanceId);
+        if (kubernetesServicesMap != null) {
+            return kubernetesServicesMap.values();
         }
-        return arrayKubernetesList;
-    }
-
-    public Collection<KubernetesService> getAllKubernetesServicesForCluster() {
-
-        Collection<KubernetesService> allServices = new ArrayList<>();
-
-        Iterator<Map.Entry<String, Map<String, KubernetesService>>> kubServicesPerInsatnceEntry = kubernetesServices.entrySet().iterator();
-        while (kubServicesPerInsatnceEntry.hasNext()) {
-            Map.Entry<String, Map<String, KubernetesService>> kubServicePerClusterInstance = kubServicesPerInsatnceEntry.next();
-            Iterator<Map.Entry<String, KubernetesService>> kubServiceEntry = kubServicePerClusterInstance.getValue().entrySet().iterator();
-            while (kubServiceEntry.hasNext()) {
-                allServices.add(kubServiceEntry.next().getValue());
-            }
-
-        }
-        return allServices;
-
+        return new ArrayList<KubernetesService>();
     }
 
     public void addKubernetesService(String clusterInstanceId,KubernetesService kubernetesService) {
-        HashMap<String, KubernetesService> kubernetesServiceHashMap = new HashMap<>();
-        kubernetesServiceHashMap.put(kubernetesService.getId(), kubernetesService);
-        this.kubernetesServices.put(clusterInstanceId, kubernetesServiceHashMap);
+        Map<String, KubernetesService> kubernetesServicesMap = clusterInstanceToKubernetesServicesMap.get(clusterInstanceId);
+        if(kubernetesServicesMap == null) {
+            kubernetesServicesMap = new HashMap<>();
+            this.clusterInstanceToKubernetesServicesMap.put(clusterInstanceId, kubernetesServicesMap);
+        }
+        kubernetesServicesMap.put(kubernetesService.getId(), kubernetesService);
     }
 
-    public void removeKubernetesService(String serviceName) {
-        kubernetesServices.remove(serviceName);
+    public void removeKubernetesService(String clusterInstanceId, String serviceName) {
+        Map<String, KubernetesService> kubernetesServicesMap = clusterInstanceToKubernetesServicesMap.get(clusterInstanceId);
+        if(kubernetesServicesMap != null) {
+            kubernetesServicesMap.remove(serviceName);
+        }
     }
-
 }
