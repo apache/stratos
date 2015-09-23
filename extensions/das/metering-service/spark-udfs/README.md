@@ -1,3 +1,5 @@
+# Apache Stratos Metering Dashboard Spark UDFs (User Defined Functions)
+
 This directory contains Spark UDFs (user Defined Function) required for executing the spark queries with UDFs.
 Follow the below steps to use UDF in spark environment:
 1. Add the jar files of each spark-udfs to '<DAS-HOME>/repository/components/lib'.
