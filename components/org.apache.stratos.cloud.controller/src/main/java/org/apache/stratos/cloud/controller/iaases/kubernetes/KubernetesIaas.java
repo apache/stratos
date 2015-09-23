@@ -742,7 +742,7 @@ public class KubernetesIaas extends Iaas {
                     }
 
                     ClusterPortMapping clusterPortMapping = findClusterPortMapping(clusterPortMappings, portMapping);
-                    if (clusterPortMappings == null) {
+                    if (clusterPortMapping == null) {
                         throw new CloudControllerException(String.format("Cluster port mapping not found: " +
                                         "[application-id] %s [cluster-id] %s [transport] %s", applicationId, clusterId,
                                 portMapping.getName()));
