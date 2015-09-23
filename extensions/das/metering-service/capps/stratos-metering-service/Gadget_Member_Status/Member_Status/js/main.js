@@ -131,34 +131,38 @@ function makeRows(data) {
 
 function drawChart(data) {
     var dataTable = makeDataTable(data);
-    gadgetConfig.chartConfig.width = $("#placeholder").width();
-    gadgetConfig.chartConfig.height = $("#placeholder").height() - 65;
-    var chartType = gadgetConfig.chartConfig.chartType;
-    var xAxis = gadgetConfig.chartConfig.xAxis;
-    var chart;
-    jQuery("#noChart").html("");
-    if (chartType === "bar" && dataTable.metadata.types[xAxis] === "N") {
-        dataTable.metadata.types[xAxis] = "C";
-    }
 
-    if (gadgetConfig.chartConfig.chartType === "tabular" || gadgetConfig.chartConfig.chartType === "singleNumber") {
-        gadgetConfig.chartConfig.height = $("#placeholder").height();
-        chart = igviz.draw("#placeholder", gadgetConfig.chartConfig, dataTable);
-        chart.plot(dataTable.data);
+    if (dataTable.data.length != 0) {
 
-    } else {
-        chart = igviz.setUp("#placeholder", gadgetConfig.chartConfig, dataTable);
-        chart.setXAxis({
-            "labelAngle": -35,
-            "labelAlign": "right",
-            "labelDy": 0,
-            "labelDx": 0,
-            "titleDy": 25
-        })
-            .setYAxis({
-                "titleDy": -30
-            });
-        chart.plot(dataTable.data);
+        gadgetConfig.chartConfig.width = $("#placeholder").width();
+        gadgetConfig.chartConfig.height = $("#placeholder").height() - 65;
+        var chartType = gadgetConfig.chartConfig.chartType;
+        var xAxis = gadgetConfig.chartConfig.xAxis;
+        var chart;
+        jQuery("#noChart").html("");
+        if (chartType === "bar" && dataTable.metadata.types[xAxis] === "N") {
+            dataTable.metadata.types[xAxis] = "C";
+        }
+
+        if (gadgetConfig.chartConfig.chartType === "tabular" || gadgetConfig.chartConfig.chartType === "singleNumber") {
+            gadgetConfig.chartConfig.height = $("#placeholder").height();
+            chart = igviz.draw("#placeholder", gadgetConfig.chartConfig, dataTable);
+            chart.plot(dataTable.data);
+
+        } else {
+            chart = igviz.setUp("#placeholder", gadgetConfig.chartConfig, dataTable);
+            chart.setXAxis({
+                "labelAngle": -35,
+                "labelAlign": "right",
+                "labelDy": 0,
+                "labelDx": 0,
+                "titleDy": 25
+            })
+                .setYAxis({
+                    "titleDy": -30
+                });
+            chart.plot(dataTable.data);
+        }
     }
     //releasing the latch so that we can request data again from the backend.
     dataLoaded = true;
