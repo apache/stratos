@@ -26,46 +26,57 @@ var gadgetConfig = {
     "columns": [
         {
             "COLUMN_NAME": "MemberId",
+            "LABEL_NAME": "Member Id",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "InstanceType",
+            "LABEL_NAME": "Instance Type",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "ImageId",
+            "LABEL_NAME": "Image Id",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "HostName",
+            "LABEL_NAME": "Host Name",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "PrivateIPAddresses",
+            "LABEL_NAME": "Private IP Addresses",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "PublicIPAddresses",
+            "LABEL_NAME": "Public IP Addresses",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "Hypervisor",
+            "LABEL_NAME": "Hypervisor",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "CPU",
-            "DATA_TYPE": "int"
+            "LABEL_NAME": "CPU",
+            "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "RAM",
-            "DATA_TYPE": "int"
+            "LABEL_NAME": "RAM",
+            "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "OSName",
+            "LABEL_NAME": "OS Name",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "OSVersion",
+            "LABEL_NAME": "OS Version",
             "DATA_TYPE": "varchar"
         }
     ],

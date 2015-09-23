@@ -25,13 +25,13 @@ $(document).ready(function () {
 
     loadApplication();
 
-    $('body').on('click', '#application-filter', function () {
+    $('body').on('change', '#application-filter', function () {
         var e = document.getElementById("application-filter");
         applicationId = e.options[e.selectedIndex].text;
         loadCluster(applicationId);
         publish();
     })
-    $('body').on('click', '#cluster-filter', function () {
+    $('body').on('change', '#cluster-filter', function () {
         var e = document.getElementById("cluster-filter");
         clusterId = e.options[e.selectedIndex].value;
         publish();

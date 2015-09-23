@@ -25,15 +25,18 @@ var gadgetConfig = {
     "type": "batch",
     "columns": [
         {
-            "COLUMN_NAME": "Time",
+            "COLUMN_NAME": "MemberId",
+            "LABEL_NAME": "Member Id",
             "DATA_TYPE": "varchar"
         },
         {
-            "COLUMN_NAME": "MemberId",
+            "COLUMN_NAME": "Time",
+            "LABEL_NAME": "Time",
             "DATA_TYPE": "varchar"
         },
         {
             "COLUMN_NAME": "MemberStatus",
+            "LABEL_NAME": "Member Status",
             "DATA_TYPE": "varchar"
         }
     ],

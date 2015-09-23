@@ -100,7 +100,7 @@ function makeDataTable(data) {
             } else if (column.DATA_TYPE == "TIME" || column.DATA_TYPE == "time") {
                 type = "T";
             }
-            dataTable.addColumn(column.COLUMN_NAME, type);
+            dataTable.addColumn(column.LABEL_NAME, type);
         });
     }
     data.forEach(function (row, index) {
