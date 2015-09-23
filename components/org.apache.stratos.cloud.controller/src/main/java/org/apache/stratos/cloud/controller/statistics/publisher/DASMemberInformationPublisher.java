@@ -104,6 +104,7 @@ public class DASMemberInformationPublisher extends ThriftStatisticsPublisher imp
             public void run() {
 
                 if (metadata == null) {
+                    log.warn("Couldn't publish member information as instance metadata is null");
                     return;
                 } else {
                     MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
