@@ -67,7 +67,7 @@ function loadApplication() {
 
 function loadCluster(application) {
     $.ajax({
-        url: '/portal/apis/clusters&applicationId=' + application,
+        url: '/portal/apis/clusters?applicationId=' + application,
         dataType: 'json',
         success: function (result) {
             var elem = document.getElementById('cluster-filter');
