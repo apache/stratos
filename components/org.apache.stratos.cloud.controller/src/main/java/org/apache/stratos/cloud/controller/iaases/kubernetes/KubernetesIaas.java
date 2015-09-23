@@ -669,7 +669,7 @@ public class KubernetesIaas extends Iaas {
 
     private String trimLabel(String key, String value) {
         if(StringUtils.isNotEmpty(value) && (value.length() > KubernetesConstants.MAX_LABEL_LENGTH)) {
-            String trimmed = value.substring(0, KubernetesConstants.MAX_LABEL_LENGTH - 2);
+            String trimmed = value.substring(0, KubernetesConstants.MAX_LABEL_LENGTH - 2).concat("X");
             log.warn(String.format("Kubernetes label trimmed: [key] %s [original] %s [trimmed] %s",
                     key, value, trimmed));
             return trimmed;
