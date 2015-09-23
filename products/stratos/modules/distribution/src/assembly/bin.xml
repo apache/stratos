@@ -130,12 +130,24 @@
 
         <!-- Copying themes, cloud icons-->
         <fileSet>
-            <directory>src/main/resources</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/resources</outputDirectory>
+            <directory>../../../../components/org.apache.stratos.manager.styles/src/main/resources/web/styles/css
+            </directory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/resources/allthemes/Default/admin
+            </outputDirectory>
             <fileMode>755</fileMode>
             <includes>
-                <include>allthemes/**</include>
-                <include>powerded-by-logos/**</include>
+                <include>**/**.css</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.styles/src/main/resources/web/styles/images
+            </directory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/resources/allthemes/Default/images
+            </outputDirectory>
+            <fileMode>755</fileMode>
+            <includes>
+                <include>**/**.gif</include>
+                <include>**/**.png</include>
             </includes>
         </fileSet>
 

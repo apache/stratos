@@ -74,9 +74,6 @@ div#header-div div.middle-ad {
 }
 
 div#header-div div.right-logo {
-	/*background-image:url("../images/right-logo.gif");
-	background-position:right top;
-	background-repeat:no-repeat;*/
 	color:#B6D8F2;
 	font-size:0;
 	height:31px;
@@ -172,10 +169,6 @@ div#menu ul.sub li.normal ul.sub li.normal ul.sub li a.menu-default {
 
 /* ------------- footer styles -------------------- */
 
-div#footer-div div.footer-content div.poweredby {
-	background-image: url(../images/powered-synapse.gif);
-	background-position: right top;
-}
 div#middle {
 	background-color: #fff;
 }
@@ -187,11 +180,6 @@ div#middle {
 
 .tableOddRow{background-color: white;}
 .tableEvenRow{background-color: #EFECF5;}
-
-.button:hover{
-	background-image:url(../images/esb-button-bg-hover.gif);
-	border:solid 1px #8268A8;
-}
 
 /* =============================================================================================================== */
 
