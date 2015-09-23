@@ -121,7 +121,7 @@
             chartConfig.interpolationMode = "monotone";
         }
         var spec = {
-            "width": chartConfig.width - 160,
+            "width": chartConfig.width - 250,
             "height": chartConfig.height,
             //  "padding":{"top":40,"bottom":60,'left':90,"right":150},
             "data": [
@@ -143,7 +143,7 @@
 
                     "orient": "right",
                     "fill": "color",
-                    "title": "Legend",
+                    "title": "Member Count",
                     "values": [],
                     "properties": {
                         "title": {
