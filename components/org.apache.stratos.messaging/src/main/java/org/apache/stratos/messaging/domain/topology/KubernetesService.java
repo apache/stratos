@@ -37,7 +37,6 @@ public class KubernetesService implements Serializable {
     private String serviceType;
     private String portName;
     private String kubernetesClusterId;
-    private String accessUrl;
 
     public String getPortName() {
         return portName;
@@ -108,13 +107,5 @@ public class KubernetesService implements Serializable {
 
     public void setKubernetesClusterId(String kubernetesClusterId) {
         this.kubernetesClusterId = kubernetesClusterId;
-    }
-
-    public String getAccessUrl() {
-        return accessUrl;
-    }
-
-    public void setAccessUrl(String accessUrl) {
-        this.accessUrl = accessUrl;
     }
 }
