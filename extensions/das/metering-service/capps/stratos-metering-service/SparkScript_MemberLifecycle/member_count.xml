@@ -51,5 +51,5 @@
         INSERT OVERWRITE TABLE member_status_new select timestamp, application_id, cluster_id, member_id,
         member_status from memberstatus;
     </Script>
-    <CronExpression>0 1/6 * * * ?</CronExpression>
+    <CronExpression>0/10 * * * * ?</CronExpression>
 </Analytics>
