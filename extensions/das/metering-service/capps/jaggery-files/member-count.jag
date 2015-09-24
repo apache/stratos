@@ -70,13 +70,13 @@
             x_axis_interval = 120;
         } else if (timeInterval === TIME_INTERVAL_3) {
             interval = 86400000;
-            x_axis_interval = 480;
+            x_axis_interval = 2880;
         } else if (timeInterval === TIME_INTERVAL_4) {
             interval = 604800000;
-            x_axis_interval = 3360;
+            x_axis_interval = 20160;
         } else if (timeInterval === TIME_INTERVAL_5) {
             interval = 2419200000;
-            x_axis_interval = 13440;
+            x_axis_interval = 80640;
         }
         var applicationId = request.getParameter("applicationId");
         var clusterId = request.getParameter("clusterId");
