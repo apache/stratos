@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceActivatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
@@ -29,9 +32,6 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilte
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.MessagingUtil;
-
-import java.net.URL;
-import java.util.List;
 
 /**
  * This processor will act upon the cluster activated event
@@ -119,7 +119,7 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            cluster.setAccessUrls(event.getAccessUrls());
+            cluster.addAccessUrlList(event.getInstanceId(),event.getAccessUrls());
 
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {

@@ -1101,7 +1101,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 cluster.setLbCluster(false);
                 cluster.setTenantRange(appClusterCtxt.getTenantRange());
                 cluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-                cluster.setAccessUrls(accessUrls.get(appClusterCtxt.getClusterId()));
+                cluster.setAccessUrls(accessUrls);
 
                 if (appClusterCtxt.getProperties() != null) {
                     Properties properties = CloudControllerUtil.toJavaUtilProperties(appClusterCtxt.getProperties());

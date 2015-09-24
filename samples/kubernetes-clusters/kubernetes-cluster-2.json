@@ -38,7 +38,7 @@
     },
     {
       "name": "payload_parameter.MB_PORT",
-      "value": "1883"
+      "value": "1884"
     },
     {
       "name": "payload_parameter.CEP_URLS",

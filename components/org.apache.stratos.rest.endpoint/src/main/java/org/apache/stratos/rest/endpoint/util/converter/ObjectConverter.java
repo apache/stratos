@@ -48,7 +48,6 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -717,7 +716,9 @@ public class ObjectConverter {
                 clusterInstanceBean.getMember().add(memberBean);
             }
         }
-        clusterInstanceBean.setAccessUrls(cluster.getAccessUrls());
+        if(cluster.getAccessUrls()!=null) {
+            clusterInstanceBean.setAccessUrls(cluster.getAccessUrls().get(instanceId));
+        }
         for (String hostname : cluster.getHostNames()) {
             clusterInstanceBean.getHostNames().add(hostname);
         }

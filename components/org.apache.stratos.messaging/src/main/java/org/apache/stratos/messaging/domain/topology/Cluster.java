@@ -61,7 +61,7 @@ public class Cluster implements Serializable {
     private Properties properties;
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
-    private List<String> accessUrls;
+    private Map<String,List<String>> accessUrls;
     private List<KubernetesService> kubernetesServices;
 
     public Cluster(Cluster cluster) {
@@ -93,7 +93,7 @@ public class Cluster implements Serializable {
         this.memberMap = new ConcurrentHashMap<String, Member>();
         this.appId = appId;
         this.setInstanceIdToInstanceContextMap(new ConcurrentHashMap<String, ClusterInstance>());
-        this.accessUrls = new ArrayList<String>();
+        this.accessUrls = new HashMap<>();
         this.kubernetesServices = new ArrayList<KubernetesService>();
     }
 
@@ -334,23 +334,28 @@ public class Cluster implements Serializable {
         return this.instanceIdToInstanceContextMap.values();
     }
 
-    public List<String> getAccessUrls() {
+    public Map<String,List<String>> getAccessUrls() {
         return accessUrls;
     }
 
-    public void setAccessUrls(List<String> accessUrls) {
+    public void setAccessUrls(Map<String,List<String>> accessUrls) {
         this.accessUrls = accessUrls;
     }
 
-    public void addAccessUrl(String accessUrl) {
-        if (accessUrls == null) {
-            accessUrls = new ArrayList<String>();
+    public void addAccessUrl(String clusterInstanceId,String accessUrl) {
+        List<String> listUrls=accessUrls.get(clusterInstanceId);
+        if (listUrls == null) {
+            listUrls = new ArrayList<String>();
         }
-        if (!accessUrls.contains(accessUrl)) {
-            accessUrls.add(accessUrl);
+        if (!listUrls.contains(accessUrl)) {
+            listUrls.add(accessUrl);
         }
+        accessUrls.put(clusterInstanceId,listUrls);
     }
 
+    public void addAccessUrlList(String clusterInstanceId,List<String> accessUrl) {
+        accessUrls.put(clusterInstanceId, accessUrl);
+    }
     public List<KubernetesService> getKubernetesServices() {
         return kubernetesServices;
     }
