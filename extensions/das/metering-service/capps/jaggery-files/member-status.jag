@@ -75,9 +75,9 @@
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM " + tableName + " WHERE ApplicationId='" + applicationId + "' AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000)");
+            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM " + tableName + " WHERE ApplicationId='" + applicationId + "' AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) ORDER BY MemberID, Time");
         }else {
-            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM " + tableName + " WHERE ApplicationId='" + applicationId + "' AND ClusterId='" + clusterId + "' AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000)");
+            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM " + tableName + " WHERE ApplicationId='" + applicationId + "' AND ClusterId='" + clusterId + "' AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) ORDER BY MemberID, Time");
         }
         print(result);
     }
