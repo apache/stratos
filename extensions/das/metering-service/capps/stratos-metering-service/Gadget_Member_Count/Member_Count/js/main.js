@@ -131,34 +131,39 @@ function makeRows(data) {
 
 function drawChart(data) {
     var dataTable = makeDataTable(data);
-    gadgetConfig.chartConfig.width = $("#placeholder").width();
-    gadgetConfig.chartConfig.height = $("#placeholder").height() - 65;
-    var chartType = gadgetConfig.chartConfig.chartType;
-    var xAxis = gadgetConfig.chartConfig.xAxis;
-    var chart;
-    jQuery("#noChart").html("");
-    if (chartType === "bar" && dataTable.metadata.types[xAxis] === "N") {
-        dataTable.metadata.types[xAxis] = "C";
-    }
+    if (dataTable.data.length != 0) {
+        gadgetConfig.chartConfig.width = $("#placeholder").width();
+        gadgetConfig.chartConfig.height = $("#placeholder").height() - 65;
+        var chartType = gadgetConfig.chartConfig.chartType;
+        var xAxis = gadgetConfig.chartConfig.xAxis;
+        var chart;
+        jQuery("#noChart").html("");
+        if (chartType === "bar" && dataTable.metadata.types[xAxis] === "N") {
+            dataTable.metadata.types[xAxis] = "C";
+        }
 
-    if (gadgetConfig.chartConfig.chartType === "tabular" || gadgetConfig.chartConfig.chartType === "singleNumber") {
-        gadgetConfig.chartConfig.height = $("#placeholder").height();
-        chart = igviz.draw("#placeholder", gadgetConfig.chartConfig, dataTable);
-        chart.plot(dataTable.data);
+        if (gadgetConfig.chartConfig.chartType === "tabular" || gadgetConfig.chartConfig.chartType === "singleNumber") {
+            gadgetConfig.chartConfig.height = $("#placeholder").height();
+            chart = igviz.draw("#placeholder", gadgetConfig.chartConfig, dataTable);
+            chart.plot(dataTable.data);
 
+        } else {
+            chart = igviz.setUp("#placeholder", gadgetConfig.chartConfig, dataTable);
+            chart.setXAxis({
+                "labelAngle": -35,
+                "labelAlign": "right",
+                "labelDy": 0,
+                "labelDx": 0,
+                "titleDy": 25
+            })
+                .setYAxis({
+                    "titleDy": -30
+                });
+            chart.plot(dataTable.data);
+        }
     } else {
-        chart = igviz.setUp("#placeholder", gadgetConfig.chartConfig, dataTable);
-        chart.setXAxis({
-            "labelAngle": -35,
-            "labelAlign": "right",
-            "labelDy": 0,
-            "labelDx": 0,
-            "titleDy": 25
-        })
-            .setYAxis({
-                "titleDy": -30
-            });
-        chart.plot(dataTable.data);
+        jQuery("#placeholder").html("");
+        jQuery("#placeholder").append('<div id="noChart"><table><tr><td style="padding:30px 20px 0px 20px"><img src="../../portal/images/noEvents.png" align="left" style="width:24;height:24"/></td><td><br/><b><p><br/> Data is not available for plotting with selected values</p></b></td></tr></table></div>');
     }
     //releasing the latch so that we can request data again from the backend.
     dataLoaded = true;
