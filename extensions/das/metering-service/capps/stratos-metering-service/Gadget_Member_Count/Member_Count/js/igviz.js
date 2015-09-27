@@ -75,7 +75,8 @@
             "range": "width",
             "zero": false,
             "clamp": false,
-            "field": xString
+            "field": xString,
+            "round": true
         }
 
         yScaleConfig = {
@@ -87,8 +88,27 @@
             "field": yStrings[0]
         }
 
-        var xScale = setScale(xScaleConfig)
-        var yScale = setScale(yScaleConfig);
+        var yDomain = [];
+        chartConfig.yAxis.forEach(function (columnIndex, i) {
+            dataTable.data.forEach(function (row, j) {
+                yDomain.push(row[columnIndex]);
+            });
+        });
+
+        yDomain.sort(function (a, b) {
+            return a - b;
+        });
+
+        var yScale = {
+            name: "y",
+            type: "linear",
+            range: "height",
+            zero: true,
+            domain: [yDomain[0], yDomain[yDomain.length - 1]]
+        };
+
+        var xScale = setScale(xScaleConfig);
+        var yScale = yScale;
 
         var xAxisConfig = {
             "type": "x",
