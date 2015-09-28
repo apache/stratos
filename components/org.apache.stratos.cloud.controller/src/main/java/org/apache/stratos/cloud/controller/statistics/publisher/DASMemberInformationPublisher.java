@@ -48,7 +48,7 @@ public class DASMemberInformationPublisher extends ThriftStatisticsPublisher imp
     private static final String DATA_STREAM_NAME = "member_info";
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
-    private static final String NULL_VALUE = "Value Not Found";
+    private static final String VALUE_NOT_FOUND = "Value Not Found";
     private ExecutorService executorService;
 
     public DASMemberInformationPublisher() {
@@ -157,6 +157,6 @@ public class DASMemberInformationPublisher extends ThriftStatisticsPublisher imp
         if (null != param) {
             return param;
         }
-        return NULL_VALUE;
+        return VALUE_NOT_FOUND;
     }
 }
