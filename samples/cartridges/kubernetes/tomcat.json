@@ -23,7 +23,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/tomcat:4.1.3",
+            "imageId": "stratos/tomcat:4.1.4",
             "networkInterfaces": [
             ],
             "property": [

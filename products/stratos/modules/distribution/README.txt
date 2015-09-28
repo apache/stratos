@@ -51,7 +51,7 @@ from instances and updates the routing topology periodically. Topology updates f
 
 
 Please refer below link for more information:
-https://cwiki.apache.org/confluence/display/STRATOS/4.1.3+Architecture
+https://cwiki.apache.org/confluence/display/STRATOS/4.1.4+Architecture
 
 
 Crypto Notice

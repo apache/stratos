@@ -26,17 +26,17 @@ pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent
 
 pushd ${pca_distribution_path}
 mvn clean install -Dmaven.test.skip=true
-cp -vf target/apache-stratos-python-cartridge-agent-4.1.3.zip ${script_path}/base-image/packs/
+cp -vf target/apache-stratos-python-cartridge-agent-4.1.4-SNAPSHOT.zip ${script_path}/base-image/packs/
 popd
 
 pushd ${script_path}/base-image/
 echo "Building base Docker image..."
-sudo docker build -t stratos/base-image:4.1.3 .
+sudo docker build -t stratos/base-image:4.1.4 .
 
 pushd ${script_path}/service-images/php
 echo "Building PHP Docker image..."
-sudo docker build -t stratos/php:4.1.3 .
+sudo docker build -t stratos/php:4.1.4 .
 
 pushd ${script_path}/service-images/tomcat
 echo "Building Tomcat Docker image..."
-sudo docker build -t stratos/tomcat:4.1.3 .
+sudo docker build -t stratos/tomcat:4.1.4 .

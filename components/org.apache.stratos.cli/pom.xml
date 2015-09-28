@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
-        <version>4.1.3</version>
+        <version>4.1.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.stratos.cli</artifactId>

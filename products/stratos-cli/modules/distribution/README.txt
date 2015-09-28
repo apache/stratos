@@ -25,7 +25,7 @@ in the interactive mode.
 
 Configuring CLI Tool
 ==================================
-Configuration guide can be found at https://cwiki.apache.org/confluence/display/STRATOS/4.1.3+Configuring+CLI+Tool
+Configuration guide can be found at https://cwiki.apache.org/confluence/display/STRATOS/4.1.4+Configuring+CLI+Tool
 
 Help
 ==================================
