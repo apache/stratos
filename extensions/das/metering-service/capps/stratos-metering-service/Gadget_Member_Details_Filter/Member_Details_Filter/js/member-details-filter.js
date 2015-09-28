@@ -22,21 +22,49 @@ var applicationId;
 var clusterId;
 
 $(document).ready(function () {
-
     loadApplication();
 
-    $('body').on('change', '#application-filter', function () {
-        var e = document.getElementById("application-filter");
-        applicationId = e.options[e.selectedIndex].text;
-        loadCluster(applicationId);
-        publish();
-    })
-    $('body').on('change', '#cluster-filter', function () {
-        var e = document.getElementById("cluster-filter");
-        clusterId = e.options[e.selectedIndex].value;
-        publish();
-    })
+    setTimeout(function () {
+        if (applicationId != null) {
+            loadCluster(applicationId);
+            $('#' + window.frameElement.id).ready(function () {
+                $(this).contents().find('body').contents().find('#application-filter').val(applicationId);
+                publish();
+            });
+        }
+    }, 2000);
 
+    setTimeout(function () {
+        if (clusterId != null) {
+            $('#' + window.frameElement.id).ready(function () {
+                $(this).contents().find('body').contents().find('#cluster-filter').val(clusterId);
+                publish();
+            });
+        }
+    }, 3000);
+
+});
+
+gadgets.HubSettings.onConnect = function () {
+    gadgets.Hub.subscribe("request-params", function (topic, data) {
+        applicationId = data.applicationId;
+        clusterId = data.clusterId;
+        console.log("Application Id: " + applicationId);
+        console.log("Cluster Id: " + clusterId);
+    });
+};
+
+$('body').on('change', '#application-filter', function () {
+    var e = document.getElementById("application-filter");
+    applicationId = e.options[e.selectedIndex].value;
+    loadCluster(applicationId);
+    publish();
+});
+
+$('body').on('change', '#cluster-filter', function () {
+    var e = document.getElementById("cluster-filter");
+    clusterId = e.options[e.selectedIndex].value;
+    publish();
 });
 
 function loadApplication() {
@@ -71,11 +99,9 @@ function loadCluster(application) {
         dataType: 'json',
         success: function (result) {
             var elem = document.getElementById('cluster-filter');
-            var clusterIds = [];
             var clusterAlias = [];
             var records = JSON.parse(JSON.stringify(result));
             records.forEach(function (record) {
-                clusterIds.push(record.ClusterId);
                 clusterAlias.push(record.ClusterAlias);
             });
 
@@ -88,24 +114,23 @@ function loadCluster(application) {
 
             var optionList = "";
 
-            optionList+= "<option value= 'All Clusters'>All Clusters</option>";
-            for (i = 0; i < clusterIds.length; i = i + 1) {
-                optionList += "<option value='" + clusterIds[i] + "'>" + clusterAlias[i] + "</option>";
+            optionList += "<option value= 'All Clusters'>All Clusters</option>";
+            for (i = 0; i < clusterAlias.length; i = i + 1) {
+                optionList += "<option value='" + clusterAlias[i] + "'>" + clusterAlias[i] + "</option>";
             }
 
             clusterList.innerHTML = optionList;
             document.getElementById('cluster').appendChild(clusterList);
         }
     });
-    var e = document.getElementById("cluster-filter");
-    clusterId = e.options[e.selectedIndex].value;
+    if (clusterId == null) {
+        var e = document.getElementById("cluster-filter");
+        clusterId = e.options[e.selectedIndex].value
+    }
 }
 
 function publish() {
-    var application = applicationId;
-    var cluster = clusterId;
-    var data = {applicationId: application, clusterId: cluster};
-
+    var data = {applicationId: applicationId, clusterId: clusterId};
     gadgets.Hub.publish("member-details-filter", data);
     console.log("Publishing filter values: " + JSON.stringify(data));
 }

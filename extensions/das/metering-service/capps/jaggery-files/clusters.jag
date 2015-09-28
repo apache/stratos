@@ -27,7 +27,7 @@
 
     try {
         var applicationId = request.getParameter('applicationId');
-        var result = db.query("SELECT DISTINCT ClusterAlias, ClusterId FROM MEMBER_COUNT WHERE ApplicationId ='" + applicationId + "'");
+        var result = db.query("SELECT DISTINCT ClusterAlias FROM MEMBER_COUNT WHERE ApplicationId = ?", applicationId);
 
         if (result != null) {
             print(result);

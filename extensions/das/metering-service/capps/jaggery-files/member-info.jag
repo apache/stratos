@@ -55,9 +55,9 @@
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT * FROM " + tableName + " WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId='" + applicationId + "')");
+            result = db.query("SELECT * FROM " + tableName + " WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ?)", applicationId);
         } else {
-            result = db.query("SELECT * FROM " + tableName + " WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId='" + applicationId + "' AND ClusterId='" + clusterId + "')");
+            result = db.query("SELECT * FROM " + tableName + " WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ? AND ClusterAlias= ?)", applicationId, clusterId);
         }
         print(result);
     }

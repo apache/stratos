@@ -216,7 +216,7 @@ function update(source) {
                     "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
                     "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
                     "<strong>Status: </strong>" + d.status + "<br/>" +
-                    "<button class='btn btn-info show-usage' id=" + d.name + " name='clusterUsage' onClick='showClusterUsage(this.id)'>Show Usage</button>";
+                    "<button class='btn btn-info show-usage' id=" + d.alias + " name='clusterUsage' onClick='showClusterUsage(this.id)'>Show Usage</button>";
             } else if (d.type == 'members') {
                 if ((typeof d.ports != 'undefined') && (d.ports.length > 0)) {
                     var portsHTML = "<strong>Ports: </strong></br>";

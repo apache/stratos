@@ -49,7 +49,7 @@
     var db = new Database("WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB");
 
     try {
-        var result = db.query("SELECT COLUMN_NAME,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='ANALYTICS_PROCESSED_DATA_STORE' AND TABLE_NAME = '" + tableName + "'");
+        var result = db.query("SELECT COLUMN_NAME,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='ANALYTICS_PROCESSED_DATA_STORE' AND TABLE_NAME = ?", tableName);
         if (result != null) {
             print(result);
         }
