@@ -76,7 +76,7 @@
                 <div id="placeholder" class="demo-placeholder" style="height:90%"></div>
                 <script language="javascript" type="text/javascript">
                   if(jQuery("#placeholder").html() == ""){
-                    jQuery("#placeholder").append('<div id="noChart"><table><tr><td style="padding:30px 20px 0px 20px"><img src="../../portal/images/noEvents.png" align="left" style="width:24;height:24"/></td><td><br/><b><p><br/> Data is not available for plotting with selected values</p></b></td></tr></table></div>');
+                    jQuery("#placeholder").append('<div id="noChart"><table><tr><td style="padding:30px 20px 0px 20px"><img src="../../portal/images/noEvents.png" align="left" style="width:24;height:24"/></td><td><br/><b><p><br/>Please select an application and cluster to view data</p></b></td></tr></table></div>');
                   }
                 </script>
             </body>

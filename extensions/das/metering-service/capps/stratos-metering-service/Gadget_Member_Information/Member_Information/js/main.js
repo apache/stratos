@@ -68,26 +68,25 @@ function fetchData(callback) {
     var application = applicationId;
     var cluster = clusterId;
 
-    console.log("ApplicationId:" + application);
-    console.log("ClusterId:" + cluster);
-
-    var request = {
-        tableName: datasource,
-        applicationId: application,
-        clusterId: cluster
-    };
-    $.ajax({
-        url: "/portal/apis/member-info",
-        method: "GET",
-        data: request,
-        contentType: "application/json",
-        success: function (data) {
-            if (callback != null) {
-                callback(makeRows(JSON.parse(data)));
+    if (application != "") {
+        var request = {
+            tableName: datasource,
+            applicationId: application,
+            clusterId: cluster
+        };
+        $.ajax({
+            url: "/portal/apis/member-info",
+            method: "GET",
+            data: request,
+            contentType: "application/json",
+            success: function (data) {
+                if (callback != null) {
+                    callback(makeRows(JSON.parse(data)));
+                }
             }
-        }
-    });
-    dataLoaded = false;   //setting the latch to locked position so that we block data fetching until we receive the response from backend
+        });
+        dataLoaded = false;   //setting the latch to locked position so that we block data fetching until we receive the response from backend
+    }
 }
 
 function makeDataTable(data) {
@@ -161,7 +160,7 @@ function drawChart(data) {
     }
     else {
         jQuery("#placeholder").html("");
-        jQuery("#placeholder").append('<div id="noChart"><table><tr><td style="padding:30px 20px 0px 20px"><img src="../../portal/images/noEvents.png" align="left" style="width:24;height:24"/></td><td><br/><b><p><br/>Please select an application and cluster to view data</p></b></td></tr></table></div>');
+        jQuery("#placeholder").append('<div id="noChart"><table><tr><td style="padding:30px 20px 0px 20px"><img src="../../portal/images/noEvents.png" align="left" style="width:24;height:24"/></td><td><br/><b><p><br/>Data is not available for selected application and cluster</p></b></td></tr></table></div>');
     }
     //releasing the latch so that we can request data again from the backend.
     dataLoaded = true;
