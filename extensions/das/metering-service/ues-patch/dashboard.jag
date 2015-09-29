@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="<%=urlPrefix%><%=utils.resolveUrl('images/favicon.png')%>" type="image/x-icon" />
+    <link rel="stylesheet" href="<%=urlPrefix%>css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%=urlPrefix%>css/fontwso2.css">
+    <link rel="stylesheet" href="<%=urlPrefix%>css/fontwso2-extend.css">
+    <link rel="stylesheet" href="<%=urlPrefix%>css/OpenSans.css">
+    <link rel="stylesheet" href="<%=urlPrefix%>css/common.css">
+    <link rel="stylesheet" href="<%=urlPrefix%>css/dashboard.css">
+    <% include('/controllers/includes/theme-dashboard-styles.jag'); %>
+    <title>Dashboards</title>
+</head>
+<body>
+<div id="navigation" role="navigation" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button data-target=".horizontal-bar" data-toggle="collapse" class="navbar-toggle" type="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="<%=dbRoot%>" class="navbar-brand"><%=dashboard.title%></a>
+        </div>
+        <div class="collapse navbar-collapse horizontal-bar">
+            <ul class="nav navbar-nav">
+                <li<% if(dashboard.landing === pageId) { %> class="active"<% } %>>
+                    <a href="<%=dbRoot%>">Home</a>
+                </li>
+                <%
+var pages = dashboard.pages;
+pages.forEach(function (p) {
+    if (dashboard.landing !== p.id) {
+        %>
+                <li<%if (p.id === pageId) { %> class="active"<% } %>>
+                            <a href="<%=dbRoot%><%=p.id%>"><%=p.title%></a>
+                        </li>
+                    <% } %>
+                <% }); %>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            <% if (user) { %>
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                               <%=user.username%> <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="<%=urlPrefix%>logout?destination=<%=dest%>">Logout</a></li>
+                    </ul>
+                </li>
+            <% } else { %>
+                <li><a href="<%=urlPrefix%>login?destination=<%=dest%>">Login</a></li>
+                <% } %>
+            </ul>
+        </div>
+           <!--/.nav-collapse -->
+     </div>
+</div>
+<div id="wrapper"></div>
+<!--<iframe id="sandbox" src="preview.jag"></iframe>-->
+<script src="<%=urlPrefix%>js/jquery-1.10.2.js"></script>
+<script src="<%=urlPrefix%>js/bootstrap.min.js"></script>
+<!-- TODO fix shindig url -->
+<script src="/shindig/gadgets/js/container:open-views:opensearch:rpc:xmlutil:pubsub-2.js?c=1&debug=1&container=default"></script>
+<script src="<%=urlPrefix%>js/ues.js"></script>
+<script src="<%=urlPrefix%>js/ues-prefs.js"></script>
+<% include('/controllers/includes/common-scripts.jag'); %>
+<% include('/controllers/includes/dashboard-scripts.jag'); %>
+<script src="<%=urlPrefix%>js/ues-gadgets.js"></script>
+<script src="<%=urlPrefix%>js/ues-dashboards.js"></script>
+<script src="<%=urlPrefix%>js/ues-pubsub.js"></script>
+<script src="<%=urlPrefix%>extensions/components/gadget/index.js"></script>
+<script src="<%=urlPrefix%>extensions/components/widget/index.js"></script>
+<script src="<%=urlPrefix%>extensions/uris/local/index.js"></script>
+<script src="<%=urlPrefix%>extensions/uris/store/index.js"></script>
+<% include('/controllers/includes/theme-dashboard-scripts.jag'); %>
+<script>
+    ues.dashboards.render($('#wrapper'), ues.global.dashboard, ues.global.page);
+</script>
+</body>
+</html>
