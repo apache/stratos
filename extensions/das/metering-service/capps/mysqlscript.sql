@@ -1,3 +1,4 @@
+CREATE DATABASE ANALYTICS_PROCESSED_DATA_STORE;
 CREATE TABLE ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS(Time long, ApplicationId VARCHAR(150), ClusterAlias VARCHAR(150), MemberId VARCHAR(150), MemberStatus VARCHAR(50));
 CREATE TABLE ANALYTICS_PROCESSED_DATA_STORE.MEMBER_COUNT(Time long, ApplicationId VARCHAR(150), ClusterAlias VARCHAR(150), CreatedInstanceCount int, InitializedInstanceCount int, ActiveInstanceCount int, TerminatedInstanceCount int);
 CREATE TABLE ANALYTICS_PROCESSED_DATA_STORE.SCALING_DETAILS(Time VARCHAR(50), ScalingDecisionId VARCHAR(150), ClusterId VARCHAR(150), MinInstanceCount INT, MaxInstanceCount INT, RIFPredicted INT, RIFThreshold INT ,RIFRequiredInstances INT, MCPredicted INT, MCThreshold INT, MCRequiredInstances INT ,LAPredicted INT, LAThreshold INT,LARequiredInstances INT,RequiredInstanceCount INT ,ActiveInstanceCount INT, AdditionalInstanceCount INT, ScalingReason VARCHAR(150));
