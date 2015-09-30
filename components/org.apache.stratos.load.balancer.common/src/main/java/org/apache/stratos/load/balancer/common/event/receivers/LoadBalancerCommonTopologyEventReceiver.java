@@ -132,6 +132,11 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                         if (memberActivatedEvent.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                             addMember(serviceName, clusterId, memberId);
                         }
+                        else{
+                            log.debug(String.format("Member exists in a different network partition." +
+                                    "[member id] %s [member network partition] %s [filter network partition] %s ",
+                                    memberId,memberActivatedEvent.getNetworkPartitionId(),networkPartitionIdFilter));
+                        }
                     } else {
                         addMember(serviceName, clusterId, memberId);
                     }
