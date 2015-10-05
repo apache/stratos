@@ -242,7 +242,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
         ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
         privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
         privateRepoEvent.setRepoUserName("testapache2211");
-        privateRepoEvent.setRepoPassword("RExPDGa4GkPJj4kJDzSROQ==");
+        privateRepoEvent.setRepoPassword("+to2qVW16jzy+Xb/zuafQQ==");
         return privateRepoEvent;
     }
 

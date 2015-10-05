@@ -22,6 +22,7 @@ import time
 import os
 import tempfile
 from git import *
+import urllib
 
 import constants
 from config import Config
@@ -30,6 +31,7 @@ from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExec
 from ...artifactmgt.repository import Repository
 from exception import GitRepositorySynchronizationException
 from distutils.dir_util import copy_tree
+
 
 class AgentGitHandler:
     """
@@ -288,34 +290,29 @@ class AgentGitHandler:
         # "https://host.com/path/to/repo.git"
         # "https://username@host.org/path/to/repo.git"
         # "https://username:password@host.org/path/to/repo.git" NOT RECOMMENDED
-        if repo_info.repo_username is not None and repo_info.repo_username != "":
+        # IMPORTANT: if the credentials are provided in the repo url, they must be url encoded
+        if repo_info.repo_username is not None or repo_info.repo_password is not None:
             # credentials provided, have to modify url
             repo_url = repo_info.repo_url
-            url_split = repo_url.split("//")
+            url_split = repo_url.split("://", 1)
+
+            # urlencode repo username and password
+            urlencoded_username = urllib.quote(repo_info.repo_username.strip(), safe='')
+            urlencoded_password = urllib.quote(repo_info.repo_password.strip(), safe='')
             if "@" in url_split[1]:
                 # credentials seem to be in the url, check
-                at_split = url_split[1].split("@")
-                if ":" in url_split[1] and url_split[1].index(":") < url_split[1].index("@"):
-                    # both username and password are in the url, check and return as is
-                    credential_split = at_split[0].split(":")
-                    if credential_split[0] is repo_info.repo_username and \
-                                    credential_split[1] is repo_info.repo_password:
-                        # credentialed url with provided credentials, return as is
-                        return repo_info.repo_url
-                    else:
-                        # credentials wrong, need to replace
-                        return str(url_split[
-                                       0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                                   at_split[1])
+                at_split = url_split[1].split("@", 1)
+                if ":" in at_split[0]:
+                    # both username and password are in the url, return as is
+                    return repo_info.repo_url
                 else:
                     # only username is provided, need to include password
-                    return str(
-                        url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                        at_split[1])
+                    username_in_url = at_split[0].split(":", 1)[0]
+                    return str(url_split[0] + "://" + username_in_url + ":" + urlencoded_password
+                               + "@" + at_split[1])
             else:
                 # no credentials in the url, need to include username and password
-                return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                           url_split[1])
+                return str(url_split[0] + "://" + urlencoded_username + ":" + urlencoded_password + "@" + url_split[1])
         # no credentials specified, return as is
         return repo_info.repo_url
 
