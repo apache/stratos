@@ -31,7 +31,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -121,7 +120,7 @@ public class NginxConfigWriter {
             for (Service service : topology.getServices()) {
                 for (Cluster cluster : service.getClusters()) {
                     Map<String, List> existingHostNameToServerMap = hostnameToPortMap.
-                                                get(String.valueOf(availPort.getProxy()));
+                            get(String.valueOf(availPort.getProxy()));
                     if(existingHostNameToServerMap == null) {
                         existingHostNameToServerMap = new HashMap<String, List>();
                     }
@@ -213,9 +212,14 @@ public class NginxConfigWriter {
                             List<String> serverList = new ArrayList<String>();
                             existingHostNameToServerMap.put(hostname, serverList);
                         }
-                        // Start upstream server block
-                        existingHostNameToServerMap.get(hostname).add(member.getHostName() + ":" +
-                                                        selectedPort.getValue());
+                        // Adding member to hostname map against specific port
+                        // that should contain this particular member
+                        List<String> ipPortMapping = existingHostNameToServerMap.get(hostname);
+                        String server = member.getHostName() + ":" + selectedPort.getValue();
+
+                        if(!ipPortMapping.contains(server)) {
+                            ipPortMapping.add(server);
+                        }
 
                     }
                 }
@@ -223,117 +227,4 @@ public class NginxConfigWriter {
         }
     }
 
-    /**
-     * Generate configuration for a cluster with the following format:
-     * <p/>
-     * <transport> {
-     * upstream <cluster-hostname> {
-     * server <hostname>:<port>;
-     * server <hostname>:<port>;
-     * }
-     * server {
-     * listen <proxy-port>;
-     * server_name <cluster-hostname>;
-     * location / {
-     * proxy_pass    http://<cluster-hostname>
-     * }
-     * location /nginx_status {
-     * stub_status on;
-     * access_log off;
-     * allow 127.0.0.1;
-     * deny all;
-     * }
-     * }
-     * }
-     *
-     * @param cluster
-     * @param availPort
-     * @param text
-     */
-    private void generateConfigurationForCluster(Cluster cluster, Port availPort, StringBuilder text) {
-
-        for (String hostname : cluster.getHostNames()) {
-            boolean memberFound = false;
-            //Checking whether at-least one member is available to create
-            // the upstream and server blocks
-            for (Member member : cluster.getMembers()) {
-                Collection<Port> ports = member.getPorts();
-                for (Port port : ports) {
-                    if ((port.getProtocol().equals(availPort.getProtocol())) &&
-                            (port.getProxy() == availPort.getProxy())) {
-                        memberFound = true;
-                        break;
-                    }
-                }
-                if(memberFound) {
-                    break;
-                }
-            }
-            if(memberFound) {
-                // Start upstream block
-                text.append(TAB).append("upstream ").append(hostname).append(" {").append(NEW_LINE);
-                for (Member member : cluster.getMembers()) {
-                    Port selectedPort = null;
-                    Collection<Port> ports = member.getPorts();
-                    for (Port port : ports) {
-                        if ((port.getProtocol().equals(availPort.getProtocol())) &&
-                                (port.getProxy() == availPort.getProxy())) {
-                            selectedPort = port;
-                            break;
-                        }
-                    }
-
-                    if (selectedPort != null) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("The selected Port for cluster: " + cluster.getClusterId()
-                                    + " is " + selectedPort.getValue() + " " +
-                                    selectedPort.getProtocol() + " " + selectedPort.getProxy());
-                        }
-                        // Start upstream server block
-                        text.append(TAB).append(TAB).append("server ").append(member.getHostName()).append(":")
-                                .append(selectedPort.getValue()).append(";").append(NEW_LINE);
-                        // End upstream server block
-                    }
-                }
-                text.append(TAB).append("}").append(NEW_LINE);
-                // End upstream block
-
-                // Start server block
-                text.append(NEW_LINE);
-                text.append(TAB).append("server {").append(NEW_LINE);
-                if (availPort.getProtocol().equals("https")) {
-                    text.append(TAB).append(TAB).append("listen ").append(availPort.getProxy()).append(" ssl;").append(NEW_LINE);
-                } else {
-                    text.append(TAB).append(TAB).append("listen ").append(availPort.getProxy()).append(";").append(NEW_LINE);
-                }
-                text.append(TAB).append(TAB).append("server_name ").append(hostname).append(";").append(NEW_LINE);
-
-                text.append(TAB).append(TAB).append("location / {").append(NEW_LINE);
-                if (availPort.getProtocol().equals("https")) {
-                    text.append(TAB).append(TAB).append(TAB).append("proxy_pass").append(TAB)
-                            .append("https://").append(hostname).append(";").append(NEW_LINE);
-                } else {
-                    text.append(TAB).append(TAB).append(TAB).append("proxy_pass").append(TAB)
-                            .append("http://").append(hostname).append(";").append(NEW_LINE);
-                }
-                text.append(TAB).append(TAB).append("}").append(NEW_LINE);
-
-                text.append(TAB).append(TAB).append("location /nginx_status {").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("stub_status on;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("access_log off;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("allow 127.0.0.1;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("deny all;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("}").append(NEW_LINE);
-
-                if (availPort.getProtocol().equals("https")) {
-                    text.append(TAB).append(TAB).append("ssl on;").append(NEW_LINE);
-                    text.append(TAB).append(TAB).append("ssl_certificate ").append(System.getProperty("nginx.cert.path")).append(";").append(NEW_LINE);
-                    text.append(TAB).append(TAB).append("ssl_certificate_key ").append(System.getProperty("nginx.key.path")).append(";").append(NEW_LINE);
-                }
-
-                text.append(TAB).append("}").append(NEW_LINE);
-                // End server block
-            }
-        }
-    }
 }

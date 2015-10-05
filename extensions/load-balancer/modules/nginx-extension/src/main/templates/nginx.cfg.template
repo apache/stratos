@@ -32,7 +32,11 @@ http {
             proxy_set_header Host $http_host;
             proxy_read_timeout 5m;
             proxy_send_timeout 5m;
+        #if ($port.protocol == "https")
+            proxy_pass    https://$hostname;
+        #else
             proxy_pass    http://$hostname;
+        #end
         }
         location /nginx_status {
             stub_status on;
@@ -44,9 +48,8 @@ http {
         ssl on;
         ssl_certificate /etc/nginx/ssl/server.cert;
         ssl_certificate_key /etc/nginx/ssl/server.key;
-
     #end
+    }
 #end
 }
 #end
-
