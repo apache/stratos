@@ -55,10 +55,10 @@ import static org.testng.AssertJUnit.*;
 public class TopologyHandler {
     private static final Log log = LogFactory.getLog(TopologyHandler.class);
 
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 360000;
-    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 120000;
-    public static final int MEMBER_TERMINATION_TIMEOUT = 120000;
-    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 90000;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 500000;
+    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 500000;
+    public static final int MEMBER_TERMINATION_TIMEOUT = 500000;
+    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 120000;
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     private ApplicationsEventReceiver applicationsEventReceiver;
@@ -172,6 +172,7 @@ public class TopologyHandler {
             }
             application = ApplicationManager.getApplications().getApplication(applicationName);
             if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                log.error("Application did not activate within timeout period");
                 break;
             }
         }
@@ -302,6 +303,7 @@ public class TopologyHandler {
                 hasMemberRemoved = true;
             } else {
                 if (getTerminatedMembers().get(memberId) - startTime > MEMBER_TERMINATION_TIMEOUT) {
+                    log.error("Member did not get removed from the topology within timeout period");
                     break;
                 }
             }
@@ -372,6 +374,7 @@ public class TopologyHandler {
                                     applicationName, serviceName, clusterId), cluster);
 
                     if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                        log.error("Cluster did not activate within timeout period");
                         break;
                     }
                 }
@@ -413,6 +416,7 @@ public class TopologyHandler {
                 log.error("Error while getting the application context for [application] " + applicationName);
             }
             if ((System.currentTimeMillis() - startTime) > APPLICATION_UNDEPLOYMENT_TIMEOUT) {
+                log.error("Application did not undeploy within timeout period");
                 break;
             }
         }
@@ -450,6 +454,7 @@ public class TopologyHandler {
                 catch (InterruptedException ignore) {
                 }
                 if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                    log.error("Group instance min count check failed within timeout period");
                     break;
                 }
             }
@@ -461,6 +466,7 @@ public class TopologyHandler {
                     catch (InterruptedException ignore) {
                     }
                     if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                        log.error("Application did not activate within timeout period");
                         break;
                     }
                 }
