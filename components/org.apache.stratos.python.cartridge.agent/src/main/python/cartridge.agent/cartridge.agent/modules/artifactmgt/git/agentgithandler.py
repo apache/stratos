@@ -59,11 +59,12 @@ class AgentGitHandler:
         subsequent calls or not
         :rtype: tuple(bool, bool)
         """
-        git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
+        git_repo = AgentGitHandler.create_git_repo(repo_info)
         updated = False
-        if git_repo is not None:
+        if AgentGitHandler.get_repo(repo_info.tenant_id) is not None:
             # has been previously cloned, this is not the subscription run
             subscribe_run = False
+
             if AgentGitHandler.is_valid_git_repository(git_repo):
                 AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
@@ -86,7 +87,6 @@ class AgentGitHandler:
                                           git_repo.tenant_id, git_repo.repo_url)
         else:
             # subscribing run.. need to clone
-            git_repo = AgentGitHandler.create_git_repo(repo_info)
             AgentGitHandler.log.debug("Cloning artifacts from %s for the first time to %s",
                                       git_repo.repo_url, git_repo.local_repo_path)
             subscribe_run = True
@@ -101,7 +101,7 @@ class AgentGitHandler:
                 # If first git clone is failed, execute retry_clone operation
                 AgentGitHandler.log.info("Retrying Git clone operation...")
                 AgentGitHandler.retry_clone(git_repo)
-
+        AgentGitHandler.add_repo(git_repo)
         return subscribe_run, updated
 
     @staticmethod
@@ -145,9 +145,6 @@ class AgentGitHandler:
 
     @staticmethod
     def is_valid_git_repository(git_repo):
-        if git_repo.cloned:
-            return True
-
         output, errors = AgentGitHandler.execute_git_command(["show-ref"], git_repo.local_repo_path)
         if len(output) > 0:
             refs = output.split("\n")
@@ -213,8 +210,6 @@ class AgentGitHandler:
 
             # move the cloned dir to application path
             copy_tree(temp_repo_path, git_repo.local_repo_path)
-
-            AgentGitHandler.add_repo(git_repo)
             AgentGitHandler.log.info("Git clone operation for tenant %s successful" % git_repo.tenant_id)
             return git_repo
         except GitCommandError as e:
