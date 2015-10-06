@@ -209,6 +209,12 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.stratos.common.services.*; version="${project.version}",
+                            org.apache.stratos.common.threading.*; version="${project.version}",
+                            org.apache.stratos.common.client.*; version="${project.version}",
+                            org.apache.stratos.common.partition.*; version="${project.version}",
+                            org.apache.stratos.common.constants.*; version="${project.version}",
+                            org.apache.stratos.common.*; version="${project.version}",
+                            org.apache.stratos.cloud.controller.stub.*; version="${project.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>
