@@ -20,7 +20,7 @@
  */
 var render = function (theme, data, meta, require) {
 
-    if(data.error.length === 0 ){
+    if (data.error.length === 0) {
 
         switch (data.applicationHbs) {
             case "applicationView":
@@ -29,16 +29,15 @@ var render = function (theme, data, meta, require) {
                         {
                             partial: 'index_title',
                             context: {
-                                page_title: 'Apache Stratos - Application Managment',
-                                page_description: 'Apache Stratos - Application Managment'
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
                             }
                         }
                     ],
                     header: [
                         {
                             partial: 'index_header',
-                            context: {
-                            }
+                            context: {}
                         }
                     ],
                     sub_header: [
@@ -61,9 +60,7 @@ var render = function (theme, data, meta, require) {
                     right_menu_help: [
                         {
                             partial: 'index_right_menu_help',
-                            context: {
-
-                            }
+                            context: {}
                         }
                     ],
                     content: [
@@ -81,25 +78,24 @@ var render = function (theme, data, meta, require) {
 
                     ]
                 });
-            break;
+                break;
 
             case "applicationTopology":
 
-            theme('index', {
-                page_meta: [
-                    {
-                        partial: 'index_title',
-                        context: {
-                            page_title: 'Apache Stratos - Application Managment',
-                            page_description: 'Apache Stratos - Application Managment'
+                theme('index', {
+                    page_meta: [
+                        {
+                            partial: 'index_title',
+                            context: {
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
+                            }
                         }
-                    }
                     ],
                     header: [
                         {
                             partial: 'index_header',
-                            context: {
-                            }
+                            context: {}
                         }
                     ],
                     sub_header: [
@@ -122,9 +118,7 @@ var render = function (theme, data, meta, require) {
                     right_menu_help: [
                         {
                             partial: 'index_right_menu_help',
-                            context: {
-
-                            }
+                            context: {}
                         }
                     ],
                     content: [
@@ -134,7 +128,7 @@ var render = function (theme, data, meta, require) {
                                 formContext: data.breadcrumbPathLevelTwo,
                                 appName: data.appName,
                                 topologyData: data.topologyData,
-                                applicationJSON:data.applicationJSON,
+                                applicationJSON: data.applicationJSON,
                                 applicationStatus: data.applicationStatus,
                                 form_action: data.form_action,
                                 formHtml: data.formHtml,
@@ -144,14 +138,17 @@ var render = function (theme, data, meta, require) {
                                 isForm: data.isForm,
                                 isEdit: data.isEdit,
                                 formTitle: data.formTitle,
-                                content_body: {sections: data.list_data
+                                dasStatsPublisherEnabled: data.dasStatsPublisherEnabled,
+                                meteringDashboardUrl: data.meteringDashboardUrl,
+                                content_body: {
+                                    sections: data.list_data
                                 }
                             }
                         }
 
                     ]
                 });
-            break;
+                break;
 
             case "applicationDeploy":
                 theme('index', {
@@ -159,16 +156,15 @@ var render = function (theme, data, meta, require) {
                         {
                             partial: 'index_title',
                             context: {
-                                page_title: 'Apache Stratos - Application Managment',
-                                page_description: 'Apache Stratos - Application Managment'
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
                             }
                         }
                     ],
                     header: [
                         {
                             partial: 'index_header',
-                            context: {
-                            }
+                            context: {}
                         }
                     ],
                     sub_header: [
@@ -191,9 +187,7 @@ var render = function (theme, data, meta, require) {
                     right_menu_help: [
                         {
                             partial: 'index_right_menu_help',
-                            context: {
-
-                            }
+                            context: {}
                         }
                     ],
                     content: [
@@ -205,9 +199,9 @@ var render = function (theme, data, meta, require) {
                                 applicationAlias: data.applicationAlias,
                                 applicationJSON: data.applicationJSON,
                                 editorCartridges: data.editorCartridges,
-                                editorGroups:data.editorGroups,
+                                editorGroups: data.editorGroups,
                                 form_action: data.form_action,
-                                applicationPolicyData:data.applicationPolicyData,
+                                applicationPolicyData: data.applicationPolicyData,
                                 formHtml: data.formHtml,
                                 formData: data.formData,
                                 formDataRaw: data.formDataRaw,
@@ -221,7 +215,7 @@ var render = function (theme, data, meta, require) {
 
                     ]
                 });
-            break;
+                break;
 
             case "applicationEditor":
                 theme('index', {
@@ -229,16 +223,15 @@ var render = function (theme, data, meta, require) {
                         {
                             partial: 'index_title',
                             context: {
-                                page_title: 'Apache Stratos - Application Managment',
-                                page_description: 'Apache Stratos - Application Managment'
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
                             }
                         }
                     ],
                     header: [
                         {
                             partial: 'index_header',
-                            context: {
-                            }
+                            context: {}
                         }
                     ],
                     sub_header: [
@@ -261,9 +254,7 @@ var render = function (theme, data, meta, require) {
                     right_menu_help: [
                         {
                             partial: 'index_right_menu_help',
-                            context: {
-
-                            }
+                            context: {}
                         }
                     ],
                     content: [
@@ -273,7 +264,7 @@ var render = function (theme, data, meta, require) {
                                 formContext: data.breadcrumbPathLevelTwo,
                                 appName: data.appName,
                                 editorCartridges: data.editorCartridges,
-                                editorGroups:data.editorGroups,
+                                editorGroups: data.editorGroups,
                                 editorAutoscalePolicies: data.editorAutoscalePolicies,
                                 editorDeploymentPolicies: data.editorDeploymentPolicies,
                                 form_action: data.form_action,
@@ -290,7 +281,7 @@ var render = function (theme, data, meta, require) {
 
                     ]
                 });
-            break;
+                break;
 
             case "applicationSignup":
                 theme('index', {
@@ -298,16 +289,15 @@ var render = function (theme, data, meta, require) {
                         {
                             partial: 'index_title',
                             context: {
-                                page_title: 'Apache Stratos - Application Managment',
-                                page_description: 'Apache Stratos - Application Managment'
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
                             }
                         }
                     ],
                     header: [
                         {
                             partial: 'index_header',
-                            context: {
-                            }
+                            context: {}
                         }
                     ],
                     sub_header: [
@@ -330,9 +320,7 @@ var render = function (theme, data, meta, require) {
                     right_menu_help: [
                         {
                             partial: 'index_right_menu_help',
-                            context: {
-
-                            }
+                            context: {}
                         }
                     ],
                     content: [
@@ -358,99 +346,93 @@ var render = function (theme, data, meta, require) {
                         {
                             partial: 'index_title',
                             context: {
-                                page_title: 'Apache Stratos - Application Managment',
-                                page_description: 'Apache Stratos - Application Managment'
+                                page_title: 'Apache Stratos - Application Management',
+                                page_description: 'Apache Stratos - Application Management'
                             }
                         }
                     ],
-                    header:[
+                    header: [
                         {
                             partial: 'index_header',
-                            context:{
+                            context: {}
+                        }
+                    ],
+                    sub_header: [
+                        {
+                            partial: 'index_sub_header',
+                            context: {
+                                breadcrumbPathLevelOne: data.breadcrumbPathLevelOne,
+                                breadcrumbPathLevelTwo: data.breadcrumbPathLevelTwo
                             }
                         }
                     ],
-                    sub_header:[
+                    left_menu: [
                         {
-                            partial:'index_sub_header',
-                            context:{
-                                breadcrumbPathLevelOne:data.breadcrumbPathLevelOne,
-                                breadcrumbPathLevelTwo:data.breadcrumbPathLevelTwo
+                            partial: 'index_left_menu',
+                            context: {
+                                left_menu: data.left_menu
                             }
                         }
                     ],
-                    left_menu:[
+                    right_menu_help: [
                         {
-                            partial:'index_left_menu',
-                            context:{
-                                left_menu:data.left_menu
-                            }
-                        }
-                    ],
-                    right_menu_help:[
-                        {
-                            partial:'index_right_menu_help',
-                            context:{
-
-                            }
+                            partial: 'index_right_menu_help',
+                            context: {}
                         }
                     ],
                     content: [
                         {
-                            partial:'applications_form',
-                            context:{
+                            partial: 'applications_form',
+                            context: {
                                 formContext: data.breadcrumbPathLevelTwo,
                                 form_action: data.form_action,
                                 formHtml: data.formHtml,
                                 formData: data.formData,
                                 formDataRaw: data.formDataRaw,
                                 formDataEdit: data.formDataEdit,
-                                formtype:data.formtype,
+                                formtype: data.formtype,
                                 buttonText: data.buttonText,
                                 isForm: data.isForm,
-                                isEdit:data.isEdit,
+                                isEdit: data.isEdit,
                                 formTitle: data.formTitle,
-                                content_body: {sections:
-                                    data.list_data
+                                content_body: {
+                                    sections: data.list_data
                                 }
                             }
                         }
 
                     ]
                 });
-            break;
+                break;
 
         }
 
-    }else{
+    } else {
 
         theme('index', {
             page_meta: [
                 {
-                    partial:'index_title',
-                    context:{
-                        page_title:'Apache Stratos Home - Error',
-                        page_description:'Apache Stratos Home - Error'
+                    partial: 'index_title',
+                    context: {
+                        page_title: 'Apache Stratos Home - Error',
+                        page_description: 'Apache Stratos Home - Error'
                     }
                 }
             ],
-            header:[
+            header: [
                 {
                     partial: 'index_header',
-                    context:{
-                    }
+                    context: {}
                 }
             ],
             content: [
 
                 {
                     partial: 'error_page',
-                    context:{
-                        error:data.error,
-                        content_title:'Sorry Something went Wrong...! ',
-                        content_body:{
-
-                        }
+                    context: {
+                        error: data.error,
+                        content_title: 'Sorry Something went Wrong...! ',
+                        content_body: {}
 
                     }
                 }

@@ -20,6 +20,7 @@
  */
 
 var applicationId = '';
+
 //create JSON from topology
 function genTree(data) {
     var rawout = [];
@@ -141,6 +142,7 @@ function genTree(data) {
     return treeData[0];
 }
 
+
 function update(source) {
 
     // ************** Generate the tree diagram	 *****************
@@ -215,8 +217,10 @@ function update(source) {
                     accessURLHTML +
                     "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
                     "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
-                    "<strong>Status: </strong>" + d.status + "<br/>" +
-                    "<button class='btn btn-info show-usage' id=" + d.alias + " name='clusterUsage' onClick='showClusterUsage(this.id)'>Show Usage</button>";
+                    "<strong>Status: </strong>" + d.status + "<br/>";
+                if (dasStatsPublisherEnabled) {
+                    div_html += "<button class='btn btn-info show-usage' id=" + d.alias + " name='clusterUsage' onClick='showClusterUsage(this.id)'>Show Usage</button>";
+                }
             } else if (d.type == 'members') {
                 if ((typeof d.ports != 'undefined') && (d.ports.length > 0)) {
                     var portsHTML = "<strong>Ports: </strong></br>";
@@ -249,9 +253,10 @@ function update(source) {
 
             } else {
                 div_html = "<strong>Alias: </strong>" + d.name + "<br/>" +
-                    "<strong>Status: </strong>" + d.status + "<br/>" +
-                    "<button class='btn btn-info show-usage' id=" + d.name + " name='appUsage' onClick='showApplicationUsage(this.id)'>Show Usage</button>";
-
+                    "<strong>Status: </strong>" + d.status + "<br/>";
+                if (dasStatsPublisherEnabled) {
+                    div_html += "<button class='btn btn-info show-usage' id=" + d.name + " name='appUsage' onClick='showApplicationUsage(this.id)'>Show Usage</button>";
+                }
             }
             return div_html;
         });
@@ -604,13 +609,14 @@ $("a[href='#application']").on('shown.bs.tab', function (e) {
     }
 });
 
+
 function showApplicationUsage(id) {
-    window.location = 'https://localhost:9444/portal/dashboards/stratos-metering-dashboard?applicationId=' + applicationId;
+    window.location = meteringDashboardUrl + '?applicationId=' + applicationId;
 }
 
 function showClusterUsage(id, type) {
     var clusterId = id;
-    window.location = 'https://localhost:9444/portal/dashboards/stratos-metering-dashboard?applicationId=' + applicationId + '&clusterId=' + clusterId;
+    window.location = meteringDashboardUrl + '?applicationId=' + applicationId + '&clusterId=' + clusterId;
 }
 
 

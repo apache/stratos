@@ -32,10 +32,13 @@ var log = new Log("apachestratos.applications_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
-        formDataEdit = topologyData = editorGroups = editorCartridges = editorAutoscalePolicies = applicationHbs ='',
-        editorDeploymentPolicies = applicationPolicyData = applicationJSON ='',
-        isEdit  = isForm = false,
-        userPermissions = session.get('PERMISSIONS');
+        formDataEdit = topologyData = editorGroups = editorCartridges = editorAutoscalePolicies = applicationHbs = '',
+        editorDeploymentPolicies = applicationPolicyData = applicationJSON = '',
+        isEdit = isForm = false,
+        userPermissions = session.get('PERMISSIONS'),
+        dasStatsPublisherEnabled = session.get('DAS_STATS_PUBLISHER_ENABLED'),
+        meteringDashboardUrl = '';
+
 
 //create left menu
 var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
@@ -44,7 +47,7 @@ var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 if (!elements) {
     elements = uriMatcher.match('/{context}/{formtype}/{action}/');
 
-    if(!elements){
+    if (!elements) {
         elements = uriMatcher.match('/{context}/{formtype}/{applicationId}/{action}');
         var applicationName = elements.applicationId;
 
@@ -52,17 +55,16 @@ if (!elements) {
         applicationJSON = util.RESTCalls.getApplicationJSON(applicationName);
         var applicationAlias = applicationJSON.alias;
 
-        if(elements.action == 'view'){
+        if (elements.action == 'view') {
             applicationHbs = 'applicationView';
-        }else if(elements.action == 'deploy'){
+        } else if (elements.action == 'deploy') {
             applicationHbs = 'applicationDeploy';
             applicationPolicyData = util.RESTCalls.getApplicationPolicies();
-        }else if(elements.action == 'signup'){
+        } else if (elements.action == 'signup') {
             applicationHbs = 'applicationSignup';
         }
 
-    }else{
-
+    } else {
         try {
             var formData = require('controllers/forms/schema/applications/' + elements.formtype + '.json'),
                     formDataRaw = require('controllers/forms/default/applications/' + elements.formtype + '.json'),
@@ -80,9 +82,10 @@ if (!elements) {
             //get application json
             applicationJSON = util.RESTCalls.getApplicationJSON(elements.action);
 
-        }else if(elements.formtype == 'applications' && elements.action == 'new'){
+
+        } else if (elements.formtype == 'applications' && elements.action == 'new') {
             applicationHbs = 'applicationEditor';
-            editorGroups =  util.RESTCalls.getGroups();
+            editorGroups = util.RESTCalls.getGroups();
             editorCartridges = util.RESTCalls.getCartridges();
             editorAutoscalePolicies = util.RESTCalls.getPolicyAutoScales();
             editorDeploymentPolicies = util.RESTCalls.getPolicyDeployments();
@@ -106,7 +109,11 @@ switch (formtype) {
         break;
 
     default:
-        error.push({"errorMessage":"Incorrect resource path found"});
+        error.push({"errorMessage": "Incorrect resource path found"});
+}
+
+if (dasStatsPublisherEnabled) {
+    meteringDashboardUrl = session.get('METERING_DASHBOARD_URL');
 }
 var caramelData = {
     breadcrumbPathLevelOne: breadcrumbPathLevelOne,
@@ -119,22 +126,24 @@ var caramelData = {
     editorGroups: JSON.stringify(editorGroups),
     editorCartridges: JSON.stringify(editorCartridges),
     editorAutoscalePolicies: JSON.stringify(editorAutoscalePolicies),
-    editorDeploymentPolicies:JSON.stringify(editorDeploymentPolicies),
+    editorDeploymentPolicies: JSON.stringify(editorDeploymentPolicies),
     applicationHbs: applicationHbs,
-    applicationPolicyData:applicationPolicyData,
-    applicationAlias:applicationAlias,
-    applicationName:applicationName,
-    applicationJSON:JSON.stringify(applicationJSON),
+    applicationPolicyData: applicationPolicyData,
+    applicationAlias: applicationAlias,
+    applicationName: applicationName,
+    applicationJSON: JSON.stringify(applicationJSON),
     applicationStatus: applicationJSON.status,
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
-    formtype:elements.formtype,
+    formtype: elements.formtype,
     buttonText: buttonText,
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
     formDataEdit: JSON.stringify(formDataEdit),
     formData: JSON.stringify(formData),
     list_data: list_data,
-    error: error
+    error: error,
+    dasStatsPublisherEnabled: dasStatsPublisherEnabled,
+    meteringDashboardUrl: meteringDashboardUrl
 }
 
 
