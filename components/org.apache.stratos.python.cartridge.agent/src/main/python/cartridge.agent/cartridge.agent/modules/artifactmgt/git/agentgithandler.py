@@ -73,7 +73,7 @@ class AgentGitHandler:
                     AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
                                               git_repo.tenant_id, git_repo.repo_url)
                 except GitRepositorySynchronizationException as e:
-                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %s" % e)
+                    AgentGitHandler.log.error("Git pull operation failed: %s" % e)
 
             else:
                 # not a valid repository, might've been corrupted. do a re-clone
@@ -99,7 +99,7 @@ class AgentGitHandler:
             except GitRepositorySynchronizationException as e:
                 AgentGitHandler.log.error("Git clone operation failed: %s" % e)
                 # If first git clone is failed, execute retry_clone operation
-                AgentGitHandler.log.info("Retrying Git clone operation...")
+                AgentGitHandler.log.info("Retrying git clone operation...")
                 AgentGitHandler.retry_clone(git_repo)
         AgentGitHandler.add_repo(git_repo)
         return subscribe_run, updated
@@ -168,7 +168,7 @@ class AgentGitHandler:
         # check if modified files are present
         modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
         if modified:
-            AgentGitHandler.log.info("Unstaged files exist in working directory. Aborting Git pull...")
+            AgentGitHandler.log.info("Unstaged files exist in working directory. Aborting git pull...")
             return
 
         # HEAD before pull
@@ -431,9 +431,9 @@ class AgentGitHandler:
 
             git_repo.scheduled_update_task = async_task
             async_task.start()
-            AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %s" % git_repo.local_repo_path)
+            AgentGitHandler.log.info("Scheduled artifact synchronization task for path %s" % git_repo.local_repo_path)
         else:
-            AgentGitHandler.log.info("Artifact Synchronization Task for path %s already scheduled"
+            AgentGitHandler.log.info("Artifact synchronization task for path %s already scheduled"
                                      % git_repo.local_repo_path)
 
     @staticmethod
@@ -450,7 +450,7 @@ class AgentGitHandler:
             AgentGitHandler.log.exception("Repository folder not deleted: %s" % e)
 
         AgentGitHandler.clear_repo(tenant_id)
-        AgentGitHandler.log.info("git repository deleted for tenant %s" % git_repo.tenant_id)
+        AgentGitHandler.log.info("Git repository deleted for tenant %s" % git_repo.tenant_id)
 
         return True
 
@@ -469,8 +469,8 @@ class AgentGitHandler:
         AgentGitHandler.log.info("Executing Git command: %s" % command)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env, cwd=repo_path)
         (output, errors) = p.communicate()
-        AgentGitHandler.log.info("Git command [output] %s" % str(output))
-        AgentGitHandler.log.info("Git command [errors] %s" % str(errors))
+        AgentGitHandler.log.debug("Git command [output] %s" % str(output))
+        AgentGitHandler.log.debug("Git command [errors] %s" % str(errors))
         return output, errors
 
 
