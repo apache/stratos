@@ -160,7 +160,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
                     //When the application is getting un-deployed, need to avoid
                     // checking the minimum count sanctification
-                    if (!applicationMonitor.isTerminating()) {
+                    if (applicationMonitor!= null && !applicationMonitor.isTerminating()) {
                         Collection<Instance> parentInstances = parent.getInstances();
 
                         for (Instance parentInstance : parentInstances) {
@@ -510,7 +510,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
                 getAppMonitor(appId);
         //If application is forcefully un-deployed, no need to handle here.
-        if(!applicationMonitor.isForce()) {
+        if(applicationMonitor != null && !applicationMonitor.isForce()) {
             GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
 

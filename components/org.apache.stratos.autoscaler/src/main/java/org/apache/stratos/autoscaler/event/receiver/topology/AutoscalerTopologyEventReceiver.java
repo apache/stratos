@@ -312,7 +312,7 @@ public class AutoscalerTopologyEventReceiver {
                     // if the cluster monitor is null, assume that its termianted
                     appMonitor = AutoscalerContext.getInstance().
                             getAppMonitor(clusterTerminatedEvent.getAppId());
-                    if (appMonitor != null) {
+                    if (appMonitor != null && !appMonitor.isForce()) {
                         appMonitor.onChildStatusEvent(
                                 new ClusterStatusEvent(ClusterStatus.Terminated,
                                         clusterId, instanceId));

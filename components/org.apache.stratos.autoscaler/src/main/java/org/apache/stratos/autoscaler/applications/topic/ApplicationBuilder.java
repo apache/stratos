@@ -419,7 +419,8 @@ public class ApplicationBuilder {
                         getAppMonitor(appId);
 
                 if (monitor != null) {
-                    if (monitor.hasMonitors() && applicationMonitor.isTerminating()) {
+                    if (monitor.hasMonitors() && applicationMonitor != null &&
+                            !applicationMonitor.isForce() && applicationMonitor.isTerminating()) {
                         for (Monitor monitor1 : monitor.
                                 getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
@@ -427,8 +428,7 @@ public class ApplicationBuilder {
                         }
                     }
                     org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext networkPartitionContext =
-                            (org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext) monitor.
-                                    getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
+                            monitor.getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
                     networkPartitionContext.removeInstanceContext(instanceId);
                     if (groupInstance.getPartitionId() != null) {
                         networkPartitionContext.getPartitionCtxt(groupInstance.getPartitionId()).
@@ -438,7 +438,10 @@ public class ApplicationBuilder {
                     group.removeInstance(instanceId);
                     ApplicationHolder.persistApplication(application);
                     ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
-                    monitor.setStatus(status, instanceId, parentId);
+                    if(applicationMonitor != null && !applicationMonitor.isForce()) {
+                        //If force un-deployment, then no need to notify the parent
+                        monitor.setStatus(status, instanceId, parentId);
+                    }
                 }
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
