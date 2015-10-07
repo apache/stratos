@@ -24,23 +24,15 @@
         <dependency artifact="EventStream_MemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventStream_MemberLifecycle" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
-        <dependency artifact="EventStream_ScalingDecision" version="1.0.0" include="true"
-                    serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventStore_MemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventStore_MemberLifecycle" version="1.0.0" include="true"
-                    serverRole="DataAnalyticsServer"/>
-        <dependency artifact="EventStore_ScalingDecision" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventReceiver_MemberInfo" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventReceiver_MemberLifecycle" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
-        <dependency artifact="EventReceiver_ScalingDecision" version="1.0.0" include="true"
-                    serverRole="DataAnalyticsServer"/>
         <dependency artifact="SparkScript_MemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="SparkScript_MemberLifecycle" version="1.0.0" include="true"
-                    serverRole="DataAnalyticsServer"/>
-        <dependency artifact="SparkScript_ScalingDecision" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="Gadget_Member_Count" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Gadget_Member_Information" version="1.0.0" include="true"
