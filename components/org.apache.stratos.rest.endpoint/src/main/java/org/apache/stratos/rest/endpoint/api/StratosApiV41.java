@@ -308,14 +308,14 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/cartridges/manage")
-    public Response updateCartridge(
-            CartridgeBean cartridgeDefinitionBean) throws RestAPIException {
-        StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
-        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
-        return Response.ok(url)
-                .entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS, "Cartridge updated successfully"))
-                .build();
+    public Response updateCartridge(CartridgeBean cartridgeDefinitionBean)
+            throws RestAPIException {
 
+        String cartridgeType = cartridgeDefinitionBean.getType();
+        StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
+        return Response.ok(url).entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
+                String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
     }
 
     /**
@@ -1133,7 +1133,7 @@ public class StratosApiV41 extends AbstractApi {
      *
      * @param applicationId         the application id
      * @param applicationSignUpBean the application sign up bean
-     * @param tenantDomain the tenant domain
+     * @param tenantDomain          the tenant domain
      * @return 200 if application sign up was successfull
      * @throws RestAPIException the rest api exception
      */
@@ -1164,7 +1164,7 @@ public class StratosApiV41 extends AbstractApi {
      * Removes the application sign up on behalf of tenant.
      *
      * @param applicationId the application id
-     * @param tenantDomain the tenant domain
+     * @param tenantDomain  the tenant domain
      * @return 200 if specified application sign up is removed
      * @throws RestAPIException the rest api exception
      */
@@ -1300,7 +1300,7 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
 
         ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
-        int tenantId= CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         if (applicationDefinition == null) {
             String message = String.format("Application does not exist [application-id] %s", applicationId);
             log.error(message);
