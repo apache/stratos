@@ -59,7 +59,7 @@ class EventHandler:
         self.execute_event_extendables(constants.INSTANCE_ACTIVATED_EVENT, {})
 
     def on_artifact_updated_event(self, artifacts_updated_event):
-        self.__log.info("Processing Artifact update event: [tenant] %s [cluster] %s [status] %s" %
+        self.__log.debug("Processing Artifact update event: [tenant] %s [cluster] %s [status] %s" %
                         (str(artifacts_updated_event.tenant_id),
                          artifacts_updated_event.cluster_id,
                          artifacts_updated_event.status))
@@ -137,22 +137,22 @@ class EventHandler:
                     update_interval)
 
     def on_artifact_update_scheduler_event(self, tenant_id):
-        self.__log.info("Processing Artifact update scheduler event...")
+        self.__log.debug("Processing Artifact update scheduler event...")
         plugin_values = {"ARTIFACT_UPDATED_TENANT_ID": str(tenant_id),
                          "ARTIFACT_UPDATED_SCHEDULER": str(True)}
 
         self.execute_event_extendables("ArtifactUpdateSchedulerEvent", plugin_values)
 
     def on_instance_cleanup_cluster_event(self):
-        self.__log.info("Processing instance cleanup cluster event...")
+        self.__log.debug("Processing instance cleanup cluster event...")
         self.cleanup(constants.INSTANCE_CLEANUP_CLUSTER_EVENT)
 
     def on_instance_cleanup_member_event(self):
-        self.__log.info("Processing instance cleanup member event...")
+        self.__log.debug("Processing instance cleanup member event...")
         self.cleanup(constants.INSTANCE_CLEANUP_MEMBER_EVENT)
 
     def on_member_activated_event(self, member_activated_event):
-        self.__log.info("Processing Member activated event: [service] %r [cluster] %r [member] %r"
+        self.__log.debug("Processing Member activated event: [service] %r [cluster] %r [member] %r"
                         % (member_activated_event.service_name,
                            member_activated_event.cluster_id,
                            member_activated_event.member_id))
@@ -237,7 +237,7 @@ class EventHandler:
         self.execute_event_extendables(constants.COMPLETE_TENANT_EVENT, plugin_values)
 
     def on_member_terminated_event(self, member_terminated_event):
-        self.__log.info("Processing Member terminated event: [service] %s [cluster] %s [member] %s" %
+        self.__log.debug("Processing Member terminated event: [service] %s [cluster] %s [member] %s" %
                         (member_terminated_event.service_name, member_terminated_event.cluster_id,
                          member_terminated_event.member_id))
 
@@ -254,7 +254,7 @@ class EventHandler:
         self.execute_event_extendables(constants.MEMBER_TERMINATED_EVENT, {})
 
     def on_member_suspended_event(self, member_suspended_event):
-        self.__log.info("Processing Member suspended event: [service] %s [cluster] %s [member] %s" %
+        self.__log.debug("Processing Member suspended event: [service] %s [cluster] %s [member] %s" %
                         (member_suspended_event.service_name, member_suspended_event.cluster_id,
                          member_suspended_event.member_id))
 
@@ -271,7 +271,7 @@ class EventHandler:
         self.execute_event_extendables(constants.MEMBER_SUSPENDED_EVENT, {})
 
     def on_member_started_event(self, member_started_event):
-        self.__log.info("Processing Member started event: [service] %s [cluster] %s [member] %s" %
+        self.__log.debug("Processing Member started event: [service] %s [cluster] %s [member] %s" %
                         (member_started_event.service_name, member_started_event.cluster_id,
                          member_started_event.member_id))
 
@@ -288,7 +288,7 @@ class EventHandler:
         self.execute_event_extendables(constants.MEMBER_STARTED_EVENT, {})
 
     def start_server_extension(self):
-        self.__log.info("Processing start server extension...")
+        self.__log.debug("Processing start server extension...")
         service_name_in_payload = Config.service_name
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
@@ -302,12 +302,12 @@ class EventHandler:
         self.execute_event_extendables("StartServers", {})
 
     def volume_mount_extension(self, persistence_mappings_payload):
-        self.__log.info("Processing volume mount extension...")
+        self.__log.debug("Processing volume mount extension...")
         self.execute_event_extendables("VolumeMount", persistence_mappings_payload)
 
     def on_domain_mapping_added_event(self, domain_mapping_added_event):
         tenant_domain = EventHandler.find_tenant_domain(domain_mapping_added_event.tenant_id)
-        self.__log.info(
+        self.__log.debug(
             "Processing Domain mapping added event: [tenant-id] " + str(domain_mapping_added_event.tenant_id) +
             " [tenant-domain] " + tenant_domain + " [domain-name] " + domain_mapping_added_event.domain_name +
             " [application-context] " + domain_mapping_added_event.application_context
@@ -341,12 +341,12 @@ class EventHandler:
         self.execute_event_extendables(constants.DOMAIN_MAPPING_REMOVED_EVENT, plugin_values)
 
     def on_copy_artifacts_extension(self, src, dest):
-        self.__log.info("Processing Copy artifacts extension...")
+        self.__log.debug("Processing Copy artifacts extension...")
         plugin_values = {"SOURCE": src, "DEST": dest}
         self.execute_event_extendables("CopyArtifacts", plugin_values)
 
     def on_tenant_subscribed_event(self, tenant_subscribed_event):
-        self.__log.info(
+        self.__log.debug(
             "Processing Tenant subscribed event: [tenant] " + str(tenant_subscribed_event.tenant_id) +
             " [service] " + tenant_subscribed_event.service_name + " [cluster] " + tenant_subscribed_event.cluster_ids
         )
@@ -354,7 +354,7 @@ class EventHandler:
         self.execute_event_extendables(constants.TENANT_SUBSCRIBED_EVENT, {})
 
     def on_application_signup_removed_event(self, application_signup_removal_event):
-        self.__log.info(
+        self.__log.debug(
             "Processing Tenant unsubscribed event: [tenant] " + str(application_signup_removal_event.tenantId) +
             " [application ID] " + str(application_signup_removal_event.applicationId)
         )
@@ -365,14 +365,14 @@ class EventHandler:
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
 
     def cleanup(self, event):
-        self.__log.info("Executing cleaning up the data in the cartridge instance...")
+        self.__log.debug("Executing cleaning up the data in the cartridge instance...")
 
         publisher.publish_maintenance_mode_event()
 
         self.execute_event_extendables("clean", {})
-        self.__log.info("cleaning up finished in the cartridge instance...")
+        self.__log.info("Cleaning up finished in the cartridge instance...")
 
-        self.__log.info("publishing ready to shutdown event...")
+        self.__log.info("Publishing ready to shutdown event...")
         publisher.publish_instance_ready_to_shutdown_event()
 
     def execute_event_extendables(self, event, input_values):
@@ -386,7 +386,7 @@ class EventHandler:
         except Exception as e:
             self.__log.error("Error while adding common input values for event extendables: %s" % e)
         input_values["EVENT"] = event
-        self.__log.info("Executing extensions for [event] %s with [input values] %s" % (event, input_values))
+        self.__log.debug("Executing extensions for [event] %s with [input values] %s" % (event, input_values))
         # Execute the extension
         self.execute_extension_for_event(event, input_values)
         # Execute the plugins
