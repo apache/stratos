@@ -251,14 +251,13 @@ class CartridgeAgent(threading.Thread):
 
     def on_complete_topology(self, msg):
         event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
+        TopologyContext.update(event_obj.topology)
         if not TopologyContext.topology.initialized:
-            self.__log.debug("Topology initialized from complete topology event")
-            TopologyContext.update(event_obj.topology)
+            self.__log.info("Topology initialized from complete topology event")
             TopologyContext.topology.initialized = True
             self.__event_handler.on_complete_topology_event(event_obj)
-        else:
-            TopologyContext.update(event_obj.topology)
-            self.__log.debug("Topology context updated with [topology] %r" % event_obj.topology.json_str)
+
+        self.__log.debug("Topology context updated with [topology] %r" % event_obj.topology.json_str)
 
     def on_member_started(self, msg):
         self.__log.debug("Member started event received: %r" % msg.payload)
@@ -279,15 +278,14 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_domain_mapping_removed_event(event_obj)
 
     def on_complete_tenant(self, msg):
+        event_obj = CompleteTenantEvent.create_from_json(msg.payload)
+        TenantContext.update(event_obj.tenants)
         if not self.__tenant_context_initialized:
-            self.__log.debug("Complete tenant event received")
-            event_obj = CompleteTenantEvent.create_from_json(msg.payload)
-            TenantContext.update(event_obj.tenants)
-
-            self.__event_handler.on_complete_tenant_event(event_obj)
+            self.__log.info("Tenant context initialized from complete tenant event")
             self.__tenant_context_initialized = True
-        else:
-            self.__log.debug("Complete tenant event updating task disabled")
+            self.__event_handler.on_complete_tenant_event(event_obj)
+
+        self.__log.debug("Tenant context updated with [tenant list] %r" % event_obj.tenant_list_json)
 
     def on_tenant_subscribed(self, msg):
         self.__log.debug("Tenant subscribed event received: %r" % msg.payload)
