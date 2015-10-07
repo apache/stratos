@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>org.apache.stratos.python.cartridge.agent</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <name>Apache Stratos - Python Cartridge Agent</name>
 
     <profiles>
