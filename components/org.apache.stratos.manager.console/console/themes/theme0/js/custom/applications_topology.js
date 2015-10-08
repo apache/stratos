@@ -611,12 +611,12 @@ $("a[href='#application']").on('shown.bs.tab', function (e) {
 
 
 function showApplicationUsage(id) {
-    window.location = meteringDashboardUrl + '?applicationId=' + applicationId;
+    window.location = encodeURI(meteringDashboardUrl + '?applicationId=' + applicationId);
 }
 
 function showClusterUsage(id, type) {
     var clusterId = id;
-    window.location = meteringDashboardUrl + '?applicationId=' + applicationId + '&clusterId=' + clusterId;
+    window.location = encodeURI(meteringDashboardUrl + '?applicationId=' + applicationId + '&clusterId=' + clusterId);
 }
 
 
