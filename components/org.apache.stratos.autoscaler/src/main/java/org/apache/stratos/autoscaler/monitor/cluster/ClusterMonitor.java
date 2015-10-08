@@ -1331,6 +1331,9 @@ public class ClusterMonitor extends Monitor {
                                 log.debug("Moving pending member [member id] " + memberId + " to obsolete list");
                             }
                             partitionContext.movePendingMemberToObsoleteMembers(memberId);
+                            if (partitionContext.getMemberStatsContext(memberId) != null) {
+                                partitionContext.removeMemberStatsContext(memberId);
+                            }
                         }
 
                         allMovedToObsolete = partitionContext.getTotalMemberCount() == 0;
