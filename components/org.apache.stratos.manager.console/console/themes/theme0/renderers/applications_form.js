@@ -141,7 +141,7 @@ var render = function (theme, data, meta, require) {
                                 dasStatsPublisherEnabled: data.dasStatsPublisherEnabled,
                                 meteringDashboardUrl: data.meteringDashboardUrl,
                                 content_body: {
-                                    sections: data.list_data
+                                    sections: data.listData
                                 }
                             }
                         }
@@ -396,7 +396,7 @@ var render = function (theme, data, meta, require) {
                                 isEdit: data.isEdit,
                                 formTitle: data.formTitle,
                                 content_body: {
-                                    sections: data.list_data
+                                    sections: data.listData
                                 }
                             }
                         }

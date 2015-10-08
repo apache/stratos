@@ -24,7 +24,7 @@ include('/controllers/menu/menu_generator.jag');
 
 var log = new Log("apachestratos.applications_form"),
         error = [],
-        list_data,
+        listData,
         caramel = require('caramel'),
         context = caramel.configs().context,
         menuJson = require('/controllers/menu/menu.json'),
@@ -102,9 +102,9 @@ switch (formtype) {
     case "applications":
         formTitle = "Application",
                 buttonText = "Application";
-        list_data = util.RESTCalls.getApplications();
-        if (list_data.status == 'error') {
-            list_data = null;
+        listData = util.RESTCalls.getApplications();
+        if (listData.status == 'error') {
+            listData = null;
         }
         break;
 
@@ -140,7 +140,7 @@ var caramelData = {
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
     formDataEdit: JSON.stringify(formDataEdit),
     formData: JSON.stringify(formData),
-    list_data: list_data,
+    listData: listData,
     error: error,
     dasStatsPublisherEnabled: dasStatsPublisherEnabled,
     meteringDashboardUrl: meteringDashboardUrl

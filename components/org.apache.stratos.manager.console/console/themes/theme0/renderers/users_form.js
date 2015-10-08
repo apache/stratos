@@ -75,7 +75,7 @@ var render = function (theme, data, meta, require) {
                         formtype:data.formtype,
                         isForm: data.isForm,
                         content_body: {sections:
-                            data.list_data
+                            data.listData
                         }
                     }
                 }
