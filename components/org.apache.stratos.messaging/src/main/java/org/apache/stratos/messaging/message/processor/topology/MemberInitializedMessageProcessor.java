@@ -140,6 +140,7 @@ public class MemberInitializedMessageProcessor extends MessageProcessor {
             member.setMemberPublicIPs(event.getMemberPublicIPs());
             member.setDefaultPrivateIP(event.getDefaultPrivateIP());
             member.setMemberPrivateIPs(event.getMemberPrivateIPs());
+            member.setInstanceId(event.getInstanceId());
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Member initialized: [service] %s [cluster] %s [member] %s",

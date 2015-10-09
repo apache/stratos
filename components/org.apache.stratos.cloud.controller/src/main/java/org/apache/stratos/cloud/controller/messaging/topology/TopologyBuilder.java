@@ -444,6 +444,7 @@ public class TopologyBuilder {
             if (memberContext.getPublicIPs() != null) {
                 member.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
             }
+            member.setInstanceId(memberContext.getInstanceId());
 
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.Initialized)) {

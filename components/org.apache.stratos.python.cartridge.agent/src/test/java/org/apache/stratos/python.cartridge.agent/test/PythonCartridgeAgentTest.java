@@ -19,10 +19,8 @@
 
 package org.apache.stratos.python.cartridge.agent.test;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,13 +38,11 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEven
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -61,7 +57,7 @@ public class PythonCartridgeAgentTest {
     private static final Log log = LogFactory.getLog(PythonCartridgeAgentTest.class);
 
     private static final String NEW_LINE = System.getProperty("line.separator");
-    //    private static final long TIMEOUT = 1440000;
+//    private static final long TIMEOUT = 1440000;
     private static final long TIMEOUT = 120000;
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
@@ -74,6 +70,7 @@ public class PythonCartridgeAgentTest {
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
     public static final String SOURCE_PATH = "/tmp/stratos-pca-test-app-path/";
+    private static final String INSTANCE_ID = "instance-1";
 
     private static List<ServerSocket> serverSocketList;
     private static Map<String, Executor> executorList;
@@ -86,10 +83,6 @@ public class PythonCartridgeAgentTest {
     private TopologyEventReceiver topologyEventReceiver;
     private InstanceStatusEventReceiver instanceStatusEventReceiver;
     private int cepPort = 7711;
-    private BrokerService broker = new BrokerService();
-    private static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "mqtt://localhost:1883";
-    private static final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
     public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
         this.artifactUpdatedEvent = artifactUpdatedEvent;
@@ -109,21 +102,10 @@ public class PythonCartridgeAgentTest {
      * Setup method for test method testPythonCartridgeAgent
      */
     @Before
-    public void setup() {
+    public void setup(){
         serverSocketList = new ArrayList<ServerSocket>();
         executorList = new HashMap<String, Executor>();
-        try {
-            broker.addConnector(ACTIVEMQ_AMQP_BIND_ADDRESS);
-            broker.addConnector(ACTIVEMQ_MQTT_BIND_ADDRESS);
-            broker.setBrokerName("testBroker");
-            broker.setDataDirectory(PythonCartridgeAgentTest.class.getResource("/").getPath() +
-                    File.separator + ".." + File.separator + PYTHON_AGENT_DIR_NAME + File.separator + "activemq-data");
-            broker.start();
-            log.info("Broker service started!");
-        }
-        catch (Exception e) {
-            log.error("Error while setting up broker service", e);
-        }
+
         if (!this.eventReceiverInitiated) {
             ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 15);
             topologyEventReceiver = new TopologyEventReceiver();
@@ -154,14 +136,13 @@ public class PythonCartridgeAgentTest {
 
             this.eventReceiverInitiated = true;
         }
+
+        String agentPath = setupPythonAgent();
+        log.info("Starting python cartridge agent...");
+        this.outputStream = executeCommand("python " + agentPath + "/agent.py");
+
         // Simulate CEP server socket
         startServerSocket(cepPort);
-        String agentPath = setupPythonAgent();
-        log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
-        log.info("Starting python cartridge agent...");
-        this.outputStream = executeCommand(
-                "python " + agentPath + "/agent.py > " + getResourcesFolderPath() + File.separator + ".." +
-                        File.separator + PYTHON_AGENT_DIR_NAME + File.separator + "cartridge-agent-ttttt.log");
     }
 
     /**
@@ -178,24 +159,26 @@ public class PythonCartridgeAgentTest {
                     log.info("Terminating process: " + commandText);
                     watchdog.destroyProcess();
                 }
-            }
-            catch (Exception ignore) {
+                File workingDirectory = executor.getWorkingDirectory();
+                if (workingDirectory != null) {
+                    log.info("Cleaning working directory: " + workingDirectory.getAbsolutePath());
+                    FileUtils.deleteDirectory(workingDirectory);
+                }
+            } catch (Exception ignore) {
             }
         }
         for (ServerSocket serverSocket : serverSocketList) {
             try {
                 log.info("Stopping socket server: " + serverSocket.getLocalSocketAddress());
                 serverSocket.close();
-            }
-            catch (IOException ignore) {
+            } catch (IOException ignore) {
             }
         }
 
         try {
             log.info("Deleting source checkout folder...");
             FileUtils.deleteDirectory(new File(SOURCE_PATH));
-        }
-        catch (Exception ignore) {
+        } catch (Exception ignore){
 
         }
 
@@ -204,23 +187,16 @@ public class PythonCartridgeAgentTest {
 
         this.instanceActivated = false;
         this.instanceStarted = false;
-        try {
-            broker.stop();
-        }
-        catch (Exception e) {
-            log.error("Error while stopping the broker service", e);
-        }
     }
 
 
     /**
      * This method returns a collection of {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent}
      * objects as parameters to the test
-     *
      * @return
      */
     @Parameterized.Parameters
-    public static Collection getArtifactUpdatedEventsAsParams() {
+    public static Collection getArtifactUpdatedEventsAsParams(){
         ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
 
         ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
@@ -248,7 +224,6 @@ public class PythonCartridgeAgentTest {
     /**
      * Creates an {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent} object with a public
      * repository URL
-     *
      * @return
      */
     private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
@@ -282,8 +257,7 @@ public class PythonCartridgeAgentTest {
                                 // Publish member initialized event
                                 log.info("Publishing member initialized event...");
                                 MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID
+                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID, INSTANCE_ID
                                 );
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
@@ -309,7 +283,7 @@ public class PythonCartridgeAgentTest {
 
         communicatorThread.start();
 
-        while (!instanceActivated) {
+        while (!instanceActivated){
             // wait until the instance activated event is received.
             sleep(2000);
         }
@@ -320,7 +294,6 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Publish messaging event
-     *
      * @param event
      */
     private void publishEvent(Event event) {
@@ -331,7 +304,6 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Start server socket
-     *
      * @param port
      */
     private void startServerSocket(final int port) {
@@ -340,11 +312,9 @@ public class PythonCartridgeAgentTest {
             public void run() {
                 try {
                     ServerSocket serverSocket = new ServerSocket(port);
-                    serverSocketList.add(serverSocket);
-                    log.info("Server socket started on port: " + port);
                     serverSocket.accept();
-                }
-                catch (IOException e) {
+                    serverSocketList.add(serverSocket);
+                } catch (IOException e) {
                     String message = "Could not start server socket: [port] " + port;
                     log.error(message, e);
                     throw new RuntimeException(message, e);
@@ -415,8 +385,7 @@ public class PythonCartridgeAgentTest {
     private void sleep(long time) {
         try {
             Thread.sleep(time);
-        }
-        catch (InterruptedException ignore) {
+        } catch (InterruptedException ignore) {
         }
     }
 
@@ -429,9 +398,7 @@ public class PythonCartridgeAgentTest {
         try {
             log.info("Setting up python cartridge agent...");
             String srcAgentPath = getResourcesFolderPath() + "/../../src/main/python/cartridge.agent/cartridge.agent";
-            String destAgentPath =
-                    getResourcesFolderPath() + File.separator + ".." + File.separator + PYTHON_AGENT_DIR_NAME +
-                            "/cartridge.agent";
+            String destAgentPath = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/cartridge.agent";
             FileUtils.copyDirectory(new File(srcAgentPath), new File(destAgentPath));
 
             String srcAgentConfPath = getResourcesFolderPath() + "/agent.conf";
@@ -449,15 +416,14 @@ public class PythonCartridgeAgentTest {
             log.info("Changing extension scripts permissions");
             File extensionsPath = new File(destAgentPath + "/extensions/bash");
             File[] extensions = extensionsPath.listFiles();
-            for (File extension : extensions) {
+            for (File extension:extensions){
                 extension.setExecutable(true);
             }
 
             log.info("Python cartridge agent setup completed");
 
             return destAgentPath;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = "Could not copy cartridge agent distribution";
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -475,8 +441,6 @@ public class PythonCartridgeAgentTest {
             CommandLine commandline = CommandLine.parse(commandText);
             DefaultExecutor exec = new DefaultExecutor();
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-            exec.setWorkingDirectory(new File(
-                    getResourcesFolderPath() + File.separator + ".." + File.separator + PYTHON_AGENT_DIR_NAME));
             exec.setStreamHandler(streamHandler);
             ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
             exec.setWatchdog(watchdog);
@@ -493,8 +457,7 @@ public class PythonCartridgeAgentTest {
             });
             executorList.put(commandText, exec);
             return outputStream;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(outputStream.toString(), e);
             throw new RuntimeException(e);
         }
@@ -502,11 +465,10 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Get resources folder path
-     *
      * @return
      */
     private static String getResourcesFolderPath() {
-        String path = PythonCartridgeAgentTest.class.getResource(File.separator).getPath();
+        String path = PythonCartridgeAgentTest.class.getResource("/").getPath();
         return StringUtils.removeEnd(path, File.separator);
     }
 

@@ -36,6 +36,8 @@ public class MemberInitializedEvent extends TopologyEvent implements Serializabl
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    //instance Id provided by IaaS
+    private final String instanceId;
 
     private List<String> memberPublicIPs;
     private String defaultPublicIP;
@@ -44,13 +46,14 @@ public class MemberInitializedEvent extends TopologyEvent implements Serializabl
     private Properties properties;
 
     public MemberInitializedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
-                                  String networkPartitionId, String partitionId) {
+                                  String networkPartitionId, String partitionId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
+        this.instanceId = instanceId;
     }
 
     public String getServiceName() {
@@ -115,5 +118,9 @@ public class MemberInitializedEvent extends TopologyEvent implements Serializabl
 
     public void setMemberPrivateIPs(List<String> memberPrivateIPs) {
         this.memberPrivateIPs = memberPrivateIPs;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }
