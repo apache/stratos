@@ -60,88 +60,99 @@ class EventHandler:
 
     def on_artifact_updated_event(self, artifacts_updated_event):
         self.__log.debug("Processing Artifact update event: [tenant] %s [cluster] %s [status] %s" %
-                        (str(artifacts_updated_event.tenant_id),
-                         artifacts_updated_event.cluster_id,
-                         artifacts_updated_event.status))
+                         (str(artifacts_updated_event.tenant_id),
+                          artifacts_updated_event.cluster_id,
+                          artifacts_updated_event.status))
 
         cluster_id_event = str(artifacts_updated_event.cluster_id).strip()
         cluster_id_payload = Config.cluster_id
         repo_url = str(artifacts_updated_event.repo_url).strip()
 
-        if (repo_url != "") and (cluster_id_payload is not None) and (cluster_id_payload == cluster_id_event):
-            local_repo_path = Config.app_path
+        if (repo_url == "") or (cluster_id_payload is None) or (cluster_id_payload != cluster_id_event):
+            return
 
-            repo_password = None
-            if artifacts_updated_event.repo_password is not None:
-                secret = Config.cartridge_key
-                repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
+        repo_password = None
+        if artifacts_updated_event.repo_password is not None:
+            secret = Config.cartridge_key
+            repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
-            repo_username = artifacts_updated_event.repo_username
-            tenant_id = artifacts_updated_event.tenant_id
-            is_multitenant = Config.is_multiTenant
-            commit_enabled = artifacts_updated_event.commit_enabled
+        repo_username = artifacts_updated_event.repo_username
+        tenant_id = artifacts_updated_event.tenant_id
+        is_multitenant = Config.is_multiTenant
+        commit_enabled = artifacts_updated_event.commit_enabled
 
-            self.__log.info("Executing git checkout")
+        if Config.app_path is None:
+            raise GitRepositorySynchronizationException("Repository path is empty. Cannot perform Git operations.")
 
-            if local_repo_path is None:
-                raise GitRepositorySynchronizationException("Repository path is empty. Cannot perform Git operations.")
+        # create repo object
+        local_repo_path = self.get_repo_path_for_tenant(str(tenant_id), Config.app_path, is_multitenant)
+        repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
+        new_git_repo = AgentGitHandler.create_git_repo(repo_info)
 
-            # create repo object
-            local_repo_path = self.get_repo_path_for_tenant(str(tenant_id), local_repo_path, is_multitenant)
-            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
+        # check whether this is the first artifact updated event for this tenant
+        existing_git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
+        if existing_git_repo is not None:
+            # check whether this event has updated credentials for git repo
+            if AgentGitHandler.is_valid_git_repository(
+                    new_git_repo) and new_git_repo.repo_url != existing_git_repo.repo_url:
+                # add the new git_repo object with updated credentials to repo list
+                AgentGitHandler.add_repo(new_git_repo)
 
-            # checkout code
-            subscribe_run, updated = AgentGitHandler.checkout(repo_info)
+                # update the origin remote URL with new credentials
+                self.__log.info("Changes detected in git credentials for tenant: %s" % new_git_repo.tenant_id)
+                self.__log.debug("Updating git repo remote URL for tenant: %s with new remote URL: %s" % (
+                    new_git_repo.tenant_id, new_git_repo.repo_url))
+                (output, errors) = AgentGitHandler.execute_git_command(
+                    ["remote", "set-url", "origin", new_git_repo.repo_url], new_git_repo.local_repo_path)
+                if errors.strip() != "":
+                    self.__log.error("Failed to update git repo remote URL for tenant: %s" % new_git_repo.tenant_id)
 
-            # execute artifact updated extension
-            plugin_values = {"ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
-                             "ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
-                             "ARTIFACT_UPDATED_REPO_URL": artifacts_updated_event.repo_url,
-                             "ARTIFACT_UPDATED_REPO_PASSWORD": artifacts_updated_event.repo_password,
-                             "ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
-                             "ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
+        self.__log.info("Executing checkout job on artifact updated event...")
+        try:
+            AgentGitHandler.run_checkout_job(repo_info)
+        except GitRepositorySynchronizationException as e:
+            self.__log.exception(
+                "Checkout job on artifact updated event failed for tenant: %s %s" % (repo_info.tenant_id, e))
 
+        # execute artifact updated extension
+        plugin_values = {"ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
+                         "ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
+                         "ARTIFACT_UPDATED_REPO_URL": artifacts_updated_event.repo_url,
+                         "ARTIFACT_UPDATED_REPO_PASSWORD": artifacts_updated_event.repo_password,
+                         "ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
+                         "ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
+
+        try:
+            self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
+        except ValueError:
+            self.__log.exception("Could not execute plugins for artifact updated event: %s" % ValueError)
+
+        if existing_git_repo is None:
+            # publish instance activated event for single tenant subscription
+            publisher.publish_instance_activated_event(Config.health_stat_plugin)
+
+        update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, True)
+        auto_commit = Config.is_commits_enabled
+        auto_checkout = Config.is_checkout_enabled
+        self.__log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s",
+                        update_artifacts, auto_commit, auto_checkout)
+        if update_artifacts:
             try:
-                self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
+                update_interval = int(Config.artifact_update_interval)
             except ValueError:
-                self.__log.exception("Could not execute plugins for artifact updated event: %s" % ValueError)
+                self.__log.exception("Invalid artifact sync interval specified: %s" % ValueError)
+                update_interval = 10
 
-            if subscribe_run:
-                # publish instanceActivated
-                publisher.publish_instance_activated_event(Config.health_stat_plugin)
-            elif updated:
-                # updated on pull
-                self.on_artifact_update_scheduler_event(tenant_id)
+            self.__log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
 
-            update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, False)
-            auto_commit = Config.is_commits_enabled
-            auto_checkout = Config.is_checkout_enabled
-            self.__log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s",
-                            update_artifacts, auto_commit, auto_checkout)
-            if update_artifacts:
-                try:
-                    update_interval = int(Config.artifact_update_interval)
-                except ValueError:
-                    self.__log.exception("Invalid artifact sync interval specified: %s" % ValueError)
-                    update_interval = 10
+            self.__log.info("Auto Commit is turned %s " % ("on" if auto_commit else "off"))
+            self.__log.info("Auto Checkout is turned %s " % ("on" if auto_checkout else "off"))
 
-                self.__log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
-
-                self.__log.info("Auto Commit is turned %s " % ("on" if auto_commit else "off"))
-                self.__log.info("Auto Checkout is turned %s " % ("on" if auto_checkout else "off"))
-
-                AgentGitHandler.schedule_artifact_update_task(
-                    repo_info,
-                    auto_checkout,
-                    auto_commit,
-                    update_interval)
-
-    def on_artifact_update_scheduler_event(self, tenant_id):
-        self.__log.debug("Processing Artifact update scheduler event...")
-        plugin_values = {"ARTIFACT_UPDATED_TENANT_ID": str(tenant_id),
-                         "ARTIFACT_UPDATED_SCHEDULER": str(True)}
-
-        self.execute_event_extendables("ArtifactUpdateSchedulerEvent", plugin_values)
+            AgentGitHandler.schedule_artifact_update_task(
+                repo_info,
+                auto_checkout,
+                auto_commit,
+                update_interval)
 
     def on_instance_cleanup_cluster_event(self):
         self.__log.debug("Processing instance cleanup cluster event...")
@@ -153,9 +164,9 @@ class EventHandler:
 
     def on_member_activated_event(self, member_activated_event):
         self.__log.debug("Processing Member activated event: [service] %r [cluster] %r [member] %r"
-                        % (member_activated_event.service_name,
-                           member_activated_event.cluster_id,
-                           member_activated_event.member_id))
+                         % (member_activated_event.service_name,
+                            member_activated_event.cluster_id,
+                            member_activated_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_activated_event.service_name,
@@ -218,7 +229,7 @@ class EventHandler:
             self.__log.debug("Member exists: %s" % member_exists)
             if member_exists:
                 Config.initialized = True
-                self.markMemberAsInitialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+                self.mark_member_as_initialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
                 self.__log.info("Instance marked as initialized on member initialized event")
             else:
                 raise Exception("Member [member-id] %s not found in topology while processing member initialized "
@@ -238,8 +249,8 @@ class EventHandler:
 
     def on_member_terminated_event(self, member_terminated_event):
         self.__log.debug("Processing Member terminated event: [service] %s [cluster] %s [member] %s" %
-                        (member_terminated_event.service_name, member_terminated_event.cluster_id,
-                         member_terminated_event.member_id))
+                         (member_terminated_event.service_name, member_terminated_event.cluster_id,
+                          member_terminated_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_terminated_event.service_name,
@@ -255,8 +266,8 @@ class EventHandler:
 
     def on_member_suspended_event(self, member_suspended_event):
         self.__log.debug("Processing Member suspended event: [service] %s [cluster] %s [member] %s" %
-                        (member_suspended_event.service_name, member_suspended_event.cluster_id,
-                         member_suspended_event.member_id))
+                         (member_suspended_event.service_name, member_suspended_event.cluster_id,
+                          member_suspended_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_suspended_event.service_name,
@@ -272,8 +283,8 @@ class EventHandler:
 
     def on_member_started_event(self, member_started_event):
         self.__log.debug("Processing Member started event: [service] %s [cluster] %s [member] %s" %
-                        (member_started_event.service_name, member_started_event.cluster_id,
-                         member_started_event.member_id))
+                         (member_started_event.service_name, member_started_event.cluster_id,
+                          member_started_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_started_event.service_name,
@@ -365,7 +376,7 @@ class EventHandler:
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
 
     def cleanup(self, event):
-        self.__log.debug("Executing cleaning up the data in the cartridge instance...")
+        self.__log.debug("Executing cleanup extension for event %s" % event)
 
         publisher.publish_maintenance_mode_event()
 
@@ -522,7 +533,8 @@ class EventHandler:
 
         return True
 
-    def markMemberAsInitialized(self, service_name, cluster_id, member_id):
+    @staticmethod
+    def mark_member_as_initialized(service_name, cluster_id, member_id):
         topology = TopologyContext.get_topology()
         service = topology.get_service(service_name)
         if service is None:

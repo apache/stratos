@@ -33,7 +33,7 @@ def test_clone(input, expected):
         repo_string = f.read()
 
     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
-    sub_run, repo_context = AgentGitHandler.checkout(repo_info)
+    sub_run, repo_context = AgentGitHandler.run_checkout_job(repo_info)
 
     assert sub_run, "Not detected as subscription run"
 
