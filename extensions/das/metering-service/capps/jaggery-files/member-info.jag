@@ -27,7 +27,7 @@
     var carbon = require('carbon');
     var configs = require('/configs/designer.json');
 
-    var tableName = request.getParameter(TABLE_NAME);
+    var tableName = encodeURIComponent(request.getParameter(TABLE_NAME));
     if (tableName == null) {
         log.error("Table name param is not provided!");
         response.status = HTTP_INTERNAL_ERROR;
