@@ -44,11 +44,20 @@ class CartridgeAgent(threading.Thread):
 
         mb_ip = Config.read_property(constants.MB_IP)
         mb_port = Config.read_property(constants.MB_PORT)
+        mb_username = Config.read_property(constants.MB_USERNAME, False)
+        mb_password = Config.read_property(constants.MB_PASSWORD, False)
 
-        self.__inst_topic_subscriber = EventSubscriber(constants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port)
-        self.__tenant_topic_subscriber = EventSubscriber(constants.TENANT_TOPIC, mb_ip, mb_port)
-        self.__app_topic_subscriber = EventSubscriber(constants.APPLICATION_SIGNUP, mb_ip, mb_port)
-        self.__topology_event_subscriber = EventSubscriber(constants.TOPOLOGY_TOPIC, mb_ip, mb_port)
+        self.__inst_topic_subscriber = \
+            EventSubscriber(constants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port, mb_username, mb_password)
+
+        self.__tenant_topic_subscriber = \
+            EventSubscriber(constants.TENANT_TOPIC, mb_ip, mb_port, mb_username, mb_password)
+
+        self.__app_topic_subscriber = \
+            EventSubscriber(constants.APPLICATION_SIGNUP, mb_ip, mb_port, mb_username, mb_password)
+
+        self.__topology_event_subscriber = \
+            EventSubscriber(constants.TOPOLOGY_TOPIC, mb_ip, mb_port, mb_username, mb_password)
 
         self.__event_handler = EventHandler()
 

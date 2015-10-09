@@ -186,6 +186,18 @@ else
 	sed -i "s/LOG_LEVEL/${LOG_LEVEL}/g" ${PCA_HOME}/logging.ini
 fi
 
+if [ -z "${MB_USERNAME}" ]; then
+	sed -i "s/MB-USERNAME/ /g" ${PCA_HOME}/agent.conf
+else
+	sed -i "s#MB-USERNAME#${MB_USERNAME}#g" ${PCA_HOME}/agent.conf
+fi
+
+if [ -z "${MB_PASSWORD}" ]; then
+	sed -i "s/MB-PASSWORD/ /g" ${PCA_HOME}/agent.conf
+else
+	sed -i "s#MB-PASSWORD#${MB_PASSWORD}#g" ${PCA_HOME}/agent.conf
+fi
+
 # copy custom plugins to PCA
 cp -R /mnt/plugins ${PCA_HOME}/
 

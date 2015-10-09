@@ -44,6 +44,9 @@ public abstract class AmqpTopicConnector implements TopicConnector {
     private TopicConnection topicConnection;
     private InitialContext initialContext;
 
+    private String mbUsername = null;
+    private String mbPassword = null;
+
     @Override
     public void create() {
         try {
@@ -53,6 +56,8 @@ public abstract class AmqpTopicConnector implements TopicConnector {
                 jndiPropFileDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf";
             }
             Properties environment = MessagingUtil.getProperties(jndiPropFileDir + File.separator + "jndi.properties");
+            mbUsername = environment.getProperty("java.naming.security.principal");
+            mbPassword  =environment.getProperty("java.naming.security.credentials");
             environment.put("org.wso2.carbon.context.RequestBaseContext", "true"); // always returns the base context.
             initialContext = new InitialContext(environment);
             // Lookup connection factory
@@ -73,7 +78,12 @@ public abstract class AmqpTopicConnector implements TopicConnector {
     @Override
     public void connect() {
         try {
-            topicConnection = connectionFactory.createTopicConnection();
+            if (StringUtils.isNotEmpty(mbUsername)){
+                topicConnection = connectionFactory.createTopicConnection(mbUsername, mbPassword);
+            }else{
+                topicConnection = connectionFactory.createTopicConnection();
+            }
+
             topicConnection.setExceptionListener(new ExceptionListener() {
                 @Override
                 public void onException(JMSException e) {

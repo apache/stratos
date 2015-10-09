@@ -24,7 +24,6 @@ import healthstats
 import constants
 from config import Config
 
-
 log = LogFactory().get_log(__name__)
 
 started = False
@@ -174,7 +173,7 @@ def publish_instance_ready_to_shutdown_event():
         cluster_instance_id = Config.cluster_instance_id
         network_partition_id = Config.network_partition_id
         partition_id = Config.partition_id
-        
+
         instance_shutdown_event = InstanceReadyToShutdownEvent(
             service_name,
             cluster_id,
@@ -204,11 +203,23 @@ class EventPublisher:
     """
     Handles publishing events to topics to the provided message broker
     """
+
     def __init__(self, topic):
         self.__topic = topic
 
     def publish(self, event):
         mb_ip = Config.read_property(constants.MB_IP)
         mb_port = Config.read_property(constants.MB_PORT)
+        mb_username = Config.read_property(constants.MB_USERNAME, False)
+        mb_password = Config.read_property(constants.MB_PASSWORD, False)
+        if mb_username is None:
+            auth = None
+        else:
+            auth = {"username": mb_username, "password": mb_password}
+
         payload = event.to_json()
-        publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port)
+        publish.single(self.__topic,
+                       payload,
+                       hostname=mb_ip,
+                       port=mb_port,
+                       auth=auth)

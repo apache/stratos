@@ -41,6 +41,14 @@
       "value": "1883"
     },
     {
+      "name": "payload_parameter.MB_USERNAME",
+      "value": "system"
+    },
+    {
+      "name": "payload_parameter.MB_PASSWORD",
+      "value": "manager"
+    },
+    {
       "name": "payload_parameter.CEP_URLS",
       "value": "172.17.8.1:7711"
     },

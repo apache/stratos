@@ -18,7 +18,10 @@
  */
 package org.apache.stratos.python.cartridge.agent.integration.tests;
 
+import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.security.AuthenticationUser;
+import org.apache.activemq.security.SimpleAuthenticationPlugin;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -211,9 +214,16 @@ public class PythonAgentIntegrationTest {
     }
 
     protected void startBroker() throws Exception {
+        System.setProperty("mb.username", "system");
+        System.setProperty("mb.password", "manager");
+
         broker = new BrokerService();
         broker.addConnector(amqpBindAddress);
         broker.addConnector(mqttBindAddress);
+        AuthenticationUser authenticationUser = new AuthenticationUser("system", "manager", "users,admins");
+        List<AuthenticationUser> authUserList = new ArrayList<>();
+        authUserList.add(authenticationUser);
+        broker.setPlugins(new BrokerPlugin[]{new SimpleAuthenticationPlugin(authUserList)});
         broker.setBrokerName("testBroker");
         broker.setDataDirectory(
                 PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +

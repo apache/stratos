@@ -143,6 +143,11 @@
             <version>5.10.0</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-jaas</artifactId>
+            <version>5.10.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>

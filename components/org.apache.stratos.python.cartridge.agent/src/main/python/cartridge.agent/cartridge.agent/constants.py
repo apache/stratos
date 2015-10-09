@@ -21,6 +21,8 @@ EXTENSIONS_DIR = "extensions.dir"
 
 MB_IP = "mb.ip"
 MB_PORT = "mb.port"
+MB_USERNAME = "mb.username"
+MB_PASSWORD = "mb.password"
 
 CARTRIDGE_KEY = "CARTRIDGE_KEY"
 APPLICATION_ID = "APPLICATION_ID"

@@ -28,7 +28,7 @@ class EventSubscriber(threading.Thread):
     register event handlers for various events.
     """
 
-    def __init__(self, topic, ip, port):
+    def __init__(self, topic, ip, port, username, password):
         threading.Thread.__init__(self)
 
         self.__event_queue = Queue(maxsize=0)
@@ -41,6 +41,8 @@ class EventSubscriber(threading.Thread):
         self.__subscribed = False
         self.__ip = ip
         self.__port = port
+        self.__username = username
+        self.__password = password
 
     def run(self):
         #  Start the event executor thread
@@ -48,6 +50,9 @@ class EventSubscriber(threading.Thread):
         self.__mb_client = mqtt.Client()
         self.__mb_client.on_connect = self.on_connect
         self.__mb_client.on_message = self.on_message
+        if self.__username is not None:
+            self.log.debug("Message broker credentials are... %s:%s" % (self.__username, self.__password))
+            self.__mb_client.username_pw_set(self.__username, self.__password)
 
         self.log.debug("Connecting to the message broker with address %r:%r" % (self.__ip, self.__port))
         self.__mb_client.connect(self.__ip, self.__port, 60)
