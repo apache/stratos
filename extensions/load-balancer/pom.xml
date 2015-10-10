@@ -36,5 +36,6 @@
         <module>modules/haproxy-extension</module>
         <module>modules/nginx-extension</module>
         <module>modules/lvs-extension</module>
+        <module>modules/aws-extension</module>
     </modules>
 </project>
