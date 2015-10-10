@@ -122,7 +122,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                 log.info("Publishing artifact updated event for repo: " +
                         getArtifactUpdatedEventForPrivateRepo().getRepoURL());
 
-                List<String> outputLines = new ArrayList<String>();
+                List<String> outputLines = new ArrayList<>();
                 while (!outputStream.isClosed() && !hasADCTestCompleted) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
@@ -181,7 +181,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                 while (!eventReceiverInitiated) {
                     sleep(1000);
                 }
-                List<String> outputLines = new ArrayList<String>();
+                List<String> outputLines = new ArrayList<>();
                 while (!outputStream.isClosed()) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
@@ -256,7 +256,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
     /**
      * Create test topology
      *
-     * @return
+     * @return Topology object with mock information
      */
     private Topology createTestTopology() {
         Topology topology = new Topology();

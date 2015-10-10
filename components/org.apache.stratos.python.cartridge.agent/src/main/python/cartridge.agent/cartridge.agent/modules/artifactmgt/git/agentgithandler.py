@@ -62,6 +62,20 @@ class AgentGitHandler:
         subsequent calls or not
         :rtype: tuple(bool, bool)
         """
+        plugins_for_event = Config.plugins.get(constants.ARTIFACT_CHECKOUT_JOB)
+        if plugins_for_event is not None and len(plugins_for_event) > 0:
+            if len(plugins_for_event) > 1:
+                for plugin_info in plugins_for_event:
+                    AgentGitHandler.log.debug("Registered plugin name for commit job: %s" % plugin_info.name)
+                AgentGitHandler.log.error("More than one plugin registered for checkout job. Aborting...")
+                return
+            try:
+                plugin_values = {"REPO_INFO": repo_info}
+                plugins_for_event[0].plugin_object.run_plugin(plugin_values)
+                return
+            except Exception as e:
+                AgentGitHandler.log.exception("Error while executing checkout job extension: %s" % e)
+
         git_repo = AgentGitHandler.create_git_repo(repo_info)
         if AgentGitHandler.get_repo(repo_info.tenant_id) is not None:
             # has been previously cloned, this is not the subscription run
@@ -82,7 +96,7 @@ class AgentGitHandler:
                 AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
                 git_repo = AgentGitHandler.clone(git_repo)
-                updated = True
+                AgentGitHandler.add_repo(git_repo)
                 AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
         else:
@@ -317,6 +331,18 @@ class AgentGitHandler:
         :param repo_info:
         :return:
         """
+        plugins_for_event = Config.plugins.get(constants.ARTIFACT_COMMIT_JOB)
+        if plugins_for_event is not None and len(plugins_for_event) > 0:
+            if len(plugins_for_event) > 1:
+                for plugin_info in plugins_for_event:
+                    AgentGitHandler.log.debug("Registered plugin name for commit job: %s" % plugin_info.name)
+                AgentGitHandler.log.error("More than one plugin registered for commit job. Aborting...")
+                return
+            try:
+                plugins_for_event[0].plugin_object.run_plugin({})
+                return
+            except Exception as e:
+                AgentGitHandler.log.exception("Error while executing commit job extension: %s " % e)
 
         git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
         if git_repo is None:

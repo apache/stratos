@@ -109,6 +109,10 @@ MEMBER_STARTED_EVENT = "MemberStartedEvent"
 TENANT_SUBSCRIBED_EVENT = "TenantSubscribedEvent"
 APPLICATION_SIGNUP_REMOVAL_EVENT = "ApplicationSignUpRemovedEvent"
 
+# ADC related extensions
+ARTIFACT_CHECKOUT_JOB = "ArtifactCheckoutJob"
+ARTIFACT_COMMIT_JOB = "ArtifactCommitJob"
+
 CREATE_LVS_DUMMY_INTERFACE = "CreateLVSDummyInterface"
 
 PRIMARY = "PRIMARY"

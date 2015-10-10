@@ -16,82 +16,114 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.stratos.python.cartridge.agent.integration.tests;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
-import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.carbon.databridge.commons.Credentials;
-import org.wso2.carbon.databridge.commons.StreamDefinition;
-import org.wso2.carbon.databridge.core.AgentCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class AgentStartupTestCase extends PythonAgentIntegrationTest {
-    private static final Log log = LogFactory.getLog(AgentStartupTestCase.class);
-    private static final int STARTUP_TIMEOUT = 5 * 60000;
-    private static final String CLUSTER_ID = "php.php.domain";
-    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
-    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
-    private static final String APP_ID = "application-1";
-    private static final String MEMBER_ID = "php.member-1";
+public class ADCExtensionTestCase extends PythonAgentIntegrationTest {
+
+    public ADCExtensionTestCase() throws IOException {
+    }
+
+    private static final Log log = LogFactory.getLog(ADCExtensionTestCase.class);
+    private static final int ADC_TIMEOUT = 300000;
+    private static final String APPLICATION_PATH = "/tmp/ADCExtensionTestCase";
+    private static final String CLUSTER_ID = "tomcat.domain";
+    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-2";
+    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-2";
+    private static final String APP_ID = "application-2";
+    private static final String MEMBER_ID = "tomcat.member-1";
     private static final String CLUSTER_INSTANCE_ID = "cluster-1-instance-1";
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
-    private static final String SERVICE_NAME = "php";
-    private boolean startupTestCompleted = false;
-    private boolean topologyContextTestCompleted = false;
-    private boolean thriftTestCompleted = false;
-    private Topology topology = createTestTopology();
+    private static final String SERVICE_NAME = "tomcat";
 
-    public AgentStartupTestCase() throws IOException {
-    }
+    private boolean hasADCExtensionTestCompleted = false;
+    private boolean hasCheckoutExtensionStarted = false;
+    private boolean hasCommitExtensionStarted = false;
 
     @BeforeMethod(alwaysRun = true)
-    public void setupAgentStartupTest() throws Exception {
-        log.info("Setting up AgentStartupTestCase");
+    public void setupADCExtensionTest() throws Exception {
+        log.info("Setting up ADCExtensionTestCase");
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
 
         // start Python agent with configurations provided in resource path
-        super.setup(STARTUP_TIMEOUT);
+        super.setup(ADC_TIMEOUT);
 
         // Simulate server socket
         startServerSocket(8080);
     }
 
-
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
     @AfterMethod(alwaysRun = true)
-    public void tearDownAgentStartupTest() {
-        tearDown();
+    public void tearDownADCExtensionTest() {
+        // TODO: app path is duplicated in Java test and payload
+        tearDown(APPLICATION_PATH);
     }
 
-    @Test(timeOut = STARTUP_TIMEOUT, description = "Test PCA initialization, activation, health stat publishing and " +
-            "topology context update", groups = {"smoke"})
-    public void testPythonCartridgeAgent() {
+    @Test(timeOut = ADC_TIMEOUT)
+    public void testADC() throws Exception {
         startCommunicatorThread();
-        subscribeToThriftDatabridge();
+        assertAgentActivation();
+        Thread adcExtensionTestThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                log.info("Running ADC Extension Test thread...");
+                // Send artifact updated event
+                publishEvent(getArtifactUpdatedEventForPrivateRepo());
+                log.info("Publishing artifact updated event for repo: " + getArtifactUpdatedEventForPrivateRepo()
+                        .getRepoURL());
+
+                List<String> outputLines = new ArrayList<String>();
+                while (!outputStream.isClosed() && !hasADCExtensionTestCompleted) {
+                    List<String> newLines = getNewLines(outputLines, outputStream.toString());
+                    if (newLines.size() > 0) {
+                        for (String line : newLines) {
+                            if (line.contains("Running extension for checkout job")) {
+                                hasCheckoutExtensionStarted = true;
+                            }
+                            if (line.contains("Running extension for commit job")) {
+                                hasCommitExtensionStarted = true;
+                            }
+                        }
+                    }
+                    sleep(1000);
+                }
+            }
+        });
+        adcExtensionTestThread.start();
+
+        while (!hasCheckoutExtensionStarted || !hasCommitExtensionStarted) {
+            // wait until the instance activated event is received.
+            sleep(1000);
+        }
+        log.info("ADC Extension Test completed");
+    }
+
+    private void assertAgentActivation() {
         Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!eventReceiverInitiated) {
-                    sleep(2000);
+                    sleep(1000);
                 }
                 List<String> outputLines = new ArrayList<String>();
                 while (!outputStream.isClosed()) {
@@ -102,27 +134,23 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                                 sleep(2000);
                                 // Send complete topology event
                                 log.info("Publishing complete topology event...");
+                                Topology topology = createTestTopology();
                                 CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
                                 publishEvent(completeTopologyEvent);
                                 log.info("Complete topology event published");
 
                                 // Publish member initialized event
                                 log.info("Publishing member initialized event...");
-                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID
-                                );
+                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(SERVICE_NAME,
+                                        CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID);
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
                             }
 
-                            if (line.contains("Published event to thrift stream")) {
-                                startupTestCompleted = true;
-                            }
-
-                            // assert topology context update
-                            if (line.contains("Topology context update test passed!")) {
-                                topologyContextTestCompleted = true;
+                            // Send artifact updated event to activate the instance first
+                            if (line.contains("Artifact repository found")) {
+                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
+                                log.info("Artifact updated event published");
                             }
                         }
                     }
@@ -130,52 +158,28 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                 }
             }
         });
-
         startupTestThread.start();
 
-        instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                log.info("Publishing complete topology with a new member...");
-                Member newMember = new Member(SERVICE_NAME, CLUSTER_ID, "new-member", CLUSTER_INSTANCE_ID,
-                        NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
-                topology.getService(SERVICE_NAME).getCluster(CLUSTER_ID).addMember(newMember);
-                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-                publishEvent(completeTopologyEvent);
-                log.info("Complete topology event published with new member");
-            }
-        });
-
-        while (!instanceStarted || !instanceActivated || !startupTestCompleted || !topologyContextTestCompleted ||
-                !thriftTestCompleted) {
+        while (!instanceStarted || !instanceActivated) {
             // wait until the instance activated event is received.
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);
         }
     }
 
-    private void subscribeToThriftDatabridge() {
-        thriftTestServer.getDatabridge().subscribe(new AgentCallback() {
-            @Override
-            public void definedStream(StreamDefinition streamDefinition, int tenantId) {
-                // ignore
-            }
+    public static ArtifactUpdatedEvent getArtifactUpdatedEventForPrivateRepo() {
+        ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
+        privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
+        privateRepoEvent.setRepoUserName("testapache2211");
+        privateRepoEvent.setRepoPassword("+to2qVW16jzy+Xb/zuafQQ==");
+        return privateRepoEvent;
+    }
 
-            @Override
-            public void removeStream(StreamDefinition streamDefinition, int tenantId) {
-                // ignore
-            }
-
-            @Override
-            public void receive(List<org.wso2.carbon.databridge.commons.Event> eventList, Credentials credentials) {
-                log.info("Event list size: " + eventList.size());
-                log.info("Recent events received: " + eventList);
-                // if the list contains an event that means PCA was able to successfully publish health stats
-                if (eventList.size() > 0) {
-                    thriftTestCompleted = true;
-                }
-            }
-        });
+    private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
+        ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
+        artifactUpdatedEvent.setClusterId(CLUSTER_ID);
+        artifactUpdatedEvent.setTenantId(TENANT_ID);
+        return artifactUpdatedEvent;
     }
 
     /**
@@ -192,9 +196,8 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                 AUTOSCALING_POLICY_NAME, APP_ID);
         service.addCluster(cluster);
 
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID,
-                CLUSTER_INSTANCE_ID, NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private,
-                System.currentTimeMillis());
+        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID, CLUSTER_INSTANCE_ID,
+                NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
 
         member.setDefaultPrivateIP("10.0.0.1");
         member.setDefaultPublicIP("20.0.0.1");

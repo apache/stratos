@@ -61,7 +61,7 @@ public class PythonAgentIntegrationTest {
     protected final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
     protected Map<Integer, ServerSocket> serverSocketMap = new HashMap<>();
-    protected Map<String, Executor> executorList = new HashMap<String, Executor>();
+    protected Map<String, Executor> executorList = new HashMap<>();
 
     protected int cepPort;
     protected int cepSSLPort;
@@ -262,7 +262,7 @@ public class PythonAgentIntegrationTest {
     /**
      * Start server socket
      *
-     * @param port
+     * @param port Port number of server socket to be started
      */
     protected void startServerSocket(final int port) {
         Thread socketThread = new Thread(new Runnable() {
@@ -314,7 +314,7 @@ public class PythonAgentIntegrationTest {
     /**
      * Copy python agent distribution to a new folder, extract it and copy sample configuration files
      *
-     * @return
+     * @return Python cartridge agent home directory
      */
     protected String setupPythonAgent() {
         try {
@@ -415,7 +415,7 @@ public class PythonAgentIntegrationTest {
     /**
      * Execute shell command
      *
-     * @param commandText
+     * @param commandText Command string to be executed
      */
     protected ByteArrayOutputStreamLocal executeCommand(final String commandText, int timeout) {
         final ByteArrayOutputStreamLocal outputStream = new ByteArrayOutputStreamLocal();
@@ -452,7 +452,7 @@ public class PythonAgentIntegrationTest {
     /**
      * Sleep current thread
      *
-     * @param time
+     * @param time Time to sleep in milli-seconds
      */
     protected void sleep(long time) {
         try {
@@ -467,7 +467,7 @@ public class PythonAgentIntegrationTest {
      *
      * @param currentOutputLines current output lines
      * @param output             output
-     * @return
+     * @return new lines printed by Python agent process
      */
     protected List<String> getNewLines(List<String> currentOutputLines, String output) {
         List<String> newLines = new ArrayList<String>();
@@ -487,7 +487,7 @@ public class PythonAgentIntegrationTest {
     /**
      * Publish messaging event
      *
-     * @param event
+     * @param event Event object to be published to message broker
      */
     protected void publishEvent(Event event) {
         String topicName = MessagingUtil.getMessageTopicName(event);
