@@ -243,7 +243,7 @@ public class PolicyManager {
     public void undeployAutoscalePolicy(String policyId) throws InvalidPolicyException {
         if (autoscalePolicyListMap.containsKey(policyId)) {
             if (log.isDebugEnabled()) {
-                log.debug("Removing policy :" + policyId);
+                log.debug("Removing policy:" + policyId);
             }
             autoscalePolicyListMap.remove(policyId);
             RegistryManager.getInstance().removeAutoscalerPolicy(policyId);

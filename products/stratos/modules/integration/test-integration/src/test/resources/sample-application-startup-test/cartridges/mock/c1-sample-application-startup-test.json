@@ -1,10 +1,10 @@
 {
-    "type": "c1-sample-applications-test",
+    "type": "c1-sample-application-startup-test",
     "provider": "apache",
     "host": "stratos.apache.org",
     "category": "data",
-    "displayName": "c1-sample-applications-test",
-    "description": "c1-sample-applications-test Cartridge",
+    "displayName": "c1-sample-application-startup-test",
+    "description": "c1-sample-application-startup-test Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [

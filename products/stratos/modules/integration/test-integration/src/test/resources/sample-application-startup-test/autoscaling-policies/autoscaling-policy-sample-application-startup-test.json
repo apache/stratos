@@ -1,5 +1,5 @@
 {
-    "id": "autoscaling-policy-sample-applications-test",
+    "id": "autoscaling-policy-sample-application-startup-test",
     "loadThresholds": {
         "requestsInFlight": {
             "threshold": 35

@@ -45,89 +45,92 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SampleApplicationStartupTestCase.class);
     private static final String RESOURCES_PATH = "/sample-application-startup-test";
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, description = "Application startup, activation and faulty member " +
-            "detection", groups = {"stratos.application.startup", "smoke"})
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
+          description = "Application startup, activation and faulty member " + "detection",
+          groups = { "stratos.application.startup", "smoke" })
     public void testApplication() throws Exception {
-        String autoscalingPolicyId = "autoscaling-policy-sample-applications-test";
+        String autoscalingPolicyId = "autoscaling-policy-sample-application-startup-test";
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
         log.info("Adding autoscaling policy [autoscale policy id] " + autoscalingPolicyId);
-        boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                        + "/" + autoscalingPolicyId + ".json",
+        boolean addedScalingPolicy = restClient.addEntity(
+                RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(addedScalingPolicy);
 
-        log.info("Adding cartridge [cartridge type] c1-sample-applications-test");
+        log.info("Adding cartridge [cartridge type] c1-sample-application-startup-test");
         boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-application-startup-test.json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC1);
 
-        log.info("Adding network partition [network partition id] network-partition-sample-applications-test-1");
+        log.info("Adding network partition [network partition id] sample-application-startup-test");
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-sample-applications-test-1.json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-sample-application-startup-test.json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
-        log.info("Adding deployment policy [deployment policy id] deployment-policy-sample-applications-test");
+        log.info("Adding deployment policy [deployment policy id] deployment-policy-sample-application-startup-test");
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-sample-applications-test.json",
-                RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
+                        "deployment-policy-sample-application-startup-test.json", RestConstants.DEPLOYMENT_POLICIES,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(addedDep);
 
-        log.info("Adding application [application id] sample-applications-test-1");
+        log.info("Adding application [application id] sample-application-startup-test");
         boolean addedApp = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        "sample-applications-test-1.json", RestConstants.APPLICATIONS,
-                RestConstants.APPLICATIONS_NAME);
+                "sample-application-startup-test.json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
         assertEquals(addedApp, true);
 
-        ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "sample-applications-test-1", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-        assertEquals(bean.getApplicationId(), "sample-applications-test-1");
+        ApplicationBean bean = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "sample-application-startup-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
+        assertEquals(bean.getApplicationId(), "sample-application-startup-test");
 
-        log.info("Adding application policy [application policy id] application-policy-sample-applications-test");
+        log.info(
+                "Adding application policy [application policy id] application-policy-sample-application-startup-test");
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        "application-policy-sample-applications-test.json", RestConstants.APPLICATION_POLICIES,
+                        "application-policy-sample-application-startup-test.json", RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(addAppPolicy);
 
-        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient.getEntity(
-                RestConstants.APPLICATION_POLICIES, "application-policy-sample-applications-test",
-                ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(policyBean.getId(), "application-policy-sample-applications-test");
+        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient
+                .getEntity(RestConstants.APPLICATION_POLICIES, "application-policy-sample-application-startup-test",
+                        ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+        assertEquals(policyBean.getId(), "application-policy-sample-application-startup-test");
 
         // Used policies/cartridges should not removed...asserting validations when removing policies
         log.info("Trying to remove the used autoscaling policy...");
-        boolean removedUsedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        boolean removedUsedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         assertFalse(removedUsedAuto);
 
         log.info("Trying to remove the used network partition...");
-        boolean removedUsedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-sample-applications-test-1",
-                RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedUsedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-application-startup-test",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertFalse(removedUsedNet);
 
         log.info("Trying to remove the used deployment policy...");
-        boolean removedUsedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-sample-applications-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+        boolean removedUsedDep = restClient
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-application-startup-test",
+                        RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertFalse(removedUsedDep);
 
-        log.info("Deploying application [application id] sample-applications-test-1 using [application policy id] " +
-                "application-policy-sample-applications-test");
-        String resourcePath = RestConstants.APPLICATIONS + "/sample-applications-test-1" +
-                RestConstants.APPLICATIONS_DEPLOY + "/application-policy-sample-applications-test";
-        boolean deployed = restClient.deployEntity(resourcePath,
-                RestConstants.APPLICATIONS_NAME);
+        log.info("Deploying application [application id] sample-application-startup-test using [application policy id] "
+                + "application-policy-sample-application-startup-test");
+        String resourcePath = RestConstants.APPLICATIONS + "/sample-application-startup-test" +
+                RestConstants.APPLICATIONS_DEPLOY + "/application-policy-sample-application-startup-test";
+        boolean deployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
         assertTrue(deployed);
 
         log.info("Trying to remove the used application policy");
-        boolean removedUsedAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                "application-policy-sample-applications-test", RestConstants.APPLICATION_POLICIES_NAME);
+        boolean removedUsedAppPolicy = restClient
+                .removeEntity(RestConstants.APPLICATION_POLICIES, "application-policy-sample-application-startup-test",
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertFalse(removedUsedAppPolicy);
 
         log.info("Trying to remove the deployed application without undeploying first");
-        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "sample-applications-test-1",
+        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "sample-application-startup-test",
                 RestConstants.APPLICATIONS_NAME);
         assertFalse(removed);
 
@@ -137,10 +140,10 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         log.info("Waiting for cluster status to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean.getApplicationId());
 
-        log.info("Terminating members in [cluster id] c1-sample-applications-test in mock IaaS directly to simulate " +
-                "faulty members...");
-        Map<String, Member> memberMap = TopologyHandler.getInstance().getMembersForCluster
-                ("c1-sample-applications-test", bean.getApplicationId());
+        log.info("Terminating members in [cluster id] c1-sample-application-startup-test in mock IaaS directly to "
+                + "simulate faulty members...");
+        Map<String, Member> memberMap = TopologyHandler.getInstance()
+                .getMembersForCluster("c1-sample-application-startup-test", bean.getApplicationId());
         for (Map.Entry<String, Member> entry : memberMap.entrySet()) {
             String memberId = entry.getValue().getMemberId();
             TopologyHandler.getInstance().terminateMemberInMockIaas(memberId, mockIaasApiClient);
@@ -157,59 +160,67 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         log.info("Waiting for cluster status to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean.getApplicationId());
 
-        log.info("Un-deploying the application [application id] sample-applications-test-1");
-        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/sample-applications-test-1" +
+        log.info("Un-deploying the application [application id] sample-application-startup-test");
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/sample-application-startup-test" +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
-        boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
-                RestConstants.APPLICATIONS_NAME);
+        boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy, RestConstants.APPLICATIONS_NAME);
         assertTrue(unDeployed);
 
-        boolean undeploy = topologyHandler.assertApplicationUndeploy("sample-applications-test-1");
+        boolean undeploy = topologyHandler.assertApplicationUndeploy("sample-application-startup-test");
         if (!undeploy) {
             //Need to forcefully undeploy the application
-            log.info("Force undeployment is going to start for the [application] sample-applications-test-1");
+            log.info("Force undeployment is going to start for the [application] sample-application-startup-test");
 
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/sample-applications-test-1" +
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/sample-application-startup-test" +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("sample-applications-test-1");
+            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("sample-application-startup-test");
             assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    "sample-applications-test-1"), forceUndeployed);
+                    "sample-application-startup-test"), forceUndeployed);
         }
 
-        log.info("Removing the application [application id] sample-applications-test-1");
-        boolean removedApp = restClient.removeEntity(RestConstants.APPLICATIONS, "sample-applications-test-1",
+        log.info("Removing the application [application id] sample-application-startup-test");
+        boolean removedApp = restClient.removeEntity(RestConstants.APPLICATIONS, "sample-application-startup-test",
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(removedApp);
 
-        ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "sample-applications-test-1", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean beanRemoved = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "sample-application-startup-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertNull(beanRemoved);
 
-        log.info("Removing the application policy [application policy id] application-policy-sample-applications-test");
-        boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                "application-policy-sample-applications-test", RestConstants.APPLICATION_POLICIES_NAME);
+        log.info("Removing the application policy [application policy id] "
+                + "application-policy-sample-application-startup-test");
+        boolean removeAppPolicy = restClient
+                .removeEntity(RestConstants.APPLICATION_POLICIES, "application-policy-sample-application-startup-test",
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
 
-        log.info("Removing the cartridge [cartridge type] c1-sample-applications-test");
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-sample-applications-test",
+        log.info("Removing the cartridge [cartridge type] c1-sample-application-startup-test");
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-sample-application-startup-test",
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC1);
 
         log.info("Removing the autoscaling policy [autoscaling policy id] " + autoscalingPolicyId);
-        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(removedAuto);
 
-        log.info("Removing the deployment policy [deployment policy id] deployment-policy-sample-applications-test");
-        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-sample-applications-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+        log.info(
+                "Removing the deployment policy [deployment policy id] "
+                        + "deployment-policy-sample-application-startup-test");
+        boolean removedDep = restClient
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-application-startup-test",
+                        RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
 
-        log.info("Removing the network partition [network partition id] network-partition-sample-applications-test-1");
-        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-sample-applications-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        log.info(
+                "Removing the network partition [network partition id] "
+                        + "network-partition-sample-application-startup-test");
+        boolean removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-application-startup-test",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
     }
 }
