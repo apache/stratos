@@ -689,13 +689,9 @@ public class CloudControllerContext implements Serializable {
         this.coordinator = coordinator;
     }
 
-    public void persist() {
+    public void persist() throws RegistryException {
         if ((!isClustered()) || (isCoordinator())) {
-            try {
-                RegistryManager.getInstance().persist(CloudControllerConstants.DATA_RESOURCE, this);
-            } catch (RegistryException e) {
-                log.error("Could not persist cloud controller context in registry", e);
-            }
+            RegistryManager.getInstance().persist(CloudControllerConstants.DATA_RESOURCE, this);
         }
     }
 

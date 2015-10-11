@@ -31,6 +31,7 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceMaintenance
 import org.apache.stratos.messaging.listener.instance.status.InstanceReadyToShutdownEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.concurrent.ExecutorService;
 
@@ -65,7 +66,11 @@ public class InstanceStatusTopicReceiver {
         statusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) event);
+                try {
+                    TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) event);
+                } catch (RegistryException e) {
+                    log.error("Could not persist data in registry data store", e);
+                }
             }
         });
 
@@ -82,7 +87,7 @@ public class InstanceStatusTopicReceiver {
                 try {
                     TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) event);
                 } catch (Exception e) {
-                    String error = "Failed to retrieve the instance status event message";
+                    String error = "Failed to process the instance status event message";
                     log.error(error, e);
                 }
             }
@@ -94,7 +99,7 @@ public class InstanceStatusTopicReceiver {
                 try {
                     TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) event);
                 } catch (Exception e) {
-                    String error = "Failed to retrieve the instance status event message";
+                    String error = "Failed to process the instance status event message";
                     log.error(error, e);
                 }
             }

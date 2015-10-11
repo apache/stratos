@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.concurrent.ExecutorService;
 
@@ -55,7 +56,11 @@ public class ClusterStatusTopicReceiver {
         statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
+                try {
+                    TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
+                } catch (RegistryException e) {
+                    log.error("Failed to process cluster status reset event", e);
+                }
             }
         });
 
@@ -69,28 +74,44 @@ public class ClusterStatusTopicReceiver {
         statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterActivatedEvent((ClusterStatusClusterActivatedEvent) event);
+                try {
+                    TopologyBuilder.handleClusterActivatedEvent((ClusterStatusClusterActivatedEvent) event);
+                } catch (RegistryException e) {
+                    log.error("Failed to process cluster activated event", e);
+                }
             }
         });
 
         statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatedEvent((ClusterStatusClusterTerminatedEvent) event);
+                try {
+                    TopologyBuilder.handleClusterTerminatedEvent((ClusterStatusClusterTerminatedEvent) event);
+                } catch (RegistryException e) {
+                    log.error("Failed to process cluster termination event", e);
+                }
             }
         });
 
         statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatingEvent((ClusterStatusClusterTerminatingEvent) event);
+                try {
+                    TopologyBuilder.handleClusterTerminatingEvent((ClusterStatusClusterTerminatingEvent) event);
+                } catch (RegistryException e) {
+                    log.error("Failed to process cluster termination event", e);
+                }
             }
         });
 
         statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterInactivateEvent((ClusterStatusClusterInactivateEvent) event);
+                try {
+                    TopologyBuilder.handleClusterInactivateEvent((ClusterStatusClusterInactivateEvent) event);
+                } catch (RegistryException e) {
+                    log.error("Failed to process cluster inactive event", e);
+                }
             }
         });
     }

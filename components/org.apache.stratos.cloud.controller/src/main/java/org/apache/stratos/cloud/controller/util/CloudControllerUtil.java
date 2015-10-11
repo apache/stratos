@@ -203,14 +203,6 @@ public class CloudControllerUtil {
         return javaUtilsProperties;
     }
 
-    public static void persistTopology(Topology topology) {
-        try {
-            RegistryManager.getInstance().persist(CloudControllerConstants.TOPOLOGY_RESOURCE, topology);
-        } catch (RegistryException e) {
-            String msg = "Failed to persist the Topology in registry. ";
-            log.fatal(msg, e);
-        }
-    }
 
     public static Topology retrieveTopology() {
         try {

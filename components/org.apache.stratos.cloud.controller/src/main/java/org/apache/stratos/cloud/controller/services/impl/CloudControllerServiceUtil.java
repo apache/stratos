@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.Properties;
 
@@ -48,11 +49,10 @@ public class CloudControllerServiceUtil {
      *
      * @param memberContext
      */
-    public static void executeMemberTerminationPostProcess(MemberContext memberContext) {
+    public static void executeMemberTerminationPostProcess(MemberContext memberContext) throws RegistryException {
         if (memberContext == null) {
-            return;
+            throw new RuntimeException("Member context is null. Could not execute member termination post process");
         }
-
         String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
 
         // Update the topology
