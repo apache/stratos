@@ -42,10 +42,6 @@ public class CloudControllerServiceUtil {
 
     private static final Log log = LogFactory.getLog(CloudControllerServiceUtil.class);
 
-    public static Iaas buildIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-        return iaasProvider.getIaas();
-    }
-
     /**
      * Update the topology, publish statistics to DAS, remove member context
      * and persist cloud controller context.
@@ -60,23 +56,23 @@ public class CloudControllerServiceUtil {
         String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
 
         // Update the topology
-        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
-                memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
-                partitionId, memberContext.getMemberId());
+        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(),
+                memberContext.getNetworkPartitionId(), partitionId, memberContext.getMemberId());
 
         // Remove member context
-        CloudControllerContext.getInstance().removeMemberContext(memberContext.getClusterId(), memberContext.getMemberId());
+        CloudControllerContext.getInstance()
+                .removeMemberContext(memberContext.getClusterId(), memberContext.getMemberId());
 
         // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
     }
 
     public static boolean isValidIpAddress(String ip) {
-        boolean isValid = InetAddresses.isInetAddress(ip);
-        return isValid;
+        return InetAddresses.isInetAddress(ip);
     }
 
-    public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
+    public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider)
+            throws InvalidPartitionException {
         if (iaasProvider != null) {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
@@ -93,7 +89,8 @@ public class CloudControllerServiceUtil {
         }
     }
 
-    public static boolean validatePartition(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
+    public static boolean validatePartition(Partition partition, IaasProvider iaasProvider)
+            throws InvalidPartitionException {
         validatePartitionAndGetIaasProvider(partition, iaasProvider);
         return true;
     }

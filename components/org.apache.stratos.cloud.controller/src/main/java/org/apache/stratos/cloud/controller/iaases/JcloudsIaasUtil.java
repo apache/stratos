@@ -56,8 +56,7 @@ public class JcloudsIaasUtil {
             ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
             iaasProvider.setComputeService(computeService);
         } catch (Exception e) {
-            String msg = "Unable to build the jclouds object for iaas "
-                    + "of type: " + iaasProvider.getType();
+            String msg = "Unable to build the jclouds object for iaas of type: " + iaasProvider.getType();
             log.error(msg, e);
             throw new InvalidIaasProviderException(msg, e);
         }

@@ -26,7 +26,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.ec2.EC2PartitionValidator;
-import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.Scope;
 
@@ -48,22 +47,19 @@ public class CloudStackPartitionValidator implements PartitionValidator {
 
     @Override
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-
         try {
             IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
-            Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+            Iaas updatedIaas = updatedIaasProvider.buildIaas();
             updatedIaas.setIaasProvider(updatedIaasProvider);
-
             if (properties.containsKey(Scope.ZONE.toString())) {
                 String zone = properties.getProperty(Scope.ZONE.toString());
                 iaas.isValidZone(null, zone);
                 updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
-                updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
+                updatedIaas = updatedIaasProvider.buildIaas();
                 updatedIaas.setIaasProvider(updatedIaasProvider);
             }
-
         } catch (Exception e) {
-            String msg = "Invalid partition detected: [partition-id] " + partition.getId() + e.getMessage();
+            String msg = String.format("Invalid partition detected: [partition-id] %s", partition.getId());
             log.error(msg, e);
             throw new InvalidPartitionException(msg, e);
         }

@@ -76,8 +76,7 @@ public class EC2Iaas extends JcloudsIaas {
     public void buildTemplate() {
         IaasProvider iaasInfo = getIaasProvider();
         if (iaasInfo.getComputeService() == null) {
-            String msg = "Compute service is null for IaaS provider: "
-                    + iaasInfo.getName();
+            String msg = "Compute service is null for IaaS provider: " + iaasInfo.getName();
             log.fatal(msg);
             throw new CloudControllerException(msg);
         }
@@ -87,15 +86,11 @@ public class EC2Iaas extends JcloudsIaas {
         // set image id specified
         templateBuilder.imageId(iaasInfo.getImage());
 
-        if (!(iaasInfo instanceof IaasProvider)) {
-            templateBuilder.locationId(iaasInfo.getType());
-        }
-
         if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
             for (Location location : locations) {
-                if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
-                        location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+                if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) && location
+                        .getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
                     templateBuilder.locationId(location.getId());
                     log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
                             + " with id: " + location.getId());
@@ -113,7 +108,8 @@ public class EC2Iaas extends JcloudsIaas {
         Template template = templateBuilder.build();
 
         if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
-            if (!template.getLocation().getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+            if (!template.getLocation().getId()
+                    .equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
                 log.warn("couldn't find assignable ZONE of id :" +
                         iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) + " in the IaaS. " +
                         "Hence using the default location as " + template.getLocation().getScope().toString() +
@@ -125,25 +121,20 @@ public class EC2Iaas extends JcloudsIaas {
         // blocking, but if you
         // wish to assign IPs manually, it can be non-blocking.
         // is auto-assign-ip mode or manual-assign-ip mode?
-        boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
-                .getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
-        template.getOptions().as(TemplateOptions.class)
-                .blockUntilRunning(blockUntilRunning);
+        boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
+        template.getOptions().as(TemplateOptions.class).blockUntilRunning(blockUntilRunning);
 
         // this is required in order to avoid creation of additional security
         // groups by jclouds.
-        template.getOptions().as(TemplateOptions.class)
-                .inboundPorts(new int[]{});
+        template.getOptions().as(TemplateOptions.class).inboundPorts();
 
         // set EC2 specific options
 
-
         if (iaasInfo.getProperty(CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS) != null) {
-            boolean associatePublicIp = Boolean.parseBoolean(iaasInfo.getProperty(
-                    CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS));
+            boolean associatePublicIp = Boolean
+                    .parseBoolean(iaasInfo.getProperty(CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS));
             if (associatePublicIp) {
-                template.getOptions().as(AWSEC2TemplateOptions.class)
-                        .associatePublicIpAddress();
+                template.getOptions().as(AWSEC2TemplateOptions.class).associatePublicIpAddress();
             }
         }
 
@@ -159,18 +150,16 @@ public class EC2Iaas extends JcloudsIaas {
 
         // security group names
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
-            template.getOptions()
-                    .as(AWSEC2TemplateOptions.class)
-                    .securityGroups(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
-                            CloudControllerConstants.ENTRY_SEPARATOR));
+            template.getOptions().as(AWSEC2TemplateOptions.class).securityGroups(
+                    iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS)
+                            .split(CloudControllerConstants.ENTRY_SEPARATOR));
 
         }
 
         // ability to define tags
         if (iaasInfo.getProperty(CloudControllerConstants.TAGS) != null) {
-            template.getOptions()
-                    .as(AWSEC2TemplateOptions.class)
-                    .tags(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
+            template.getOptions().as(AWSEC2TemplateOptions.class).tags(Arrays
+                    .asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
 
         }
@@ -180,30 +169,25 @@ public class EC2Iaas extends JcloudsIaas {
 
         for (String propertyKey : iaasInfo.getProperties().keySet()) {
             if (propertyKey.startsWith(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX)) {
-                keyValuePairTagsMap.put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
-                        iaasInfo.getProperties().get(propertyKey));
-                template.getOptions()
-                        .as(AWSEC2TemplateOptions.class)
-                        .userMetadata(keyValuePairTagsMap);
+                keyValuePairTagsMap
+                        .put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
+                                iaasInfo.getProperties().get(propertyKey));
+                template.getOptions().as(AWSEC2TemplateOptions.class).userMetadata(keyValuePairTagsMap);
             }
 
         }
 
-
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
-            template.getOptions()
-                    .as(AWSEC2TemplateOptions.class)
-                    .securityGroupIds(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
+            template.getOptions().as(AWSEC2TemplateOptions.class).securityGroupIds(
+                    iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
                             .split(CloudControllerConstants.ENTRY_SEPARATOR));
 
         }
-
 
         if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
             template.getOptions().as(AWSEC2TemplateOptions.class)
                     .keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
         }
-
 
         if (iaasInfo.getNetworkInterfaces() != null) {
             List<String> networks = new ArrayList<String>(iaasInfo.getNetworkInterfaces().length);
@@ -226,58 +210,39 @@ public class EC2Iaas extends JcloudsIaas {
     }
 
     @Override
-    public synchronized boolean createKeyPairFromPublicKey(String region, String keyPairName,
-                                                           String publicKey) {
-
+    public synchronized boolean createKeyPairFromPublicKey(String region, String keyPairName, String publicKey) {
         IaasProvider iaasInfo = getIaasProvider();
-
         String ec2Msg = " ec2. Region: " + region + " - Key Pair Name: ";
-
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         AWSKeyPairApi keyPairApi = context.unwrapApi(AWSEC2Api.class).getKeyPairApiForRegion(region).get();
-
         KeyPair keyPair = keyPairApi.importKeyPairInRegion(region, keyPairName, publicKey);
-
         if (keyPair != null) {
-
-            iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
-                    .keyPair(keyPair.getKeyName());
-
+            iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class).keyPair(keyPair.getKeyName());
             log.info(SUCCESSFUL_LOG_LINE + ec2Msg + keyPair.getKeyName());
             return true;
         }
-
         log.error(FAILED_LOG_LINE + ec2Msg);
-
         return false;
     }
 
     @Override
     public synchronized List<String> associateAddresses(NodeMetadata node) {
-
         IaasProvider iaasInfo = getIaasProvider();
-
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         ElasticIPAddressApi elasticIPAddressApi = context.unwrapApi(AWSEC2Api.class).getElasticIPAddressApi().get();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
         String ip = null;
 
         // first try to find an unassigned IP.
-        ArrayList<PublicIpInstanceIdPair> unassignedIps = Lists
-                .newArrayList(Iterables.filter(elasticIPAddressApi.describeAddressesInRegion(region),
-                        new Predicate<PublicIpInstanceIdPair>() {
+        ArrayList<PublicIpInstanceIdPair> unassignedIps = Lists.newArrayList(Iterables
+                .filter(elasticIPAddressApi.describeAddressesInRegion(region), new Predicate<PublicIpInstanceIdPair>() {
 
-                            @Override
-                            public boolean apply(PublicIpInstanceIdPair arg0) {
-                                return arg0.getInstanceId() == null;
-                            }
+                    @Override
+                    public boolean apply(PublicIpInstanceIdPair arg0) {
+                        return arg0.getInstanceId() == null;
+                    }
 
-                        }));
+                }));
 
         if (!unassignedIps.isEmpty()) {
             // try to prevent multiple parallel launches from choosing the same
@@ -289,8 +254,7 @@ public class EC2Iaas extends JcloudsIaas {
         // if no unassigned IP is available, we'll try to allocate an IP.
         if (ip == null || ip.isEmpty()) {
             try {
-                ip = elasticIPAddressApi
-                        .allocateAddressInRegion(region);
+                ip = elasticIPAddressApi.allocateAddressInRegion(region);
                 log.info("Allocated ip [" + ip + "]");
 
             } catch (Exception e) {
@@ -318,8 +282,7 @@ public class EC2Iaas extends JcloudsIaas {
             retries++;
         }
 
-        log.debug("Successfully associated an IP address " + ip
-                + " for node with id: " + node.getId());
+        log.debug("Successfully associated an IP address " + ip + " for node with id: " + node.getId());
 
         List<String> associatedIPs = new ArrayList<String>();
         associatedIPs.add(ip);
@@ -338,11 +301,9 @@ public class EC2Iaas extends JcloudsIaas {
      * @param ip
      * @param id
      */
-    private boolean associatePublicIp(ElasticIPAddressApi addressApi, String region,
-                                      String ip, String id) {
+    private boolean associatePublicIp(ElasticIPAddressApi addressApi, String region, String ip, String id) {
         try {
-            addressApi.associateAddressInRegion(
-                    region, ip, id);
+            addressApi.associateAddressInRegion(region, ip, id);
             log.info("Successfully associated public IP ");
             return true;
         } catch (Exception e) {
@@ -356,26 +317,20 @@ public class EC2Iaas extends JcloudsIaas {
 
         IaasProvider iaasInfo = getIaasProvider();
 
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         ElasticIPAddressApi elasticIPAddressApi = context.unwrapApi(AWSEC2Api.class).getElasticIPAddressApi().get();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-        elasticIPAddressApi.disassociateAddressInRegion(
-                region, ip);
-        elasticIPAddressApi.releaseAddressInRegion(region,
-                ip);
+        elasticIPAddressApi.disassociateAddressInRegion(region, ip);
+        elasticIPAddressApi.releaseAddressInRegion(region, ip);
     }
 
     @Override
     public boolean isValidRegion(String region) throws InvalidRegionException {
-
         IaasProvider iaasInfo = getIaasProvider();
-
         if (region == null || iaasInfo == null) {
-            String msg =
-                    "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " +
-                            iaasInfo;
+            String msg = "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " +
+                    iaasInfo;
             log.error(msg);
             throw new InvalidRegionException(msg);
         }
@@ -397,13 +352,10 @@ public class EC2Iaas extends JcloudsIaas {
 
     @Override
     public boolean isValidZone(String region, String zone) throws InvalidZoneException {
-
         IaasProvider iaasInfo = getIaasProvider();
-
         if (zone == null || iaasInfo == null) {
-            String msg =
-                    "Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
-                            iaasInfo;
+            String msg = "Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
+                    iaasInfo;
             log.error(msg);
             throw new InvalidZoneException(msg);
         }
@@ -411,9 +363,7 @@ public class EC2Iaas extends JcloudsIaas {
         AvailabilityZoneAndRegionApi zoneRegionApi = context.unwrapApi(AWSEC2Api.class).
                 getAvailabilityZoneAndRegionApiForRegion(region).get();
 
-        Set<AvailabilityZoneInfo> availabilityZones =
-                zoneRegionApi.describeAvailabilityZonesInRegion(region
-                );
+        Set<AvailabilityZoneInfo> availabilityZones = zoneRegionApi.describeAvailabilityZonesInRegion(region);
         for (AvailabilityZoneInfo zoneInfo : availabilityZones) {
             String configuredZone = zoneInfo.getZone();
             if (zone.equalsIgnoreCase(configuredZone)) {
@@ -432,7 +382,6 @@ public class EC2Iaas extends JcloudsIaas {
 
     @Override
     public boolean isValidHost(String zone, String host) throws InvalidHostException {
-
         IaasProvider iaasInfo = getIaasProvider();
 
         // there's no such concept in EC2
@@ -450,19 +399,19 @@ public class EC2Iaas extends JcloudsIaas {
     public String createVolume(int sizeGB, String snapshotId) {
         IaasProvider iaasInfo = getIaasProvider();
 
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
 
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
         String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
 
         if (region == null || zone == null) {
-            log.fatal("Cannot create a new volume in the [region] : " + region
-                    + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+            log.fatal("Cannot create a new volume in the [region] : " + region + ", [zone] : " + zone + " of Iaas : "
+                    + iaasInfo);
             return null;
         }
 
-        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region)
+                .get();
 
         Volume volume;
         if (StringUtils.isEmpty(snapshotId)) {
@@ -477,37 +426,35 @@ public class EC2Iaas extends JcloudsIaas {
             volume = blockStoreApi.createVolumeFromSnapshotInAvailabilityZone(zone, snapshotId);
         }
 
-
         if (volume == null) {
-            log.fatal("Volume creation was unsuccessful. [region] : " + region
-                    + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+            log.fatal("Volume creation was unsuccessful. [region] : " + region + ", [zone] : " + zone + " of Iaas : "
+                    + iaasInfo);
             return null;
         }
 
-        log.info("Successfully created a new volume [id]: " + volume.getId()
-                + " in [region] : " + region + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+        log.info(
+                "Successfully created a new volume [id]: " + volume.getId() + " in [region] : " + region + ", [zone] : "
+                        + zone + " of Iaas : " + iaasInfo);
         return volume.getId();
     }
 
     @Override
     public String attachVolume(String instanceId, String volumeId, String deviceName) {
         IaasProvider iaasInfo = getIaasProvider();
-
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
         String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
         String device = deviceName == null ? "/dev/sdh" : deviceName;
 
         if (region == null || zone == null) {
-            log.fatal("Cannot attach the volume [id]: " + volumeId + " in the [region] : " + region
-                    + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+            log.fatal(
+                    "Cannot attach the volume [id]: " + volumeId + " in the [region] : " + region + ", [zone] : " + zone
+                            + " of Iaas : " + iaasInfo);
             return null;
         }
 
-        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
-
+        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region)
+                .get();
         Volume.Status volumeStatus = this.getVolumeStatus(blockStoreApi, region, volumeId);
 
         if (log.isDebugEnabled()) {
@@ -534,8 +481,7 @@ public class EC2Iaas extends JcloudsIaas {
 
         if (attachment == null) {
             log.fatal("Volume [id]: " + volumeId + " attachment for instance [id]: " + instanceId
-                    + " was unsuccessful. [region] : " + region
-                    + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+                    + " was unsuccessful. [region] : " + region + ", [zone] : " + zone + " of Iaas : " + iaasInfo);
             return null;
         }
 
@@ -554,67 +500,56 @@ public class EC2Iaas extends JcloudsIaas {
     @Override
     public void detachVolume(String instanceId, String volumeId) {
         IaasProvider iaasInfo = getIaasProvider();
-
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
         if (region == null) {
             log.fatal("Cannot detach the volume [id]: " + volumeId + " from the instance [id]: " + instanceId
-                    + " of the [region] : " + region
-                    + " of Iaas : " + iaasInfo);
+                    + " of the [region] : " + region + " of Iaas : " + iaasInfo);
             return;
         }
 
-        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
-
+        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region)
+                .get();
         Set<Volume> volumeDescriptions = blockStoreApi.describeVolumesInRegion(region, volumeId);
         Iterator<Volume> it = volumeDescriptions.iterator();
 
         while (it.hasNext()) {
             Volume.Status status = it.next().getStatus();
-
             if (status == Volume.Status.AVAILABLE) {
-                log.warn(String.format("Volume %s is already in AVAILABLE state. Volume seems to be detached somehow", volumeId));
+                log.warn(String.format("Volume %s is already in AVAILABLE state. Volume seems to be detached somehow",
+                        volumeId));
                 return;
             }
         }
-
-        blockStoreApi.detachVolumeInRegion(region, volumeId, true, DetachVolumeOptions.Builder.fromInstance(instanceId));
+        blockStoreApi
+                .detachVolumeInRegion(region, volumeId, true, DetachVolumeOptions.Builder.fromInstance(instanceId));
 
         log.info("Detachment of Volume [id]: " + volumeId + " from instance [id]: " + instanceId
-                + " was successful. [region] : " + region
-                + " of Iaas : " + iaasInfo);
+                + " was successful. [region] : " + region + " of Iaas : " + iaasInfo);
     }
 
     @Override
     public void deleteVolume(String volumeId) {
         IaasProvider iaasInfo = getIaasProvider();
-
-        ComputeServiceContext context = iaasInfo.getComputeService()
-                .getContext();
-
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
         if (region == null) {
-            log.fatal("Cannot delete the volume [id]: " + volumeId + " of the [region] : " + region
-                    + " of Iaas : " + iaasInfo);
+            log.fatal("Cannot delete the volume [id]: " + volumeId + " of the [region] : " + region + " of Iaas : "
+                    + iaasInfo);
             return;
         }
-
-        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+        ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region)
+                .get();
         blockStoreApi.deleteVolumeInRegion(region, volumeId);
-
-        log.info("Deletion of Volume [id]: " + volumeId + " was successful. [region] : " + region
-                + " of Iaas : " + iaasInfo);
+        log.info("Deletion of Volume [id]: " + volumeId + " was successful. [region] : " + region + " of Iaas : "
+                + iaasInfo);
     }
 
-    @Override
     /*
         Converts the user defined volume device to Ec2 specific device.
         For example /dev/sdf is converted to /dev/xvdf
      */
+    @Override
     public String getIaasDevice(String device) {
         String[] split = device.split("/");
         String x = split[split.length - 1];
@@ -624,6 +559,4 @@ public class EC2Iaas extends JcloudsIaas {
         ec2Device.append(x.charAt(x.length() - 1));
         return ec2Device.toString();
     }
-
-
 }

@@ -48,10 +48,8 @@ import java.util.concurrent.locks.Lock;
  * This object holds all runtime data and provides faster access. This is a Singleton class.
  */
 public class CloudControllerContext implements Serializable {
-
     private static final long serialVersionUID = -2662307358852779897L;
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
-
     public static boolean unitTest = false;
 
     private static final String CC_CLUSTER_ID_TO_MEMBER_CTX_MAP = "CC_CLUSTER_ID_TO_MEMBER_CTX_MAP";
@@ -62,11 +60,15 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX_MAP = "CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX_MAP";
     private static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP";
     private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
-    private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
-    private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
-    private static final String CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP = "CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP";
+    private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP
+            = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
+    private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP
+            = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
+    private static final String CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP
+            = "CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP";
     private static final String CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP = "CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP";
-    private static final String CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP = "CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP";
+    private static final String CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP
+            = "CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP";
 
     private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
     private static final String CC_MEMBER_CTX_WRITE_LOCK = "CC_MEMBER_CTX_WRITE_LOCK";
@@ -129,8 +131,8 @@ public class CloudControllerContext implements Serializable {
     /**
      * Thread pool used in this task to execute parallel tasks.
      */
-    private transient ExecutorService executorService = StratosThreadPool.getExecutorService(
-            "cloud.controller.context.thread.pool", 10);
+    private transient ExecutorService executorService = StratosThreadPool
+            .getExecutorService("cloud.controller.context.thread.pool", 10);
 
     /**
      * Map of registered {@link org.apache.stratos.cloud.controller.domain.Cartridge}s
@@ -199,13 +201,17 @@ public class CloudControllerContext implements Serializable {
         clusterIdToContextMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_CLUSTER_CTX);
         cartridgeTypeToPartitionIdsMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP);
         cartridgeTypeToCartridgeMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP);
-        serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
-        networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
-        partitionToIaasProviderByCartridge = distributedObjectProvider.getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
+        serviceGroupNameToServiceGroupMap = distributedObjectProvider
+                .getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
+        networkPartitionIDToNetworkPartitionMap = distributedObjectProvider
+                .getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
+        partitionToIaasProviderByCartridge = distributedObjectProvider
+                .getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
         cartridgeTypeToIaasProviders = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP);
-        applicationIdToClusterIdToPortMappings = distributedObjectProvider.getMap(CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP);
+        applicationIdToClusterIdToPortMappings = distributedObjectProvider
+                .getMap(CC_APPLICATION_ID_TO_CLUSTER_ID_TO_PORT_MAPPING_MAP);
 
-        if(!unitTest) {
+        if (!unitTest) {
             // Update context from the registry
             updateContextFromRegistry();
         }
@@ -503,16 +509,16 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addKubernetesClusterContext(KubernetesClusterContext kubernetesClusterContext) {
-        kubClusterIdToKubClusterContextMap.put(
-                kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
+        kubClusterIdToKubClusterContextMap
+                .put(kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
     }
 
     public void updateKubernetesClusterContext(KubernetesClusterContext kubernetesClusterContext) {
-        kubClusterIdToKubClusterContextMap.put(
-                kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
+        kubClusterIdToKubClusterContextMap
+                .put(kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
     }
 
-    public void removeKubernetesClusterContext(String kubernetesClusterId){
+    public void removeKubernetesClusterContext(String kubernetesClusterId) {
         kubClusterIdToKubClusterContextMap.remove(kubernetesClusterId);
     }
 
@@ -541,8 +547,7 @@ public class CloudControllerContext implements Serializable {
             log.info("Removing Kubernetes Host: " + kubernetesHostId);
         }
         try {
-            KubernetesCluster kubernetesClusterStored = getKubernetesClusterContainingHost(
-                    kubernetesHostId);
+            KubernetesCluster kubernetesClusterStored = getKubernetesClusterContainingHost(kubernetesHostId);
 
             // Kubernetes master can not be removed
             if (kubernetesClusterStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
@@ -558,8 +563,7 @@ public class CloudControllerContext implements Serializable {
             }
             // member count will be equal only when host object was not found
             if (kubernetesHostList.size() == kubernetesClusterStored.getKubernetesHosts().length) {
-                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] "
-                        + kubernetesHostId);
+                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] " + kubernetesHostId);
             }
             KubernetesHost[] kubernetesHostsArray = new KubernetesHost[kubernetesHostList.size()];
             kubernetesHostList.toArray(kubernetesHostsArray);
@@ -568,8 +572,7 @@ public class CloudControllerContext implements Serializable {
             kubernetesClusterStored.setKubernetesHosts(kubernetesHostsArray);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes host removed successfully: [id] %s",
-                        kubernetesHostId));
+                log.info(String.format("Kubernetes host removed successfully: [id] %s", kubernetesHostId));
             }
 
             return true;
@@ -609,7 +612,6 @@ public class CloudControllerContext implements Serializable {
         return false;
     }
 
-
     public KubernetesHost[] getKubernetesHostsInGroup(String kubernetesClusterId)
             throws NonExistingKubernetesClusterException {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
@@ -621,8 +623,7 @@ public class CloudControllerContext implements Serializable {
             return kubernetesCluster.getKubernetesHosts();
         }
         throw new NonExistingKubernetesClusterException("Kubernetes cluster " +
-                "not found: [kubernetes-cluster-id] "
-                + kubernetesClusterId);
+                "not found: [kubernetes-cluster-id] " + kubernetesClusterId);
     }
 
     public KubernetesMaster getKubernetesMasterInGroup(String kubernetesClusterId)
@@ -635,8 +636,7 @@ public class CloudControllerContext implements Serializable {
             return kubernetesCluster.getKubernetesMaster();
         }
         throw new NonExistingKubernetesClusterException("Kubernetes master " +
-                "not found: [kubernetes-cluster-id] "
-                + kubernetesClusterId);
+                "not found: [kubernetes-cluster-id] " + kubernetesClusterId);
     }
 
     public KubernetesCluster getKubernetesCluster(String kubernetesClusterId)
@@ -674,8 +674,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public KubernetesCluster[] getKubernetesClusters() {
-        return kubernetesClustersMap.values().toArray(
-                new KubernetesCluster[kubernetesClustersMap.size()]);
+        return kubernetesClustersMap.values().toArray(new KubernetesCluster[kubernetesClustersMap.size()]);
     }
 
     public boolean isClustered() {
@@ -710,25 +709,17 @@ public class CloudControllerContext implements Serializable {
                         CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
 
                         copyMap(serializedObj.kubernetesClustersMap, kubernetesClustersMap);
-                        copyMap(serializedObj.clusterIdToMemberContextListMap,
-                                clusterIdToMemberContextListMap);
-                        copyMap(serializedObj.memberIdToMemberContextMap,
-                                memberIdToMemberContextMap);
-                        copyMap(serializedObj.kubClusterIdToKubClusterContextMap,
-                                kubClusterIdToKubClusterContextMap);
+                        copyMap(serializedObj.clusterIdToMemberContextListMap, clusterIdToMemberContextListMap);
+                        copyMap(serializedObj.memberIdToMemberContextMap, memberIdToMemberContextMap);
+                        copyMap(serializedObj.kubClusterIdToKubClusterContextMap, kubClusterIdToKubClusterContextMap);
                         copyMap(serializedObj.clusterIdToContextMap, clusterIdToContextMap);
-                        copyMap(serializedObj.cartridgeTypeToPartitionIdsMap,
-                                cartridgeTypeToPartitionIdsMap);
-                        copyMap(serializedObj.cartridgeTypeToCartridgeMap,
-                                cartridgeTypeToCartridgeMap);
-                        copyMap(serializedObj.serviceGroupNameToServiceGroupMap,
-                                serviceGroupNameToServiceGroupMap);
+                        copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
+                        copyMap(serializedObj.cartridgeTypeToCartridgeMap, cartridgeTypeToCartridgeMap);
+                        copyMap(serializedObj.serviceGroupNameToServiceGroupMap, serviceGroupNameToServiceGroupMap);
                         copyMap(serializedObj.networkPartitionIDToNetworkPartitionMap,
                                 networkPartitionIDToNetworkPartitionMap);
-                        copyMap(serializedObj.partitionToIaasProviderByCartridge,
-                                partitionToIaasProviderByCartridge);
-                        copyMap(serializedObj.cartridgeTypeToIaasProviders,
-                                cartridgeTypeToIaasProviders);
+                        copyMap(serializedObj.partitionToIaasProviderByCartridge, partitionToIaasProviderByCartridge);
+                        copyMap(serializedObj.cartridgeTypeToIaasProviders, cartridgeTypeToIaasProviders);
                         copyMap(serializedObj.applicationIdToClusterIdToPortMappings,
                                 applicationIdToClusterIdToPortMappings);
 
@@ -742,8 +733,8 @@ public class CloudControllerContext implements Serializable {
                     }
                 }
             } catch (Exception e) {
-                String msg = "Unable to read cloud controller context from the registry. " +
-                        "Hence, any historical data will not be reflected";
+                String msg = "Unable to read cloud controller context from the registry. "
+                        + "Hence, any historical data will not be reflected";
                 log.warn(msg, e);
             }
         }
@@ -790,8 +781,8 @@ public class CloudControllerContext implements Serializable {
         }
         partitionToIaasProviderByCartridge.put(cartridgeType, partitionToIaasProviders);
         if (log.isInfoEnabled()) {
-            log.info("Partition map updated for the Cartridge: " + cartridgeType + ". "
-                    + "Current Partition List: " + partitionToIaasProviderByCartridge.get(cartridgeType).keySet().toString());
+            log.info("Partition map updated for the Cartridge: " + cartridgeType + ". " + "Current Partition List: "
+                    + partitionToIaasProviderByCartridge.get(cartridgeType).keySet().toString());
         }
     }
 
@@ -838,7 +829,6 @@ public class CloudControllerContext implements Serializable {
 
     public IaasProvider getIaasProvider(String cartridgeType, String iaasType) {
         List<IaasProvider> iaasProviders = cartridgeTypeToIaasProviders.get(cartridgeType);
-
         if (iaasProviders != null) {
             for (IaasProvider iaasProvider : iaasProviders) {
                 if (iaasProvider.getType().equals(iaasType)) {
@@ -856,6 +846,7 @@ public class CloudControllerContext implements Serializable {
 
     /**
      * Add a cluster port mapping.
+     *
      * @param portMapping
      */
     public void addClusterPortMapping(ClusterPortMapping portMapping) {
@@ -863,36 +854,37 @@ public class CloudControllerContext implements Serializable {
         String clusterId = portMapping.getClusterId();
 
         List<ClusterPortMapping> portMappings = null;
-        Map<String, List<ClusterPortMapping>> clusterIdToPortMappings =
-                applicationIdToClusterIdToPortMappings.get(applicationId);
+        Map<String, List<ClusterPortMapping>> clusterIdToPortMappings = applicationIdToClusterIdToPortMappings
+                .get(applicationId);
 
-        if(clusterIdToPortMappings == null) {
+        if (clusterIdToPortMappings == null) {
             clusterIdToPortMappings = new HashMap<String, List<ClusterPortMapping>>();
             applicationIdToClusterIdToPortMappings.put(applicationId, clusterIdToPortMappings);
         } else {
             portMappings = clusterIdToPortMappings.get(portMapping.getClusterId());
         }
-        if(portMappings == null) {
+        if (portMappings == null) {
             portMappings = new ArrayList<ClusterPortMapping>();
             clusterIdToPortMappings.put(clusterId, portMappings);
         }
 
-        if(!portMappings.contains(portMapping)) {
+        if (!portMappings.contains(portMapping)) {
             portMappings.add(portMapping);
         }
     }
 
     /**
      * Get cluster port mappings of an application cluster.
+     *
      * @param applicationId
      * @param clusterId
      * @return
      */
     public List<ClusterPortMapping> getClusterPortMappings(String applicationId, String clusterId) {
-        Map<String, List<ClusterPortMapping>> clusterIdToPortMappings =
-                applicationIdToClusterIdToPortMappings.get(applicationId);
+        Map<String, List<ClusterPortMapping>> clusterIdToPortMappings = applicationIdToClusterIdToPortMappings
+                .get(applicationId);
 
-        if(clusterIdToPortMappings != null) {
+        if (clusterIdToPortMappings != null) {
             return clusterIdToPortMappings.get(clusterId);
         }
         return null;
@@ -900,10 +892,11 @@ public class CloudControllerContext implements Serializable {
 
     /**
      * Remove all the cluster port mappings of the given application.
+     *
      * @param applicationId
      */
     public void removeClusterPortMappings(String applicationId) {
-        if(applicationIdToClusterIdToPortMappings.containsKey(applicationId)) {
+        if (applicationIdToClusterIdToPortMappings.containsKey(applicationId)) {
             applicationIdToClusterIdToPortMappings.remove(applicationId);
         }
     }

@@ -22,5 +22,19 @@ package org.apache.stratos.cloud.controller.util;
  * represents the scope of each partition which can be configured in stratos.
  */
 public enum Scope {
-    PROVIDER, REGION, ZONE, HOST
+    PROVIDER("provider"), REGION("region"), ZONE("zone"), HOST("host");
+
+    private final String name;
+
+    private Scope(String s) {
+        name = s;
+    }
+
+    public boolean equalsName(String otherName) {
+        return (otherName != null) && name.equals(otherName);
+    }
+
+    public String toString() {
+        return this.name;
+    }
 }

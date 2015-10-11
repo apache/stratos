@@ -30,7 +30,6 @@ import java.util.Properties;
  * Mock partition validator.
  */
 public class MockIaasPartitionValidator implements PartitionValidator {
-
     private IaasProvider iaasProvider;
 
     @Override

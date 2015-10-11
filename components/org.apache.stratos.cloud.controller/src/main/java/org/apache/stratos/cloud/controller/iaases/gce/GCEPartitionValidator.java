@@ -32,12 +32,10 @@ import org.apache.stratos.cloud.controller.util.Scope;
 
 import java.util.Properties;
 
-
 /**
  * The VCloud {@link org.apache.stratos.cloud.controller.iaases.PartitionValidator} implementation.
  */
 public class GCEPartitionValidator implements PartitionValidator {
-
     private static final Log log = LogFactory.getLog(GCEPartitionValidator.class);
     private IaasProvider iaasProvider;
     private Iaas iaas;
@@ -47,61 +45,36 @@ public class GCEPartitionValidator implements PartitionValidator {
         try {
             if (properties.containsKey(Scope.REGION.toString())) {
                 String region = properties.getProperty(Scope.REGION.toString());
-
-                if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
-
-                    String message = "Invalid partition detected, invalid region. [partition-id] " + partition.getId() +
-                            ", [region] " + region;
-                    log.error(message);
-                    throw new InvalidPartitionException(message);
-                }
-
                 iaas.isValidRegion(region);
-
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
-                Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-                updatedIaas.setIaasProvider(updatedIaasProvider);
-
                 if (properties.containsKey(Scope.ZONE.toString())) {
                     String zone = properties.getProperty(Scope.ZONE.toString());
                     iaas.isValidZone(region, zone);
                     updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
-                    updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-                    updatedIaas.setIaasProvider(updatedIaasProvider);
                 }
-
                 updateOtherProperties(updatedIaasProvider, properties);
+                Iaas updatedIaas = updatedIaasProvider.buildIaas();
+                updatedIaas.setIaasProvider(updatedIaasProvider);
                 return updatedIaasProvider;
             } else {
                 return iaasProvider;
             }
-        }
-        catch (Exception ex) {
-            String message = "Invalid partition detected: [partition-id] " + partition.getId();
+        } catch (Exception ex) {
+            String message = String.format("Invalid partition detected: [partition-id] %s", partition.getId());
             throw new InvalidPartitionException(message, ex);
         }
     }
 
     private void updateOtherProperties(IaasProvider updatedIaasProvider, Properties properties) {
-        Iaas updatedIaas;
-        try {
-            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-
-            for (Object property : properties.keySet()) {
-                if (property instanceof String) {
-                    String key = (String) property;
-                    updatedIaasProvider.setProperty(key, properties.getProperty(key));
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added property " + key + " to the IaasProvider.");
-                    }
+        for (Object property : properties.keySet()) {
+            if (property instanceof String) {
+                String key = (String) property;
+                updatedIaasProvider.setProperty(key, properties.getProperty(key));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Added [property] %s to the IaasProvider.", key));
                 }
             }
-            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-            updatedIaas.setIaasProvider(updatedIaasProvider);
         }
-        catch (InvalidIaasProviderException ignore) {
-        }
-
     }
 
     @Override
