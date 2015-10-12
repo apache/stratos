@@ -52,10 +52,7 @@ public class ADCExtensionTestCase extends PythonAgentIntegrationTest {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "tomcat";
-
     private boolean hasADCExtensionTestCompleted = false;
-    private boolean hasCheckoutExtensionStarted = false;
-    private boolean hasCommitExtensionStarted = false;
 
     @BeforeMethod(alwaysRun = true)
     public void setupADCExtensionTest() throws Exception {
@@ -82,7 +79,6 @@ public class ADCExtensionTestCase extends PythonAgentIntegrationTest {
     @Test(timeOut = ADC_TIMEOUT)
     public void testADC() throws Exception {
         startCommunicatorThread();
-        assertAgentActivation();
         Thread adcExtensionTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -97,11 +93,10 @@ public class ADCExtensionTestCase extends PythonAgentIntegrationTest {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
-                            if (line.contains("Running extension for checkout job")) {
-                                hasCheckoutExtensionStarted = true;
-                            }
-                            if (line.contains("Running extension for commit job")) {
-                                hasCommitExtensionStarted = true;
+                            if (line.contains(
+                                    "Multiple plugins registered for artifact checkout. Stratos agent failed to "
+                                            + "start")) {
+                                hasADCExtensionTestCompleted = true;
                             }
                         }
                     }
@@ -111,60 +106,11 @@ public class ADCExtensionTestCase extends PythonAgentIntegrationTest {
         });
         adcExtensionTestThread.start();
 
-        while (!hasCheckoutExtensionStarted || !hasCommitExtensionStarted) {
+        while (!hasADCExtensionTestCompleted) {
             // wait until the instance activated event is received.
             sleep(1000);
         }
         log.info("ADC Extension Test completed");
-    }
-
-    private void assertAgentActivation() {
-        Thread startupTestThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!eventReceiverInitiated) {
-                    sleep(1000);
-                }
-                List<String> outputLines = new ArrayList<String>();
-                while (!outputStream.isClosed()) {
-                    List<String> newLines = getNewLines(outputLines, outputStream.toString());
-                    if (newLines.size() > 0) {
-                        for (String line : newLines) {
-                            if (line.contains("Subscribed to 'topology/#'")) {
-                                sleep(2000);
-                                // Send complete topology event
-                                log.info("Publishing complete topology event...");
-                                Topology topology = createTestTopology();
-                                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-                                publishEvent(completeTopologyEvent);
-                                log.info("Complete topology event published");
-
-                                // Publish member initialized event
-                                log.info("Publishing member initialized event...");
-                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(SERVICE_NAME,
-                                        CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID);
-                                publishEvent(memberInitializedEvent);
-                                log.info("Member initialized event published");
-                            }
-
-                            // Send artifact updated event to activate the instance first
-                            if (line.contains("Artifact repository found")) {
-                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
-                                log.info("Artifact updated event published");
-                            }
-                        }
-                    }
-                    sleep(1000);
-                }
-            }
-        });
-        startupTestThread.start();
-
-        while (!instanceStarted || !instanceActivated) {
-            // wait until the instance activated event is received.
-            // this will assert whether instance got activated within timeout period; no need for explicit assertions
-            sleep(2000);
-        }
     }
 
     public static ArtifactUpdatedEvent getArtifactUpdatedEventForPrivateRepo() {

@@ -47,77 +47,6 @@ class AgentGitHandler:
     # (tenant_id => GitRepository)
 
     @staticmethod
-    def run_checkout_job(repo_info):
-        """
-        Checks out the code from the remote repository.
-        If local repository path is empty, a clone operation is done.
-        If there is a cloned repository already on the local repository path, a pull operation
-        will be performed.
-        If there are artifacts not in the repository already on the local repository path,
-        they will be added to a git repository, the remote url added as origin, and then
-        a pull operation will be performed.
-
-        :param Repository repo_info: The repository information object
-        :return: A tuple containing whether it was an initial clone or not, and if the repo was updated on
-        subsequent calls or not
-        :rtype: tuple(bool, bool)
-        """
-        plugins_for_event = Config.plugins.get(constants.ARTIFACT_CHECKOUT_JOB)
-        if plugins_for_event is not None and len(plugins_for_event) > 0:
-            if len(plugins_for_event) > 1:
-                for plugin_info in plugins_for_event:
-                    AgentGitHandler.log.debug("Registered plugin name for commit job: %s" % plugin_info.name)
-                AgentGitHandler.log.error("More than one plugin registered for checkout job. Aborting...")
-                return
-            try:
-                plugin_values = {"REPO_INFO": repo_info}
-                plugins_for_event[0].plugin_object.run_plugin(plugin_values)
-                return
-            except Exception as e:
-                AgentGitHandler.log.exception("Error while executing checkout job extension: %s" % e)
-
-        git_repo = AgentGitHandler.create_git_repo(repo_info)
-        if AgentGitHandler.get_repo(repo_info.tenant_id) is not None:
-            # has been previously cloned, this is not the subscription run
-            if AgentGitHandler.is_valid_git_repository(git_repo):
-                AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-                try:
-                    updated = AgentGitHandler.pull(git_repo)
-                    AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
-                                              git_repo.tenant_id, git_repo.repo_url)
-                except GitRepositorySynchronizationException as e:
-                    AgentGitHandler.log.exception("Git pull operation failed: %s" % e)
-
-            else:
-                # not a valid repository, might've been corrupted. do a re-clone
-                AgentGitHandler.log.debug("Local repository is not valid. Doing a re-clone to purify.")
-                git_repo.cloned = False
-                AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-                git_repo = AgentGitHandler.clone(git_repo)
-                AgentGitHandler.add_repo(git_repo)
-                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-        else:
-            # subscribing run.. need to clone
-            AgentGitHandler.log.info("Cloning artifacts from %s for the first time to %s",
-                                     git_repo.repo_url, git_repo.local_repo_path)
-            AgentGitHandler.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
-                                     git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
-            try:
-                git_repo = AgentGitHandler.clone(git_repo)
-                AgentGitHandler.add_repo(git_repo)
-                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-            except GitRepositorySynchronizationException as e:
-                AgentGitHandler.log.exception("Git clone operation failed: %s" % e)
-                # If first git clone is failed, execute retry_clone operation
-                AgentGitHandler.log.info("Retrying git clone operation...")
-                AgentGitHandler.retry_clone(git_repo)
-                AgentGitHandler.add_repo(git_repo)
-
-    @staticmethod
     def sync_initial_local_artifacts(git_repo):
         # init git repo
         AgentGitHandler.init(git_repo.local_repo_path)
@@ -325,115 +254,6 @@ class AgentGitHandler:
         return repo_info.repo_url
 
     @staticmethod
-    def run_commit_job(repo_info):
-        """
-        Commits and pushes new artifacts to the remote repository
-        :param repo_info:
-        :return:
-        """
-        plugins_for_event = Config.plugins.get(constants.ARTIFACT_COMMIT_JOB)
-        if plugins_for_event is not None and len(plugins_for_event) > 0:
-            if len(plugins_for_event) > 1:
-                for plugin_info in plugins_for_event:
-                    AgentGitHandler.log.debug("Registered plugin name for commit job: %s" % plugin_info.name)
-                AgentGitHandler.log.error("More than one plugin registered for commit job. Aborting...")
-                return
-            try:
-                plugins_for_event[0].plugin_object.run_plugin({})
-                return
-            except Exception as e:
-                AgentGitHandler.log.exception("Error while executing commit job extension: %s " % e)
-
-        git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
-        if git_repo is None:
-            # not cloned yet
-            AgentGitHandler.log.error("Not a valid repository to push from. Aborting Git push...")
-
-        # Get initial HEAD so in case if push fails it can be reverted to this hash
-        # This way, commit and push becomes an single operation. No intermediate state will be left behind.
-        (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
-
-        # remove trailing new line character, if any
-        init_head = init_head.rstrip()
-
-        # stage all untracked files
-        if AgentGitHandler.stage_all(git_repo.local_repo_path):
-            AgentGitHandler.log.debug("Git staged untracked artifacts successfully")
-        else:
-            AgentGitHandler.log.error("Git could not stage untracked artifacts")
-
-        # check for changes in working directory
-        modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
-
-        AgentGitHandler.log.debug("[Git] Modified: %s" % str(modified))
-        if not modified:
-            AgentGitHandler.log.debug("No changes detected in the local repository for tenant %s" % git_repo.tenant_id)
-            return
-
-        # commit to local repository
-        commit_message = "tenant [%s]'s artifacts committed to local repo at %s" \
-                         % (git_repo.tenant_id, git_repo.local_repo_path)
-        # TODO: set configuratble names, check if already configured
-        commit_name = git_repo.tenant_id
-        commit_email = "author@example.org"
-        # git config
-        AgentGitHandler.execute_git_command(["config", "user.email", commit_email], git_repo.local_repo_path)
-        AgentGitHandler.execute_git_command(["config", "user.name", commit_name], git_repo.local_repo_path)
-
-        # commit
-        (output, errors) = AgentGitHandler.execute_git_command(["commit", "-m", commit_message],
-                                                               git_repo.local_repo_path)
-        if errors.strip() == "":
-            commit_hash = AgentGitHandler.find_between(output, "[master", "]").strip()
-            AgentGitHandler.log.debug("Committed artifacts for tenant: %s : %s " % (git_repo.tenant_id, commit_hash))
-        else:
-            AgentGitHandler.log.error("Committing artifacts to local repository failed for tenant: %s, Cause: %s"
-                                      % (git_repo.tenant_id, errors))
-            # revert to initial commit hash
-            AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-            return
-
-        repo = Repo(git_repo.local_repo_path)
-        # pull and rebase before pushing to remote repo
-        AgentGitHandler.execute_git_command(["pull", "--rebase", "origin", "master"], git_repo.local_repo_path)
-        if repo.is_dirty():
-            AgentGitHandler.log.error("Git pull operation in commit job left the repository in dirty state")
-            AgentGitHandler.log.error(
-                "Git pull rebase operation on remote %s for tenant %s failed" % (git_repo.repo_url, git_repo.tenant_id))
-
-            AgentGitHandler.log.warn("The working directory will be reset to the last known good commit")
-            # revert to the initial commit
-            AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-            return
-        else:
-            # push to remote
-            try:
-                push_info_list = repo.remotes.origin.push()
-                if (len(push_info_list)) == 0:
-                    AgentGitHandler.log.error("Failed to push artifacts to remote repo for tenant: %s remote: %s" %
-                                              (git_repo.tenant_id, git_repo.repo_url))
-                    # revert to the initial commit
-                    AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-                    return
-
-                for push_info in push_info_list:
-                    AgentGitHandler.log.debug("Push info summary: %s" % push_info.summary)
-                    if push_info.flags & PushInfo.ERROR == PushInfo.ERROR:
-                        AgentGitHandler.log.error("Failed to push artifacts to remote repo for tenant: %s remote: %s" %
-                                                  (git_repo.tenant_id, git_repo.repo_url))
-                        # revert to the initial commit
-                        AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-                        return
-                AgentGitHandler.log.debug(
-                    "Successfully pushed artifacts for tenant: %s remote: %s" % (git_repo.tenant_id, git_repo.repo_url))
-            except Exception as e:
-                AgentGitHandler.log.error(
-                    "Failed to push artifacts to remote repo for tenant: %s remote: %s exception: %s" %
-                    (git_repo.tenant_id, git_repo.repo_url, e))
-                # revert to the initial commit
-                AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-
-    @staticmethod
     def has_modified_files(repo_path):
         (output, errors) = AgentGitHandler.execute_git_command(["status"], repo_path=repo_path)
         if "nothing to commit" in output:
@@ -524,30 +344,26 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
         self.repo_info = repo_info
         self.auto_checkout = auto_checkout
         self.auto_commit = auto_commit
-        self.invocation_count = 0
 
     def execute_task(self):
-        self.invocation_count += 1
-
         # DO NOT change this order. The commit job should run first here.
         # This is because if the cloned location contain any un-tracked files then
         # those files should be committed and pushed first
         if self.auto_commit:
             try:
-                self.log.debug("Running commit job # %s" % self.invocation_count)
-                AgentGitHandler.run_commit_job(self.repo_info)
+                self.log.debug("Running commit job...")
+                Config.artifact_commit_plugin.plugin_object.commit(self.repo_info)
             except GitRepositorySynchronizationException as e:
                 self.log.exception("Auto commit failed: %s" % e)
 
         if self.auto_checkout:
             try:
-                self.log.debug("Running checkout job # %s" % self.invocation_count)
-                AgentGitHandler.run_checkout_job(self.repo_info)
-                # TODO: move this to updated scheduler extension
+                self.log.debug("Running checkout job...")
+                Config.artifact_checkout_plugin.plugin_object.checkout(self.repo_info)
             except GitRepositorySynchronizationException as e:
                 self.log.exception("Auto checkout task failed: %s" % e)
 
-        self.log.debug("ArtifactUpdateTask completed # %s" % self.invocation_count)
+        self.log.debug("ArtifactUpdateTask end of iteration.")
 
 
 class GitRepository:

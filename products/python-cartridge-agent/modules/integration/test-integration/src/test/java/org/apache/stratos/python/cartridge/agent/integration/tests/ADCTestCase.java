@@ -103,8 +103,8 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
         tearDown(APPLICATION_PATH);
     }
 
-
-    @Test(timeOut = ADC_TIMEOUT, groups = {"smoke"})
+    @Test(timeOut = ADC_TIMEOUT,
+          groups = { "smoke" })
     public void testADC() throws Exception {
         startCommunicatorThread();
         assertAgentActivation();
@@ -119,8 +119,8 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                 log.info("Running ADC Test thread...");
                 // Send artifact updated event
                 publishEvent(getArtifactUpdatedEventForPrivateRepo());
-                log.info("Publishing artifact updated event for repo: " +
-                        getArtifactUpdatedEventForPrivateRepo().getRepoURL());
+                log.info("Publishing artifact updated event for repo: " + getArtifactUpdatedEventForPrivateRepo()
+                        .getRepoURL());
 
                 List<String> outputLines = new ArrayList<>();
                 while (!outputStream.isClosed() && !hasADCTestCompleted) {
@@ -139,12 +139,11 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                                     }
                                     fileCreated = true;
                                     continue;
-                                }
-                                catch (IOException e) {
+                                } catch (IOException e) {
                                     log.error("Could not create file", e);
                                 }
                             }
-                            if (fileCreated && line.contains("ArtifactUpdateTask completed") && !fileDeleted) {
+                            if (fileCreated && line.contains("ArtifactUpdateTask end of iteration") && !fileDeleted) {
                                 if (!file.delete()) {
                                     throw new RuntimeException("Could not delete [file] " + file.getAbsolutePath());
                                 }
@@ -152,7 +151,8 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                                 continue;
                             }
                             // assert whether file deletion commit was pushed to remote repo
-                            if (fileDeleted && line.contains("ArtifactUpdateTask completed") && !hasADCTestCompleted) {
+                            if (fileDeleted && line.contains("ArtifactUpdateTask end of iteration")
+                                    && !hasADCTestCompleted) {
                                 boolean fileExists = new File(file.getAbsolutePath()).exists();
                                 assertFalse("Deleted file has not been pushed to remote repo", fileExists);
                                 if (!fileExists) {
@@ -197,10 +197,8 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
 
                                 // Publish member initialized event
                                 log.info("Publishing member initialized event...");
-                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID
-                                );
+                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(SERVICE_NAME,
+                                        CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID);
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
                             }
@@ -227,10 +225,8 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
 
     private void assertRepoClone(ArtifactUpdatedEvent artifactUpdatedEvent) {
         File file = new File(APPLICATION_PATH + "/README.text");
-        assertTrue("Git clone failed for repo [url] " + artifactUpdatedEvent.getRepoURL(),
-                file.exists());
+        assertTrue("Git clone failed for repo [url] " + artifactUpdatedEvent.getRepoURL(), file.exists());
     }
-
 
     public static ArtifactUpdatedEvent getArtifactUpdatedEventForPublicRepo() {
         ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
@@ -267,9 +263,8 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
                 AUTOSCALING_POLICY_NAME, APP_ID);
         service.addCluster(cluster);
 
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID,
-                CLUSTER_INSTANCE_ID, NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private,
-                System.currentTimeMillis());
+        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID, CLUSTER_INSTANCE_ID,
+                NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
 
         member.setDefaultPrivateIP("10.0.0.1");
         member.setDefaultPublicIP("20.0.0.1");

@@ -36,7 +36,7 @@ class CartridgeAgent(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-
+        Config.initialize_config()
         self.__tenant_context_initialized = False
         self.__log_publish_manager = None
         self.__terminated = False
@@ -106,7 +106,7 @@ class CartridgeAgent(threading.Thread):
         if repo_url is None or str(repo_url).strip() == "":
             self.__log.info("No artifact repository found")
             self.__event_handler.on_instance_activated_event()
-            publisher.publish_instance_activated_event(Config.health_stat_plugin)
+            publisher.publish_instance_activated_event()
         else:
             self.__log.info(
                 "Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s",

@@ -67,7 +67,7 @@ def publish_instance_started_event():
         log.warn("Instance already started")
 
 
-def publish_instance_activated_event(health_stat_plugin):
+def publish_instance_activated_event():
     global activated, log
     if not activated:
         # Wait for all ports to be active
@@ -115,7 +115,7 @@ def publish_instance_activated_event(health_stat_plugin):
                         interval = interval_default
                 else:
                     interval = interval_default
-                health_stats_publisher = healthstats.HealthStatisticsPublisherManager(interval, health_stat_plugin)
+                health_stats_publisher = healthstats.HealthStatisticsPublisherManager(interval)
                 log.info("Starting Health statistics publisher with interval %r" % interval)
                 health_stats_publisher.start()
             else:

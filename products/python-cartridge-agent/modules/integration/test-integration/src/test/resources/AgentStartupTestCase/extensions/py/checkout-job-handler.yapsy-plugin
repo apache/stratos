@@ -16,12 +16,12 @@
 #
 # ------------------------------------------------------------------------
 
-from plugins.contracts import IArtifactCommitPlugin
-from modules.util.log import LogFactory
-from entity import *
+[Core]
+Name = checkout-job-handler
+Module = checkout-job-handler
 
-
-class CommitJobHandler(IArtifactCommitPlugin):
-    def commit(self, repo_info):
-        log = LogFactory().get_log(__name__)
-        log.info("Running extension for commit job")
+[Documentation]
+Description = ArtifactCheckoutJob
+Author = Stratos
+Version = 0.1
+Website = stratos.apache.org

@@ -109,7 +109,7 @@ class EventHandler:
 
         self.__log.info("Executing checkout job on artifact updated event...")
         try:
-            AgentGitHandler.run_checkout_job(repo_info)
+            Config.artifact_checkout_plugin.plugin_object.checkout(repo_info)
         except GitRepositorySynchronizationException as e:
             self.__log.exception(
                 "Checkout job on artifact updated event failed for tenant: %s %s" % (repo_info.tenant_id, e))
@@ -129,7 +129,7 @@ class EventHandler:
 
         if existing_git_repo is None:
             # publish instance activated event for single tenant subscription
-            publisher.publish_instance_activated_event(Config.health_stat_plugin)
+            publisher.publish_instance_activated_event()
 
         update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, True)
         auto_commit = Config.is_commits_enabled
