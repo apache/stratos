@@ -208,7 +208,7 @@ class HealthStatisticsPublisher:
         for publisher in self.publishers:
             publisher.publish(event)
 
-    def disconnect_publisher(self, publishers):
+    def disconnect_publisher(self):
         for publisher in self.publishers:
             publisher.disconnect()
 
