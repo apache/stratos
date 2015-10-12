@@ -631,8 +631,6 @@ public class TopologyBuilder {
                 memberActivatedEvent.setMemberPublicIPs(member.getMemberPublicIPs());
                 TopologyManager.updateTopology(topology);
 
-                // Publish member activated event
-                TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
                 //member activated time
                 Long timestamp = System.currentTimeMillis();
                 // Publish member activated event
