@@ -30,9 +30,11 @@
     <artifactId>stratos-das-extension</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - DAS Extension</name>
-    <description>Apache Stratos extensions for DAS.</description>
+    <description>Apache Stratos DAS extension.</description>
     <modules>
-        <module>metering-service</module>
+        <module>modules/artifacts/metering-dashboard/capps</module>
+        <module>modules/distribution</module>
+        <module>modules/stratos-das-extension/spark-udfs</module>
     </modules>
 
 
