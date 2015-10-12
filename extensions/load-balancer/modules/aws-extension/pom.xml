@@ -20,7 +20,9 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-load-balancer-extensions</artifactId>
@@ -29,8 +31,9 @@
     </parent>
 
     <artifactId>org.apache.stratos.aws.extension</artifactId>
-    <name>Apache Stratos - AWS Extension</name>
+    <name>Apache Stratos - AWS LB Extension</name>
     <description>Apache Stratos AWS Extension for Load Balancing</description>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -117,4 +120,5 @@
             </plugin>
         </plugins>
     </build>
+    
 </project>
