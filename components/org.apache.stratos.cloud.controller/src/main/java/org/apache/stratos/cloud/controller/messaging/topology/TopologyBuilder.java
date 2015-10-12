@@ -147,12 +147,11 @@ public class TopologyBuilder {
             for (Cluster cluster : appClusters) {
                 Service service = topology.getService(cluster.getServiceName());
                 if (service == null) {
-                    log.error("Service " + cluster.getServiceName()
+                    throw new RuntimeException("Service " + cluster.getServiceName()
                             + " not found in Topology, unable to create Application cluster");
-                } else {
-                    service.addCluster(cluster);
-                    log.info("Application Cluster " + cluster.getClusterId() + " created in CC topology");
                 }
+                service.addCluster(cluster);
+                log.info("Application Cluster " + cluster.getClusterId() + " created in CC topology");
             }
             TopologyManager.updateTopology(topology);
         } finally {
