@@ -27,8 +27,8 @@ var log = new Log("controller.login"),
         offset = conf. *::['Ports']. *::['Offset'].text(),
         hostName = conf. *::['HostName'].text().toString(),
         conf = carbon.server.loadConfig('thrift-client-config.xml'),
-        dasConfig = conf. *::['config'].(name == "das"),
-        dasStatsPublisherEnabled = dasConfig.statsPublisherEnabled.text();
+        dasConfig = conf. *::['config']. *::['das'],
+        dasStatsPublisherEnabled = dasConfig.node[0].statsPublisherEnabled.text();
 
 
 if (hostName === null || hostName === '') {
