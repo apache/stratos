@@ -1122,45 +1122,47 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         String clusterId = applicationClusterContext.getClusterId();
-        Property ipListProperty = applicationClusterContext.getProperties().
-                getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
-        if (ipListProperty != null) {
-            log.info(String.format("Load balancer IP list found in application: [application] %s [cluster] %s " +
-                            "[load-balancer-ip-list] %s", applicationId, clusterId,
-                    ipListProperty.getValue()));
-            return transformToList(ipListProperty);
-        }
+        org.apache.stratos.common.Properties appClusterContextProperties = applicationClusterContext.getProperties();
 
-        Property npListProperty = applicationClusterContext.getProperties().
-                getProperty(CloudControllerConstants.NETWORK_PARTITION_ID_LIST);
-        if(npListProperty != null) {
-            String npIdListStr = npListProperty.getValue();
-            if(StringUtils.isNotEmpty(npIdListStr)) {
-                List<String> loadBalancerIps = new ArrayList<>();
-                String[] npIdArray = npIdListStr.split(",");
-                for(String networkPartitionId : npIdArray) {
-                    NetworkPartition networkPartition = CloudControllerContext.getInstance().
-                            getNetworkPartition(networkPartitionId);
-                    if(networkPartition == null) {
-                        throw new CloudControllerException(String.format("Network partition not found: [application] %s " +
-                                "[network-partition] %s", applicationId, networkPartitionId));
-                    }
+        if(appClusterContextProperties != null) {
+            Property ipListProperty = appClusterContextProperties.getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
+            if (ipListProperty != null) {
+                log.info(String.format("Load balancer IP list found in application: [application] %s [cluster] %s " +
+                                "[load-balancer-ip-list] %s", applicationId, clusterId,
+                        ipListProperty.getValue()));
+                return transformToList(ipListProperty);
+            }
 
-                    org.apache.stratos.common.Properties properties = networkPartition.getProperties();
-                    if(properties != null) {
-                        ipListProperty = properties.getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
-                        if (ipListProperty != null) {
-                            log.debug(String.format("Load balancer IP list found in network partition: " +
-                                            "[application] %s [cluster] %s [load-balancer-ip-list] %s", applicationId,
-                                    clusterId, ipListProperty.getValue()));
-                            String[] ipArray = ipListProperty.getValue().split(",");
-                            for (String ip : ipArray) {
-                                loadBalancerIps.add(ip);
+            Property npListProperty = appClusterContextProperties.getProperty(CloudControllerConstants.NETWORK_PARTITION_ID_LIST);
+            if (npListProperty != null) {
+                String npIdListStr = npListProperty.getValue();
+                if (StringUtils.isNotEmpty(npIdListStr)) {
+                    List<String> loadBalancerIps = new ArrayList<>();
+                    String[] npIdArray = npIdListStr.split(",");
+                    for (String networkPartitionId : npIdArray) {
+                        NetworkPartition networkPartition = CloudControllerContext.getInstance().
+                                getNetworkPartition(networkPartitionId);
+                        if (networkPartition == null) {
+                            throw new CloudControllerException(String.format("Network partition not found: [application] %s " +
+                                    "[network-partition] %s", applicationId, networkPartitionId));
+                        }
+
+                        org.apache.stratos.common.Properties npProperties = networkPartition.getProperties();
+                        if (npProperties != null) {
+                            ipListProperty = npProperties.getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
+                            if (ipListProperty != null) {
+                                log.debug(String.format("Load balancer IP list found in network partition: " +
+                                                "[application] %s [cluster] %s [load-balancer-ip-list] %s", applicationId,
+                                        clusterId, ipListProperty.getValue()));
+                                String[] ipArray = ipListProperty.getValue().split(",");
+                                for (String ip : ipArray) {
+                                    loadBalancerIps.add(ip);
+                                }
                             }
                         }
                     }
+                    return loadBalancerIps;
                 }
-                return loadBalancerIps;
             }
         }
         return null;
