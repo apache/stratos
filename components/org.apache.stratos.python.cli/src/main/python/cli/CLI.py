@@ -80,6 +80,7 @@ class CLI(Cmd):
         make_option('-e', '--email', type="str", help="Email of the user"),
         make_option('-o', '--profile_name', type="str", help="Profile name of the user")
     ])
+    @auth
     def do_add_user(self, line , opts=None):
         """Add a user."""
         try:
@@ -88,8 +89,8 @@ class CLI(Cmd):
                       " [-l <last name>] [-o <profile name>]")
                 return
             else:
-                user = Stratos.add_users(opts.username_user, opts.password_user, opts.role_name, opts.first_name, opts.last_name,
-                                       opts.email, opts.profile_name)
+                user = Stratos.add_users(opts.username_user, opts.password_user, opts.role_name, opts.first_name,
+                                         opts.last_name,  opts.email, opts.profile_name)
                 if user:
                     print("User successfully created")
                 else:
@@ -100,20 +101,20 @@ class CLI(Cmd):
     @options([
         make_option('-u', '--username', type="str", help="Username of the user"),
         make_option('-p', '--password', type="str", help="Password of the user"),
-        make_option('-s', '--username_user', type="str", help="Username of the user"),
-        make_option('-a', '--password_user', type="str", help="Password of the user"),
-        make_option('-r', '--role_name', type="str", help="Role name of the user"),
-        make_option('-f', '--first_name', type="str", help="First name of the user"),
-        make_option('-l', '--last_name', type="str", help="Last name of the user"),
-        make_option('-e', '--email', type="str", help="Email of the user"),
-        make_option('-o', '--profile_name', type="str", help="Profile name of the user")
+        make_option('-s', '--username_user', type="str", help="Username of the user to be created"),
+        make_option('-a', '--password_user', type="str", help="Password of the user to be created"),
+        make_option('-r', '--role_name', type="str", help="Role name of the user to be created"),
+        make_option('-f', '--first_name', type="str", help="First name of the user to be created"),
+        make_option('-l', '--last_name', type="str", help="Last name of the user to be created"),
+        make_option('-e', '--email', type="str", help="Email of the user to be created"),
+        make_option('-o', '--profile_name', type="str", help="Profile name of the user to be created")
     ])
     @auth
     def do_update_user(self, line , opts=None):
         """Update a specific user."""
         try:
-            user = Stratos.update_user(opts.username_user, opts.password_user, opts.role_name, opts.first_name, opts.last_name,
-                                       opts.email, opts.profile_name)
+            user = Stratos.update_user(opts.username_user, opts.password_user, opts.role_name, opts.first_name,
+                                       opts.last_name, opts.email, opts.profile_name)
             if user:
                 print("User successfully updated")
             else:
@@ -133,7 +134,6 @@ class CLI(Cmd):
                 print("usage: remove-user [username]")
             else:
                 user_removed = Stratos.remove_user(name)
-                print(user_removed)
                 if user_removed:
                     print("You have successfully deleted user: "+name)
                 else:
@@ -190,7 +190,7 @@ class CLI(Cmd):
                 print("Application not found in : "+application_id)
             else:
                 print("Application : "+application_id)
-                PrintableJSON(application).pprint()
+                PrintableTree(application).print_tree()
         except BadResponseError as e:
             self.perror(str(e))
 
@@ -580,7 +580,7 @@ class CLI(Cmd):
         """Retrieve details of available cartridges."""
         try:
             if not filter_text:
-                print("")
+                print("usage: describe-cartridge-by-filter [filter]")
             else:
                 cartridges = Stratos.list_cartridges_by_filter(filter_text)
                 table = PrintableTable()
@@ -1527,4 +1527,4 @@ class CLI(Cmd):
                     print("Could not delete domain: "+domain)
         except BadResponseError as e:
             self.perror(str(e))
-            logging.error("HTTP "+e.error_code+" : "+str(e))
+

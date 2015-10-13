@@ -31,7 +31,7 @@ class MyTestCase(unittest.TestCase):
                       body='{"keyOne": "valueOne"}', status=200,
                       content_type='application/json')
 
-        r = Stratos.post("")
+        r = Stratos.get("")
 
         assert r == {"keyOne": "valueOne"}
 

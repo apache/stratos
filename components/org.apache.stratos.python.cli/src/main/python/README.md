@@ -8,9 +8,9 @@ Install the required Python packages by issuing the following `pip install` comm
 pip install cmd2
 pip install texttable
 
-
 ```
- 
+
+#Build 
 Build and install stratos CLI by,
 
 ``` 
@@ -28,8 +28,19 @@ instead `install` if developing
 To start the Python CLI issue, 
 
 ```
-$ stratos
+$ stratos-cli
 ```
+
+Install with Pip
+
+```
+pip install stratos
+```
+
+or to install a specific version use
  
+```
+pip install stratos==1.0
+```
  
  
