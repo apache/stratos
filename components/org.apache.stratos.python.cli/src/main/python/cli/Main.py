@@ -40,8 +40,7 @@ def prompt_for_credentials():
         if Configs.stratos_password is "":
             Configs.stratos_password = getpass.getpass("Password: ")
     if Stratos.authenticate():
-        print("Successfully authenticated.")
-        print("Connected to Stratos [%s]" % Configs.stratos_url)
+        print("Successfully authenticated [%s]" % Configs.stratos_url)
     else:
         print("Could not authenticate")
         exit()

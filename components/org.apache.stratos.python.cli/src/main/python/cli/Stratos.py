@@ -467,7 +467,7 @@ class Stratos:
 
     @staticmethod
     def response(r):
-        if Configs.debug_cli:
+        if "False" not in Configs.debug_cli:
             # print responses if debug is turned on
             print(r)
             print(r.text)
