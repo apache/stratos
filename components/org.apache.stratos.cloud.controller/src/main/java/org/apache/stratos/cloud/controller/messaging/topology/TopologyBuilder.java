@@ -893,8 +893,11 @@ public class TopologyBuilder {
                         // Load balancer ips not given, use node public ips as load balancer ips
                         clusterInstanceActivatedEvent.setLoadBalancerIps(nodePublicIps);
                     }
+                    log.info(String.format("Access URLs generated for kubernetes services: [application] %s " +
+                                    "[cluster] %s [access-urls] %s",
+                            applicationId, clusterId, clusterInstanceActivatedEvent.getAccessUrls()));
                 } catch (URISyntaxException e) {
-                    log.error("Could not create generate URLs for Kubernetes services", e);
+                    log.error("Could not generate access URLs for Kubernetes services", e);
                 }
             } else {
                 try {
@@ -909,16 +912,15 @@ public class TopologyBuilder {
                             clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
                         }
                     }
+
+                    log.info(String.format("Access URLs generated: [application] %s [cluster] %s [access-urls] %s",
+                            applicationId, clusterId, clusterInstanceActivatedEvent.getAccessUrls()));
                 } catch (URISyntaxException e) {
                     log.error("Could not generate access URLs", e);
                 }
             }
 
-            log.info(String.format("Access URLs generated: [application] %s [cluster] %s [access-urls] %s",
-                    applicationId, clusterId, clusterInstanceActivatedEvent.getAccessUrls()));
-
             ClusterInstance context = cluster.getInstanceContexts(clusterStatusClusterActivatedEvent.getInstanceId());
-
             if (context == null) {
                 throw new RuntimeException("Cluster instance context is not found for [cluster] " +
                         clusterStatusClusterActivatedEvent.getClusterId() + " [instance-id] " +
