@@ -1087,7 +1087,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
                 // Create cluster object
-                List<String> loadBalancerIps = findLoadBalancerIPList(appId, appClusterCtxt);
+                List<String> loadBalancerIps = findLoadBalancerIps(appId, appClusterCtxt);
                 Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
                 cluster.setLbCluster(false);
@@ -1113,7 +1113,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return true;
     }
 
-    private List<String> findLoadBalancerIPList(String applicationId, ApplicationClusterContext applicationClusterContext) {
+    /**
+     * Find load balancer ips from application subscribable properties or network partition properties.
+     * @param applicationId
+     * @param applicationClusterContext
+     * @return
+     */
+    private List<String> findLoadBalancerIps(String applicationId, ApplicationClusterContext applicationClusterContext) {
 
         Cartridge cartridge = CloudControllerContext.getInstance().
                 getCartridge(applicationClusterContext.getCartridgeType());
@@ -1125,6 +1131,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         org.apache.stratos.common.Properties appClusterContextProperties = applicationClusterContext.getProperties();
 
         if(appClusterContextProperties != null) {
+            // Find load balancer ips from application subscribable properties
             Property ipListProperty = appClusterContextProperties.getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
             if (ipListProperty != null) {
                 log.info(String.format("Load balancer IP list found in application: [application] %s [cluster] %s " +
@@ -1133,6 +1140,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 return transformToList(ipListProperty);
             }
 
+            // Find load balancer ips from network partition properties
             Property npListProperty = appClusterContextProperties.getProperty(CloudControllerConstants.NETWORK_PARTITION_ID_LIST);
             if (npListProperty != null) {
                 String npIdListStr = npListProperty.getValue();
