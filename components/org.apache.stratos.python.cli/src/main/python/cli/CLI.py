@@ -285,10 +285,10 @@ class CLI(Cmd):
     def do_undeploy_application(self, line , opts=None):
         """Undeploy an application."""
         try:
-            if not opts.application_id or not opts.application_policy_id:
-                print("usage: undeploy-application [-a <applicationId>] [-o <applicationPolicyId>]")
+            if not opts.application_id:
+                print("usage: undeploy-application [-a <applicationId>]")
             else:
-                application_removed = Stratos.undeploy_application(opts.application_id, opts.application_policy_id)
+                application_removed = Stratos.undeploy_application(opts.application_id)
                 if application_removed:
                     print("You have successfully undeployed application: "+opts.application_id)
                 else:

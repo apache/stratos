@@ -103,8 +103,8 @@ class Stratos:
         return Stratos.post('applications/'+application_id+'/deploy/'+application_policy_id, None)
 
     @staticmethod
-    def deploy_application(application_id, application_policy_id):
-        return Stratos.post('applications/'+application_id+'/undeploy/'+application_policy_id, None)
+    def undeploy_application(application_id):
+        return Stratos.post('applications/'+application_id+'/undeploy', None)
     @staticmethod
     def describe_application_runtime(application_id):
         return Stratos.get('applications/'+application_id+"/runtime")
@@ -340,6 +340,10 @@ class Stratos:
     @staticmethod
     def add_autoscaling_policy(json):
         return Stratos.post('autoscalingPolicies', json)
+
+    @staticmethod
+    def add_application_policy(json):
+        return Stratos.post('applicationPolicies', json)
 
     @staticmethod
     def update_autoscaling_policy(json):
