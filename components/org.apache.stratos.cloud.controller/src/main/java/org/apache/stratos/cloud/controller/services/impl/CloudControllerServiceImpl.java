@@ -35,7 +35,7 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.common.Property;
+import org.apache.stratos.common.*;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -43,6 +43,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -1144,15 +1145,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         throw new CloudControllerException(String.format("Network partition not found: [application] %s " +
                                 "[network-partition] %s", applicationId, networkPartitionId));
                     }
-                    ipListProperty = networkPartition.getProperties().
-                            getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
-                    if (ipListProperty != null) {
-                        log.debug(String.format("Load balancer IP list found in network partition: " +
-                                        "[application] %s [cluster] %s [load-balancer-ip-list] %s", applicationId,
-                                clusterId, ipListProperty.getValue()));
-                        String[] ipArray = ipListProperty.getValue().split(",");
-                        for(String ip : ipArray) {
-                            loadBalancerIps.add(ip);
+
+                    org.apache.stratos.common.Properties properties = networkPartition.getProperties();
+                    if(properties != null) {
+                        ipListProperty = properties.getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
+                        if (ipListProperty != null) {
+                            log.debug(String.format("Load balancer IP list found in network partition: " +
+                                            "[application] %s [cluster] %s [load-balancer-ip-list] %s", applicationId,
+                                    clusterId, ipListProperty.getValue()));
+                            String[] ipArray = ipListProperty.getValue().split(",");
+                            for (String ip : ipArray) {
+                                loadBalancerIps.add(ip);
+                            }
                         }
                     }
                 }
