@@ -20,20 +20,38 @@
 
 <!-- Apache thrift client configuration for publishing statistics to WSO2 CEP and WSO2 DAS-->
 <thriftClientConfiguration>
-    <config>
-        <name>cep</name>
-        <statsPublisherEnabled>true</statsPublisherEnabled>
-        <username>admin</username>
-        <password>admin</password>
-        <ip>localhost</ip>
-        <port>7611</port>
-    </config>
-    <config>
-        <name>das</name>
-        <statsPublisherEnabled>false</statsPublisherEnabled>
-        <username>admin</username>
-        <password>admin</password>
-        <ip>localhost</ip>
-        <port>7612</port>
+     <config>
+        <cep>
+             <node id="node-01">
+                  <statsPublisherEnabled>true</statsPublisherEnabled>
+                  <username>admin</username>
+                  <password>admin</password>
+                  <ip>10.10.1.1</ip>
+                  <port>7711</port>
+             </node>
+             <!--<node id="node-02">
+                  <statsPublisherEnabled>true</statsPublisherEnabled>
+                  <username>admin</username>
+                  <password>admin</password>
+                  <ip>10.10.1.1</ip>
+                  <port>7714</port>
+             </node>-->
+        </cep>
+        <das>
+             <node id="node-01">
+                  <statsPublisherEnabled>false</statsPublisherEnabled>
+                  <username>admin</username>
+                  <password>admin</password>
+                  <ip>10.10.1.1</ip>
+                  <port>7712</port>
+             </node>
+             <!--<node id="node-02">
+                  <statsPublisherEnabled>true</statsPublisherEnabled>
+                  <username>admin</username>
+                  <password>admin</password>
+                  <ip>10.10.1.1</ip>
+                  <port>7713</port>
+             </node>-->
+        </das>
     </config>
 </thriftClientConfiguration>

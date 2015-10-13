@@ -25,10 +25,16 @@ import org.wso2.carbon.databridge.agent.thrift.Agent;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.conf.AgentConfiguration;
 import org.wso2.carbon.databridge.agent.thrift.exception.AgentException;
+import org.wso2.carbon.databridge.agent.thrift.lb.DataPublisherHolder;
+import org.wso2.carbon.databridge.agent.thrift.lb.LoadBalancingDataPublisher;
+import org.wso2.carbon.databridge.agent.thrift.lb.ReceiverGroup;
+import org.wso2.carbon.databridge.agent.thrift.util.DataPublisherUtil;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Thrift statistics publisher.
@@ -38,11 +44,8 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
     private static final Log log = LogFactory.getLog(ThriftStatisticsPublisher.class);
 
     private StreamDefinition streamDefinition;
-    private AsyncDataPublisher asyncDataPublisher;
-    private String ip;
-    private String port;
-    private String username;
-    private String password;
+    private LoadBalancingDataPublisher loadBalancingDataPublisher;
+    private List<ThriftClientInfo> thriftClientInfoList;
     private boolean enabled = false;
 
     /**
@@ -54,30 +57,58 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
      */
     public ThriftStatisticsPublisher(StreamDefinition streamDefinition, String thriftClientName) {
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
-        ThriftClientInfo thriftClientInfo = thriftClientConfig.getThriftClientInfo(thriftClientName);
-
+        this.thriftClientInfoList = thriftClientConfig.getThriftClientInfo(thriftClientName);
         this.streamDefinition = streamDefinition;
-        this.enabled = thriftClientInfo.isStatsPublisherEnabled();
-        this.ip = thriftClientInfo.getIp();
-        this.port = thriftClientInfo.getPort();
-        this.username = thriftClientInfo.getUsername();
-        this.password = thriftClientInfo.getPassword();
 
-        if (enabled) {
+        if (isPublisherEnabled()) {
+        	this.enabled = true;
             init();
         }
     }
 
-    private void init() {
-        AgentConfiguration agentConfiguration = new AgentConfiguration();
-        Agent agent = new Agent(agentConfiguration);
+    private boolean isPublisherEnabled() {
+    	boolean publisherEnabled = false;
+    	for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
+    		publisherEnabled = thriftClientInfo.isStatsPublisherEnabled();
+    		if(publisherEnabled){
+    			break;
+    		}
+		}    	
+		return publisherEnabled;
+	}
 
-        // Initialize asynchronous data publisher
-        asyncDataPublisher = new AsyncDataPublisher("tcp://" + ip + ":" + port + "", username, password, agent);
-        asyncDataPublisher.addStreamDefinition(streamDefinition);
+	private void init() {
+        
+        // Initialize load balancing data publisher       
+        loadBalancingDataPublisher = new LoadBalancingDataPublisher(getReceiverGroups());
+        loadBalancingDataPublisher.addStreamDefinition(streamDefinition);
     }
 
-    @Override
+    private ArrayList<ReceiverGroup> getReceiverGroups() {
+    	
+        ArrayList<ReceiverGroup> receiverGroups = new ArrayList<ReceiverGroup>();    
+        
+        for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
+        	ArrayList<DataPublisherHolder> dataPublisherHolders = new ArrayList<DataPublisherHolder>();
+			DataPublisherHolder aNode = new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(), thriftClientInfo.getPassword());
+			dataPublisherHolders.add(aNode);
+			ReceiverGroup group = new ReceiverGroup(dataPublisherHolders);
+			receiverGroups.add(group);
+		} 
+		return receiverGroups; 
+        
+	}
+
+	private String buildUrl(ThriftClientInfo thriftClientInfo) {
+		String url = new StringBuilder()
+						.append("tcp://")
+						.append(thriftClientInfo.getIp())
+						.append(":")
+						.append(thriftClientInfo.getPort()).toString();				
+		return url;
+	}
+
+	@Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         if (this.enabled) {
@@ -105,7 +136,13 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
                 log.debug(String.format("Publishing thrift event: [stream] %s [version] %s",
                         streamDefinition.getName(), streamDefinition.getVersion()));
             }
-            asyncDataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
+            loadBalancingDataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Successfully Published ********  thrift event: [stream] %s [version] %s",
+                        streamDefinition.getName(), streamDefinition.getVersion()));
+            }
+            
+            
         } catch (AgentException e) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Could not publish thrift event: [stream] %s [version] %s",

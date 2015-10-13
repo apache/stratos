@@ -28,6 +28,7 @@ public class ThriftClientInfo {
     private String password;
     private String ip;
     private String port;
+    private String id;
 
     public boolean isStatsPublisherEnabled() {
         return statsPublisherEnabled;
@@ -68,4 +69,14 @@ public class ThriftClientInfo {
     public void setPort(String port) {
         this.port = port;
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+      
+    
 }

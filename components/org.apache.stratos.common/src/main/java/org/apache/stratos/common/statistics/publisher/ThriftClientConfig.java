@@ -20,6 +20,8 @@
 package org.apache.stratos.common.statistics.publisher;
 
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -32,7 +34,7 @@ public class ThriftClientConfig {
     public static final String DAS_THRIFT_CLIENT_NAME = "das";
 
     private static volatile ThriftClientConfig instance;
-    private ThriftClientInfo cepThriftClientInfo, dasThriftClientInfo;
+    private List <ThriftClientInfo> cepThriftClientInfo, dasThriftClientInfo;
 
     /*
     * A private Constructor prevents any other
@@ -58,7 +60,7 @@ public class ThriftClientConfig {
     }
 
     /**
-     * Returns an ThriftClientInfo Object that stores the credential information.
+     * Returns a list of ThriftClientInfo Object that stores the credential information.
      * Thrift client credential information can be found under thrift-client-config.xml file
      * These credential information then get parsed and assigned into ThriftClientInfo
      * Object.
@@ -68,7 +70,7 @@ public class ThriftClientConfig {
      * @param thriftClientName Thrift Client Name
      * @return ThriftClientInfo object which consists of username,password,ip and port values
      */
-    public ThriftClientInfo getThriftClientInfo(String thriftClientName) {
+    public List <ThriftClientInfo> getThriftClientInfo(String thriftClientName) {
         if (CEP_THRIFT_CLIENT_NAME.equals(thriftClientName)) {
             return cepThriftClientInfo;
         } else if (DAS_THRIFT_CLIENT_NAME.equals(thriftClientName)) {
@@ -84,7 +86,7 @@ public class ThriftClientConfig {
      * @param thriftClientInfo DAS Thrift Client Information
      */
 
-    public void setDASThriftClientInfo(ThriftClientInfo thriftClientInfo) {
+    public void setDASThriftClientInfo(List <ThriftClientInfo> thriftClientInfo) {
         this.dasThriftClientInfo = thriftClientInfo;
     }
 
@@ -95,7 +97,7 @@ public class ThriftClientConfig {
      * @param thriftClientInfo CEP Thrift Client Information
      */
 
-    public void setCEPThriftClientInfo(ThriftClientInfo thriftClientInfo) {
+    public void setCEPThriftClientInfo(List <ThriftClientInfo> thriftClientInfo) {
         this.cepThriftClientInfo = thriftClientInfo;
     }
 }
