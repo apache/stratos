@@ -9,20 +9,33 @@ below steps to proceed with the installation:
 
 3. Open <nginx-extension-home>/bin/nginx-extension.sh file in a text editor and update following system properties:
    ```
-   # Define nginx host private ip address:
-   -Dnginx.private.ip=127.0.0.1
+      # Define nginx host private ip address:
+      -Dnginx.private.ip=127.0.0.1
 
-   # Define the nginx executable file path:
-   -Dexecutable.file.path=<nginx-home>/nginx
+      # Define the nginx executable file path:
+      -Dexecutable.file.path=<nginx-home>/nginx
 
-   # Enable/disable cep statistics publisher:
-   -Dcep.stats.publisher.enabled=false
+      # Update the nginx.conf file patch
+      -Dconf.file.path=/etc/nginx/nginx.conf
 
-   # If cep statistics publisher is enabled define the following properties:
-   -Dthrift.receiver.ip=127.0.0.1
-   -Dthrift.receiver.port=7615
-   -Dnetwork.partition.id=network-partition-1
-   ```
+      #update the certificate for SSL configuration
+      -Dnginx.cert.path=/etc/nginx/ssl/server.cert
+
+      #update the server key for SSL configuration
+      -Dnginx.key.path=/etc/nginx/ssl/server.key
+
+      # Update the hostname length, if needed
+      -Dnginx.server.names.hash.bucket.size=128
+
+      # Enable/disable cep statistics publisher:
+      -Dcep.stats.publisher.enabled=false
+
+      # If cep statistics publisher is enabled define the following properties:
+      -Dthrift.receiver.ip=127.0.0.1
+      -Dthrift.receiver.port=7615
+      -Dnetwork.partition.id=network-partition-1
+      ```
+
 
 4. Open <nginx-extension-home>/conf/jndi.properties file in a text editor and update message broker information:
    ```
