@@ -28,8 +28,14 @@ var log = new Log("controller.login"),
         hostName = conf. *::['HostName'].text().toString(),
         conf = carbon.server.loadConfig('thrift-client-config.xml'),
         dasConfig = conf. *::['config']. *::['das'],
-        dasStatsPublisherEnabled = dasConfig.node[0].statsPublisherEnabled.text();
+        dasStatsPublisherEnabled = false;
 
+for (var i = 0; i < dasConfig.node.length(); i++) {
+    dasStatsPublisherEnabled = dasConfig.node[i].statsPublisherEnabled.text();
+    if (dasStatsPublisherEnabled == true) {
+        break;
+    }
+}
 
 if (hostName === null || hostName === '') {
     hostName = 'localhost';
