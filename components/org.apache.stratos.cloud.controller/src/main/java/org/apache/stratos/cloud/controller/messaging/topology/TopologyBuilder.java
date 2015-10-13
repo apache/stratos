@@ -39,15 +39,12 @@ import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.application.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
-import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.net.URI;
@@ -850,6 +847,7 @@ public class TopologyBuilder {
                     clusterStatusClusterActivatedEvent.getServiceName()));
         }
 
+        String applicationId = cluster.getAppId();
         String clusterId = cluster.getClusterId();
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
         if (clusterContext == null) {
@@ -861,43 +859,63 @@ public class TopologyBuilder {
                 clusterStatusClusterActivatedEvent.getClusterId(), clusterStatusClusterActivatedEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
+
             Collection<KubernetesService> kubernetesServices = clusterContext
                     .getKubernetesServices(clusterStatusClusterActivatedEvent.getInstanceId());
 
             if (kubernetesServices != null) {
-
                 try {
                     // Generate access URLs for kubernetes services
+                    List<String> nodePublicIps = new ArrayList<>();
                     for (KubernetesService kubernetesService : kubernetesServices) {
+                        // Add node ips as load balancer ips
+                        nodePublicIps.addAll(Arrays.asList(kubernetesService.getPublicIPs()));
 
+                        // Only expose services of type node port
                         if (kubernetesService.getServiceType().equals(KubernetesConstants.NODE_PORT)) {
-                            // Public IP = Kubernetes minion public IP
-                            String[] publicIPs = kubernetesService.getPublicIPs();
-                            if ((publicIPs != null) && (publicIPs.length > 0)) {
-                                for (String publicIP : publicIPs) {
-                                    // There can be a String array with null values
-                                    if (publicIP != null) {
-                                        // Using type URI since only http, https, ftp, file, jar protocols are
-                                        // supported in URL
-                                        URI accessURL = new URI(kubernetesService.getProtocol(), null, publicIP,
-                                                kubernetesService.getPort(), null, null, null);
-                                        cluster.addAccessUrl(clusterStatusClusterActivatedEvent.getInstanceId(),
-                                                accessURL.toString());
-                                        clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
-                                    } else {
-                                        log.error(String.format(
-                                                "Could not create access URL for [Kubernetes-service] %s , "
-                                                        + "since Public IP is not available",
-                                                kubernetesService.getId()));
-                                    }
+                            for (String hostname : cluster.getHostNames()) {
+                                // Using type URI since only http, https, ftp, file, jar protocols are
+                                // supported in URL
+                                int port = kubernetesService.getPort();
+                                if(cluster.getLoadBalancerIps().size() > 0) {
+                                    // Load balancer ips have been provided, need to use proxy port
+                                    port = findProxyPort(applicationId, clusterId, kubernetesService.getPortName());
                                 }
+                                URI accessURL = new URI(kubernetesService.getProtocol(), null, hostname,
+                                        port, null, null, null);
+                                cluster.addAccessUrl(clusterStatusClusterActivatedEvent.getInstanceId(),
+                                        accessURL.toString());
+                                clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
                             }
                         }
                     }
+                    if(cluster.getLoadBalancerIps().size() == 0) {
+                        // Load balancer ips not given, use node public ips as load balancer ips
+                        clusterInstanceActivatedEvent.setLoadBalancerIps(nodePublicIps);
+                    }
                 } catch (URISyntaxException e) {
-                    log.error("Could not create access URLs for Kubernetes services", e);
+                    log.error("Could not create generate URLs for Kubernetes services", e);
+                }
+            } else {
+                try {
+                    List<ClusterPortMapping> portMappings = CloudControllerContext.getInstance().
+                            getClusterPortMappings(applicationId, clusterId);
+                    for (ClusterPortMapping portMapping : portMappings) {
+                        for (String hostname : cluster.getHostNames()) {
+                            URI accessURL = new URI(portMapping.getProtocol(), null, hostname,
+                                    portMapping.getPort(), null, null, null);
+                            cluster.addAccessUrl(clusterStatusClusterActivatedEvent.getInstanceId(),
+                                    accessURL.toString());
+                            clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
+                        }
+                    }
+                } catch (URISyntaxException e) {
+                    log.error("Could not generate access URLs", e);
                 }
             }
+
+            log.info(String.format("Access URLs generated: [application] %s [cluster] %s [access-urls] %s",
+                    applicationId, clusterId, clusterInstanceActivatedEvent.getAccessUrls()));
 
             ClusterInstance context = cluster.getInstanceContexts(clusterStatusClusterActivatedEvent.getInstanceId());
 
@@ -923,6 +941,18 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
 
+    }
+
+    private static int findProxyPort(String applicationId, String clusterId, String portName) {
+        List<ClusterPortMapping> portMappings = CloudControllerContext.getInstance().
+                getClusterPortMappings(applicationId, clusterId);
+        for(ClusterPortMapping portMapping : portMappings) {
+            if(portMapping.getName().equals(portName)) {
+                return portMapping.getProxyPort();
+            }
+        }
+        throw new RuntimeException(String.format("Port mapping not found: [application] %s [cluster] %s " +
+                        "[port-name] %s", applicationId, clusterId, portName));
     }
 
     public static void handleClusterInactivateEvent(ClusterStatusClusterInactivateEvent clusterInactivateEvent)

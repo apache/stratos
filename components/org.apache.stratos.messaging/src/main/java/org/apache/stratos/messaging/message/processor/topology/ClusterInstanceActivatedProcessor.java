@@ -119,7 +119,8 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            cluster.addAccessUrlList(event.getInstanceId(),event.getAccessUrls());
+            cluster.addAccessUrlList(event.getInstanceId(), event.getAccessUrls());
+            cluster.addLoadBalancerIps(event.getLoadBalancerIps());
 
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {

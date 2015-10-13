@@ -716,12 +716,14 @@ public class ObjectConverter {
                 clusterInstanceBean.getMember().add(memberBean);
             }
         }
-        if(cluster.getAccessUrls()!=null) {
+        if(cluster.getAccessUrls() != null) {
             clusterInstanceBean.setAccessUrls(cluster.getAccessUrls().get(instanceId));
         }
         for (String hostname : cluster.getHostNames()) {
             clusterInstanceBean.getHostNames().add(hostname);
         }
+
+        clusterInstanceBean.setLoadBalancerIps(cluster.getLoadBalancerIps());
         clusterInstanceBean.setKubernetesServices(convertKubernetesServiceToKubernetesServiceBean(
                 cluster.getKubernetesServices()));
         return clusterInstanceBean;

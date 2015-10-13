@@ -137,4 +137,5 @@ public final class AutoscalerConstants {
     public static final String ACTIVE_INSTANCE_COUNT = "active_instance_count";
     public static final String ADDITIONAL_INSTANCE_COUNT = "additional_instance_count";
     public static final String SCALING_REASON = "scaling_reason";
+    public static final String NETWORK_PARTITION_ID_LIST = "NETWORK_PARTITION_ID_LIST";
 }

@@ -27,10 +27,16 @@ import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.common.Property;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -75,6 +81,27 @@ public class ApplicationBuilder {
                     application.getUniqueIdentifier());
         }
         ApplicationHolder.persistApplication(application);
+        // Add network partition ids to application cluster contexts to be used by cloud controller
+        for(ApplicationClusterContext appClusterContext : appClusterContexts) {
+            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
+                    getDeploymentPolicy(appClusterContext.getDeploymentPolicyName());
+            if(deploymentPolicy == null) {
+                throw new AutoScalerException(String.format("Deployment policy not found: [application] %s " +
+                        "[deployment-policy] %s", application.getUniqueIdentifier(),
+                        appClusterContext.getDeploymentPolicyName()));
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for(NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionRefs()) {
+                if(stringBuilder.length() > 0) {
+                    stringBuilder.append(",");
+                }
+                stringBuilder.append(networkPartitionRef.getId());
+            }
+            Property npIdListProperty = new Property(AutoscalerConstants.NETWORK_PARTITION_ID_LIST,
+                    stringBuilder.toString());
+            appClusterContext.getProperties().addProperty(npIdListProperty);
+        }
+
         AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                 appClusterContexts);
     }

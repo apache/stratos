@@ -63,6 +63,7 @@ public class Cluster implements Serializable {
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
     private Map<String,List<String>> accessUrls;
     private List<KubernetesService> kubernetesServices;
+    private List<String> loadBalancerIps;
 
     public Cluster(Cluster cluster) {
         this.serviceName = cluster.getServiceName();
@@ -81,6 +82,7 @@ public class Cluster implements Serializable {
         this.setKubernetesCluster(cluster.isKubernetesCluster());
         this.accessUrls = cluster.getAccessUrls();
         this.kubernetesServices = cluster.getKubernetesServices();
+        this.loadBalancerIps = cluster.getLoadBalancerIps();
     }
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
@@ -95,6 +97,7 @@ public class Cluster implements Serializable {
         this.setInstanceIdToInstanceContextMap(new ConcurrentHashMap<String, ClusterInstance>());
         this.accessUrls = new HashMap<>();
         this.kubernetesServices = new ArrayList<KubernetesService>();
+        this.loadBalancerIps = new ArrayList<String>();
     }
 
     public String getServiceName() {
@@ -365,13 +368,25 @@ public class Cluster implements Serializable {
         setKubernetesCluster((kubernetesServices != null) && (kubernetesServices.size() > 0));
     }
 
+    public List<String> getLoadBalancerIps() {
+        return loadBalancerIps;
+    }
+
+    public void setLoadBalancerIps(List<String> loadBalancerIps) {
+        this.loadBalancerIps = loadBalancerIps;
+    }
+
+    public void addLoadBalancerIps(List<String> loadBalancerIps) {
+        loadBalancerIps.addAll(loadBalancerIps);
+    }
+
     @Override
     public String toString() {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
                         "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
-                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyName,
+                        "accessUrls=%s, kubernetesServices=%s, loadBalancerIps=%s]", serviceName, clusterId, autoscalePolicyName,
                 deploymentPolicyName, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
-                accessUrls, kubernetesServices);
+                accessUrls, kubernetesServices, loadBalancerIps);
     }
 }
 

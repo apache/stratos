@@ -61,11 +61,16 @@ function genTree(data) {
                 } else {
                     accessUrls = '';
                 }
+                if(items[prop].loadBalancerIps) {
+                    loadBalancerIps = items[prop].loadBalancerIps;
+                } else {
+                    loadBalancerIps = '';
+                }
                 var type = 'clusters';
                 rawout.push({
                     "name": cur_name, "parent": parent, "type": type, "status": status,
                     "alias": alias, "hostNames": hostNames, "serviceName": serviceName,
-                    "accessUrls": accessUrls
+                    "accessUrls": accessUrls, "loadBalancerIps": loadBalancerIps,
                 });
                 clustermembers(items[prop].member, collector, cur_name)
             }
@@ -212,10 +217,24 @@ function update(source) {
                 } else {
                     var accessURLHTML = '';
                 }
+                if(d.loadBalancerIps != '') {
+                    var loadBalancerIpsHTML = "<strong>Load Balancer IPs: </strong>";
+                    for (var i = 0; i < d.loadBalancerIps.length; i++) {
+                        if(i > 0) {
+                            loadBalancerIpsHTML += ", ";
+                        }
+                        loadBalancerIpsHTML += loadBalancerIps[i] + "";
+                    }
+                    loadBalancerIpsHTML += "<br/>"
+                } else {
+                    var loadBalancerIpsHTML = '';
+                }
+
                 div_html = "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
                     "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
                     accessURLHTML +
                     "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
+                    loadBalancerIpsHTML +
                     "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
                     "<strong>Status: </strong>" + d.status + "<br/>";
                 if (dasStatsPublisherEnabled) {

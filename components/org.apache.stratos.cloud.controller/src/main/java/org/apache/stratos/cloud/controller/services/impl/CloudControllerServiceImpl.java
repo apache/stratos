@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
@@ -40,8 +41,6 @@ import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -1072,48 +1071,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
+            // Create a cluster context & cluster object for each cluster in the application
 
-            // Create a Cluster Context obj. for each of the Clusters in the Application
             List<Cluster> clusters = new ArrayList<>();
-            Map<String, List<String>> accessUrls = new HashMap<>();
-
-            for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
-                String clusterId = appClusterCtxt.getClusterId();
-                if (appClusterCtxt.isLbCluster()) {
-                    String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
-                    if (dependencyClusterIDs != null) {
-                        for (String dependencyClusterID : dependencyClusterIDs) {
-
-                            List<String> accessUrlPerCluster = new ArrayList<>();
-                            Collection<ClusterPortMapping> clusterPortMappings = CloudControllerContext.getInstance()
-                                    .getClusterPortMappings(appId, clusterId);
-
-                            for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
-                                try {
-                                    if (clusterPortMapping.isKubernetes()) {
-                                        // Using type URI since only http, https, ftp, file, jar protocols are
-                                        // supported in URL
-                                        URI accessUrl = new URI(clusterPortMapping.getProtocol(), null,
-                                                appClusterCtxt.getHostName(),
-                                                clusterPortMapping.getKubernetesServicePort(), null, null, null);
-                                        accessUrlPerCluster.add(accessUrl.toString());
-                                    } else {
-                                        URI accessUrl = new URI(clusterPortMapping.getProtocol(), null,
-                                                appClusterCtxt.getHostName(), clusterPortMapping.getProxyPort(), null,
-                                                null, null);
-                                        accessUrlPerCluster.add(accessUrl.toString());
-                                    }
-                                } catch (URISyntaxException e) {
-                                    String message = "Could not generate access URL";
-                                    log.error(message, e);
-                                }
-                            }
-                            accessUrls.put(dependencyClusterID, accessUrlPerCluster);
-                        }
-                    }
-                }
-            }
-
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
                 ClusterContext clusterContext = new ClusterContext(appId, appClusterCtxt.getCartridgeType(),
                         appClusterCtxt.getClusterId(), appClusterCtxt.getTextPayload(), appClusterCtxt.getHostName(),
@@ -1126,18 +1086,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
                 // Create cluster object
+                List<String> loadBalancerIps = findLoadBalancerIPList(appId, appClusterCtxt);
                 Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
                 cluster.setLbCluster(false);
                 cluster.setTenantRange(appClusterCtxt.getTenantRange());
                 cluster.setHostNames(Collections.singletonList(appClusterCtxt.getHostName()));
-                cluster.setAccessUrls(accessUrls);
+                cluster.setLoadBalancerIps(loadBalancerIps);
 
                 if (appClusterCtxt.getProperties() != null) {
                     Properties properties = CloudControllerUtil.toJavaUtilProperties(appClusterCtxt.getProperties());
                     cluster.setProperties(properties);
                 }
-
                 clusters.add(cluster);
             }
             TopologyBuilder.handleApplicationClustersCreated(appId, clusters);
@@ -1150,6 +1110,65 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
         return true;
+    }
+
+    private List<String> findLoadBalancerIPList(String applicationId, ApplicationClusterContext applicationClusterContext) {
+
+        Cartridge cartridge = CloudControllerContext.getInstance().
+                getCartridge(applicationClusterContext.getCartridgeType());
+        if (cartridge == null) {
+            throw new CloudControllerException("Cartridge not found: " + applicationClusterContext.getCartridgeType());
+        }
+
+        String clusterId = applicationClusterContext.getClusterId();
+        Property ipListProperty = applicationClusterContext.getProperties().
+                getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
+        if (ipListProperty != null) {
+            log.info(String.format("Load balancer IP list found in application: [application] %s [cluster] %s " +
+                            "[load-balancer-ip-list] %s", applicationId, clusterId,
+                    ipListProperty.getValue()));
+            return transformToList(ipListProperty);
+        }
+
+        Property npListProperty = applicationClusterContext.getProperties().
+                getProperty(CloudControllerConstants.NETWORK_PARTITION_ID_LIST);
+        if(npListProperty != null) {
+            String npIdListStr = npListProperty.getValue();
+            if(StringUtils.isNotEmpty(npIdListStr)) {
+                List<String> loadBalancerIps = new ArrayList<>();
+                String[] npIdArray = npIdListStr.split(",");
+                for(String networkPartitionId : npIdArray) {
+                    NetworkPartition networkPartition = CloudControllerContext.getInstance().
+                            getNetworkPartition(networkPartitionId);
+                    if(networkPartition == null) {
+                        throw new CloudControllerException(String.format("Network partition not found: [application] %s " +
+                                "[network-partition] %s", applicationId, networkPartitionId));
+                    }
+                    ipListProperty = networkPartition.getProperties().
+                            getProperty(CloudControllerConstants.LOAD_BALANCER_IPS);
+                    if (ipListProperty != null) {
+                        log.debug(String.format("Load balancer IP list found in network partition: " +
+                                        "[application] %s [cluster] %s [load-balancer-ip-list] %s", applicationId,
+                                clusterId, ipListProperty.getValue()));
+                        String[] ipArray = ipListProperty.getValue().split(",");
+                        for(String ip : ipArray) {
+                            loadBalancerIps.add(ip);
+                        }
+                    }
+                }
+                return loadBalancerIps;
+            }
+        }
+        return null;
+    }
+
+    private List<String> transformToList(Property listProperty) {
+        List<String> stringList = new ArrayList<>();
+        String[] array = listProperty.getValue().split(",");
+        for(String item : array) {
+            stringList.add(item);
+        }
+        return stringList;
     }
 
     public boolean createClusterInstance(String serviceType, String clusterId, String alias, String instanceId,
