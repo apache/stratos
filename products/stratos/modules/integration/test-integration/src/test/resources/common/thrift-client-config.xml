@@ -20,20 +20,24 @@
 
 <!-- Apache thrift client configuration for publishing statistics to WSO2 CEP and WSO2 DAS -->
 <thriftClientConfiguration>
-    <config>
-        <name>cep</name>
-        <statsPublisherEnabled>true</statsPublisherEnabled>
-        <username>admin</username>
-        <password>admin</password>
-        <ip>localhost</ip>
-        <port>THRIFT_DYNAMIC_PORT</port>
-    </config>
-    <config>
-        <name>das</name>
-        <statsPublisherEnabled>false</statsPublisherEnabled>
-        <username>admin</username>
-        <password>admin</password>
-        <ip>localhost</ip>
-        <port>7612</port>
+<config>
+        <cep>
+             <node id="node-01">
+                  <statsPublisherEnabled>true</statsPublisherEnabled>
+                  <username>admin</username>
+                  <password>admin</password>
+                  <ip>localhost</ip>
+                  <port>THRIFT_DYNAMIC_PORT</port>
+             </node>
+        </cep>
+        <das>
+             <node id="node-01">
+                  <statsPublisherEnabled>false</statsPublisherEnabled>
+                  <username>admin</username>
+                  <password>admin</password>
+                  <ip>localhost</ip>
+                  <port>7612</port>
+             </node>
+        </das>
     </config>
 </thriftClientConfiguration>
