@@ -29,3 +29,4 @@ stratos_url = os.getenv('STRATOS_URL', "https://localhost:9443/")
 stratos_api_url = stratos_url + "api/"
 stratos_username = os.getenv('STRATOS_USERNAME', "")
 stratos_password = os.getenv('STRATOS_PASSWORD', "")
+debug_cli = os.getenv('STRATOS_CLI_DEBUG', "false")

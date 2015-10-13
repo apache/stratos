@@ -467,8 +467,11 @@ class Stratos:
 
     @staticmethod
     def response(r):
-        # print(r)
-        # print(r.text)
+        if Configs.debug_cli:
+            # print responses if debug is turned on
+            print(r)
+            print(r.text)
+
         if r.status_code == 200:
             return r.json()
         elif r.status_code == 201:
