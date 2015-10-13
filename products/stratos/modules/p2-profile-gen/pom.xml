@@ -815,14 +815,6 @@
                                     <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.apache.stratos.metadata.service.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.metadata.client.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
                                     <id>org.apache.stratos.common.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
@@ -904,14 +896,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.event.server.feature.group</id>
                                     <version>${carbon.platform.patch.version.4.2.1}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.metadata.service.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.metadata.client.feature.group</id>
-                                    <version>${project.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -1178,10 +1162,6 @@
 
                                 <!-- Stratos features -->
                                 <feature>
-                                    <id>org.apache.stratos.metadata.client.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
                                     <id>org.apache.stratos.custom.handlers.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
@@ -1221,13 +1201,8 @@
                                     <id>org.apache.stratos.common.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
-                                <!-- Mock IaaS features -->
                                 <feature>
                                     <id>org.apache.stratos.mock.iaas.api.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.metadata.service.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                             </features>
