@@ -863,7 +863,7 @@ public class TopologyBuilder {
             Collection<KubernetesService> kubernetesServices = clusterContext
                     .getKubernetesServices(clusterStatusClusterActivatedEvent.getInstanceId());
 
-            if (kubernetesServices != null) {
+            if ((kubernetesServices != null) && (kubernetesServices.size() > 0)) {
                 try {
                     // Generate access URLs for kubernetes services
                     List<String> nodePublicIps = new ArrayList<>();
