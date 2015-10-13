@@ -1,15 +1,5 @@
 Apache Stratos CLI
 ==================
-
-#Pre-requisites
-Install the required Python packages by issuing the following `pip install` commands.
-
-```python
-pip install cmd2
-pip install texttable
-
-
-```
  
 Build and install stratos CLI by,
 

@@ -19,7 +19,7 @@ import requests
 import json
 import Configs
 from Logging import logging
-from cli.exceptions.BadResponseError import BadResponseError
+from Exceptions import BadResponseError
 
 
 class Stratos:

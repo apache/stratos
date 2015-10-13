@@ -35,6 +35,7 @@
     <modules>
         <module>python-cartridge-agent</module>
         <module>cartridge-agent</module>
+        <module>python-cli</module>
         <module>stratos-cli</module>
         <module>load-balancer</module>
         <module>stratos</module>

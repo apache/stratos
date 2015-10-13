@@ -680,6 +680,7 @@
         <java.cartridge.agent.distribution.name>apache-stratos-cartridge-agent</java.cartridge.agent.distribution.name>
         <python.cartridge.agent.distribution.name>apache-stratos-python-cartridge-agent
         </python.cartridge.agent.distribution.name>
+        <python.cli.distribution.name>apache-stratos-python-cli</python.cli.distribution.name>
 
         <!-- Maven plugin versions -->
         <maven.incremental.plugin.version>1.3</maven.incremental.plugin.version>

@@ -19,7 +19,7 @@ from cmd2 import *
 from Utils import *
 from Stratos import *
 import Configs
-from cli.exceptions import BadResponseError
+from Exceptions import BadResponseError
 
 
 class CLI(Cmd):

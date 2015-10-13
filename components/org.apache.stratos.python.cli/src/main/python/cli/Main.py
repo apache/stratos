@@ -22,8 +22,8 @@ from CLI import CLI
 import Configs
 
 # Fix Python 2.x.
-from cli.Stratos import Stratos
-from cli.exceptions import BadResponseError
+from Stratos import Stratos
+from Exceptions import BadResponseError
 
 try:
     input = raw_input
