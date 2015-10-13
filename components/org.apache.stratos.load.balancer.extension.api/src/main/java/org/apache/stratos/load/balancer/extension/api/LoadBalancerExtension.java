@@ -112,9 +112,12 @@ public class LoadBalancerExtension {
      * @param topologyProvider topology provider instance
      */
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-
-        topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider);
+        //Enforcing the listeners order in order execute extension listener later
+        topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider, false);
+        //Add load-balancer extension event listener
         addTopologyEventListeners(topologyEventReceiver);
+        //Add Topology Provider event listener
+        topologyEventReceiver.addEventListeners();
         topologyEventReceiver.setExecutorService(executorService);
         topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {

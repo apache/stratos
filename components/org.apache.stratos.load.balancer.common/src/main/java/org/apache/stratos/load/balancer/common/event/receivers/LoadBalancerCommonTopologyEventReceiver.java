@@ -48,6 +48,14 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         addEventListeners();
     }
 
+    public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider,
+                                                   boolean addListener) {
+        this.topologyProvider = topologyProvider;
+        if(addListener) {
+            addEventListeners();
+        }
+    }
+
     public void execute() {
         super.execute();
         if (log.isInfoEnabled()) {
@@ -102,7 +110,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         return initialized;
     }
 
-    private void addEventListeners() {
+    public void addEventListeners() {
 
         addEventListener(new CompleteTopologyEventListener() {
             @Override
