@@ -145,17 +145,17 @@ public class TopologyBuilder {
                 Service service = topology.getService(cluster.getServiceName());
                 if (service == null) {
                     throw new RuntimeException("Service " + cluster.getServiceName()
-                            + " not found in Topology, unable to create Application cluster");
+                            + " not found in topology, unable to create cluster");
                 }
                 service.addCluster(cluster);
-                log.info("Application Cluster " + cluster.getClusterId() + " created in CC topology");
+                log.info("Cluster created: [cluster] " + cluster.getClusterId());
             }
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
         }
 
-        log.debug("Creating cluster port mappings: [appication-id] " + appId);
+        log.debug("Creating cluster port mappings: [application-id] " + appId);
         for (Cluster cluster : appClusters) {
             String cartridgeType = cluster.getServiceName();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
