@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.applications.topic;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -35,6 +36,7 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.partition.NetworkPartitionRef;
 import org.apache.stratos.messaging.domain.application.*;
@@ -83,11 +85,24 @@ public class ApplicationBuilder {
         ApplicationHolder.persistApplication(application);
         // Add network partition ids to application cluster contexts to be used by cloud controller
         for(ApplicationClusterContext appClusterContext : appClusterContexts) {
-            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
-                    getDeploymentPolicy(appClusterContext.getDeploymentPolicyName());
+            String deploymentPolicyName = appClusterContext.getDeploymentPolicyName();
+            if(StringUtils.isEmpty(deploymentPolicyName)) {
+                // Deployment policy name is not defined in each application cluster context
+                // therefore it needs to be find using the below util method
+                deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(application.getUniqueIdentifier(),
+                        AutoscalerUtil.getAliasFromClusterId(appClusterContext.getClusterId()));
+            }
+            if(StringUtils.isEmpty(deploymentPolicyName)) {
+                throw new AutoScalerException(String.format("Deployment policy name not found: [application] %s " +
+                                "[cluster] %s", application.getUniqueIdentifier(),
+                        appClusterContext.getClusterId()));
+            }
+
+            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
             if(deploymentPolicy == null) {
                 throw new AutoScalerException(String.format("Deployment policy not found: [application] %s " +
-                        "[deployment-policy] %s", application.getUniqueIdentifier(),
+                        "[cluster] %s [deployment-policy] %s", application.getUniqueIdentifier(),
+                        appClusterContext.getClusterId(),
                         appClusterContext.getDeploymentPolicyName()));
             }
             StringBuilder stringBuilder = new StringBuilder();
