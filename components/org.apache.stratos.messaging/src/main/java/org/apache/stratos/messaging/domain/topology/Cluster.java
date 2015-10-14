@@ -376,16 +376,6 @@ public class Cluster implements Serializable {
         this.loadBalancerIps = loadBalancerIps;
     }
 
-    public void addLoadBalancerIps(List<String> loadBalancerIps) {
-        if(loadBalancerIps == null) {
-            return;
-        }
-        if(this.loadBalancerIps == null) {
-            this.loadBalancerIps = new ArrayList<String>();
-        }
-        this.loadBalancerIps.addAll(loadBalancerIps);
-    }
-
     @Override
     public String toString() {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +

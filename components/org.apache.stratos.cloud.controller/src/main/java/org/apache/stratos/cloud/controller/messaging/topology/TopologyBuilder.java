@@ -441,31 +441,29 @@ public class TopologyBuilder {
                         createMemberStatusPublisher(StatisticsPublisherType.WSO2DAS);
 
                 if (memInfoPublisher.isEnabled()) {
-                    if (log.isDebugEnabled()) {
-                        log.info("Publishing Member Information");
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing member information to DAS...");
                     }
                     String scalingDecisionId = memberContext.getProperties()
                             .getProperty(StratosConstants.SCALING_DECISION_ID).getValue();
                     memInfoPublisher.publish(memberContext.getMemberId(), scalingDecisionId,
                             memberContext.getInstanceMetadata());
                 } else {
-                    log.warn("Member Information Publisher is not enabled");
+                    log.warn("Member information publisher is not enabled");
                 }
                 if (memStatusPublisher.isEnabled()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Publishing Member Status to DAS");
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing member status to DAS...");
                     }
                     memStatusPublisher.publish(timestamp, applicationId, memberContext.getClusterId(), clusterAlias,
                             memberContext.getClusterInstanceId(), memberContext.getCartridgeType(),
                             memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(),
                             memberContext.getMemberId(), MemberStatus.Initialized.toString());
                 } else {
-                    log.warn("Member Status Publisher is not enabled");
+                    log.warn("Member status publisher is not enabled");
                 }
             }
-        } finally
-
-        {
+        } finally {
             TopologyManager.releaseWriteLock();
         }
     }
@@ -893,6 +891,7 @@ public class TopologyBuilder {
                         // Load balancer ips not given, use node public ips as load balancer ips
                         List<String> nodePublicIpsList = new ArrayList<>();
                         nodePublicIpsList.addAll(nodePublicIps);
+                        cluster.setLoadBalancerIps(nodePublicIpsList);
                         clusterInstanceActivatedEvent.setLoadBalancerIps(nodePublicIpsList);
                     }
                     log.info(String.format("Access URLs generated for kubernetes services: [application] %s " +
