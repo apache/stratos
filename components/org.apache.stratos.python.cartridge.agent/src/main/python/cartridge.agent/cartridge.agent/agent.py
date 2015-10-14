@@ -33,7 +33,6 @@ import constants
 
 
 class CartridgeAgent(threading.Thread):
-
     def __init__(self):
         threading.Thread.__init__(self)
         Config.initialize_config()
@@ -105,9 +104,10 @@ class CartridgeAgent(threading.Thread):
         repo_url = Config.repo_url
         if repo_url is None or str(repo_url).strip() == "":
             self.__log.info("No artifact repository found")
-            self.__event_handler.on_instance_activated_event()
             publisher.publish_instance_activated_event()
+            self.__event_handler.on_instance_activated_event()
         else:
+            # instance activated event will be published in artifact updated event handler
             self.__log.info(
                 "Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s",
                 repo_url)
@@ -128,7 +128,7 @@ class CartridgeAgent(threading.Thread):
 
         # run until terminated
         while not self.__terminated:
-            time.sleep(1)
+            time.sleep(5)
 
         if DataPublisherConfiguration.get_instance().enabled:
             self.__log_publish_manager.terminate_all_publishers()
@@ -318,7 +318,7 @@ def main():
     log = LogFactory().get_log(__name__)
 
     try:
-        log.debug("Starting cartridge agent")
+        log.info("Starting Stratos cartridge agent...")
         cartridge_agent.start()
     except Exception as e:
         log.exception("Cartridge Agent Exception: %r" % e)

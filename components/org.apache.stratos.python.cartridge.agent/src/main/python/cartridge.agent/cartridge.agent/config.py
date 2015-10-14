@@ -130,8 +130,15 @@ class Config:
     """ :type : str """
     lvs_virtual_ip = None
     """ :type : str """
-
     initialized = False
+    """ :type : bool """
+    activated = False
+    """ :type : bool """
+    started = False
+    """ :type : bool """
+    ready_to_shutdown = False
+    """ :type : bool """
+    maintenance = False
     """ :type : bool """
 
     @staticmethod

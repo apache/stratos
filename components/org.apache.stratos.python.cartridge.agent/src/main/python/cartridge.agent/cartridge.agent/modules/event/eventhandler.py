@@ -59,7 +59,7 @@ class EventHandler:
         self.execute_event_extendables(constants.INSTANCE_ACTIVATED_EVENT, {})
 
     def on_artifact_updated_event(self, artifacts_updated_event):
-        self.__log.debug("Processing Artifact update event: [tenant] %s [cluster] %s [status] %s" %
+        self.__log.debug("Processing artifact updated event for [tenant] %s [cluster] %s [status] %s" %
                          (str(artifacts_updated_event.tenant_id),
                           artifacts_updated_event.cluster_id,
                           artifacts_updated_event.status))
@@ -68,7 +68,16 @@ class EventHandler:
         cluster_id_payload = Config.cluster_id
         repo_url = str(artifacts_updated_event.repo_url).strip()
 
-        if (repo_url == "") or (cluster_id_payload is None) or (cluster_id_payload != cluster_id_event):
+        if repo_url == "":
+            self.__log.error("Repository URL is empty. Failed to process artifact updated event.")
+            return
+
+        if cluster_id_payload is None or cluster_id_payload == "":
+            self.__log.error("Cluster ID in payload is empty. Failed to process artifact updated event.")
+            return
+
+        if cluster_id_payload != cluster_id_event:
+            self.__log.debug("Cluster ID in artifact updated event does not match. Skipping event handler.")
             return
 
         repo_password = None
@@ -76,41 +85,23 @@ class EventHandler:
             secret = Config.cartridge_key
             repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
+        if Config.app_path is None:
+            self.__log.error("Repository path is empty. Failed to process artifact updated event.")
+            return
+
         repo_username = artifacts_updated_event.repo_username
         tenant_id = artifacts_updated_event.tenant_id
         is_multitenant = Config.is_multiTenant
         commit_enabled = artifacts_updated_event.commit_enabled
 
-        if Config.app_path is None:
-            raise GitRepositorySynchronizationException("Repository path is empty. Cannot perform Git operations.")
-
         # create repo object
         local_repo_path = self.get_repo_path_for_tenant(str(tenant_id), Config.app_path, is_multitenant)
         repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
-        new_git_repo = AgentGitHandler.create_git_repo(repo_info)
-
-        # check whether this is the first artifact updated event for this tenant
-        existing_git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
-        if existing_git_repo is not None:
-            # check whether this event has updated credentials for git repo
-            if AgentGitHandler.is_valid_git_repository(
-                    new_git_repo) and new_git_repo.repo_url != existing_git_repo.repo_url:
-                # add the new git_repo object with updated credentials to repo list
-                AgentGitHandler.add_repo(new_git_repo)
-
-                # update the origin remote URL with new credentials
-                self.__log.info("Changes detected in git credentials for tenant: %s" % new_git_repo.tenant_id)
-                self.__log.debug("Updating git repo remote URL for tenant: %s with new remote URL: %s" % (
-                    new_git_repo.tenant_id, new_git_repo.repo_url))
-                (output, errors) = AgentGitHandler.execute_git_command(
-                    ["remote", "set-url", "origin", new_git_repo.repo_url], new_git_repo.local_repo_path)
-                if errors.strip() != "":
-                    self.__log.error("Failed to update git repo remote URL for tenant: %s" % new_git_repo.tenant_id)
-
         self.__log.info("Executing checkout job on artifact updated event...")
+
         try:
             Config.artifact_checkout_plugin.plugin_object.checkout(repo_info)
-        except GitRepositorySynchronizationException as e:
+        except Exception as e:
             self.__log.exception(
                 "Checkout job on artifact updated event failed for tenant: %s %s" % (repo_info.tenant_id, e))
 
@@ -124,12 +115,13 @@ class EventHandler:
 
         try:
             self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
-        except ValueError:
-            self.__log.exception("Could not execute plugins for artifact updated event: %s" % ValueError)
+        except Exception as e:
+            self.__log.exception("Could not execute plugins for artifact updated event: %s" % e)
 
-        if existing_git_repo is None:
-            # publish instance activated event for single tenant subscription
+        if not Config.activated:
+            # publish instance activated event if not yet activated
             publisher.publish_instance_activated_event()
+            self.on_instance_activated_event()
 
         update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, True)
         auto_commit = Config.is_commits_enabled

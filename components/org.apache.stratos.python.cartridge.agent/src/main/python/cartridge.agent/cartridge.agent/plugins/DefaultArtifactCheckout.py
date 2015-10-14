@@ -47,39 +47,57 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
         subsequent calls or not
         :rtype: tuple(bool, bool)
         """
+        new_git_repo = AgentGitHandler.create_git_repo(repo_info)
+
+        # check whether this is the first artifact updated event for this tenant
+        existing_git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
+        if existing_git_repo is not None:
+            # check whether this event has updated credentials for git repo
+            if AgentGitHandler.is_valid_git_repository(
+                    new_git_repo) and new_git_repo.repo_url != existing_git_repo.repo_url:
+                # add the new git_repo object with updated credentials to repo list
+                AgentGitHandler.add_repo(new_git_repo)
+
+                # update the origin remote URL with new credentials
+                self.log.info("Changes detected in git credentials for tenant: %s" % new_git_repo.tenant_id)
+                (output, errors) = AgentGitHandler.execute_git_command(
+                    ["remote", "set-url", "origin", new_git_repo.repo_url], new_git_repo.local_repo_path)
+                if errors.strip() != "":
+                    self.log.error("Failed to update git repo remote URL for tenant: %s" % new_git_repo.tenant_id)
+
         git_repo = AgentGitHandler.create_git_repo(repo_info)
         if AgentGitHandler.get_repo(repo_info.tenant_id) is not None:
             # has been previously cloned, this is not the subscription run
             if AgentGitHandler.is_valid_git_repository(git_repo):
-                AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
+                self.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
+                               git_repo.tenant_id, git_repo.repo_url)
                 updated = AgentGitHandler.pull(git_repo)
-                AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
+                self.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
+                               git_repo.tenant_id, git_repo.repo_url)
             else:
                 # not a valid repository, might've been corrupted. do a re-clone
-                AgentGitHandler.log.debug("Local repository is not valid. Doing a re-clone to purify.")
+                self.log.debug("Local repository is not valid. Doing a re-clone to purify.")
                 git_repo.cloned = False
-                AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
+                self.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
+                               git_repo.tenant_id, git_repo.repo_url)
                 git_repo = AgentGitHandler.clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
-                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
+                self.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
+                               git_repo.tenant_id, git_repo.repo_url)
         else:
             # subscribing run.. need to clone
-            AgentGitHandler.log.info("Cloning artifacts from %s for the first time to %s",
-                                     git_repo.repo_url, git_repo.local_repo_path)
-            AgentGitHandler.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
-                                     git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
+            self.log.info("Cloning artifacts from %s for the first time to %s",
+                          git_repo.repo_url, git_repo.local_repo_path)
+            self.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
+                          git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
             try:
                 git_repo = AgentGitHandler.clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
-                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-            except GitRepositorySynchronizationException as e:
-                AgentGitHandler.log.exception("Git clone operation failed: %s" % e)
+                self.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
+                               git_repo.tenant_id, git_repo.repo_url)
+            except Exception as e:
+                self.log.exception("Git clone operation failed: %s" % e)
                 # If first git clone is failed, execute retry_clone operation
-                AgentGitHandler.log.info("Retrying git clone operation...")
+                self.log.info("Retrying git clone operation...")
                 AgentGitHandler.retry_clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
