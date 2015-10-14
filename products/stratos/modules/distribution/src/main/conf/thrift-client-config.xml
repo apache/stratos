@@ -27,7 +27,7 @@
                   <username>admin</username>
                   <password>admin</password>
                   <ip>localhost</ip>
-                  <port>7711</port>
+                  <port>7611</port>
              </node>
              <!--<node id="node-02">
                   <statsPublisherEnabled>true</statsPublisherEnabled>
@@ -43,7 +43,7 @@
                   <username>admin</username>
                   <password>admin</password>
                   <ip>localhost</ip>
-                  <port>7712</port>
+                  <port>7612</port>
              </node>
              <!--<node id="node-02">
                   <statsPublisherEnabled>true</statsPublisherEnabled>
