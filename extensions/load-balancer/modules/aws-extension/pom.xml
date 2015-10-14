@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-load-balancer-extensions</artifactId>
-        <version>4.1.4-SNAPSHOT</version>
+        <version>4.1.4</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
