@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.threading.StratosThreadPool;
-import org.apache.stratos.integration.common.rest.IntegrationMockClient;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
@@ -38,12 +37,10 @@ import org.apache.stratos.messaging.message.receiver.application.ApplicationMana
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -90,7 +87,6 @@ public class TopologyHandler {
         return topologyHandler;
     }
 
-
     /**
      * Initialize application event receiver
      */
@@ -124,8 +120,7 @@ public class TopologyHandler {
         while (!applicationTopologyInitialized) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
             if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_TIMEOUT) {
@@ -145,8 +140,7 @@ public class TopologyHandler {
         while (!topologyInitialized) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             topologyInitialized = TopologyManager.getTopology().isInitialized();
             if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_TIMEOUT) {
@@ -167,8 +161,7 @@ public class TopologyHandler {
         while (!((application != null) && (application.getStatus() == status))) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             application = ApplicationManager.getApplications().getApplication(applicationName);
             if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
@@ -188,8 +181,7 @@ public class TopologyHandler {
      */
     public void assertGroupActivation(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
 
         Collection<Group> groups = application.getAllGroupsRecursively();
         for (Group group : groups) {
@@ -204,24 +196,23 @@ public class TopologyHandler {
      */
     public void assertClusterActivation(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
             String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
-            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                    applicationName, serviceName), service);
+            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                    serviceName), service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
                     applicationName, serviceName, clusterId), cluster);
             for (Member member : cluster.getMembers()) {
-                log.info(String.format("Member [member-id] %s found in cluster instance [cluster-instance] %s of " +
-                        "cluster [cluster-id] %s", member
-                        .getMemberId(), member.getClusterInstanceId(), member.getClusterId()));
+                log.info(String.format("Member [member-id] %s found in cluster instance [cluster-instance] %s of "
+                                + "cluster [cluster-id] %s", member.getMemberId(), member.getClusterInstanceId(),
+                        member.getClusterId()));
             }
             boolean clusterActive = false;
             int activeInstances;
@@ -259,8 +250,8 @@ public class TopologyHandler {
             if (cartridgeName.equals(serviceName)) {
                 String clusterId = clusterDataHolder.getClusterId();
                 Service service = TopologyManager.getTopology().getService(serviceName);
-                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                        applicationName, serviceName), service);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                        serviceName), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
@@ -282,7 +273,7 @@ public class TopologyHandler {
      * @param memberId
      * @param mockIaasApiClient
      */
-    public void terminateMemberInMockIaas(String memberId, IntegrationMockClient mockIaasApiClient) {
+    public void terminateMemberInMockIaas(String memberId, MockIaasApiClient mockIaasApiClient) {
         boolean memberTerminated = false;
         memberTerminated = mockIaasApiClient.terminateInstance(memberId);
         assertTrue(String.format("Member [member-id] %s couldn't be terminated from the mock IaaS", memberId),
@@ -309,8 +300,7 @@ public class TopologyHandler {
             }
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 log.error("Could not sleep", e);
             }
         }
@@ -322,16 +312,15 @@ public class TopologyHandler {
         long startTime = System.currentTimeMillis();
 
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
             String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
-            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                    applicationName, serviceName), service);
+            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                    serviceName), service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
@@ -352,12 +341,12 @@ public class TopologyHandler {
                 while (!clusterActive) {
                     try {
                         Thread.sleep(1000);
-                    }
-                    catch (InterruptedException ignore) {
+                    } catch (InterruptedException ignore) {
                     }
                     service = TopologyManager.getTopology().getService(serviceName);
-                    assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                            applicationName, serviceName), service);
+                    assertNotNull(
+                            String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                                    serviceName), service);
 
                     cluster = service.getCluster(clusterId);
                     activeInstances = 0;
@@ -385,7 +374,6 @@ public class TopologyHandler {
 
     }
 
-
     /**
      * Assert application activation
      *
@@ -397,22 +385,19 @@ public class TopologyHandler {
         ApplicationContext applicationContext = null;
         try {
             applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             log.error("Error while getting the application context for [application] " + applicationName);
         }
-        while (((application != null) && application.getInstanceContextCount() > 0) ||
-                (applicationContext == null || applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING))) {
+        while (((application != null) && application.getInstanceContextCount() > 0) || (applicationContext == null
+                || applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING))) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             application = ApplicationManager.getApplications().getApplication(applicationName);
             try {
                 applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
-            }
-            catch (RemoteException e) {
+            } catch (RemoteException e) {
                 log.error("Error while getting the application context for [application] " + applicationName);
             }
             if ((System.currentTimeMillis() - startTime) > APPLICATION_UNDEPLOYMENT_TIMEOUT) {
@@ -421,14 +406,13 @@ public class TopologyHandler {
             }
         }
 
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
-        assertNotNull(String.format("Application Context is not found: [application-id] %s",
-                applicationName), applicationContext);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+        assertNotNull(String.format("Application Context is not found: [application-id] %s", applicationName),
+                applicationContext);
 
         //Force undeployment after the graceful deployment
-        if (application.getInstanceContextCount() > 0 ||
-                applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING)) {
+        if (application.getInstanceContextCount() > 0 || applicationContext.getStatus()
+                .equals(APPLICATION_STATUS_UNDEPLOYING)) {
             return false;
         }
         assertEquals(
@@ -450,8 +434,7 @@ public class TopologyHandler {
             while (group.getInstanceContextCount() != count) {
                 try {
                     Thread.sleep(1000);
-                }
-                catch (InterruptedException ignore) {
+                } catch (InterruptedException ignore) {
                 }
                 if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                     log.error("Group instance min count check failed within timeout period");
@@ -462,8 +445,7 @@ public class TopologyHandler {
                 while (!instance.getStatus().equals(GroupStatus.Active)) {
                     try {
                         Thread.sleep(1000);
-                    }
-                    catch (InterruptedException ignore) {
+                    } catch (InterruptedException ignore) {
                     }
                     if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                         log.error("Application did not activate within timeout period");
@@ -497,7 +479,6 @@ public class TopologyHandler {
                 getTerminatingMembers().remove(((MemberTerminatedEvent) event).getMemberId());
             }
         });
-
 
         topologyEventReceiver.addEventListener(new ClusterInstanceCreatedEventListener() {
             @Override
@@ -544,7 +525,6 @@ public class TopologyHandler {
                 getTerminatingMembers().put(clusterId, System.currentTimeMillis());
             }
         });
-
 
     }
 
@@ -626,7 +606,6 @@ public class TopologyHandler {
         return dataHolder.getClusterId();
     }
 
-
     public void removeMembersFromMaps(String applicationId) {
         for (Map.Entry<String, Long> entry : getActivateddMembers().entrySet()) {
             if (entry.getKey().contains(applicationId)) {
@@ -679,5 +658,29 @@ public class TopologyHandler {
 
     public void setActivateddMembers(Map<String, Long> activateddMembers) {
         this.activateddMembers = activateddMembers;
+    }
+
+    public List<Member> getMembersForApplication(String applicationId) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
+        Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
+        List<Member> memberList = new ArrayList<>();
+        for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
+            String serviceName = clusterDataHolder.getServiceType();
+            String clusterId = clusterDataHolder.getClusterId();
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            assertNotNull(
+                    String.format("Service is not found: [application-id] %s [service] %s", applicationId, serviceName),
+                    service);
+            Cluster cluster = service.getCluster(clusterId);
+            assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
+                    applicationId, serviceName, clusterId), cluster);
+            for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                for (Member member : cluster.getMembers()) {
+                    memberList.add(member);
+                }
+            }
+        }
+        return memberList;
     }
 }

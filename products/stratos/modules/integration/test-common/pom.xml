@@ -114,6 +114,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.metadata.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

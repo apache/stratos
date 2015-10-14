@@ -19,6 +19,9 @@
 
 package org.apache.stratos.integration.tests.application;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -28,11 +31,17 @@ import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.metadata.client.beans.PropertyBean;
+import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
@@ -44,6 +53,12 @@ import static org.testng.AssertJUnit.assertTrue;
 public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SampleApplicationStartupTestCase.class);
     private static final String RESOURCES_PATH = "/sample-application-startup-test";
+    private static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
+    private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
+    private static final String PAYLOAD_PARAMETER_TOKEN_KEY = "TOKEN";
+    private static final String PAYLOAD_PARAMETER_APPLICATION_ID_KEY = "APPLICATION_ID";
+    private GsonBuilder gsonBuilder = new GsonBuilder();
+    private Gson gson = gsonBuilder.create();
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and faulty member " + "detection",
@@ -140,6 +155,47 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         log.info("Waiting for cluster status to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean.getApplicationId());
 
+        List<Member> memberList = topologyHandler.getMembersForApplication(bean.getApplicationId());
+        Assert.assertTrue(memberList.size() > 1,
+                String.format("Active member list for application %s is empty", bean.getApplicationId()));
+        MockInstanceMetadata mockInstanceMetadata = mockIaasApiClient.getInstance(memberList.get(0).getMemberId());
+        String payloadString = mockInstanceMetadata.getPayload();
+        log.info("Mock instance payload properties: " + payloadString);
+
+        Properties payloadProperties = new Properties();
+        String[] parameterArray = payloadString.split(PAYLOAD_PARAMETER_SEPARATOR);
+        for (String parameter : parameterArray) {
+            if (parameter != null) {
+                String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
+                if ((nameValueArray.length == 2)) {
+                    payloadProperties.put(nameValueArray[0], nameValueArray[1]);
+                }
+            }
+        }
+
+        String key = "mykey";
+        String val1 = "myval1";
+        String val2 = "myval2";
+        String accessToken = payloadProperties.getProperty(PAYLOAD_PARAMETER_TOKEN_KEY);
+        String appId = payloadProperties.getProperty(PAYLOAD_PARAMETER_APPLICATION_ID_KEY);
+        assertNotNull(accessToken, "Access token is null in member payload");
+
+        log.info("Trying to add metadata for application:" + appId + ", with accessToken: " + accessToken);
+        boolean hasProperty1Added = restClient.addPropertyToApplication(appId, key, val1, accessToken);
+        Assert.assertTrue(hasProperty1Added, "Could not add metadata property1 to application: " + appId);
+
+        boolean hasProperty2Added = restClient.addPropertyToApplication(appId, key, val2, accessToken);
+        Assert.assertTrue(hasProperty2Added, "Could not add metadata property2 to application: " + appId);
+
+        PropertyBean propertyBean = restClient.getApplicationProperty(appId, key, accessToken);
+        log.info("Retrieved metadata property: " + gson.toJson(propertyBean));
+        Assert.assertTrue(propertyBean != null && propertyBean.getValues().length > 0, "Empty property list");
+        boolean hasPropertiesAdded = ArrayUtils.contains(propertyBean.getValues(), val1) && ArrayUtils
+                .contains(propertyBean.getValues(), val2);
+
+        Assert.assertTrue(hasPropertiesAdded, "Metadata properties retrieved are not correct");
+        log.info("Metadata test completed successfully");
+
         log.info("Terminating members in [cluster id] c1-sample-application-startup-test in mock IaaS directly to "
                 + "simulate faulty members...");
         Map<String, Member> memberMap = TopologyHandler.getInstance()
@@ -207,17 +263,15 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
                 RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(removedAuto);
 
-        log.info(
-                "Removing the deployment policy [deployment policy id] "
-                        + "deployment-policy-sample-application-startup-test");
+        log.info("Removing the deployment policy [deployment policy id] "
+                + "deployment-policy-sample-application-startup-test");
         boolean removedDep = restClient
                 .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-application-startup-test",
                         RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
 
-        log.info(
-                "Removing the network partition [network partition id] "
-                        + "network-partition-sample-application-startup-test");
+        log.info("Removing the network partition [network partition id] "
+                + "network-partition-sample-application-startup-test");
         boolean removedNet = restClient
                 .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-application-startup-test",
                         RestConstants.NETWORK_PARTITIONS_NAME);

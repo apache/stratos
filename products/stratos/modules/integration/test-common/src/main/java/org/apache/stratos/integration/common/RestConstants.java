@@ -21,6 +21,7 @@ package org.apache.stratos.integration.common;
  */
 public class RestConstants {
     public static final String API = "api";
+    public static final String METADATA_API = "/metadata/api";
     public static final String AUTOSCALING_POLICIES = "/" + API + "/autoscalingPolicies";
     public static final String USERS = "/" + API + "/users";
     public static final String TENANTS = "/" + API + "/tenants";
