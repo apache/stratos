@@ -866,7 +866,7 @@ public class TopologyBuilder {
             if ((kubernetesServices != null) && (kubernetesServices.size() > 0)) {
                 try {
                     // Generate access URLs for kubernetes services
-                    List<String> nodePublicIps = new ArrayList<>();
+                    Set<String> nodePublicIps = new HashSet<>();
                     for (KubernetesService kubernetesService : kubernetesServices) {
                         // Add node ips as load balancer ips
                         nodePublicIps.addAll(Arrays.asList(kubernetesService.getPublicIPs()));
@@ -891,7 +891,9 @@ public class TopologyBuilder {
                     }
                     if(cluster.getLoadBalancerIps().size() == 0) {
                         // Load balancer ips not given, use node public ips as load balancer ips
-                        clusterInstanceActivatedEvent.setLoadBalancerIps(nodePublicIps);
+                        List<String> nodePublicIpsList = new ArrayList<>();
+                        nodePublicIpsList.addAll(nodePublicIps);
+                        clusterInstanceActivatedEvent.setLoadBalancerIps(nodePublicIpsList);
                     }
                     log.info(String.format("Access URLs generated for kubernetes services: [application] %s " +
                                     "[cluster] %s [access-urls] %s",
