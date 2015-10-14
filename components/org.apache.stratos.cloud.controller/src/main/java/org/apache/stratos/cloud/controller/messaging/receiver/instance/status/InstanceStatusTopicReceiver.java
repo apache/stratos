@@ -66,10 +66,15 @@ public class InstanceStatusTopicReceiver {
         statusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+                InstanceActivatedEvent instanceActivatedEvent = (InstanceActivatedEvent) event;
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Handling InstanceActivatedEvent for [member-id] %s",
+                            instanceActivatedEvent.getMemberId()));
+                }
                 try {
-                    TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) event);
-                } catch (RegistryException e) {
-                    log.error("Could not persist data in registry data store", e);
+                    TopologyBuilder.handleMemberActivated(instanceActivatedEvent);
+                } catch (Exception e) {
+                    log.error("Failed to process InstanceActivatedEvent", e);
                 }
             }
         });
@@ -77,18 +82,33 @@ public class InstanceStatusTopicReceiver {
         statusEventReceiver.addEventListener(new InstanceStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleMemberStarted((InstanceStartedEvent) event);
+                InstanceStartedEvent instanceStartedEvent = (InstanceStartedEvent) event;
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Handling InstanceStartedEvent for [member-id] %s",
+                            instanceStartedEvent.getMemberId()));
+                }
+                try {
+                    TopologyBuilder.handleMemberStarted(instanceStartedEvent);
+                } catch (Exception e) {
+                    log.error(String.format("Failed to process InstanceStartedEvent for [member-id] %s",
+                            instanceStartedEvent.getMemberId()), e);
+                }
             }
         });
 
         statusEventReceiver.addEventListener(new InstanceReadyToShutdownEventListener() {
             @Override
             protected void onEvent(Event event) {
+                InstanceReadyToShutdownEvent instanceReadyToShutdownEvent = (InstanceReadyToShutdownEvent) event;
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Handling InstanceReadyToShutdownEvent for [member-id] %s",
+                            instanceReadyToShutdownEvent.getMemberId()));
+                }
                 try {
-                    TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) event);
+                    TopologyBuilder.handleMemberReadyToShutdown(instanceReadyToShutdownEvent);
                 } catch (Exception e) {
-                    String error = "Failed to process the instance status event message";
-                    log.error(error, e);
+                    log.error(String.format("Failed to process InstanceReadyToShutdownEvent for [member-id] %s",
+                            instanceReadyToShutdownEvent.getMemberId()), e);
                 }
             }
         });
@@ -96,11 +116,16 @@ public class InstanceStatusTopicReceiver {
         statusEventReceiver.addEventListener(new InstanceMaintenanceListener() {
             @Override
             protected void onEvent(Event event) {
+                InstanceMaintenanceModeEvent instanceMaintenanceModeEvent = (InstanceMaintenanceModeEvent) event;
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Handling InstanceMaintenanceModeEvent for [member-id] %s",
+                            instanceMaintenanceModeEvent.getMemberId()));
+                }
                 try {
-                    TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) event);
+                    TopologyBuilder.handleMemberMaintenance(instanceMaintenanceModeEvent);
                 } catch (Exception e) {
-                    String error = "Failed to process the instance status event message";
-                    log.error(error, e);
+                    log.error(String.format("Failed to process InstanceMaintenanceModeEvent for [member-id] %s",
+                            instanceMaintenanceModeEvent.getMemberId()), e);
                 }
             }
         });

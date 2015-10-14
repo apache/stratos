@@ -54,6 +54,11 @@ public class MockIaasApi {
     @Consumes("application/json")
     @Produces("application/json")
     public Response startInstance(MockInstanceContext mockInstanceContext) throws MockIaasApiException {
+        if (mockInstanceContext == null) {
+            String msg = "Mock instance context is null";
+            log.error(msg);
+            throw new MockIaasApiException(msg);
+        }
         try {
             // Validate mock iaas service
             validateMockIaasService();
@@ -81,8 +86,8 @@ public class MockIaasApi {
             log.debug(String.format("Get mock instances"));
 
             List<MockInstanceMetadata> mockInstanceMetadataList = getMockIaasService().getInstances();
-            MockInstanceMetadata[] mockInstanceMetadataArray = mockInstanceMetadataList.toArray(
-                    new MockInstanceMetadata[mockInstanceMetadataList.size()]);
+            MockInstanceMetadata[] mockInstanceMetadataArray = mockInstanceMetadataList
+                    .toArray(new MockInstanceMetadata[mockInstanceMetadataList.size()]);
             return Response.ok(mockInstanceMetadataArray).build();
         } catch (Exception e) {
             String message = "Could not get mock instances";
@@ -130,9 +135,9 @@ public class MockIaasApi {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             mockInstanceMetadata = getMockIaasService().allocateIpAddress(instanceId);
-            log.info(String.format("IP addresses allocated: [instance-id] %s [default-private-ip] %s " +
-                            "[default-public-ip] %s", instanceId, mockInstanceMetadata.getDefaultPrivateIp(),
-                    mockInstanceMetadata.getDefaultPublicIp()));
+            log.info(String.format(
+                    "IP addresses allocated: [instance-id] %s [default-private-ip] %s " + "[default-public-ip] %s",
+                    instanceId, mockInstanceMetadata.getDefaultPrivateIp(), mockInstanceMetadata.getDefaultPublicIp()));
             return Response.ok(mockInstanceMetadata).build();
         } catch (Exception e) {
             String message = String.format("Could not allocate ip address: [instance-id] %s", instanceId);

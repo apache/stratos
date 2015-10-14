@@ -54,6 +54,7 @@
                         </Private-Package>
                         <Import-Package>
                             !org.apache.stratos.cloud.controller.*,
+                            org.apache.stratos.mock.iaas.*,
                             org.apache.commons.*,
                             org.wso2.carbon.utils.*,
                             org.apache.stratos.common.*; version="${project.version}",

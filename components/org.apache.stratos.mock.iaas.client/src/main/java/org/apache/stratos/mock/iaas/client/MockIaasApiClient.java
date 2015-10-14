@@ -58,6 +58,9 @@ public class MockIaasApiClient {
             }
             URI uri = new URIBuilder(endpoint + INSTANCES_CONTEXT).build();
             HttpResponse response = restClient.doPost(uri, content);
+            if (log.isDebugEnabled()) {
+                log.debug("Mock start instance call response: " + response.getContent());
+            }
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                     return gson.fromJson(response.getContent(), MockInstanceMetadata.class);
@@ -84,7 +87,7 @@ public class MockIaasApiClient {
             HttpResponse response = restClient.doDelete(uri);
             if (response != null) {
                 if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
-                    return false;
+                    return true;
                 } else {
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
@@ -124,6 +127,29 @@ public class MockIaasApiClient {
             throw new RuntimeException("An unknown error occurred");
         } catch (Exception e) {
             String message = String.format("Could not allocate ip address: [instance-id] ", instanceId);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public MockInstanceMetadata getInstance(String instanceId) {
+        try {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            URI uri = new URIBuilder(endpoint + INSTANCES_CONTEXT + instanceId).build();
+            HttpResponse response = restClient.doGet(uri);
+            if (response != null) {
+                if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                    return gson.fromJson(response.getContent(), MockInstanceMetadata.class);
+                } else {
+                    ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
+                    if (errorResponse != null) {
+                        throw new RuntimeException(errorResponse.getErrorMessage());
+                    }
+                }
+            }
+            throw new RuntimeException("An unknown error occurred");
+        } catch (Exception e) {
+            String message = "Could not start mock instance";
             throw new RuntimeException(message, e);
         }
     }

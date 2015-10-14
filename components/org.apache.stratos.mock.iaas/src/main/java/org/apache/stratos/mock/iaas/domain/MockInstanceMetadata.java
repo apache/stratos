@@ -19,20 +19,23 @@
 
 package org.apache.stratos.mock.iaas.domain;
 
+import org.apache.stratos.messaging.adapters.MapAdapter;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Mock instance metadata.
  */
 @XmlRootElement(name = "mockInstanceMetadata")
 public class MockInstanceMetadata implements Serializable {
-
     private static final long serialVersionUID = -1323605022799409426L;
-
     private String instanceId;
     private String defaultPrivateIp;
     private String defaultPublicIp;
+    private String payload;
 
     public MockInstanceMetadata() {
     }
@@ -41,6 +44,7 @@ public class MockInstanceMetadata implements Serializable {
         this.instanceId = mockInstanceContext.getInstanceId();
         this.defaultPrivateIp = mockInstanceContext.getDefaultPrivateIP();
         this.defaultPublicIp = mockInstanceContext.getDefaultPublicIP();
+        this.payload = mockInstanceContext.getPayload();
     }
 
     public String getInstanceId() {
@@ -65,5 +69,13 @@ public class MockInstanceMetadata implements Serializable {
 
     public void setDefaultPublicIp(String defaultPublicIp) {
         this.defaultPublicIp = defaultPublicIp;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }
