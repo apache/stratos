@@ -25,7 +25,10 @@ import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.event.application.signup.CompleteApplicationSignUpsEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpManager;
+import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
+
+import java.util.Arrays;
 
 /**
  * Complete application signups message processor.
@@ -63,8 +66,23 @@ public class CompleteApplicationSignUpsMessageProcessor extends MessageProcessor
                         }
                     }
                     ApplicationSignUpManager.getInstance().setInitialized(true);
+                    log.info("Application signups initialized");
                 } finally {
                     ApplicationSignUpManager.releaseWriteLock();
+                }
+            }
+
+            if(!DomainMappingManager.getInstance().isInitialized()) {
+                try {
+                    DomainMappingManager.acquireWriteLock();
+                    for (ApplicationSignUp applicationSignUp : event.getApplicationSignUps()) {
+                        DomainMappingManager.getInstance().addDomainMappings(
+                                Arrays.asList(applicationSignUp.getDomainMappings()));
+                    }
+                    DomainMappingManager.getInstance().setInitialized(true);
+                    log.info("Domain mappings initialized");
+                } finally {
+                    DomainMappingManager.releaseWriteLock();
                 }
             }
 

@@ -75,7 +75,7 @@ public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
                 Application application = ApplicationManager.getApplications().getApplication(applicationId);
                 if (application == null) {
                     if (log.isWarnEnabled()) {
-                        log.warn(String.format("Application not found: [application-id] %d", applicationId));
+                        log.warn(String.format("Application not found: [application-id] %s", applicationId));
                     }
                     return false;
                 }

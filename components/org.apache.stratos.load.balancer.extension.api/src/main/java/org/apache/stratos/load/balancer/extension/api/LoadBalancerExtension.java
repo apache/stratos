@@ -38,6 +38,7 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
 
@@ -59,6 +60,7 @@ public class LoadBalancerExtension {
     private LoadBalancerCommonTopologyEventReceiver topologyEventReceiver;
     private LoadBalancerCommonDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerCommonApplicationSignUpEventReceiver applicationSignUpEventReceiver;
+    private ApplicationsEventReceiver applicationsEventReceiver;
 
     /**
      * Load balancer extension constructor.
@@ -86,6 +88,7 @@ public class LoadBalancerExtension {
 
             // Start topology receiver thread
             startTopologyEventReceiver(executorService, topologyProvider);
+            startApplicationEventReceiver(executorService);
             startApplicationSignUpEventReceiver(executorService, topologyProvider);
             startDomainMappingEventReceiver(executorService, topologyProvider);
 
@@ -141,6 +144,15 @@ public class LoadBalancerExtension {
                 log.info(String.format("Member filter activated: [filter] %s",
                         TopologyMemberFilter.getInstance().toString()));
             }
+        }
+    }
+
+    private void startApplicationEventReceiver(ExecutorService executorService) {
+        applicationsEventReceiver = new ApplicationsEventReceiver();
+        applicationsEventReceiver.setExecutorService(executorService);
+        applicationsEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Application event receiver thread started");
         }
     }
 
