@@ -377,7 +377,13 @@ public class Cluster implements Serializable {
     }
 
     public void addLoadBalancerIps(List<String> loadBalancerIps) {
-        loadBalancerIps.addAll(loadBalancerIps);
+        if(loadBalancerIps == null) {
+            return;
+        }
+        if(this.loadBalancerIps == null) {
+            this.loadBalancerIps = new ArrayList<String>();
+        }
+        this.loadBalancerIps.addAll(loadBalancerIps);
     }
 
     @Override
