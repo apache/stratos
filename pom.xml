@@ -202,8 +202,9 @@
                                 <exclude>**/templates/*.cfg.template</exclude>
                                 <exclude>**/instrumentation.txt</exclude>
                                 <exclude>**/filters.txt</exclude>
-                                <exclude>**/*json</exclude>
+                                <exclude>**/*.json</exclude>
                                 <exclude>**/.idea/**/*</exclude>
+                                <exclude>**/.idea</exclude>
                                 <exclude>**/tlds/**/*</exclude>
                                 <exclude>**/highlighter/**/*</exclude>
                                 <exclude>**/yui/**/*</exclude>
@@ -226,6 +227,9 @@
                                 <exclude>**/*.wsdl</exclude>
                                 <!-- Carbon UI dependency -->
                                 <exclude>**/org.wso2.carbon.ui/**/*</exclude>
+                                <!-- Python CLI config files -->
+                                <exclude>**/*.cfg</exclude>
+                                <exclude>**/*.rst</exclude>
                             </excludes>
                             <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
