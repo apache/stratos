@@ -32,6 +32,8 @@ import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerS
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
+import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -112,11 +114,11 @@ public class LoadBalancerExtension {
      * @param topologyProvider topology provider instance
      */
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        //Enforcing the listeners order in order execute extension listener later
+        // Enforcing the listener order in order execute extension listener later
         topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider, false);
-        //Add load-balancer extension event listener
+        // Add load-balancer extension event listener
         addTopologyEventListeners(topologyEventReceiver);
-        //Add Topology Provider event listener
+        // Add default topology provider event listeners
         topologyEventReceiver.addEventListeners();
         topologyEventReceiver.setExecutorService(executorService);
         topologyEventReceiver.execute();
@@ -149,12 +151,34 @@ public class LoadBalancerExtension {
      * @param topologyProvider topology receiver instance
      */
     private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        domainMappingEventReceiver = new LoadBalancerCommonDomainMappingEventReceiver(topologyProvider);
+        // Enforcing the listener order in order execute extension listener later
+        domainMappingEventReceiver = new LoadBalancerCommonDomainMappingEventReceiver(topologyProvider, false);
+        // Add extension event listeners
+        addDomainMappingsEventListeners(domainMappingEventReceiver);
+        // Add default domain mapping event listeners
+        domainMappingEventReceiver.addEventListeners();
         domainMappingEventReceiver.setExecutorService(executorService);
         domainMappingEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Domain mapping event receiver thread started");
         }
+    }
+
+    private void addDomainMappingsEventListeners(final LoadBalancerCommonDomainMappingEventReceiver
+                                                         domainMappingEventReceiver) {
+        domainMappingEventReceiver.addEventListener(new DomainMappingAddedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                reloadConfiguration();
+            }
+        });
+
+        domainMappingEventReceiver.addEventListener(new DomainMappingRemovedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                reloadConfiguration();
+            }
+        });
     }
 
     /**

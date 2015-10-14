@@ -48,10 +48,9 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         addEventListeners();
     }
 
-    public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider,
-                                                   boolean addListener) {
+    public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider, boolean addListeners) {
         this.topologyProvider = topologyProvider;
-        if(addListener) {
+        if(addListeners) {
             addEventListeners();
         }
     }
@@ -110,8 +109,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         return initialized;
     }
 
+    /**
+     * Add default event listeners for updating the topology on topology events
+     */
     public void addEventListeners() {
-
         addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {

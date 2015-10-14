@@ -45,8 +45,18 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
         addEventListeners();
     }
 
-    private void addEventListeners() {
+    public LoadBalancerCommonDomainMappingEventReceiver(TopologyProvider topologyProvider, boolean addListeners) {
+        this.topologyProvider = topologyProvider;
+        if(addListeners) {
+            addEventListeners();
+        }
+    }
 
+    /**
+     * Add default event listeners for updating the topology with
+     * domain mapping events.
+     */
+    public void addEventListeners() {
         addEventListener(new DomainMappingAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
