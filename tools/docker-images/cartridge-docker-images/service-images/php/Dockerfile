@@ -19,7 +19,7 @@
 #
 # --------------------------------------------------------------
 
-FROM stratos/base-image:4.1.4
+FROM stratos/base-image:4.1.5
 MAINTAINER dev@stratos.apache.org
 
 # ----------------

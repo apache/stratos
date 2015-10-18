@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-service-stubs-parent</artifactId>
-        <version>4.1.4</version>
+        <version>4.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.stratos.manager.service.stub</artifactId>

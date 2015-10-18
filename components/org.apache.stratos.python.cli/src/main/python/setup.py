@@ -25,8 +25,8 @@ def read(file_name):
 
 setup(
     name="stratos-cli",
-    version="4.1.4",
-    version="4.1.4",
+    version="4.1.5",
+    version="4.1.5",
     author="Apache Stratos",
     author_email="dev@stratos.apache.org",
     description="CLI tool to interact with Apache Stratos",
