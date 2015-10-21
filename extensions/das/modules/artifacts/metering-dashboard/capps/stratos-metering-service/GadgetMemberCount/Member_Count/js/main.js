@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-var datasource, type, columns, filter, maxUpdateValue;
+var type, columns, maxUpdateValue;
 
 var REFRESH_INTERVAL = 5000;
 var dataLoaded = true;
@@ -27,8 +27,6 @@ var applicationId = '';
 var clusterId = '';
 
 //loading gadget configuration
-datasource = gadgetConfig.datasource;
-filter = gadgetConfig.filter;
 type = gadgetConfig.type;
 var counter = 0;
 maxUpdateValue = gadgetConfig.maxUpdateValue;
@@ -71,7 +69,6 @@ function fetchData(callback) {
 
     if (application != "") {
         var request = {
-            tableName: datasource,
             applicationId: application,
             clusterId: cluster,
             time: time
