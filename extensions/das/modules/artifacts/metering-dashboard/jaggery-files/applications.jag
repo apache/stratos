@@ -18,10 +18,9 @@
  * under the License.
  *
  */
-(function () {
-    var log = new Log();
-    var HTTP_INTERNAL_ERROR = 500;
+include('metering-authentication.jag');
 
+(function () {
     var db = new Database("WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB");
 
     try {

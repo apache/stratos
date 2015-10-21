@@ -18,12 +18,10 @@
  * under the License.
  *
  */
+include('metering-authentication.jag');
+
 (function () {
     var log = new Log();
-
-    var TABLE_NAME = "tableName";
-
-    var HTTP_INTERNAL_ERROR = 500;
 
     var TIME_INTERVAL_1 = '30 Min';
     var TIME_INTERVAL_2 = '1 Hour';
@@ -31,17 +29,6 @@
     var TIME_INTERVAL_4 = '1 Week';
     var TIME_INTERVAL_5 = '1 Month';
     var ALL_CLUSTERS = 'All Clusters';
-
-    var carbon = require('carbon');
-    var configs = require('/configs/designer.json');
-
-    var tableName = encodeURIComponent(request.getParameter(TABLE_NAME));
-    if (tableName == null) {
-        log.error("Table name param is not provided!");
-        response.status = HTTP_INTERNAL_ERROR;
-        print('{ "status": "Failed", "message": "Table name param is empty" }');
-        return;
-    }
 
     var content = request.getContent();
     var contentAsString = null;
@@ -74,9 +61,9 @@
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM " + tableName + " WHERE ApplicationId= ? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) ORDER BY MemberID, Time", applicationId);
+            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM MEMBER_STATUS WHERE ApplicationId= ? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) ORDER BY MemberID, Time", applicationId);
         }else {
-            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM " + tableName + " WHERE ApplicationId= ? AND ClusterAlias= ? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) ORDER BY MemberID, Time", applicationId, clusterId);
+            result = db.query("SELECT FROM_UNIXTIME(Time/1000, '%Y:%m:%d %h:%i:%s') AS Time, MemberId, MemberStatus FROM MEMBER_STATUS WHERE ApplicationId= ? AND ClusterAlias= ? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) ORDER BY MemberID, Time", applicationId, clusterId);
         }
         print(result);
     }

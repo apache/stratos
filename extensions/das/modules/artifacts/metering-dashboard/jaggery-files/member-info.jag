@@ -18,23 +18,10 @@
  * under the License.
  *
  */
+include('metering-authentication.jag');
+
 (function () {
     var log = new Log();
-    var TABLE_NAME = "tableName";
-
-    var HTTP_INTERNAL_ERROR = 500;
-
-    var carbon = require('carbon');
-    var configs = require('/configs/designer.json');
-
-    var tableName = encodeURIComponent(request.getParameter(TABLE_NAME));
-    if (tableName == null) {
-        log.error("Table name param is not provided!");
-        response.status = HTTP_INTERNAL_ERROR;
-        print('{ "status": "Failed", "message": "Table name param is empty" }');
-        return;
-    }
-
     var ALL_CLUSTERS = 'All Clusters';
 
     var content = request.getContent();
@@ -54,9 +41,9 @@
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT * FROM " + tableName + " WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ?)", applicationId);
+            result = db.query("SELECT * FROM MEMBER_INFORMATION WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ?)", applicationId);
         } else {
-            result = db.query("SELECT * FROM " + tableName + " WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ? AND ClusterAlias= ?)", applicationId, clusterId);
+            result = db.query("SELECT * FROM MEMBER_INFORMATION WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ? AND ClusterAlias= ?)", applicationId, clusterId);
         }
         print(result);
     }

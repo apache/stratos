@@ -18,22 +18,10 @@
  * under the License.
  *
  */
+include('metering-authentication.jag');
+
 (function () {
     var log = new Log();
-    var TABLE_NAME = "tableName";
-
-    var HTTP_INTERNAL_ERROR = 500;
-
-    var carbon = require('carbon');
-    var configs = require('/configs/designer.json');
-
-    var tableName = encodeURIComponent(request.getParameter(TABLE_NAME));
-    if (tableName == null) {
-        log.error("Table name param is not provided!");
-        response.status = HTTP_INTERNAL_ERROR;
-        print('{ "status": "Failed", "message": "Table name param is empty" }');
-        return;
-    }
 
     var TIME_INTERVAL_1 = '30 Min';
     var TIME_INTERVAL_2 = '1 Hour';
@@ -42,8 +30,6 @@
     var TIME_INTERVAL_5 = '1 Month';
     var ALL_CLUSTERS = 'All Clusters';
 
-    var carbon = require('carbon');
-    var configs = require('/configs/designer.json');
     var content = request.getContent();
     var contentAsString = null;
     if (content != '' && content != null) {
@@ -87,9 +73,9 @@
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, SUM(CreatedInstanceCount) AS CreatedInstanceCount , SUM(InitializedInstanceCount) AS InitializedInstanceCount , SUM(ActiveInstanceCount) AS ActiveInstanceCount, SUM(TerminatedInstanceCount) AS TerminatedInstanceCount FROM " + tableName + " WHERE ApplicationId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ApplicationId", applicationId);
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, SUM(CreatedInstanceCount) AS CreatedInstanceCount , SUM(InitializedInstanceCount) AS InitializedInstanceCount , SUM(ActiveInstanceCount) AS ActiveInstanceCount, SUM(TerminatedInstanceCount) AS TerminatedInstanceCount FROM MEMBER_COUNT WHERE ApplicationId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '" + time_format + "'), ApplicationId", applicationId);
         } else {
-            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, SUM(CreatedInstanceCount) AS CreatedInstanceCount , SUM(InitializedInstanceCount) AS InitializedInstanceCount , SUM(ActiveInstanceCount) AS ActiveInstanceCount, SUM(TerminatedInstanceCount) AS TerminatedInstanceCount FROM " + tableName + " WHERE ApplicationId=? AND ClusterAlias=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i')",applicationId, clusterId);
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, SUM(CreatedInstanceCount) AS CreatedInstanceCount , SUM(InitializedInstanceCount) AS InitializedInstanceCount , SUM(ActiveInstanceCount) AS ActiveInstanceCount, SUM(TerminatedInstanceCount) AS TerminatedInstanceCount FROM MEMBER_COUNT WHERE ApplicationId=? AND ClusterAlias=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '" + time_format + "')", applicationId, clusterId);
         }
         print(result);
 
