@@ -30,7 +30,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.apache.stratos.metering.service.capps</artifactId>
+    <artifactId>metering-service-capps</artifactId>
     <name>Apache Stratos - Metering Service CApps</name>
     <description>Apache Stratos Metering Service CApps</description>
     <packaging>pom</packaging>
