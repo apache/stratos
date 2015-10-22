@@ -1,0 +1,91 @@
+<%
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+include("monitoring-authentication.jag");
+
+(function () {
+    var log = new Log();
+
+    var TIME_INTERVAL_1 = '30 Min';
+    var TIME_INTERVAL_2 = '1 Hour';
+    var TIME_INTERVAL_3 = '1 Day';
+    var TIME_INTERVAL_4 = '1 Week';
+    var TIME_INTERVAL_5 = '1 Month';
+    var ALL_MEMBERS = 'All Members';
+
+    var content = request.getContent();
+    var contentAsString = null;
+    if (content != '' && content != null) {
+        contentAsString = stringify(content);
+        if (log.isDebugEnabled()) {
+            log.debug("Value of content: " + contentAsString);
+        }
+    }
+
+    var db = new Database("WSO2_ANALYTICS_EVENT_STORE_DB");
+
+    try {
+        var result;
+
+        var timeInterval = request.getParameter("time");
+        var interval = 1800000;
+        var x_axis_interval;
+        var time_format;
+        if (timeInterval === TIME_INTERVAL_1) {
+            interval = 1800000;
+            x_axis_interval = 60;
+            time_format = '%h:%i';
+        } else if (timeInterval === TIME_INTERVAL_2) {
+            interval = 3600000;
+            x_axis_interval = 120;
+            time_format = '%h:%i';
+        } else if (timeInterval === TIME_INTERVAL_3) {
+            interval = 86400000;
+            x_axis_interval = 2880;
+            time_format = '%Y:%m:%d %h:%i';
+        } else if (timeInterval === TIME_INTERVAL_4) {
+            interval = 604800000;
+            x_axis_interval = 20160;
+            time_format = '%Y:%m:%d %h:%i';
+        } else if (timeInterval === TIME_INTERVAL_5) {
+            interval = 2419200000;
+            x_axis_interval = 80640;
+            time_format = '%Y:%m:%d';
+        }
+
+        var clusterId = request.getParameter("clusterId");
+        var memberId = request.getParameter("memberId");
+
+       if (memberId == ALL_MEMBERS) {
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM AVERAGE_LOAD_AVERAGE_STATS WHERE ClusterId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId", clusterId);
+       }else{
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM MEMBER_AVERAGE_LOAD_AVERAGE_STATS WHERE ClusterId=? AND MemberId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId, MemberId", clusterId, memberId);
+       }
+       print(result);
+
+    }
+    catch (e) {
+        print(e.toString());
+    }
+    finally {
+        db.close();
+    }
+}());
+%>
