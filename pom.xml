@@ -315,6 +315,11 @@
                 <artifactId>commons-exec</artifactId>
                 <version>${commons.exec.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.das.extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Automation framework dependencies -->
             <dependency>
