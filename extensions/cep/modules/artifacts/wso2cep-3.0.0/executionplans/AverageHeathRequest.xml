@@ -40,20 +40,20 @@
   	define partition health_avg_cluster_partition by   health_avg_concatinator.health_grad_cluster_network;
   	define partition member_health_avg_cluster_partition by  health_avg_processsor.member_id;
   	from health_avg_concatinator [health_description == 'load_average'] 
-		#window.timeBatch(1 min) select cluster_id, cluster_instance_id, network_partition_id, avg(value) as average_load_average
+		#window.timeBatch(1 min) select cluster_id, cluster_instance_id, network_partition_id, avg(value) as average_load_average, stratos:now() as timestamp
 		insert into average_load_average_stats 
 		partition by health_avg_cluster_partition;
   	from health_avg_processsor [health_description == 'load_average'] 
-		#window.timeBatch(1 min) select member_id, cluster_id, cluster_instance_id, network_partition_id, avg(value) as member_average_load_average
+		#window.timeBatch(1 min) select member_id, cluster_id, cluster_instance_id, network_partition_id, avg(value) as member_average_load_average, stratos:now() as timestamp
 		insert into member_average_load_average_stats 
 		partition by member_health_avg_cluster_partition;
   	from health_avg_processsor [health_description == 'memory_consumption'] 
-		#window.timeBatch(1 min) select member_id, cluster_id, cluster_instance_id, network_partition_id, avg(value) as member_average_memory_consumption
+		#window.timeBatch(1 min) select member_id, cluster_id, cluster_instance_id, network_partition_id, avg(value) as member_average_memory_consumption, stratos:now() as timestamp
 		insert into member_average_memory_consumption_stats 
 		partition by member_health_avg_cluster_partition;
   	from health_avg_concatinator [health_description == 'memory_consumption'] 
-		#window.timeBatch(1 min) select cluster_id, cluster_instance_id, network_partition_id, avg(value) as average_memory_consumption
-		insert into average_memory_consumption_stats 
+		#window.timeBatch(1 min) select cluster_id, cluster_instance_id, network_partition_id, avg(value) as average_memory_consumption, stratos:now() as timestamp
+		insert into average_memory_consumption_stats
 		partition by health_avg_cluster_partition;
   ]]></queryExpressions>
   <exportedStreams>

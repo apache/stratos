@@ -37,8 +37,8 @@
 		insert into avg_rif_concat;
 	define partition avg_rif_cluster_partition by avg_rif_concat.avg_rif_cluster_network;
 	from avg_rif_concat#window.timeBatch(1 min)
-		select cluster_id, cluster_instance_id, network_partition_id, avg(in_flight_request_count) as count
-		insert into average_in_flight_requests 
+		select cluster_id, cluster_instance_id, network_partition_id, avg(in_flight_request_count) as count, stratos:now() as timestamp
+		insert into average_in_flight_requests
 		partition by avg_rif_cluster_partition;
     ]]></queryExpressions>
     <exportedStreams>
