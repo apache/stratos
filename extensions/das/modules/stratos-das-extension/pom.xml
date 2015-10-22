@@ -22,21 +22,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-extensions</artifactId>
+        <artifactId>das-extension</artifactId>
         <version>4.1.5-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>das-extension</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>org.apache.stratos.das.extension</artifactId>
     <name>Apache Stratos - DAS Extension</name>
-    <description>Apache Stratos DAS extension</description>
-    <modules>
-        <module>modules/artifacts/metering-dashboard/capps</module>
-        <module>modules/artifacts/monitoring-dashboard/capps</module>
-        <module>modules/stratos-das-extension</module>
-        <module>modules/distribution</module>
-    </modules>
+    <description>Apache Stratos DAS Extension</description>
 
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
