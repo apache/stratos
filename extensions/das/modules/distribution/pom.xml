@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-das-extension</artifactId>
+        <artifactId>das-extension</artifactId>
         <version>4.1.5-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -51,6 +51,7 @@
                                     <goal>attached</goal>
                                 </goals>
                                 <configuration>
+                                    <finalName>${project.artifactId}-${project.version}</finalName>
                                     <descriptors>
                                         <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
                                     </descriptors>
@@ -63,4 +64,11 @@
             </build>
         </profile>
     </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.das.extension</artifactId>
+        </dependency>
+    </dependencies>
 </project>
