@@ -346,7 +346,6 @@ public class TopologyBuilder {
             member.setStatus(MemberStatus.Created);
             member.setLbClusterId(lbClusterId);
             member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));
-            member.setInstanceId(memberContext.getInstanceId());
             cluster.addMember(member);
             TopologyManager.updateTopology(topology);
 
@@ -400,6 +399,8 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
 
+            // Set instance id returned by the IaaS
+            member.setInstanceId(memberContext.getInstanceId());
             // Set ip addresses
             member.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
             if (memberContext.getPrivateIPs() != null) {

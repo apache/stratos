@@ -136,16 +136,18 @@ public class MemberInitializedMessageProcessor extends MessageProcessor {
                 log.error("Invalid state transition from " + member.getStatus() + " to " + MemberStatus.Initialized);
             }
             member.setStatus(MemberStatus.Initialized);
+            member.setInstanceId(event.getInstanceId());
             member.setDefaultPublicIP(event.getDefaultPublicIP());
             member.setMemberPublicIPs(event.getMemberPublicIPs());
             member.setDefaultPrivateIP(event.getDefaultPrivateIP());
             member.setMemberPrivateIPs(event.getMemberPrivateIPs());
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member initialized: [service] %s [cluster] %s [member] %s",
+                log.info(String.format("Member initialized: [service] %s [cluster] %s [member] %s [instance-id] %s",
                         event.getServiceName(),
                         event.getClusterId(),
-                        event.getMemberId()));
+                        event.getMemberId(),
+                        event.getInstanceId()));
             }
         }
 
