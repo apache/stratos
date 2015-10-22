@@ -1,0 +1,19 @@
+{
+  "id": "Load_Average",
+  "title": "Load Average",
+  "type": "gadget",
+  "thumbnail": "local://images/gadgetIcon.png",
+  "data": {
+    "url": "local://store/carbon.super/gadget/Load_Average/index.xml"
+  },
+  "listen": {
+    "health-stats-filter": {
+      "type": "address",
+      "description": "Used to filter based on state"
+    },
+    "auto-update": {
+      "type": "boolean",
+      "description": "Used to filter based on state"
+    }
+  }
+}

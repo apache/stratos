@@ -1,0 +1,19 @@
+{
+  "id": "Memory_Usage",
+  "title": "Memory Usage",
+  "type": "gadget",
+  "thumbnail": "local://images/gadgetIcon.png",
+  "data": {
+    "url": "local://store/carbon.super/gadget/Memory_Usage/index.xml"
+  },
+  "listen": {
+    "health-stats-filter": {
+      "type": "address",
+      "description": "Used to filter based on state"
+    },
+    "auto-update": {
+      "type": "boolean",
+      "description": "Used to filter based on state"
+    }
+  }
+}

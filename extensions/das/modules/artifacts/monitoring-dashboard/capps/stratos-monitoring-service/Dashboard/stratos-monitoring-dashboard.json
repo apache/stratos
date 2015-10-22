@@ -1,0 +1,274 @@
+{
+  "id": "ppaas-monitoring-dashboard",
+  "title": "Private PaaS Monitoring Dashboard",
+  "description": "This dashboard helps to monitor health stats.",
+  "permissions": {
+    "viewers": [
+      "Internal/everyone"
+    ],
+    "editors": [
+      "Internal/everyone"
+    ]
+  },
+  "pages": [
+    {
+      "id": "health-stats",
+      "title": "Health Stats",
+      "layout": {
+        "id": "single-column",
+        "title": "Single Column",
+        "description": "This is a layout generated through single-column.io",
+        "thumbnail": "store://layout/single-column/index.png",
+        "url": "store://layout/single-column/index.hbs",
+        "content": "<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+      },
+      "content": {
+        "a": [
+          {
+            "id": "np79atkpuq8h0k9",
+            "content": {
+              "id": "Health_Stats_Filter",
+              "title": "Health Stats Filter",
+              "type": "gadget",
+              "thumbnail": "store://gadget/Health_Stats_Filter/index.png",
+              "data": {
+                "url": "store://gadget/Health_Stats_Filter/index.xml"
+              },
+              "styles": {
+                "title": "",
+                "height": "150",
+                "borders": false,
+                "titlePosition": "left"
+              },
+              "notify": {
+                "health-stats-filter": {
+                  "type": "address",
+                  "description": "This notifies time interval"
+                },
+                "cancel": {
+                  "type": "boolean",
+                  "description": "This notifies cancellation of state selection"
+                }
+              },
+              "options": {},
+              "settings": {}
+            }
+          },
+          {
+            "id": "8wnyg587eaznz5mi",
+            "content": {
+              "id": "Memory_Usage",
+              "title": "Memory Usage",
+              "type": "gadget",
+              "thumbnail": "local://images/gadgetIcon.png",
+              "data": {
+                "url": "local://store/carbon.super/gadget/Memory_Usage/index.xml"
+              },
+              "listen": {
+                "health-stats-filter": {
+                  "type": "address",
+                  "description": "Used to filter based on state",
+                  "on": [
+                    {
+                      "from": "np79atkpuq8h0k9",
+                      "event": "health-stats-filter"
+                    }
+                  ]
+                },
+                "auto-update": {
+                  "type": "boolean",
+                  "description": "Used to filter based on state",
+                  "on": []
+                }
+              },
+              "styles": {
+                "title": "Memory Usage",
+                "height": "400",
+                "borders": true,
+                "titlePosition": "left"
+              },
+              "options": {
+                "dataSource": {
+                  "type": "STRING",
+                  "title": "Data Source",
+                  "value": "/portal/gadgets/bar-chart/datasource/dataFile4.jag",
+                  "options": [],
+                  "required": false
+                },
+                "updateGraph": {
+                  "type": "STRING",
+                  "title": "Update Interval (s)",
+                  "value": "5",
+                  "options": [],
+                  "required": false
+                }
+              },
+              "settings": {}
+            }
+          }
+        ],
+        "b": [
+          {
+            "id": "hhy2fj8wgu1bgldi",
+            "content": {
+              "id": "Load_Average",
+              "title": "Load Average",
+              "type": "gadget",
+              "thumbnail": "local://images/gadgetIcon.png",
+              "data": {
+                "url": "local://store/carbon.super/gadget/Load_Average/index.xml"
+              },
+              "listen": {
+                "health-stats-filter": {
+                  "type": "address",
+                  "description": "Used to filter based on state",
+                  "on": [
+                    {
+                      "from": "np79atkpuq8h0k9",
+                      "event": "health-stats-filter"
+                    }
+                  ]
+                },
+                "auto-update": {
+                  "type": "boolean",
+                  "description": "Used to filter based on state",
+                  "on": []
+                }
+              },
+              "styles": {
+                "title": "Load Average",
+                "height": "400",
+                "borders": true,
+                "titlePosition": "left"
+              },
+              "options": {
+                "dataSource": {
+                  "type": "STRING",
+                  "title": "Data Source",
+                  "value": "/portal/gadgets/bar-chart/datasource/dataFile4.jag",
+                  "options": [],
+                  "required": false
+                },
+                "updateGraph": {
+                  "type": "STRING",
+                  "title": "Update Interval (s)",
+                  "value": "5",
+                  "options": [],
+                  "required": false
+                }
+              },
+              "settings": {}
+            }
+          },
+          {
+            "id": "3rlgpdhg2e29",
+            "content": {
+              "id": "In_Flight_Request",
+              "title": "In Flight Request",
+              "type": "gadget",
+              "thumbnail": "local://images/gadgetIcon.png",
+              "data": {
+                "url": "local://store/carbon.super/gadget/In_Flight_Request/index.xml"
+              },
+              "listen": {
+                "health-stats-filter": {
+                  "type": "address",
+                  "description": "Used to filter based on state",
+                  "on": [
+                    {
+                      "from": "np79atkpuq8h0k9",
+                      "event": "health-stats-filter"
+                    }
+                  ]
+                },
+                "auto-update": {
+                  "type": "boolean",
+                  "description": "Used to filter based on state",
+                  "on": []
+                }
+              },
+              "styles": {
+                "title": "In-Flight Request",
+                "height": "400",
+                "borders": true,
+                "titlePosition": "left"
+              },
+              "options": {
+                "dataSource": {
+                  "type": "STRING",
+                  "title": "Data Source",
+                  "value": "/portal/gadgets/bar-chart/datasource/dataFile4.jag",
+                  "options": [],
+                  "required": false
+                },
+                "updateGraph": {
+                  "type": "STRING",
+                  "title": "Update Interval (s)",
+                  "value": "5",
+                  "options": [],
+                  "required": false
+                }
+              },
+              "settings": {}
+            }
+          }
+        ],
+        "c": [
+          {
+            "id": "a7jevl0wisc680k9",
+            "content": {
+              "id": "Scaling_Details",
+              "title": "Scaling Details",
+              "type": "gadget",
+              "thumbnail": "local://images/gadgetIcon.png",
+              "data": {
+                "url": "local://store/carbon.super/gadget/Scaling_Details/index.xml"
+              },
+              "listen": {
+                "health-stats-filter": {
+                  "type": "address",
+                  "description": "Used to filter based on state",
+                  "on": [
+                    {
+                      "from": "np79atkpuq8h0k9",
+                      "event": "health-stats-filter"
+                    }
+                  ]
+                },
+                "auto-update": {
+                  "type": "boolean",
+                  "description": "Used to filter based on state",
+                  "on": []
+                }
+              },
+              "styles": {
+                "title": "Cluster Instances",
+                "height": "600",
+                "borders": true,
+                "titlePosition": "left"
+              },
+              "options": {
+                "dataSource": {
+                  "type": "STRING",
+                  "title": "Data Source",
+                  "value": "/portal/gadgets/bar-chart/datasource/dataFile4.jag",
+                  "options": [],
+                  "required": false
+                },
+                "updateGraph": {
+                  "type": "STRING",
+                  "title": "Update Interval (s)",
+                  "value": "5",
+                  "options": [],
+                  "required": false
+                }
+              },
+              "settings": {}
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "landing": "health-stats"
+}
