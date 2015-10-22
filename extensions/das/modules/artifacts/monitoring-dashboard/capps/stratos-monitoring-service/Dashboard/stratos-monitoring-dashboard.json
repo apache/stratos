@@ -1,6 +1,6 @@
 {
-  "id": "ppaas-monitoring-dashboard",
-  "title": "Private PaaS Monitoring Dashboard",
+  "id": "stratos-monitoring-dashboard",
+  "title": "Stratos Monitoring Dashboard",
   "description": "This dashboard helps to monitor health stats.",
   "permissions": {
     "viewers": [
