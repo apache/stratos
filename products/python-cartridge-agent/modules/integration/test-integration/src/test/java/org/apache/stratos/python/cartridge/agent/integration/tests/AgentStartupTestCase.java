@@ -47,6 +47,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
     private static final String APP_ID = "application-1";
     private static final String MEMBER_ID = "php.member-1";
+    private static final String INSTANCE_ID = "instance-1";
     private static final String CLUSTER_INSTANCE_ID = "cluster-1-instance-1";
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
@@ -110,7 +111,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                                 log.info("Publishing member initialized event...");
                                 MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
                                         SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID
+                                        PARTITION_ID, INSTANCE_ID
                                 );
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");

@@ -650,6 +650,7 @@ public class ObjectConverter {
             memberBean.setServiceName(member.getServiceName());
             memberBean.setClusterId(member.getClusterId());
             memberBean.setMemberId(member.getMemberId());
+            memberBean.setInstanceId(member.getInstanceId());
             memberBean.setClusterInstanceId(member.getClusterInstanceId());
 
             memberBean.setLbClusterId(member.getLbClusterId());
@@ -703,6 +704,7 @@ public class ObjectConverter {
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
                 memberBean.setPartitionId(member.getPartitionId());
                 memberBean.setMemberId(member.getMemberId());
+                memberBean.setInstanceId(member.getInstanceId());
                 memberBean.setClusterInstanceId(member.getClusterInstanceId());
                 memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
                 memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
