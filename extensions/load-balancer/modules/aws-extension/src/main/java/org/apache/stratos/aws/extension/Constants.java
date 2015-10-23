@@ -53,4 +53,5 @@ public class Constants {
 	public static final String HTTP_RESPONSE_5XX = "HTTPCode_Backend_5XX";
 	public static final String STATISTICS_INTERVAL = "statistics-interval";
 	public static final int STATISTICS_INTERVAL_MULTIPLE_OF = 60;
+	public static final String LOAD_BALANCER_SSL_CERTIFICATE_ID = "load-balancer-ssl-certificate-id";
 }

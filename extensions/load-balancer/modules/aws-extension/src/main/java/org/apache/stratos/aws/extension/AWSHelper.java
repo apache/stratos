@@ -66,6 +66,7 @@ public class AWSHelper {
 	private String lbSecurityGroupDescription;
 	private String allowedCidrIpForLBSecurityGroup;
 	private int statisticsInterval;
+	private String sslCertificateId;
 
 	private AtomicInteger lbSequence;
 
@@ -125,6 +126,11 @@ public class AWSHelper {
 				throw new LoadBalancerExtensionException(
 						"Invalid load balancer security group name.");
 			}
+
+			// Read the SSL certificate Id. This is mandatory if only we are using HTTPS as the front end protocol.
+			// http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/using-elb-listenerconfig-quickref.html
+			this.sslCertificateId = properties
+					.getProperty(Constants.LOAD_BALANCER_SSL_CERTIFICATE_ID);
 
 			this.allowedCidrIpForLBSecurityGroup = properties
 					.getProperty(Constants.ALLOWED_CIDR_IP_KEY);
@@ -338,8 +344,7 @@ public class AWSHelper {
 	 * @param region
 	 *            of the load balancer
 	 */
-	public void deregisterInstancesFromLoadBalancer(String loadBalancerName,
-			List<Instance> instances, String region) {
+	public void deregisterInstancesFromLoadBalancer(String loadBalancerName, List<Instance> instances, String region) {
 
 		log.info("De-registering following instance(s) from load balancer "
 				+ loadBalancerName);
@@ -841,7 +846,7 @@ public class AWSHelper {
 	 * @param service
 	 * @return list of listeners required for the service
 	 */
-	public List<Listener> getRequiredListeners(Member member) {
+	public List<Listener> getRequiredListeners(Member member) throws LoadBalancerExtensionException {
 		List<Listener> listeners = new ArrayList<Listener>();
 
 		Collection<Port> ports = member.getPorts();
@@ -854,6 +859,19 @@ public class AWSHelper {
 
 			Listener listener = new Listener(protocol, proxyPort, instancePort);
 			listener.setInstanceProtocol(instanceProtocol);
+			if ("HTTPS".equalsIgnoreCase(protocol) || "SSL".equalsIgnoreCase(protocol)) {
+				// if the SSL certificate is not configured in the aws.properties file, can't continue
+				if (getSslCertificateId() == null || getSslCertificateId().isEmpty()) {
+					String errorMsg = "Required property " + Constants.LOAD_BALANCER_SSL_CERTIFICATE_ID + " not provided in configuration";
+					log.error(errorMsg);
+					throw new LoadBalancerExtensionException(errorMsg);
+				}
+				// TODO: make debug?
+				if (log.isInfoEnabled()) {
+					log.info("Listener protocol = " + protocol + ", hence setting the SSL Certificate Id: " + getSslCertificateId());
+				}
+				listener.setSSLCertificateId(getSslCertificateId());
+			}
 
 			listeners.add(listener);
 		}
@@ -922,5 +940,9 @@ public class AWSHelper {
 			return region + "a";
 		} else
 			return null;
+	}
+
+	public String getSslCertificateId() {
+		return sslCertificateId;
 	}
 }
