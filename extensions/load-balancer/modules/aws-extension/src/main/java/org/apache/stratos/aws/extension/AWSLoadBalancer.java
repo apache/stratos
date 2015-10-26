@@ -213,6 +213,13 @@ public class AWSLoadBalancer implements LoadBalancer {
 						activeClusters.add(cluster.getClusterId());
 					}
 				}
+
+				// sleep to stop AWS Rate Exceeding: Caused by: com.amazonaws.AmazonServiceException: Rate exceeded
+				// (Service: AmazonElasticLoadBalancing; Status Code: 400; Error Code: Throttling; Request ID: xxx-xxx)
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException ignored) {}
+
 			}
 		}
 
