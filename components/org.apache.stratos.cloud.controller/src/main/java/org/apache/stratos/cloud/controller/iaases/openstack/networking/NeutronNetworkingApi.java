@@ -86,7 +86,7 @@ public class NeutronNetworkingApi implements OpenstackNetworkingApi {
                 getFixedIPToFloatingNetworksMap(iaasProvider.getNetworkInterfaces());
 
         // list of IPs allocated to this node
-        List<String> associatedFlotingIPs = new ArrayList<String>();
+        List<String> associatedFloatingIPs = new ArrayList<String>();
 
         // wait until node gets private IPs
         while (node.getPrivateAddresses() == null) {
@@ -145,10 +145,10 @@ public class NeutronNetworkingApi implements OpenstackNetworkingApi {
                         + "Please check whether the floating network %s can be reached from the fixed IP range", floatingNetwork.getNetworkUuid());
                 assertNotNullAndNotEmpty(allocatedFloatingIP.getFloatingIpAddress(), allocatedFloatingIPAddressNullOrEmptyMsg);
 
-                associatedFlotingIPs.add(allocatedFloatingIP.getFloatingIpAddress());
+                associatedFloatingIPs.add(allocatedFloatingIP.getFloatingIpAddress());
             }
         }
-        return associatedFlotingIPs;
+        return associatedFloatingIPs;
     }
 
     @Override
@@ -391,7 +391,7 @@ public class NeutronNetworkingApi implements OpenstackNetworkingApi {
             throw new CloudControllerException(msg, e);
         }
 
-        String msg = String.format("Unable to create a floting IP from network %s", floatingNetworkUuid);
+        String msg = String.format("Unable to create a floating IP from network %s", floatingNetworkUuid);
         assertNotNull(floatingIP, msg);
 
         return floatingIP;

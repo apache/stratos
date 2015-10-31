@@ -37,10 +37,10 @@ public class FloatingNetwork implements Serializable {
     public FloatingNetwork() {
     }
 
-    public FloatingNetwork(String name, String networkUuid, String flotingIP) {
+    public FloatingNetwork(String name, String networkUuid, String floatingIP) {
         this.name = name;
         this.networkUuid = networkUuid;
-        this.floatingIP = flotingIP;
+        this.floatingIP = floatingIP;
     }
 
     public String getName() {

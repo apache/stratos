@@ -96,11 +96,11 @@ public class NeutronNetworkingApiTest extends TestCase {
 
     @Test
     public void testGetAllPredefinedFloatingIPs() throws Exception {
-        List<String> allPredefinedFlotaingIPs = neutronNetworkingApi.getAllPredefinedFloatingIPs(networkInterfaces);
+        List<String> allPredefinedFloatingIPs = neutronNetworkingApi.getAllPredefinedFloatingIPs(networkInterfaces);
         Assert.assertEquals(String.format("%s. Predefined floating IP count not valid", validationError), 1,
-                allPredefinedFlotaingIPs.size());
+                allPredefinedFloatingIPs.size());
         Assert.assertTrue(String.format("%s. Predefined floating IP not returned", validationError),
-                allPredefinedFlotaingIPs.contains("192.168.16.59"));
+                allPredefinedFloatingIPs.contains("192.168.16.59"));
     }
 
     @Test
