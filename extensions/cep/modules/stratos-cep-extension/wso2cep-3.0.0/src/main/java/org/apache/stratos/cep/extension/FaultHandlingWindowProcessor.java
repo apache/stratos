@@ -48,20 +48,17 @@ import org.wso2.siddhi.query.api.extension.annotation.SiddhiExtension;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * CEP window processor to handle faulty member instances. This window processor is responsible for
  * publishing MemberFault event if health stats are not received within a given time window.
  */
-@SiddhiExtension(namespace = "stratos", function = "faultHandling")
+@SiddhiExtension(namespace = "stratos",
+                 function = "faultHandling")
 public class FaultHandlingWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
 
-	private static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
+    private static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
 
     private static final int TIME_OUT = 60 * 1000;
     public static final String CEP_EXTENSION_THREAD_POOL_KEY = "cep.extension.thread.pool";
@@ -70,57 +67,57 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     private ExecutorService executorService;
     private ScheduledExecutorService faultHandleScheduler;
     private ScheduledFuture<?> lastSchedule;
-	private ThreadBarrier threadBarrier;
-	private long timeToKeep;
-	private ISchedulerSiddhiQueue<StreamEvent> window;
-	private EventPublisher healthStatPublisher =
-			EventPublisherPool.getPublisher(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName());
-	private Map<String, Object> MemberFaultEventMap = new HashMap<String, Object>();
-	private Map<String, Object> memberFaultEventMessageMap = new HashMap<String, Object>();
+    private ThreadBarrier threadBarrier;
+    private long timeToKeep;
+    private ISchedulerSiddhiQueue<StreamEvent> window;
+    private EventPublisher healthStatPublisher = EventPublisherPool
+            .getPublisher(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName());
+    private Map<String, Object> MemberFaultEventMap = new HashMap<String, Object>();
+    private Map<String, Object> memberFaultEventMessageMap = new HashMap<String, Object>();
 
-	// Map of member id's to their last received health event time stamp
-	private ConcurrentHashMap<String, Long> memberTimeStampMap = new ConcurrentHashMap<String, Long>();
+    // Map of member id's to their last received health event time stamp
+    private ConcurrentHashMap<String, Long> memberTimeStampMap = new ConcurrentHashMap<String, Long>();
 
-	// Event receiver to receive topology events published by cloud-controller
-	private CEPTopologyEventReceiver cepTopologyEventReceiver = new CEPTopologyEventReceiver(this);
+    // Event receiver to receive topology events published by cloud-controller
+    private CEPTopologyEventReceiver cepTopologyEventReceiver = new CEPTopologyEventReceiver(this);
 
-	// Stratos member id attribute index in stream execution plan
-	private int memberIdAttrIndex;
+    // Stratos member id attribute index in stream execution plan
+    private int memberIdAttrIndex;
 
-	@Override
-	protected void processEvent(InEvent event) {
-		addDataToMap(event);
-	}
+    @Override
+    protected void processEvent(InEvent event) {
+        addDataToMap(event);
+    }
 
-	@Override
-	protected void processEvent(InListEvent listEvent) {
-		for (int i = 0, size = listEvent.getActiveEvents(); i < size; i++) {
-			addDataToMap((InEvent) listEvent.getEvent(i));
-		}
-	}
+    @Override
+    protected void processEvent(InListEvent listEvent) {
+        for (int i = 0, size = listEvent.getActiveEvents(); i < size; i++) {
+            addDataToMap((InEvent) listEvent.getEvent(i));
+        }
+    }
 
-	/**
-	 * Add new entry to time stamp map from the received event.
-	 *
-	 * @param event Event received by Siddhi.
-	 */
-	protected void addDataToMap(InEvent event) {
-		String id = (String) event.getData()[memberIdAttrIndex];
-		//checking whether this member is the topology.
-		//sometimes there can be a delay between publishing member terminated events
-		//and actually terminating instances. Hence CEP might get events for already terminated members
-		//so we are checking the topology for the member existence
-		Member member = getMemberFromId(id);
-		if (null == member) {
-			log.debug("Member not found in the topology. Event rejected");
-			return;
-		}
+    /**
+     * Add new entry to time stamp map from the received event.
+     *
+     * @param event Event received by Siddhi.
+     */
+    protected void addDataToMap(InEvent event) {
+        String id = (String) event.getData()[memberIdAttrIndex];
+        //checking whether this member is the topology.
+        //sometimes there can be a delay between publishing member terminated events
+        //and actually terminating instances. Hence CEP might get events for already terminated members
+        //so we are checking the topology for the member existence
+        Member member = getMemberFromId(id);
+        if (null == member) {
+            log.warn(String.format("Member with [id] %s not found in the topology. Event rejected", id));
+            return;
+        }
         if (StringUtils.isNotEmpty(id)) {
             memberTimeStampMap.put(id, event.getTimeStamp());
         } else {
             log.warn("NULL member id found in the event received. Event rejected.");
         }
-        if (log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Event received from [member-id] " + id + " [time-stamp] " + event.getTimeStamp());
         }
     }
@@ -140,15 +137,15 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     }
 
     /**
-     *  Retrieve the current activated members from the topology and initialize the timestamp map.
-     *  This will allow the system to recover from a restart
+     * Retrieve the current activated members from the topology and initialize the timestamp map.
+     * This will allow the system to recover from a restart
      *
-     *  @param topology Topology model object
+     * @param topology Topology model object
      */
-    boolean loadTimeStampMapFromTopology(Topology topology){
+    boolean loadTimeStampMapFromTopology(Topology topology) {
 
         long currentTimeStamp = System.currentTimeMillis();
-        if (topology == null || topology.getServices() == null){
+        if (topology == null || topology.getServices() == null) {
             return false;
         }
         // TODO make this efficient by adding APIs to messaging component
@@ -168,21 +165,21 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
             }
         }
 
-        if (log.isDebugEnabled()){
-            log.debug("Member timestamps were successfully loaded from the topology: [timestamps] " +
-                    memberTimeStampMap);
+        if (log.isDebugEnabled()) {
+            log.debug(
+                    "Member timestamps were successfully loaded from the topology: [timestamps] " + memberTimeStampMap);
         }
         return true;
     }
 
-    private Member getMemberFromId(String memberId){
-        if (StringUtils.isEmpty(memberId)){
+    private Member getMemberFromId(String memberId) {
+        if (StringUtils.isEmpty(memberId)) {
             return null;
         }
-        if (TopologyManager.getTopology().isInitialized()){
-        	try {
+        if (TopologyManager.getTopology().isInitialized()) {
+            try {
                 TopologyManager.acquireReadLock();
-                if (TopologyManager.getTopology().getServices() == null){
+                if (TopologyManager.getTopology().getServices() == null) {
                     return null;
                 }
                 // TODO make this efficient by adding APIs to messaging component
@@ -190,8 +187,8 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                     if (service.getClusters() != null) {
                         for (Cluster cluster : service.getClusters()) {
                             if (cluster.getMembers() != null) {
-                                for (Member member : cluster.getMembers()){
-                                    if (memberId.equals(member.getMemberId())){
+                                for (Member member : cluster.getMembers()) {
+                                    if (memberId.equals(member.getMemberId())) {
                                         return member;
                                     }
                                 }
@@ -199,27 +196,24 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                         }
                     }
                 }
-        	} catch (Exception e) {
-        		log.error("Error while reading topology" + e);
-        	} finally {
-        		TopologyManager.releaseReadLock();
-        	}
+            } catch (Exception e) {
+                log.error("Error while reading topology" + e);
+            } finally {
+                TopologyManager.releaseReadLock();
+            }
         }
         return null;
     }
 
-    private void publishMemberFault(String memberId){
-        Member member = getMemberFromId(memberId);
-        if (member == null){
-            log.warn("Failed to publish member fault event. Member having [member-id] " + memberId +
-                    " does not exist in topology");
+    private void publishMemberFault(Member member) {
+        if (member == null) {
+            log.warn("Failed to publish member fault event. Member object is null");
             return;
         }
-        log.info("Publishing member fault event for [member-id] " + memberId);
+        log.info("Publishing member fault event for [member-id] " + member.getMemberId());
 
         MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getClusterInstanceId(),
-                member.getMemberId(), member.getPartitionId(),
-                member.getNetworkPartitionId(), 0);
+                member.getMemberId(), member.getPartitionId(), member.getNetworkPartitionId(), 0);
 
         memberFaultEventMessageMap.put("message", memberFaultEvent);
         healthStatPublisher.publish(MemberFaultEventMap, true);
@@ -229,19 +223,23 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     public void run() {
         try {
             threadBarrier.pass();
-
             for (Object o : memberTimeStampMap.entrySet()) {
                 Map.Entry pair = (Map.Entry) o;
                 long currentTime = System.currentTimeMillis();
                 Long eventTimeStamp = (Long) pair.getValue();
 
                 if ((currentTime - eventTimeStamp) > TIME_OUT) {
-                    log.info("Faulty member detected [member-id] " + pair.getKey() + " with [last time-stamp] " +
-                            eventTimeStamp + " [time-out] " + TIME_OUT + " milliseconds");
-                    publishMemberFault((String) pair.getKey());
+                    String memberId = (String) pair.getKey();
+                    Member member = getMemberFromId(memberId);
+                    if (member != null) {
+                        log.info("Faulty member detected [member-id] " + pair.getKey() + " with [last time-stamp] " +
+                                eventTimeStamp + " [time-out] " + TIME_OUT + " milliseconds");
+                        publishMemberFault(member);
+                    }
+                    memberTimeStampMap.remove(memberId);
                 }
             }
-            if (log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("Fault handling processor iteration completed with [time-stamp map length] " +
                         memberTimeStampMap.size() + " [time-stamp map] " + memberTimeStampMap);
             }
@@ -257,7 +255,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     @Override
     protected Object[] currentState() {
-        return new Object[]{window.currentState()};
+        return new Object[] { window.currentState() };
     }
 
     @Override
@@ -269,7 +267,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     @Override
     protected void init(Expression[] parameters, QueryPostProcessingElement nextProcessor,
-                        AbstractDefinition streamDefinition, String elementId, boolean async, SiddhiContext siddhiContext) {
+            AbstractDefinition streamDefinition, String elementId, boolean async, SiddhiContext siddhiContext) {
 
         if (parameters[0] instanceof IntConstant) {
             timeToKeep = ((IntConstant) parameters[0]).getValue();
@@ -285,16 +283,17 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         } else {
             window = new SchedulerSiddhiQueue<StreamEvent>(this);
         }
-        MemberFaultEventMap.put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
+        MemberFaultEventMap
+                .put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
 
-	    executorService = StratosThreadPool.getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY,
-                CEP_EXTENSION_THREAD_POOL_SIZE);
-	    cepTopologyEventReceiver.setExecutorService(executorService);
+        executorService = StratosThreadPool
+                .getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY, CEP_EXTENSION_THREAD_POOL_SIZE);
+        cepTopologyEventReceiver.setExecutorService(executorService);
         cepTopologyEventReceiver.execute();
 
         //Ordinary scheduling
         window.schedule();
-        if (log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Fault handling window processor initialized with [timeToKeep] " + timeToKeep +
                     ", [memberIdAttrName] " + memberIdAttrName + ", [memberIdAttrIndex] " + memberIdAttrIndex +
                     ", [distributed-enabled] " + this.siddhiContext.isDistributedProcessingEnabled());
@@ -328,13 +327,13 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     }
 
     @Override
-    public void destroy(){
+    public void destroy() {
         // terminate topology listener thread
         cepTopologyEventReceiver.terminate();
         window = null;
 
         // Shutdown executor service
-        if(executorService != null) {
+        if (executorService != null) {
             try {
                 executorService.shutdownNow();
             } catch (Exception e) {
