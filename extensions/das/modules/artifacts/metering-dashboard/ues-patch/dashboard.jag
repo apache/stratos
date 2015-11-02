@@ -23,7 +23,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
     <link rel="icon" href="<%=urlPrefix%><%=utils.resolveUrl('images/favicon.png')%>" type="image/x-icon" />
     <link rel="stylesheet" href="<%=urlPrefix%>css/bootstrap.min.css">
     <link rel="stylesheet" href="<%=urlPrefix%>css/fontwso2.css">
@@ -31,10 +31,28 @@
     <link rel="stylesheet" href="<%=urlPrefix%>css/OpenSans.css">
     <link rel="stylesheet" href="<%=urlPrefix%>css/common.css">
     <link rel="stylesheet" href="<%=urlPrefix%>css/dashboard.css">
+    <link rel="stylesheet" href="<%=urlPrefix%>css/bootstrap-modal-carousel.min.css">
     <% include('/controllers/includes/theme-dashboard-styles.jag'); %>
-    <title>Dashboards</title>
+    <script src="<%=urlPrefix%>js/handlebars-v4.0.2.js"></script>
+    <%var i18n = require("i18n");
+i18n.init(request);%>
+    <title><%= i18n.localize("dashboard.lable")%></title>
 </head>
-<body>
+<body class="lang_<%=request.getLocale()%>">
+<%
+var usr = require('/modules/user.js');
+var user = usr.current();
+var pages = dashboard.pages;
+var isAnonView = request.getParameter('isAnonView');
+if (!user) {
+    if (isAnonView) {
+        response.sendRedirect(request.getRequestURL());
+    }
+    isAnonView = true;
+} else {
+    isAnonView = JSON.parse(isAnonView);
+}
+%>
 <div id="navigation" role="navigation" class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -44,43 +62,192 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="<%=dbRoot%>" class="navbar-brand"><%=dashboard.title%></a>
+            <a href="<%=dbRoot%>?isAnonView=<%=isAnonView%>" class="navbar-brand"><%=dashboard.title%></a>
         </div>
         <div class="collapse navbar-collapse horizontal-bar">
             <ul class="nav navbar-nav">
-                <li<% if(dashboard.landing === pageId) { %> class="active"<% } %>>
-                    <a href="<%=dbRoot%>">Home</a>
-                </li>
-                <%
-var pages = dashboard.pages;
-pages.forEach(function (p) {
-    if (dashboard.landing !== p.id) {
-        %>
-                <li<%if (p.id === pageId) { %> class="active"<% } %>>
-                            <a href="<%=dbRoot%><%=p.id%>"><%=p.title%></a>
+
+                <% if (dashboard.pages.length >= 2) { %>
+                    <li
+                        <%
+    if (dashboard.landing === pageId) { %>
+                            class="active"
+                        <%
+    }
+    %>>
+                               <a href="<%=dbRoot%>?isAnonView=<%=isAnonView
+    %>"><%=
+    i18n.localize("home")
+    %></a>
                         </li>
-                    <% } %>
-                <% }); %>
+                    <%
+} %>
+
+                <%
+pages.forEach(function (page) {
+    if (isAnonView || !user) {
+        if (page.isanon) {
+            // Anonymous viewing. So render only anonymous pages links.
+            renderPageLink(page);
+        }
+    } else {
+        renderPageLink(page);
+    }
+});
+
+function renderPageLink(page) {
+    if (dashboard.landing !== page.id) { %>
+                        <li
+                            <%
+        if (page.id === pageId) { %>
+                                class="active"
+                            <%
+        }
+        %>>
+                                   <a href="<%=dbRoot%><%=page.id%>?isAnonView=<%=isAnonView%>"> <%=page.title
+        %></a>
+                                </li>
+                            <%
+    }
+};%>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-            <% if (user) { %>
-                <li>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                               <%=user.username%> <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="<%=urlPrefix%>logout?destination=<%=dest%>">Logout</a></li>
-                    </ul>
-                </li>
-            <% } else { %>
-                <li><a href="<%=urlPrefix%>login?destination=<%=dest%>">Login</a></li>
-                <% } %>
+            <% if (user) {
+    if (user.isEditor) {
+        %>
+                               <li>
+                                   <a class="ues-copy" href="<%=dbRoot
+        %>?editor=true">
+                                        <span class="fw-stack">
+                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-settings fw-stack-1x"></i>
+                                        </span>
+                                         <%=
+        i18n.localize("edit.button")
+        %>
+                                    </a>
+                                </li>
+                            <%
+    } else {
+        %>
+                                    <li>
+                                        <a class="ues-copy" href="<%=dbRoot
+        %>?custom=true">
+                                            <span class="fw-stack">
+                                                <i class="fw fw-ring fw-stack-2x"></i>
+                                                <i class="fw fw-settings fw-stack-1x"></i>
+                                            </span>
+                                             <%=
+        i18n.localize("personalize")
+        %>
+                                        </a>
+                                    </li>
+                                <%
+    }
+    %>
+                   <li>
+                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                  <%=
+    user ? user.username : "anon"
+    %> <span class="caret"></span>
+                       </a>
+                       <ul class="dropdown-menu" role="menu">
+                           <li><a href="<%=urlPrefix%>logout?destination=<%=dest
+    %>">
+                                    <%=
+    i18n.localize("logout.lable")
+    %>
+                                </a></li>
+                        </ul>
+                    </li>
+                <%
+} else {
+    %>
+                   <li><a href="<%=urlPrefix%>login-controller?destination=<%=dest
+    %>">
+                                <%=
+    i18n.localize("login.lable")
+    %>
+                            </a></li>
+                    <%
+} %>
             </ul>
         </div>
            <!--/.nav-collapse -->
      </div>
 </div>
 <div id="wrapper"></div>
+<script id="ues-component-toolbar-hbs" type="text/x-handlebars-template">
+    <div class="ues-toolbar">
+        <ul class="list-inline pull-right">
+            <li><a href="#" class="ues-component-full-handle"><i class="fw fw-laptop"></i></a></li>
+        </ul>
+        {{#has options}}
+        <ul class="list-inline pull-right">
+            <li><a href="#" class="ues-component-settings-handle"><i class="fw fw-settings ues-component-properties-toggle"></i></a></li>
+        </ul>
+        {{/has}}
+    </div>
+</script>
+<script id="ues-component-full-hbs" type="text/x-handlebars-template">
+    <div class="modal fade modal-fullscreen force-fullscreen" id="componentFull" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</script>
+<script id="ues-gadget-setting-hbs" type="text/x-handlebars-template">
+    <div class="ues-sandbox" data-component="{{id}}">
+        <div id="ues-gadget-options" class="ues-gadget-options ues-gadget-properties gadget-setting">
+                <form class="ues-component-properties">
+                    {{#has options}}
+                        <div class="ues-options ues-properties">
+                            <h4>Options</h4>
+                            {{#each options}}
+                                <div class="form-group">
+                                    {{#equals type "STRING"}}
+                                        <label>{{title}}
+                                            <input type="text" class="form-control" name="{{@key}}" placeholder="{{title}}" value="{{value}}">
+                                        </label>
+                                    {{/equals}}
+                                    {{#equals type "BOOL"}}
+                                        <label>
+                                            <input type="checkbox" name="{{title}}"{{#equals value true}} checked="checked"{{/equals}}> {{title}}
+                                        </label>
+                                    {{/equals}}
+                                    {{#equals type "ENUM"}}
+                                        <label>{{title}}
+                                            <select id={{title}} name={{title}} class="form-control ues-title-position">
+                                                 {{#each options}}
+                                                    <option value={{value}}{{#equals value ../value}} selected="selected"{{/equals}}>{{displayValue}}</option>
+                                                 {{/each}}
+                                            </select>
+                                        </label>
+                                    {{/equals}}
+                                    {{#equals type "text"}}
+                                        <label>{{title}}
+                                            <textarea name="{{@key}}" class="form-control" rows="4">{{value}}</textarea>
+                                        </label>
+                                    {{/equals}}
+                                </div>
+                            {{/each}}
+                        </div>
+                        <hr/>
+                    {{/has}}
+                    {{#has options}}
+                    {{else}}
+                        No properties to configure.
+                    {{/has}}
+                </form>
+            </div>
+    </div>
+</script>
 <!--<iframe id="sandbox" src="preview.jag"></iframe>-->
 <script src="<%=urlPrefix%>js/jquery-1.10.2.js"></script>
 <script src="<%=urlPrefix%>js/bootstrap.min.js"></script>
@@ -92,14 +259,17 @@ pages.forEach(function (p) {
 <% include('/controllers/includes/dashboard-scripts.jag'); %>
 <script src="<%=urlPrefix%>js/ues-gadgets.js"></script>
 <script src="<%=urlPrefix%>js/ues-dashboards.js"></script>
-<script src="<%=urlPrefix%>js/ues-pubsub.js"></script>
 <script src="<%=urlPrefix%>extensions/components/gadget/index.js"></script>
 <script src="<%=urlPrefix%>extensions/components/widget/index.js"></script>
 <script src="<%=urlPrefix%>extensions/uris/local/index.js"></script>
 <script src="<%=urlPrefix%>extensions/uris/store/index.js"></script>
+<script src="<%=urlPrefix%>js/bootstrap-modal-carousel.min.js"></script>
+<script src="<%=urlPrefix%>js/gadget-properties.js"></script>
 <% include('/controllers/includes/theme-dashboard-scripts.jag'); %>
 <script>
-    ues.dashboards.render($('#wrapper'), ues.global.dashboard, ues.global.page);
+    if(!ues.global.renderFromExtension){
+        ues.dashboards.render($('#wrapper'), ues.global.dashboard, ues.global.page);
+    }
 </script>
 </body>
 </html>
