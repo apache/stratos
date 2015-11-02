@@ -168,7 +168,6 @@ public class ObjectConverter {
             portMappingBean.setProtocol(portMapping.getProtocol());
             portMappingBean.setPort(portMapping.getPort());
             portMappingBean.setProxyPort(portMapping.getProxyPort());
-            portMappingBean.setKubernetesPortType(portMapping.getKubernetesPortType());
             portMappingBeans.add(portMappingBean);
         }
         return portMappingBeans;
