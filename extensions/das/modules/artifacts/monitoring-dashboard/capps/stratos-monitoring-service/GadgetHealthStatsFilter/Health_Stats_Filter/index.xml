@@ -44,24 +44,24 @@
           <form id="member-status" method="post" action="#">
             <div class="container-fluid">
                <div class="row">
-                    <div class="col-xs-9" id="cluster">
-                        <label for="cluster-filter">Cluster</label>
+                    <div class="col-xs-11" id="cluster">
+                        <label class="col-xs-1" for="cluster-filter">Cluster</label>
                         <select id="cluster-filter">
                             <option value="Select Cluster" disabled>Select Cluster</option>
                         </select>
                     </div>
                </div>
                <div class="row">
-                    <div class="col-xs-9" id="member" style="margin-top: 10px;">
-                        <label for="member-filter">Member</label>
+                    <div class="col-xs-11" id="member" style="margin-top: 10px;">
+                        <label class="col-xs-1" for="member-filter">Member</label>
                         <select id="member-filter">
                             <option value="All Members" disabled>All Members</option>
                         </select>
                     </div>
                </div>
                <div class="row">
-                    <div class="col-xs-9" id="time-interval" style="margin-top: 10px;">
-                         <label for="time-selector">Time</label>
+                    <div class="col-xs-11" id="time-interval" style="margin-top: 10px;">
+                         <label class="col-xs-1" for="time-selector">Time</label>
                          <input type="button" class="button" value="30 Min" onClick="publish(this.value)">
                          <input type="button" class="button" value="1 Hour" onClick="publish(this.value)">
                          <input type="button" class="button" value="1 Day" onClick="publish(this.value)">

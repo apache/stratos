@@ -27,10 +27,13 @@
         return plugin;
     };
 
+
     var createComponent = function (container, component, done) {
         var type = component.content.type;
         var plugin = findPlugin(type);
-        var sandbox = $('<div id="' + component.id + '" class="ues-component"></div>');
+        var sandboxId = component.id;
+        //(component.viewOption? component.id+"_full" : component.id );
+        var sandbox = $('<div id="' + sandboxId + '" data-component-id="' + component.id + '" class="ues-component"></div>');
         sandbox.appendTo(container);
         plugin.create(sandbox, component, ues.hub, done);
     };
@@ -66,18 +69,19 @@
         });
     };
 
-
+    //overriding publish method
     var publish = ues.hub.publish;
     ues.hub.publish = function (topic, data){
         $(".container").find('.ues-component').each(function () {
             var id = $(this).attr('id');
             var channel = id + "." + topic;
+            console.log(channel);
             publish.apply(ues.hub, [channel, data]);
         });
-    }
+    };
 
-    var wires = function (page) {
-        var content = page.content;
+    var wires = function (page, pageType) {
+        var content = page.content[pageType];
         var area;
         var blocks;
         var wirez = {};
@@ -120,13 +124,13 @@
         document.title = dashboard.title + ' | ' + page.title;
     };
 
-    var renderPage = function (element, dashboard, page, done) {
+    var renderPage = function (element, dashboard, page, pageType, done) {
         setDocumentTitle(dashboard, page);
-        wirings = wires(page);
+        wirings = wires(page, pageType);
         var container;
         var area;
         var layout = $(page.layout.content);
-        var content = page.content;
+        var content = page.content[pageType];
         element.html(layout);
         for (area in content) {
             if (content.hasOwnProperty(area)) {
@@ -159,17 +163,17 @@
         }
     };
 
-    var renderDashboard = function (element, dashboard, name, done) {
+    var renderDashboard = function (element, dashboard, name, pageType, done) {
         name = name || dashboard.landing;
         var page = findPage(dashboard, name);
         if (!page) {
             throw 'requested page : ' + name + ' cannot be found';
         }
-        renderPage(element, dashboard, page, done);
+        renderPage(element, dashboard, page, pageType, done);
     };
 
-    var rewireDashboard = function (page) {
-        wirings = wires(page);
+    var rewireDashboard = function (page, pageType) {
+        wirings = wires(page, pageType);
     };
 
     var resolveURI = function (uri) {
