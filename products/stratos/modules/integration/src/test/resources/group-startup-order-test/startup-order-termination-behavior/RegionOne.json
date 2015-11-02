@@ -1,0 +1,17 @@
+{
+    "id": "RegionOne",
+    "provider": "mock",
+    "partitions":
+    [
+        {
+            "id": "whole-region",
+            "property":
+            [
+                {
+                    "name": "region",
+                    "value": "RegionOne"
+                }
+            ]
+        }
+    ]
+}
