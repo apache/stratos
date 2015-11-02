@@ -25,21 +25,15 @@ import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitio
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
-import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
-import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
-import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
@@ -49,7 +43,6 @@ import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -80,7 +73,6 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.registry.api.RegistryException;
 
@@ -150,6 +142,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.info(String.format("Application added successfully: [application-id] %s",
                     applicationContext.getApplicationId()));
         }
+        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
         return true;
     }
 
@@ -163,8 +156,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         if (AutoscalerContext.getInstance().getApplicationContext(applicationId) == null) {
-            String message = "Application is not found as ApplicationContext. Please add application before updating it: " +
-                    "[application-id] " + applicationId;
+            String message =
+                    "Application is not found as ApplicationContext. Please add application before updating it: " +
+                            "[application-id] " + applicationId;
             log.error(message);
             throw new ApplicationDefinitionException(message);
         }
@@ -310,7 +304,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
      * @param clusterIds
      */
     private void addApplicationSignUp(ApplicationContext applicationContext, String applicationKey,
-            List<String> clusterIds) {
+                                      List<String> clusterIds) {
 
         try {
             if (log.isInfoEnabled()) {
@@ -436,7 +430,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void updateArtifactRepositoryList(List<ArtifactRepository> artifactRepositoryList,
-            CartridgeContext[] cartridgeContexts) {
+                                              CartridgeContext[] cartridgeContexts) {
 
         if (cartridgeContexts == null) {
             return;
@@ -463,7 +457,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     public boolean undeployApplication(String applicationId, boolean force)
             throws RemoteException, StratosManagerServiceApplicationSignUpExceptionException,
-                   UnremovableApplicationException {
+            UnremovableApplicationException {
 
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
         ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
@@ -509,7 +503,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         return false;
                     } else {
                         log.info(String.format("Previous graceful un-deployment is in progress for "
-                                        + "[application-id] %s , thus  terminating instances directly", applicationId));
+                                + "[application-id] %s , thus  terminating instances directly", applicationId));
                         appMonitor.setForce(true);
                         terminateAllMembersAndClustersForcefully(applicationId);
                     }
@@ -785,8 +779,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public String findClusterId(String applicationId, String alias) {
+        ApplicationHolder.acquireReadLock();
         try {
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
+            Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application != null) {
 
                 ClusterDataHolder clusterData = application.getClusterDataHolderRecursivelyByAlias(alias);
@@ -862,7 +857,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException, UnremovablePolicyException {
+    public boolean removeApplicationPolicy(String applicationPolicyId)
+            throws InvalidPolicyException, UnremovablePolicyException {
 
         if (removableApplicationPolicy(applicationPolicyId)) {
             return PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
@@ -921,9 +917,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         Application application;
+        ApplicationHolder.acquireReadLock();
         try {
-            ApplicationManager.acquireReadLockForApplication(applicationId);
-            application = ApplicationManager.getApplications().getApplication(applicationId);
+            application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application == null) {
                 log.warn(String.format(
                         "Could not find application, thus no members to be terminated " + "[application-id] %s",
@@ -998,8 +994,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                                         .terminateInstanceForcefully(memberIdToTerminate);
                             } catch (Exception e) {
                                 log.error(String.format(
-                                                "Forceful termination of member %s has failed, but continuing forceful "
-                                                        + "deletion of other members", memberIdToTerminate));
+                                        "Forceful termination of member %s has failed, but continuing forceful "
+                                                + "deletion of other members", memberIdToTerminate));
                             }
                         }
                     }
@@ -1160,7 +1156,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy)
             throws RemoteException, InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException,
-                   InvalidPolicyException, CloudControllerConnectionException {
+            InvalidPolicyException, CloudControllerConnectionException {
 
         validateDeploymentPolicy(deploymentPolicy);
 
@@ -1217,9 +1213,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             throw new InvalidDeploymentPolicyException(message, e);
                         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
 
-                            String message = "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
-                                    + deploymentPolicy.getDeploymentPolicyID() + " [cartridge] "
-                                    + clusterMonitor.getClusterContext().getServiceId();
+                            String message =
+                                    "Invalid cartridge type, Cluster monitor update failed for [deployment-policy] "
+                                            + deploymentPolicy.getDeploymentPolicyID() + " [cartridge] "
+                                            + clusterMonitor.getClusterContext().getServiceId();
                             log.error(message);
                             throw new InvalidDeploymentPolicyException(message, e);
                         }
@@ -1231,13 +1228,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void removeOldPartitionsFromClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
-            NetworkPartitionRef networkPartition) {
+                                                       NetworkPartitionRef networkPartition) {
 
-        for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap().values()) {
+        for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap()
+                .values()) {
 
             ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) instanceContext;
 
-            for (ClusterLevelPartitionContext clusterLevelPartitionContext : clusterInstanceContext.getPartitionCtxts()) {
+            for (ClusterLevelPartitionContext clusterLevelPartitionContext : clusterInstanceContext
+                    .getPartitionCtxts()) {
 
                 if (null == networkPartition.getPartitionRef(clusterLevelPartitionContext.getPartitionId())) {
 
@@ -1264,9 +1263,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void addNewPartitionsToClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
-            NetworkPartitionRef networkPartitionRef, String deploymentPolicyID, String cartridgeType)
+                                                  NetworkPartitionRef networkPartitionRef, String deploymentPolicyID, String cartridgeType)
             throws RemoteException, CloudControllerServiceInvalidPartitionExceptionException,
-                   CloudControllerServiceInvalidCartridgeTypeExceptionException {
+            CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
         boolean validationOfNetworkPartitionRequired = false;
         for (PartitionRef partition : networkPartitionRef.getPartitionRefs()) {
