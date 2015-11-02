@@ -3,7 +3,7 @@
     "id": "root",
     "type": "object",
     "title": "Network Partition Definition",
-    "name": "Network Partition",
+    "name": "Network Partition Policy",
     "options": {
         "disable_properties": true,
         "disable_collapse": true

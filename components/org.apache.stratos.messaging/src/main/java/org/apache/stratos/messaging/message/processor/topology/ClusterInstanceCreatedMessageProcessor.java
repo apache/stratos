@@ -56,12 +56,12 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             ClusterInstanceCreatedEvent event = (ClusterInstanceCreatedEvent) MessagingUtil.
                     jsonToObject(message, ClusterInstanceCreatedEvent.class);
 
-            TopologyUpdater.acquireWriteLockForService(event.getServiceUuid());
+            TopologyUpdater.acquireWriteLockForService(event.getServiceName());
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForService(event.getServiceUuid());
+                TopologyUpdater.releaseWriteLockForService(event.getServiceName());
             }
 
         } else {
@@ -76,7 +76,7 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess(ClusterInstanceCreatedEvent event, Topology topology) {
 
-        String serviceName = event.getServiceUuid();
+        String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
 
         // Apply service filter
@@ -90,11 +90,11 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
         }
 
         // Validate event against the existing topology
-        Service service = topology.getService(event.getServiceUuid());
+        Service service = topology.getService(event.getServiceName());
         if (service == null) {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("Service does not exist: [service] %s",
-                        event.getServiceUuid()));
+                        event.getServiceName()));
             }
             return false;
         }
@@ -108,7 +108,7 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
 
         if (cluster == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceUuid(),
+                log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
                         event.getClusterId()));
             }
             return false;
@@ -118,7 +118,7 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             if (cluster.getInstanceContexts(clusterInstance.getInstanceId()) != null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster Instance already exists in service: " +
-                                    "[service] %s [cluster] %s [Instance] %s", event.getServiceUuid(),
+                                    "[service] %s [cluster] %s [Instance] %s", event.getServiceName(),
                             event.getClusterId(), clusterInstance.getInstanceId()));
                 }
             } else {

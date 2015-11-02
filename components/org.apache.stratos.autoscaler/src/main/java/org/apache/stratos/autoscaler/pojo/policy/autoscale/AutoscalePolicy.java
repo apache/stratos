@@ -28,22 +28,12 @@ public class AutoscalePolicy implements Serializable {
 
     private static final long serialVersionUID = 1754373171598089271L;
     private LoadThresholds loadThresholds;
-    private String uuid;
     private String id;
     private String displayName;
     private String description;
     private boolean isPublic;
     private int tenantId;
     private float instanceRoundingFactor;
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     /**
      * Gets the value of the loadThresholds property.
@@ -66,23 +56,23 @@ public class AutoscalePolicy implements Serializable {
     }
 
     /**
-     * Gets the value of the uuid property.
+     * Gets the value of the id property.
      *
      * @return possible object is
      * {@link String }
      */
-    public String getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets the value of the uuid property.
+     * Sets the value of the id property.
      *
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUuid(String value) {
-        this.uuid = value;
+    public void setId(String value) {
+        this.id = value;
     }
 
     /**
@@ -159,7 +149,7 @@ public class AutoscalePolicy implements Serializable {
 
     @Override
     public String toString() {
-        return "ASPolicy [uuid=" + uuid + ", displayName=" + displayName
+        return "ASPolicy [id=" + id + ", displayName=" + displayName
                 + ", description=" + description + ", isPublic=" + isPublic + "]";
     }
 

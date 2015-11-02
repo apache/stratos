@@ -52,26 +52,26 @@ public class StratosManagerContext implements Serializable {
     private static volatile StratosManagerContext instance;
     private final transient DistributedObjectProvider distributedObjectProvider;
     /**
-     * Key - cartridge type uuid
-     * Value - list of cartridgeGroupNames uuid
+     * Key - cartridge type
+     * Value - list of cartridgeGroupNames
      */
-    private Map<String,Set<String>> cartridgeTypeToCartridgeGroupsMap;
+    private Map<String, Set<String>> cartridgeTypeToCartridgeGroupsMap;
 
     /**
-     * Key - cartridge type uuid
-     * Value - list of ApplicationNames uuid
+     * Key - cartridge type
+     * Value - list of ApplicationNames
      */
     private Map<String, Set<String>> cartridgeTypeToApplicationsMap;
 
     /**
-     * Key - cartridge group name uuid
-     * Value - list of cartridgeGroupNames uuid
+     * Key - cartridge group name
+     * Value - list of cartridgeGroupNames
      */
     private Map<String, Set<String>> cartridgeGroupToCartridgeSubGroupsMap;
 
     /**
-     * Key - cartridge group name uuid
-     * Value - list of ApplicationNames uuid
+     * Key - cartridge group name
+     * Value - list of ApplicationNames
      */
     private Map<String, Set<String>> cartridgeGroupToApplicationsMap;
 
@@ -145,46 +145,46 @@ public class StratosManagerContext implements Serializable {
         return acquireWriteLock(SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK);
     }
 
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupUuid, String[] cartridgeUuids) {
-        if (cartridgeUuids == null) {
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) {
+        if (cartridgeNames == null) {
             return;
         }
 
-        for (String cartridgeNameUuid : cartridgeUuids) {
+        for (String cartridgeName : cartridgeNames) {
             Set<String> cartridgeGroupNames = null;
-            if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeNameUuid)) {
-                cartridgeGroupNames = cartridgeTypeToCartridgeGroupsMap.get(cartridgeNameUuid);
+            if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeName)) {
+                cartridgeGroupNames = cartridgeTypeToCartridgeGroupsMap.get(cartridgeName);
             } else {
                 cartridgeGroupNames = new HashSet<String>();
-                cartridgeTypeToCartridgeGroupsMap.put(cartridgeNameUuid, cartridgeGroupNames);
+                cartridgeTypeToCartridgeGroupsMap.put(cartridgeName, cartridgeGroupNames);
             }
-            cartridgeGroupNames.add(cartridgeGroupUuid);
+            cartridgeGroupNames.add(cartridgeGroupName);
         }
     }
 
-    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupNameUuid, String[] cartridgeNamesUuid) {
-        if (cartridgeNamesUuid == null) {
+    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) {
+        if (cartridgeNames == null) {
             return;
         }
 
-        for (String cartridgeNameUuid : cartridgeNamesUuid) {
+        for (String cartridgeName : cartridgeNames) {
             Set<String> cartridgeGroupNames = null;
-            if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeNameUuid)) {
-                cartridgeGroupNames = cartridgeTypeToCartridgeGroupsMap.get(cartridgeNameUuid);
+            if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeName)) {
+                cartridgeGroupNames = cartridgeTypeToCartridgeGroupsMap.get(cartridgeName);
                 // Remove current cartridge group name
-                cartridgeGroupNames.remove(cartridgeGroupNameUuid);
+                cartridgeGroupNames.remove(cartridgeGroupName);
                 // Remove entry if there are no more cartridge group names for that cartridge type
                 if (cartridgeGroupNames.isEmpty()) {
                     cartridgeGroupNames = null;
-                    cartridgeTypeToCartridgeGroupsMap.remove(cartridgeNameUuid);
+                    cartridgeTypeToCartridgeGroupsMap.remove(cartridgeName);
                 }
             }
         }
     }
 
-    public boolean isCartridgeIncludedInCartridgeGroups(String cartridgeNameUuid) {
-        if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeNameUuid)) {
-            if (!cartridgeTypeToCartridgeGroupsMap.get(cartridgeNameUuid).isEmpty()) {
+    public boolean isCartridgeIncludedInCartridgeGroups(String cartridgeName) {
+        if (cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeName)) {
+            if (!cartridgeTypeToCartridgeGroupsMap.get(cartridgeName).isEmpty()) {
                 return true;
             }
             return false;
@@ -192,12 +192,12 @@ public class StratosManagerContext implements Serializable {
         return false;
     }
 
-    public void addUsedCartridgesInApplications(String applicationNameUuid, String[] cartridgeNamesUuid) {
-        if (cartridgeNamesUuid == null) {
+    public void addUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) {
+        if (cartridgeNames == null) {
             return;
         }
 
-        for (String cartridgeName : cartridgeNamesUuid) {
+        for (String cartridgeName : cartridgeNames) {
             Set<String> applicationNames = null;
             if (cartridgeTypeToApplicationsMap.containsKey(cartridgeName)) {
                 applicationNames = cartridgeTypeToApplicationsMap.get(cartridgeName);
@@ -205,33 +205,33 @@ public class StratosManagerContext implements Serializable {
                 applicationNames = new HashSet<String>();
                 cartridgeTypeToApplicationsMap.put(cartridgeName, applicationNames);
             }
-            applicationNames.add(applicationNameUuid);
+            applicationNames.add(applicationName);
         }
     }
 
-    public void removeUsedCartridgesInApplications(String applicationNameUuid, String[] cartridgeNamesUuid) {
-        if (cartridgeNamesUuid == null) {
+    public void removeUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) {
+        if (cartridgeNames == null) {
             return;
         }
 
-        for (String cartridgeNameUuid : cartridgeNamesUuid) {
+        for (String cartridgeName : cartridgeNames) {
             Set<String> applicationNames = null;
-            if (cartridgeTypeToApplicationsMap.containsKey(cartridgeNameUuid)) {
-                applicationNames = cartridgeTypeToApplicationsMap.get(cartridgeNameUuid);
+            if (cartridgeTypeToApplicationsMap.containsKey(cartridgeName)) {
+                applicationNames = cartridgeTypeToApplicationsMap.get(cartridgeName);
                 // Remove current application name
-                applicationNames.remove(applicationNameUuid);
+                applicationNames.remove(applicationName);
                 // Remove entry if there are no more cartridge group names for that cartridge type
                 if (applicationNames.isEmpty()) {
                     applicationNames = null;
-                    cartridgeTypeToApplicationsMap.remove(cartridgeNameUuid);
+                    cartridgeTypeToApplicationsMap.remove(cartridgeName);
                 }
             }
         }
     }
 
-    public boolean isCartridgeIncludedInApplications(String cartridgeNameUuid) {
-        if (cartridgeTypeToApplicationsMap.containsKey(cartridgeNameUuid)) {
-            if (!cartridgeTypeToApplicationsMap.get(cartridgeNameUuid).isEmpty()) {
+    public boolean isCartridgeIncludedInApplications(String cartridgeName) {
+        if (cartridgeTypeToApplicationsMap.containsKey(cartridgeName)) {
+            if (!cartridgeTypeToApplicationsMap.get(cartridgeName).isEmpty()) {
                 return true;
             }
             return false;
@@ -239,46 +239,46 @@ public class StratosManagerContext implements Serializable {
         return false;
     }
 
-    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupNameUuid, String[] cartridgeGroupNamesUuid) {
-        if (cartridgeGroupNamesUuid == null) {
+    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) {
+        if (cartridgeGroupNames == null) {
             return;
         }
 
-        for (String cartridgeGroupNameUuid : cartridgeGroupNamesUuid) {
+        for (String cartridgeGroupName : cartridgeGroupNames) {
             Set<String> cartridgeSubGroupNames = null;
-            if (cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupNameUuid)) {
-                cartridgeSubGroupNames = cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupNameUuid);
+            if (cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupName)) {
+                cartridgeSubGroupNames = cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupName);
             } else {
                 cartridgeSubGroupNames = new HashSet<String>();
-                cartridgeGroupToCartridgeSubGroupsMap.put(cartridgeSubGroupNameUuid, cartridgeSubGroupNames);
+                cartridgeGroupToCartridgeSubGroupsMap.put(cartridgeSubGroupName, cartridgeSubGroupNames);
             }
-            cartridgeSubGroupNames.add(cartridgeGroupNameUuid);
+            cartridgeSubGroupNames.add(cartridgeGroupName);
         }
     }
 
-    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupNameUuid, String[] cartridgeGroupNamesUuid) {
-        if (cartridgeGroupNamesUuid == null) {
+    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) {
+        if (cartridgeGroupNames == null) {
             return;
         }
 
-        for (String cartridgeGroupNameUuid : cartridgeGroupNamesUuid) {
+        for (String cartridgeGroupName : cartridgeGroupNames) {
             Set<String> cartridgeSubGroupNames = null;
-            if (cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupNameUuid)) {
-                cartridgeSubGroupNames = cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupNameUuid);
+            if (cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupName)) {
+                cartridgeSubGroupNames = cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupName);
                 // Remove current cartridge group name
-                cartridgeSubGroupNames.remove(cartridgeGroupNameUuid);
+                cartridgeSubGroupNames.remove(cartridgeGroupName);
                 // Remove entry if there are no more cartridge group names for that cartridge type
                 if (cartridgeSubGroupNames.isEmpty()) {
                     cartridgeSubGroupNames = null;
-                    cartridgeGroupToCartridgeSubGroupsMap.remove(cartridgeGroupNameUuid);
+                    cartridgeGroupToCartridgeSubGroupsMap.remove(cartridgeGroupName);
                 }
             }
         }
     }
 
-    public boolean isCartridgeGroupIncludedInCartridgeSubGroups(String cartridgeGroupNameUuid) {
-        if (cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupNameUuid)) {
-            if (!cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupNameUuid).isEmpty()) {
+    public boolean isCartridgeGroupIncludedInCartridgeSubGroups(String cartridgeGroupName) {
+        if (cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupName)) {
+            if (!cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupName).isEmpty()) {
                 return true;
             }
             return false;
@@ -286,46 +286,46 @@ public class StratosManagerContext implements Serializable {
         return false;
     }
 
-    public void addUsedCartridgeGroupsInApplications(String applicationNameUuid, String[] cartridgeGroupNamesUuid) {
-        if (cartridgeGroupNamesUuid == null) {
+    public void addUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) {
+        if (cartridgeGroupNames == null) {
             return;
         }
 
-        for (String cartridgeGroupNameUuid : cartridgeGroupNamesUuid) {
+        for (String cartridgeGroupName : cartridgeGroupNames) {
             Set<String> applicationNames = null;
-            if (cartridgeGroupToApplicationsMap.containsKey(cartridgeGroupNameUuid)) {
-                applicationNames = cartridgeGroupToApplicationsMap.get(cartridgeGroupNameUuid);
+            if (cartridgeGroupToApplicationsMap.containsKey(cartridgeGroupName)) {
+                applicationNames = cartridgeGroupToApplicationsMap.get(cartridgeGroupName);
             } else {
                 applicationNames = new HashSet<String>();
-                cartridgeGroupToApplicationsMap.put(cartridgeGroupNameUuid, applicationNames);
+                cartridgeGroupToApplicationsMap.put(cartridgeGroupName, applicationNames);
             }
-            applicationNames.add(applicationNameUuid);
+            applicationNames.add(applicationName);
         }
     }
 
-    public void removeUsedCartridgeGroupsInApplications(String applicationNameUuid, String[] cartridgeGroupNamesUuid) {
-        if (cartridgeGroupNamesUuid == null) {
+    public void removeUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) {
+        if (cartridgeGroupNames == null) {
             return;
         }
 
-        for (String cartridgeGroupNameUuid : cartridgeGroupNamesUuid) {
+        for (String cartridgeGroupName : cartridgeGroupNames) {
             Set<String> applicationNames = null;
-            if (cartridgeGroupToApplicationsMap.containsKey(cartridgeGroupNameUuid)) {
-                applicationNames = cartridgeGroupToApplicationsMap.get(cartridgeGroupNameUuid);
+            if (cartridgeGroupToApplicationsMap.containsKey(cartridgeGroupName)) {
+                applicationNames = cartridgeGroupToApplicationsMap.get(cartridgeGroupName);
                 // Remove current application name
-                applicationNames.remove(applicationNameUuid);
+                applicationNames.remove(applicationName);
                 // Remove entry if there are no more cartridge group names for that cartridge type
                 if (applicationNames.isEmpty()) {
                     applicationNames = null;
-                    cartridgeGroupToApplicationsMap.remove(cartridgeGroupNameUuid);
+                    cartridgeGroupToApplicationsMap.remove(cartridgeGroupName);
                 }
             }
         }
     }
 
-    public boolean isCartridgeGroupIncludedInApplications(String cartridgeGroupNameUuid) {
-        if (cartridgeGroupToApplicationsMap.containsKey(cartridgeGroupNameUuid)) {
-            if (!cartridgeGroupToApplicationsMap.get(cartridgeGroupNameUuid).isEmpty()) {
+    public boolean isCartridgeGroupIncludedInApplications(String cartridgeGroupName) {
+        if (cartridgeGroupToApplicationsMap.containsKey(cartridgeGroupName)) {
+            if (!cartridgeGroupToApplicationsMap.get(cartridgeGroupName).isEmpty()) {
                 return true;
             }
             return false;

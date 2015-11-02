@@ -31,21 +31,19 @@ public class KubernetesCluster implements Serializable {
 
     private static final long serialVersionUID = 3210149484906093132L;
 
-    private String clusterUuid;
-	private String clusterId;
+    private String clusterId;
     private KubernetesHost[] kubernetesHosts;
     private KubernetesMaster kubernetesMaster;
     private PortRange portRange;
     private String description;
-	private int tenantId;
     private Properties properties = new Properties();
 
-    public String getClusterUuid() {
-        return clusterUuid;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setClusterUuid(String clusterUuid) {
-        this.clusterUuid = clusterUuid;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public KubernetesHost[] getKubernetesHosts() {
@@ -93,7 +91,7 @@ public class KubernetesCluster implements Serializable {
     }
 
     public String toString() {
-        return "KubernetesCluster [groupId=" + clusterUuid +
+        return "KubernetesCluster [groupId=" + clusterId +
                 " , kubernetesHosts=" + Arrays.toString(kubernetesHosts) +
                 " , kubernetesMaster=" + kubernetesMaster +
                 " , portRange=" + portRange +
@@ -113,9 +111,9 @@ public class KubernetesCluster implements Serializable {
             return false;
         }
         KubernetesCluster kubernetesClusterObj = (KubernetesCluster) anObject;
-        if (this.clusterUuid == null || kubernetesClusterObj.getClusterUuid() == null) {
+        if (this.clusterId == null || kubernetesClusterObj.getClusterId() == null) {
             return false;
-        } else if (!this.clusterUuid.equals(kubernetesClusterObj.getClusterUuid())) {
+        } else if (!this.clusterId.equals(kubernetesClusterObj.getClusterId())) {
             return false;
         }
 
@@ -163,27 +161,11 @@ public class KubernetesCluster implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.portRange == null) ? 0 : this.portRange.hashCode());
-        result = prime * result + ((this.clusterUuid == null) ? 0 : this.clusterUuid.hashCode());
+        result = prime * result + ((this.clusterId == null) ? 0 : this.clusterId.hashCode());
         result = prime * result + ((this.description == null) ? 0 : this.description.hashCode());
         result = prime * result + ((this.kubernetesMaster == null) ? 0 : this.kubernetesMaster.hashCode());
         result = prime * result + ((this.kubernetesHosts == null) ? 0 : Arrays.hashCode(this.kubernetesHosts));
         result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
         return result;
     }
-
-	public String getClusterId() {
-		return clusterId;
-	}
-
-	public void setClusterId(String clusterId) {
-		this.clusterId = clusterId;
-	}
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
-	}
 }

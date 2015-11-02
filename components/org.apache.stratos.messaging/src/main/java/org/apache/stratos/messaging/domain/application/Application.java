@@ -35,7 +35,6 @@ public class Application extends ParentComponent<ApplicationInstance> {
     private static final long serialVersionUID = -5092959597171649688L;
 
     // Unique id for the Application, defined in Application Definition
-    private String uuid;
     private String id;
     private String name;
     private String description;
@@ -50,29 +49,20 @@ public class Application extends ParentComponent<ApplicationInstance> {
     // Life cycle state manager
     //protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
 
-    // application policy uuid
+    // application policy id
     private String applicationPolicyId;
 
-    public Application(String uuid,int tenantId) {
+    public Application(String id) {
         super();
-        this.uuid = uuid;
-	    this.tenantId=tenantId;
+        this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
         //this.applicationStateManager =
         //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getUniqueIdentifier() {
-        return uuid;
+        return id;
     }
 
     public String getKey() {
@@ -144,21 +134,21 @@ public class Application extends ParentComponent<ApplicationInstance> {
         }
 
         Application that = (Application) other;
-        return this.uuid.equals(that.uuid);
+        return this.id.equals(that.id);
     }
 
     public int hashCode() {
-        return uuid.hashCode();
+        return id.hashCode();
     }
 
-    public Instance getInstanceByNetworkPartitionId(String networkPartitionUuid) {
+    public Instance getInstanceByNetworkPartitionId(String networkPartitionId) {
         // if map is empty, return null
         if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
         }
 
         for (Instance instance : getInstanceIdToInstanceContextMap().values()) {
-            if (instance.getNetworkPartitionUuid().equals(networkPartitionUuid)) {
+            if (instance.getNetworkPartitionId().equals(networkPartitionId)) {
                 return instance;
             }
         }

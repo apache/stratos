@@ -27,7 +27,6 @@ public interface HealthStatisticsPublisher extends StatisticsPublisher {
     /**
      * Publish health statistics to complex event processor.
      *
-     * @param timestamp          Time
      * @param clusterId          Cluster id of the member
      * @param clusterInstanceId  Cluster instance id of the member
      * @param networkPartitionId Network partition id of the member
@@ -36,6 +35,6 @@ public interface HealthStatisticsPublisher extends StatisticsPublisher {
      * @param health             Health type: memory_consumption | load_average
      * @param value              Health type value
      */
-    void publish(Long timestamp, String clusterId, String clusterInstanceId, String networkPartitionId,
+    void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
                  String memberId, String partitionId, String health, double value);
 }

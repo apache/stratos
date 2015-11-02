@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -79,10 +80,10 @@ public class ApplicationBuilder {
                 appClusterContexts);
     }
 
-    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appUuid,
-                                                                            String networkPartitionUuid) {
+    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId,
+                                                                            String networkPartitionId) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling application instance creation event: [application-id] " + appUuid);
+            log.debug("Handling application instance creation event: [application-id] " + appId);
         }
         ApplicationInstance applicationInstance = null;
         //acquiring write lock to add the required instances
@@ -90,26 +91,26 @@ public class ApplicationBuilder {
         try {
 
             Applications applications = ApplicationHolder.getApplications();
-            Application application = applications.getApplication(appUuid);
+            Application application = applications.getApplication(appId);
             //update the status of the Group
             if (application == null) {
                 log.warn(String.format("Application does not exist: [application-id] %s",
-                        appUuid));
+                        appId));
                 return null;
             }
-            String instanceId = application.getNextInstanceId(appUuid);
+            String instanceId = application.getNextInstanceId(appId);
 
             if (!application.containsInstanceContext(instanceId)) {
                 //setting the status, persist and publish
-                applicationInstance = new ApplicationInstance(appUuid, instanceId);
-                applicationInstance.setNetworkPartitionUuid(networkPartitionUuid);
+                applicationInstance = new ApplicationInstance(appId, instanceId);
+                applicationInstance.setNetworkPartitionId(networkPartitionId);
                 application.addInstance(instanceId, applicationInstance);
                 //updateApplicationMonitor(appId, status);
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendApplicationInstanceCreatedEvent(appUuid, applicationInstance);
+                ApplicationsEventPublisher.sendApplicationInstanceCreatedEvent(appId, applicationInstance);
             } else {
                 log.warn(String.format("Application Instance Context already exists" +
-                        " [appId] %s [ApplicationInstanceId] %s", appUuid, instanceId));
+                        " [appId] %s [ApplicationInstanceId] %s", appId, instanceId));
             }
         } finally {
             ApplicationHolder.releaseWriteLock();
@@ -137,7 +138,7 @@ public class ApplicationBuilder {
         if (applicationInstance.isStateTransitionValid(status)) {
             //setting the status, persist and publish
             application.setStatus(status, instanceId);
-            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionUuid(),
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
                     instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceActivatedEvent(appId, instanceId);
@@ -168,7 +169,7 @@ public class ApplicationBuilder {
         if (applicationInstance.isStateTransitionValid(status)) {
             //setting the status, persist and publish
             application.setStatus(status, instanceId);
-            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionUuid(),
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
                     instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
@@ -198,7 +199,7 @@ public class ApplicationBuilder {
         if (applicationInstance.isStateTransitionValid(status)) {
             // setting the status, persist and publish
             application.setStatus(status, instanceId);
-            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionUuid(), instanceId);
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(), instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, instanceId);
         } else {
@@ -240,11 +241,12 @@ public class ApplicationBuilder {
             Set<ClusterDataHolder> appClusterData = application.getClusterDataRecursively();
             for (ClusterDataHolder currClusterData : appClusterData) {
                 ClusterDataHolder newClusterData = new ClusterDataHolder(currClusterData.getServiceType(),
-                        currClusterData.getClusterId(), currClusterData.getServiceUuid());
+                        currClusterData.getClusterId());
                 appClusterDataToSend.add(newClusterData);
             }
 
             AutoscalerContext.getInstance().removeApplicationContext(appId);
+            RegistryManager.getInstance().removeApplicationContext(appId);
             ApplicationHolder.removeApplication(appId);
 
         } finally {
@@ -274,14 +276,16 @@ public class ApplicationBuilder {
                 //setting the status, persist and publish
                 applicationInstance.setStatus(status);
                 updateApplicationMonitor(applicationId, status,
-                        applicationInstance.getNetworkPartitionUuid(),
+                        applicationInstance.getNetworkPartitionId(),
                         instanceId);
                 ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
                         getAppMonitor(applicationId);
                 NetworkPartitionContext networkPartitionContext = applicationMonitor.
                         getNetworkPartitionContext(applicationInstance.
-                                getNetworkPartitionUuid());
+                                getNetworkPartitionId());
                 networkPartitionContext.removeInstanceContext(instanceId);
+                applicationMonitor.removeNetworkPartitionContext(applicationInstance.
+                        getNetworkPartitionId());
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
                 ApplicationHolder.persistApplication(application);
@@ -302,10 +306,12 @@ public class ApplicationBuilder {
                     // stopping application thread
                     applicationMonitor.destroy();
                     AutoscalerContext.getInstance().removeAppMonitor(applicationId);
-
+                    // Remove network partition algorithm context
+                    AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
                     // update application status in application context
                     applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
                     AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+                    RegistryManager.getInstance().persistApplicationContext(applicationContext);
 
                     log.info("Application un-deployed successfully: [application-id] " + applicationId);
                 }
@@ -360,7 +366,7 @@ public class ApplicationBuilder {
                                     cluster.getInstanceIdToInstanceContextMap().values()) {
                                 ClusterStatusEventPublisher.
                                         sendClusterStatusClusterTerminatingEvent(applicationId,
-                                                aClusterData.getServiceUuid(),
+                                                aClusterData.getServiceType(),
                                                 aClusterData.getClusterId(),
                                                 instance.getInstanceId());
                             }
@@ -423,7 +429,7 @@ public class ApplicationBuilder {
                     }
                     org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext networkPartitionContext =
                             (org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext) monitor.
-                                    getNetworkPartitionContext(groupInstance.getNetworkPartitionUuid());
+                                    getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
                     networkPartitionContext.removeInstanceContext(instanceId);
                     if (groupInstance.getPartitionId() != null) {
                         networkPartitionContext.getPartitionCtxt(groupInstance.getPartitionId()).
@@ -476,7 +482,7 @@ public class ApplicationBuilder {
             if (groupInstance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 groupInstance.setStatus(status);
-                updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionUuid(),
+                updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
                         instanceId, groupInstance.getParentId());
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceActivatedEvent(appId, groupId, instanceId);
@@ -534,7 +540,7 @@ public class ApplicationBuilder {
                 groupInstance = new GroupInstance(groupId, instanceId);
                 groupInstance.setParentId(parentId);
                 groupInstance.setPartitionId(partitionId);
-                groupInstance.setNetworkPartitionUuid(networkPartitionId);
+                groupInstance.setNetworkPartitionId(networkPartitionId);
                 groupInstance.setStatus(status);
                 group.addInstance(instanceId, groupInstance);
                 //updateGroupMonitor(appId, groupId, status);
@@ -580,7 +586,7 @@ public class ApplicationBuilder {
             if (groupInstance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 groupInstance.setStatus(status);
-                updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionUuid(),
+                updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
                         instanceId, groupInstance.getParentId());
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceInactivateEvent(appId, groupId, instanceId);
@@ -626,7 +632,7 @@ public class ApplicationBuilder {
                 if (groupInstance.isStateTransitionValid(status)) {
                     //setting the status, persist and publish
                     groupInstance.setStatus(status);
-                    updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionUuid(),
+                    updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
                             instanceId, groupInstance.getParentId());
                     ApplicationHolder.persistApplication(application);
                     ApplicationsEventPublisher.sendGroupInstanceTerminatingEvent(appId,

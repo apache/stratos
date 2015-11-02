@@ -52,18 +52,6 @@ public class AutoscalerCloudControllerClient {
 
     private static CloudControllerServiceStub stub;
 
-    /* An instance of a CloudControllerClient is created when the class is loaded. 
-     * Since the class is loaded only once, it is guaranteed that an object of 
-     * CloudControllerClient is created only once. Hence it is singleton.
-     */
-    private static class InstanceHolder {
-        private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
-    }
-
-    public static AutoscalerCloudControllerClient getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
     private AutoscalerCloudControllerClient() {
         try {
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
@@ -81,16 +69,19 @@ public class AutoscalerCloudControllerClient {
         }
     }
 
+    public static AutoscalerCloudControllerClient getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
     public synchronized MemberContext startInstance(PartitionRef partition,
                                                     String clusterId, String clusterInstanceId,
-                                                    String networkPartitionId, boolean isPrimary,
-                                                    int minMemberCount, String autoscalingReason,
-                                                    long scalingTime) throws SpawningException {
+                                                    String networkPartitionId,
+                                                    int minMemberCount) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: " +
                                 "[cluster] %s [partition] %s [network-partition-id] %s",
-                        clusterId, partition.getUuid(), networkPartitionId));
+                        clusterId, partition.getId(), networkPartitionId));
             }
 
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
@@ -108,26 +99,11 @@ public class AutoscalerCloudControllerClient {
             instanceContext.setNetworkPartitionId(networkPartitionId);
 
             Properties memberContextProps = new Properties();
-            Property isPrimaryProp = new Property();
-            isPrimaryProp.setName("PRIMARY");
-            isPrimaryProp.setValue(String.valueOf(isPrimary));
-
             Property minCountProp = new Property();
             minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
 
-            Property autoscalingReasonProp = new Property();
-            autoscalingReasonProp.setName(StratosConstants.SCALING_REASON);
-            autoscalingReasonProp.setValue(autoscalingReason);
-
-            Property scalingTimeProp = new Property();
-            scalingTimeProp.setName(StratosConstants.SCALING_TIME);
-            scalingTimeProp.setValue(String.valueOf(scalingTime));
-
-            memberContextProps.addProperty(isPrimaryProp);
             memberContextProps.addProperty(minCountProp);
-            memberContextProps.addProperty(autoscalingReasonProp);
-            memberContextProps.addProperty(scalingTimeProp);
             instanceContext.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 
             long startTime = System.currentTimeMillis();
@@ -156,7 +132,7 @@ public class AutoscalerCloudControllerClient {
         }
     }
 
-    public synchronized void createApplicationClusters(String appUuid,
+    public synchronized void createApplicationClusters(String appId,
                                                        ApplicationClusterContext[] applicationClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
                 new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
@@ -168,7 +144,7 @@ public class AutoscalerCloudControllerClient {
                     dto.setClusterId(applicationClusterContext.getClusterId());
                     dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
                     dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
-                    dto.setCartridgeUuid(applicationClusterContext.getCartridgeUuid());
+                    dto.setCartridgeType(applicationClusterContext.getCartridgeType());
                     dto.setHostName(applicationClusterContext.getHostName());
                     dto.setTenantRange(applicationClusterContext.getTenantRange());
                     dto.setTextPayload(applicationClusterContext.getTextPayload());
@@ -188,7 +164,7 @@ public class AutoscalerCloudControllerClient {
                 new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[contextDTOs.size()];
         contextDTOs.toArray(applicationClusterContextDTOs);
         try {
-            stub.createApplicationClusters(appUuid, applicationClusterContextDTOs);
+            stub.createApplicationClusters(appId, applicationClusterContextDTOs);
         } catch (RemoteException e) {
             String msg = e.getMessage();
             log.error(msg, e);
@@ -197,7 +173,6 @@ public class AutoscalerCloudControllerClient {
             log.error(msg, e);
         }
     }
-
 
     private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
 
@@ -239,8 +214,7 @@ public class AutoscalerCloudControllerClient {
     public void terminateAllInstances(String clusterId) throws RemoteException,
             CloudControllerServiceInvalidClusterExceptionException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating all instances of cluster via cloud controller: " +
-                    "[cluster] %s", clusterId));
+            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
         }
         long startTime = System.currentTimeMillis();
         stub.terminateInstances(clusterId);
@@ -251,4 +225,11 @@ public class AutoscalerCloudControllerClient {
         }
     }
 
- }
+    /* An instance of a CloudControllerClient is created when the class is loaded.
+     * Since the class is loaded only once, it is guaranteed that an object of
+     * CloudControllerClient is created only once. Hence it is singleton.
+     */
+    private static class InstanceHolder {
+        private static final AutoscalerCloudControllerClient INSTANCE = new AutoscalerCloudControllerClient();
+    }
+}

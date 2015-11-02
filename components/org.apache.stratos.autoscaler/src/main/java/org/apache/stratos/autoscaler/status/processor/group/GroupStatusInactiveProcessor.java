@@ -132,7 +132,7 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
                                           String instanceId) {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().
-                    getService(clusterDataHolderEntry.getValue().getServiceUuid());
+                    getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
             ClusterInstance context = cluster.getInstanceContexts(instanceId);
             if (context != null) {

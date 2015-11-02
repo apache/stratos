@@ -51,7 +51,7 @@ public class EC2PartitionValidator implements PartitionValidator {
 
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
-                    String message = "Invalid partition detected, invalid region: [partition-id] " + partition.getUuid() +
+                    String message = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
                             " [region] " + region;
                     log.error(message);
                     throw new InvalidPartitionException(message);
@@ -79,7 +79,7 @@ public class EC2PartitionValidator implements PartitionValidator {
                 return iaasProvider;
             }
         } catch (Exception ex) {
-            String message = "Invalid partition detected: [partition-id] " + partition.getUuid();
+            String message = "Invalid partition detected: [partition-id] " + partition.getId();
             log.error(message, ex);
             throw new InvalidPartitionException(message, ex);
         }

@@ -25,9 +25,7 @@ public class ServiceGroup implements Serializable {
 
     private static final long serialVersionUID = -7413745300105885793L;
 
-    private String uuid;
-
-	private String name;
+    private String name;
 
     private ServiceGroup[] groups;
 
@@ -35,12 +33,12 @@ public class ServiceGroup implements Serializable {
 
     private Dependencies dependencies;
 
-    public String getUuid() {
-        return uuid;
+    public String getName() {
+        return name;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String[] getCartridges() {
@@ -66,22 +64,4 @@ public class ServiceGroup implements Serializable {
     public void setGroups(ServiceGroup[] groups) {
         this.groups = groups;
     }
-
-	private int tenantId;
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 }

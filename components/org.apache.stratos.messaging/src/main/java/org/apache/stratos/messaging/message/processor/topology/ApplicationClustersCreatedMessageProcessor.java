@@ -24,6 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -73,13 +74,19 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
         List<Cluster> clusters = event.getClusterList();
 
         for (Cluster cluster : clusters) {
-            String serviceUuid = cluster.getServiceName();
+            String applicationId = cluster.getAppId();
+            String serviceName = cluster.getServiceName();
             String clusterId = cluster.getClusterId();
-            TopologyUpdater.acquireWriteLockForService(serviceUuid);
+            TopologyUpdater.acquireWriteLockForService(serviceName);
+
             try {
+                // Apply application filter
+                if(TopologyApplicationFilter.apply(applicationId)) {
+                    continue;
+                }
 
                 // Apply service filter
-                if (TopologyServiceFilter.apply(serviceUuid)) {
+                if (TopologyServiceFilter.apply(serviceName)) {
                     continue;
                 }
 
@@ -89,18 +96,18 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
                 }
 
                 // Validate event against the existing topology
-                Service service = topology.getService(serviceUuid);
+                Service service = topology.getService(serviceName);
                 if (service == null) {
                     if (log.isWarnEnabled()) {
                         log.warn(String.format("Service does not exist: [service] %s",
-                                serviceUuid));
+                                serviceName));
                     }
                     return false;
                 }
                 if (service.clusterExists(clusterId)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Cluster already exists in service: [service] %s " +
-                                        "[cluster] %s", serviceUuid,
+                                        "[cluster] %s", serviceName,
                                 clusterId));
                     }
                 } else {
@@ -115,7 +122,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
                 }
 
             } finally {
-                TopologyUpdater.releaseWriteLockForService(serviceUuid);
+                TopologyUpdater.releaseWriteLockForService(serviceName);
             }
         }
 

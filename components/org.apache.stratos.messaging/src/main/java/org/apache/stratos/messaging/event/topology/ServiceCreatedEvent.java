@@ -34,15 +34,13 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 
     private final String serviceName;
     private final ServiceType serviceType;
-    private final String serviceUuid;
     // Key: Port.proxy
     private final Map<Integer, Port> portMap;
     private Properties properties;
 
-    public ServiceCreatedEvent(String serviceName, ServiceType serviceType, String serviceUuid) {
+    public ServiceCreatedEvent(String serviceName, ServiceType serviceType) {
         this.serviceName = serviceName;
         this.serviceType = serviceType;
-        this.serviceUuid = serviceUuid;
         this.portMap = new HashMap<Integer, Port>();
     }
 
@@ -52,10 +50,6 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 
     public ServiceType getServiceType() {
         return serviceType;
-    }
-
-    public String getServiceUuid() {
-        return serviceUuid;
     }
 
     public Collection<Port> getPorts() {

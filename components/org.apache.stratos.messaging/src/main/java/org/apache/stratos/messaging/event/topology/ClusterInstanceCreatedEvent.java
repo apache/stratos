@@ -26,27 +26,27 @@ import org.apache.stratos.messaging.event.Event;
  */
 public class ClusterInstanceCreatedEvent extends Event {
 
-    private final String serviceUuid;
+    private final String serviceName;
     private final String clusterId;
     private String partitionId;
     private String networkPartitionId;
     private ClusterInstance clusterInstance;
 
 
-    public ClusterInstanceCreatedEvent(String serviceUuid, String clusterId,
+    public ClusterInstanceCreatedEvent(String serviceName, String clusterId,
                                        ClusterInstance clusterInstance) {
-        this.serviceUuid = serviceUuid;
+        this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstance = clusterInstance;
     }
 
-    public String getServiceUuid() {
-        return serviceUuid;
+    public String getServiceName() {
+        return serviceName;
     }
 
     @Override
     public String toString() {
-        return "ClusterInstanceCreatedEvent [serviceName=" + serviceUuid + ", clusterStatus=" +
+        return "ClusterInstanceCreatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
                 "]";
     }
 

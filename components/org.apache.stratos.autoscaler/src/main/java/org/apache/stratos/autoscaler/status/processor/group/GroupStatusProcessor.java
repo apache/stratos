@@ -99,7 +99,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                                                ClusterStatus status, String instanceId) {
         boolean clusterStat = false;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
-            String serviceName = clusterDataHolderEntry.getValue().getServiceUuid();
+            String serviceName = clusterDataHolderEntry.getValue().getServiceType();
             String clusterId = clusterDataHolderEntry.getValue().getClusterId();
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             try {

@@ -86,12 +86,12 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
         } else {
 
             // Apply changes to the topology
-            Service service = new Service(event.getServiceName(), event.getServiceType(), event.getServiceUuid());
+            Service service = new Service(event.getServiceName(), event.getServiceType());
             service.addPorts(event.getPorts());
             topology.addService(service);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Service created: [service] %s [service-uuid] %s", event.getServiceName(),event.getServiceUuid()));
+                log.info(String.format("Service created: [service] %s", event.getServiceName()));
             }
         }
 

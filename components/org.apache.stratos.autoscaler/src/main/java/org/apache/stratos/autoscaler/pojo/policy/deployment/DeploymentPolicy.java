@@ -32,34 +32,15 @@ import java.util.Arrays;
 public class DeploymentPolicy implements Serializable {
 
     private static final long serialVersionUID = 5675507196284400099L;
-    private String uuid;
-    private int tenantId;
-    private  String id;
+    private String deploymentPolicyID;
     private NetworkPartitionRef[] networkPartitionRefs;
 
-    public String getUuid() {
-        return uuid;
+    public String getDeploymentPolicyID() {
+        return deploymentPolicyID;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
+    public void setDeploymentPolicyID(String deploymentPolicyID) {
+        this.deploymentPolicyID = deploymentPolicyID;
     }
 
     public NetworkPartitionRef[] getNetworkPartitionRefs() {
@@ -79,7 +60,7 @@ public class DeploymentPolicy implements Serializable {
     public NetworkPartitionRef getNetworkPartitionByNetworkPartitionId(String networkPartitionId) {
         if (networkPartitionRefs != null) {
             for (NetworkPartitionRef networkPartition : networkPartitionRefs) {
-                if (networkPartition.getUuid().equals(networkPartitionId)) {
+                if (networkPartition.getId().equals(networkPartitionId)) {
                     return networkPartition;
                 }
             }
@@ -96,7 +77,7 @@ public class DeploymentPolicy implements Serializable {
     public PartitionRef[] getPartitionsByNetworkPartitionId(String networkPartitionId) {
         if (networkPartitionRefs != null) {
             for (NetworkPartitionRef networkPartitionRef : networkPartitionRefs) {
-                if (networkPartitionRef.getUuid().equals(networkPartitionId)) {
+                if (networkPartitionRef.getId().equals(networkPartitionId)) {
                     return networkPartitionRef.getPartitionRefs();
                 }
             }
@@ -105,7 +86,7 @@ public class DeploymentPolicy implements Serializable {
     }
 
     public String toString() {
-        return String.format("{ deployment-policy-id : %s, network-partitions : %s", uuid,
+        return String.format("{ deployment-policy-id : %s, network-partitions : %s", deploymentPolicyID,
                 Arrays.toString(networkPartitionRefs));
     }
 

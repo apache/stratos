@@ -13,7 +13,7 @@
         "id": {
             "type":"string",
             "id": "root/id",
-            "title":"Auto Scale policy Id",
+            "title":"Auto Scale policy ID",
             "minLength":4,
             "default":"Policy name",
             "maxItems":1

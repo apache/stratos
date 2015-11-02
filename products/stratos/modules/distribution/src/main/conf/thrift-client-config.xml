@@ -18,22 +18,10 @@
   ~ under the License.
   -->
 
-<!-- Apache thrift client configuration for publishing statistics to WSO2 CEP and WSO2 DAS-->
+<!-- Apache thrift client configuration for publishing statistics to WSO2 CEP -->
 <thriftClientConfiguration>
-    <config>
-        <name>cep</name>
-        <statsPublisherEnabled>true</statsPublisherEnabled>
-        <username>admin</username>
-        <password>admin</password>
-        <ip>localhost</ip>
-        <port>7611</port>
-    </config>
-    <config>
-        <name>das</name>
-        <statsPublisherEnabled>false</statsPublisherEnabled>
-        <username>admin</username>
-        <password>admin</password>
-        <ip>localhost</ip>
-        <port>7612</port>
-    </config>
+    <username>admin</username>
+    <password>admin</password>
+    <ip>localhost</ip>
+    <port>7611</port>
 </thriftClientConfiguration>

@@ -31,20 +31,10 @@ public class CartridgeReferenceBean implements Serializable {
 
     private static final long serialVersionUID = 8968224678298479827L;
 
-    private String uuid;
     private String type;
-    private int tenantId;
     private int cartridgeMin;
     private int cartridgeMax;
     private SubscribableInfo subscribableInfo;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
     public String getType() {
         return type;
@@ -52,14 +42,6 @@ public class CartridgeReferenceBean implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
     }
 
     public int getCartridgeMin() {

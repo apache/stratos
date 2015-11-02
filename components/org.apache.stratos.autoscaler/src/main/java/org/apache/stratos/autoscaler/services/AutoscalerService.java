@@ -27,7 +27,6 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.CartridgeNotFoundException;
-import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -51,18 +50,10 @@ public interface AutoscalerService {
     /**
      * Get an autoscaling policy
      *
-     * @param autoscalingPolicyUuid
+     * @param autoscalingPolicyId
      * @return
      */
-    public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyUuid);
-
-	/**
-	 * Get an autoscaling policy
-	 *
-	 * @param autoscalingPolicyId
-	 * @return
-	 */
-	public AutoscalePolicy getAutoscalingPolicyForTenant(String autoscalingPolicyId,int tenantId);
+    public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId);
 
     /**
      * Get autoscaling policies
@@ -117,20 +108,12 @@ public interface AutoscalerService {
     public ApplicationContext getApplication(String applicationId);
 
     /**
-     * Get an application
-     *
-     * @param applicationId
-     * @param tenantId
-     */
-    public ApplicationContext getApplicationByTenant(String applicationId, int tenantId);
-
-    /**
      * Check if the application exists
      *
      * @param applicationId
      * @return whether application exists or not
      */
-    boolean existApplication(String applicationId,int tenantId);
+    boolean existApplication(String applicationId);
 
     /**
      * Get all applications
@@ -178,29 +161,9 @@ public interface AutoscalerService {
      * Get application policy by application id
      *
      * @param applicationPolicyId the application policy id
-     * @param tenantId tenant id
      * @return {@link ApplicationPolicy} used by the given application
      */
-    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId, int tenantId);
-
-    /**
-     * Get application policy by application uuid
-     *
-     * @param applicationPolicyUuid the application policy uuid
-     * @return {@link ApplicationPolicy} used by the given application
-     */
-    public ApplicationPolicy getApplicationPolicyByUuid(String applicationPolicyUuid);
-
-	/**
-	 *
-	 * Get application policy by application id and tenant id
-	 *
-	 * @param applicationPolicyId
-	 * @param tenantId
-	 * @return
-	 */
-
-	public ApplicationPolicy getApplicationPolicyByTenant(String applicationPolicyId, int tenantId);
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId);
 
     /**
      * Remove application policy
@@ -268,14 +231,6 @@ public interface AutoscalerService {
      */
     public ServiceGroup getServiceGroup(String name);
 
-	/**
-	 * Get cartridge group by tenant
-	 * @param name
-	 * @param tenantId
-	 * @return
-	 */
-	public ServiceGroup getServiceGroupByTenant(String name, int tenantId);
-
     /**
      * Find cluster id of an application by subscription alias.
      *
@@ -318,19 +273,10 @@ public interface AutoscalerService {
     /**
      * Get deployment policy definition
      *
-     * @param deploymentPolicyUuid
+     * @param deploymentPolicyID
      * @return
      */
-    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyUuid);
-
-	/**
-	 * Get deployment policy definition
-	 *
-	 * @param deploymentPolicyID
-	 * @param tenantId
-	 * @return
-	 */
-	public DeploymentPolicy getDeploymentPolicyForTenant(String deploymentPolicyID,int tenantId);
+    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID);
 
     /**
      * Get deployment policies
@@ -338,46 +284,5 @@ public interface AutoscalerService {
      * @return array of {@link DeploymentPolicy}
      */
     public DeploymentPolicy[] getDeploymentPolicies();
-
-    /**
-     * Get applications by tenant
-     *
-     * @return array of {@link DeploymentPolicy}
-     */
-    public ApplicationContext[] getApplicationsByTenant(int tenantId);
-
-    /**
-     * Get deployment policy definition by tenant
-     *
-     * @param tenantId tenant id
-     * @return Deployment policy
-     */
-    public DeploymentPolicy[] getDeploymentPoliciesByTenant(int tenantId);
-
-    /**
-     * Get autoscaling policy definition by tenant
-     *
-     * @param tenantId tenant id
-     * @return Array of autoscaling policies for tenant
-     */
-    public AutoscalePolicy[] getAutoScalingPoliciesByTenant(int tenantId);
-
-    /**
-     * Returns the application policy to which the specified id is mapped or null
-     *
-     * @param tenantId Id of the deployment policy
-     * @return Array of application policies for a tenant
-     */
-    public ApplicationPolicy[] getApplicationPoliciesByTenant(int tenantId);
-
-	/**
-	 * Validate the network partition with the application
-	 * @param networkPartitionId Network partition id
-	 * @param tenantId tenant id
-	 * @return
-	 */
-	public boolean validateNetworkPartitionWithApplication(String networkPartitionId,int tenantId)
-			throws PartitionValidationException;
-
 
 }

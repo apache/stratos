@@ -19,6 +19,7 @@
 
 package org.apache.stratos.integration.tests.policies;
 
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.PropertyBean;
@@ -27,6 +28,10 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 
@@ -44,22 +49,22 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
             String applicationPolicyId = "application-policy-application-policy-test";
             log.info("-------------------------Started Application policy test case-------------------------");
 
-            boolean addedN1 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-policy-test-1" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN1, true);
+            assertTrue(addedN1);
 
-            boolean addedN2 = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                             "network-partition-application-policy-test-2" + ".json",
                     RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN2, true);
+            assertTrue(addedN2);
 
-            boolean addedDep = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                             applicationPolicyId + ".json",
                     RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(addedDep, true);
+            assertTrue(addedDep);
 
-            ApplicationPolicyBean bean = (ApplicationPolicyBean) restClientTenant1.
+            ApplicationPolicyBean bean = (ApplicationPolicyBean) restClient.
                     getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
                             ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
             assertEquals(bean.getId(), applicationPolicyId);
@@ -86,99 +91,141 @@ public class ApplicationPolicyTest extends StratosTestServerManager {
                 }
             }
             if (!algoFound) {
-                assertTrue(String.format("The networkPartitionGroups property is not found in %s",
-                        applicationPolicyId), false);
+                assertNull(String.format("The networkPartitionGroups property is not found in %s",
+                        applicationPolicyId));
             }
 
-            bean = (ApplicationPolicyBean) restClientTenant2.
-                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                            ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-            assertNull("Application policy bean found in tenant 2",bean);
-
-            addedN1 = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-application-policy-test-1" + ".json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN1, true);
-
-            addedN2 = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-application-policy-test-2" + ".json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN2, true);
-
-            boolean addedTenant2Dep = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                            applicationPolicyId + ".json",
-                    RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(addedTenant2Dep, true);
-
-            ApplicationPolicyBean tenant2bean = (ApplicationPolicyBean) restClientTenant2.
-                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                            ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-            assertNotNull("Application is not exist in tenant 2", tenant2bean);
-
-
-            boolean removedNet = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
             //Trying to remove the used network partition
-            assertEquals(removedNet, false);
+            assertFalse(removedNet);
 
-            boolean removedDep = restClientTenant1.removeEntity(RestConstants.APPLICATION_POLICIES,
+            boolean removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
                     applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(removedDep, true);
+            assertTrue(removedDep);
 
-            ApplicationPolicyBean beanRemovedDep = (ApplicationPolicyBean) restClientTenant1.
+            ApplicationPolicyBean beanRemovedDep = (ApplicationPolicyBean) restClient.
                     getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
                             ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(beanRemovedDep, null);
+            assertNull(beanRemovedDep);
 
-            boolean removedN1 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedN1 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN1, true);
+            assertTrue(removedN1);
 
-            NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClientTenant1.
+            NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(beanRemovedN1, null);
+            assertNull(beanRemovedN1);
 
-            boolean removedN2 = restClientTenant1.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-policy-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, true);
+            assertTrue(removedN2);
 
-            NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClientTenant1.
+            NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-2",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(beanRemovedN2, null);
+            assertNull(beanRemovedN2);
 
-            tenant2bean = (ApplicationPolicyBean) restClientTenant2.
-                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
+            log.info("-------------------------Ended deployment policy test case-------------------------");
+
+        } catch (Exception e) {
+            log.error("An error occurred while handling deployment policy", e);
+            assertTrue("An error occurred while handling deployment policy", false);
+        }
+    }
+
+    @Test
+    public void testApplicationPolicyList() {
+        try {
+            String applicationPolicyId1 = "application-policy-application-policy-test-1";
+            String applicationPolicyId2 = "application-policy-application-policy-test-2";
+            log.info("-------------------------Started Application policy list test case-------------------------");
+
+            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            "network-partition-application-policy-test-1" + ".json",
+                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(addedN1);
+
+            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                            "network-partition-application-policy-test-2" + ".json",
+                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(addedN2);
+
+            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+                            applicationPolicyId1 + ".json",
+                    RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
+            assertTrue(addedDep);
+
+            addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
+                            applicationPolicyId2 + ".json",
+                    RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
+            assertTrue(addedDep);
+
+            Type listType = new TypeToken<ArrayList<ApplicationPolicyBean>>() {
+            }.getType();
+
+            List<ApplicationPolicyBean> applicationPolicyList = (List<ApplicationPolicyBean>) restClient.
+                    listEntity(RestConstants.APPLICATION_POLICIES,
+                            listType, RestConstants.APPLICATION_POLICIES_NAME);
+            assertTrue(applicationPolicyList.size() >= 2);
+
+            ApplicationPolicyBean bean1 = null;
+            for (ApplicationPolicyBean applicationPolicyBean : applicationPolicyList) {
+                if (applicationPolicyBean.getId().equals(applicationPolicyId1)) {
+                    bean1 = applicationPolicyBean;
+                }
+            }
+            assertNotNull(bean1);
+
+            ApplicationPolicyBean bean2 = null;
+            for (ApplicationPolicyBean applicationPolicyBean : applicationPolicyList) {
+                if (applicationPolicyBean.getId().equals(applicationPolicyId2)) {
+                    bean2 = applicationPolicyBean;
+                }
+            }
+            assertNotNull(bean2);
+
+            boolean removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
+                    applicationPolicyId1, RestConstants.APPLICATION_POLICIES_NAME);
+            assertTrue(removedDep);
+
+            ApplicationPolicyBean beanRemovedDep = (ApplicationPolicyBean) restClient.
+                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId1,
                             ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-            assertNotNull("Application is not exist in tenant 2", tenant2bean);
+            assertNull(beanRemovedDep);
 
-            removedDep = restClientTenant2.removeEntity(RestConstants.APPLICATION_POLICIES,
-                    applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(removedDep, true);
-
-            beanRemovedDep = (ApplicationPolicyBean) restClientTenant2.
-                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                            ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-            assertEquals(beanRemovedDep, null);
-
-            removedN1 = restClientTenant2.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN1, true);
+            //Trying to remove the used network partition
+            assertFalse(removedNet);
 
-            beanRemovedN1 = (NetworkPartitionBean) restClientTenant2.
+            removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
+                    applicationPolicyId2, RestConstants.APPLICATION_POLICIES_NAME);
+            assertTrue(removedDep);
+
+            beanRemovedDep = (ApplicationPolicyBean) restClient.
+                    getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId2,
+                            ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+            assertNull(beanRemovedDep);
+
+            boolean removedN1 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                    "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+            assertTrue(removedN1);
+
+            NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(beanRemovedN1, null);
+            assertNull(beanRemovedN1);
 
-            removedN2 = restClientTenant2.removeEntity(RestConstants.NETWORK_PARTITIONS,
+            boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                     "network-partition-application-policy-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, true);
+            assertTrue(removedN2);
 
-            beanRemovedN2 = (NetworkPartitionBean) restClientTenant2.
+            NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClient.
                     getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-2",
                             NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(beanRemovedN2, null);
+            assertNull(beanRemovedN2);
 
             log.info("-------------------------Ended deployment policy test case-------------------------");
 

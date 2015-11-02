@@ -164,7 +164,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                         Collection<Instance> parentInstances = parent.getInstances();
 
                         for (Instance parentInstance : parentInstances) {
-                            if (parentInstance.getNetworkPartitionUuid().equals(networkPartitionContext.getId())) {
+                            if (parentInstance.getNetworkPartitionId().equals(networkPartitionContext.getId())) {
                                 int nonTerminatedInstancesCount = networkPartitionContext.
                                         getNonTerminatedInstancesCount(parentInstance.getInstanceId());
                                 int minInstances = networkPartitionContext.
@@ -234,7 +234,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      * @param instanceContext         the instance which reaches its max
      * @param networkPartitionContext the network-partition used for the instances
      */
-    private void handleScalingUpBeyondMax(InstanceContext instanceContext,
+    private void handleScalingUpBeyondMax(ParentInstanceContext instanceContext,
                                           NetworkPartitionContext networkPartitionContext) {
         if (!hasScalingDependents) {
             //handling the group scaling and if pending instances found,
@@ -513,7 +513,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                     getAppMonitor(appId);
             //In case if the group instance is not in terminating while application is
             // terminating, changing the status to terminating
-            if(applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
+            if (applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
                 //Sending group instance terminating event
                 ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
             }
@@ -686,7 +686,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, groupAlias);
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
 
-        String networkPartitionId = parentInstanceContext.getNetworkPartitionUuid();
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
         if (this.getNetworkPartitionContextsMap().containsKey(networkPartitionId)) {
             parentLevelNetworkPartitionContext = this.getNetworkPartitionContextsMap().
                     get(networkPartitionId);
@@ -695,7 +695,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
                 NetworkPartitionRef networkPartition = null;
                 for (NetworkPartitionRef networkPartition1 : networkPartitions) {
-                    if (networkPartition1.getUuid().equals(networkPartitionId)) {
+                    if (networkPartition1.getId().equals(networkPartitionId)) {
                         networkPartition = networkPartition1;
                     }
                 }
@@ -733,7 +733,7 @@ public class GroupMonitor extends ParentComponentMonitor {
     private void addPartitionContext(Instance parentInstanceContext,
                                      NetworkPartitionContext networkPartitionContext, String groupAlias) {
 
-        String networkPartitionId = parentInstanceContext.getNetworkPartitionUuid();
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
 
         String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(appId, groupAlias);
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
@@ -755,7 +755,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             NetworkPartitionRef networkPartitionRef = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
                 for (NetworkPartitionRef i : networkPartitions) {
-                    if (i.getUuid().equals(networkPartitionId)) {
+                    if (i.getId().equals(networkPartitionId)) {
                         networkPartitionRef = i;
                     }
                 }
@@ -767,14 +767,14 @@ public class GroupMonitor extends ParentComponentMonitor {
                     if (partitions != null && partitions.length != 0) {
                         for (PartitionRef partition : partitions) {
 
-                            if (networkPartitionContext.getPartitionCtxt(partition.getUuid()) == null) {
+                            if (networkPartitionContext.getPartitionCtxt(partition.getId()) == null) {
 
                                 ParentLevelPartitionContext parentLevelPartitionContext = new ParentLevelPartitionContext(
-                                        partition.getUuid(), networkPartitionId, deploymentPolicyId);
+                                        partition.getId(), networkPartitionId, deploymentPolicyId);
                                 networkPartitionContext.addPartitionContext(parentLevelPartitionContext);
                                 if (log.isInfoEnabled()) {
                                     log.info(String.format("[Partition] %s has been added for the [Group] %s",
-                                            partition.getUuid(), this.id));
+                                            partition.getId(), this.id));
                                 }
                             }
                         }
@@ -788,7 +788,7 @@ public class GroupMonitor extends ParentComponentMonitor {
      * Creates the group instance and adds the required context objects
      *
      * @param group                              the group
-     * @param partitionContext              the parent instance context
+     * @param parentInstance                     the parent instance context
      * @param partitionContext                   partition-context used to create the group instance
      * @param parentLevelNetworkPartitionContext the group level network partition context
      */
@@ -804,7 +804,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 partitionId = partitionContext.getPartitionId();
             }
 
-            groupInstance = createGroupInstance(group, parentInstance.getNetworkPartitionUuid(),
+            groupInstance = createGroupInstance(group, parentInstance.getNetworkPartitionId(),
                     parentInstance.getInstanceId(), partitionId);
         }
 

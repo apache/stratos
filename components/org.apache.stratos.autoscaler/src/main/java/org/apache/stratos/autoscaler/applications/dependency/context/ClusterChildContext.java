@@ -23,7 +23,6 @@ package org.apache.stratos.autoscaler.applications.dependency.context;
  */
 public class ClusterChildContext extends ApplicationChildContext {
     private String serviceName;
-	private String serviceUuid;
 
     public ClusterChildContext(String id, boolean killDependent) {
         super(id, killDependent);
@@ -36,12 +35,4 @@ public class ClusterChildContext extends ApplicationChildContext {
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
-
-	public String getServiceUuid() {
-		return serviceUuid;
-	}
-
-	public void setServiceUuid(String serviceUuid) {
-		this.serviceUuid = serviceUuid;
-	}
 }

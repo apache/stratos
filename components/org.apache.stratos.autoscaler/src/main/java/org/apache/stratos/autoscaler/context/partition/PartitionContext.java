@@ -51,7 +51,7 @@ public abstract class PartitionContext implements Serializable {
     public PartitionContext(PartitionRef partition, String networkPartitionId, String deploymentPolicyId) {
         this.partition = partition;
         this.deploymentPolicyId = deploymentPolicyId;
-        this.partitionId = partition.getUuid();
+        this.partitionId = partition.getId();
         this.networkPartitionId = networkPartitionId;
     }
 

@@ -30,33 +30,20 @@ public class ClusterDataHolder implements Serializable {
 
     // Service/Cartridge type
     private String serviceType;
-
-    // Service uuid
-    private String serviceUuid;
-
     // Cluster id
     private String clusterId;
 
     private int minInstances;
     private int maxInstances;
 
-    public ClusterDataHolder(String serviceType, String clusterId, String serviceUuid) {
+    public ClusterDataHolder(String serviceType, String clusterId) {
 
         this.serviceType = serviceType;
         this.clusterId = clusterId;
-        this.serviceUuid = serviceUuid;
     }
 
     public String getServiceType() {
         return serviceType;
-    }
-
-    public String getServiceUuid() {
-        return serviceUuid;
-    }
-
-    public void setServiceUuid(String serviceUuid) {
-        this.serviceUuid = serviceUuid;
     }
 
     public String getClusterId() {

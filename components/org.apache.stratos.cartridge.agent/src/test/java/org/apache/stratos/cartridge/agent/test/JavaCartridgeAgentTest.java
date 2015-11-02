@@ -77,9 +77,8 @@ public class JavaCartridgeAgentTest {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
-    public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.1.0-SNAPSHOT";
-	private static final String CARTRIDGE_UUID ="uuid" ;
-	private static HashMap<String, Executor> executorList;
+    public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.2.0-SNAPSHOT";
+    private static HashMap<String, Executor> executorList;
     private static ArrayList<ServerSocket> serverSocketList;
     private final ArtifactUpdatedEvent artifactUpdatedEvent;
     private final Boolean expectedResult;
@@ -250,7 +249,7 @@ public class JavaCartridgeAgentTest {
             }
 
             log.info("Copying agent jar");
-            String agentJar = "org.apache.stratos.cartridge.agent-4.1.0-SNAPSHOT.jar";
+            String agentJar = "org.apache.stratos.cartridge.agent-4.2.0-SNAPSHOT.jar";
             String agentJarSource = getResourcesFolderPath() + "/../" + agentJar;
             String agentJarDest = agentHome.getCanonicalPath() + "/lib/" + agentJar;
             FileUtils.copyFile(new File(agentJarSource), new File(agentJarDest));
@@ -443,7 +442,7 @@ public class JavaCartridgeAgentTest {
      */
     private Topology createTestTopology() {
         Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant,CARTRIDGE_UUID);
+        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
         topology.addService(service);
 
         Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,

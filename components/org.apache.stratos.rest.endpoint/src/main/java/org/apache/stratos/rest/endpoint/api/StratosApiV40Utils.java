@@ -69,8 +69,7 @@ public class StratosApiV40Utils {
 
         if (cloudControllerServiceClient != null) {
 
-            Cartridge cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig
-                    (cartridgeDefinitionBean, null, -1);
+            Cartridge cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinitionBean);
 
             if (cartridgeConfig == null) {
                 throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
@@ -157,7 +156,7 @@ public class StratosApiV40Utils {
         if (autoscalerServiceClient != null) {
 
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-                    convertToCCAutoscalerPojo(autoscalePolicyBean,null,-1234);
+                    convertToCCAutoscalerPojo(autoscalePolicyBean);
 
             try {
                 autoscalerServiceClient
@@ -372,7 +371,7 @@ public class StratosApiV40Utils {
                 for (String cartridgeType : availableCartridges) {
                     Cartridge cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeByTenant(cartridgeType,-1234);
+                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
                             log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "

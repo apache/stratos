@@ -52,7 +52,7 @@ public class OpenstackPartitionValidator implements PartitionValidator {
 
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
-                    String msg = "Invalid partition detected, invalid region: [partition-id] " + partition.getUuid() +
+                    String msg = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
                             " [region] " + region;
                     log.error(msg);
                     throw new InvalidPartitionException(msg);
@@ -80,7 +80,7 @@ public class OpenstackPartitionValidator implements PartitionValidator {
                 return iaasProvider;
             }
         } catch (Exception e) {
-            String msg = "Invalid partition detected: [partition-id] " + partition.getUuid() + e.getMessage();
+            String msg = "Invalid partition detected: [partition-id] " + partition.getId() + e.getMessage();
             log.error(msg, e);
             throw new InvalidPartitionException(msg, e);
         }

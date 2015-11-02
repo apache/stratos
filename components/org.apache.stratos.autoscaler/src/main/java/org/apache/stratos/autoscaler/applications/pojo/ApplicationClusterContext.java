@@ -29,8 +29,6 @@ public class ApplicationClusterContext implements Serializable {
 
     // cluster id
     private String clusterId;
-    // cartridge uuid
-    private String cartridgeUuid;
     // cartridge type
     private String cartridgeType;
     // payload as a String
@@ -49,11 +47,11 @@ public class ApplicationClusterContext implements Serializable {
     private String[] dependencyClusterIds;
     private PersistenceContext persistenceContext;
 
-    public ApplicationClusterContext(String cartridgeUuid, String clusterId, String hostName,
+    public ApplicationClusterContext(String cartridgeType, String clusterId, String hostName,
                                      String textPayload, String deploymentPolicyName, boolean isLbCluster,
                                      String tenantRange, String[] dependencyClusterIds) {
 
-        this.cartridgeUuid = cartridgeUuid;
+        this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
         this.hostName = hostName;
         this.textPayload = textPayload;
@@ -76,14 +74,6 @@ public class ApplicationClusterContext implements Serializable {
 
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
-    }
-
-    public String getCartridgeUuid() {
-        return cartridgeUuid;
-    }
-
-    public void setCartridgeUuid(String cartridgeUuid) {
-        this.cartridgeUuid = cartridgeUuid;
     }
 
     public String getCartridgeType() {
@@ -154,12 +144,12 @@ public class ApplicationClusterContext implements Serializable {
 
         ApplicationClusterContext that = (ApplicationClusterContext) other;
 
-        return this.cartridgeUuid.equals(that.cartridgeUuid) &&
+        return this.cartridgeType.equals(that.cartridgeType) &&
                 this.clusterId.equals(that.clusterId);
     }
 
     public int hashCode() {
-        return this.cartridgeUuid.hashCode() + this.clusterId.hashCode();
+        return this.cartridgeType.hashCode() + this.clusterId.hashCode();
     }
 
     public String[] getDependencyClusterIds() {

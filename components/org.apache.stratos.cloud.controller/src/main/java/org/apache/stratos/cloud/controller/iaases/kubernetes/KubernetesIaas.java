@@ -108,7 +108,7 @@ public class KubernetesIaas extends Iaas {
             if (parameterArray != null) {
                 for (String parameter : parameterArray) {
                     if (parameter != null) {
-                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR);
+                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
                         if ((nameValueArray != null) && (nameValueArray.length == 2)) {
                             NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
                             payload.add(nameValuePair);
@@ -174,7 +174,7 @@ public class KubernetesIaas extends Iaas {
                     memberContext.getMemberId()));
 
             // Validate cartridge
-            String cartridgeType = clusterContext.getCartridgeUuid();
+            String cartridgeType = clusterContext.getCartridgeType();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
             if (cartridge == null) {
                 String msg = String.format("Cartridge not found: [application] %s [cartridge] %s",
@@ -216,7 +216,7 @@ public class KubernetesIaas extends Iaas {
                     kubernetesPortRange.getLower());
 
             // Generate kubernetes service ports and update port mappings in cartridge
-            generateKubernetesServicePorts(clusterContext.getApplicationUuid(), clusterContext.getClusterId(),
+            generateKubernetesServicePorts(clusterContext.getApplicationId(), clusterContext.getClusterId(),
                     kubernetesClusterContext, cartridge);
 
             // Create kubernetes services for port mappings
@@ -395,9 +395,9 @@ public class KubernetesIaas extends Iaas {
             memory = Integer.parseInt(memoryProperty.getValue());
         }
 
-        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getUuid(), partition.getUuid());
+        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getType(), partition.getId());
         if (iaasProvider == null) {
-            String message = "Could not find iaas provider: [partition] " + partition.getUuid();
+            String message = "Could not find iaas provider: [partition] " + partition.getId();
             log.error(message);
             throw new RuntimeException(message);
         }
@@ -408,7 +408,7 @@ public class KubernetesIaas extends Iaas {
         // Create pod
         long podSeqNo = kubernetesClusterContext.getPodSeqNo().incrementAndGet();
         String podId = "pod" + "-" + podSeqNo;
-        String podLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
+        String podLabel = DigestUtils.md5Hex(clusterId);
         String dockerImage = iaasProvider.getImage();
         List<EnvVar> environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
@@ -423,9 +423,9 @@ public class KubernetesIaas extends Iaas {
         kubernetesApi.createPod(podId, podLabel, dockerImage, cpu, memory, ports, environmentVariables);
 
         log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s " +
-                        "[pod] %s [cpu] %d [memory] %d MB",
+                        "[pod] %s [pod-label] %s [cpu] %d [memory] %d MB",
                 memberContext.getApplicationId(), memberContext.getCartridgeType(),
-                memberContext.getMemberId(), podId, cpu, memory));
+                memberContext.getMemberId(), podId, podLabel, cpu, memory));
 
         // Add pod id to member context
         memberContext.setKubernetesPodId(podId);
@@ -457,7 +457,7 @@ public class KubernetesIaas extends Iaas {
             throws KubernetesClientException {
 
         String clusterId = clusterContext.getClusterId();
-        String cartridgeType = clusterContext.getCartridgeUuid();
+        String cartridgeType = clusterContext.getCartridgeType();
 
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
         if (cartridge == null) {
@@ -484,7 +484,7 @@ public class KubernetesIaas extends Iaas {
         KubernetesHost[] kubernetesHosts = kubernetesCluster.getKubernetesHosts();
         if ((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
             throw new RuntimeException("Hosts not found in kubernetes cluster: [cluster] "
-                    + kubernetesCluster.getClusterUuid());
+                    + kubernetesCluster.getClusterId());
         }
         for (KubernetesHost host : kubernetesHosts) {
             if (host != null) {
@@ -497,7 +497,7 @@ public class KubernetesIaas extends Iaas {
         }
 
         Collection<ClusterPortMapping> clusterPortMappings = CloudControllerContext.getInstance()
-                .getClusterPortMappings(clusterContext.getApplicationUuid(), clusterId);
+                .getClusterPortMappings(clusterContext.getApplicationId(), clusterId);
 
         if (clusterPortMappings != null) {
             for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
@@ -658,9 +658,10 @@ public class KubernetesIaas extends Iaas {
                     if (portMappingStrBuilder.toString().length() > 0) {
                         portMappingStrBuilder.append(";");
                     }
-                    portMappingStrBuilder.append(String.format("NAME:%s|PROTOCOL:%s|PORT:%d|PROXY_PORT:%d",
+                    portMappingStrBuilder.append(String.format("NAME:%s|PROTOCOL:%s|PORT:%d|PROXY_PORT:%d|TYPE:%s",
                             clusterPortMapping.getName(), clusterPortMapping.getProtocol(),
-                            clusterPortMapping.getKubernetesServicePort(), clusterPortMapping.getProxyPort()));
+                            clusterPortMapping.getKubernetesServicePort(), clusterPortMapping.getProxyPort(),
+                            clusterPortMapping.getKubernetesServiceType()));
 
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Kubernetes service port generated: [application-id] %s " +
@@ -687,8 +688,8 @@ public class KubernetesIaas extends Iaas {
      * @return
      */
     private ClusterPortMapping findClusterPortMapping(Collection<ClusterPortMapping> clusterPortMappings, PortMapping portMapping) {
-        for(ClusterPortMapping clusterPortMapping : clusterPortMappings) {
-            if(clusterPortMapping.getName().equals(portMapping.getName())) {
+        for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
+            if (clusterPortMapping.getName().equals(portMapping.getName())) {
                 return clusterPortMapping;
             }
         }
@@ -912,6 +913,7 @@ public class KubernetesIaas extends Iaas {
 
     /**
      * Remove kubernetes services if available for application cluster.
+     *
      * @param applicationId
      * @param clusterId
      */
@@ -919,12 +921,12 @@ public class KubernetesIaas extends Iaas {
 
         ClusterContext clusterContext =
                 CloudControllerContext.getInstance().getClusterContext(clusterId);
-        if(clusterContext != null) {
+        if (clusterContext != null) {
             String kubernetesClusterId = clusterContext.getKubernetesClusterId();
-            if(org.apache.commons.lang3.StringUtils.isNotBlank(kubernetesClusterId)) {
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(kubernetesClusterId)) {
                 KubernetesClusterContext kubernetesClusterContext =
                         CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-                if(kubernetesClusterContext != null) {
+                if (kubernetesClusterContext != null) {
                     KubernetesApiClient kubernetesApiClient = kubernetesClusterContext.getKubApi();
                     for (KubernetesService kubernetesService : clusterContext.getKubernetesServices()) {
                         log.info(String.format("Deleting kubernetes service: [application-id] %s " +

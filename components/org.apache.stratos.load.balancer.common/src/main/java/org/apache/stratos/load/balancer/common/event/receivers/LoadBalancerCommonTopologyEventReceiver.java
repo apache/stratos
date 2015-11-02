@@ -242,7 +242,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             protected void onEvent(Event event) {
 
                 ServiceRemovedEvent serviceRemovedEvent = (ServiceRemovedEvent) event;
-                String serviceName = serviceRemovedEvent.getServiceUuid();
+                String serviceName = serviceRemovedEvent.getServiceName();
 
                 try {
                     TopologyManager.acquireReadLockForService(serviceName);

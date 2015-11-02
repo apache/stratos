@@ -24,7 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Utility class for Stratos thread pool
@@ -32,7 +35,6 @@ import java.util.concurrent.*;
 public class StratosThreadPool {
 
     private static final Log log = LogFactory.getLog(StratosThreadPool.class);
-    private static final int MAXIMUM_POOL_SIZE = 1000;
 
     private static Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<String, ExecutorService>();
     private static Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
@@ -51,20 +53,7 @@ public class StratosThreadPool {
         if (executorService == null) {
             synchronized (executorServiceMapLock) {
                 if (executorService == null) {
-                    final BlockingQueue<Runnable> queue = new ArrayBlockingQueue(threadPoolSize);
-                    ThreadPoolExecutor threadPool=new ThreadPoolExecutor(threadPoolSize, MAXIMUM_POOL_SIZE,
-                            0L, TimeUnit.MILLISECONDS,
-                            queue);
-                    threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                            try {
-                                executor.getQueue().put(r);
-                            } catch (InterruptedException e) {
-                                log.error("Failed to add the rejected jobs to executor service blocking queue",e);
-                            }
-                        }
-                    });
-                    executorService=threadPool;
+                    executorService = Executors.newFixedThreadPool(threadPoolSize);
                     executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
                 }

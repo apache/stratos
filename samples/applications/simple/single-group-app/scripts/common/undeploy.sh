@@ -22,36 +22,35 @@
 #
 host_ip="localhost"
 host_port=9443
-username="admin@test$1.com"
-password="admin123"
 
 set -e
 
 echo "Undeploying application..."
-curl -X POST -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/applications/cartridge-group-app/undeploy
+curl -X POST -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/cartridge-group-app/undeploy
 
-sleep 20
+sleep 10
 
 echo "Deleting application..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/applications/cartridge-group-app
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/cartridge-group-app
 
 echo "Removing groups..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/cartridgeGroups/esb-php-group
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups/esb-php-group
 
 echo "Removing cartridges..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/cartridges/tomcat
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/cartridges/esb
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/cartridges/php
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges/tomcat
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges/esb
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges/php
 
 echo "Removing autoscale policies..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/autoscalingPolicies/autoscaling-policy-1
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies/autoscaling-policy-1
 
 echo "Removing deployment policies..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/deploymentPolicies/deployment-policy-1
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies/deployment-policy-1
 
 echo "Removing application policies..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/applicationPolicies/application-policy-1
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies/application-policy-1
 
 echo "Removing network partitions..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/networkPartitions/network-partition-1
-curl -X DELETE -H "Content-Type: application/json" -k -v -u ${username}:${password} https://${host_ip}:${host_port}/api/networkPartitions/network-partition-2
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/networkPartitions/network-partition-1
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/networkPartitions/network-partition-2
+

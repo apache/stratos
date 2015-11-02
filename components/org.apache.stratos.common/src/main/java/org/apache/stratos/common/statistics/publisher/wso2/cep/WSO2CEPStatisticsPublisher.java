@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.common.statistics.publisher;
+package org.apache.stratos.common.statistics.publisher.wso2.cep;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisher;
 import org.wso2.carbon.databridge.agent.thrift.Agent;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.conf.AgentConfiguration;
@@ -31,11 +32,11 @@ import org.wso2.carbon.databridge.commons.StreamDefinition;
 import java.util.HashMap;
 
 /**
- * Thrift statistics publisher.
+ * WSO2 CEP statistics publisher.
  */
-public class ThriftStatisticsPublisher implements StatisticsPublisher {
+public class WSO2CEPStatisticsPublisher implements StatisticsPublisher {
 
-    private static final Log log = LogFactory.getLog(ThriftStatisticsPublisher.class);
+    private static final Log log = LogFactory.getLog(WSO2CEPStatisticsPublisher.class);
 
     private StreamDefinition streamDefinition;
     private AsyncDataPublisher asyncDataPublisher;
@@ -49,20 +50,19 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
      * Credential information stored inside thrift-client-config.xml file
      * is parsed and assigned into ip,port,username and password fields
      *
-     * @param streamDefinition      Thrift Event Stream Definition
-     * @param thriftClientName      Thrift Client Name
+     * @param streamDefinition
      */
-    public ThriftStatisticsPublisher(StreamDefinition streamDefinition, String thriftClientName) {
+    public WSO2CEPStatisticsPublisher(StreamDefinition streamDefinition) {
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
-        ThriftClientInfo thriftClientInfo = thriftClientConfig.getThriftClientInfo(thriftClientName);
+        thriftClientConfig.getThriftClientInfo();
 
         this.streamDefinition = streamDefinition;
-        this.enabled = thriftClientInfo.isStatsPublisherEnabled();
-        this.ip = thriftClientInfo.getIp();
-        this.port = thriftClientInfo.getPort();
-        this.username = thriftClientInfo.getUsername();
-        this.password = thriftClientInfo.getPassword();
+        this.ip = thriftClientConfig.getThriftClientInfo().getIp();
+        this.port = thriftClientConfig.getThriftClientInfo().getPort();
+        this.username = thriftClientConfig.getThriftClientInfo().getUsername();
+        this.password = thriftClientConfig.getThriftClientInfo().getPassword();
 
+        enabled = Boolean.getBoolean("cep.stats.publisher.enabled");
         if (enabled) {
             init();
         }
@@ -102,14 +102,12 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Publishing thrift event: [stream] %s [version] %s",
-                        streamDefinition.getName(), streamDefinition.getVersion()));
+                log.debug(String.format("Publishing cep event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()));
             }
             asyncDataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
         } catch (AgentException e) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Could not publish thrift event: [stream] %s [version] %s",
-                        streamDefinition.getName(), streamDefinition.getVersion()), e);
+                log.error(String.format("Could not publish cep event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()), e);
             }
         }
     }

@@ -58,11 +58,9 @@ import static junit.framework.Assert.*;
 public class TopologyHandler {
     private static final Log log = LogFactory.getLog(TopologyHandler.class);
 
-
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 400000;
-    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 60000;
-    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 60000;
-
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 360000;
+    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 120000;
+    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 90000;
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     private ApplicationsEventReceiver applicationsEventReceiver;
@@ -163,18 +161,17 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
-     * @param tenantId
      * @param applicationName
      */
-    public void assertApplicationStatus(String applicationName, ApplicationStatus status, int tenantId) {
+    public void assertApplicationStatus(String applicationName, ApplicationStatus status) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         while (!((application != null) && (application.getStatus() == status))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,tenantId);
+            application = ApplicationManager.getApplications().getApplication(applicationName);
             if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                 break;
             }
@@ -185,24 +182,13 @@ public class TopologyHandler {
                 status, application.getStatus());
     }
 
-    public Application getApplication(String applicationName, int tenantId) {
-        return ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
-    }
-
-    public void assertApplicationForNonAvailability(String applicationName,  int tenantId) {
-
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
-        assertNull(String.format("Application is found for other tenant : [application-id] %s", applicationName),application);
-    }
-
     /**
      * Assert application activation
      *
      * @param applicationName
-     * @param tenantId
      */
-    public void assertGroupActivation(String applicationName, int tenantId) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+    public void assertGroupActivation(String applicationName) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
@@ -216,24 +202,23 @@ public class TopologyHandler {
      * Assert application activation
      *
      * @param applicationName
-     * @param tenantId
      */
-    public void assertClusterActivation(String applicationName, int tenantId) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+    public void assertClusterActivation(String applicationName) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-            String serviceUuid = clusterDataHolder.getServiceUuid();
+            String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
-            Service service = TopologyManager.getTopology().getService(serviceUuid);
+            Service service = TopologyManager.getTopology().getService(serviceName);
             assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                    applicationName, serviceUuid), service);
+                    applicationName, serviceName), service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                    applicationName, serviceUuid, clusterId), cluster);
+                    applicationName, serviceName, clusterId), cluster);
             boolean clusterActive = false;
 
             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
@@ -260,27 +245,26 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
-     * @param tenantId
      * @param applicationName
      */
-
-    public void terminateMemberFromCluster(String cartridgeName, String applicationName, IntegrationMockClient mockIaasApiClient, int tenantId) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+    public void terminateMemberFromCluster(String cartridgeName, String applicationName,
+                                           IntegrationMockClient mockIaasApiClient) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-            String serviceUuid = clusterDataHolder.getServiceUuid();
-            if(cartridgeName.equals(serviceUuid)) {
+            String serviceName = clusterDataHolder.getServiceType();
+            if(cartridgeName.equals(serviceName)) {
                 String clusterId = clusterDataHolder.getClusterId();
-                Service service = TopologyManager.getTopology().getService(serviceUuid);
-                assertNotNull(String.format("Service is not found: [application-id] %s [service uuid] %s",
-                        applicationName, serviceUuid), service);
+                Service service = TopologyManager.getTopology().getService(serviceName);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
+                        applicationName, serviceName), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                        applicationName, serviceUuid, clusterId), cluster);
+                        applicationName, serviceName, clusterId), cluster);
                 boolean memberTerminated = false;
 
                 for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
@@ -306,16 +290,16 @@ public class TopologyHandler {
 
     }
 
-    public void assertClusterMinMemberCount(String applicationName, int minMembers, int tenantId) {
+    public void assertClusterMinMemberCount(String applicationName, int minMembers) {
         long startTime = System.currentTimeMillis();
 
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         assertNotNull(String.format("Application is not found: [application-id] %s",
                 applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
-            String serviceName = clusterDataHolder.getServiceUuid();
+            String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
             assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
@@ -375,14 +359,13 @@ public class TopologyHandler {
      * Assert application activation
      *
      * @param applicationName
-     * @param tenantId
      */
-    public boolean assertApplicationUndeploy(String applicationName, int tenantId) {
+    public boolean assertApplicationUndeploy(String applicationName) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         ApplicationContext applicationContext = null;
         try {
-            applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationName,tenantId);
+            applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
         } catch (RemoteException e) {
             log.error("Error while getting the application context for [application] " + applicationName);
         }
@@ -392,9 +375,9 @@ public class TopologyHandler {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
-            application = ApplicationManager.getApplications().getApplicationByTenant(applicationName,tenantId);
+            application = ApplicationManager.getApplications().getApplication(applicationName);
             try {
-                applicationContext = AutoscalerServiceClient.getInstance().getApplicationByTenant(applicationName,tenantId);
+                applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
             } catch (RemoteException e) {
                 log.error("Error while getting the application context for [application] " + applicationName);
             }
@@ -421,12 +404,11 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
-     * @param tenantId
      * @param applicationName
      */
-    public void assertGroupInstanceCount(String applicationName, String groupAlias, int count, int tenantId) {
+    public void assertGroupInstanceCount(String applicationName, String groupAlias, int count) {
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationName, tenantId);
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
         if (application != null) {
             Group group = application.getGroupRecursively(groupAlias);
             while (group.getInstanceContextCount() != count) {
@@ -599,8 +581,8 @@ public class TopologyHandler {
         return appId + "-" + groupId + "-" + instanceId;
     }
 
-    public String getClusterIdFromAlias(String applicationId, String alias,int tenantId) {
-        Application application = ApplicationManager.getApplications().getApplicationByTenant(applicationId,tenantId);
+    public String getClusterIdFromAlias(String applicationId, String alias) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
         assertNotNull(application);
 
         ClusterDataHolder dataHolder = application.getClusterDataHolderRecursivelyByAlias(alias);

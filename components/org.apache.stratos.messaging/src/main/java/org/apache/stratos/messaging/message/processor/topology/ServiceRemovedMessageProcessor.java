@@ -70,7 +70,7 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess(ServiceRemovedEvent event, Topology topology) {
 
-        String serviceName = event.getServiceUuid();
+        String serviceName = event.getServiceName();
 
         // Apply service filter
         if (TopologyServiceFilter.apply(serviceName)) {
@@ -81,11 +81,11 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
         notifyEventListeners(event);
 
         // Validate event against the existing topology
-        Service service = topology.getService(event.getServiceUuid());
+        Service service = topology.getService(event.getServiceName());
         if (service == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Service does not exist: [service] %s",
-                        event.getServiceUuid()));
+                        event.getServiceName()));
             }
         } else {
 
@@ -93,7 +93,7 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
             topology.removeService(service);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Service removed: [service] %s", event.getServiceUuid()));
+                log.info(String.format("Service removed: [service] %s", event.getServiceName()));
             }
         }
 

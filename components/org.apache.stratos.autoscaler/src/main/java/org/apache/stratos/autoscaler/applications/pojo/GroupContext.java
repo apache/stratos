@@ -25,8 +25,6 @@ public class GroupContext implements Serializable {
 
     private static final long serialVersionUID = 1595266728968445926L;
 
-    private String uuid;
-    private int tenantId;
     private String name;
 
     private String alias;
@@ -37,27 +35,9 @@ public class GroupContext implements Serializable {
 
     private String deploymentPolicy;
 
-    private String deploymentPolicyUuid;
-
     private CartridgeContext[] cartridgeContexts;
 
     private GroupContext[] groupContexts;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
-    }
 
     public String getName() {
         return name;
@@ -113,13 +93,5 @@ public class GroupContext implements Serializable {
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
-    }
-
-    public String getDeploymentPolicyUuid() {
-        return deploymentPolicyUuid;
-    }
-
-    public void setDeploymentPolicyUuid(String deploymentPolicyUuid) {
-        this.deploymentPolicyUuid = deploymentPolicyUuid;
     }
 }

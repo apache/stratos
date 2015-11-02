@@ -18,12 +18,17 @@
  */
 package org.apache.stratos.integration.tests.policies;
 
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.integration.tests.RestConstants;
 import org.apache.stratos.integration.tests.StratosTestServerManager;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 
@@ -40,11 +45,11 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
         log.info("-------------------------Started autoscaling policy test case-------------------------");
         String policyId = "autoscaling-policy-autoscaling-policy-test";
         try {
-            boolean added = restClientTenant1.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
+            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
 
-            assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), added, true);
-            AutoscalePolicyBean bean = (AutoscalePolicyBean) restClientTenant1.
+            assertTrue(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), added);
+            AutoscalePolicyBean bean = (AutoscalePolicyBean) restClient.
                     getEntity(RestConstants.AUTOSCALING_POLICIES, policyId,
                             AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
 
@@ -57,33 +62,11 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
                     bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
 
-            bean = (AutoscalePolicyBean) restClientTenant2.
-                    getEntity(RestConstants.AUTOSCALING_POLICIES, policyId,
-                            AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertNull("Auto scale policy exists for other tenant",bean);
-
-            boolean addedTenant2 = restClientTenant2.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + ".json",
+            boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
                     RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
 
-            assertEquals(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s", policyId), addedTenant2, true);
-            bean = (AutoscalePolicyBean) restClientTenant2.
-                    getEntity(RestConstants.AUTOSCALING_POLICIES, policyId,
-                            AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
-
-            assertEquals(String.format("[autoscaling-policy-id] %s is not correct", bean.getId()),
-                    bean.getId(), policyId);
-            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
-                    bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 35.0, 0.0);
-            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
-                    bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 45.0, 0.0);
-            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
-                    bean.getLoadThresholds().getLoadAverage().getThreshold(), 25.0, 0.0);
-
-            boolean updated = restClientTenant1.updateEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
-                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-
-            assertEquals(String.format("[autoscaling-policy-id] %s update failed", policyId), updated, true);
-            AutoscalePolicyBean updatedBean = (AutoscalePolicyBean) restClientTenant1.getEntity(
+            assertTrue(String.format("[autoscaling-policy-id] %s update failed", policyId), updated);
+            AutoscalePolicyBean updatedBean = (AutoscalePolicyBean) restClient.getEntity(
                     RestConstants.AUTOSCALING_POLICIES, policyId,
                     AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
             assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
@@ -93,46 +76,95 @@ public class AutoscalingPolicyTest extends StratosTestServerManager {
             assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
                     updatedBean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
 
-            boolean updatedTenant2 = restClientTenant2.updateEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId + "-v1.json",
-                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-
-            assertEquals(String.format("[autoscaling-policy-id] %s update failed", policyId), updatedTenant2, true);
-            AutoscalePolicyBean updatedTenant2Bean = (AutoscalePolicyBean) restClientTenant2.getEntity(
-                    RestConstants.AUTOSCALING_POLICIES, policyId,
-                    AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(String.format("[autoscaling-policy-id] %s RIF is not correct", policyId),
-                    updatedTenant2Bean.getLoadThresholds().getRequestsInFlight().getThreshold(), 30.0, 0.0);
-            assertEquals(String.format("[autoscaling-policy-id] %s Load is not correct", policyId),
-                    updatedTenant2Bean.getLoadThresholds().getMemoryConsumption().getThreshold(), 40.0, 0.0);
-            assertEquals(String.format("[autoscaling-policy-id] %s Memory is not correct", policyId),
-                    updatedTenant2Bean.getLoadThresholds().getLoadAverage().getThreshold(), 20.0, 0.0);
-
-
-            boolean removed = restClientTenant1.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+            boolean removed = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                     policyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId),
-                    removed, true);
+            assertTrue(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId),
+                    removed);
 
-            AutoscalePolicyBean beanRemoved = (AutoscalePolicyBean) restClientTenant1.getEntity(
+            AutoscalePolicyBean beanRemoved = (AutoscalePolicyBean) restClient.getEntity(
                     RestConstants.AUTOSCALING_POLICIES, policyId,
                     AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
-                    policyId), beanRemoved, null);
-
-            beanRemoved = (AutoscalePolicyBean) restClientTenant2.getEntity(
-                    RestConstants.AUTOSCALING_POLICIES, policyId,
-                    AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertNotNull("Auto scale policy not exist in other tenant",beanRemoved);
-
-            removed = restClientTenant2.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                    policyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId),
-                    removed, true);
-
+            assertNull(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
+                    policyId), beanRemoved);
             log.info("-------------------------Ended autoscaling policy test case---------------------------");
         } catch (Exception e) {
             log.error("An error occurred while handling [autoscaling policy] " + policyId, e);
             assertTrue("An error occurred while handling [autoscaling policy] " + policyId, false);
+        }
+    }
+
+    @Test
+    public void testAutoscalingPolicyList() {
+        log.info("-------------------------Started autoscaling policy list test case-------------------------");
+        String policyId1 = "autoscaling-policy-autoscaling-policy-test-1";
+        String policyId2 = "autoscaling-policy-autoscaling-policy-test-2";
+        try {
+            boolean added = restClient.addEntity(RESOURCES_PATH +
+                            RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId1 + ".json",
+                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+
+            assertTrue(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s",
+                    policyId1), added);
+
+            added = restClient.addEntity(RESOURCES_PATH +
+                            RestConstants.AUTOSCALING_POLICIES_PATH + "/" + policyId2 + ".json",
+                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+
+            assertTrue(String.format("Autoscaling policy did not added: [autoscaling-policy-id] %s",
+                    policyId2), added);
+
+
+            Type listType = new TypeToken<ArrayList<AutoscalePolicyBean>>() {
+            }.getType();
+
+            List<AutoscalePolicyBean> autoscalingPolicyList = (List<AutoscalePolicyBean>) restClient.
+                    listEntity(RestConstants.AUTOSCALING_POLICIES,
+                            listType, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertTrue(autoscalingPolicyList.size() >= 2);
+
+            AutoscalePolicyBean bean1 = null;
+            for (AutoscalePolicyBean autoscalePolicyBean : autoscalingPolicyList) {
+                if (autoscalePolicyBean.getId().equals(policyId1)) {
+                    bean1 = autoscalePolicyBean;
+                }
+            }
+            assertNotNull(bean1);
+
+            AutoscalePolicyBean bean2 = null;
+            for (AutoscalePolicyBean autoscalePolicyBean : autoscalingPolicyList) {
+                if (autoscalePolicyBean.getId().equals(policyId2)) {
+                    bean2 = autoscalePolicyBean;
+                }
+            }
+            assertNotNull(bean2);
+
+
+            boolean removed = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+                    policyId1, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertTrue(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId1),
+                    removed);
+
+            AutoscalePolicyBean beanRemoved = (AutoscalePolicyBean) restClient.getEntity(
+                    RestConstants.AUTOSCALING_POLICIES, policyId1,
+                    AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertNull(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
+                    policyId1), beanRemoved);
+
+            removed = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
+                    policyId2, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertTrue(String.format("[autoscaling-policy-id] %s couldn't be removed", policyId2),
+                    removed);
+
+            beanRemoved = (AutoscalePolicyBean) restClient.getEntity(
+                    RestConstants.AUTOSCALING_POLICIES, policyId2,
+                    AutoscalePolicyBean.class, RestConstants.AUTOSCALING_POLICIES_NAME);
+            assertNull(String.format("[autoscaling-policy-id] %s didn't get removed successfully",
+                    policyId2), beanRemoved);
+
+            log.info("-------------------------Ended autoscaling policy list test case---------------------------");
+        } catch (Exception e) {
+            log.error("An error occurred while handling [autoscaling policy] list", e);
+            assertTrue("An error occurred while handling [autoscaling policy] list", false);
         }
     }
 }

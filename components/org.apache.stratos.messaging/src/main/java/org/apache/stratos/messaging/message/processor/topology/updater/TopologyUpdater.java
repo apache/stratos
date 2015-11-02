@@ -108,21 +108,21 @@ public class TopologyUpdater {
     /**
      * Acquires write lock for a Service
      *
-     * @param serviceUuid service uuid to acquire write lock
+     * @param serviceName service name to acquire write lock
      */
-    public static void acquireWriteLockForService(String serviceUuid) {
+    public static void acquireWriteLockForService(String serviceName) {
 
         // acquire read lock for all Applications
         TopologyManager.acquireReadLockForServices();
 
-        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceUuid, true);
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName, true);
         if (topologyServiceLock == null) {
-            handleLockNotFound("Topology lock not found for Service " + serviceUuid);
+            handleLockNotFound("Topology lock not found for Service " + serviceName);
 
         } else {
             topologyServiceLock.acquireWriteLock();
             if (log.isDebugEnabled()) {
-                log.debug("Write lock acquired for Service " + serviceUuid);
+                log.debug("Write lock acquired for Service " + serviceName);
             }
         }
     }

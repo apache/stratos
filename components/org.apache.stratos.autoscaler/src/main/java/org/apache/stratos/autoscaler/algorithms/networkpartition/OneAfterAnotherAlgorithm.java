@@ -68,7 +68,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        String applicationPolicyId = applicationPolicy.getUuid();
+        String applicationPolicyId = applicationPolicy.getId();
         String[] networkPartitionGroups = applicationPolicy.getNetworkPartitionGroups();
         if (networkPartitionGroups != null && networkPartitionGroups.length != 0) {
             if (log.isDebugEnabled()) {
@@ -131,7 +131,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
             return selectedNetworkPartitions;
         }
 
-        String[] networkPartitions = applicationPolicy.getNetworkPartitionsUuid();
+        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
         if (networkPartitions == null || networkPartitions.length == 0) {
             if (log.isWarnEnabled()) {
                 String msg = String.format("Network partitions found in application policy " +
@@ -223,7 +223,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
             return null;
         }
 
-        String applicationPolicyId = applicationPolicy.getUuid();
+        String applicationPolicyId = applicationPolicy.getId();
         String[] networkPartitionGroups = applicationPolicy.getNetworkPartitionGroups();
         List<String> selectedNetworkPartitions = new ArrayList<String>();
 
@@ -248,7 +248,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
 
         } else {
             //Returning the very first network-partition as the default one
-            String[] networkPartitions = applicationPolicy.getNetworkPartitionsUuid();
+            String[] networkPartitions = applicationPolicy.getNetworkPartitions();
             selectedNetworkPartitions.add(networkPartitions[0]);
         }
 

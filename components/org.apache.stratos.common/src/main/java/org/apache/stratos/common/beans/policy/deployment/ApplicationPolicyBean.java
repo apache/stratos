@@ -30,7 +30,6 @@ public class ApplicationPolicyBean {
     private String id;
     private String algorithm;
     String[] networkPartitions;
-	private String[] networkPartitionsUuid;
     List<PropertyBean> properties;
 
     public String getId() {
@@ -64,12 +63,4 @@ public class ApplicationPolicyBean {
     public void setProperties(List<PropertyBean> properties) {
         this.properties = properties;
     }
-
-	public String[] getNetworkPartitionsUuid() {
-		return networkPartitionsUuid;
-	}
-
-	public void setNetworkPartitionsUuid(String[] networkPartitionsUuid) {
-		this.networkPartitionsUuid = networkPartitionsUuid;
-	}
 }

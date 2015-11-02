@@ -71,7 +71,6 @@ public class ApplicationChildContextFactory {
                                                                     boolean isKillDependent) {
         ClusterChildContext clusterChildContext = new ClusterChildContext(dataHolder.getClusterId(), isKillDependent);
         clusterChildContext.setServiceName(dataHolder.getServiceType());
-	    clusterChildContext.setServiceUuid(dataHolder.getServiceUuid());
         return clusterChildContext;
     }
 

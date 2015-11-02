@@ -112,7 +112,6 @@
             <plugin>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
-                <version>1.6.1-wso2v10</version>
                 <configuration>
                     <className>org.apache.stratos.manager.services.impl.StratosManagerServiceImpl</className>
                     <outputFileName>target/generated-resources/wsdl/StratosManagerService.wsdl</outputFileName>

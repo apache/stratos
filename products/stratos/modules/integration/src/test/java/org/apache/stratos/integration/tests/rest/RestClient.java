@@ -61,8 +61,8 @@ public class RestClient {
     public RestClient(String endPoint, String userName, String password) {
         this();
         this.endPoint = endPoint;
-        this.setUserName(userName);
-        this.setPassword(password);
+        this.userName = userName;
+        this.password = password;
     }
 
     /**
@@ -382,22 +382,6 @@ public class RestClient {
      * @return username:password
      */
     private String getUsernamePassword() {
-        return this.getUserName() + ":" + this.getPassword();
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+        return this.userName + ":" + this.password;
     }
 }

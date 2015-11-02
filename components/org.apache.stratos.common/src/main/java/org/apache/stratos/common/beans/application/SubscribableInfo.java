@@ -35,15 +35,13 @@ public class SubscribableInfo implements Serializable {
     private String alias;
     private String deploymentPolicy;
     private String autoscalingPolicy;
-	private String deploymentPolicyUuid;
-	private String autoscalingPolicyUuid;
     private int maxMembers;
     private int minMembers;
     private String[] dependencyAliases;
     private ArtifactRepositoryBean artifactRepository;
     private List<PropertyBean> property;
     private PersistenceBean persistence;
-	private int tenantId;
+	private String lvsVirtualIP;
 
     public String getAlias() {
         return alias;
@@ -117,11 +115,11 @@ public class SubscribableInfo implements Serializable {
         this.persistence = persistence;
     }
 
-	public int getTenantId() {
-		return tenantId;
+	public String getLvsVirtualIP() {
+		return lvsVirtualIP;
 	}
 
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
+	public void setLvsVirtualIP(String lvsVirtualIP) {
+		this.lvsVirtualIP = lvsVirtualIP;
 	}
 }

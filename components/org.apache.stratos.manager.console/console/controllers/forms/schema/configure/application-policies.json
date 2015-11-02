@@ -13,14 +13,14 @@
             "id": "root/id",
             "type": "string",
             "title": "Application Policy Id ",
-            "name": "Application Policy Id"
+            "name": "Application Policy Id",
         },
         "algorithm": {
             "id": "root/algorithm",
             "type": "string",
             "title": "Application Policy Algorithm ",
             "name": "Application Policy Algorithm",
-            "enum": ["one-after-another","all-at-once"]
+            "enum": ["one-after-another","all-at-once"],
         },
         "networkPartitions": {
             "id": "root/networkPartitions",

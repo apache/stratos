@@ -34,17 +34,15 @@ public class Service implements Serializable {
 
     private final String serviceName;
     private final ServiceType serviceType;
-    private String serviceUuid;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterIdClusterMap;
     // Key: Port.proxy
     private Map<Integer, Port> portMap;
     private Properties properties;
 
-    public Service(String serviceName, ServiceType serviceType, String serviceUuid) {
+    public Service(String serviceName, ServiceType serviceType) {
         this.serviceName = serviceName;
         this.serviceType = serviceType;
-        this.serviceUuid = serviceUuid;
         this.clusterIdClusterMap = new HashMap<String, Cluster>();
         this.portMap = new HashMap<Integer, Port>();
     }
@@ -55,14 +53,6 @@ public class Service implements Serializable {
 
     public ServiceType getServiceType() {
         return serviceType;
-    }
-
-    public String getServiceUuid() {
-        return serviceUuid;
-    }
-
-    public void setServiceUuid(String serviceUuid) {
-        this.serviceUuid = serviceUuid;
     }
 
     public Collection<Cluster> getClusters() {

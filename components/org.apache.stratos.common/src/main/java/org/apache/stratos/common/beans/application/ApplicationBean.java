@@ -30,7 +30,7 @@ public class ApplicationBean implements Serializable {
 
     private static final long serialVersionUID = -2829206180707597651L;
 
-	private String applicationId;
+    private String applicationId;
     private boolean multiTenant;
     private String name;
     private String description;
@@ -108,4 +108,7 @@ public class ApplicationBean implements Serializable {
         return signUpsExist;
     }
 
+    public void setSignUpsExist(boolean signUpsExist) {
+        this.signUpsExist = signUpsExist;
+    }
 }

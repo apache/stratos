@@ -56,7 +56,7 @@ public class KubernetesPartitionValidator implements PartitionValidator {
 
         String kubernetesClusterId = partition.getKubernetesClusterId();
         if (StringUtils.isBlank(kubernetesClusterId)) {
-            String message = "Kubernetes cluster not defined in partition: [partition-id] " + partition.getUuid();
+            String message = "Kubernetes cluster not defined in partition: [partition-id] " + partition.getId();
             log.error(message);
             throw new InvalidPartitionException(message);
         }
@@ -65,7 +65,7 @@ public class KubernetesPartitionValidator implements PartitionValidator {
             CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId);
             return iaasProvider;
         } catch (NonExistingKubernetesClusterException e) {
-            String message = "Kubernetes partition is not valid: [partition-id] " + partition.getUuid();
+            String message = "Kubernetes partition is not valid: [partition-id] " + partition.getId();
             log.error(message, e);
             throw new InvalidPartitionException(message, e);
         }

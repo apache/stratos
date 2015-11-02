@@ -120,16 +120,16 @@ public class ClusterContext extends AbstractClusterContext {
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
                 getDeploymentPolicy(deploymentPolicyName);
 
-        if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionUuid())) {
+        if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             networkPartitionContext = this.networkPartitionCtxts.get(
-                    clusterInstance.getNetworkPartitionUuid());
+                    clusterInstance.getNetworkPartitionId());
         } else {
 
             NetworkPartitionRef[] networkPartitions = deploymentPolicy.getNetworkPartitionRefs();
             NetworkPartitionRef networkPartition = null;
             if (networkPartitions != null && networkPartitions.length != 0) {
                 for (NetworkPartitionRef i : networkPartitions) {
-                    if (i.getId().equals(clusterInstance.getNetworkPartitionUuid())) {
+                    if (i.getId().equals(clusterInstance.getNetworkPartitionId())) {
                         networkPartition = i;
                     }
                 }
@@ -138,7 +138,7 @@ public class ClusterContext extends AbstractClusterContext {
             if (networkPartition == null) {
                 //Parent should have the partition specified
                 networkPartitionContext = new NetworkPartitionContext(
-                        clusterInstance.getNetworkPartitionUuid());
+                        clusterInstance.getNetworkPartitionId());
             } else {
                 networkPartitionContext = new NetworkPartitionContext(networkPartition.getId(),
                         networkPartition.getPartitionAlgo());
@@ -153,15 +153,15 @@ public class ClusterContext extends AbstractClusterContext {
             networkPartitionContext = parseDeploymentPolicy(clusterInstance, cluster,
                     networkPartitionContext, hasScalingDependents, groupScalingEnabledSubtree);
         }
-        if (!networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionUuid())) {
-            this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionUuid(),
+        if (!networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
+            this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionId(),
                     networkPartitionContext);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster instance context has been added to network partition," +
                                 " [application] %s [cluster] %s  [cluster-instance] %s " +
                                 "[network partition] %s", cluster.getAppId(), cluster.getClusterId(),
                         clusterInstance.getInstanceId(),
-                        clusterInstance.getNetworkPartitionUuid()));
+                        clusterInstance.getNetworkPartitionId()));
             }
         }
 
@@ -185,7 +185,7 @@ public class ClusterContext extends AbstractClusterContext {
         PartitionRef[] partitions = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
             for (NetworkPartitionRef networkPartitionRef : networkPartitions) {
-                if (networkPartitionRef.getUuid().equals(
+                if (networkPartitionRef.getId().equals(
                         clusterLevelNetworkPartitionContext.getId())) {
                     partitions = networkPartitionRef.getPartitionRefs();
                 }
@@ -204,8 +204,8 @@ public class ClusterContext extends AbstractClusterContext {
         NetworkPartitionRef networkPartitionRef = null;
         if (networkPartitions != null && networkPartitions.length != 0) {
             for (NetworkPartitionRef networkPartition2 : networkPartitions) {
-                if (networkPartition2.getUuid().equals(
-                        clusterInstance.getNetworkPartitionUuid())) {
+                if (networkPartition2.getId().equals(
+                        clusterInstance.getNetworkPartitionId())) {
                     networkPartitionRef = networkPartition2;
                 }
             }
@@ -246,7 +246,7 @@ public class ClusterContext extends AbstractClusterContext {
         if (clusterInstance.getPartitionId() == null && partition == null) {
             String msg = "[Partition] " + clusterInstance.getPartitionId() + " for [application] " +
                     cluster.getAppId() + " [networkPartition] " +
-                    clusterInstance.getNetworkPartitionUuid() + "is null " +
+                    clusterInstance.getNetworkPartitionId() + "is null " +
                     "in deployment policy: [cluster-alias]: " + clusterInstance.getAlias();
             log.error(msg);
             throw new PolicyValidationException(msg);
@@ -278,7 +278,7 @@ public class ClusterContext extends AbstractClusterContext {
         String partitionId;
         if (partition != null) {
             //use it own defined partition
-            partitionId = partition.getUuid();
+            partitionId = partition.getId();
             maxInstances = partition.getPartitionMax();
         } else {
             //handling the partition given by the parent
@@ -302,7 +302,7 @@ public class ClusterContext extends AbstractClusterContext {
         PartitionRef partition3 = null;
         if (partitions != null && partitions.length != 0) {
             for (PartitionRef partition2 : partitions) {
-                if (partition2.getUuid().equals(partitionId)) {
+                if (partition2.getId().equals(partitionId)) {
                     partition3 = partition2;
                 }
             }
@@ -311,7 +311,7 @@ public class ClusterContext extends AbstractClusterContext {
         //Creating cluster level partition context
         ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
                 partition3,
-                clusterInstance.getNetworkPartitionUuid(), this.deploymentPolicyId);
+                clusterInstance.getNetworkPartitionId(), this.deploymentPolicyId);
         clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
 
@@ -346,7 +346,7 @@ public class ClusterContext extends AbstractClusterContext {
                                         String ClusterInstanceId) {
         for (Member member : cluster.getMembers()) {
             String memberId = member.getMemberId();
-            if (member.getPartitionId().equalsIgnoreCase(partition.getUuid()) &&
+            if (member.getPartitionId().equalsIgnoreCase(partition.getId()) &&
                     member.getClusterInstanceId().equals(ClusterInstanceId)) {
                 MemberContext memberContext = new MemberContext();
                 memberContext.setClusterId(member.getClusterId());

@@ -35,30 +35,29 @@ public class PartitionRef implements Serializable {
     /**
      * provider should match with an IaasProvider type.
      */
-    private String uuid;
-	private String id;
+    private String id;
     private String description;
     private int partitionMax;
     private Properties properties = new Properties();
-	private int tenantId;
+
     /**
      * Gets the value of the id property.
      *
      * @return possible object is
      * {@link String }
      */
-    public String getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
     /**
      * Sets the value of the id property.
      *
-     * @param uuid allowed object is
+     * @param id allowed object is
      *           {@link String }
      */
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -99,12 +98,12 @@ public class PartitionRef implements Serializable {
 
     @Override
     public String toString() {
-        return "Partition [id=" + uuid + ", description=" + description + ", properties=" + properties + "]";
+        return "Partition [id=" + id + ", description=" + description + ", properties=" + properties + "]";
     }
 
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof PartitionRef) {
-            return this.uuid.equals(((PartitionRef) obj).getUuid());
+            return this.id.equals(((PartitionRef) obj).getId());
         }
         return false;
 
@@ -112,7 +111,7 @@ public class PartitionRef implements Serializable {
 
     @Override
     public int hashCode() {
-        return this.uuid.hashCode();
+        return this.id.hashCode();
     }
 
     public int getPartitionMax() {
@@ -122,20 +121,4 @@ public class PartitionRef implements Serializable {
     public void setPartitionMax(int partitionMax) {
         this.partitionMax = partitionMax;
     }
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public int getTenantId() {
-		return tenantId;
-	}
-
-	public void setTenantId(int tenantId) {
-		this.tenantId = tenantId;
-	}
 }
