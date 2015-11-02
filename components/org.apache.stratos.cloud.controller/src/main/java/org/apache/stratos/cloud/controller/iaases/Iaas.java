@@ -61,7 +61,8 @@ public abstract class Iaas {
      * @param payload
      * @return updated memberContext
      */
-    public abstract MemberContext startInstance(MemberContext memberContext, byte[] payload) throws CartridgeNotFoundException;
+    public abstract MemberContext startInstance(MemberContext memberContext, byte[] payload)
+            throws CartridgeNotFoundException;
 
     /**
      * This will deallocate/release the given IP address back to pool.
@@ -117,7 +118,6 @@ public abstract class Iaas {
      */
     public abstract String createVolume(int sizeGB, String snapshotId);
 
-
     /**
      * Attach a given volume to an instance at the specified device path.
      *
@@ -170,7 +170,8 @@ public abstract class Iaas {
      * @throws InvalidCartridgeTypeException
      * @throws InvalidMemberException
      */
-    public abstract void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException, MemberTerminationFailedException;
+    public abstract void terminateInstance(MemberContext memberContext)
+            throws InvalidCartridgeTypeException, InvalidMemberException, MemberTerminationFailedException;
 
     /**
      * Get the group name which will be used when creating a node via jclouds API
@@ -178,7 +179,7 @@ public abstract class Iaas {
      * @param memberContext
      * @param payload
      */
-    public String getGroupName(MemberContext memberContext, byte[] payload){
+    public String getGroupName(MemberContext memberContext, byte[] payload) {
         String clusterId = memberContext.getClusterId();
         String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
         String group = str.replaceAll("[^a-z0-9-]", "");

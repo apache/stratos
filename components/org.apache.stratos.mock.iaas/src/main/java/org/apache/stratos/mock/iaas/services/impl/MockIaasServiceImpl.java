@@ -42,7 +42,6 @@ import java.util.concurrent.ExecutorService;
 /**
  * Mock IaaS service implementation. This is a singleton class that simulates a standard Infrastructure as a Service
  * platform by creating mock instances and managing their lifecycle states.
- * <p/>
  * How does this work:
  * - Mock IaaS starts a Mock Member thread or each instance created
  * - A sample private IP and a public IP will be assigned to the instance
@@ -54,9 +53,8 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     private static final Log log = LogFactory.getLog(MockIaasServiceImpl.class);
 
-    private static final ExecutorService mockMemberExecutorService =
-            StratosThreadPool.getExecutorService(MockConstants.MOCK_MEMBER_THREAD_POOL,
-                    MockConstants.MOCK_MEMBER_THREAD_POOL_SIZE);
+    private static final ExecutorService mockMemberExecutorService = StratosThreadPool
+            .getExecutorService(MockConstants.MOCK_MEMBER_THREAD_POOL, MockConstants.MOCK_MEMBER_THREAD_POOL_SIZE);
     private static volatile MockIaasServiceImpl instance;
 
     private PersistenceManager persistenceManager;
@@ -68,8 +66,8 @@ public class MockIaasServiceImpl implements MockIaasService {
      */
     public MockIaasServiceImpl() {
         try {
-            String persistenceManagerTypeStr = System.getProperty(MockConstants.PERSISTENCE_MANAGER_TYPE,
-                    PersistenceManagerType.Registry.toString());
+            String persistenceManagerTypeStr = System
+                    .getProperty(MockConstants.PERSISTENCE_MANAGER_TYPE, PersistenceManagerType.Registry.toString());
             PersistenceManagerType persistenceManagerType = PersistenceManagerType.valueOf(persistenceManagerTypeStr);
             persistenceManager = PersistenceManagerFactory.getPersistenceManager(persistenceManagerType);
             mockIaasServiceUtil = new MockIaasServiceUtil(persistenceManager);
@@ -95,30 +93,35 @@ public class MockIaasServiceImpl implements MockIaasService {
      */
     @Override
     public MockInstanceMetadata startInstance(MockInstanceContext mockInstanceContext) throws MockIaasException {
-        synchronized (MockIaasServiceImpl.class) {
+        if (mockInstanceContext == null) {
+            throw new MockIaasException("Mock instance context is null");
+        }
+        try {
+            synchronized (MockIaasServiceImpl.class) {
+                // Generate instance id
+                String instanceId = mockInstanceContext.getMemberId();
+                mockInstanceContext.setInstanceId(instanceId);
 
-            if (mockInstanceContext == null) {
-                throw new MockIaasException("Mock instance context is null");
+                MockInstance mockInstance = new MockInstance(mockInstanceContext);
+                instanceIdToMockInstanceMap.put(instanceId, mockInstance);
+                mockMemberExecutorService.submit(mockInstance);
+
+                // Persist changes
+                mockIaasServiceUtil
+                        .persistInRegistry((ConcurrentHashMap<String, MockInstance>) instanceIdToMockInstanceMap);
+
+                String serviceName = mockInstanceContext.getServiceName();
+                MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceName);
+
+                // Simulate instance creation time
+                sleep(2000);
+
+                return new MockInstanceMetadata(mockInstanceContext);
             }
-
-            // Generate instance id
-            String instanceId = mockInstanceContext.getMemberId();
-            mockInstanceContext.setInstanceId(instanceId);
-
-            MockInstance mockInstance = new MockInstance(mockInstanceContext);
-            instanceIdToMockInstanceMap.put(instanceId, mockInstance);
-            mockMemberExecutorService.submit(mockInstance);
-
-            // Persist changes
-            mockIaasServiceUtil.persistInRegistry((ConcurrentHashMap<String, MockInstance>) instanceIdToMockInstanceMap);
-
-            String serviceName = mockInstanceContext.getServiceName();
-            MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceName);
-
-            // Simulate instance creation time
-            sleep(2000);
-
-            return new MockInstanceMetadata(mockInstanceContext);
+        } catch (Exception e) {
+            String msg = "Could not start mock instance: " + mockInstanceContext.getMemberId();
+            log.error(msg, e);
+            throw new MockIaasException(msg, e);
         }
     }
 
@@ -158,7 +161,8 @@ public class MockIaasServiceImpl implements MockIaasService {
     @Override
     public MockInstanceMetadata getInstance(String instanceId) {
         if (instanceIdToMockInstanceMap.containsKey(instanceId)) {
-            MockInstanceContext mockInstanceContext = instanceIdToMockInstanceMap.get(instanceId).getMockInstanceContext();
+            MockInstanceContext mockInstanceContext = instanceIdToMockInstanceMap.get(instanceId)
+                    .getMockInstanceContext();
             return new MockInstanceMetadata(mockInstanceContext);
         }
         return null;
@@ -193,25 +197,31 @@ public class MockIaasServiceImpl implements MockIaasService {
      */
     @Override
     public void terminateInstance(String instanceId) {
-        synchronized (MockIaasServiceImpl.class) {
-            log.info(String.format("Terminating instance: [instance-id] %s", instanceId));
+        try {
+            synchronized (MockIaasServiceImpl.class) {
+                log.info(String.format("Terminating instance: [instance-id] %s", instanceId));
 
-            MockInstance mockInstance = instanceIdToMockInstanceMap.get(instanceId);
-            if (mockInstance != null) {
-                String serviceName = mockInstance.getMockInstanceContext().getServiceName();
+                MockInstance mockInstance = instanceIdToMockInstanceMap.get(instanceId);
+                if (mockInstance != null) {
+                    String serviceName = mockInstance.getMockInstanceContext().getServiceName();
 
-                mockInstance.terminate();
-                instanceIdToMockInstanceMap.remove(instanceId);
-                mockIaasServiceUtil.persistInRegistry((ConcurrentHashMap<String, MockInstance>) instanceIdToMockInstanceMap);
+                    mockInstance.terminate();
+                    instanceIdToMockInstanceMap.remove(instanceId);
+                    mockIaasServiceUtil
+                            .persistInRegistry((ConcurrentHashMap<String, MockInstance>) instanceIdToMockInstanceMap);
 
-                if (getMemberCount(serviceName) == 0) {
-                    MockHealthStatisticsGenerator.getInstance().stopStatisticsUpdaterTasks(serviceName);
+                    if (getMemberCount(serviceName) == 0) {
+                        MockHealthStatisticsGenerator.getInstance().stopStatisticsUpdaterTasks(serviceName);
+                    }
+
+                    log.info(String.format("Instance terminated successfully: [instance-id] %s", instanceId));
+                } else {
+                    log.warn(String.format("Instance not found: [instance-id] %s", instanceId));
                 }
-
-                log.info(String.format("Instance terminated successfully: [instance-id] %s", instanceId));
-            } else {
-                log.warn(String.format("Instance not found: [instance-id] %s", instanceId));
             }
+        } catch (Exception e) {
+            String msg = "Could not terminate mock instance: " + instanceId;
+            log.error(msg, e);
         }
     }
 

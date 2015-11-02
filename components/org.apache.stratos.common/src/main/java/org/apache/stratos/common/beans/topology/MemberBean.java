@@ -33,6 +33,7 @@ public class MemberBean {
     private String networkPartitionId;
     private String partitionId;
     private String memberId;
+    private String instanceId;
     private String status;
     private String defaultPrivateIP;
     private List<String> memberPrivateIPs;
@@ -80,6 +81,14 @@ public class MemberBean {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 
     public List<String> getMemberPrivateIPs() {
@@ -159,6 +168,7 @@ public class MemberBean {
         return "Member [serviceName=" + getServiceName()
                 + ", clusterId=" + getClusterId()
                 + ", memberId=" + getMemberId()
+                + ", instanceId=" + getInstanceId()
                 + ", clusterInstanceId=" + getClusterInstanceId()
                 + ", networkPartitionId=" + getNetworkPartitionId()
                 + ", partitionId=" + getPartitionId()

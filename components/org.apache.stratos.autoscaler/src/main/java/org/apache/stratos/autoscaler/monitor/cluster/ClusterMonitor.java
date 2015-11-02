@@ -45,12 +45,10 @@ import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiv
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
-import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -328,8 +326,8 @@ public class ClusterMonitor extends Monitor {
                             public void run() {
 
                                 if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Cluster monitor is running: [application-id] %s [cluster-id]: " +
-                                            "%s", getAppId(), getClusterId()));
+                                    log.debug(String.format("Cluster monitor is running: [application-id] " +
+                                            "%s [cluster-id]: %s", getAppId(), getClusterId()));
                                 }
 
                                 instanceContext.getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
@@ -340,19 +338,20 @@ public class ClusterMonitor extends Monitor {
                                         paritionAlgo);
 
                                 if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Running minimum check for cluster instance %s ",
-                                            instanceContext.getId() + " for the cluster: " + clusterId));
+                                    log.debug(String.format("Running minimum check for [cluster instance] %s, " +
+                                                    "[cluster id] %s",
+                                            instanceContext.getId(), clusterId));
                                 }
 
                                 instanceContext.setMinCheckFactHandle(evaluate(instanceContext.
                                                 getMinCheckKnowledgeSession(),
                                         instanceContext.getMinCheckFactHandle(), instanceContext));
                                 instanceContext.getMaxCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Running max check for cluster instance %s ",
-                                            instanceContext.getId() + " for the cluster: " + clusterId));
-                                }
 
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Running maximum check for [cluster instance] %s, " +
+                                                    "[cluster id] %s", instanceContext.getId(), clusterId));
+                                }
                                 instanceContext.setMaxCheckFactHandle(evaluate(instanceContext.
                                                 getMaxCheckKnowledgeSession(),
                                         instanceContext.getMaxCheckFactHandle(), instanceContext));
@@ -366,16 +365,7 @@ public class ClusterMonitor extends Monitor {
                                         = instanceContext.isAverageRequestServedPerInstanceReset();
 
                                 if (rifReset || memoryConsumptionReset || loadAverageReset) {
-
-                                    if (log.isDebugEnabled()) {
-                                        log.debug("Executing scaling Rule, [Is rif Reset] : " + rifReset
-                                                + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
-                                                + " [Is loadAverage Reset] : " + loadAverageReset + "[cluster] " +
-                                                clusterId);
-                                    }
-
                                     ClusterContext clusterContext = ClusterMonitor.this.clusterContext;
-
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("applicationId", getAppId());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
@@ -386,7 +376,13 @@ public class ClusterMonitor extends Monitor {
                                             clusterContext.getAutoscalePolicy());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("arspiReset",
                                             averageRequestServedPerInstanceReset);
-
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Running scale check, [Is rif Reset] " + rifReset + ", " +
+                                                "[Is memoryConsumption Reset] " + memoryConsumptionReset + ", " +
+                                                "[Is loadAverage Reset] " + loadAverageReset + ", " +
+                                                "[cluster] " + clusterId + ", " +
+                                                "[cluster instance] " + instanceContext.getId());
+                                    }
                                     instanceContext.setScaleCheckFactHandle(evaluate(
                                             instanceContext.getScaleCheckKnowledgeSession()
                                             , instanceContext.getScaleCheckFactHandle(), instanceContext));
@@ -429,6 +425,13 @@ public class ClusterMonitor extends Monitor {
                             @Override
                             public void run() {
                                 instanceContext.getObsoleteCheckKnowledgeSession().setGlobal("clusterId", clusterId);
+
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Running obsolete check for [partition id] %s, " +
+                                                    "[cluster instance] %s, [cluster id] %s",
+                                            partitionContext.getPartitionId(), instanceContext.getId(), clusterId));
+                                }
+
                                 instanceContext.setObsoleteCheckFactHandle(evaluate(
                                         instanceContext.getObsoleteCheckKnowledgeSession(),
                                         instanceContext.getObsoleteCheckFactHandle(), partitionContext));
@@ -528,11 +531,12 @@ public class ClusterMonitor extends Monitor {
     @Override
     public void onParentScalingEvent(ScalingEvent scalingEvent) {
 
-
-        log.info("Parent scaling event received to [cluster]: " + this.getClusterId()
-                + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
-                + ", [factor] " + scalingEvent.getFactor());
+        if (log.isDebugEnabled()) {
+            log.debug("Parent scaling event received to [cluster]: " + this.getClusterId()
+                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
+                    + ", [factor] " + scalingEvent.getFactor());
+        }
 
         float scalingFactorBasedOnDependencies = scalingEvent.getFactor();
         ClusterContext vmClusterContext = clusterContext;
@@ -550,6 +554,13 @@ public class ClusterMonitor extends Monitor {
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Running dependent scale check for [cluster instance] %s, " +
+                            "[cluster id] %s",
+                    clusterInstanceContext.getId(), clusterId));
+        }
+
         clusterInstanceContext.setDependentScaleCheckFactHandle(evaluate(
                 clusterInstanceContext.getDependentScaleCheckKnowledgeSession()
                 , clusterInstanceContext.getDependentScaleCheckFactHandle(), clusterInstanceContext));
@@ -698,8 +709,8 @@ public class ClusterMonitor extends Monitor {
         Float floatValue = averageRequestsServingCapabilityEvent.getValue();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Average Requests Served per Instance event: [cluster] %s [network-partition] %s [value] %s",
-                    clusterId, networkPartitionId, floatValue));
+            log.debug(String.format("Average Requests Served per Instance event: [cluster] %s [network-partition] %s " +
+                    "[value] %s", clusterId, networkPartitionId, floatValue));
         }
 
         ClusterInstanceContext clusterLevelNetworkPartitionContext = getClusterInstanceContext(
@@ -1231,7 +1242,8 @@ public class ClusterMonitor extends Monitor {
                     // active members
 
                     if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
-                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s", partitionContext.getPartitionId(), getAppId()));
+                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s" +
+                                " [application-id] %s", partitionContext.getPartitionId(), getAppId()));
                         partitionContext.terminateAllRemainingInstances();
                     }
 
@@ -1301,7 +1313,8 @@ public class ClusterMonitor extends Monitor {
                         }
 
                         if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
-                            log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s", partitionContext.getPartitionId(), getAppId()));
+                            log.info(String.format("Terminating all remaining members of partition [partition-id] %s " +
+                                    "[application-id] %s", partitionContext.getPartitionId(), getAppId()));
                             partitionContext.terminateAllRemainingInstances();
                         }
                         //Need to terminate pending members
@@ -1318,6 +1331,9 @@ public class ClusterMonitor extends Monitor {
                                 log.debug("Moving pending member [member id] " + memberId + " to obsolete list");
                             }
                             partitionContext.movePendingMemberToObsoleteMembers(memberId);
+                            if (partitionContext.getMemberStatsContext(memberId) != null) {
+                                partitionContext.removeMemberStatsContext(memberId);
+                            }
                         }
 
                         allMovedToObsolete = partitionContext.getTotalMemberCount() == 0;

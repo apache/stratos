@@ -38,6 +38,7 @@ public class ClusterInstanceBean implements Serializable {
     private List<String> hostNames;
     private List<String> accessUrls;
     private List<KubernetesServiceBean> kubernetesServices;
+    private List<String> loadBalancerIps;
 
     public String getStatus() {
         return status;
@@ -132,5 +133,13 @@ public class ClusterInstanceBean implements Serializable {
 
     public List<KubernetesServiceBean> getKubernetesServices() {
         return kubernetesServices;
+    }
+
+    public List<String> getLoadBalancerIps() {
+        return loadBalancerIps;
+    }
+
+    public void setLoadBalancerIps(List<String> loadBalancerIps) {
+        this.loadBalancerIps = loadBalancerIps;
     }
 }

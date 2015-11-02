@@ -48,9 +48,10 @@ class EventHandler:
     def create_dummy_interface(self):
         self.__log.debug("Processing lvs dummy interface creation...")
         lvs_vip = Config.lvs_virtual_ip.split("|")
-        self.__log.debug("LVS dummy interface creation values %s %s " %(lvs_vip[0], lvs_vip[1]) )
+        self.__log.debug("LVS dummy interface creation values %s %s " % (lvs_vip[0], lvs_vip[1]))
         self.execute_event_extendables(constants.CREATE_LVS_DUMMY_INTERFACE,
-                                       {"EVENT": constants.CREATE_LVS_DUMMY_INTERFACE, "LVS_DUMMY_VIRTUAL_IP": lvs_vip[0],
+                                       {"EVENT": constants.CREATE_LVS_DUMMY_INTERFACE,
+                                        "LVS_DUMMY_VIRTUAL_IP": lvs_vip[0],
                                         "LVS_SUBNET_MASK": lvs_vip[1]})
 
     def on_instance_activated_event(self):
@@ -58,103 +59,106 @@ class EventHandler:
         self.execute_event_extendables(constants.INSTANCE_ACTIVATED_EVENT, {})
 
     def on_artifact_updated_event(self, artifacts_updated_event):
-        self.__log.info("Processing Artifact update event: [tenant] %s [cluster] %s [status] %s" %
-                        (str(artifacts_updated_event.tenant_id),
-                         artifacts_updated_event.cluster_id,
-                         artifacts_updated_event.status))
+        self.__log.debug("Processing artifact updated event for [tenant] %s [cluster] %s [status] %s" %
+                         (str(artifacts_updated_event.tenant_id),
+                          artifacts_updated_event.cluster_id,
+                          artifacts_updated_event.status))
 
         cluster_id_event = str(artifacts_updated_event.cluster_id).strip()
         cluster_id_payload = Config.cluster_id
         repo_url = str(artifacts_updated_event.repo_url).strip()
 
-        if (repo_url != "") and (cluster_id_payload is not None) and (cluster_id_payload == cluster_id_event):
-            local_repo_path = Config.app_path
+        if repo_url == "":
+            self.__log.error("Repository URL is empty. Failed to process artifact updated event.")
+            return
 
-            repo_password = None
-            if artifacts_updated_event.repo_password is not None:
-                secret = Config.cartridge_key
-                repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
+        if cluster_id_payload is None or cluster_id_payload == "":
+            self.__log.error("Cluster ID in payload is empty. Failed to process artifact updated event.")
+            return
 
-            repo_username = artifacts_updated_event.repo_username
-            tenant_id = artifacts_updated_event.tenant_id
-            is_multitenant = Config.is_multiTenant
-            commit_enabled = artifacts_updated_event.commit_enabled
+        if cluster_id_payload != cluster_id_event:
+            self.__log.debug("Cluster ID in artifact updated event does not match. Skipping event handler.")
+            return
 
-            self.__log.info("Executing git checkout")
+        repo_password = None
+        if artifacts_updated_event.repo_password is not None:
+            secret = Config.cartridge_key
+            repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
-            if local_repo_path is None:
-                raise GitRepositorySynchronizationException("Repository path is empty. Cannot perform Git operations.")
+        if Config.app_path is None:
+            self.__log.error("Repository path is empty. Failed to process artifact updated event.")
+            return
 
-            # create repo object
-            local_repo_path = self.get_repo_path_for_tenant(str(tenant_id), local_repo_path, is_multitenant)
-            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
+        repo_username = artifacts_updated_event.repo_username
+        tenant_id = artifacts_updated_event.tenant_id
+        is_multitenant = Config.is_multiTenant
+        commit_enabled = artifacts_updated_event.commit_enabled
 
-            # checkout code
-            subscribe_run, updated = AgentGitHandler.checkout(repo_info)
+        # create repo object
+        local_repo_path = self.get_repo_path_for_tenant(str(tenant_id), Config.app_path, is_multitenant)
+        repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
+        self.__log.info("Executing checkout job on artifact updated event...")
 
-            # execute artifact updated extension
-            plugin_values = {"ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
-                             "ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
-                             "ARTIFACT_UPDATED_REPO_URL": artifacts_updated_event.repo_url,
-                             "ARTIFACT_UPDATED_REPO_PASSWORD": artifacts_updated_event.repo_password,
-                             "ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
-                             "ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
+        try:
+            Config.artifact_checkout_plugin.plugin_object.checkout(repo_info)
+        except Exception as e:
+            self.__log.exception(
+                "Checkout job on artifact updated event failed for tenant: %s %s" % (repo_info.tenant_id, e))
 
+        # execute artifact updated extension
+        plugin_values = {"ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
+                         "ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
+                         "ARTIFACT_UPDATED_REPO_URL": artifacts_updated_event.repo_url,
+                         "ARTIFACT_UPDATED_REPO_PASSWORD": artifacts_updated_event.repo_password,
+                         "ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
+                         "ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
+
+        try:
+            self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
+        except Exception as e:
+            self.__log.exception("Could not execute plugins for artifact updated event: %s" % e)
+
+        if not Config.activated:
+            # publish instance activated event if not yet activated
+            publisher.publish_instance_activated_event()
+            self.on_instance_activated_event()
+
+        update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, True)
+        auto_commit = Config.is_commits_enabled
+        auto_checkout = Config.is_checkout_enabled
+        self.__log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s",
+                        update_artifacts, auto_commit, auto_checkout)
+        if update_artifacts:
             try:
-                self.execute_event_extendables(constants.ARTIFACT_UPDATED_EVENT, plugin_values)
+                update_interval = int(Config.artifact_update_interval)
             except ValueError:
-                self.__log.exception("Could not execute plugins for artifact updated event.")         
+                self.__log.exception("Invalid artifact sync interval specified: %s" % ValueError)
+                update_interval = 10
 
-            if subscribe_run:
-                # publish instanceActivated
-                publisher.publish_instance_activated_event(Config.health_stat_plugin)
-            elif updated:
-                # updated on pull
-                self.on_artifact_update_scheduler_event(tenant_id)
+            self.__log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
 
-            update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, False)
-            auto_commit = Config.is_commits_enabled
-            auto_checkout = Config.is_checkout_enabled
-            self.__log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s",
-                            update_artifacts, auto_commit, auto_checkout)
-            if update_artifacts:
-                try:
-                    update_interval = int(Config.artifact_update_interval)
-                except ValueError:
-                    self.__log.exception("Invalid artifact sync interval specified.")
-                    update_interval = 10
+            self.__log.info("Auto Commit is turned %s " % ("on" if auto_commit else "off"))
+            self.__log.info("Auto Checkout is turned %s " % ("on" if auto_checkout else "off"))
 
-                self.__log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
-
-                self.__log.info("Auto Commit is turned %s " % ("on" if auto_commit else "off"))
-                self.__log.info("Auto Checkout is turned %s " % ("on" if auto_checkout else "off"))
-
-                AgentGitHandler.schedule_artifact_update_task(
-                    repo_info,
-                    auto_checkout,
-                    auto_commit,
-                    update_interval)
-
-    def on_artifact_update_scheduler_event(self, tenant_id):
-        self.__log.info("Processing Artifact update scheduler event...")
-        plugin_values = {"ARTIFACT_UPDATED_TENANT_ID": str(tenant_id),
-                         "ARTIFACT_UPDATED_SCHEDULER": str(True)}
-
-        self.execute_event_extendables("ArtifactUpdateSchedulerEvent", plugin_values)
+            AgentGitHandler.schedule_artifact_update_task(
+                repo_info,
+                auto_checkout,
+                auto_commit,
+                update_interval)
 
     def on_instance_cleanup_cluster_event(self):
-        self.__log.info("Processing instance cleanup cluster event...")
+        self.__log.debug("Processing instance cleanup cluster event...")
         self.cleanup(constants.INSTANCE_CLEANUP_CLUSTER_EVENT)
 
     def on_instance_cleanup_member_event(self):
-        self.__log.info("Processing instance cleanup member event...")
+        self.__log.debug("Processing instance cleanup member event...")
         self.cleanup(constants.INSTANCE_CLEANUP_MEMBER_EVENT)
 
     def on_member_activated_event(self, member_activated_event):
-        self.__log.info("Processing Member activated event: [service] %r [cluster] %r [member] %r"
-                        % (member_activated_event.service_name,
-                           member_activated_event.cluster_id,
-                           member_activated_event.member_id))
+        self.__log.debug("Processing Member activated event: [service] %r [cluster] %r [member] %r"
+                         % (member_activated_event.service_name,
+                            member_activated_event.cluster_id,
+                            member_activated_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_activated_event.service_name,
@@ -174,45 +178,54 @@ class EventHandler:
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
 
-        member_initialized = self.is_member_initialized_in_topology(
-            service_name_in_payload,
-            cluster_id_in_payload,
-            member_id_in_payload)
+        if not Config.initialized:
+            member_initialized = self.is_member_initialized_in_topology(
+                service_name_in_payload,
+                cluster_id_in_payload,
+                member_id_in_payload)
 
-        self.__log.debug("Member initialized %s", member_initialized)
-        if member_initialized:
-            # Set cartridge agent as initialized since member is available and it is in initialized state
-            Config.initialized = True
+            if member_initialized:
+                # Set cartridge agent as initialized since member is available and it is in initialized state
+                Config.initialized = True
+                self.__log.info("Member initialized [member id] %s, [cluster-id] %s, [service] %s" %
+                                (member_id_in_payload, cluster_id_in_payload, service_name_in_payload))
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
+        if service is None:
+            raise Exception("Service not found in topology [service] %s" % service_name_in_payload)
+
         cluster = service.get_cluster(cluster_id_in_payload)
+        if cluster is None:
+            raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id_in_payload)
 
         plugin_values = {"TOPOLOGY_JSON": json.dumps(topology.json_str),
                          "MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
 
         self.execute_event_extendables(constants.COMPLETE_TOPOLOGY_EVENT, plugin_values)
 
-    def on_member_initialized_event(self):
+    def on_member_initialized_event(self, member_initialized_event):
         """
          Member initialized event is sent by cloud controller once volume attachment and
          ip address allocation is completed successfully
         :return:
         """
         self.__log.debug("Processing Member initialized event...")
-
         service_name_in_payload = Config.service_name
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
 
-        member_exists = self.member_exists_in_topology(service_name_in_payload, cluster_id_in_payload,
-                                                       member_id_in_payload)
-
-        self.__log.debug("Member exists: %s" % member_exists)
-
-        if member_exists:
-            Config.initialized = True
-            self.markMemberAsInitialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+        if not Config.initialized and member_id_in_payload == member_initialized_event.member_id:
+            member_exists = self.member_exists_in_topology(service_name_in_payload, cluster_id_in_payload,
+                                                           member_id_in_payload)
+            self.__log.debug("Member exists: %s" % member_exists)
+            if member_exists:
+                Config.initialized = True
+                self.mark_member_as_initialized(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+                self.__log.info("Instance marked as initialized on member initialized event")
+            else:
+                raise Exception("Member [member-id] %s not found in topology while processing member initialized "
+                                "event. [Topology] %s" % (member_id_in_payload, TopologyContext.get_topology()))
 
         self.execute_event_extendables(constants.MEMBER_INITIALIZED_EVENT, {})
 
@@ -227,9 +240,9 @@ class EventHandler:
         self.execute_event_extendables(constants.COMPLETE_TENANT_EVENT, plugin_values)
 
     def on_member_terminated_event(self, member_terminated_event):
-        self.__log.info("Processing Member terminated event: [service] %s [cluster] %s [member] %s" %
-                        (member_terminated_event.service_name, member_terminated_event.cluster_id,
-                         member_terminated_event.member_id))
+        self.__log.debug("Processing Member terminated event: [service] %s [cluster] %s [member] %s" %
+                         (member_terminated_event.service_name, member_terminated_event.cluster_id,
+                          member_terminated_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_terminated_event.service_name,
@@ -244,9 +257,9 @@ class EventHandler:
         self.execute_event_extendables(constants.MEMBER_TERMINATED_EVENT, {})
 
     def on_member_suspended_event(self, member_suspended_event):
-        self.__log.info("Processing Member suspended event: [service] %s [cluster] %s [member] %s" %
-                        (member_suspended_event.service_name, member_suspended_event.cluster_id,
-                         member_suspended_event.member_id))
+        self.__log.debug("Processing Member suspended event: [service] %s [cluster] %s [member] %s" %
+                         (member_suspended_event.service_name, member_suspended_event.cluster_id,
+                          member_suspended_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_suspended_event.service_name,
@@ -261,9 +274,9 @@ class EventHandler:
         self.execute_event_extendables(constants.MEMBER_SUSPENDED_EVENT, {})
 
     def on_member_started_event(self, member_started_event):
-        self.__log.info("Processing Member started event: [service] %s [cluster] %s [member] %s" %
-                        (member_started_event.service_name, member_started_event.cluster_id,
-                         member_started_event.member_id))
+        self.__log.debug("Processing Member started event: [service] %s [cluster] %s [member] %s" %
+                         (member_started_event.service_name, member_started_event.cluster_id,
+                          member_started_event.member_id))
 
         member_initialized = self.is_member_initialized_in_topology(
             member_started_event.service_name,
@@ -278,12 +291,12 @@ class EventHandler:
         self.execute_event_extendables(constants.MEMBER_STARTED_EVENT, {})
 
     def start_server_extension(self):
-        self.__log.info("Processing start server extension...")
+        self.__log.debug("Processing start server extension...")
         service_name_in_payload = Config.service_name
         cluster_id_in_payload = Config.cluster_id
         member_id_in_payload = Config.member_id
         member_initialized = self.is_member_initialized_in_topology(service_name_in_payload, cluster_id_in_payload,
-                                                                 member_id_in_payload)
+                                                                    member_id_in_payload)
 
         if not member_initialized:
             self.__log.error("Member has not initialized, failed to execute start server event")
@@ -292,12 +305,12 @@ class EventHandler:
         self.execute_event_extendables("StartServers", {})
 
     def volume_mount_extension(self, persistence_mappings_payload):
-        self.__log.info("Processing volume mount extension...")
+        self.__log.debug("Processing volume mount extension...")
         self.execute_event_extendables("VolumeMount", persistence_mappings_payload)
 
     def on_domain_mapping_added_event(self, domain_mapping_added_event):
         tenant_domain = EventHandler.find_tenant_domain(domain_mapping_added_event.tenant_id)
-        self.__log.info(
+        self.__log.debug(
             "Processing Domain mapping added event: [tenant-id] " + str(domain_mapping_added_event.tenant_id) +
             " [tenant-domain] " + tenant_domain + " [domain-name] " + domain_mapping_added_event.domain_name +
             " [application-context] " + domain_mapping_added_event.application_context
@@ -331,12 +344,12 @@ class EventHandler:
         self.execute_event_extendables(constants.DOMAIN_MAPPING_REMOVED_EVENT, plugin_values)
 
     def on_copy_artifacts_extension(self, src, dest):
-        self.__log.info("Processing Copy artifacts extension...")
+        self.__log.debug("Processing Copy artifacts extension...")
         plugin_values = {"SOURCE": src, "DEST": dest}
         self.execute_event_extendables("CopyArtifacts", plugin_values)
 
     def on_tenant_subscribed_event(self, tenant_subscribed_event):
-        self.__log.info(
+        self.__log.debug(
             "Processing Tenant subscribed event: [tenant] " + str(tenant_subscribed_event.tenant_id) +
             " [service] " + tenant_subscribed_event.service_name + " [cluster] " + tenant_subscribed_event.cluster_ids
         )
@@ -344,7 +357,7 @@ class EventHandler:
         self.execute_event_extendables(constants.TENANT_SUBSCRIBED_EVENT, {})
 
     def on_application_signup_removed_event(self, application_signup_removal_event):
-        self.__log.info(
+        self.__log.debug(
             "Processing Tenant unsubscribed event: [tenant] " + str(application_signup_removal_event.tenantId) +
             " [application ID] " + str(application_signup_removal_event.applicationId)
         )
@@ -355,14 +368,14 @@ class EventHandler:
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
 
     def cleanup(self, event):
-        self.__log.info("Executing cleaning up the data in the cartridge instance...")
+        self.__log.debug("Executing cleanup extension for event %s" % event)
 
         publisher.publish_maintenance_mode_event()
 
         self.execute_event_extendables("clean", {})
-        self.__log.info("cleaning up finished in the cartridge instance...")
+        self.__log.info("Cleaning up finished in the cartridge instance...")
 
-        self.__log.info("publishing ready to shutdown event...")
+        self.__log.info("Publishing ready to shutdown event...")
         publisher.publish_instance_ready_to_shutdown_event()
 
     def execute_event_extendables(self, event, input_values):
@@ -373,10 +386,10 @@ class EventHandler:
         """
         try:
             input_values = EventHandler.add_common_input_values(input_values)
-            input_values["EVENT"] = event
         except Exception as e:
             self.__log.error("Error while adding common input values for event extendables: %s" % e)
-
+        input_values["EVENT"] = event
+        self.__log.debug("Executing extensions for [event] %s with [input values] %s" % (event, input_values))
         # Execute the extension
         self.execute_extension_for_event(event, input_values)
         # Execute the plugins
@@ -419,8 +432,8 @@ class EventHandler:
                 extension_thread.join()
             else:
                 self.__log.debug("No extensions registered for event %s" % event)
-        except OSError:
-            self.__log.warn("No extension was found for event %s" % event)
+        except OSError as e:
+            self.__log.warn("No extension was found for event %s: %s" % (event, e))
         except Exception as e:
             self.__log.exception("Error while executing extension for event %s: %s" % (event, e))
 
@@ -479,25 +492,31 @@ class EventHandler:
         if self.member_exists_in_topology(service_name, cluster_id, member_id):
             topology = TopologyContext.get_topology()
             service = topology.get_service(service_name)
-            cluster = service.get_cluster(cluster_id)
-            found_member = cluster.get_member(member_id)
-            self.__log.debug("Found member: " + found_member.to_json())
-            if found_member.status == MemberStatus.Initialized:
-                return True
+            if service is None:
+                raise Exception("Service not found in topology [service] %s" % service_name)
 
+            cluster = service.get_cluster(cluster_id)
+            if cluster is None:
+                raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
+
+            member = cluster.get_member(member_id)
+            if member is None:
+                raise Exception("Member id not found in topology [member] %s" % member_id)
+
+            self.__log.info("Found member: " + member.to_json())
+            if member.status == MemberStatus.Initialized:
+                return True
         return False
 
     def member_exists_in_topology(self, service_name, cluster_id, member_id):
         topology = TopologyContext.get_topology()
         service = topology.get_service(service_name)
         if service is None:
-            self.__log.error("Service not found in topology [service] %s" % service_name)
-            return False
+            raise Exception("Service not found in topology [service] %s" % service_name)
 
         cluster = service.get_cluster(cluster_id)
         if cluster is None:
-            self.__log.error("Cluster id not found in topology [cluster] %s" % cluster_id)
-            return False
+            raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
 
         activated_member = cluster.get_member(member_id)
         if activated_member is None:
@@ -506,19 +525,20 @@ class EventHandler:
 
         return True
 
-    def markMemberAsInitialized(self, service_name, cluster_id, member_id):
+    @staticmethod
+    def mark_member_as_initialized(service_name, cluster_id, member_id):
         topology = TopologyContext.get_topology()
         service = topology.get_service(service_name)
         if service is None:
-            self.__log.error("Service not found in topology [service] %s" % service_name)
-            return False
+            raise Exception("Service not found in topology [service] %s" % service_name)
 
         cluster = service.get_cluster(cluster_id)
         if cluster is None:
-            self.__log.error("Cluster id not found in topology [cluster] %s" % cluster_id)
-            return False
+            raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
 
         member = cluster.get_member(member_id)
+        if member is None:
+            raise Exception("Member id not found in topology [member] %s" % member_id)
         member.status = MemberStatus.Initialized
 
     @staticmethod
@@ -543,14 +563,20 @@ class EventHandler:
         plugin_values["LB_IP"] = lb_private_ip if lb_private_ip is not None else Config.lb_private_ip
         plugin_values["LB_PUBLIC_IP"] = lb_public_ip if lb_public_ip is not None else Config.lb_public_ip
 
-
-
         topology = TopologyContext.get_topology()
         if topology.initialized:
             service = topology.get_service(Config.service_name)
+            if service is None:
+                raise Exception("Service not found in topology [service] %s" % Config.service_name)
+
             cluster = service.get_cluster(Config.cluster_id)
-            member_id_in_payload = Config.member_id
-            member = cluster.get_member(member_id_in_payload)
+            if cluster is None:
+                raise Exception("Cluster id not found in topology [cluster] %s" % Config.cluster_id)
+
+            member = cluster.get_member(Config.member_id)
+            if member is None:
+                raise Exception("Member id not found in topology [member] %s" % Config.member_id)
+
             EventHandler.add_properties(service.properties, plugin_values, "SERVICE_PROPERTY")
             EventHandler.add_properties(cluster.properties, plugin_values, "CLUSTER_PROPERTY")
             EventHandler.add_properties(member.properties, plugin_values, "MEMBER_PROPERTY")

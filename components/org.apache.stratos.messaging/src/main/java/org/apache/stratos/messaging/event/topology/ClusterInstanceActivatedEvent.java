@@ -34,6 +34,7 @@ public class ClusterInstanceActivatedEvent extends Event {
     private String appId;
     private String instanceId;
     private List<String> accessUrls;
+    private List<String> loadBalancerIps;
 
     public ClusterInstanceActivatedEvent(String appId, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
@@ -41,6 +42,7 @@ public class ClusterInstanceActivatedEvent extends Event {
         this.appId = appId;
         this.instanceId = instanceId;
         this.accessUrls = new ArrayList<String>();
+        this.loadBalancerIps = new ArrayList<String>();
     }
 
     public String getServiceName() {
@@ -80,5 +82,13 @@ public class ClusterInstanceActivatedEvent extends Event {
         if (!accessUrls.contains(accessUrl)) {
             accessUrls.add(accessUrl);
         }
+    }
+
+    public void setLoadBalancerIps(List<String> loadBalancerIps) {
+        this.loadBalancerIps = loadBalancerIps;
+    }
+
+    public List<String> getLoadBalancerIps() {
+        return loadBalancerIps;
     }
 }

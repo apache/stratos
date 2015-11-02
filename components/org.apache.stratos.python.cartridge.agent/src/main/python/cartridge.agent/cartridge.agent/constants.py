@@ -21,6 +21,8 @@ EXTENSIONS_DIR = "extensions.dir"
 
 MB_IP = "mb.ip"
 MB_PORT = "mb.port"
+MB_USERNAME = "mb.username"
+MB_PASSWORD = "mb.password"
 
 CARTRIDGE_KEY = "CARTRIDGE_KEY"
 APPLICATION_ID = "APPLICATION_ID"
@@ -107,6 +109,10 @@ MEMBER_STARTED_EVENT = "MemberStartedEvent"
 TENANT_SUBSCRIBED_EVENT = "TenantSubscribedEvent"
 APPLICATION_SIGNUP_REMOVAL_EVENT = "ApplicationSignUpRemovedEvent"
 
+# ADC related extensions
+ARTIFACT_CHECKOUT_JOB = "ArtifactCheckoutJob"
+ARTIFACT_COMMIT_JOB = "ArtifactCommitJob"
+
 CREATE_LVS_DUMMY_INTERFACE = "CreateLVSDummyInterface"
 
 PRIMARY = "PRIMARY"
@@ -121,8 +127,7 @@ DATE_FORMAT = "%Y.%m.%d"
 PORT_CHECK_TIMEOUT = "port.check.timeout"
 
 CEP_PUBLISHER_ENABLED = "cep.stats.publisher.enabled"
-CEP_RECEIVER_IP = "thrift.receiver.ip"
-CEP_RECEIVER_PORT = "thrift.receiver.port"
+CEP_RECEIVER_URLS = "thrift.receiver.urls"
 CEP_SERVER_ADMIN_USERNAME = "thrift.server.admin.username"
 CEP_SERVER_ADMIN_PASSWORD = "thrift.server.admin.password"
 

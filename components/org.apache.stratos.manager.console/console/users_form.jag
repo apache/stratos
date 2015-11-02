@@ -32,7 +32,7 @@ var caramel = require('caramel'),
         context = caramel.configs().context,
         menuJson = require('/controllers/menu/menu.json'),
         userPermissions = session.get('PERMISSIONS'),
-        list_data,
+        listData,
         isForm = false;
 
 if (!elements) {
@@ -57,22 +57,22 @@ var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
 if (elements.formtype == 'users') {
     formTitle = 'User';
-    list_data = util.RESTCalls.getUserList();
-    if (list_data.status == 'error') {
-        list_data = null;
+    listData = util.RESTCalls.getUserList();
+    if (listData.status == 'error') {
+        listData = null;
     }
 
 } else if (elements.formtype == 'tenants') {
     formTitle = 'Tenant'
-    list_data = util.RESTCalls.getTenants();
-    if (list_data.status == 'error') {
-        list_data = null;
+    listData = util.RESTCalls.getTenants();
+    if (listData.status == 'error') {
+        listData = null;
     }
 }
 
 //check user has permission to access endpoints
-if (list_data != null && list_data.hasOwnProperty('Error')) {
-    error.push(list_data.Error);
+if (listData != null && listData.hasOwnProperty('Error')) {
+    error.push(listData.Error);
 }
 
 caramel.render({
@@ -83,7 +83,7 @@ caramel.render({
     formDataRaw: JSON.stringify(formDataRaw),
     formData: JSON.stringify(formData),
     formtype:elements.formtype,
-    list_data: list_data,
+    listData: listData,
     left_menu: leftMenu,
     error: error
 });

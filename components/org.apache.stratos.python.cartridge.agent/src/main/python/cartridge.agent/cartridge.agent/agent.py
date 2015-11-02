@@ -33,10 +33,9 @@ import constants
 
 
 class CartridgeAgent(threading.Thread):
-
     def __init__(self):
         threading.Thread.__init__(self)
-
+        Config.initialize_config()
         self.__tenant_context_initialized = False
         self.__log_publish_manager = None
         self.__terminated = False
@@ -44,11 +43,20 @@ class CartridgeAgent(threading.Thread):
 
         mb_ip = Config.read_property(constants.MB_IP)
         mb_port = Config.read_property(constants.MB_PORT)
+        mb_username = Config.read_property(constants.MB_USERNAME, False)
+        mb_password = Config.read_property(constants.MB_PASSWORD, False)
 
-        self.__inst_topic_subscriber = EventSubscriber(constants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port)
-        self.__tenant_topic_subscriber = EventSubscriber(constants.TENANT_TOPIC, mb_ip, mb_port)
-        self.__app_topic_subscriber = EventSubscriber(constants.APPLICATION_SIGNUP, mb_ip, mb_port)
-        self.__topology_event_subscriber = EventSubscriber(constants.TOPOLOGY_TOPIC, mb_ip, mb_port)
+        self.__inst_topic_subscriber = \
+            EventSubscriber(constants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port, mb_username, mb_password)
+
+        self.__tenant_topic_subscriber = \
+            EventSubscriber(constants.TENANT_TOPIC, mb_ip, mb_port, mb_username, mb_password)
+
+        self.__app_topic_subscriber = \
+            EventSubscriber(constants.APPLICATION_SIGNUP, mb_ip, mb_port, mb_username, mb_password)
+
+        self.__topology_event_subscriber = \
+            EventSubscriber(constants.TOPOLOGY_TOPIC, mb_ip, mb_port, mb_username, mb_password)
 
         self.__event_handler = EventHandler()
 
@@ -96,9 +104,10 @@ class CartridgeAgent(threading.Thread):
         repo_url = Config.repo_url
         if repo_url is None or str(repo_url).strip() == "":
             self.__log.info("No artifact repository found")
+            publisher.publish_instance_activated_event()
             self.__event_handler.on_instance_activated_event()
-            publisher.publish_instance_activated_event(Config.health_stat_plugin)
         else:
+            # instance activated event will be published in artifact updated event handler
             self.__log.info(
                 "Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s",
                 repo_url)
@@ -119,7 +128,7 @@ class CartridgeAgent(threading.Thread):
 
         # run until terminated
         while not self.__terminated:
-            time.sleep(1)
+            time.sleep(5)
 
         if DataPublisherConfiguration.get_instance().enabled:
             self.__log_publish_manager.terminate_all_publishers()
@@ -218,11 +227,12 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_initialized(self, msg):
         self.__log.debug("Member initialized event received: %r" % msg.payload)
+        event_obj = MemberInitializedEvent.create_from_json(msg.payload)
 
         if not TopologyContext.topology.initialized:
             return
 
-        self.__event_handler.on_member_initialized_event()
+        self.__event_handler.on_member_initialized_event(event_obj)
 
     def on_member_activated(self, msg):
         self.__log.debug("Member activated event received: %r" % msg.payload)
@@ -249,13 +259,14 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_member_suspended_event(event_obj)
 
     def on_complete_topology(self, msg):
+        event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
+        TopologyContext.update(event_obj.topology)
         if not TopologyContext.topology.initialized:
-            self.__log.debug("Complete topology event received")
-            event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
-            TopologyContext.update(event_obj.topology)
+            self.__log.info("Topology initialized from complete topology event")
+            TopologyContext.topology.initialized = True
             self.__event_handler.on_complete_topology_event(event_obj)
-        else:
-            self.__log.debug("Complete topology event updating task disabled")
+
+        self.__log.debug("Topology context updated with [topology] %r" % event_obj.topology.json_str)
 
     def on_member_started(self, msg):
         self.__log.debug("Member started event received: %r" % msg.payload)
@@ -276,15 +287,14 @@ class CartridgeAgent(threading.Thread):
         self.__event_handler.on_domain_mapping_removed_event(event_obj)
 
     def on_complete_tenant(self, msg):
+        event_obj = CompleteTenantEvent.create_from_json(msg.payload)
+        TenantContext.update(event_obj.tenants)
         if not self.__tenant_context_initialized:
-            self.__log.debug("Complete tenant event received")
-            event_obj = CompleteTenantEvent.create_from_json(msg.payload)
-            TenantContext.update(event_obj.tenants)
-
-            self.__event_handler.on_complete_tenant_event(event_obj)
+            self.__log.info("Tenant context initialized from complete tenant event")
             self.__tenant_context_initialized = True
-        else:
-            self.__log.debug("Complete tenant event updating task disabled")
+            self.__event_handler.on_complete_tenant_event(event_obj)
+
+        self.__log.debug("Tenant context updated with [tenant list] %r" % event_obj.tenant_list_json)
 
     def on_tenant_subscribed(self, msg):
         self.__log.debug("Tenant subscribed event received: %r" % msg.payload)
@@ -308,7 +318,7 @@ def main():
     log = LogFactory().get_log(__name__)
 
     try:
-        log.debug("Starting cartridge agent")
+        log.info("Starting Stratos cartridge agent...")
         cartridge_agent.start()
     except Exception as e:
         log.exception("Cartridge Agent Exception: %r" % e)

@@ -160,7 +160,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
                     //When the application is getting un-deployed, need to avoid
                     // checking the minimum count sanctification
-                    if (!applicationMonitor.isTerminating()) {
+                    if (applicationMonitor!= null && !applicationMonitor.isTerminating()) {
                         Collection<Instance> parentInstances = parent.getInstances();
 
                         for (Instance parentInstance : parentInstances) {
@@ -504,43 +504,48 @@ public class GroupMonitor extends ParentComponentMonitor {
         removeInstanceFromFromInactiveMap(childId, instanceId);
         removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-        GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
-        if (instance != null) {
-            // If this parent instance is terminating, then based on child notification,
-            // it has to decide its state rather than starting a the children recovery
+        // If this parent instance is terminating, then based on child notification,
+        // it has to decide its state rather than starting a the children recovery
 
-            ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
-                    getAppMonitor(appId);
-            //In case if the group instance is not in terminating while application is
-            // terminating, changing the status to terminating
-            if (applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
-                //Sending group instance terminating event
-                ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
-            }
+        ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
+                getAppMonitor(appId);
+        //If application is forcefully un-deployed, no need to handle here.
+        if(applicationMonitor != null && !applicationMonitor.isForce()) {
+            GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
+            if (instance != null) {
 
-            if (instance.getStatus() == GroupStatus.Terminating ||
-                    instance.getStatus() == GroupStatus.Terminated) {
-                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
-                        appId, instanceId);
-            } else {
-                //Checking whether the child who notified is still active.
-                // If it is active(scale down case), no need to act upon it.
-                // Otherwise act upon Termination and see whether it is required to start
-                // instance again based on termination behavior
-                boolean active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
-                if (!active) {
-                    onChildTerminatedEvent(childId, instanceId);
-                } else {
-                    log.info("[Group Instance] " + instanceId + " for [application] " + appId +
-                            " is still active upon termination" +
-                            " of the [child] " + childId);
+                //In case if the group instance is not in terminating while application is
+                // terminating, changing the status to terminating
+                if (applicationMonitor.isTerminating() && instance.getStatus().getCode() < 3) {
+                    //Sending group instance terminating event
+                    ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
                 }
+
+                if (instance.getStatus() == GroupStatus.Terminating ||
+                        instance.getStatus() == GroupStatus.Terminated) {
+                    ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
+                            appId, instanceId);
+                } else {
+                    //Checking whether the child who notified is still active.
+                    // If it is active(scale down case), no need to act upon it.
+                    // Otherwise act upon Termination and see whether it is required to start
+                    // instance again based on termination behavior
+                    boolean active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                    if (!active) {
+                        onChildTerminatedEvent(childId, instanceId);
+                    } else {
+                        log.info("[Group Instance] " + instanceId + " for [application] " + appId +
+                                " is still active upon termination" +
+                                " of the [child] " + childId);
+                    }
+                }
+            } else {
+                log.warn("The required [instance] " + instanceId + " for [application] " + appId +
+                        " cannot be found in the the [GroupMonitor] " +
+                        id + " upon termination of the [child] " + childId);
             }
-        } else {
-            log.warn("The required [instance] " + instanceId + " for [application] " + appId +
-                    " cannot be found in the the [GroupMonitor] " +
-                    id + " upon termination of the [child] " + childId);
         }
+
     }
 
 

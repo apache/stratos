@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-products-parent</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>python-cartridge-agent-parent</artifactId>
@@ -33,6 +33,6 @@
 
     <modules>
         <module>modules/distribution</module>
-
+        <module>modules/integration</module>
     </modules>
 </project>

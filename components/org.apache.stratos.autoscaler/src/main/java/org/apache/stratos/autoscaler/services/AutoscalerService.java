@@ -136,7 +136,7 @@ public interface AutoscalerService {
      * @return
      */
 
-    public boolean undeployApplication(String applicationId, boolean force);
+    public boolean undeployApplication(String applicationId, boolean force) throws Exception;
 
     /**
      * Delete an application

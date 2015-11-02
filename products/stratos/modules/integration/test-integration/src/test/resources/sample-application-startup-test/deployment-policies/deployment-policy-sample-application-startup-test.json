@@ -1,0 +1,18 @@
+{
+    "id": "deployment-policy-sample-application-startup-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-sample-application-startup-test",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 20
+                }
+            ]
+        }
+    ]
+}
+
+
+

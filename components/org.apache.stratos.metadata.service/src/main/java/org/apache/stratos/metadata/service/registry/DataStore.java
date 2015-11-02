@@ -43,6 +43,4 @@ public interface DataStore {
     public boolean removePropertyFromApplication(String applicationId, String propertyName) throws RegistryException;
 
     public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException;
-
-
 }

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.stratos.cloud.controller</artifactId>
@@ -54,11 +54,11 @@
                         </Private-Package>
                         <Import-Package>
                             !org.apache.stratos.cloud.controller.*,
-                            org.apache.commons.logging,
-                            org.apache.commons.io.*,
+                            org.apache.stratos.mock.iaas.*,
+                            org.apache.commons.*,
                             org.wso2.carbon.utils.*,
-                            org.apache.stratos.kubernetes.client; version="${project.version}",
-                            org.apache.stratos.kubernetes.client.exceptions; version="${project.version}",
+                            org.apache.stratos.common.*; version="${project.version}",
+                            org.apache.stratos.kubernetes.client.*; version="${project.version}",
                             org.jclouds.aws.ec2.*; version=${jclouds.version},
                             org.jclouds.ec2.*; version=${jclouds.version},
                             org.jclouds.compute.*; version=${jclouds.version},
@@ -136,11 +136,6 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
             <version>${carbon.kernel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.metadata.client</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>

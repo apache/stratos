@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceActivatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyApplicationFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
@@ -29,9 +32,6 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilte
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.MessagingUtil;
-
-import java.net.URL;
-import java.util.List;
 
 /**
  * This processor will act upon the cluster activated event
@@ -118,26 +118,34 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
                 return false;
             }
         } else {
-            // Apply changes to the topology
-            cluster.setAccessUrls(event.getAccessUrls());
-
-            ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
-            if (context == null) {
-                log.warn("Cluster instance context is not found for [cluster] " +
-                        event.getClusterId() + " [instance-id] " +
-                        event.getInstanceId());
+            ClusterInstance clusterInstance = cluster.getInstanceContexts(event.getInstanceId());
+            if (clusterInstance == null) {
+                log.warn(String.format("Cluster instance not found: [application] %s [cluster] %s [instance-id] %s",
+                        event.getAppId(), event.getClusterId(), event.getInstanceId()));
                 return false;
             }
-            ClusterStatus status = ClusterStatus.Active;
-            if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid state transition from " + context.getStatus() + " to " + status);
+            if(clusterInstance.getStatus() == ClusterStatus.Active) {
+                log.debug(String.format("Cluster instance is already activated, event ignored: [application] %s " +
+                        "[cluster] %s [instance-id] %s", event.getAppId(), event.getClusterId(), event.getInstanceId()));
             }
-            context.setStatus(status);
+            else {
+                // Apply changes to the topology
+                cluster.addAccessUrlList(event.getInstanceId(), event.getAccessUrls());
+                if((event.getLoadBalancerIps() != null) && (event.getLoadBalancerIps().size() > 0)) {
+                    // Overwrite load balancer ips if new values found in cluster activated event
+                    cluster.setLoadBalancerIps(event.getLoadBalancerIps());
+                }
+
+                ClusterStatus status = ClusterStatus.Active;
+                if (!clusterInstance.isStateTransitionValid(status)) {
+                    log.error("Invalid state transition from " + clusterInstance.getStatus() + " to " + status);
+                }
+                clusterInstance.setStatus(status);
+            }
         }
 
         // Notify event listeners
         notifyEventListeners(event);
         return true;
     }
-
 }

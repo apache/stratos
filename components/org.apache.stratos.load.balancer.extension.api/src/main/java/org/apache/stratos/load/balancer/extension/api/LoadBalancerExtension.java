@@ -32,10 +32,13 @@ import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerS
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
+import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
 
@@ -57,6 +60,7 @@ public class LoadBalancerExtension {
     private LoadBalancerCommonTopologyEventReceiver topologyEventReceiver;
     private LoadBalancerCommonDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerCommonApplicationSignUpEventReceiver applicationSignUpEventReceiver;
+    private ApplicationsEventReceiver applicationsEventReceiver;
 
     /**
      * Load balancer extension constructor.
@@ -84,6 +88,7 @@ public class LoadBalancerExtension {
 
             // Start topology receiver thread
             startTopologyEventReceiver(executorService, topologyProvider);
+            startApplicationEventReceiver(executorService);
             startApplicationSignUpEventReceiver(executorService, topologyProvider);
             startDomainMappingEventReceiver(executorService, topologyProvider);
 
@@ -112,9 +117,12 @@ public class LoadBalancerExtension {
      * @param topologyProvider topology provider instance
      */
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-
-        topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider);
+        // Enforcing the listener order in order execute extension listener later
+        topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider, false);
+        // Add load-balancer extension event listener
         addTopologyEventListeners(topologyEventReceiver);
+        // Add default topology provider event listeners
+        topologyEventReceiver.addEventListeners();
         topologyEventReceiver.setExecutorService(executorService);
         topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {
@@ -139,6 +147,15 @@ public class LoadBalancerExtension {
         }
     }
 
+    private void startApplicationEventReceiver(ExecutorService executorService) {
+        applicationsEventReceiver = new ApplicationsEventReceiver();
+        applicationsEventReceiver.setExecutorService(executorService);
+        applicationsEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Application event receiver thread started");
+        }
+    }
+
     /**
      * Start domain mapping event receiver thread.
      *
@@ -146,12 +163,34 @@ public class LoadBalancerExtension {
      * @param topologyProvider topology receiver instance
      */
     private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        domainMappingEventReceiver = new LoadBalancerCommonDomainMappingEventReceiver(topologyProvider);
+        // Enforcing the listener order in order execute extension listener later
+        domainMappingEventReceiver = new LoadBalancerCommonDomainMappingEventReceiver(topologyProvider, false);
+        // Add extension event listeners
+        addDomainMappingsEventListeners(domainMappingEventReceiver);
+        // Add default domain mapping event listeners
+        domainMappingEventReceiver.addEventListeners();
         domainMappingEventReceiver.setExecutorService(executorService);
         domainMappingEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Domain mapping event receiver thread started");
         }
+    }
+
+    private void addDomainMappingsEventListeners(final LoadBalancerCommonDomainMappingEventReceiver
+                                                         domainMappingEventReceiver) {
+        domainMappingEventReceiver.addEventListener(new DomainMappingAddedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                reloadConfiguration();
+            }
+        });
+
+        domainMappingEventReceiver.addEventListener(new DomainMappingRemovedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                reloadConfiguration();
+            }
+        });
     }
 
     /**

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+-->
+<Module>
+    <ModulePrefs title="Member Status Filter" description="Member Status Filter Gadget" height="150">
+        <!-- This is used to import the pubsub-2 feature -->
+        <Require feature="pubsub-2">
+            <Param name="topics">
+                <![CDATA[
+                    <Topic title="member-status-filter" name="member-status-filter" publish="true"/>
+                ]]>
+            </Param>
+        </Require>
+        <Require feature="dynamic-height"/>
+    </ModulePrefs>
+    <Content type="html">
+        <![CDATA[
+        <head>
+            <meta charset="utf-8">
+             <link href="/portal/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+            <script src="/portal/js/jquery-1.10.2.js"></script>
+            <script language="javascript" type="text/javascript" src="js/member-status-filter.js"></script>
+        </head>
+        <body>
+          <form id="member-status" method="post" action="#">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-4" id="application">
+                        <label for="application-filter">Application</label>
+                        <select id="application-filter">
+                            <option value="Select Application" disabled>Select Application</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-3" id="cluster">
+                        <label for="cluster-filter">Cluster</label>
+                        <select id="cluster-filter">
+                            <option value="All Clusters" selected>All Clusters</option>
+                        </select>
+                    </div>
+                    <div class="btn-div col-xs-5" id="time-interval">
+                         <label for="time-selector">Time</label>
+                         <input type="button" class="button" value="30 Min" onClick="publish(this.value)">
+                         <input type="button" class="button" value="1 Hour" onClick="publish(this.value)">
+                         <input type="button" class="button" value="1 Day" onClick="publish(this.value)">
+                         <input type="button" class="button" value="1 Week" onClick="publish(this.value)">
+                         <input type="button" class="button" value="1 Month" onClick="publish(this.value)">
+                    </div>
+                </div>
+            </div>
+          </form>
+        </body>
+        ]]>
+    </Content>
+</Module>

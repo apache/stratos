@@ -16,10 +16,6 @@
 # under the License.
 
 from threading import Thread
-import multiprocessing
-
-import psutil
-
 from modules.databridge.agent import *
 from config import Config
 from modules.util import cartridgeagentutils
@@ -37,7 +33,7 @@ class HealthStatisticsPublisherManager(Thread):
     STREAM_NICKNAME = "agent health stats"
     STREAM_DESCRIPTION = "agent health stats"
 
-    def __init__(self, publish_interval, health_stat_plugin):
+    def __init__(self, publish_interval):
         """
         Initializes a new HealthStatisticsPublisherManager with a given number of seconds as the interval
         :param int publish_interval: Number of seconds as the interval
@@ -50,8 +46,9 @@ class HealthStatisticsPublisherManager(Thread):
         self.terminated = False
         self.publisher = HealthStatisticsPublisher()
         """:type : HealthStatisticsPublisher"""
-        # If there are no health stat reader plugins, create the default reader instance
-        self.stats_reader = health_stat_plugin if health_stat_plugin is not None else DefaultHealthStatisticsReader()
+
+        """:type : IHealthStatReaderPlugin"""
+        self.stats_reader = Config.health_stat_plugin
 
     def run(self):
         while not self.terminated:
@@ -59,17 +56,18 @@ class HealthStatisticsPublisherManager(Thread):
 
             try:
                 ca_health_stat = CartridgeHealthStatistics()
-                cartridge_stats = self.stats_reader.stat_cartridge_health(ca_health_stat)
+                cartridge_stats = self.stats_reader.plugin_object.stat_cartridge_health(ca_health_stat)
                 self.log.debug("Publishing memory consumption: %r" % cartridge_stats.memory_usage)
                 self.publisher.publish_memory_usage(cartridge_stats.memory_usage)
 
                 self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
                 self.publisher.publish_load_average(cartridge_stats.load_avg)
             except ThriftReceiverOfflineException:
-                self.log.exception("Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
+                self.log.exception(
+                    "Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
                 self.publisher = HealthStatisticsPublisher()
 
-        self.publisher.publisher.disconnect()
+        self.publisher.disconnect_publisher()
 
 
 class HealthStatisticsPublisher:
@@ -94,38 +92,44 @@ class HealthStatisticsPublisher:
         return conf_value
 
     def __init__(self):
-        self.ports = []
-        cep_port = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_PORT)
-        self.ports.append(cep_port)
 
-        cep_ip = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_IP)
-
-        cartridgeagentutils.wait_until_ports_active(
-            cep_ip,
-            self.ports,
-            int(Config.read_property("port.check.timeout", critical=False)))
-
-        cep_active = cartridgeagentutils.check_ports_active(
-            cep_ip,
-            self.ports)
-
-        if not cep_active:
-            raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
-
+        self.publishers = []
         cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
         cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+        # 1.1.1.1:1883,2.2.2.2:1883
+        cep_urls = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_URLS)
+        cep_urls = cep_urls.split(',')
+        for cep_url in cep_urls:
+            self.ports = []
+            cep_ip = cep_url.split(':')[0]
+            cep_port = cep_url.split(':')[1]
+            self.ports.append(cep_port)
+            cartridgeagentutils.wait_until_ports_active(
+                cep_ip,
+                self.ports,
+                int(Config.read_property("port.check.timeout", critical=False)))
 
-        self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
-        HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
+            cep_active = cartridgeagentutils.check_ports_active(
+                cep_ip,
+                self.ports)
 
-        self.publisher = ThriftPublisher(
-            cep_ip,
-            cep_port,
-            cep_admin_username,
-            cep_admin_password,
-            self.stream_definition)
+            if not cep_active:
+                raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
 
-        HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
+            self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
+            HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
+
+            publisher = ThriftPublisher(
+                cep_ip,
+                cep_port,
+                cep_admin_username,
+                cep_admin_password,
+                self.stream_definition)
+
+            self.publishers.append(publisher)
+
+            HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized. %r %r",
+                                                cep_ip, cep_port)
 
     @staticmethod
     def create_stream_definition():
@@ -171,7 +175,7 @@ class HealthStatisticsPublisher:
                                                 event.payloadData,
                                                 self.stream_definition.version))
 
-        self.publisher.publish(event)
+        self.publish_event(event)
 
     def publish_load_average(self, load_avg):
         """
@@ -195,35 +199,15 @@ class HealthStatisticsPublisher:
                                                 event.payloadData,
                                                 self.stream_definition.version))
 
-        self.publisher.publish(event)
+        self.publish_event(event)
 
+    def publish_event(self, event):
+        for publisher in self.publishers:
+            publisher.publish(event)
 
-class DefaultHealthStatisticsReader:
-    """
-    Default implementation for the health statistics reader. If no Health Statistics Reader plugins are provided,
-    this will be used to read health stats from the instance.
-    """
-
-    def __init__(self):
-        self.log = LogFactory().get_log(__name__)
-
-    def stat_cartridge_health(self, ca_health_stat):
-        ca_health_stat.memory_usage = DefaultHealthStatisticsReader.__read_mem_usage()
-        ca_health_stat.load_avg = DefaultHealthStatisticsReader.__read_load_avg()
-
-        self.log.debug("Memory read: %r, CPU read: %r" % (ca_health_stat.memory_usage, ca_health_stat.load_avg))
-        return ca_health_stat
-
-    @staticmethod
-    def __read_mem_usage():
-        return psutil.virtual_memory().percent
-
-    @staticmethod
-    def __read_load_avg():
-        (one, five, fifteen) = os.getloadavg()
-        cores = multiprocessing.cpu_count()
-
-        return (one/cores) * 100
+    def disconnect_publisher(self):
+        for publisher in self.publishers:
+            publisher.disconnect()
 
 
 class CartridgeHealthStatistics:

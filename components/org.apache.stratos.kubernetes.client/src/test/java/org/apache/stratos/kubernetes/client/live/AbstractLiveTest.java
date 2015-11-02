@@ -124,12 +124,13 @@ public class AbstractLiveTest extends TestCase {
         log.info("Kubernetes resources cleaned");
     }
 
-    protected void createPod(String podId, String podName, String containerPortName, int cpu, int memory)
+    protected void createPod(String podId, String podName, Map<String, String> labelMap, Map<String, String>
+            annotations, String containerPortName, String cpu, String memory)
             throws KubernetesClientException {
 
         log.info("Creating pod: [pod] " + podId);
         List<ContainerPort> ports = createPorts(containerPortName);
-        client.createPod(podId, podName, dockerImage, cpu, memory, ports, null);
+        client.createPod(podId, podName, annotations, labelMap, dockerImage, cpu, memory, ports, null);
         podIdList.add(podId);
 
         sleep(2000);
@@ -141,11 +142,10 @@ public class AbstractLiveTest extends TestCase {
         assertEquals(1, containers.size());
 
         Map<String, Quantity> limits = containers.get(0).getResources().getLimits();
-        int memoryInMb = memory * 1024 * 1024;
 
         log.info("Verifying container resource limits...");
-        assertEquals(String.valueOf(cpu), limits.get(KubernetesConstants.RESOURCE_CPU).getAmount());
-        assertEquals(String.valueOf(memoryInMb), limits.get(KubernetesConstants.RESOURCE_MEMORY).getAmount());
+        assertEquals(cpu, limits.get(KubernetesConstants.RESOURCE_CPU).getAmount());
+        assertEquals(memory, limits.get(KubernetesConstants.RESOURCE_MEMORY).getAmount());
         log.info("Container resource limits verified successfully");
 
         if (testPodActivation) {
@@ -191,15 +191,20 @@ public class AbstractLiveTest extends TestCase {
             for (String podId : podIdList) {
                 deletePod(podId);
             }
-        } catch (KubernetesClientException e) {
+        }
+        catch (KubernetesClientException e) {
             log.error("Could not delete pods", e);
         }
     }
 
-    protected void createService(String serviceId, String serviceName, int nodePort, String serviceType, String containerPortName,
-                                 int containerPort, List<String> publicIPs) throws KubernetesClientException, InterruptedException, IOException {
+    protected void createService(String serviceId, String serviceName, Map<String, String> labelMap, Map<String,
+            String> annotationMap, int nodePort, String serviceType, String containerPortName, int containerPort,
+                                 List<String> publicIPs)
+            throws KubernetesClientException, InterruptedException, IOException {
         log.info("Creating service...");
-        client.createService(serviceId, serviceName, nodePort, serviceType, containerPortName, containerPort,
+
+        client.createService(serviceId, serviceName, labelMap, annotationMap, nodePort, serviceType,
+                containerPortName, containerPort,
                 KubernetesConstants.SESSION_AFFINITY_CLIENT_IP);
         serviceIdList.add(serviceId);
 
@@ -228,7 +233,8 @@ public class AbstractLiveTest extends TestCase {
             for (String serviceId : serviceIdList) {
                 deleteService(serviceId);
             }
-        } catch (KubernetesClientException e) {
+        }
+        catch (KubernetesClientException e) {
             log.error("Could not delete services", e);
         }
     }
@@ -236,7 +242,8 @@ public class AbstractLiveTest extends TestCase {
     protected void sleep(long time) {
         try {
             Thread.sleep(time);
-        } catch (InterruptedException ignore) {
+        }
+        catch (InterruptedException ignore) {
         }
     }
 

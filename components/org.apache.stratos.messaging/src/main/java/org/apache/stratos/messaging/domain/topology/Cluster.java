@@ -61,8 +61,9 @@ public class Cluster implements Serializable {
     private Properties properties;
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
-    private List<String> accessUrls;
+    private Map<String,List<String>> accessUrls;
     private List<KubernetesService> kubernetesServices;
+    private List<String> loadBalancerIps;
 
     public Cluster(Cluster cluster) {
         this.serviceName = cluster.getServiceName();
@@ -81,6 +82,7 @@ public class Cluster implements Serializable {
         this.setKubernetesCluster(cluster.isKubernetesCluster());
         this.accessUrls = cluster.getAccessUrls();
         this.kubernetesServices = cluster.getKubernetesServices();
+        this.loadBalancerIps = cluster.getLoadBalancerIps();
     }
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
@@ -93,8 +95,9 @@ public class Cluster implements Serializable {
         this.memberMap = new ConcurrentHashMap<String, Member>();
         this.appId = appId;
         this.setInstanceIdToInstanceContextMap(new ConcurrentHashMap<String, ClusterInstance>());
-        this.accessUrls = new ArrayList<String>();
+        this.accessUrls = new HashMap<>();
         this.kubernetesServices = new ArrayList<KubernetesService>();
+        this.loadBalancerIps = new ArrayList<String>();
     }
 
     public String getServiceName() {
@@ -334,23 +337,28 @@ public class Cluster implements Serializable {
         return this.instanceIdToInstanceContextMap.values();
     }
 
-    public List<String> getAccessUrls() {
+    public Map<String,List<String>> getAccessUrls() {
         return accessUrls;
     }
 
-    public void setAccessUrls(List<String> accessUrls) {
+    public void setAccessUrls(Map<String,List<String>> accessUrls) {
         this.accessUrls = accessUrls;
     }
 
-    public void addAccessUrl(String accessUrl) {
-        if (accessUrls == null) {
-            accessUrls = new ArrayList<String>();
+    public void addAccessUrl(String clusterInstanceId,String accessUrl) {
+        List<String> listUrls=accessUrls.get(clusterInstanceId);
+        if (listUrls == null) {
+            listUrls = new ArrayList<String>();
         }
-        if (!accessUrls.contains(accessUrl)) {
-            accessUrls.add(accessUrl);
+        if (!listUrls.contains(accessUrl)) {
+            listUrls.add(accessUrl);
         }
+        accessUrls.put(clusterInstanceId,listUrls);
     }
 
+    public void addAccessUrlList(String clusterInstanceId,List<String> accessUrl) {
+        accessUrls.put(clusterInstanceId, accessUrl);
+    }
     public List<KubernetesService> getKubernetesServices() {
         return kubernetesServices;
     }
@@ -360,13 +368,21 @@ public class Cluster implements Serializable {
         setKubernetesCluster((kubernetesServices != null) && (kubernetesServices.size() > 0));
     }
 
+    public List<String> getLoadBalancerIps() {
+        return loadBalancerIps;
+    }
+
+    public void setLoadBalancerIps(List<String> loadBalancerIps) {
+        this.loadBalancerIps = loadBalancerIps;
+    }
+
     @Override
     public String toString() {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
                         "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
-                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyName,
+                        "accessUrls=%s, kubernetesServices=%s, loadBalancerIps=%s]", serviceName, clusterId, autoscalePolicyName,
                 deploymentPolicyName, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
-                accessUrls, kubernetesServices);
+                accessUrls, kubernetesServices, loadBalancerIps);
     }
 }
 

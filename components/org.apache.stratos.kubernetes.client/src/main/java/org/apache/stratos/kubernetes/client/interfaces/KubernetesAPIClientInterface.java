@@ -25,7 +25,9 @@ import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
+
 import java.util.List;
+import java.util.Map;
 
 
 public interface KubernetesAPIClientInterface {
@@ -34,7 +36,9 @@ public interface KubernetesAPIClientInterface {
      * Create pod.
      *
      * @param podId                id of the pod
-     * @param podLabel             pod label
+     * @param podName              pod label
+     * @param podLabels            Map of labels to be applied to the pod
+     * @param annotations          Map of annotations to be applied to the pod
      * @param dockerImage          docker image name
      * @param cpu                  number of cpu cores
      * @param memory               memory allocation in mega bytes
@@ -42,8 +46,9 @@ public interface KubernetesAPIClientInterface {
      * @param environmentVariables environment variables
      * @throws KubernetesClientException
      */
-    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory,
-                          List<ContainerPort> ports, List<EnvVar> environmentVariables)
+    public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
+                          String dockerImage, String cpu, String memory, List<ContainerPort> ports,
+                          List<EnvVar> environmentVariables)
             throws KubernetesClientException;
 
     /**
@@ -74,17 +79,20 @@ public interface KubernetesAPIClientInterface {
     /**
      * Create service.
      *
-     * @param serviceId
-     * @param serviceLabel
-     * @param servicePort
-     * @param serviceType
-     * @param containerPortName
-     * @param containerPort
-     * @param sessionAffinity
+     * @param serviceId         id of the service
+     * @param serviceName       service name
+     * @param serviceLabels     labels to be applied to the service
+     * @param annotations       Map of annotations to be applied to the service
+     * @param servicePort       port to be used in the node
+     * @param serviceType       port type to be used when creating the service
+     * @param containerPortName port name
+     * @param containerPort     port to be used in the container
+     * @param sessionAffinity   session affinity policy to be used when routing requests to this service
      * @throws KubernetesClientException
      */
-    public void createService(String serviceId, String serviceLabel, int servicePort, String serviceType,
-                              String containerPortName, int containerPort, String sessionAffinity)
+    public void createService(String serviceId, String serviceName, Map<String, String> serviceLabels, Map<String,
+            String> annotations, int servicePort, String serviceType, String containerPortName, int containerPort,
+                              String sessionAffinity)
             throws KubernetesClientException;
 
     /**

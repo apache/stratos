@@ -16,18 +16,21 @@
 # under the License.
 
 from threading import current_thread
-import os
 import subprocess
 import shutil
-import constants
 import time
+import os
+import tempfile
 from git import *
+import urllib
 
+import constants
 from config import Config
-from ... util.log import LogFactory
-from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
-from ... artifactmgt.repository import Repository
+from ...util.log import LogFactory
+from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
+from ...artifactmgt.repository import Repository
 from exception import GitRepositorySynchronizationException
+from distutils.dir_util import copy_tree
 
 
 class AgentGitHandler:
@@ -35,70 +38,13 @@ class AgentGitHandler:
     Handles all the git artifact management tasks related to a cartridge
     """
 
+    def __init__(self):
+        pass
+
     log = LogFactory().get_log(__name__)
 
     __git_repositories = {}
     # (tenant_id => GitRepository)
-
-    @staticmethod
-    def checkout(repo_info):
-        """
-        Checks out the code from the remote repository.
-        If local repository path is empty, a clone operation is done.
-        If there is a cloned repository already on the local repository path, a pull operation
-        will be performed.
-        If there are artifacts not in the repository already on the local repository path,
-        they will be added to a git repository, the remote url added as origin, and then
-        a pull operation will be performed.
-
-        :param Repository repo_info: The repository information object
-        :return: A tuple containing whether it was an initial clone or not, and if the repo was updated on
-        subsequent calls or not
-        :rtype: tuple(bool, bool)
-        """
-        git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
-        updated = False
-        if git_repo is not None:
-            # has been previously cloned, this is not the subscription run
-            subscribe_run = False
-            if AgentGitHandler.is_valid_git_repository(git_repo):
-                AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-                try:
-                    updated = AgentGitHandler.pull(git_repo)
-                    AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
-                                              git_repo.tenant_id, git_repo.repo_url)
-                except GitRepositorySynchronizationException as e:
-                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %s" % e.get_message())
-
-            else:
-                # not a valid repository, might've been corrupted. do a re-clone
-                AgentGitHandler.log.debug("Local repository is not valid. Doing a re-clone to purify.")
-                git_repo.cloned = False
-                AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-                git_repo = AgentGitHandler.clone(git_repo)
-                updated = True
-                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-        else:
-            # subscribing run.. need to clone
-            git_repo = AgentGitHandler.create_git_repo(repo_info)
-            AgentGitHandler.log.debug("Cloning artifacts from %s for the first time to %s",
-                                      git_repo.repo_url, git_repo.local_repo_path)
-            subscribe_run = True
-            AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
-                                      git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
-            try:
-                git_repo = AgentGitHandler.clone(git_repo)
-                AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
-            except GitRepositorySynchronizationException as e:
-                AgentGitHandler.log.warn("Warning: Git clone operation failed. Retrying...")
-                # If first git clone is failed, execute retry_clone operation
-                AgentGitHandler.retry_clone(git_repo)
-
-        return subscribe_run, updated
 
     @staticmethod
     def sync_initial_local_artifacts(git_repo):
@@ -141,9 +87,6 @@ class AgentGitHandler:
 
     @staticmethod
     def is_valid_git_repository(git_repo):
-        if git_repo.cloned:
-            return True
-
         output, errors = AgentGitHandler.execute_git_command(["show-ref"], git_repo.local_repo_path)
         if len(output) > 0:
             refs = output.split("\n")
@@ -161,20 +104,28 @@ class AgentGitHandler:
 
     @staticmethod
     def pull(git_repo):
-        # git reset to make sure no uncommitted changes are present before the pull, no conflicts will occur
-        AgentGitHandler.execute_git_command(["reset", "--hard"], git_repo.local_repo_path)
+        # check if modified files are present
+        modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
+        if modified:
+            if Config.is_commits_enabled:
+                AgentGitHandler.log.debug(
+                    "Un-staged files exist in working directory. Aborting git pull for this iteration...")
+                return
+            else:
+                AgentGitHandler.log.warn("Changes detected in working directory but COMMIT_ENABLED is set to false!")
+                AgentGitHandler.log.warn("Attempting to reset the working directory")
+                AgentGitHandler.execute_git_command(["reset"], repo_path=git_repo.local_repo_path)
 
         # HEAD before pull
         (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
 
-        try:
-            repo = Repo(git_repo.local_repo_path)
-            repo.remotes.origin.pull()
-            if repo.is_dirty():
-                raise GitRepositorySynchronizationException("Git pull operation left the repository in dirty state")
-        except (GitCommandError, GitRepositorySynchronizationException) as e:
-            raise GitRepositorySynchronizationException("Git pull operation on %s for tenant %s failed: %s" %
-                                                        (git_repo.repo_url, git_repo.tenant_id, e))
+        repo = Repo(git_repo.local_repo_path)
+        AgentGitHandler.execute_git_command(["pull", "--rebase", "origin", "master"], git_repo.local_repo_path)
+        AgentGitHandler.log.debug("Git pull rebase executed in checkout job")
+        if repo.is_dirty():
+            AgentGitHandler.log.error("Git pull operation in checkout job left the repository in dirty state")
+            AgentGitHandler.log.error(
+                "Git pull operation on remote %s for tenant %s failed" % (git_repo.repo_url, git_repo.tenant_id))
 
         # HEAD after pull
         (end_head, end_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
@@ -190,30 +141,27 @@ class AgentGitHandler:
 
     @staticmethod
     def clone(git_repo):
-        if os.path.isdir(git_repo.local_repo_path) and os.listdir(git_repo.local_repo_path) != []:
-            # delete and recreate local repo path if not empty dir
-            AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
-            GitUtils.delete_folder_tree(git_repo.local_repo_path)
-            GitUtils.create_dir(git_repo.local_repo_path)
-
         try:
-            Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)
-            AgentGitHandler.add_repo(git_repo)
+            # create a temporary location to clone
+            temp_repo_path = os.path.join(tempfile.gettempdir(), "pca-temp-" + git_repo.tenant_id)
+            if os.path.isdir(temp_repo_path) and os.listdir(temp_repo_path) != []:
+                GitUtils.delete_folder_tree(temp_repo_path)
+                GitUtils.create_dir(temp_repo_path)
+            # clone the repo to a temporary location first to avoid conflicts
+            Repo.clone_from(git_repo.repo_url, temp_repo_path)
+
+            # move the cloned dir to application path
+            copy_tree(temp_repo_path, git_repo.local_repo_path)
             AgentGitHandler.log.info("Git clone operation for tenant %s successful" % git_repo.tenant_id)
             return git_repo
         except GitCommandError as e:
-            raise GitRepositorySynchronizationException("Error while cloning repository: %s" % e)
+            raise GitRepositorySynchronizationException("Error while cloning repository for tenant %s: %s" % (
+                git_repo.tenant_id, e))
 
     @staticmethod
     def retry_clone(git_repo):
         """Retry 'git clone' operation for defined number of attempts with defined intervals
         """
-        if os.path.isdir(git_repo.local_repo_path) and os.listdir(git_repo.local_repo_path) != []:
-            # delete and recreate local repo path if not empty dir
-            AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
-            GitUtils.delete_folder_tree(git_repo.local_repo_path)
-            GitUtils.create_dir(git_repo.local_repo_path)
-
         git_clone_successful = False
         # Read properties from agent.conf
         max_retry_attempts = int(Config.read_property(constants.ARTIFACT_CLONE_RETRIES, 5))
@@ -224,19 +172,17 @@ class AgentGitHandler:
         while git_clone_successful is False and retry_attempts < max_retry_attempts:
             try:
                 retry_attempts += 1
-                Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)
-                AgentGitHandler.add_repo(git_repo)
+                AgentGitHandler.clone(git_repo)
                 AgentGitHandler.log.info(
                     "Retrying attempt to git clone operation for tenant %s successful" % git_repo.tenant_id)
                 git_clone_successful = True
-
-            except GitCommandError as e:
-                AgentGitHandler.log.warn("Retrying git clone attempt %s failed" % retry_attempts)
+            except GitRepositorySynchronizationException as e:
+                AgentGitHandler.log.exception("Retrying git clone attempt %s failed: %s" % (retry_attempts, e))
                 if retry_attempts < max_retry_attempts:
                     time.sleep(retry_interval)
-                    pass
                 else:
-                    raise GitRepositorySynchronizationException("Error while retrying git clone: %s" % e)
+                    raise GitRepositorySynchronizationException("All attempts failed while retrying git clone: %s"
+                                                                % e)
 
     @staticmethod
     def add_repo(git_repo):
@@ -281,117 +227,35 @@ class AgentGitHandler:
         # "https://host.com/path/to/repo.git"
         # "https://username@host.org/path/to/repo.git"
         # "https://username:password@host.org/path/to/repo.git" NOT RECOMMENDED
-        if repo_info.repo_username is not None and repo_info.repo_username != "":
+        # IMPORTANT: if the credentials are provided in the repo url, they must be url encoded
+        if repo_info.repo_username is not None or repo_info.repo_password is not None:
             # credentials provided, have to modify url
             repo_url = repo_info.repo_url
-            url_split = repo_url.split("//")
+            url_split = repo_url.split("://", 1)
+
+            # urlencode repo username and password
+            urlencoded_username = urllib.quote(repo_info.repo_username.strip(), safe='')
+            urlencoded_password = urllib.quote(repo_info.repo_password.strip(), safe='')
             if "@" in url_split[1]:
                 # credentials seem to be in the url, check
-                at_split = url_split[1].split("@")
-                if ":" in url_split[1] and url_split[1].index(":") < url_split[1].index("@"):
-                    # both username and password are in the url, check and return as is
-                    credential_split = at_split[0].split(":")
-                    if credential_split[0] is repo_info.repo_username and \
-                            credential_split[1] is repo_info.repo_password:
-                        # credentialed url with provided credentials, return as is
-                        return repo_info.repo_url
-                    else:
-                        # credentials wrong, need to replace
-                        return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                                   at_split[1])
+                at_split = url_split[1].split("@", 1)
+                if ":" in at_split[0]:
+                    # both username and password are in the url, return as is
+                    return repo_info.repo_url
                 else:
                     # only username is provided, need to include password
-                    return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                               at_split[1])
+                    username_in_url = at_split[0].split(":", 1)[0]
+                    return str(url_split[0] + "://" + username_in_url + ":" + urlencoded_password
+                               + "@" + at_split[1])
             else:
                 # no credentials in the url, need to include username and password
-                return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password.strip() + "@" +
-                           url_split[1])
+                return str(url_split[0] + "://" + urlencoded_username + ":" + urlencoded_password + "@" + url_split[1])
         # no credentials specified, return as is
         return repo_info.repo_url
 
     @staticmethod
-    def push(repo_info):
-        """
-        Commits and pushes new artifacts to the remote repository
-        :param repo_info:
-        :return:
-        """
-
-        git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
-        if git_repo is None:
-            # not cloned yet
-            raise GitRepositorySynchronizationException("Not a valid repository to push from. Aborting")
-
-        # Get initial HEAD so in case if push fails it can be reverted to this hash
-        # This way, commit and push becomes an single operation. No intermediate state will be left behind.
-        (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
-
-        # stage all untracked files
-        if AgentGitHandler.stage_all(git_repo.local_repo_path):
-            AgentGitHandler.log.info("Git staged untracked artifacts successfully")
-        else:
-            AgentGitHandler.log.info("Git could not stage untracked artifacts")
-
-        # check if modified files are present
-        modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
-
-        AgentGitHandler.log.debug("[Git] Modified: %s" % str(modified))
-        if not modified:
-            AgentGitHandler.log.debug("No changes detected in the local repository for tenant %s" % git_repo.tenant_id)
-            return
-
-        # commit to local repositpory
-        commit_message = "tenant [%s]'s artifacts committed to local repo at %s" \
-                         % (git_repo.tenant_id, git_repo.local_repo_path)
-        # TODO: set configuratble names, check if already configured
-        commit_name = git_repo.tenant_id
-        commit_email = "author@example.org"
-        # git config
-        AgentGitHandler.execute_git_command(["config", "user.email", commit_email], git_repo.local_repo_path)
-        AgentGitHandler.execute_git_command(["config", "user.name", commit_name], git_repo.local_repo_path)
-
-        # commit
-        (output, errors) = AgentGitHandler.execute_git_command(
-            ["commit", "-m", commit_message], git_repo.local_repo_path)
-        if errors.strip() == "":
-            commit_hash = AgentGitHandler.find_between(output, "[master", "]").strip()
-            AgentGitHandler.log.debug("Committed artifacts for tenant : %s : %s " % (git_repo.tenant_id, commit_hash))
-        else:
-            AgentGitHandler.log.exception("Committing artifacts to local repository failed for tenant: %s, Cause: %s"
-                                          % (git_repo.tenant_id, errors))
-            # revert to initial commit hash
-            AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-            return
-
-        # push to remote
-        try:
-            repo = Repo(git_repo.local_repo_path)
-            push_info = repo.remotes.origin.push()
-            if str(push_info[0].summary) is "[rejected] (fetch first)":
-                # need to pull
-                repo.remotes.origin.pull()
-                if repo.is_dirty():
-                    # auto merge failed, need to reset
-                    # TODO: what to do here?
-                    raise GitRepositorySynchronizationException(
-                        "Git pull before push operation left repository in dirty state.")
-
-                # pull successful, now push
-                repo.remotes.origin.push()
-            AgentGitHandler.log.debug("Pushed artifacts for tenant : %s" % git_repo.tenant_id)
-        except (GitCommandError, GitRepositorySynchronizationException) as e:
-            # revert to initial commit hash
-            AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
-
-            raise GitRepositorySynchronizationException(
-                "Pushing artifacts to remote repository failed for tenant %s: %s" % (git_repo.tenant_id, e))
-
-    @staticmethod
     def has_modified_files(repo_path):
         (output, errors) = AgentGitHandler.execute_git_command(["status"], repo_path=repo_path)
-        AgentGitHandler.log.debug("Git status output: %s", str(output))
-
         if "nothing to commit" in output:
             return False
         else:
@@ -426,10 +290,10 @@ class AgentGitHandler:
 
             git_repo.scheduled_update_task = async_task
             async_task.start()
-            AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %s" % git_repo.local_repo_path)
+            AgentGitHandler.log.info("Scheduled artifact synchronization task for path %s" % git_repo.local_repo_path)
         else:
-            AgentGitHandler.log.info("Artifact Synchronization Task for path %s already scheduled"
-                                     % git_repo.local_repo_path)
+            AgentGitHandler.log.debug("Artifact synchronization task for path %s already scheduled"
+                                      % git_repo.local_repo_path)
 
     @staticmethod
     def remove_repo(tenant_id):
@@ -442,10 +306,11 @@ class AgentGitHandler:
         try:
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
         except GitRepositorySynchronizationException as e:
-            AgentGitHandler.log.exception("Repository folder not deleted: %s" % e.get_message())
+            AgentGitHandler.log.exception(
+                "Could not remove repository folder for tenant:%s  %s" % (git_repo.tenant_id, e))
 
         AgentGitHandler.clear_repo(tenant_id)
-        AgentGitHandler.log.info("git repository deleted for tenant %s" % git_repo.tenant_id)
+        AgentGitHandler.log.info("Git repository deleted for tenant %s" % git_repo.tenant_id)
 
         return True
 
@@ -460,13 +325,12 @@ class AgentGitHandler:
         :exception: RuntimeError
         """
         os_env = os.environ.copy()
-
         command.insert(0, "/usr/bin/git")
+        AgentGitHandler.log.debug("Executing Git command: %s" % command)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env, cwd=repo_path)
-        output, errors = p.communicate()
-        if len(errors) > 0:
-            raise RuntimeError("Git Command execution failed: %s" % errors)
-
+        (output, errors) = p.communicate()
+        AgentGitHandler.log.debug("Git command [output] %s" % str(output))
+        AgentGitHandler.log.debug("Git command [errors] %s" % str(errors))
         return output, errors
 
 
@@ -482,20 +346,24 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
         self.auto_commit = auto_commit
 
     def execute_task(self):
-        if self.auto_checkout:
-            try:
-                self.log.debug("Running checkout job")
-                AgentGitHandler.checkout(self.repo_info)
-                # TODO: run updated scheduler extension
-            except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto checkout task failed: %s" % e.get_message())
-
+        # DO NOT change this order. The commit job should run first here.
+        # This is because if the cloned location contain any un-tracked files then
+        # those files should be committed and pushed first
         if self.auto_commit:
             try:
-                self.log.debug("Running commit job")
-                AgentGitHandler.push(self.repo_info)
+                self.log.debug("Running commit job...")
+                Config.artifact_commit_plugin.plugin_object.commit(self.repo_info)
             except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto commit failed: %s" % e.get_message())
+                self.log.exception("Auto commit failed: %s" % e)
+
+        if self.auto_checkout:
+            try:
+                self.log.debug("Running checkout job...")
+                Config.artifact_checkout_plugin.plugin_object.checkout(self.repo_info)
+            except GitRepositorySynchronizationException as e:
+                self.log.exception("Auto checkout task failed: %s" % e)
+
+        self.log.debug("ArtifactUpdateTask end of iteration.")
 
 
 class GitRepository:
@@ -527,6 +395,10 @@ class GitUtils:
     """
     Util methods required by the AgentGitHandler
     """
+
+    def __init__(self):
+        pass
+
     log = LogFactory().get_log(__name__)
 
     @staticmethod
@@ -539,12 +411,12 @@ class GitUtils:
         """
         try:
             os.mkdir(path)
-            GitUtils.log.info("Successfully created directory [%s]" % path)
+            GitUtils.log.debug("Successfully created directory [%s]" % path)
             # return True
         except OSError as e:
             raise GitRepositorySynchronizationException("Directory creating failed in [%s]. " % e)
 
-        # return False
+            # return False
 
     @staticmethod
     def delete_folder_tree(path):

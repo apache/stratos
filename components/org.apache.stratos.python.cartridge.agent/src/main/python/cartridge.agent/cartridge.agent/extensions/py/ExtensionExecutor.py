@@ -35,8 +35,8 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
 
         try:
             output, errors = ExtensionExecutor.execute_script(event_name + ".sh", extension_values)
-        except OSError:
-            raise RuntimeError("Could not find an extension file for event %s" % event_name)
+        except Exception as e:
+            raise RuntimeError("Could not find an extension file for event %s %s" % (event_name, e))
 
         if len(errors) > 0:
             raise RuntimeError("Extension execution failed for script %s: %s" % (event_name, errors))

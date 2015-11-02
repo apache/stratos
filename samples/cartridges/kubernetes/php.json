@@ -23,7 +23,7 @@
     "iaasProvider": [
         {
             "type": "kubernetes",
-            "imageId": "stratos/php:4.2.0",
+            "imageId": "stratos/php:4.1.5",
             "networkInterfaces": [
             ],
             "property": [

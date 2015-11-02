@@ -1,0 +1,19 @@
+{
+  "id": "Member_Details",
+  "title": "Member Details",
+  "type": "gadget",
+  "thumbnail": "local://store/carbon.super/gadget/usa-business-revenue/index.png",
+  "data": {
+    "url": "local://store/carbon.super/gadget/Member_Information/index.xml"
+  },
+  "listen": {
+    "member-details-filter": {
+      "type": "address",
+      "description": "Used to filter based on state"
+    },
+    "auto-update": {
+      "type": "boolean",
+      "description": "Used to filter based on state"
+    }
+  }
+}

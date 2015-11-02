@@ -49,6 +49,9 @@ try {
         case "signupapplication":
             formSubmit = util.RESTCalls.signupApplication(applicationId, formPayload);
             break;
+        case "unsignupapplication":
+            formSubmit = util.RESTCalls.removeSignupApplication(applicationId);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 

@@ -1,68 +1,72 @@
 {
-    "clusterId": "kubernetes-cluster-ec2",
-    "description": "Kubernetes Cluster EC2",
-    "kubernetesMaster": {
-        "hostId": "KubHostMaster1",
-        "hostname": "master.dev.kubernetes.example.org",
-        "privateIPAddress": "10.175.144.104",
-        "publicIPAddress": "54.151.228.48",
-        "property": [
-        ]
-    },
-    "portRange": {
-        "upper": "32767",
-        "lower": "30000"
-    },
-    "kubernetesHosts": [
-        {
-            "hostId": "KubHostSlave1",
-            "hostname": "slave1.dev.kubernetes.example.org",
-            "privateIPAddress": "10.151.10.16",
-            "publicIPAddress": "54.179.64.66",
-            "property": [
-            ]
-        },
-        {
-            "hostId": "KubHostSlave2",
-            "hostname": "slave2.dev.kubernetes.example.org",
-            "privateIPAddress": "10.150.148.75",
-            "publicIPAddress": "54.151.241.37",
-            "property": [
-            ]
-        },
-        {
-            "hostId": "KubHostSlave3",
-            "hostname": "slave2.dev.kubernetes.example.org",
-            "privateIPAddress": "10.148.100.77",
-            "publicIPAddress": "54.179.225.120",
-            "property": [
-            ]
-        }
-    ],
+  "clusterId": "kubernetes-cluster-ec2",
+  "description": "Kubernetes Cluster EC2",
+  "kubernetesMaster": {
+    "hostId": "KubHostMaster1",
+    "hostname": "master.dev.kubernetes.example.org",
+    "privateIPAddress": "10.175.144.104",
+    "publicIPAddress": "54.151.228.48",
     "property": [
-        {
-            "name": "payload_parameter.MB_IP",
-            "value": "54.179.197.243"
-        },
-        {
-            "name": "payload_parameter.MB_PORT",
-            "value": "1883"
-        },
-        {
-            "name": "payload_parameter.CEP_IP",
-            "value": "54.179.197.243"
-        },
-        {
-            "name": "payload_parameter.CEP_PORT",
-            "value": "7711"
-        },
-        {
-            "name": "payload_parameter.LOG_LEVEL",
-            "value": "DEBUG"
-        },
-        {
-            "name": "payload_parameter.METADATA_SERVICE_URL",
-            "value": "https://54.179.197.243:9443"
-        }
     ]
+  },
+  "portRange": {
+    "upper": "32767",
+    "lower": "30000"
+  },
+  "kubernetesHosts": [
+    {
+      "hostId": "KubHostSlave1",
+      "hostname": "slave1.dev.kubernetes.example.org",
+      "privateIPAddress": "10.151.10.16",
+      "publicIPAddress": "54.179.64.66",
+      "property": [
+      ]
+    },
+    {
+      "hostId": "KubHostSlave2",
+      "hostname": "slave2.dev.kubernetes.example.org",
+      "privateIPAddress": "10.150.148.75",
+      "publicIPAddress": "54.151.241.37",
+      "property": [
+      ]
+    },
+    {
+      "hostId": "KubHostSlave3",
+      "hostname": "slave2.dev.kubernetes.example.org",
+      "privateIPAddress": "10.148.100.77",
+      "publicIPAddress": "54.179.225.120",
+      "property": [
+      ]
+    }
+  ],
+  "property": [
+    {
+      "name": "payload_parameter.MB_IP",
+      "value": "54.179.197.243"
+    },
+    {
+      "name": "payload_parameter.MB_PORT",
+      "value": "1883"
+    },
+    {
+      "name": "payload_parameter.MB_USERNAME",
+      "value": "system"
+    },
+    {
+      "name": "payload_parameter.MB_PASSWORD",
+      "value": "manager"
+    },
+    {
+      "name": "payload_parameter.CEP_URLS",
+      "value": "54.179.197.243:7711"
+    },
+    {
+      "name": "payload_parameter.LOG_LEVEL",
+      "value": "DEBUG"
+    },
+    {
+      "name": "payload_parameter.METADATA_SERVICE_URL",
+      "value": "https://54.179.197.243:9443"
+    }
+  ]
 }

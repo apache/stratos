@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.stratos.autoscaler</artifactId>
@@ -164,11 +164,6 @@
             <version>${carbon.kernel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.metadata.client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
             <version>4.2.3</version>
@@ -209,6 +204,12 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.stratos.common.services.*; version="${project.version}",
+                            org.apache.stratos.common.threading.*; version="${project.version}",
+                            org.apache.stratos.common.client.*; version="${project.version}",
+                            org.apache.stratos.common.partition.*; version="${project.version}",
+                            org.apache.stratos.common.constants.*; version="${project.version}",
+                            org.apache.stratos.common.*; version="${project.version}",
+                            org.apache.stratos.cloud.controller.stub.*; version="${project.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>

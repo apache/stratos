@@ -27,15 +27,23 @@ class ICartridgeAgentPlugin(IPlugin):
         raise NotImplementedError
 
 
-class IArtifactManagementPlugin(IPlugin):
+class IArtifactCheckoutPlugin(IPlugin):
     """
     To implement an artifact management plugin to manage artifact distribution using a custom version control tool
+    It should implement checkout method which will pull artifacts from a remote repository
     """
 
-    def checkout(self):
+    def checkout(self, repo_info):
         raise NotImplementedError
 
-    def push(self):
+
+class IArtifactCommitPlugin(IPlugin):
+    """
+    To implement an artifact management plugin to manage artifact distribution using a custom version control tool
+    It should implement commit method which will push artifacts to a remote repository
+    """
+
+    def commit(self, repo_info):
         raise NotImplementedError
 
 

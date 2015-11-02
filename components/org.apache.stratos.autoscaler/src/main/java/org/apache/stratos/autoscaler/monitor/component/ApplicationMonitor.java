@@ -445,30 +445,33 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     removeInstanceFromFromInactiveMap(childId, instanceId);
                     removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-                    ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
-                    if (instance != null) {
-                        if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
-                                instance.getStatus() == ApplicationStatus.Terminated) {
-                            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
-                                    appId, instanceId);
-                        } else {
-                            Monitor monitor = getMonitor(childId);
-                            boolean active = false;
-                            if (monitor instanceof GroupMonitor) {
-                                //Checking whether the Group is still active in case the faulty member
-                                // identified after scaling up
-                                active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
-                            }
-                            if (!active) {
-                                onChildTerminatedEvent(childId, instanceId);
+                    //If application is forcefully un-deployed, no need to handle here.
+                    if(!force) {
+                        ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
+                        if (instance != null) {
+                            if (isTerminating() || instance.getStatus() == ApplicationStatus.Terminating ||
+                                    instance.getStatus() == ApplicationStatus.Terminated) {
+                                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
+                                        appId, instanceId);
                             } else {
-                                log.info("[Group Instance] " + instanceId + " is still active " +
-                                        "upon termination of the [child ] " + childId);
+                                Monitor monitor = getMonitor(childId);
+                                boolean active = false;
+                                if (monitor instanceof GroupMonitor) {
+                                    //Checking whether the Group is still active in case the faulty member
+                                    // identified after scaling up
+                                    active = verifyGroupStatus(childId, instanceId, GroupStatus.Active);
+                                }
+                                if (!active) {
+                                    onChildTerminatedEvent(childId, instanceId);
+                                } else {
+                                    log.info("[Group Instance] " + instanceId + " is still active " +
+                                            "upon termination of the [child ] " + childId);
+                                }
                             }
+                        } else {
+                            log.warn("The required instance cannot be found in the the [GroupMonitor] " +
+                                    id);
                         }
-                    } else {
-                        log.warn("The required instance cannot be found in the the [GroupMonitor] " +
-                                id);
                     }
                 }
             }

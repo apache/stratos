@@ -31,9 +31,8 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.Properties;
 
@@ -44,50 +43,36 @@ public class CloudControllerServiceUtil {
 
     private static final Log log = LogFactory.getLog(CloudControllerServiceUtil.class);
 
-    public static Iaas buildIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-        return iaasProvider.getIaas();
-    }
-
     /**
-     * Update the topology, publish statistics to BAM, remove member context
+     * Update the topology, publish statistics to DAS, remove member context
      * and persist cloud controller context.
      *
      * @param memberContext
      */
-    public static void executeMemberTerminationPostProcess(MemberContext memberContext) {
+    public static void executeMemberTerminationPostProcess(MemberContext memberContext) throws RegistryException {
         if (memberContext == null) {
-            return;
+            throw new RuntimeException("Member context is null. Could not execute member termination post process");
         }
-
         String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
 
         // Update the topology
-        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
-                memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
-                partitionId, memberContext.getMemberId());
-
-        // Publish statistics to BAM
-        BAMUsageDataPublisher.publish(memberContext.getMemberId(),
-                partitionId,
-                memberContext.getNetworkPartitionId(),
-                memberContext.getClusterId(),
-                memberContext.getCartridgeType(),
-                MemberStatus.Terminated.toString(),
-                null);
+        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(),
+                memberContext.getNetworkPartitionId(), partitionId, memberContext.getMemberId());
 
         // Remove member context
-        CloudControllerContext.getInstance().removeMemberContext(memberContext.getClusterId(), memberContext.getMemberId());
+        CloudControllerContext.getInstance()
+                .removeMemberContext(memberContext.getClusterId(), memberContext.getMemberId());
 
         // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
     }
 
     public static boolean isValidIpAddress(String ip) {
-        boolean isValid = InetAddresses.isInetAddress(ip);
-        return isValid;
+        return InetAddresses.isInetAddress(ip);
     }
 
-    public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
+    public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider)
+            throws InvalidPartitionException {
         if (iaasProvider != null) {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
@@ -104,7 +89,8 @@ public class CloudControllerServiceUtil {
         }
     }
 
-    public static boolean validatePartition(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
+    public static boolean validatePartition(Partition partition, IaasProvider iaasProvider)
+            throws InvalidPartitionException {
         validatePartitionAndGetIaasProvider(partition, iaasProvider);
         return true;
     }

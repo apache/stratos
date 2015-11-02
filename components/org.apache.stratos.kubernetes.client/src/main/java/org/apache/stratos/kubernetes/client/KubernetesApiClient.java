@@ -46,7 +46,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * Create new pod
      *
      * @param podId                Identifier of the pod
-     * @param podLabel             Pod name to be used by the pod label
+     * @param podName              Pod name to be used by the pod label
+     * @param podLabels            Map of labels to be applied to the pod
+     * @param annotations          Map of annotations to be applied to the pod
      * @param dockerImage          Docker image to be used by the pod
      * @param cpu                  Number of cpu cores
      * @param memory               Memory allocation in megabytes
@@ -55,35 +57,31 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     @Override
-    public void createPod(String podId, String podLabel, String dockerImage, int cpu, int memory, List<ContainerPort> ports,
-                          List<EnvVar> environmentVariables)
+    public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
+                          String dockerImage, String cpu,
+                          String memory, List<ContainerPort> ports, List<EnvVar> environmentVariables)
             throws KubernetesClientException {
 
         try {
-            int memoryInMB = 1024 * 1024 * memory;
+
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Creating kubernetes pod: [pod-id] %s [pod-name] %s [docker-image] %s " +
-                                "[cpu] %d [memory] %d MB [ports] %s",
-                        podId, podLabel, dockerImage, cpu, memoryInMB, ports));
+                        "[cpu] %s [memory] %s [ports] %s", podId, podLabels, dockerImage, cpu, memory, ports));
             }
 
             // Create pod definition
             Pod pod = new Pod();
             pod.setApiVersion(Pod.ApiVersion.V_1);
             pod.setKind(KubernetesConstants.KIND_POD);
-
             pod.setSpec(new PodSpec());
             pod.setMetadata(new ObjectMeta());
-
             pod.getMetadata().setName(podId);
-
-            Map<String, String> labels = new HashMap<String, String>();
-            labels.put(KubernetesConstants.LABEL_NAME, podLabel);
-            pod.getMetadata().setLabels(labels);
+            pod.getMetadata().setLabels(podLabels);
+            pod.getMetadata().setAnnotations(annotations);
 
             // Set container template
             Container containerTemplate = new Container();
-            containerTemplate.setName(podLabel);
+            containerTemplate.setName(podName);
             containerTemplate.setImage(dockerImage);
             containerTemplate.setEnv(environmentVariables);
             List<Container> containerTemplates = new ArrayList<Container>();
@@ -93,8 +91,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             // Set resource limits
             ResourceRequirements resources = new ResourceRequirements();
             Map<String, Quantity> limits = new HashMap<String, Quantity>();
-            limits.put(KubernetesConstants.RESOURCE_CPU, new Quantity(String.valueOf(cpu)));
-            limits.put(KubernetesConstants.RESOURCE_MEMORY, new Quantity(String.valueOf(memoryInMB)));
+            limits.put(KubernetesConstants.RESOURCE_CPU, new Quantity(cpu));
+            limits.put(KubernetesConstants.RESOURCE_MEMORY, new Quantity(memory));
             resources.setLimits(limits);
             containerTemplate.setResources(resources);
 
@@ -110,7 +108,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Kubernetes pod created successfully: [pod-id] %s", podId));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String msg = String.format("Could not create kubernetes pod: [pod-id] %s", podId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -121,7 +120,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public Pod getPod(String podId) throws KubernetesClientException {
         try {
             return kubernetesClient.getPod(podId);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String msg = String.format("Could not retrieve kubernetes pod: [pod-id] %s", podId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -132,7 +132,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public List<Pod> getPods() throws KubernetesClientException {
         try {
             return kubernetesClient.getPods().getItems();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String msg = "Error while retrieving kubernetes pods.";
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -143,7 +144,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public void deletePod(String podId) throws KubernetesClientException {
         try {
             kubernetesClient.deletePod(podId);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = String.format("Could not delete kubernetes pod: [pod-id] %s", podId);
             log.error(message, e);
             throw new KubernetesClientException(message, e);
@@ -154,7 +156,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * Create kubernetes service
      *
      * @param serviceId         Service id
-     * @param serviceLabel      Service name to be used by the label name
+     * @param serviceName       Service name to be used by the label name
+     * @param serviceLabels     Service labels map
+     * @param annotations       Map of annotations to be applied to the service
      * @param servicePort       Port to be exposed by the kubernetes node
      * @param containerPortName Container port name defined in the port label
      * @param containerPort     Container port
@@ -163,27 +167,28 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @throws KubernetesClientException
      */
     @Override
-    public void createService(String serviceId, String serviceLabel, int servicePort, String serviceType,
-                              String containerPortName, int containerPort, String sessionAffinity)
+    public void createService(String serviceId, String serviceName, Map<String, String> serviceLabels, Map<String,
+            String> annotations, int servicePort, String serviceType, String containerPortName, int containerPort,
+                              String sessionAffinity)
             throws KubernetesClientException {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Creating kubernetes service: [service-id] %s [service-name] %s [service-port] " +
-                                "%d [container-port-name] %s [service-type] %s", serviceId, serviceLabel, servicePort,
-                        containerPortName, serviceType));
+                log.debug(
+                        String.format("Creating kubernetes service: [service-id] %s [service-name] %s [service-port] " +
+                                        "%d [container-port-name] %s [service-type] %s", serviceId, serviceName,
+                                servicePort, containerPortName, serviceType));
             }
 
             // Create service definition
             Service service = new Service();
             service.setSpec(new ServiceSpec());
             service.setMetadata(new ObjectMeta());
-
             service.setApiVersion(Service.ApiVersion.V_1);
             service.setKind(KubernetesConstants.KIND_SERVICE);
-
             service.getMetadata().setName(serviceId);
             service.getSpec().setSessionAffinity(sessionAffinity);
+            service.getMetadata().setAnnotations(annotations);
 
             if (serviceType.equals(KubernetesConstants.NODE_PORT)) {
                 service.getSpec().setType(KubernetesConstants.NODE_PORT);
@@ -203,14 +208,12 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             ports.add(port);
             service.getSpec().setPorts(ports);
 
-            // Set label
-            Map<String, String> labels = new HashMap<String, String>();
-            labels.put(KubernetesConstants.LABEL_NAME, serviceLabel);
-            service.getMetadata().setLabels(labels);
+            // Set labels
+            service.getMetadata().setLabels(serviceLabels);
 
             // Set service selector
             Map<String, String> selector = new HashMap<String, String>();
-            selector.put(KubernetesConstants.LABEL_NAME, serviceLabel);
+            selector.put(KubernetesConstants.SERVICE_SELECTOR_LABEL, serviceName);
             service.getSpec().setSelector(selector);
 
             // Invoke the api to create the service
@@ -218,12 +221,13 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Kubernetes service created successfully: [service-id] %s [service-name] %s " +
-                                "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceLabel,
+                                "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceName,
                         servicePort, containerPortName, containerPort));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String message = String.format("Could not create kubernetes service: [service-id] %s [service-name] %s " +
-                            "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceLabel,
+                            "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceName,
                     servicePort, containerPortName, containerPort);
             log.error(message, e);
             throw new KubernetesClientException(message, e);
@@ -235,7 +239,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throws KubernetesClientException {
         try {
             return kubernetesClient.getService(serviceId);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String msg = String.format("Could not retrieve kubernetes service: [service-id] %s", serviceId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -246,7 +251,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public List<Service> getServices() throws KubernetesClientException {
         try {
             return kubernetesClient.getServices().getItems();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String msg = "Could not retrieve kubernetes services";
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -267,7 +273,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Kubernetes service deleted successfully: [service-id] %s", serviceId));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             String msg = String.format("Could not delete kubernetes service: [service-id] %s", serviceId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);

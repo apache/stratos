@@ -1,0 +1,17 @@
+{
+    "id": "application-policy-sample-application-startup-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-sample-application-startup-test"
+    ],
+    "properties": [
+        {
+            "name": "networkPartitionGroups",
+            "value": "network-partition-sample-application-startup-test"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

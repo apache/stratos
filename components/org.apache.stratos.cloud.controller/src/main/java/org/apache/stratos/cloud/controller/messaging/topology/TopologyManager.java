@@ -21,10 +21,12 @@ package org.apache.stratos.cloud.controller.messaging.topology;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
 import org.apache.stratos.messaging.domain.topology.Topology;
-
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
  * Persistence and retrieval of Topology from Registry
@@ -78,15 +80,15 @@ public class TopologyManager {
     /**
      * Update in-memory topology and persist it in registry.
      *
-     * @param topology_ Topology
+     * @param updatedTopology
      */
-    public static void updateTopology(Topology topology_) {
+    public static void updateTopology(Topology updatedTopology) throws RegistryException {
         synchronized (TopologyManager.class) {
             if (log.isDebugEnabled()) {
                 log.debug("Updating topology");
             }
-            topology = topology_;
-            CloudControllerUtil.persistTopology(topology);
+            topology = updatedTopology;
+            RegistryManager.getInstance().persist(CloudControllerConstants.TOPOLOGY_RESOURCE, topology);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Topology updated: %s", toJson(topology)));
             }

@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.autoscaler.context.partition;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +25,6 @@ import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.partition.PartitionRef;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -208,6 +206,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 MemberContext pendingMember = iterator.next();
                 if (id.equals(pendingMember.getMemberId())) {
                     iterator.remove();
+                    if (memberStatsContexts.get(pendingMember.getMemberId()) != null) {
+                        memberStatsContexts.remove(pendingMember.getMemberId());
+                    }
                     return true;
                 }
 

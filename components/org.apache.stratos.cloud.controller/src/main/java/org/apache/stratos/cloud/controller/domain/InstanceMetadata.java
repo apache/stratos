@@ -30,8 +30,8 @@ public class InstanceMetadata implements Serializable {
 
     private String hostname;
     private String hypervisor;
-    private int cpu;
-    private int ram;
+    private String cpu;
+    private String ram;
     private String imageId;
     private int loginPort;
     private String operatingSystemName;
@@ -55,11 +55,11 @@ public class InstanceMetadata implements Serializable {
         this.hypervisor = hypervisor;
     }
 
-    public int getRam() {
+    public String getRam() {
         return ram;
     }
 
-    public void setRam(int ram) {
+    public void setRam(String ram) {
         this.ram = ram;
     }
 
@@ -111,11 +111,11 @@ public class InstanceMetadata implements Serializable {
         this.operatingSystem64bit = operatingSystem64bit;
     }
 
-    public void setCpu(int cpu) {
+    public void setCpu(String cpu) {
         this.cpu = cpu;
     }
 
-    public int getCpu() {
+    public String getCpu() {
         return cpu;
     }
 }

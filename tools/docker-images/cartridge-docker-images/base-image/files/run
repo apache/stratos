@@ -26,7 +26,7 @@
 
 source /root/.bashrc
 
-export STRATOS_VERSION="4.2.0-SNAPSHOT"
+export STRATOS_VERSION="4.1.5-SNAPSHOT"
 export PCA_HOME="/mnt/apache-stratos-python-cartridge-agent-${STRATOS_VERSION}"
 
 set -o posix ; set | sed -e ':a;N;$!ba;s/\n/,/g' > ${PCA_HOME}/payload/launch-params
@@ -47,17 +47,10 @@ fi
 
 
 # defaults to the message broker IP if not set
-if [ -z "${CEP_IP}" ]; then
-	sed -i "s/CEP-IP/${MB_IP}/g" ${PCA_HOME}/agent.conf
+if [ -z "${CEP_URLS}" ]; then
+	sed -i "s/CEP-URLS/${MB_IP}:7711/g" ${PCA_HOME}/agent.conf
 else
-	sed -i "s/CEP-IP/${CEP_IP}/g" ${PCA_HOME}/agent.conf
-fi
-
-
-if [ -z "${CEP_PORT}" ]; then
-	sed -i "s/CEP-PORT/7711/g" ${PCA_HOME}/agent.conf
-else
-	sed -i "s/CEP-PORT/${CEP_PORT}/g" ${PCA_HOME}/agent.conf
+	sed -i "s/CEP-URLS/${CEP_URLS}/g" ${PCA_HOME}/agent.conf
 fi
 
 if [ -z "${CEP_USERNAME}" ]; then
@@ -191,6 +184,18 @@ if [ -z "${LOG_LEVEL}" ]; then
 	sed -i "s/LOG_LEVEL/INFO/g" ${PCA_HOME}/logging.ini
 else
 	sed -i "s/LOG_LEVEL/${LOG_LEVEL}/g" ${PCA_HOME}/logging.ini
+fi
+
+if [ -z "${MB_USERNAME}" ]; then
+	sed -i "s/MB-USERNAME/ /g" ${PCA_HOME}/agent.conf
+else
+	sed -i "s#MB-USERNAME#${MB_USERNAME}#g" ${PCA_HOME}/agent.conf
+fi
+
+if [ -z "${MB_PASSWORD}" ]; then
+	sed -i "s/MB-PASSWORD/ /g" ${PCA_HOME}/agent.conf
+else
+	sed -i "s#MB-PASSWORD#${MB_PASSWORD}#g" ${PCA_HOME}/agent.conf
 fi
 
 # copy custom plugins to PCA

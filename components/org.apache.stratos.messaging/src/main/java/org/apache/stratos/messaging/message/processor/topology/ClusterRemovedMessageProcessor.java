@@ -107,6 +107,13 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
         } else {
 
             Cluster cluster = service.getCluster(event.getClusterId());
+            if(cluster == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s",
+                            event.getServiceName(), event.getClusterId()));
+                }
+                return false;
+            }
 
             // Apply application filter
             if(TopologyApplicationFilter.apply(cluster.getAppId())) {

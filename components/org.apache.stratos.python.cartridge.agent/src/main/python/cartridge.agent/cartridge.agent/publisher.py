@@ -24,22 +24,14 @@ import healthstats
 import constants
 from config import Config
 
-
 log = LogFactory().get_log(__name__)
-
-started = False
-activated = False
-ready_to_shutdown = False
-maintenance = False
-
 publishers = {}
 """ :type : dict[str, EventPublisher] """
 
 
 def publish_instance_started_event():
-    global started, log
-    if not started:
-        log.info("Publishing instance started event")
+    if not Config.started:
+        log.info("Publishing instance started event...")
 
         application_id = Config.application_id
         service_name = Config.service_name
@@ -62,15 +54,14 @@ def publish_instance_started_event():
 
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)
-        started = True
+        Config.started = True
         log.info("Instance started event published")
     else:
         log.warn("Instance already started")
 
 
-def publish_instance_activated_event(health_stat_plugin):
-    global activated, log
-    if not activated:
+def publish_instance_activated_event():
+    if not Config.activated:
         # Wait for all ports to be active
         listen_address = Config.listen_address
         configuration_ports = Config.ports
@@ -80,7 +71,7 @@ def publish_instance_activated_event(health_stat_plugin):
             int(Config.read_property("port.check.timeout", critical=False)))
 
         if ports_active:
-            log.info("Publishing instance activated event")
+            log.info("Publishing instance activated event...")
             service_name = Config.service_name
             cluster_id = Config.cluster_id
             member_id = Config.member_id
@@ -116,25 +107,25 @@ def publish_instance_activated_event(health_stat_plugin):
                         interval = interval_default
                 else:
                     interval = interval_default
-                health_stats_publisher = healthstats.HealthStatisticsPublisherManager(interval, health_stat_plugin)
+                health_stats_publisher = healthstats.HealthStatisticsPublisherManager(interval)
                 log.info("Starting Health statistics publisher with interval %r" % interval)
                 health_stats_publisher.start()
             else:
                 log.warn("Statistics publisher is disabled")
 
-            activated = True
+            Config.activated = True
             log.info("Health statistics notifier started")
         else:
-            log.error("Ports activation timed out. Aborting InstanceActivatedEvent publishing [IPAddress] %s [Ports] %s"
-                      % (listen_address, configuration_ports))
+            log.error(
+                "Ports activation timed out. Aborting publishing instance activated event [IPAddress] %s [Ports] %s"
+                % (listen_address, configuration_ports))
     else:
         log.warn("Instance already activated")
 
 
 def publish_maintenance_mode_event():
-    global maintenance, log
-    if not maintenance:
-        log.info("Publishing instance maintenance mode event")
+    if not Config.maintenance:
+        log.info("Publishing instance maintenance mode event...")
 
         service_name = Config.service_name
         cluster_id = Config.cluster_id
@@ -156,16 +147,15 @@ def publish_maintenance_mode_event():
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_MAINTENANCE_MODE_EVENT)
         publisher.publish(instance_maintenance_mode_event)
 
-        maintenance = True
-        log.info("Instance Maintenance mode event published")
+        Config.maintenance = True
+        log.info("Instance maintenance mode event published")
     else:
-        log.warn("Instance already in a Maintenance mode...")
+        log.warn("Instance already in a maintenance mode")
 
 
 def publish_instance_ready_to_shutdown_event():
-    global ready_to_shutdown, log
-    if not ready_to_shutdown:
-        log.info("Publishing instance activated event")
+    if not Config.ready_to_shutdown:
+        log.info("Publishing instance activated event...")
 
         service_name = Config.service_name
         cluster_id = Config.cluster_id
@@ -174,7 +164,7 @@ def publish_instance_ready_to_shutdown_event():
         cluster_instance_id = Config.cluster_instance_id
         network_partition_id = Config.network_partition_id
         partition_id = Config.partition_id
-        
+
         instance_shutdown_event = InstanceReadyToShutdownEvent(
             service_name,
             cluster_id,
@@ -187,7 +177,7 @@ def publish_instance_ready_to_shutdown_event():
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_READY_TO_SHUTDOWN_EVENT)
         publisher.publish(instance_shutdown_event)
 
-        ready_to_shutdown = True
+        Config.ready_to_shutdown = True
         log.info("Instance ReadyToShutDown event published")
     else:
         log.warn("Instance already in a ReadyToShutDown event...")
@@ -204,11 +194,23 @@ class EventPublisher:
     """
     Handles publishing events to topics to the provided message broker
     """
+
     def __init__(self, topic):
         self.__topic = topic
 
     def publish(self, event):
         mb_ip = Config.read_property(constants.MB_IP)
         mb_port = Config.read_property(constants.MB_PORT)
+        mb_username = Config.read_property(constants.MB_USERNAME, False)
+        mb_password = Config.read_property(constants.MB_PASSWORD, False)
+        if mb_username is None:
+            auth = None
+        else:
+            auth = {"username": mb_username, "password": mb_password}
+
         payload = event.to_json()
-        publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port)
+        publish.single(self.__topic,
+                       payload,
+                       hostname=mb_ip,
+                       port=mb_port,
+                       auth=auth)

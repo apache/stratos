@@ -27,8 +27,7 @@ import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.concurrent.locks.Lock;
 
@@ -84,16 +83,6 @@ public class InstanceCreator implements Runnable {
 
             // Update topology
             TopologyBuilder.handleMemberInitializedEvent(memberContext);
-
-            // Publish instance creation statistics to BAM
-            BAMUsageDataPublisher.publish(
-                    memberContext.getMemberId(),
-                    memberContext.getPartition().getId(),
-                    memberContext.getNetworkPartitionId(),
-                    memberContext.getClusterId(),
-                    memberContext.getCartridgeType(),
-                    MemberStatus.Initialized.toString(),
-                    memberContext.getInstanceMetadata());
         } catch (Exception e) {
             String message = String.format("Could not start instance: [cartridge-type] %s [cluster-id] %s",
                     memberContext.getCartridgeType(), memberContext.getClusterId());
@@ -105,9 +94,9 @@ public class InstanceCreator implements Runnable {
         }
     }
 
-    private MemberContext startInstance(Iaas iaas, MemberContext memberContext, byte[] payload) throws CartridgeNotFoundException {
+    private MemberContext startInstance(Iaas iaas, MemberContext memberContext, byte[] payload)
+            throws CartridgeNotFoundException, RegistryException {
         memberContext = iaas.startInstance(memberContext, payload);
-
         // Validate instance id
         String instanceId = memberContext.getInstanceId();
         if (StringUtils.isBlank(instanceId)) {
@@ -125,7 +114,6 @@ public class InstanceCreator implements Runnable {
             log.debug(String.format("Member context updated: [application] %s [cartridge] %s [member] %s",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId()));
         }
-
         return memberContext;
     }
 

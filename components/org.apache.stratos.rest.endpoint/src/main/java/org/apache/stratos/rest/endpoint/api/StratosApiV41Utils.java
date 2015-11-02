@@ -69,6 +69,7 @@ import org.apache.stratos.manager.user.management.StratosUserManagerUtils;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -81,6 +82,7 @@ import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.stratos.common.exception.StratosException;
@@ -106,6 +108,8 @@ public class StratosApiV41Utils {
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     public static final String KUBERNETES_IAAS_PROVIDER = "kubernetes";
+    private static final String METADATA_REG_PATH = "metadata/";
+
 
     /**
      * Add New Cartridge
@@ -1895,17 +1899,57 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
             try {
                 autoscalerServiceClient.undeployApplication(applicationId, force);
-            } catch (RemoteException e) {
+
+                try {
+                    clearMetadata(applicationId);
+                } catch (RestAPIException e) {
+                    String message = "Could not remove application metadata: [application-id] " + applicationId;
+                    log.error(message, e);
+                    throw new RestAPIException(message, e);
+                }
+            } catch (RemoteException | AutoscalerServiceApplicationDefinitionExceptionException
+                    | AutoscalerServiceRemoteExceptionException |
+                    AutoscalerServiceStratosManagerServiceApplicationSignUpExceptionExceptionException e) {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
-                String message = "Could not undeploy application: [application-id] " + applicationId;
+            } catch (AutoscalerServiceUnremovableApplicationExceptionException e) {
+                String message = "Could not undeploy application: [application-id] " + applicationId + " since it has" +
+                        " application signups";
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
         }
     }
+
+    private static void clearMetadata(String applicationId) throws RestAPIException {
+
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+        String resourcePath = METADATA_REG_PATH + applicationId;
+        Registry registry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getRegistry(RegistryType.SYSTEM_GOVERNANCE);
+        try {
+            registry.beginTransaction();
+            if (registry.resourceExists(resourcePath)) {
+                registry.delete(resourcePath);
+                log.info(String.format("Application metadata removed: [application-id] %s", applicationId));
+            }
+            registry.commitTransaction();
+        } catch (RegistryException e) {
+            try {
+                registry.rollbackTransaction();
+            }
+            catch (RegistryException e1) {
+                log.error("Could not rollback transaction", e1);
+            }
+            throw new RestAPIException(String.format("Application metadata removed: [application-id] %s",
+                    applicationId), e);
+        }
+    }
+
 
     /**
      * Get Application Runtime
@@ -2384,9 +2428,10 @@ public class StratosApiV41Utils {
      *
      * @param applicationId         applicationId
      * @param applicationSignUpBean ApplicationSignUpBean
+     * @param tenantId
      * @throws RestAPIException
      */
-    public static void addApplicationSignUp(String applicationId, ApplicationSignUpBean applicationSignUpBean)
+    public static void addApplicationSignUp(String applicationId, ApplicationSignUpBean applicationSignUpBean, int tenantId)
             throws RestAPIException {
 
         if (StringUtils.isBlank(applicationId)) {
@@ -2400,8 +2445,8 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application not found: [application-id] " + applicationId);
         }
 
-        if (!APPLICATION_STATUS_DEPLOYED.equals(applicationBean.getStatus())) {
-            throw new RestAPIException("Application has not been deployed: [application-id] " + applicationId);
+        if (!ApplicationStatus.Active.equals(application.getStatus())) {
+            throw new RestAPIException("Application has not been activated: [application-id] " + applicationId);
         }
 
         if (!applicationBean.isMultiTenant()) {
@@ -2416,8 +2461,6 @@ public class StratosApiV41Utils {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding applicationBean signup: [application-id] %s", applicationId));
             }
-
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(
                     applicationSignUpBean);
@@ -2534,9 +2577,10 @@ public class StratosApiV41Utils {
      * Remove Application SignUp
      *
      * @param applicationId applicationId
+     * @param tenantId
      * @throws RestAPIException
      */
-    public static void removeApplicationSignUp(String applicationId) throws RestAPIException {
+    public static void removeApplicationSignUp(String applicationId, int tenantId) throws RestAPIException {
         if (StringUtils.isBlank(applicationId)) {
             throw new RestAPIException("Application id is null");
         }
@@ -2549,8 +2593,6 @@ public class StratosApiV41Utils {
         if (!application.isMultiTenant()) {
             throw new RestAPIException("Application singups not available for single-tenant applications");
         }
-
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
@@ -3236,7 +3278,7 @@ public class StratosApiV41Utils {
      * @return TenantInfoBean
      * @throws Exception
      */
-    public static org.apache.stratos.common.beans.TenantInfoBean getTenantByDomain(String tenantDomain) throws Exception {
+    public static org.apache.stratos.common.beans.TenantInfoBean getTenantByDomain(String tenantDomain) throws RestAPIException {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
 
@@ -3247,7 +3289,7 @@ public class StratosApiV41Utils {
             String msg = "Error in retrieving the tenant id for the tenant domain: " +
                     tenantDomain + ".";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg, e);
         }
         Tenant tenant;
         try {
@@ -3255,7 +3297,7 @@ public class StratosApiV41Utils {
         } catch (UserStoreException e) {
             String msg = "Error in retrieving the tenant from the tenant manager.";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg, e);
         }
 
         TenantInfoBean bean;
@@ -3267,10 +3309,16 @@ public class StratosApiV41Utils {
             return null;
         }
 
-        // retrieve first and last names from the UserStoreManager
-        bean.setFirstName(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
-        bean.setLastName(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
-
+        try {
+            // retrieve first and last names from the UserStoreManager
+            bean.setFirstName(ClaimsMgtUtil.getFirstNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+            bean.setLastName(ClaimsMgtUtil.getLastNamefromUserStoreManager(ServiceHolder.getRealmService(), tenantId));
+        }
+        catch(UserStoreException e){
+                String msg = "Error in retrieving the tenant from the tenant manager.";
+                log.error(msg, e);
+                throw new RestAPIException(msg, e);
+        }
         return bean;
     }
 

@@ -18,12 +18,14 @@
  * under the License.
  *
  */
- 
+
+var applicationId = '';
+
 //create JSON from topology
-function genTree(data){
+function genTree(data) {
     var rawout = [];
 
-    var rootnode ={};
+    var rootnode = {};
     rootnode.name = data.id;
     rootnode.parent = null;
     rootnode.status = data.status;
@@ -31,22 +33,22 @@ function genTree(data){
     rawout.push(rootnode);
 
     //application instances
-    function applicationInstances(items, collector, parent){
-        for(var prop in items){
+    function applicationInstances(items, collector, parent) {
+        for (var prop in items) {
             if (items.hasOwnProperty(prop)) {
                 var cur_name = items[prop].instanceId,
                     status = items[prop].status,
                     type = 'applicationInstances';
                 rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
-
+                applicationId = items[prop].applicationId;
                 clusterInstances(items[prop].clusterInstances, collector, cur_name);
                 groupInstances(items[prop].groupInstances, collector, cur_name)
             }
         }
     }
 
-    function clusterInstances(items, collector, parent){
-        for(var prop in items){
+    function clusterInstances(items, collector, parent) {
+        for (var prop in items) {
             if (items.hasOwnProperty(prop)) {
                 var cur_name = items[prop].clusterId + items[prop].instanceId,
                     alias = items[prop].alias,
@@ -54,35 +56,42 @@ function genTree(data){
                     serviceName = items[prop].serviceName,
                     status = items[prop].status;
 
-                if(items[prop].accessUrls){
+                if (items[prop].accessUrls) {
                     accessUrls = items[prop].accessUrls;
-                }else{
+                } else {
                     accessUrls = '';
                 }
+                if(items[prop].loadBalancerIps) {
+                    loadBalancerIps = items[prop].loadBalancerIps;
+                } else {
+                    loadBalancerIps = '';
+                }
                 var type = 'clusters';
-                rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
-                    "alias":alias, "hostNames": hostNames, "serviceName": serviceName,
-                    "accessUrls":accessUrls
+                rawout.push({
+                    "name": cur_name, "parent": parent, "type": type, "status": status,
+                    "alias": alias, "hostNames": hostNames, "serviceName": serviceName,
+                    "accessUrls": accessUrls, "loadBalancerIps": loadBalancerIps,
                 });
                 clustermembers(items[prop].member, collector, cur_name)
             }
         }
     }
 
-    function groupInstances(items, collector, parent){
-        for(var prop in items){
+    function groupInstances(items, collector, parent) {
+        for (var prop in items) {
             if (items.hasOwnProperty(prop)) {
                 var cur_name = items[prop].groupId + items[prop].instanceId,
                     instanceId = items[prop].instanceId,
                     groupId = items[prop].groupId,
                     status = items[prop].status;
                 var type = 'groups';
-                rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
-                    "groupId":groupId, "instanceId":instanceId
+                rawout.push({
+                    "name": cur_name, "parent": parent, "type": type, "status": status,
+                    "groupId": groupId, "instanceId": instanceId
                 });
 
                 clusterInstances(items[prop].clusterInstances, collector, cur_name);
-                if(items[prop].hasOwnProperty('groupInstances')){
+                if (items[prop].hasOwnProperty('groupInstances')) {
                     groupInstances(items[prop].groupInstances, collector, cur_name)
                 }
 
@@ -90,8 +99,8 @@ function genTree(data){
         }
     }
 
-    function clustermembers(items, collector, parent){
-        for(var prop in items){
+    function clustermembers(items, collector, parent) {
+        for (var prop in items) {
             if (items.hasOwnProperty(prop)) {
                 var cur_name = items[prop].memberId,
                     defaultPrivateIP = items[prop].defaultPrivateIP,
@@ -101,9 +110,10 @@ function genTree(data){
                     partitionId = items[prop].partitionId,
                     status = items[prop].status;
                 var type = 'members';
-                rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
-                    "defaultPrivateIP":defaultPrivateIP, "defaultPublicIP":defaultPublicIP,"ports":ports,
-                    "networkPartitionId":networkPartitionId, "partitionId":partitionId
+                rawout.push({
+                    "name": cur_name, "parent": parent, "type": type, "status": status,
+                    "defaultPrivateIP": defaultPrivateIP, "defaultPublicIP": defaultPublicIP, "ports": ports,
+                    "networkPartitionId": networkPartitionId, "partitionId": partitionId
                 });
             }
         }
@@ -137,6 +147,7 @@ function genTree(data){
     return treeData[0];
 }
 
+
 function update(source) {
 
     // ************** Generate the tree diagram	 *****************
@@ -147,17 +158,20 @@ function update(source) {
     var i = 0;
 
     var tree = d3.layout.tree()
-        .separation(function(a, b) { return ((a.parent == source) && (b.parent == source)) ? 5 : 4; })
-        .size([height+100, width]);
+        .separation(function (a, b) {
+            return ((a.parent == source) && (b.parent == source)) ? 5 : 4;
+        })
+        .size([height + 100, width]);
 
     var diagonal = d3.svg.diagonal()
         .projection(function (d) {
             return [d.x, d.y];
         });
+
     function redraw() {
         svg.attr("transform",
-                "translate(" + d3.event.translate + ")"
-                + " scale(" + d3.event.scale + ")");
+            "translate(" + d3.event.translate + ")"
+            + " scale(" + d3.event.scale + ")");
     }
 
     var svg = d3.select(".application-topology").append("svg")
@@ -193,61 +207,79 @@ function update(source) {
         })
         .attr('data-content', function (d) {
             if (d.type == 'clusters') {
-                if(d.accessUrls != ''){
+                if (d.accessUrls != '') {
                     var accessURLHTML = "<strong>Access URLs: </strong>";
-                    for(var i=0;i<d.accessUrls.length;i++){
-                        accessURLHTML +=  "<a href='"+ d.accessUrls[i] +"' target='_blank'>"+ d.accessUrls[i] +
-                            "</a><br/>" ;
+                    for (var i = 0; i < d.accessUrls.length; i++) {
+                        accessURLHTML += "<a href='" + d.accessUrls[i] + "' target='_blank'>" + d.accessUrls[i] +
+                            "</a><br/>";
                     }
 
-                }else{
-                    var accessURLHTML ='';
+                } else {
+                    var accessURLHTML = '';
                 }
-                div_html = "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
-                            "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
-                            accessURLHTML +
-                            "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
-                            "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
-                            "<strong>Status: </strong>" + d.status;
+                if(d.loadBalancerIps != '') {
+                    var loadBalancerIpsHTML = "<strong>Load Balancer IPs: </strong>";
+                    for (var i = 0; i < d.loadBalancerIps.length; i++) {
+                        if(i > 0) {
+                            loadBalancerIpsHTML += ", ";
+                        }
+                        loadBalancerIpsHTML += loadBalancerIps[i] + "";
+                    }
+                    loadBalancerIpsHTML += "<br/>"
+                } else {
+                    var loadBalancerIpsHTML = '';
+                }
 
+                div_html = "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
+                    "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
+                    accessURLHTML +
+                    "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
+                    loadBalancerIpsHTML +
+                    "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
+                    "<strong>Status: </strong>" + d.status + "<br/>";
+                if (dasStatsPublisherEnabled) {
+                    div_html += "<button class='btn btn-info show-usage' id=" + d.alias + " name='clusterUsage' onClick='showClusterUsage(this.id)'>Show Usage</button>";
+                }
             } else if (d.type == 'members') {
-                if((typeof d.ports != 'undefined') && (d.ports.length > 0)) {
+                if ((typeof d.ports != 'undefined') && (d.ports.length > 0)) {
                     var portsHTML = "<strong>Ports: </strong></br>";
-                    for(var i=0;i<d.ports.length;i++){
+                    for (var i = 0; i < d.ports.length; i++) {
                         portsHTML += "Port: " + d.ports[i].port + ", Protocol: " + d.ports[i].protocol;
-                        if(i < (d.ports.length - 1)) {
+                        if (i < (d.ports.length - 1)) {
                             portsHTML += "</br>";
                         }
                     }
                     portsHTML += "</br>"
 
-                } else{
-                    var portsHTML ='';
+                } else {
+                    var portsHTML = '';
                 }
                 div_html = "<strong>Member Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
-                        "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
-                        portsHTML +
-                        "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
-                        "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
-                        "<strong>Status: </strong>" + d.status;
+                    "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
+                    "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
+                    portsHTML +
+                    "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
+                    "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
+                    "<strong>Status: </strong>" + d.status;
             } else if (d.type == 'groups') {
 
                 div_html = "<strong>Group Instance Id: </strong>" + d.instanceId + "<br/>" +
-                        "<strong>Status: </strong>" + d.status;
+                    "<strong>Status: </strong>" + d.status;
 
             } else if (d.type == 'applicationInstances') {
                 div_html = "<strong>Instance Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Status: </strong>" + d.status;
+                    "<strong>Status: </strong>" + d.status;
 
             } else {
-                div_html = "<strong>Alias: </strong>" + d.name + "<br/>"+
-                        "<strong>Status: </strong>" + d.status;
-
+                div_html = "<strong>Alias: </strong>" + d.name + "<br/>" +
+                    "<strong>Status: </strong>" + d.status + "<br/>";
+                if (dasStatsPublisherEnabled) {
+                    div_html += "<button class='btn btn-info show-usage' id=" + d.name + " name='appUsage' onClick='showApplicationUsage(this.id)'>Show Usage</button>";
+                }
             }
-           return div_html;
+            return div_html;
         });
-        // add popover on nodes
+    // add popover on nodes
     nodeEnter.append("rect")
         .attr("x", -15)
         .attr("y", -15)
@@ -264,7 +296,7 @@ function update(source) {
                 return "#c0392b";
             } else if (d.status == 'Terminating') {
                 return "#c0392b";
-            }else{
+            } else {
                 return "#CCC";
             }
         });
@@ -296,13 +328,13 @@ function update(source) {
         .attr("dy", ".35em")
         .attr("text-anchor", "middle")
         .text(function (d) {
-            if(d.type == 'members') {
+            if (d.type == 'members') {
                 return '';
-            }else if(d.type == 'clusters') {
+            } else if (d.type == 'clusters') {
                 return d.alias;
-            }else if(d.type == 'groups'){
+            } else if (d.type == 'groups') {
                 return d.groupId;
-            }else{
+            } else {
                 return d.name;
             }
 
@@ -317,46 +349,52 @@ function update(source) {
 
     // Enter the links.
     link.enter().insert("path", "g")
-        .style('fill','none')
-        .style('stroke-width','2')
-        .style('stroke','#ccc')
+        .style('fill', 'none')
+        .style('stroke-width', '2')
+        .style('stroke', '#ccc')
         .attr("class", "link")
         .attr("d", diagonal);
 
     //enable popovers on nodes
     $('svg .node').popover({
         'trigger': 'manual'
-        ,'container': '.application-topology'
-        ,'placement': 'auto'
-        ,'white-space': 'nowrap'
-        ,'html':'true'
-        ,delay: {show: 50, hide: 400}
+        , 'container': '.application-topology'
+        , 'placement': 'auto'
+        , 'white-space': 'nowrap'
+        , 'html': 'true'
+        , delay: {show: 50, hide: 400}
     });
 
     var timer,
         popover_parent;
+
     function hidePopover(elem) {
         $(elem).popover('hide');
     }
+
     $('svg .node').hover(
-        function() {
+        function () {
             var self = this;
             clearTimeout(timer);
             $('.popover').hide(); //Hide any open popovers on other elements.
             popover_parent = self
             $(self).popover('show');
         },
-        function() {
+        function () {
             var self = this;
-            timer = setTimeout(function(){hidePopover(self)},300);
+            timer = setTimeout(function () {
+                hidePopover(self)
+            }, 300);
         });
     $(document).on({
-        mouseenter: function() {
+        mouseenter: function () {
             clearTimeout(timer);
         },
-        mouseleave: function() {
+        mouseleave: function () {
             var self = this;
-            timer = setTimeout(function(){hidePopover(popover_parent)},300);
+            timer = setTimeout(function () {
+                hidePopover(popover_parent)
+            }, 300);
         }
     }, '.popover');
 
@@ -365,15 +403,15 @@ function update(source) {
 
 //Application view
 // repaint
-function Repaint(){
-    $("#whiteboard").resize(function(){
+function Repaint() {
+    $("#whiteboard").resize(function () {
         jsPlumb.repaintEverything();
     });
 }
 // drag
-function DragEl(el){
-    jsPlumb.draggable($(el) ,{
-        containment:"#whiteboard"
+function DragEl(el) {
+    jsPlumb.draggable($(el), {
+        containment: "#whiteboard"
     });
 }
 
@@ -381,10 +419,10 @@ function DragEl(el){
 // JsPlumb Config
 var color = "gray",
     exampleColor = "#00f",
-    arrowCommon = { foldback:0.7, fillStyle:color, width:14 };
+    arrowCommon = {foldback: 0.7, fillStyle: color, width: 14};
 
 jsPlumb.importDefaults({
-    Connector : [ "Bezier", { curviness:63 } ],
+    Connector: ["Bezier", {curviness: 63}],
     /*Overlays: [
      [ "Arrow", { location:0.7 }, arrowCommon ],
      ]*/
@@ -392,63 +430,65 @@ jsPlumb.importDefaults({
 
 
 var nodeDropOptions = {
-    activeClass:"dragActive"
+    activeClass: "dragActive"
 };
 
 var bottomConnectorOptions = {
-    endpoint:"Rectangle",
-    paintStyle:{ width:25, height:21, fillStyle:'#666' },
-    isSource:true,
-    connectorStyle : { strokeStyle:"#666" },
-    isTarget:false,
-    maxConnections:20
+    endpoint: "Rectangle",
+    paintStyle: {width: 25, height: 21, fillStyle: '#666'},
+    isSource: true,
+    connectorStyle: {strokeStyle: "#666"},
+    isTarget: false,
+    maxConnections: 20
 };
 
 var endpointOptions = {
-    isTarget:true,
-    endpoint:"Dot",
-    paintStyle:{
-        fillStyle:"gray"
+    isTarget: true,
+    endpoint: "Dot",
+    paintStyle: {
+        fillStyle: "gray"
     },
     dropOptions: nodeDropOptions,
-    maxConnections:1
+    maxConnections: 1
 };
 
 var groupOptions = {
-    isTarget:true,
-    endpoint:"Dot",
-    paintStyle:{
-        fillStyle:"gray"
+    isTarget: true,
+    endpoint: "Dot",
+    paintStyle: {
+        fillStyle: "gray"
     },
     dropOptions: nodeDropOptions,
-    maxConnections:1
+    maxConnections: 1
 };
 
 var generatedCartridgeEndpointOptions = {
-    isTarget:false,
-    endpoint:"Dot",
-    paintStyle:{
-        fillStyle:"gray"
+    isTarget: false,
+    endpoint: "Dot",
+    paintStyle: {
+        fillStyle: "gray"
     },
     dropOptions: '',
-    maxConnections:1
+    maxConnections: 1
 };
 
 var generatedGroupOptions = {
-    isTarget:false,
-    endpoint:"Dot",
-    paintStyle:{
-        fillStyle:"gray"
+    isTarget: false,
+    endpoint: "Dot",
+    paintStyle: {
+        fillStyle: "gray"
     },
     dropOptions: nodeDropOptions,
-    maxConnections:1
+    maxConnections: 1
 };
 
-function dagrePosition(){
+function dagrePosition() {
     // construct dagre graph from JsPlumb graph
     var g = new dagre.graphlib.Graph();
-    g.setGraph({ranksep:'80'});
-    g.setDefaultEdgeLabel(function() { return {}; });
+    g.setGraph({ranksep: '80'});
+    g.setDefaultEdgeLabel(function () {
+        return {};
+    });
     var nodes = $(".stepnode");
 
     for (var i = 0; i < nodes.length; i++) {
@@ -458,53 +498,57 @@ function dagrePosition(){
     var edges = jsPlumb.getAllConnections();
     for (var i = 0; i < edges.length; i++) {
         var c = edges[i];
-        g.setEdge(c.source.id,c.target.id );
+        g.setEdge(c.source.id, c.target.id);
     }
     // calculate the layout (i.e. node positions)
     dagre.layout(g);
 
     // Applying the calculated layout
-    g.nodes().forEach(function(v) {
+    g.nodes().forEach(function (v) {
         $("#" + v).css("left", g.node(v).x + "px");
         $("#" + v).css("top", g.node(v).y + "px");
     });
     jsPlumb.repaintEverything();
 }
 //add group to editor
-var cartridgeCounter =0;
+var cartridgeCounter = 0;
 //add group to editor
-function addJsplumbGroup(groupJSON, cartridgeCounter){
+function addJsplumbGroup(groupJSON, cartridgeCounter) {
 
-    var divRoot = $('<div>').attr({'id':cartridgeCounter+'-'+groupJSON.alias,'data-type':'group','data-ctype':groupJSON.alias})
+    var divRoot = $('<div>').attr({
+        'id': cartridgeCounter + '-' + groupJSON.alias,
+        'data-type': 'group',
+        'data-ctype': groupJSON.alias
+    })
         .text(groupJSON.alias)
         .addClass('input-false')
         .addClass('application')
         .attr('data-toggle', 'tooltip')
-        .attr('title',groupJSON.alias)
+        .attr('title', groupJSON.alias)
         .addClass('stepnode')
         .appendTo('#whiteboard');
 
     jsPlumb.addEndpoint($(divRoot), {
-        anchor:"BottomCenter"
+        anchor: "BottomCenter"
     }, bottomConnectorOptions);
 
     DragEl($(divRoot));
-    if(groupJSON['components']['cartridges']) {
+    if (groupJSON['components']['cartridges']) {
         genJsplumbCartridge(groupJSON['components']['cartridges'], divRoot, groupJSON.alias);
     }
-    if(groupJSON['components']['groups']){
+    if (groupJSON['components']['groups']) {
         genJsplumbGroups(groupJSON['components']['groups'], divRoot, groupJSON.alias);
     }
 
-    function genJsplumbCartridge(item, currentParent, parentName){
+    function genJsplumbCartridge(item, currentParent, parentName) {
         for (var prop in item) {
             var id = item[prop].type;
-            var divCartridge = $('<div>').attr({'id':cartridgeCounter+'-'+parentName+'-'+item[prop].type} )
+            var divCartridge = $('<div>').attr({'id': cartridgeCounter + '-' + parentName + '-' + item[prop].type})
                 .text(item[prop].type)
                 .addClass('input-false')
                 .addClass('stepnode')
                 .attr('data-toggle', 'tooltip')
-                .attr('title',item[prop].type )
+                .attr('title', item[prop].type)
                 .appendTo('#whiteboard');
 
 
@@ -514,12 +558,12 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
 
             //add connection options
             jsPlumb.connect({
-                source:$(currentParent),
-                target:$(divCartridge),
-                paintStyle:{strokeStyle:"blue", lineWidth:1 },
-                Connector : [ "Bezier", { curviness:63 } ],
-                anchors:["BottomCenter", "TopCenter"],
-                endpoint:"Dot"
+                source: $(currentParent),
+                target: $(divCartridge),
+                paintStyle: {strokeStyle: "blue", lineWidth: 1},
+                Connector: ["Bezier", {curviness: 63}],
+                anchors: ["BottomCenter", "TopCenter"],
+                endpoint: "Dot"
             });
 
             DragEl($(divCartridge));
@@ -528,17 +572,21 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
 
     function genJsplumbGroups(item, currentParent, parentName) {
         for (var prop in item) {
-            var divGroup = $('<div>').attr({'id':cartridgeCounter+'-'+parentName+'-'+item[prop]['name'],'data-type':'group','data-ctype':item[prop]['name'] })
+            var divGroup = $('<div>').attr({
+                'id': cartridgeCounter + '-' + parentName + '-' + item[prop]['name'],
+                'data-type': 'group',
+                'data-ctype': item[prop]['name']
+            })
                 .text(item[prop]['name'])
                 .addClass('stepnode')
                 .attr('data-toggle', 'tooltip')
-                .attr('title',item[prop]['name'])
+                .attr('title', item[prop]['name'])
                 .addClass('input-false')
                 .appendTo('#whiteboard');
 
 
             jsPlumb.addEndpoint($(divGroup), {
-                anchor:"BottomCenter"
+                anchor: "BottomCenter"
             }, bottomConnectorOptions);
 
             jsPlumb.addEndpoint($(divGroup), {
@@ -547,33 +595,32 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
 
             //add connection options
             jsPlumb.connect({
-                source:$(currentParent),
-                target:$(divGroup),
-                paintStyle:{strokeStyle:"blue", lineWidth:1 },
-                Connector : [ "Bezier", { curviness:63 } ],
-                anchors:["BottomCenter", "TopCenter"],
-                endpoint:"Dot"
+                source: $(currentParent),
+                target: $(divGroup),
+                paintStyle: {strokeStyle: "blue", lineWidth: 1},
+                Connector: ["Bezier", {curviness: 63}],
+                anchors: ["BottomCenter", "TopCenter"],
+                endpoint: "Dot"
             });
 
             DragEl($(divGroup));
 
-            if(item[prop].hasOwnProperty('cartridges')) {
-                genJsplumbCartridge(item[prop].cartridges, divGroup, parentName+'-'+item[prop]['name'] );
+            if (item[prop].hasOwnProperty('cartridges')) {
+                genJsplumbCartridge(item[prop].cartridges, divGroup, parentName + '-' + item[prop]['name']);
             }
-            if(item[prop].hasOwnProperty('groups')) {
-                genJsplumbGroups(item[prop].groups, divGroup, parentName+'-'+item[prop]['name'])
+            if (item[prop].hasOwnProperty('groups')) {
+                genJsplumbGroups(item[prop].groups, divGroup, parentName + '-' + item[prop]['name'])
             }
         }
     }
-
 
 
 }
 
 var initapp = 0;
 
-$("a[href='#application']").on('shown.bs.tab', function(e) {
-    if(initapp == 0){
+$("a[href='#application']").on('shown.bs.tab', function (e) {
+    if (initapp == 0) {
         addJsplumbGroup(applicationJSON, cartridgeCounter);
         //reposition after group add
         dagrePosition();
@@ -581,5 +628,14 @@ $("a[href='#application']").on('shown.bs.tab', function(e) {
     }
 });
 
+
+function showApplicationUsage(id) {
+    window.location = encodeURI(meteringDashboardUrl + '?applicationId=' + applicationId);
+}
+
+function showClusterUsage(id, type) {
+    var clusterId = id;
+    window.location = encodeURI(meteringDashboardUrl + '?applicationId=' + applicationId + '&clusterId=' + clusterId);
+}
 
 

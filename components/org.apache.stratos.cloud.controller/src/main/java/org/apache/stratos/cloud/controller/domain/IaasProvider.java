@@ -43,7 +43,6 @@ public class IaasProvider implements Serializable {
      */
     private String type;
 
-
     /**
      * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.iaases.Iaas}
      */
@@ -188,7 +187,6 @@ public class IaasProvider implements Serializable {
         this.template = template;
     }
 
-
     public boolean equals(Object o) {
         if (o instanceof IaasProvider) {
             return ((IaasProvider) o).getType().equals(this.getType());
@@ -215,7 +213,7 @@ public class IaasProvider implements Serializable {
         this.className = className;
     }
 
-    public Iaas getIaas() {
+    public Iaas buildIaas() {
         if (iaas == null) {
             synchronized (IaasProvider.this) {
                 if (iaas == null) {
@@ -227,10 +225,19 @@ public class IaasProvider implements Serializable {
                     }
                 }
             }
+        } else {
+            // Force IaaS to be reinitialized each time this function is called
+            iaas.initialize();
         }
         return iaas;
     }
 
+    public Iaas getIaas() {
+        if (iaas == null) {
+            iaas = buildIaas();
+        }
+        return iaas;
+    }
 
     public byte[] getPayload() {
         return payload;

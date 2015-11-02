@@ -101,11 +101,6 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
 
         Cluster cluster = service.getCluster(event.getClusterId());
 
-        // Apply application filter
-        if(TopologyApplicationFilter.apply(cluster.getAppId())) {
-            return false;
-        }
-
         if (cluster == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
@@ -113,6 +108,11 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             }
             return false;
         } else {
+            // Apply application filter
+            if(TopologyApplicationFilter.apply(cluster.getAppId())) {
+                return false;
+            }
+
             // Apply changes to the topology
             ClusterInstance clusterInstance = event.getClusterInstance();
             if (cluster.getInstanceContexts(clusterInstance.getInstanceId()) != null) {

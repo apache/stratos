@@ -31,7 +31,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Nginx load balancer configuration writer.
@@ -57,14 +57,84 @@ public class NginxConfigWriter {
     }
 
     public boolean write(Topology topology) {
-
-        StringBuilder configurationBuilder = new StringBuilder();
-
+        List<Port> availablePorts = new ArrayList<Port>();
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
-                generateConfigurationForCluster(cluster, configurationBuilder);
+                if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
+                    throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
+                }
+                for (Member member : cluster.getMembers()) {
+                    Collection<Port> ports = member.getPorts();
+                    for(Port port : ports) {
+                        boolean protocolFound = false;
+                        for(Port availablePort : availablePorts) {
+                            if ((availablePort.getProtocol().equals(port.getProtocol()))) {
+                                protocolFound = true;
+                                break;
+                            }
+                        }
+                        if(!protocolFound) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Available protocols : " + port.getProtocol() + " proxy val: " +
+                                        port.getProxy() + "\n");
+                            }
+                            availablePorts.add(port);
+                        } else {
+                            boolean proxyFound = false;
+                            for(Port availablePort : availablePorts) {
+                                if (availablePort.getProtocol().equals(port.getProtocol()) &&
+                                        availablePort.getProxy() == port.getProxy()) {
+                                    proxyFound = true;
+                                    break;
+                                }
+                            }
+
+                            if(!proxyFound) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Available protocols : " + port.getProtocol() + " proxy val: " +
+                                            port.getProxy() + "\n");
+                                }
+                                availablePorts.add(port);
+                            }
+                        }
+                    }
+                }
+
             }
         }
+
+        //Constructing the port list
+        List<Map<String, String>> portList = new ArrayList<Map<String, String>>();
+        Map<String, String> portMap;
+
+        Map<String, Map<String, List>> hostnameToPortMap = new HashMap<String, Map<String, List>>();
+
+        for (Port availPort : availablePorts) {
+            portMap = new HashMap<String, String>();
+            portMap.put("proxy", String.valueOf(availPort.getProxy()));
+            portMap.put("protocol", availPort.getProtocol());
+            portMap.put("value", String.valueOf(availPort.getValue()));
+            portList.add(portMap);
+
+
+            for (Service service : topology.getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    Map<String, List> existingHostNameToServerMap = hostnameToPortMap.
+                            get(String.valueOf(availPort.getProxy()));
+                    if(existingHostNameToServerMap == null) {
+                        existingHostNameToServerMap = new HashMap<String, List>();
+                    }
+                    if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
+                        throw new RuntimeException(String.format("No ports found in service: %s",
+                                service.getServiceName()));
+                    }
+                    generateConfigurationForCluster(cluster, availPort, existingHostNameToServerMap);
+                    hostnameToPortMap.put(String.valueOf(availPort.getProxy()), existingHostNameToServerMap);
+
+                }
+            }
+        }
+
 
         // Start velocity engine
         VelocityEngine ve = new VelocityEngine();
@@ -76,7 +146,8 @@ public class NginxConfigWriter {
 
         // Insert strings into the template
         VelocityContext context = new VelocityContext();
-        context.put("configuration", configurationBuilder.toString());
+        context.put("portlist", portList);
+        context.put("servermap", hostnameToPortMap);
 
         // Create a new string from the template
         StringWriter stringWriter = new StringWriter();
@@ -101,81 +172,59 @@ public class NginxConfigWriter {
         }
     }
 
-    /**
-     * Generate configuration for a cluster with the following format:
-     *
-     * <transport> {
-     *     upstream <cluster-hostname> {
-     *         server <hostname>:<port>;
-     *         server <hostname>:<port>;
-     *     }
-     *     server {
-     *         listen <proxy-port>;
-     *         server_name <cluster-hostname>;
-     *         location / {
-     *             proxy_pass    http://<cluster-hostname>
-     *         }
-     *         location /nginx_status {
-     *            stub_status on;
-     *            access_log off;
-     *            allow 127.0.0.1;
-     *            deny all;
-     *         }
-     *     }
-     * }
-     * @param cluster
-     * @param text
-     */
-    private void generateConfigurationForCluster(Cluster cluster, StringBuilder text) {
-
-        if((cluster.getMembers() == null) || (cluster.getMembers().size() == 0)) {
-            return;
-        }
-
-        // Find port mappings
-        Member firstMember = (Member) cluster.getMembers().toArray()[0];
-        Collection<Port> ports = firstMember.getPorts();
-
-        for (Port port : ports) {
-            for (String hostname : cluster.getHostNames()) {
-                // Start transport block
-                text.append(port.getProtocol()).append(" {").append(NEW_LINE);
-
-                // Start upstream block
-                text.append(TAB).append("upstream ").append(hostname).append(" {").append(NEW_LINE);
-                for (Member member : cluster.getMembers()) {
-                    // Start upstream server block
-                    text.append(TAB).append(TAB).append("server ").append(member.getHostName()).append(":")
-                            .append(port.getValue()).append(";").append(NEW_LINE);
-                    // End upstream server block
+    private void generateConfigurationForCluster(Cluster cluster, Port availPort, Map<String, List> existingHostNameToServerMap) {
+        for (String hostname : cluster.getHostNames()) {
+            boolean memberFound = false;
+            //Checking whether at-least one member is available to create
+            // the upstream and server blocks
+            for (Member member : cluster.getMembers()) {
+                Collection<Port> ports = member.getPorts();
+                for (Port port : ports) {
+                    if ((port.getProtocol().equals(availPort.getProtocol())) &&
+                            (port.getProxy() == availPort.getProxy())) {
+                        memberFound = true;
+                        break;
+                    }
                 }
-                text.append(TAB).append("}").append(NEW_LINE);
-                // End upstream block
+                if(memberFound) {
+                    break;
+                }
+            }
+            if(memberFound) {
+                for (Member member : cluster.getMembers()) {
+                    Port selectedPort = null;
+                    Collection<Port> ports = member.getPorts();
+                    for (Port port : ports) {
+                        if ((port.getProtocol().equals(availPort.getProtocol())) &&
+                                (port.getProxy() == availPort.getProxy())) {
+                            selectedPort = port;
+                            break;
+                        }
+                    }
 
-                // Start server block
-                text.append(NEW_LINE);
-                text.append(TAB).append("server {").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("listen ").append(port.getProxy()).append(";").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("server_name ").append(hostname).append(";").append(NEW_LINE);
+                    if (selectedPort != null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("The selected Port for cluster: " + cluster.getClusterId()
+                                    + " is " + selectedPort.getValue() + " " +
+                                    selectedPort.getProtocol() + " " + selectedPort.getProxy());
+                        }
+                        if(existingHostNameToServerMap.get(hostname) == null) {
+                            List<String> serverList = new ArrayList<String>();
+                            existingHostNameToServerMap.put(hostname, serverList);
+                        }
+                        // Adding member to hostname map against specific port
+                        // that should contain this particular member
+                        List<String> ipPortMapping = existingHostNameToServerMap.get(hostname);
+                        String server = member.getHostName() + ":" + selectedPort.getValue();
 
-                text.append(TAB).append(TAB).append("location / {").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("proxy_pass").append(TAB)
-                        .append("http://").append(hostname).append(";").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("}").append(NEW_LINE);
+                        if(!ipPortMapping.contains(server)) {
+                            ipPortMapping.add(server);
+                        }
 
-                text.append(TAB).append(TAB).append("location /nginx_status {").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("stub_status on;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("access_log off;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("allow 127.0.0.1;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append(TAB).append("deny all;").append(NEW_LINE);
-                text.append(TAB).append(TAB).append("}").append(NEW_LINE);
-
-                text.append(TAB).append("}").append(NEW_LINE);
-                // End server block
-
-                text.append("}").append(NEW_LINE);
-                // End transport block
+                    }
+                }
             }
         }
     }
+
 }

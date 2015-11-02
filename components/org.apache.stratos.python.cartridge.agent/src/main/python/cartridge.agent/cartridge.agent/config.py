@@ -17,13 +17,17 @@
 
 import ConfigParser
 import os
+import sys
+
+from yapsy.PluginManager import PluginManager
 
 from yapsy.PluginManager import PluginManager
 
 from modules.util.log import LogFactory
 from exception import ParameterNotFoundException
 import constants
-from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin, IHealthStatReaderPlugin
+from plugins.contracts import ICartridgeAgentPlugin, IArtifactCommitPlugin, IArtifactCheckoutPlugin, \
+    IHealthStatReaderPlugin
 
 
 class Config:
@@ -31,8 +35,12 @@ class Config:
     Handles the configuration information of the particular Cartridge Agent
     """
 
+    def __init__(self):
+        pass
+
     AGENT_PLUGIN_EXT = "agent-plugin"
-    ARTIFACT_MGT_PLUGIN = "ArtifactManagementPlugin"
+    ARTIFACT_CHECKOUT_PLUGIN = "ArtifactCheckoutPlugin"
+    ARTIFACT_COMMIT_PLUGIN = "ArtifactCommitPlugin"
     CARTRIDGE_AGENT_PLUGIN = "CartridgeAgentPlugin"
     HEALTH_STAT_PLUGIN = "HealthStatReaderPlugin"
 
@@ -45,7 +53,8 @@ class Config:
 
     plugins = {}
     """ :type dict{str: [PluginInfo]} : """
-    artifact_mgt_plugins = []
+    artifact_checkout_plugin = None
+    artifact_commit_plugin = None
     health_stat_plugin = None
     extension_executor = None
 
@@ -123,8 +132,15 @@ class Config:
     """ :type : str """
     lvs_virtual_ip = None
     """ :type : str """
-
     initialized = False
+    """ :type : bool """
+    activated = False
+    """ :type : bool """
+    started = False
+    """ :type : bool """
+    ready_to_shutdown = False
+    """ :type : bool """
+    maintenance = False
     """ :type : bool """
 
     @staticmethod
@@ -143,8 +159,10 @@ class Config:
 
         # set calculated values
         param_file = os.path.abspath(os.path.dirname(__file__)) + "/payload/launch-params"
+        Config.log.debug("param_file: %r" % param_file)
         properties.set("agent", constants.PARAM_FILE_PATH, param_file)
         plugins_dir = os.path.abspath(os.path.dirname(__file__)) + "/plugins"
+        Config.log.debug("plugins_dir: %r" % plugins_dir)
         properties.set("agent", constants.PLUGINS_DIR, plugins_dir)
         plugins_dir = os.path.abspath(os.path.dirname(__file__)) + "/extensions/py"
         properties.set("agent", constants.EXTENSIONS_DIR, plugins_dir)
@@ -223,10 +241,6 @@ class Config:
         :return: Value of the property
         :exception: ParameterNotFoundException if the provided property cannot be found
         """
-
-        if Config.properties is None or Config.payload_params == {}:
-            Config.initialize_config()
-
         if Config.properties.has_option("agent", property_key):
             temp_str = Config.properties.get("agent", property_key)
             Config.log.debug("Reading property: %s = %s", property_key, temp_str)
@@ -270,15 +284,15 @@ class Config:
             Config.tenant_id = Config.read_property(constants.TENANT_ID)
 
             try:
-                Config.is_clustered = Config.read_property(constants.CLUSTERING)
+                Config.is_clustered = Config.read_property(constants.CLUSTERING, False)
             except ParameterNotFoundException:
                 Config.is_clustered = False
 
             try:
-                Config.is_commits_enabled = Config.read_property(constants.COMMIT_ENABLED)
+                Config.is_commits_enabled = Config.read_property(constants.COMMIT_ENABLED, False)
             except ParameterNotFoundException:
                 try:
-                    Config.is_commits_enabled = Config.read_property(constants.AUTO_COMMIT)
+                    Config.is_commits_enabled = Config.read_property(constants.AUTO_COMMIT, False)
                 except ParameterNotFoundException:
                     Config.is_commits_enabled = False
 
@@ -351,7 +365,7 @@ class Config:
         Config.log.debug("log_file_paths: %s" % Config.log_file_paths)
 
         Config.log.info("Initializing plugins")
-        Config.plugins, Config.artifact_mgt_plugins, Config.health_stat_plugin = Config.initialize_plugins()
+        Config.initialize_plugins()
         Config.extension_executor = Config.initialize_extensions()
 
     @staticmethod
@@ -365,7 +379,8 @@ class Config:
             # TODO: change plugin descriptor ext, plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
             plugins_dir = Config.read_property(constants.PLUGINS_DIR)
             category_filter = {Config.CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin,
-                               Config.ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin,
+                               Config.ARTIFACT_CHECKOUT_PLUGIN: IArtifactCheckoutPlugin,
+                               Config.ARTIFACT_COMMIT_PLUGIN: IArtifactCommitPlugin,
                                Config.HEALTH_STAT_PLUGIN: IHealthStatReaderPlugin}
 
             plugin_manager = Config.create_plugin_manager(category_filter, plugins_dir)
@@ -385,34 +400,79 @@ class Config:
                             grouped_ca_plugins[mapped_event] = []
 
                         grouped_ca_plugins[mapped_event].append(plugin_info)
+            Config.plugins = grouped_ca_plugins
 
             # activate artifact management plugins
-            artifact_mgt_plugins = plugin_manager.getPluginsOfCategory(Config.ARTIFACT_MGT_PLUGIN)
-            for plugin_info in artifact_mgt_plugins:
-                # TODO: Fix this to only load the first plugin
-                Config.log.debug("Found artifact management plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
-                plugin_manager.activatePluginByName(plugin_info.name)
-                Config.log.info("Activated artifact management plugin [%s]" % plugin_info.name)
+            artifact_checkout_plugins = plugin_manager.getPluginsOfCategory(Config.ARTIFACT_CHECKOUT_PLUGIN)
+            for plugin_info in artifact_checkout_plugins:
+                Config.log.debug("Found artifact checkout plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
+            # if multiple artifact management plugins are registered, halt agent execution. This is to avoid any
+            # undesired outcome due to errors made in deployment
+            if Config.is_checkout_enabled:
+                if len(artifact_checkout_plugins) == 0:
+                    Config.log.exception(
+                        "No plugins registered for artifact checkout extension. Stratos agent failed to start")
+                    sys.exit(1)
+                elif len(artifact_checkout_plugins) == 1:
+                    plugin_info = artifact_checkout_plugins[0]
+                    Config.log.debug("Found artifact checkout plugin [%s] at [%s]" %
+                                     (plugin_info.name, plugin_info.path))
+                    plugin_manager.activatePluginByName(plugin_info.name)
+                    Config.log.info("Activated artifact checkout plugin [%s]" % plugin_info.name)
+                    Config.artifact_checkout_plugin = plugin_info
+                elif len(artifact_checkout_plugins) > 1:
+                    Config.log.exception(
+                        "Multiple plugins registered for artifact checkout. Stratos agent failed to start.")
+                    sys.exit(1)
+
+            artifact_commit_plugins = plugin_manager.getPluginsOfCategory(Config.ARTIFACT_COMMIT_PLUGIN)
+            for plugin_info in artifact_commit_plugins:
+                Config.log.debug("Found artifact commit plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
+            if Config.is_commits_enabled:
+                if len(artifact_commit_plugins) == 0:
+                    Config.log.exception(
+                        "No plugins registered for artifact commit extension. Stratos agent failed to start")
+                    sys.exit(1)
+                elif len(artifact_commit_plugins) == 1:
+                    plugin_info = artifact_commit_plugins[0]
+                    Config.log.debug("Found artifact commit plugin [%s] at [%s]" %
+                                     (plugin_info.name, plugin_info.path))
+                    plugin_manager.activatePluginByName(plugin_info.name)
+                    Config.log.info("Activated artifact commit plugin [%s]" % plugin_info.name)
+                    Config.artifact_commit_plugin = plugin_info
+                elif len(artifact_commit_plugins) > 1:
+                    Config.log.exception(
+                        "Multiple plugins registered for artifact checkout. Stratos agent failed to start.")
+                    sys.exit(1)
 
             health_stat_plugins = plugin_manager.getPluginsOfCategory(Config.HEALTH_STAT_PLUGIN)
-            health_stat_plugin = None
-
-            # If there are any health stat reader plugins, load the first one and ignore the rest
-            if len(health_stat_plugins) > 0:
+            for plugin_info in health_stat_plugins:
+                Config.log.debug("Found health stats reader plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
+            # If multiple health stat reader plugins are registered, halt agent execution. This is to avoid any
+            # undesired outcome due to errors made in deployment
+            if len(health_stat_plugins) == 0:
+                Config.log.exception(
+                    "No plugins registered for health statistics reader. Stratos agent failed to start.")
+                sys.exit(1)
+            elif len(health_stat_plugins) == 1:
                 plugin_info = health_stat_plugins[0]
                 Config.log.debug("Found health statistics reader plugin [%s] at [%s]" %
                                  (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
                 Config.log.info("Activated health statistics reader plugin [%s]" % plugin_info.name)
-                health_stat_plugin = plugin_info
-
-            return grouped_ca_plugins, artifact_mgt_plugins, health_stat_plugin
+                Config.health_stat_plugin = plugin_info
+            elif len(health_stat_plugins) > 1:
+                Config.log.exception(
+                    "Multiple plugins registered for health statistics reader. Stratos agent failed to start.")
+                sys.exit(1)
         except ParameterNotFoundException as e:
             Config.log.exception("Could not load plugins. Plugins directory not set: %s" % e)
-            return None, None
+            Config.log.error("Stratos agent failed to start")
+            sys.exit(1)
         except Exception as e:
-            Config.log.exception("Error while loading plugin: %s" % e)
-            return None, None
+            Config.log.exception("Error while loading plugins: %s" % e)
+            Config.log.error("Stratos agent failed to start")
+            sys.exit(1)
 
     @staticmethod
     def initialize_extensions():

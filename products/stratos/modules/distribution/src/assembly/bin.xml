@@ -48,8 +48,12 @@
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
                 <exclude>**/dbscripts/**</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
+                <exclude>**/repository/conf/security/authenticators.xml</exclude>
                 <exclude>**/repository/conf/axis2/axis2.xml</exclude>
+                <exclude>**/repository/conf/axis2/axis2_client.xml</exclude>
+                <exclude>**/repository/conf/axis2/tenant-axis2.xml</exclude>
                 <exclude>**/repository/conf/registry.xml</exclude>
+                <exclude>**/repository/conf/user-mgt.xml</exclude>
                 <exclude>**/repository/conf/log4j.properties</exclude>
                 <exclude>**/repository/conf/data-bridge/**</exclude>
                 <exclude>**/repository/resources/security/client-truststore.jks</exclude>
@@ -93,7 +97,8 @@
             <directory>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/jaggeryapps
             </directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/jaggeryapps</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/jaggeryapps
+            </outputDirectory>
             <excludes>
                 <exclude>**/publisher/**</exclude>
                 <exclude>**/store/**</exclude>
@@ -104,16 +109,9 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>target/shopping-cart-global-${shoppingcart.global.version}</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/samples/bin</outputDirectory>
-            <includes>
-                <include>**/*.car</include>
-                <include>**/*.properties</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>../../../../components/org.apache.stratos.manager.console/console</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/jaggeryapps/console
+            <outputDirectory>
+                ${stratos.distribution.name}-${project.version}/repository/deployment/server/jaggeryapps/console
             </outputDirectory>
             <excludes>
                 <exclude>**/README</exclude>
@@ -121,38 +119,35 @@
         </fileSet>
         <fileSet>
             <directory>../../../../components/org.apache.stratos.manager.console/sso</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/jaggeryapps/sso
+            <outputDirectory>
+                ${stratos.distribution.name}-${project.version}/repository/deployment/server/jaggeryapps/sso
             </outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../../../../components/org.apache.stratos.manager.console/modules/console</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/modules/console</outputDirectory>
         </fileSet>
-        <fileSet>
-            <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}</outputDirectory>
-            <excludes>
-                <exclude>**/daemon.sh</exclude>
-                <exclude>**/log4j.properties</exclude>
-                <exclude>**/repository/conf/log4j.properties</exclude>
-                <exclude>**/wso2server.sh</exclude>
-                <exclude>**/wso2server.bat</exclude>
-            </excludes>
-            <includes>
-                <include>**/*.sh</include>
-                <include>**/native/*</include>
-            </includes>
-            <fileMode>755</fileMode>
-        </fileSet>
 
         <!-- Copying themes, cloud icons-->
         <fileSet>
-            <directory>src/main/resources</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/resources</outputDirectory>
+            <directory>../../../../components/org.apache.stratos.manager.styles/src/main/resources/web/styles/css
+            </directory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/resources/allthemes/Default/admin
+            </outputDirectory>
             <fileMode>755</fileMode>
             <includes>
-                <include>allthemes/**</include>
-                <include>powerded-by-logos/**</include>
+                <include>**/**.css</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.styles/src/main/resources/web/styles/images
+            </directory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/resources/allthemes/Default/images
+            </outputDirectory>
+            <fileMode>755</fileMode>
+            <includes>
+                <include>**/**.gif</include>
+                <include>**/**.png</include>
             </includes>
         </fileSet>
 
@@ -190,7 +185,8 @@
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/multitenancy/
             </directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/multitenancy/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/multitenancy/
+            </outputDirectory>
             <includes>
                 <include>**/multitenancy-packages.xml</include>
                 <include>**/stratos.xml</include>
@@ -242,40 +238,39 @@
         </fileSet>
         <fileSet>
             <directory>src/main/conf/multitenancy</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/multitenancy</outputDirectory>
-        </fileSet>
-
-        <!-- copy the billing h2 db -->
-        <fileSet>
-            <directory>target/database</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/database</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/multitenancy
+            </outputDirectory>
         </fileSet>
 
         <!-- Apply Kernel Patches-->
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <includes>
                 <include>**/patch0001/*.*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <includes>
                 <include>**/patch0002/*.*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0003</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <includes>
                 <include>**/patch0003/*.*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0004</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <excludes>
                 <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
             </excludes>
@@ -285,21 +280,24 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0005</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <includes>
                 <include>**/patch0005/*.*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0006</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <includes>
                 <include>**/patch0006/*.*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0007</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <excludes>
                 <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
             </excludes>
@@ -309,14 +307,16 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0008</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <includes>
                 <include>**/patch0008/*.*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0009</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <excludes>
                 <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
             </excludes>
@@ -326,7 +326,8 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0010</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <excludes>
                 <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
             </excludes>
@@ -336,7 +337,8 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0011</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <excludes>
                 <exclude>**/org.wso2.carbon.ui-4.2.0.jar</exclude>
             </excludes>
@@ -346,7 +348,8 @@
         </fileSet>
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0012</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/patches
+            </outputDirectory>
             <excludes>
                 <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
             </excludes>
@@ -411,14 +414,16 @@
         </fileSet>
         <fileSet>
             <directory>src/main/temp-artifacts</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/plugins</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/plugins
+            </outputDirectory>
             <includes>
                 <include>org.wso2.store.sso.common_1.0.0.jar</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>src/main/temp-artifacts</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/plugins</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/plugins
+            </outputDirectory>
             <includes>
                 <include>org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</include>
             </includes>
@@ -426,7 +431,8 @@
         <!-- autoscaler -->
         <fileSet>
             <directory>src/main/temp-artifacts</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/plugins</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/plugins
+            </outputDirectory>
             <includes>
                 <include>org.jaggeryjs.hostobjects.xhr_0.9.0.ALPHA4_wso2v1.jar</include>
             </includes>
@@ -435,31 +441,34 @@
         <!-- cep -->
         <!--creating an empty input event adaptors directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/modules/artifacts/inputeventadaptors</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/inputeventadaptors
+            <directory>../../../../extensions/cep/modules/artifacts/wso2cep-3.0.0/inputeventadaptors</directory>
+            <outputDirectory>
+                ${stratos.distribution.name}-${project.version}/repository/deployment/server/inputeventadaptors
             </outputDirectory>
         </fileSet>
         <!--creating an empty output event adaptors directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/modules/artifacts/outputeventadaptors</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/outputeventadaptors
+            <directory>../../../../extensions/cep/modules/artifacts/wso2cep-3.0.0/outputeventadaptors</directory>
+            <outputDirectory>
+                ${stratos.distribution.name}-${project.version}/repository/deployment/server/outputeventadaptors
             </outputDirectory>
         </fileSet>
         <!--creating an empty event builders directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/modules/artifacts/eventbuilders</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/wso2cep-3.0.0/eventbuilders</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/eventbuilders
             </outputDirectory>
         </fileSet>
         <!--creating an empty event formatters directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/modules/artifacts/eventformatters</directory>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/eventformatters
+            <directory>../../../../extensions/cep/modules/artifacts/wso2cep-3.0.0/eventformatters</directory>
+            <outputDirectory>
+                ${stratos.distribution.name}-${project.version}/repository/deployment/server/eventformatters
             </outputDirectory>
         </fileSet>
         <!--creating an empty execution plans directory-->
         <fileSet>
-            <directory>../../../../extensions/cep/modules/artifacts/executionplans</directory>
+            <directory>../../../../extensions/cep/modules/artifacts/wso2cep-3.0.0/executionplans</directory>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/executionplans
             </outputDirectory>
         </fileSet>
@@ -486,14 +495,16 @@
             </includes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/axis2/client/lib</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/axis2/client/lib
+            </outputDirectory>
             <includes>
                 <include>bouncycastle:bcprov-jdk15:jar</include>
             </includes>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/client/modules</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/client/modules
+            </outputDirectory>
             <includes>
                 <include>org.apache.rampart:rampart:mar</include>
             </includes>
@@ -510,7 +521,7 @@
         <dependencySet>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/lib</outputDirectory>
             <includes>
-                <include>org.apache.stratos:org.apache.stratos.cep.extension:jar</include>
+                <include>org.apache.stratos:org.apache.stratos.cep300.extension:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
@@ -520,7 +531,8 @@
             </includes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/dropins</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/components/dropins
+            </outputDirectory>
             <includes>
                 <include>org.apache.stratos:org.wso2.carbon.ui:jar</include>
             </includes>
@@ -603,7 +615,7 @@
             <filtered>true</filtered>
         </file>
         <file>
-            <source>../../../../extensions/cep/modules/artifacts/streamdefinitions/stream-manager-config.xml</source>
+            <source>../../../../extensions/cep/modules/artifacts/wso2cep-3.0.0/streamdefinitions/stream-manager-config.xml</source>
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
@@ -649,7 +661,8 @@
         </file>
         <file>
             <source>src/main/conf/security/client-truststore.jks</source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/resources/security/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/resources/security/
+            </outputDirectory>
             <filtered>false</filtered>
             <fileMode>600</fileMode>
         </file>
@@ -779,7 +792,8 @@
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/security/userRP.jks
             </source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/resources/security/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/resources/security/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <!-- Including logging-config.xml file -->
@@ -790,13 +804,13 @@
             <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/etc/</outputDirectory>
         </file>
         <file>
-            <source>src/bin/stratos.sh</source>
+            <source>src/main/bin/stratos.sh</source>
             <outputDirectory>apache-stratos-${project.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/bin/stratos.bat</source>
+            <source>src/main/bin/stratos.bat</source>
             <outputDirectory>apache-stratos-${project.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
@@ -819,7 +833,8 @@
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/api.war
             </source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <!-- Mock iaas webapp -->
@@ -827,7 +842,8 @@
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/mock-iaas.war
             </source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <!--oauth2.war and authenticationendpoint.war is related to oAuth feature  -->
@@ -835,14 +851,16 @@
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/oauth2.war
             </source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/authenticationendpoint.war
             </source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <!-- End of REST endpoint webapp -->
@@ -851,18 +869,21 @@
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/metadata.war
             </source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/deployment/server/webapps/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <!-- End of Meta data service webapp -->
         <file>
             <source>src/main/conf/data-bridge/data-bridge-config.xml</source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/data-bridge/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/data-bridge/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>src/main/conf/data-bridge/thrift-agent-config.xml</source>
-            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/data-bridge/</outputDirectory>
+            <outputDirectory>${stratos.distribution.name}-${project.version}/repository/conf/data-bridge/
+            </outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <file>

@@ -55,12 +55,15 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.*;
 
 public class ObjectConverter {
+
+    private static final String APPLICATION_STATUS_ACTIVE = "Active";
 
     public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
             CartridgeBean cartridgeBean) {
@@ -647,6 +650,7 @@ public class ObjectConverter {
             memberBean.setServiceName(member.getServiceName());
             memberBean.setClusterId(member.getClusterId());
             memberBean.setMemberId(member.getMemberId());
+            memberBean.setInstanceId(member.getInstanceId());
             memberBean.setClusterInstanceId(member.getClusterInstanceId());
 
             memberBean.setLbClusterId(member.getLbClusterId());
@@ -700,6 +704,7 @@ public class ObjectConverter {
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
                 memberBean.setPartitionId(member.getPartitionId());
                 memberBean.setMemberId(member.getMemberId());
+                memberBean.setInstanceId(member.getInstanceId());
                 memberBean.setClusterInstanceId(member.getClusterInstanceId());
                 memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
                 memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
@@ -713,10 +718,14 @@ public class ObjectConverter {
                 clusterInstanceBean.getMember().add(memberBean);
             }
         }
-        clusterInstanceBean.setAccessUrls(cluster.getAccessUrls());
+        if(cluster.getAccessUrls() != null) {
+            clusterInstanceBean.setAccessUrls(cluster.getAccessUrls().get(instanceId));
+        }
         for (String hostname : cluster.getHostNames()) {
             clusterInstanceBean.getHostNames().add(hostname);
         }
+
+        clusterInstanceBean.setLoadBalancerIps(cluster.getLoadBalancerIps());
         clusterInstanceBean.setKubernetesServices(convertKubernetesServiceToKubernetesServiceBean(
                 cluster.getKubernetesServices()));
         return clusterInstanceBean;
@@ -1147,15 +1156,18 @@ public class ObjectConverter {
         if (applicationContext == null) {
             return null;
         }
-
+        Application application = ApplicationManager.getApplications().getApplication(applicationContext.getApplicationId());
         ApplicationBean applicationDefinition = new ApplicationBean();
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setAlias(applicationContext.getAlias());
         applicationDefinition.setMultiTenant(applicationContext.getMultiTenant());
         applicationDefinition.setName(applicationContext.getName());
         applicationDefinition.setDescription(applicationContext.getDescription());
-        applicationDefinition.setStatus(applicationContext.getStatus());
-
+        if (application.getStatus().name().equals(APPLICATION_STATUS_ACTIVE)) {
+            applicationDefinition.setStatus(application.getStatus().name());
+        } else {
+            applicationDefinition.setStatus(applicationContext.getStatus());
+        }
         // convert and set components
         if (applicationContext.getComponents() != null) {
             applicationDefinition.setComponents(new ComponentBean());

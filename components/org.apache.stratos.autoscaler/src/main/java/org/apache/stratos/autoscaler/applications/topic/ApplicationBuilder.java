@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.applications.topic;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -27,10 +28,17 @@ import org.apache.stratos.autoscaler.client.AutoscalerCloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
+import org.apache.stratos.common.Property;
+import org.apache.stratos.common.partition.NetworkPartitionRef;
 import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -75,7 +83,40 @@ public class ApplicationBuilder {
                     application.getUniqueIdentifier());
         }
         ApplicationHolder.persistApplication(application);
-        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
+        // Add network partition ids to application cluster contexts to be used by cloud controller
+        for(ApplicationClusterContext appClusterContext : appClusterContexts) {
+            String deploymentPolicyName = appClusterContext.getDeploymentPolicyName();
+            if(StringUtils.isEmpty(deploymentPolicyName)) {
+                // Deployment policy name is not defined in each application cluster context
+                // therefore it needs to be find using the below util method
+                deploymentPolicyName = AutoscalerUtil.getDeploymentPolicyIdByAlias(application.getUniqueIdentifier(),
+                        AutoscalerUtil.getAliasFromClusterId(appClusterContext.getClusterId()));
+            }
+            if(StringUtils.isEmpty(deploymentPolicyName)) {
+                throw new AutoScalerException(String.format("Deployment policy name not found: [application] %s " +
+                                "[cluster] %s", application.getUniqueIdentifier(),
+                        appClusterContext.getClusterId()));
+            }
+
+            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
+            if(deploymentPolicy == null) {
+                throw new AutoScalerException(String.format("Deployment policy not found: [application] %s " +
+                        "[cluster] %s [deployment-policy] %s", application.getUniqueIdentifier(),
+                        appClusterContext.getClusterId(),
+                        appClusterContext.getDeploymentPolicyName()));
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for(NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionRefs()) {
+                if(stringBuilder.length() > 0) {
+                    stringBuilder.append(",");
+                }
+                stringBuilder.append(networkPartitionRef.getId());
+            }
+            Property npIdListProperty = new Property(AutoscalerConstants.NETWORK_PARTITION_ID_LIST,
+                    stringBuilder.toString());
+            appClusterContext.getProperties().addProperty(npIdListProperty);
+        }
+
         AutoscalerCloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                 appClusterContexts);
     }
@@ -420,7 +461,8 @@ public class ApplicationBuilder {
                         getAppMonitor(appId);
 
                 if (monitor != null) {
-                    if (monitor.hasMonitors() && applicationMonitor.isTerminating()) {
+                    if (monitor.hasMonitors() && applicationMonitor != null &&
+                            !applicationMonitor.isForce() && applicationMonitor.isTerminating()) {
                         for (Monitor monitor1 : monitor.
                                 getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
@@ -428,8 +470,7 @@ public class ApplicationBuilder {
                         }
                     }
                     org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext networkPartitionContext =
-                            (org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext) monitor.
-                                    getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
+                            monitor.getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
                     networkPartitionContext.removeInstanceContext(instanceId);
                     if (groupInstance.getPartitionId() != null) {
                         networkPartitionContext.getPartitionCtxt(groupInstance.getPartitionId()).
@@ -439,7 +480,10 @@ public class ApplicationBuilder {
                     group.removeInstance(instanceId);
                     ApplicationHolder.persistApplication(application);
                     ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
-                    monitor.setStatus(status, instanceId, parentId);
+                    if(applicationMonitor != null && !applicationMonitor.isForce()) {
+                        //If force un-deployment, then no need to notify the parent
+                        monitor.setStatus(status, instanceId, parentId);
+                    }
                 }
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +

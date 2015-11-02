@@ -20,6 +20,7 @@ import base64
 import time
 import socket
 import string
+import hashlib
 
 from log import LogFactory
 
@@ -27,7 +28,8 @@ log = LogFactory().get_log(__name__)
 
 unpad = lambda s: s[0:-ord(s[-1])]
 current_milli_time = lambda: int(round(time.time() * 1000))
-
+BS = 16
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 
 def decrypt_password(pass_str, secret):
     """
@@ -45,7 +47,7 @@ def decrypt_password(pass_str, secret):
     dec_pass = ""
 
     try:
-        log.debug("Decrypting password")
+        log.debug("Decrypting cipher text: %s" % pass_str)
         bdecoded_pass = base64.b64decode(pass_str.strip())
         # secret length should be 16
         cipher = AES.new(secret.strip(), AES.MODE_ECB)
@@ -56,7 +58,8 @@ def decrypt_password(pass_str, secret):
 
     # remove nonprintable characters that are padded in the decrypted password
     dec_pass = filter(lambda x: x in string.printable, dec_pass)
-    log.debug("Decrypted PWD: [%r]" % dec_pass)
+    dec_pass_md5 = hashlib.md5(dec_pass.encode('utf-8')).hexdigest()
+    log.debug("Decrypted password md5sum: [%r]" % dec_pass_md5)
     return dec_pass
 
 

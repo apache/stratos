@@ -31,6 +31,9 @@
             <includes>
                 <include>**/*</include>
             </includes>
+            <excludes>
+                <exclude>**/*.pyc</exclude>
+            </excludes>
             <fileMode>0755</fileMode>
         </fileSet>
     </fileSets>

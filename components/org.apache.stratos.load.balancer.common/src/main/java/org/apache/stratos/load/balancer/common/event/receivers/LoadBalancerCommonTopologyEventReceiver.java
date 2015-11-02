@@ -48,6 +48,13 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         addEventListeners();
     }
 
+    public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider, boolean addListeners) {
+        this.topologyProvider = topologyProvider;
+        if(addListeners) {
+            addEventListeners();
+        }
+    }
+
     public void execute() {
         super.execute();
         if (log.isInfoEnabled()) {
@@ -102,8 +109,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         return initialized;
     }
 
-    private void addEventListeners() {
-
+    /**
+     * Add default event listeners for updating the topology on topology events
+     */
+    public void addEventListeners() {
         addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -131,6 +140,11 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                     if (networkPartitionIdFilter != null && !networkPartitionIdFilter.equals("")) {
                         if (memberActivatedEvent.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                             addMember(serviceName, clusterId, memberId);
+                        }
+                        else{
+                            log.debug(String.format("Member exists in a different network partition." +
+                                    "[member id] %s [member network partition] %s [filter network partition] %s ",
+                                    memberId,memberActivatedEvent.getNetworkPartitionId(),networkPartitionIdFilter));
                         }
                     } else {
                         addMember(serviceName, clusterId, memberId);
@@ -439,6 +453,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             for (Port port : messagingMember.getPorts()) {
                 member.addPort(transformPort(port));
             }
+        }
+        
+        if (messagingMember.getInstanceId() != null) {
+            member.setInstanceId(messagingMember.getInstanceId());
         }
         return member;
     }

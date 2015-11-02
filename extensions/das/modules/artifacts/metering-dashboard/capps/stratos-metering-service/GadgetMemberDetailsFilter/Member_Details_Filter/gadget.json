@@ -1,0 +1,23 @@
+{
+  "id": "Member_Details_Filter",
+  "title": "Member Details Filter",
+  "type": "gadget",
+  "thumbnail": "store://gadget/Member_Details_Filter/index.png",
+  "data": {
+    "url": "store://gadget/Member_Details_Filter/index.xml"
+  },
+  "styles": {
+    "borders": false,
+    "title": false
+  },
+  "notify": {
+    "member-details-filter": {
+      "type": "address",
+      "description": "This notifies applicationId and clusterId"
+    }
+  },
+  "cancel": {
+    "type": "boolean",
+    "description": "This notifies cancellation of state selection"
+  }
+}

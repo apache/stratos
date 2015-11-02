@@ -29,7 +29,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.1.5-SNAPSHOT</version>
     <name>Apache Stratos</name>
     <description>Apache Stratos is an open source polyglot Platform as a Service (PaaS) framework</description>
     <url>http://stratos.apache.org</url>
@@ -73,7 +73,7 @@
         <connection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</developerConnection>
         <url>https://git-wip-us.apache.org/repos/asf?p=stratos.git</url>
-        <tag>4.2.0-SNAPSHOT</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
@@ -127,12 +127,36 @@
             </releases>
         </pluginRepository>
         <pluginRepository>
-            <id>wso2-maven2-repository-1</id>
-            <url>http://dist.wso2.org/maven2</url>
+            <id>wso2.releases</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
         </pluginRepository>
         <pluginRepository>
-            <id>wso2-maven2-repository-2</id>
-            <url>http://dist.wso2.org/snapshots/maven2</url>
+            <id>wso2.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>wso2-nexus</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
         </pluginRepository>
     </pluginRepositories>
 
@@ -177,8 +201,10 @@
                                 <exclude>**/siddhi.extension</exclude>
                                 <exclude>**/templates/*.cfg.template</exclude>
                                 <exclude>**/instrumentation.txt</exclude>
-                                <exclude>**/*json</exclude>
+                                <exclude>**/filters.txt</exclude>
+                                <exclude>**/*.json</exclude>
                                 <exclude>**/.idea/**/*</exclude>
+                                <exclude>**/.idea</exclude>
                                 <exclude>**/tlds/**/*</exclude>
                                 <exclude>**/highlighter/**/*</exclude>
                                 <exclude>**/yui/**/*</exclude>
@@ -201,181 +227,10 @@
                                 <exclude>**/*.wsdl</exclude>
                                 <!-- Carbon UI dependency -->
                                 <exclude>**/org.wso2.carbon.ui/**/*</exclude>
+                                <!-- Python CLI config files -->
+                                <exclude>**/*.cfg</exclude>
+                                <exclude>**/*.rst</exclude>
                             </excludes>
-                            <excludeSubProjects>false</excludeSubProjects>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>addLicense</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.rat</groupId>
-                        <artifactId>apache-rat-plugin</artifactId>
-                        <version>0.10</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/target/**/*</exclude>
-                                <exclude>**/.settings/**/*</exclude>
-                                <exclude>**/.project</exclude>
-                                <exclude>**/.classpath</exclude>
-                                <exclude>**/.git/**/*</exclude>
-                                <exclude>**/README.md</exclude>
-                                <exclude>**/INSTALL.md</exclude>
-                                <exclude>**/MANIFEST.MF</exclude>
-                                <exclude>**/edit_area/**/*</exclude>
-                                <exclude>**/editarea/**/*</exclude>
-                                <exclude>**/jquery/**/*</exclude>
-                                <exclude>**/jquery*</exclude>
-                                <exclude>**/*.iml</exclude>
-                                <exclude>**/*.iws</exclude>
-                                <exclude>**/*.ipr</exclude>
-                                <exclude>**/.gitignore</exclude>
-                                <exclude>**/payload/launch-params</exclude>
-                                <exclude>**/*.key</exclude>
-                                <exclude>**/bootstrap*.css</exclude>
-                                <exclude>**/animation.css</exclude>
-                                <exclude>**/fontello*</exclude>
-                                <exclude>**/jaggery.conf</exclude>
-                                <exclude>**/zoo.cfg</exclude>
-                                <exclude>**/scripts/*/customization</exclude>
-                                <exclude>**/siddhi.extension</exclude>
-                                <exclude>**/templates/*.cfg.template</exclude>
-                                <exclude>**/instrumentation.txt</exclude>
-                                <exclude>**/*json</exclude>
-                                <!-- Carbon UI dependency -->
-                                <exclude>**/org.wso2.carbon.ui/**/*</exclude>
-
-                                <!-- Added following based on jclouds -->
-                                <exclude>**/src/test/resources/**/*.xml</exclude>
-                                <!-- META-INF/services files -->
-                                <exclude>**/services/*LoggingModule</exclude>
-                                <exclude>**/services/*ApiMetadata</exclude>
-                                <exclude>**/services/*ProviderMetadata</exclude>
-                            </excludes>
-                            <licenses>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>BSD</licenseFamilyCategory>
-                                    <licenseFamilyName>The BSD License</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>The BSD License</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>CDDL</licenseFamilyCategory>
-                                    <licenseFamilyName>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0
-                                    </licenseFamilyName>
-                                    <patterns>
-                                        <pattern>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>EPL</licenseFamilyCategory>
-                                    <licenseFamilyName>Eclipse Public License - v 1.0</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>Eclipse Public License</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>MIT</licenseFamilyCategory>
-                                    <licenseFamilyName>The MIT License (MIT)</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>MIT License</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>JSMON</licenseFamilyCategory>
-                                    <licenseFamilyName>JSMON</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>JSMON</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>JDOM</licenseFamilyCategory>
-                                    <licenseFamilyName>JDOM</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>JDOM</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>JSON</licenseFamilyCategory>
-                                    <licenseFamilyName>The JSON License</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>JSON License</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>MPL10</licenseFamilyCategory>
-                                    <licenseFamilyName>MOZILLA PUBLIC LICENSE Version 1.0</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>MOZILLA PUBLIC LICENSE</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>SNAPTREE</licenseFamilyCategory>
-                                    <licenseFamilyName>SNAPTREE LICENSE</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>SNAPTREE LICENSE</pattern>
-                                    </patterns>
-                                </license>
-                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-                                    <licenseFamilyCategory>CPL1</licenseFamilyCategory>
-                                    <licenseFamilyName>Common Public License 1.0</licenseFamilyName>
-                                    <patterns>
-                                        <pattern>CPL</pattern>
-                                    </patterns>
-                                </license>
-                            </licenses>
-                            <licenseFamilies>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>The BSD LicenseThe BSD License</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>Eclipse Public License - v 1.0</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>The MIT License (MIT)</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>JSMON</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>JDOM</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>The JSON License</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>MOZILLA PUBLIC LICENSE Version 1.0</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>SNAPTREE LICENSE</familyName>
-                                </licenseFamily>
-                                <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-                                    <familyName>Common Public License 1.0</familyName>
-                                </licenseFamily>
-                            </licenseFamilies>
-                            <addLicenseHeaders>forced</addLicenseHeaders>
-                            <ignoreErrors>false</ignoreErrors>
                             <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
                         <executions>
@@ -394,6 +249,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>SecVerifier</artifactId>
+                <type>aar</type>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -450,19 +311,55 @@
                 <version>${gson.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.analytics-common</groupId>
-                <artifactId>org.wso2.carbon.databridge.receiver.thrift</artifactId>
-                <version>${carbon.analytics.common.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-exec</artifactId>
+                <version>${commons.exec.version}</version>
+            </dependency>
+
+            <!-- Automation framework dependencies -->
+            <dependency>
+                <groupId>org.wso2.carbon.automation</groupId>
+                <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
+                <version>${carbon.automation.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.analytics-common</groupId>
-                <artifactId>org.wso2.carbon.databridge.receiver.binary</artifactId>
-                <version>${carbon.analytics.common.version}</version>
+                <groupId>org.wso2.carbon.automation</groupId>
+                <artifactId>org.wso2.carbon.automation.engine</artifactId>
+                <version>${carbon.automation.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.analytics-common</groupId>
-                <artifactId>org.wso2.carbon.databridge.core</artifactId>
-                <version>${carbon.analytics.common.version}</version>
+                <groupId>org.wso2.carbon.automation</groupId>
+                <artifactId>org.wso2.carbon.automation.extensions</artifactId>
+                <version>${carbon.automation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.automationutils</groupId>
+                <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
+                <version>${carbon.automationutils.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.automationutils</groupId>
+                <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
+                <version>${carbon.automationutils.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.automationutils</groupId>
+                <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
+                <version>${carbon.automationutils.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.agent</artifactId>
+                <version>${jacoco.agent.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -563,9 +460,14 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.jvnet.maven.incrementalbuild</groupId>
+                    <artifactId>incremental-build-plugin</artifactId>
+                    <version>${maven.incremental.build.plugin.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>${maven.compiler.plugin.version}</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <source>1.7</source>
@@ -573,14 +475,9 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.4.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
-                    <version>1.7.2</version>
+                    <version>${maven.scr.plugin.version}</version>
                     <executions>
                         <execution>
                             <id>generate-scr-scrdescriptor</id>
@@ -593,7 +490,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.5</version>
+                    <version>${maven.bundle.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
                         <obrRepository>NONE</obrRepository>
@@ -602,7 +499,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>${maven.source.plugin.version}</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -610,70 +507,93 @@
                             <goals>
                                 <goal>jar-no-fork</goal>
                             </goals>
-                            <configuration>
-                                <excludes>
-                                    <exclude>${project.build.directory}/**/*</exclude>
-                                    <exclude>**/.gitignore</exclude>
-                                    <exclude>**/.git/**/*</exclude>
-                                </excludes>
-                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.5.5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.8</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.wso2.maven</groupId>
-                    <artifactId>carbon-p2-plugin</artifactId>
-                    <version>1.5.3</version>
+                    <version>${maven.assembly.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.9.1</version>
+                    <version>${maven.build.helper.plugin.version}</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.18.1</version>
+                    <groupId>org.wso2.maven</groupId>
+                    <artifactId>carbon-p2-plugin</artifactId>
+                    <version>${carbon.p2.plugin.version}</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>maven-buildnumber-plugin</artifactId>
+                    <version>${maven.build.number.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.axis2</groupId>
-                    <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
-                    <version>1.6.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>2.6</version>
+                    <artifactId>axis2-aar-maven-plugin</artifactId>
+                    <version>${version.axis2}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>${maven.jar.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven.enforcer.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>${maven.project.info.reports.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.plugin.verison}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven.war.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.axis2</groupId>
+                    <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+                    <version>${maven.axis2.java2wsdl.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${maven.exec.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${maven.gpg.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven.deploy.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -683,8 +603,11 @@
         <!-- Carbon related versions -->
         <carbon.kernel.version>4.2.0</carbon.kernel.version>
         <carbon.deployment.version>4.2.3</carbon.deployment.version>
+        <carbon.automation.version>4.4.2</carbon.automation.version>
+        <carbon.automationutils.version>4.4.2</carbon.automationutils.version>
+        <carbon.analytics.common.version>5.0.0</carbon.analytics.common.version>
         <carbon.ui.stratos.version>4.2.0-stratosv2</carbon.ui.stratos.version>
-        <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+        <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.platform.patch.version.4.2.1>4.2.1</carbon.platform.patch.version.4.2.1>
         <carbon.platform.patch.version.4.2.2>4.2.2</carbon.platform.patch.version.4.2.2>
         <carbon.platform.patch.version.4.2.3>4.2.3</carbon.platform.patch.version.4.2.3>
@@ -739,6 +662,11 @@
         <siddhi.version>2.0.0-wso2v5</siddhi.version>
         <siddhi.event.processor.version>1.0.0</siddhi.event.processor.version>
         <scr.annotations.version>1.9.12</scr.annotations.version>
+        <testng.version>6.1.1</testng.version>
+        <jacoco.agent.version>0.7.4.201502262128</jacoco.agent.version>
+        <commons.exec.version>1.0.1</commons.exec.version>
+        <httpcore.version>4.3.0.wso2v1</httpcore.version>
+        <httpclient.version>4.2.5.wso2v1</httpclient.version>
 
         <!-- OSGi import ranges -->
         <axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>
@@ -757,6 +685,32 @@
         <java.cartridge.agent.distribution.name>apache-stratos-cartridge-agent</java.cartridge.agent.distribution.name>
         <python.cartridge.agent.distribution.name>apache-stratos-python-cartridge-agent
         </python.cartridge.agent.distribution.name>
+        <python.cli.distribution.name>apache-stratos-python-cli</python.cli.distribution.name>
+
+        <!-- Maven plugin versions -->
+        <maven.incremental.plugin.version>1.3</maven.incremental.plugin.version>
+        <maven.scr.plugin.version>1.7.4</maven.scr.plugin.version>
+        <maven.bundle.plugin.version>2.3.5</maven.bundle.plugin.version>
+        <maven.source.plugin.version>2.1.2</maven.source.plugin.version>
+        <maven.assembly.plugin.version>2.4</maven.assembly.plugin.version>
+        <maven.build.helper.plugin.version>1.7</maven.build.helper.plugin.version>
+        <maven.build.number.plugin.version>0.9.4</maven.build.number.plugin.version>
+        <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+        <maven.clean.plugin.version>2.4.1</maven.clean.plugin.version>
+        <maven.enforcer.plugin.version>1.3.1</maven.enforcer.plugin.version>
+        <maven.compiler.plugin.version>2.3.1</maven.compiler.plugin.version>
+        <maven.wagon.ssh.extension.version>2.1</maven.wagon.ssh.extension.version>
+        <maven.project.info.reports.plugin.version>2.4</maven.project.info.reports.plugin.version>
+        <maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
+        <maven.resources.plugin.verison>2.7</maven.resources.plugin.verison>
+        <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
+        <maven.incremental.build.plugin.version>1.3</maven.incremental.build.plugin.version>
+        <maven.war.plugin.version>2.6</maven.war.plugin.version>
+        <maven.axis2.java2wsdl.plugin.version>1.6.2</maven.axis2.java2wsdl.plugin.version>
+        <maven.exec.plugin.version>1.4.0</maven.exec.plugin.version>
+        <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
+        <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
+        <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

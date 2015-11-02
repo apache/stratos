@@ -43,6 +43,8 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
+    // Instance id on IaaS side, which is available in MemberContext
+    private String instanceId;
 
     // member initiated time
     private final long initTime;
@@ -207,6 +209,14 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
 
     public LoadBalancingIPType getLoadBalancingIPType() {
         return loadBalancingIPType;
+    }
+    
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 
     @Override

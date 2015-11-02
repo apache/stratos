@@ -44,15 +44,35 @@ public class ApplicationsEventPublisher {
     }
 
     public static void sendApplicationCreatedEvent(Application application) {
+        if(log.isInfoEnabled()) {
+            log.info("Sending application created event for [application] " +
+                    application.getUniqueIdentifier());
+        }
         publishEvent(new ApplicationCreatedEvent(application));
     }
 
+    public static void sendApplicationUpdated(Application application) {
+        if(log.isInfoEnabled()) {
+            log.info("Sending application updated event for [application] " +
+                    application.getUniqueIdentifier());
+        }
+        publishEvent(new ApplicationUpdatedEvent(application));
+    }
+
     public static void sendApplicationDeletedEvent(String appId, Set<ClusterDataHolder> clusterData) {
+        if(log.isInfoEnabled()) {
+            log.info("Sending application deleted event for [application] " +
+                    appId);
+        }
         publishEvent(new ApplicationDeletedEvent(appId, clusterData));
     }
 
     public static void sendApplicationInstanceCreatedEvent(String appId,
                                                            ApplicationInstance applicationInstance) {
+        if(log.isInfoEnabled()) {
+            log.info("Sending application instnace created event for [application] " +
+                    appId + " [instance] " + applicationInstance.getInstanceId());
+        }
         publishEvent(new ApplicationInstanceCreatedEvent(appId, applicationInstance));
     }
 

@@ -19,8 +19,12 @@
 
 package org.apache.stratos.mock.iaas.domain;
 
+import org.apache.stratos.messaging.adapters.MapAdapter;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Mock member context.
@@ -40,12 +44,13 @@ public class MockInstanceContext implements Serializable {
     private String defaultPrivateIP;
     private String defaultPublicIP;
     private String instanceId;
+    private String payload;
 
     public MockInstanceContext() {
     }
 
     public MockInstanceContext(String applicationId, String serviceName, String clusterId, String memberId,
-                               String clusterInstanceId, String networkPartitionId, String partitionId) {
+            String clusterInstanceId, String networkPartitionId, String partitionId) {
         this.setApplicationId(applicationId);
         this.setServiceName(serviceName);
         this.setClusterId(clusterId);
@@ -137,5 +142,13 @@ public class MockInstanceContext implements Serializable {
 
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }

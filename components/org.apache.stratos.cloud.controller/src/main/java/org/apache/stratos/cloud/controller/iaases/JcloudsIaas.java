@@ -35,6 +35,7 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.rest.ResourceNotFoundException;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,12 @@ public abstract class JcloudsIaas extends Iaas {
     }
 
     /**
-     * This should build the {@link org.jclouds.compute.ComputeService} object and the {@link org.jclouds.compute.domain.Template} object,
-     * using the information from {@link org.apache.stratos.cloud.controller.domain.IaasProvider} and should set the built
-     * {@link org.jclouds.compute.ComputeService} object in the {@link org.apache.stratos.cloud.controller.domain.IaasProvider#setComputeService(org.jclouds.compute.ComputeService)}
+     * This should build the {@link org.jclouds.compute.ComputeService} object and the {@link org.jclouds.compute
+     * .domain.Template} object,
+     * using the information from {@link org.apache.stratos.cloud.controller.domain.IaasProvider} and should set the
+     * built
+     * {@link org.jclouds.compute.ComputeService} object in the {@link org.apache.stratos.cloud.controller.domain
+     * .IaasProvider#setComputeService(org.jclouds.compute.ComputeService)}
      * and also should set the built {@link org.jclouds.compute.domain.Template} object in the
      * {@link org.apache.stratos.cloud.controller.domain.IaasProvider#setTemplate(org.jclouds.compute.domain.Template)}.
      */
@@ -66,7 +70,8 @@ public abstract class JcloudsIaas extends Iaas {
     public abstract void buildTemplate();
 
     /**
-     * This method should create a Key Pair corresponds to a given public key in the respective region having the name given.
+     * This method should create a Key Pair corresponds to a given public key in the respective region having the
+     * name given.
      * Also should override the value of the key pair in the {@link org.jclouds.compute.domain.Template} of this IaaS.
      *
      * @param region      region that the key pair will get created.
@@ -85,7 +90,8 @@ public abstract class JcloudsIaas extends Iaas {
     public abstract List<String> associateAddresses(NodeMetadata node);
 
     /**
-     * This will obtain a predefined IP address and associate that IP with this node, if ip is already in use allocate ip from pool
+     * This will obtain a predefined IP address and associate that IP with this node, if ip is already in use
+     * allocate ip from pool
      * (through associateAddress())
      *
      * @param node Node to be associated with an IP.
@@ -117,27 +123,27 @@ public abstract class JcloudsIaas extends Iaas {
             Template template = getIaasProvider().getTemplate();
 
             if (template == null) {
-                String msg = "Could not start an instance, jclouds template is null for iaas provider [type]: " +
-                        getIaasProvider().getType();
+                String msg = "Could not start an instance, jclouds template is null for iaas provider [type]: "
+                        + getIaasProvider().getType();
                 log.error(msg);
                 throw new InvalidIaasProviderException(msg);
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("Cloud controller is delegating request to start an instance for "
-                        + memberContext + " to jclouds");
+                log.debug("Cloud controller is delegating request to start an instance for " + memberContext
+                        + " to jclouds");
             }
             // create and start a node
             Set<? extends NodeMetadata> nodeMetadataSet = computeService.createNodesInGroup(group, 1, template);
             NodeMetadata nodeMetadata = nodeMetadataSet.iterator().next();
             if (log.isDebugEnabled()) {
-                log.debug("Cloud controller received a response for the request to start "
-                        + memberContext + " from Jclouds layer.");
+                log.debug("Cloud controller received a response for the request to start " + memberContext
+                        + " from Jclouds layer.");
             }
 
             if (nodeMetadata == null) {
-                String msg = "Null response received for instance start-up request to Jclouds.\n"
-                        + memberContext.toString();
+                String msg = "Null response received for instance start-up request to Jclouds.\n" + memberContext
+                        .toString();
                 log.error(msg);
                 throw new IllegalStateException(msg);
             }
@@ -158,7 +164,7 @@ public abstract class JcloudsIaas extends Iaas {
         instanceMetadata.setLoginPort(nodeMetadata.getLoginPort());
         if (nodeMetadata.getHardware() != null) {
             instanceMetadata.setHypervisor(nodeMetadata.getHardware().getHypervisor());
-            instanceMetadata.setRam(nodeMetadata.getHardware().getRam());
+            instanceMetadata.setRam(String.valueOf(nodeMetadata.getHardware().getRam()));
         }
         if (nodeMetadata.getOperatingSystem() != null) {
             instanceMetadata.setOperatingSystemName(nodeMetadata.getOperatingSystem().getName());
@@ -194,17 +200,15 @@ public abstract class JcloudsIaas extends Iaas {
                 if (StringUtils.isNotBlank(preDefinedPublicIp)) {
                     // Allocate predefined public ip
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Allocating predefined public IP address: " +
-                                        "[cartridge-type] %s [member-id] %s [pre-defined-ip] %s",
-                                memberContext.getCartridgeType(), memberContext.getMemberId(),
-                                preDefinedPublicIp));
+                        log.debug(String.format("Allocating predefined public IP address: "
+                                        + "[cartridge-type] %s [member-id] %s [pre-defined-ip] %s",
+                                memberContext.getCartridgeType(), memberContext.getMemberId(), preDefinedPublicIp));
                     }
 
                     if (!CloudControllerServiceUtil.isValidIpAddress(preDefinedPublicIp)) {
-                        String msg = String.format("Predefined public IP address is not valid: " +
-                                        "[cartridge-type] %s [member-id] %s [pre-defined-ip] %s",
-                                memberContext.getCartridgeType(), memberContext.getMemberId(),
-                                preDefinedPublicIp);
+                        String msg = String.format("Predefined public IP address is not valid: "
+                                        + "[cartridge-type] %s [member-id] %s [pre-defined-ip] %s",
+                                memberContext.getCartridgeType(), memberContext.getMemberId(), preDefinedPublicIp);
                         log.error(msg);
                         throw new CloudControllerException(msg);
                     }
@@ -213,9 +217,8 @@ public abstract class JcloudsIaas extends Iaas {
                     if ((StringUtils.isBlank(allocatedIp)) || (!preDefinedPublicIp.equals(allocatedIp))) {
                         String msg = String.format("Could not allocate predefined public IP address: " +
                                         "[cartridge-type] %s [member-id] %s " +
-                                        "[pre-defined-ip] %s [allocated-ip] %s",
-                                memberContext.getCartridgeType(), memberContext.getMemberId(),
-                                preDefinedPublicIp, allocatedIp);
+                                        "[pre-defined-ip] %s [allocated-ip] %s", memberContext.getCartridgeType(),
+                                memberContext.getMemberId(), preDefinedPublicIp, allocatedIp);
                         log.error(msg);
                         throw new CloudControllerException(msg);
                     }
@@ -223,8 +226,8 @@ public abstract class JcloudsIaas extends Iaas {
                 } else {
                     // Allocate dynamic public ip addresses
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Allocating dynamic public IP addresses: " +
-                                        "[cartridge-type] %s [member-id] %s",
+                        log.debug(String.format(
+                                "Allocating dynamic public IP addresses: " + "[cartridge-type] %s [member-id] %s",
                                 memberContext.getCartridgeType(), memberContext.getMemberId()));
                     }
 
@@ -233,24 +236,23 @@ public abstract class JcloudsIaas extends Iaas {
                     // checking for null and empty is enough. If there are elements in this list, they are valid IPs
                     // because we are validating before putting into the list
                     if (associatedIPs == null || associatedIPs.isEmpty()) {
-                        String msg = String.format("Could not allocate dynamic public IP addresses: " +
-                                        "[cartridge-type] %s [member-id] %s",
-                                memberContext.getCartridgeType(), memberContext.getMemberId(),
-                                preDefinedPublicIp);
+                        String msg = String.format("Could not allocate dynamic public IP addresses: "
+                                        + "[cartridge-type] %s [member-id] %s", memberContext.getCartridgeType(),
+                                memberContext.getMemberId(), preDefinedPublicIp);
                         log.error(msg);
                         throw new CloudControllerException(msg);
                     }
                 }
 
                 memberContext.setAllocatedIPs(associatedIPs.toArray(new String[associatedIPs.size()]));
-                log.info(String.format("IP addresses allocated to member: [cartridge-type] %s [member-id] %s " +
-                                "[allocated-ip-addresses] %s ", memberContext.getCartridgeType(),
+                log.info(String.format("IP addresses allocated to member: [cartridge-type] %s [member-id] %s "
+                                + "[allocated-ip-addresses] %s ", memberContext.getCartridgeType(),
                         memberContext.getMemberId(), memberContext.getAllocatedIPs()));
 
                 // build the node with the new ip
-                nodeMetadata = NodeMetadataBuilder.fromNodeMetadata(nodeMetadata).publicAddresses(associatedIPs).build();
+                nodeMetadata = NodeMetadataBuilder.fromNodeMetadata(nodeMetadata).publicAddresses(associatedIPs)
+                        .build();
             }
-
 
             // public IPs
             Set<String> publicIPAddresses = nodeMetadata.getPublicAddresses();
@@ -278,42 +280,44 @@ public abstract class JcloudsIaas extends Iaas {
                 log.debug("IP allocation process ended for " + memberContext);
             }
         } catch (Exception e) {
-            String msg = String.format("Error occurred while allocating ip addresses: [cartridge-type] %s " +
-                    "[member-id] %s", memberContext.getCartridgeType(), memberContext.getMemberId());
+            String msg = String
+                    .format("Error occurred while allocating ip addresses: [cartridge-type] %s " + "[member-id] %s",
+                            memberContext.getCartridgeType(), memberContext.getMemberId());
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
         }
     }
 
-    public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException,
-            InvalidMemberException {
+    public void terminateInstance(MemberContext memberContext)
+            throws InvalidCartridgeTypeException, InvalidMemberException {
         String memberId = memberContext.getMemberId();
         String cartridgeType = memberContext.getCartridgeType();
         String nodeId = memberContext.getInstanceId();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Starting to terminate member: [cartridge-type] %s [member-id] %s",
-                    cartridgeType, memberId));
+            log.info(String.format("Starting to terminate member: [cartridge-type] %s [member-id] %s", cartridgeType,
+                    memberId));
         }
 
         if (cartridge == null) {
-            String msg = String.format("Member termination failed, could not find cartridge in cloud controller " +
-                            "context: [cartridge-type] %s [member-id] %s",
-                    cartridgeType, memberId);
+            String msg = String.format("Member termination failed, could not find cartridge in cloud controller "
+                            + "context: [cartridge-type] %s [member-id] %s", cartridgeType, memberId);
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
 
         // if no matching node id can be found.
         if (nodeId == null) {
-            String msg = String.format("Member termination failed, could not find node id in member context: " +
-                            "[cartridge-type] %s [member-id] %s",
-                    cartridgeType, memberId);
-
-            // Execute member termination post process
-            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
+            String msg = String.format("Member termination failed, could not find node id in member context: "
+                            + "[cartridge-type] %s [member-id] %s", cartridgeType, memberId);
             log.error(msg);
+            // Execute member termination post process
+            try {
+                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
+            } catch (RegistryException e) {
+                log.error("Could not persist data in registry data store", e);
+            }
             throw new InvalidMemberException(msg);
         }
 
@@ -352,7 +356,9 @@ public abstract class JcloudsIaas extends Iaas {
         String clusterId = ctxt.getClusterId();
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
         if (clusterContext == null) {
-            log.error(String.format("Could not detach volume, Cluster context not found for the [member] %s [cluster-id]", ctxt.getMemberId(), clusterId));
+            log.error(String.format(
+                    "Could not detach volume, Cluster context not found for the [member] %s [cluster-id] %s",
+                    ctxt.getMemberId(), clusterId));
             return;
         }
 
@@ -375,7 +381,6 @@ public abstract class JcloudsIaas extends Iaas {
             }
         }
     }
-
 
     public NodeMetadata findNodeMetadata(String nodeId) {
         ComputeService computeService = getIaasProvider().getComputeService();

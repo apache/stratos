@@ -31,14 +31,16 @@
             <div class='container text-center form-toolbar'>
                 <div class='col-md-1'>
                     <button class='btn btn-default btn-lg' type='button' style="margin-left: -15px; "
-                            onclick='window.location.replace(document.referrer)'> Back</button>
-                    </div>
-        {{#ifCond applicationStatus "==" "Undeploying"}}
-                <div class='col-md-1'>
-                    <button class="btn btn-danger btn-lg" type="button" style="..."
-                            value="{{appName}}" id="force_undeploy">Force Undeploy</button>
+                            onclick='window.location.replace(document.referrer)'> Back
+                    </button>
                 </div>
-        {{/ifCond}}
+                {{#ifCond applicationStatus "==" "Undeploying"}}
+                    <div class='col-md-1'>
+                        <button class="btn btn-danger btn-lg" type="button" style="..."
+                                value="{{appName}}" id="force_undeploy">Force Undeploy
+                        </button>
+                    </div>
+                {{/ifCond}}
             </div>
         </div>
         <!-- Nav tabs -->
@@ -51,8 +53,10 @@
         <div class="tab-content">
             <div class="tab-pane active" id="topology">
                 <div class="topology-buttons">
-                    <a id='export' ><i class="fa fa-save" data-toggle="tooltip" data-placement="top" title="Export as PNG"></i></a>
-                    <i class="fa fa-refresh" id='refresh' data-toggle="tooltip" data-placement="top" title="Refresh Topology"></i>
+                    <a id='export'><i class="fa fa-save" data-toggle="tooltip" data-placement="top"
+                                      title="Export as PNG"></i></a>
+                    <i class="fa fa-refresh" id='refresh' data-toggle="tooltip" data-placement="top"
+                       title="Refresh Topology"></i>
                 </div>
                 <div class="left-side">
                     <div class="panel panel-default">
@@ -61,11 +65,11 @@
                         </div>
                         <div class="panel-body">
                             <div class="keys">
-                                <div><i class="fa fa-square st-active"></i> Active </div>
-                                <div><i class="fa fa-square st-created"></i> Created </div>
-                                <div><i class="fa fa-square st-inactive"></i> Inactive </div>
-                                <div><i class="fa fa-square st-terminated"></i> Terminated </div>
-                                <div><i class="fa fa-square st-other"></i> Other </div>
+                                <div><i class="fa fa-square st-active"></i> Active</div>
+                                <div><i class="fa fa-square st-created"></i> Created</div>
+                                <div><i class="fa fa-square st-inactive"></i> Inactive</div>
+                                <div><i class="fa fa-square st-terminated"></i> Terminated</div>
+                                <div><i class="fa fa-square st-other"></i> Other</div>
                             </div>
                         </div>
                     </div>
@@ -86,114 +90,116 @@
     </div>
 
 </div>
+
 <script type="text/javascript">
     var topologydata = {{{topologyData}}};
     var applicationJSON = {{{applicationJSON}}};
-$(window).load(function() {
+    var dasStatsPublisherEnabled = {{dasStatsPublisherEnabled}};
+    var meteringDashboardUrl = '{{meteringDashboardUrl}}';
+    $(window).load(function () {
 
-    //handled Ajax base session expire issue
-    $(document).ajaxError(function (e, xhr, settings) {
-        window.location.href = '../';
-    });
+        //handled Ajax base session expire issue
+        $(document).ajaxError(function (e, xhr, settings) {
+            window.location.href = '../';
+        });
 
-    //initial generation with deafult call
-    update(genTree(topologydata));
+        //initial generation with deafult call
+        update(genTree(topologydata));
 
-    $('#refresh').click(function(){
-        //get ajax call
-        $(".application-topology").html('<i class="fa fa-spinner fa-pulse fa-4x"></i>');
-        var formtype = 'applicationtopology';
-        var applicationId = "{{appName}}";
+        $('#refresh').click(function () {
+            //get ajax call
+            $(".application-topology").html('<i class="fa fa-spinner fa-pulse fa-4x"></i>');
+            var formtype = 'applicationtopology';
+            var applicationId = "{{appName}}";
 
-        $.ajax({
-            type: "GET",
-            url: caramel.context + "/controllers/applications/application_getrequests.jag",
-            dataType: 'json',
-            data: { "formtype": formtype, "appId":applicationId },
-            success: function (data) {
-                if (data.status == 'error') {
-                    var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
-                    $(".application-topology").html('');
-                } else {
-                    $(".application-topology").html('');
-                    update(genTree(data));
-                    //call canvas update event
-                    canvg('canvasOriginal', new XMLSerializer().serializeToString(svg));
+            $.ajax({
+                type: "GET",
+                url: caramel.context + "/controllers/applications/application_getrequests.jag",
+                dataType: 'json',
+                data: {"formtype": formtype, "appId": applicationId},
+                success: function (data) {
+                    if (data.status == 'error') {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                        $(".application-topology").html('');
+                    } else {
+                        $(".application-topology").html('');
+                        update(genTree(data));
+                        //call canvas update event
+                        canvg('canvasOriginal', new XMLSerializer().serializeToString(svg));
+                    }
                 }
-            }
-        })
-    });
+            })
+        });
 
-    //make svg to canvas
-    var svg = $('svg')[0];
-    var canvasOriginal = $('#canvasOriginal')[0];
-    var ctxOriginal = canvasOriginal.getContext('2d');
-    // this saves the inline svg to canvas without external css
-    canvg('canvasOriginal', new XMLSerializer().serializeToString(svg));
-    /**
-     * This is the function that will take care of image extracting and
-     * setting proper filename for the download.
-     * IMPORTANT: Call it from within a onclick event.
-     */
-    function downloadCanvas(link, canvasId, filename) {
-        link.href = document.getElementById(canvasId).toDataURL();
-        link.download = filename;
-    }
+        //make svg to canvas
+        var svg = $('svg')[0];
+        var canvasOriginal = $('#canvasOriginal')[0];
+        var ctxOriginal = canvasOriginal.getContext('2d');
+        // this saves the inline svg to canvas without external css
+        canvg('canvasOriginal', new XMLSerializer().serializeToString(svg));
+        /**
+         * This is the function that will take care of image extracting and
+         * setting proper filename for the download.
+         * IMPORTANT: Call it from within a onclick event.
+         */
+        function downloadCanvas(link, canvasId, filename) {
+            link.href = document.getElementById(canvasId).toDataURL();
+            link.download = filename;
+        }
 
-    /**
-     * The event handler for the link's onclick event. We give THIS as a
-     * parameter (=the link element), ID of the canvas and a filename.
-     */
-    $('#export').click(function() {
-        downloadCanvas(this, 'canvasOriginal', '{{{appName}}}.png');
-    });
+        /**
+         * The event handler for the link's onclick event. We give THIS as a
+         * parameter (=the link element), ID of the canvas and a filename.
+         */
+        $('#export').click(function () {
+            downloadCanvas(this, 'canvasOriginal', '{{{appName}}}.png');
+        });
 
-$( "#force_undeploy" ).click(function() {
-var payload =$(this).attr("value");
-  noty({
-            layout: 'bottomRight',
-            type: 'warning',
-            text: 'Are you sure you want to <strong>forcefully undeploy</strong> application: <strong>'
-            +$(this).attr("value") + "</strong> ?",
-            buttons: [
-                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
-                    var formtype = 'forceundeployapplication';
-                    $noty.close();
+        $("#force_undeploy").click(function () {
+            var payload = $(this).attr("value");
+            noty({
+                layout: 'bottomRight',
+                type: 'warning',
+                text: 'Are you sure you want to <strong>forcefully undeploy</strong> application: <strong>'
+                + $(this).attr("value") + "</strong> ?",
+                buttons: [
+                    {
+                        addClass: 'btn btn-primary', text: 'Yes', onClick: function ($noty) {
+                        var formtype = 'forceundeployapplication';
+                        $noty.close();
 
-                    $.ajax({
-                        type: "POST",
-                        url: caramel.context + "/controllers/applications/application_requests.jag",
-                        dataType: 'json',
-                        data: { "applicationId": payload, "formtype": formtype },
-                        success: function (data) {
-                            if (data.status == 'error') {
-                                var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
-                            } else if (data.status == 'warning') {
-                                var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
-                            } else {
-                                var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                        $.ajax({
+                            type: "POST",
+                            url: caramel.context + "/controllers/applications/application_requests.jag",
+                            dataType: 'json',
+                            data: {"applicationId": payload, "formtype": formtype},
+                            success: function (data) {
+                                if (data.status == 'error') {
+                                    var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                                } else if (data.status == 'warning') {
+                                    var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                                } else {
+                                    var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                                }
+                                window.setTimeout(function () {
+                                    window.location.href = '../';
+                                }, 1500);
                             }
-                            window.setTimeout(function(){
-                                window.location.href = '../';
-                            }, 1500);
-                        }
-                    }).always(function () {
+                        }).always(function () {
 
-                    });
+                        });
 
-                }
-                },
-                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
-                    $noty.close();
-                }
-                }
-            ]
+                    }
+                    },
+                    {
+                        addClass: 'btn btn-danger', text: 'No', onClick: function ($noty) {
+                        $noty.close();
+                    }
+                    }
+                ]
+            });
         });
     });
-});
-
-
-
 
 
 </script>

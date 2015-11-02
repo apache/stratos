@@ -39,7 +39,10 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-
+import java.util.UUID;
+import org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher;
+import org.apache.stratos.autoscaler.statistics.publisher.AutoscalerPublisherFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption
 
@@ -161,6 +164,23 @@ dialect "mvel"
 
                     boolean partitionsAvailable = true;
                     int count = 0;
+                    String scalingReason = (numberOfRequiredInstances == numberOfInstancesReuquiredBasedOnRif)?"RIF":(numberOfRequiredInstances== numberOfInstancesReuquiredBasedOnMemoryConsumption)?"MC":"LA";
+
+                    String scalingDecisionId = clusterId + "-" + UUID.randomUUID().toString();
+                    long scalingTime = System.currentTimeMillis();
+                    ScalingDecisionPublisher scalingDecisionPublisher = AutoscalerPublisherFactory.createScalingDecisionPublisher(StatisticsPublisherType.WSO2DAS);
+                    if (scalingDecisionPublisher.isEnabled()) {
+                        log.debug("Publishing scaling decision to DAS");
+                        scalingDecisionPublisher.publish(scalingTime, scalingDecisionId, clusterId,
+                                            minInstancesCount, maxInstancesCount,
+                                            rifPredictedValue, rifThreshold, numberOfInstancesReuquiredBasedOnRif,
+                                            mcPredictedValue, mcThreshold, numberOfInstancesReuquiredBasedOnMemoryConsumption,
+                                            laPredictedValue, laThreshold, numberOfInstancesReuquiredBasedOnLoadAverage,
+                                            numberOfRequiredInstances, activeInstancesCount,
+                                            additionalInstances, scalingReason);
+                    } else {
+                        log.warn("Scaling decision publisher is not enabled");
+                    }
 
                     while(count != additionalInstances && partitionsAvailable){
 
@@ -180,7 +200,7 @@ dialect "mvel"
                                 " [laPredictedValue] " + laPredictedValue + " [laThreshold] " + laThreshold);
 
                             log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                            delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId());
+                            delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), scalingDecisionId);
                             count++;
                         } else {
 

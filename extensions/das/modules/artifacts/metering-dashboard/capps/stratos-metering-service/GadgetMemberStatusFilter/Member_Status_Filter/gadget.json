@@ -1,0 +1,23 @@
+{
+  "id": "Member_Status_Filter",
+  "title": "Member Status Filter",
+  "type": "gadget",
+  "thumbnail": "store://gadget/Member_Status_Filter/index.png",
+  "data": {
+    "url": "store://gadget/Member_Status_Filter/index.xml"
+  },
+  "styles": {
+    "borders": false,
+    "title": false
+  },
+  "notify": {
+    "member-status-filter": {
+      "type": "address",
+      "description": "This notifies time interval"
+    },
+    "cancel": {
+      "type": "boolean",
+      "description": "This notifies cancellation of state selection"
+    }
+  }
+}

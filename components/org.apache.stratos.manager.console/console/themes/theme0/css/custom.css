@@ -214,7 +214,7 @@ a.btn:hover {
 }
 
 button.hover-unsubscribe, button.hover-details, button.hover-delete,button.hover-delete-group, button.b-top,
-button.hover-undeploy, button.hover-signup{
+button.hover-undeploy, button.hover-signup, button.hover-remove-signup{
     margin-top: .7em;
 }
 
@@ -233,4 +233,9 @@ div#textform>div>h3 {
 
 h3.panel-title {
     color: #999;
+}
+
+button.show-usage {
+    float: right;
+    margin-bottom: 5px;
 }

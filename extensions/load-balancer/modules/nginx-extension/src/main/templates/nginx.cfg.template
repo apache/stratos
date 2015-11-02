@@ -2,7 +2,58 @@ events {
     worker_connections  1024;
 }
 
-$configuration
+#foreach( $port in $portlist )
+http {
+    server_names_hash_bucket_size 128;
+#set( $hostnameServerMap = $servermap.get($port.proxy) )
+#foreach( $hostname in $hostnameServerMap.keySet() )
+    #set ($servers = $hostnameServerMap.get($hostname) )
+    #set ($noOfServers = $servers.size() )
+    #if ( $noOfServers > 0)
+        upstream $hostname {
+            ## Uncomment below when sticky secession is needed by particular server
+            ##if( $$hostname == "group-scaling.my-c3-group2.stratos.apache.org" )
+            ##    sticky;
+            ###end
+            #set ($servers = $hostnameServerMap.get($hostname) )
+            #foreach ( $server in $servers)
+                server $server;
+            #end
+            }
 
-
-
+            server {
+            #if ($port.protocol == "https")
+                listen $port.proxy ssl;
+            #else
+                listen $port.proxy;
+            #end
+                server_name $hostname;
+                location / {
+                    proxy_set_header X-Forwarded-Host $host;
+                    proxy_set_header X-Forwarded-Server $host;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header Host $http_host;
+                    proxy_read_timeout 5m;
+                    proxy_send_timeout 5m;
+                #if ($port.protocol == "https")
+                    proxy_pass    https://$hostname;
+                #else
+                    proxy_pass    http://$hostname;
+                #end
+                }
+                location /nginx_status {
+                    stub_status on;
+                    access_log off;
+                    allow 127.0.0.1;
+                    deny all;
+                }
+            #if ($port.protocol == "https")
+                ssl on;
+                ssl_certificate /etc/nginx/ssl/server.cert;
+                ssl_certificate_key /etc/nginx/ssl/server.key;
+            #end
+            }
+        #end
+    #end
+}
+#end

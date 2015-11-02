@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
@@ -32,14 +31,12 @@ import org.apache.stratos.cloud.controller.util.Scope;
 
 import java.util.Properties;
 
-
 /**
  * The Openstack Nova {@link org.apache.stratos.cloud.controller.iaases.PartitionValidator} implementation.
  */
 public class OpenstackPartitionValidator implements PartitionValidator {
 
     private static final Log log = LogFactory.getLog(OpenstackPartitionValidator.class);
-
     private IaasProvider iaasProvider;
     private Iaas iaas;
 
@@ -49,65 +46,44 @@ public class OpenstackPartitionValidator implements PartitionValidator {
             // validate the existence of the zone and hosts properties.
             if (properties.containsKey(Scope.REGION.toString())) {
                 String region = properties.getProperty(Scope.REGION.toString());
-
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
-
-                    String msg = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
-                            " [region] " + region;
-                    log.error(msg);
-                    throw new InvalidPartitionException(msg);
+                    String message = String
+                            .format("Invalid partition detected [partition-id] %s, [region] %s. Image ID does not "
+                                            + "contain region [image] %s",
+                                    partition.getId(), region, iaasProvider.getImage());
+                    log.error(message);
+                    throw new InvalidPartitionException(message);
                 }
-
                 iaas.isValidRegion(region);
-
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
-                Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-                updatedIaas.setIaasProvider(updatedIaasProvider);
-
                 if (properties.containsKey(Scope.ZONE.toString())) {
                     String zone = properties.getProperty(Scope.ZONE.toString());
                     iaas.isValidZone(region, zone);
-
-                    updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
-                    updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-                    updatedIaas.setIaasProvider(updatedIaasProvider);
                 }
-
                 updateOtherProperties(updatedIaasProvider, properties);
+                Iaas updatedIaas = updatedIaasProvider.buildIaas();
+                updatedIaas.setIaasProvider(updatedIaasProvider);
                 return updatedIaasProvider;
             } else {
-
                 return iaasProvider;
             }
         } catch (Exception e) {
-            String msg = "Invalid partition detected: [partition-id] " + partition.getId() + e.getMessage();
-            log.error(msg, e);
-            throw new InvalidPartitionException(msg, e);
+            String message = String.format("Invalid partition detected: [partition-id] %s", partition.getId());
+            log.error(message, e);
+            throw new InvalidPartitionException(message, e);
         }
     }
 
-    private void updateOtherProperties(IaasProvider updatedIaasProvider,
-                                       Properties properties) {
-        Iaas updatedIaas;
-        try {
-            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-
-            for (Object property : properties.keySet()) {
-                if (property instanceof String) {
-                    String key = (String) property;
-                    updatedIaasProvider.setProperty(key,
-                            properties.getProperty(key));
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added property " + key
-                                + " to the IaasProvider.");
-                    }
+    private void updateOtherProperties(IaasProvider updatedIaasProvider, Properties properties) {
+        for (Object property : properties.keySet()) {
+            if (property instanceof String) {
+                String key = (String) property;
+                updatedIaasProvider.setProperty(key, properties.getProperty(key));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Added [property] %s to the IaasProvider.", key));
                 }
             }
-            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-            updatedIaas.setIaasProvider(updatedIaasProvider);
-        } catch (InvalidIaasProviderException ignore) {
         }
-
     }
 
     @Override
@@ -115,5 +91,4 @@ public class OpenstackPartitionValidator implements PartitionValidator {
         this.iaasProvider = iaas;
         this.iaas = iaas.getIaas();
     }
-
 }

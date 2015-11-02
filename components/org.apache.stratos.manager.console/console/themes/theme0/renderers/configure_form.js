@@ -150,7 +150,7 @@ var render = function (theme, data, meta, require) {
                                 isUpdate: data.isUpdate,
                                 formDataUpdate: data.formDataUpdate,
                                 formDataEdit: data.formDataEdit,
-                                content_body: {sections: data.list_data
+                                content_body: {sections: data.listData
                                 }
                             }
                         }

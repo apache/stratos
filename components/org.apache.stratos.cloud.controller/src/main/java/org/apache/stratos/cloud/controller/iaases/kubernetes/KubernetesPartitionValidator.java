@@ -34,9 +34,7 @@ import java.util.Properties;
  * Kubernetes partition validator
  */
 public class KubernetesPartitionValidator implements PartitionValidator {
-
     private static final Log log = LogFactory.getLog(KubernetesPartitionValidator.class);
-
     private IaasProvider iaasProvider;
 
     @Override
@@ -53,14 +51,12 @@ public class KubernetesPartitionValidator implements PartitionValidator {
      * @throws InvalidPartitionException if at least one property is evaluated to be invalid.
      */
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-
         String kubernetesClusterId = partition.getKubernetesClusterId();
         if (StringUtils.isBlank(kubernetesClusterId)) {
             String message = "Kubernetes cluster not defined in partition: [partition-id] " + partition.getId();
             log.error(message);
             throw new InvalidPartitionException(message);
         }
-
         try {
             CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId);
             return iaasProvider;

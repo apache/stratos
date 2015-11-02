@@ -22,21 +22,21 @@ set -e
 
 prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
-pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent/distribution/"; pwd`
+pca_distribution_path=`cd "$script_path/../../../products/python-cartridge-agent/modules/distribution/"; pwd`
 
 pushd ${pca_distribution_path}
 mvn clean install -Dmaven.test.skip=true
-cp -vf target/apache-stratos-python-cartridge-agent-4.2.0-SNAPSHOT.zip ${script_path}/base-image/packs/
+cp -vf target/apache-stratos-python-cartridge-agent-4.1.5-SNAPSHOT.zip ${script_path}/base-image/packs/
 popd
 
 pushd ${script_path}/base-image/
 echo "Building base Docker image..."
-sudo docker build -t stratos/base-image:4.2.0 .
+sudo docker build -t stratos/base-image:4.1.5 .
 
 pushd ${script_path}/service-images/php
 echo "Building PHP Docker image..."
-sudo docker build -t stratos/php:4.2.0 .
+sudo docker build -t stratos/php:4.1.5 .
 
 pushd ${script_path}/service-images/tomcat
 echo "Building Tomcat Docker image..."
-sudo docker build -t stratos/tomcat:4.2.0 .
+sudo docker build -t stratos/tomcat:4.1.5 .

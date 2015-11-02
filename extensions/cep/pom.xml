@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-extensions</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>cep-extensions</artifactId>
@@ -33,6 +33,7 @@
 
     <modules>
         <module>modules/distribution</module>
-        <module>modules/stratos-cep-extension</module>
+        <module>modules/stratos-cep-extension/wso2cep-3.0.0</module>
+        <module>modules/stratos-cep-extension/wso2cep-3.1.0</module>
     </modules>
 </project>

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>stratos-components-parent</artifactId>
@@ -40,6 +40,7 @@
         <module>org.apache.stratos.manager</module>
         <module>org.apache.stratos.cli</module>
         <module>org.apache.stratos.python.cartridge.agent</module>
+        <module>org.apache.stratos.python.cli</module>
         <module>org.apache.stratos.cartridge.agent</module>
         <module>org.apache.stratos.load.balancer.common</module>
         <module>org.apache.stratos.load.balancer</module>

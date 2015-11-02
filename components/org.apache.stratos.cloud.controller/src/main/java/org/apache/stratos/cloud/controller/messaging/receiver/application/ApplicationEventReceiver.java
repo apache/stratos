@@ -27,6 +27,7 @@ import org.apache.stratos.messaging.event.application.ApplicationInstanceTermina
 import org.apache.stratos.messaging.listener.application.ApplicationInstanceTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.concurrent.ExecutorService;
 
@@ -41,11 +42,9 @@ public class ApplicationEventReceiver {
     public ApplicationEventReceiver() {
         this.applicationsEventReceiver = new ApplicationsEventReceiver();
         addEventListeners();
-
     }
 
     public void execute() {
-
         if (log.isInfoEnabled()) {
             log.info("Cloud controller application event receiver thread started");
         }
@@ -54,22 +53,24 @@ public class ApplicationEventReceiver {
     }
 
     private void addEventListeners() {
-
         applicationsEventReceiver.addEventListener(new ApplicationInstanceTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 // Remove the application related data
-                ApplicationInstanceTerminatedEvent instanceTerminatedEvent =
-                        (ApplicationInstanceTerminatedEvent) event;
-                log.info("Application instance terminated event received: [application-id] " +
-                        instanceTerminatedEvent.getAppId());
+                ApplicationInstanceTerminatedEvent instanceTerminatedEvent = (ApplicationInstanceTerminatedEvent) event;
+                log.info("Application instance terminated event received: [application-id] " + instanceTerminatedEvent
+                        .getAppId());
                 String appId = instanceTerminatedEvent.getAppId();
                 Application application = ApplicationManager.getApplications().
                         getApplication(instanceTerminatedEvent.getAppId());
 
                 if (application.getInstanceContextCount() == 0) {
-                    TopologyBuilder.handleApplicationClustersRemoved(appId,
-                            application.getClusterDataRecursively());
+                    try {
+                        TopologyBuilder
+                                .handleApplicationClustersRemoved(appId, application.getClusterDataRecursively());
+                    } catch (RegistryException e) {
+                        log.error("Failed to process application instance terminated event", e);
+                    }
                 }
             }
         });

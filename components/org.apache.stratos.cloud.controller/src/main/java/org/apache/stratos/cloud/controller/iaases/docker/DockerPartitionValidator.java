@@ -23,11 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 
 import java.util.Properties;
 
@@ -47,34 +45,30 @@ public class DockerPartitionValidator implements PartitionValidator {
 
     @Override
     public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-        // in Docker case currently we only update the custom properties passed via Partitions, and
-        // no validation done as of now.
-        IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
-        updateOtherProperties(updatedIaasProvider, properties);
-        return updatedIaasProvider;
+        try {
+            // in Docker case currently we only update the custom properties passed via Partitions, and
+            // no validation done as of now.
+            IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
+            updateOtherProperties(updatedIaasProvider, properties);
+            Iaas updatedIaas = iaasProvider.buildIaas();
+            updatedIaas.setIaasProvider(updatedIaasProvider);
+            return updatedIaasProvider;
+        } catch (Exception e) {
+            String msg = String.format("Invalid partition detected [partition-id] %s", partition.getId());
+            log.error(msg, e);
+            throw new InvalidPartitionException(msg, e);
+        }
     }
 
-    private void updateOtherProperties(IaasProvider updatedIaasProvider,
-                                       Properties properties) {
-        Iaas updatedIaas;
-        try {
-            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-
-            for (Object property : properties.keySet()) {
-                if (property instanceof String) {
-                    String key = (String) property;
-                    updatedIaasProvider.setProperty(key,
-                            properties.getProperty(key));
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added property " + key
-                                + " to the IaasProvider.");
-                    }
+    private void updateOtherProperties(IaasProvider updatedIaasProvider, Properties properties) {
+        for (Object property : properties.keySet()) {
+            if (property instanceof String) {
+                String key = (String) property;
+                updatedIaasProvider.setProperty(key, properties.getProperty(key));
+                if (log.isDebugEnabled()) {
+                    log.debug("Added property " + key + " to the IaasProvider.");
                 }
             }
-            updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
-            updatedIaas.setIaasProvider(updatedIaasProvider);
-        } catch (InvalidIaasProviderException ignore) {
         }
-
     }
 }
