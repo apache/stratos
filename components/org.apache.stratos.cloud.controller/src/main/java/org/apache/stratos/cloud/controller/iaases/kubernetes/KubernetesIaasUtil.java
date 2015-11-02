@@ -139,9 +139,9 @@ public class KubernetesIaasUtil {
      * @param id
      * @return
      */
-    public static String fixSpecialCharactersAndLength(String id) {
+    public static String fixSpecialCharacters(String id) {
         id = id.replace(".", "-");
         id = id.replace("_", "-");
-        return id.substring(0,40);
+        return id;
     }
 }
