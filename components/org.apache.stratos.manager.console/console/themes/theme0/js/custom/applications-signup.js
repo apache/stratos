@@ -259,8 +259,7 @@ var signupBlockTemplate = {
         "repoPassword": {
             "id": "root/repoPassword",
             "title": "Repository Password: ",
-            "type": "string",
-            "format" : "password"
+            "type": "string"
         }
     }
 };

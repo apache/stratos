@@ -38,9 +38,9 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
                 new GroupStatusTerminatedProcessor();
         add(groupStatusTerminatedProcessor);
 
-        /*GroupStatusTerminatingProcessor groupStatusTerminatingProcessor =
+        GroupStatusTerminatingProcessor groupStatusTerminatingProcessor =
                 new GroupStatusTerminatingProcessor();
-        add(groupStatusTerminatingProcessor);*/
+        add(groupStatusTerminatingProcessor);
 
         GroupStatusInactiveProcessor groupStatusInactiveProcessor =
                 new GroupStatusInactiveProcessor();
