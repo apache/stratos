@@ -296,7 +296,7 @@ public class StratosApiV41 extends AbstractApi {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
 
-        String cartridgeUuid =  cartridgeType + "~" +UUID.randomUUID().toString();
+        String cartridgeUuid =  cartridgeType + "~" +tenantId;//UUID.randomUUID().toString()
 
         CartridgeBean cartridgeBean = null;
         try {
