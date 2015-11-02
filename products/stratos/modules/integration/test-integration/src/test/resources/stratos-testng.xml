@@ -73,24 +73,29 @@
             <class name="org.apache.stratos.integration.tests.application.ApplicationUpdateTest"/>
         </classes>
     </test>
-    <test name="SingleClusterScalingTest" preserve-order="true" parallel="false">
+    <!--test name="SingleClusterScalingTest" preserve-order="true" parallel="false">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.SingleClusterScalingTest"/>
         </classes>
-    </test>
-    <test name="ApplicationBurstingTest" preserve-order="true" parallel="false">
+    </test-->
+    <!--test name="ApplicationBurstingTest" preserve-order="true" parallel="false">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.ApplicationBurstingTest"/>
         </classes>
-    </test>
+    </test-->
     <test name="PartitionRoundRobinClusterTest" preserve-order="true" parallel="false">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.PartitionRoundRobinClusterTest"/>
         </classes>
     </test>
-    <test name="GroupTerminationBehaviorTest" preserve-order="true" parallel="false">
+    <!--test name="GroupStartupOrderTest" preserve-order="true" parallel="false">
+        <classes>
+            <class name="org.apache.stratos.integration.tests.application.GroupStartupOrderTest"/>
+        </classes>
+    </test-->
+    <!--test name="GroupTerminationBehaviorTest" preserve-order="true" parallel="false">
         <classes>
             <class name="org.apache.stratos.integration.tests.application.GroupTerminationBehaviorTest"/>
         </classes>
-    </test>
+    </test-->
 </suite>
