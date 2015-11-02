@@ -39,8 +39,7 @@ import java.util.Map;
 public class IaasProviderConfigParser {
     private static final Log log = LogFactory.getLog(IaasProviderConfigParser.class);
 
-    public static IaasProvider getIaasProvider(final String fileName, final OMElement elt,
-                                               final OMNode item, List<IaasProvider> iaases) {
+    public static IaasProvider getIaasProvider(final String fileName, final OMElement elt, final OMNode item, List<IaasProvider> iaases) {
 
         IaasProvider iaas = null;
 
@@ -129,8 +128,7 @@ public class IaasProviderConfigParser {
 
     }
 
-    private static void loadCredentials(final String fileName, final OMElement elt, final IaasProvider iaas,
-                                        final OMElement iaasElt,
+    private static void loadCredentials(final String fileName, final OMElement elt, final IaasProvider iaas, final OMElement iaasElt,
                                         final String xpath) {
 
         Iterator<?> it =
@@ -180,8 +178,7 @@ public class IaasProviderConfigParser {
     }
 
 
-    private static void loadIdentity(final String fileName, final OMElement elt, final IaasProvider iaas,
-                                     final OMElement iaasElt) {
+    private static void loadIdentity(final String fileName, final OMElement elt, final IaasProvider iaas, final OMElement iaasElt) {
 
         Iterator<?> it =
                 iaasElt.getChildrenWithName(new QName(CloudControllerConstants.IDENTITY_ELEMENT));
@@ -228,8 +225,7 @@ public class IaasProviderConfigParser {
     }
 
 
-    public static void loadProperties(final String fileName, final OMElement elt,
-                                      final Map<String, String> propertyMap) {
+    public static void loadProperties(final String fileName, final OMElement elt, final Map<String, String> propertyMap) {
 
         Iterator<?> it =
                 elt.getChildrenWithName(new QName(CloudControllerConstants.PROPERTY_ELEMENT));

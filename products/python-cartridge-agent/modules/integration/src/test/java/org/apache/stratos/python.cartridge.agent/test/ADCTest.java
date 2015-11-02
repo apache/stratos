@@ -211,7 +211,7 @@ public class ADCTest extends PythonAgentTestManager {
      */
     private Topology createTestTopology() {
         Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant, UUID.randomUUID().toString());
+        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
         topology.addService(service);
 
         Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,

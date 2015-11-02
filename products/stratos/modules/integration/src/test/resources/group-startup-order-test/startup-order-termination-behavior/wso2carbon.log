@@ -1,0 +1,992 @@
+TID: [2015-04-22 20:45:03,242]  INFO {org.wso2.carbon.server.extensions.PatchInstaller} -  Patch changes detected  {org.wso2.carbon.server.extensions.PatchInstaller}
+TID: [2015-04-22 20:45:03,566]  INFO {org.wso2.carbon.server.util.PatchUtils.console} -  Backed up plugins to patch0000 {org.wso2.carbon.server.util.PatchUtils.console}
+TID: [2015-04-22 20:45:04,429]  INFO {org.wso2.carbon.server.util.PatchUtils.console} -  Patch verification started {org.wso2.carbon.server.util.PatchUtils.console}
+TID: [2015-04-22 20:45:04,705]  INFO {org.wso2.carbon.server.util.PatchUtils.console} -  Patch verification successfully completed without encountering any issues. {org.wso2.carbon.server.util.PatchUtils.console}
+TID: [0] [STRATOS] [2015-04-22 20:45:09,454]  INFO {org.wso2.carbon.cassandra.dataaccess.DataAccessComponentManager} -  There is no /repository/conf/etc/cassandra-component.xml. Using the default configuration
+TID: [0] [STRATOS] [2015-04-22 20:45:09,493]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Starting WSO2 Carbon...
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Operating System : Linux 3.13.0-46-generic, amd64
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Home        : /opt/jdk1.7.0_67/jre
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Version     : 1.7.0_67
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java VM          : Java HotSpot(TM) 64-Bit Server VM 24.65-b04,Oracle Corporation
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Carbon Home      : /opt/wso2/apache-stratos
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Temp Dir    : /opt/wso2/apache-stratos/tmp
+TID: [0] [STRATOS] [2015-04-22 20:45:09,496]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  User             : root, en-US, Etc/UTC
+TID: [0] [STRATOS] [2015-04-22 20:45:09,578]  WARN {org.wso2.carbon.core.bootup.validator.SystemValidator} -  Could not validate the system for configuration parameter : CPU
+TID: [0] [STRATOS] [2015-04-22 20:45:09,579]  WARN {org.wso2.carbon.core.bootup.validator.util.ValidationResultPrinter} -  The default keystore (wso2carbon.jks) is currently being used. To maximize security when deploying to a production environment, configure a new keystore with a unique password in the production server profile.
+TID: [0] [STRATOS] [2015-04-22 20:45:09,579]  WARN {org.wso2.carbon.core.bootup.validator.util.ValidationResultPrinter} -  Swap Memory size (MB): 0 of the system is below the recommended minimum size :2048
+TID: [0] [STRATOS] [2015-04-22 20:45:09,649]  INFO {org.wso2.carbon.databridge.agent.thrift.AgentHolder} -  Agent created !
+TID: [0] [STRATOS] [2015-04-22 20:45:09,667]  INFO {org.wso2.carbon.databridge.agent.thrift.internal.AgentDS} -  Successfully deployed Agent Client
+TID: [0] [STRATOS] [2015-04-22 20:45:09,690]  INFO {org.wso2.carbon.event.input.adaptor.core.internal.ds.InputEventAdaptorServiceTrackerDS} -  Successfully deployed the input event adaptor tracker service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,697]  INFO {org.wso2.carbon.event.input.adaptor.jms.internal.ds.JMSEventAdaptorServiceDS} -  Successfully deployed the input jms event adaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:09,702]  INFO {org.wso2.carbon.event.input.adaptor.manager.core.internal.ds.InputEventAdaptorTypeServiceTrackerDS} -  Successfully deployed the input event adaptor type tracker service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,713]  INFO {org.wso2.carbon.event.output.adaptor.cassandra.internal.ds.CassandraEventAdaptorServiceDS} -  Successfully deployed the output cassandra event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,716]  INFO {org.wso2.carbon.event.output.adaptor.core.internal.ds.OutputEventAdaptorServiceTrackerDS} -  Successfully deployed the output event adaptor tracker service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,722]  INFO {org.wso2.carbon.event.output.adaptor.http.internal.ds.HTTPEventAdaptorServiceDS} -  Successfully deployed the output HTTP event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,729]  INFO {org.wso2.carbon.event.output.adaptor.jms.internal.ds.JMSEventAdaptorServiceDS} -  Successfully deployed the output jms event adaptor service 
+TID: [0] [STRATOS] [2015-04-22 20:45:09,735]  INFO {org.wso2.carbon.event.output.adaptor.manager.core.internal.ds.OutputEventAdaptorTypeServiceTrackerDS} -  Successfully deployed the event adaptor type tracker service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,748]  INFO {org.wso2.carbon.event.output.adaptor.wso2event.internal.ds.WSO2EventAdaptorServiceDS} -  Successfully deployed the output WSO2Event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,767]  INFO {org.wso2.carbon.event.input.adaptor.manager.core.internal.ds.InputEventAdaptorManagerDS} -  Successfully deployed the input event adaptor manager service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,767]  INFO {org.wso2.carbon.event.input.adaptor.core.internal.ds.InputEventAdaptorServiceDS} -  Successfully deployed the input event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,778]  INFO {org.wso2.carbon.event.output.adaptor.manager.core.internal.ds.OutputEventAdaptorManagerDS} -  Successfully deployed the output event adaptor manager service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,778]  INFO {org.wso2.carbon.event.output.adaptor.core.internal.ds.OutputEventAdaptorServiceDS} -  Successfully deployed the output event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:09,791]  INFO {org.wso2.carbon.event.statistics.internal.ds.EventStatisticsDS} -  Successfully deployed the event statistics monitoring service
+TID: [0] [STRATOS] [2015-04-22 20:45:10,257]  INFO {org.wso2.carbon.social.internal.SocialComponent} -  Social Activity bundle is activated
+TID: [0] [STRATOS] [2015-04-22 20:45:11,025]  INFO {org.wso2.carbon.cassandra.server.internal.CassandraServerDSComponent} -  There is no /repository/conf/etc/cassandra.yaml. Using the default configuration
+TID: [0] [STRATOS] [2015-04-22 20:45:11,072]  INFO {org.wso2.carbon.event.input.adaptor.wso2event.internal.ds.WSO2EventAdaptorServiceDS} -  Successfully deployed the input WSO2Event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:11,074]  INFO {org.wso2.carbon.loggeraggregator.internal.LogAggregator} -  Successfully started Log Aggregator
+TID: [0] [STRATOS] [2015-04-22 20:45:11,074]  INFO {org.wso2.carbon.databridge.core.internal.DataBridgeDS} -  Successfully deployed Agent Server 
+TID: [0] [STRATOS] [2015-04-22 20:45:11,320]  INFO {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService} -  Configured Registry in 178ms
+TID: [0] [STRATOS] [2015-04-22 20:45:11,693]  INFO {org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent} -  Registry Mode    : READ-WRITE
+TID: [0] [STRATOS] [2015-04-22 20:45:11,781]  INFO {org.wso2.carbon.event.output.adaptor.mysql.internal.ds.MysqlEventAdaptorServiceDS} -  Successfully deployed the output mysql event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:11,783]  INFO {org.wso2.carbon.event.processor.siddhi.extension.internal.SiddhiExtensionDS} -  Successfully activated Property Window
+TID: [0] [STRATOS] [2015-04-22 20:45:11,885]  INFO {org.wso2.carbon.event.builder.core.internal.ds.EventBuilderServiceDS} -  Successfully deployed EventBuilderService.
+TID: [0] [STRATOS] [2015-04-22 20:45:11,908]  INFO {org.wso2.carbon.event.formatter.core.internal.ds.EventFormatterServiceDS} -  Successfully deployed EventFormatterService
+TID: [0] [STRATOS] [2015-04-22 20:45:11,909]  INFO {org.wso2.carbon.event.processor.core.internal.ds.EventProcessorServiceDS} -  Successfully deployed EventProcessorService
+TID: [0] [STRATOS] [2015-04-22 20:45:11,909]  INFO {org.wso2.carbon.event.builder.core.internal.ds.EventBuilderServiceDS} -  Successfully deployed EventBuilder EventReceiver.
+TID: [0] [STRATOS] [2015-04-22 20:45:12,037]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,061]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :in_flight_requests_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,080]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : gradient_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,085]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :gradient_in_flight_requests_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,104]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : average_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,109]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :average_in_flight_requests_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,128]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : average_served_request_count:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,134]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :average_served_request_count_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,152]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : second_derivative_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,157]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :second_derivative_in_flight_requests_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,176]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,182]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :cartridge_agent_health_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,201]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,206]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :average_load_average_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,223]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,228]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :average_memory_consumption_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,246]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,252]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :gradient_load_average_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,269]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,275]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :gradient_memory_consumption_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,290]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,295]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :second_derivative_memory_consumption_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,312]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,317]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :second_derivative_load_average_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,333]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : fault_message:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,338]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :fault_message_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,354]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : member_average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,359]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :member_average_load_average_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,374]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : member_average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,379]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :member_average_memory_consumption_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,394]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : member_gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,399]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :member_gradient_load_average_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,415]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : member_gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,421]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :member_gradient_memory_consumption_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,439]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : member_second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,444]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :member_second_derivative_memory_consumption_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,461]  INFO {org.wso2.carbon.event.stream.manager.core.internal.CarbonEventStreamService} -  Stream definition added to registry successfully : member_second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:12,466]  INFO {org.wso2.carbon.event.builder.core.internal.util.helper.EventBuilderConfigurationFileSystemInvoker} -  Event builder configuration saved to the filesystem :member_second_derivative_load_average_stats_1.0.0_builder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:12,466]  INFO {org.wso2.carbon.event.builder.core.internal.ds.EventBuilderServiceDS} -  Successfully deployed EventBuilder PassthroughReceiverConfigurator.
+TID: [0] [STRATOS] [2015-04-22 20:45:12,468]  INFO {org.wso2.carbon.event.stream.manager.core.internal.ds.EventStreamServiceDS} -  Successfully deployed EventStreamService
+TID: [0] [STRATOS] [2015-04-22 20:45:12,485]  INFO {org.wso2.carbon.identity.application.mgt.internal.ApplicationManagementServiceComponent} -  Identity ApplicationManagementComponent bundle is activated
+TID: [0] [STRATOS] [2015-04-22 20:45:13,164]  INFO {org.wso2.carbon.user.core.internal.UserStoreMgtDSComponent} -  Carbon UserStoreMgtDSComponent activated successfully.
+TID: [0] [STRATOS] [2015-04-22 20:45:18,487]  INFO {org.apache.axis2.deployment.ClusterBuilder} -  Clustering has been disabled
+TID: [0] [STRATOS] [2015-04-22 20:45:18,850]  INFO {org.wso2.carbon.identity.user.store.configuration.deployer.UserStoreConfigurationDeployer} -  User Store Configuration Deployer initiated.
+TID: [0] [STRATOS] [2015-04-22 20:45:18,889]  INFO {org.wso2.carbon.stratos.landing.page.deployer.LandingPageWebappDeployer} -  Deployed product landing page webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/home]
+TID: [0] [STRATOS] [2015-04-22 20:45:18,921]  INFO {org.apache.axis2.transport.tcp.TCPTransportSender} -  TCP Sender started
+TID: [0] [STRATOS] [2015-04-22 20:45:18,943]  INFO {org.wso2.carbon.event.processor.core.internal.CarbonEventProcessorService} -  Execution plan deployment held back and in inactive state: AverageHeathRequest. Event receiver not found for stream ID : cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:18,943]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan deployment held back and in inactive state : AverageHeathRequest ,waiting for dependency : cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:18,947]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : AverageInFlightRequestsEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:18,948]  INFO {org.wso2.carbon.event.processor.core.internal.CarbonEventProcessorService} -  Execution plan deployment held back and in inactive state: AverageInFlightRequestsFinder. Event receiver not found for stream ID : in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:18,948]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan deployment held back and in inactive state : AverageInFlightRequestsFinder ,waiting for dependency : in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:18,949]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : AverageLoadAverageEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:18,950]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : AverageMemoryConsumptionEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:18,951]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : AverageServedRequestsEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:18,955]  INFO {org.wso2.carbon.event.input.adaptor.manager.core.InputEventAdaptorDeployer} -  Input Event Adaptor deployed successfully and in active state : DefaultWSO2EventInputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:18,957]  INFO {org.wso2.carbon.event.output.adaptor.manager.core.OutputEventAdaptorDeployer} -  Output Event Adaptor successfully deployed and in active state : DefaultWSO2EventOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:19,009]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: echo {super-tenant}
+TID: [0] [STRATOS] [2015-04-22 20:45:19,079]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Echo.aar - file:/opt/wso2/apache-stratos/repository/deployment/server/axis2services/Echo.aar
+TID: [0] [STRATOS] [2015-04-22 20:45:19,080]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : FaultMessageEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:19,080]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : GradientInFlightRequestsEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:19,081]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : GradientLoadAverageEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:19,082]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : GradientMemoryConsumptionEventFormatter.xml, waiting for dependency : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:19,083]  INFO {org.wso2.carbon.event.processor.core.internal.CarbonEventProcessorService} -  Execution plan deployment held back and in inactive state: GradientOfHealthRequest. Event receiver not found for stream ID : cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,084]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan deployment held back and in inactive state : GradientOfHealthRequest ,waiting for dependency : cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,084]  INFO {org.wso2.carbon.event.processor.core.internal.CarbonEventProcessorService} -  Execution plan deployment held back and in inactive state: GradientOfRequestsInFlightFinder. Event receiver not found for stream ID : in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,085]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan deployment held back and in inactive state : GradientOfRequestsInFlightFinder ,waiting for dependency : in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,106]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,109]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,110]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution Plan was undeployed successfully : AverageHeathRequest.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,305]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,305]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,305]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,305]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,305]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,306]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:fault_message:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,306]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan is deployed successfully and in active state  : AverageHeathRequest
+TID: [0] [STRATOS] [2015-04-22 20:45:19,306]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution Plan was undeployed successfully : GradientOfHealthRequest.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,398]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Executor Service [id] cep.extension.thread.pool [size] 10
+TID: [0] [STRATOS] [2015-04-22 20:45:19,406]  INFO {org.apache.stratos.cep.extension.CEPTopologyEventReceiver} -  CEP topology event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:19,406]  INFO {org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator} -  Topology event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:fault_message:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,410]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan is deployed successfully and in active state  : GradientOfHealthRequest
+TID: [0] [STRATOS] [2015-04-22 20:45:19,411]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : HealthStatisticsEventBuilder
+TID: [0] [STRATOS] [2015-04-22 20:45:19,419]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event builder deployment held back and in inactive state :InstanceStatusStatisticsBuilder, Stream validation exception : Input stream definition is not available 
+TID: [0] [STRATOS] [2015-04-22 20:45:19,420]  INFO {org.wso2.carbon.event.output.adaptor.manager.core.OutputEventAdaptorDeployer} -  Output Event Adaptor successfully deployed and in active state : JMSOutputAdaptor
+TID: [0] [STRATOS] [2015-04-22 20:45:19,421]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : AverageInFlightRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,433]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : AverageInFlightRequestsEventFormatter.xml, waiting for dependency : average_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,433]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : AverageLoadAverageEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,442]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,442]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : AverageLoadAverageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,442]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : AverageMemoryConsumptionEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,450]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,450]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : AverageMemoryConsumptionEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,450]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : AverageServedRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,458]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : AverageServedRequestsEventFormatter.xml, waiting for dependency : average_served_request_count:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,458]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : FaultMessageEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,466]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:fault_message:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,466]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : FaultMessageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,466]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : GradientInFlightRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,474]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : GradientInFlightRequestsEventFormatter.xml, waiting for dependency : gradient_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,474]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : GradientLoadAverageEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,481]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,482]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : GradientLoadAverageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,482]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : GradientMemoryConsumptionEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,490]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,490]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : GradientMemoryConsumptionEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,498]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,500]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,500]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution Plan was undeployed successfully : AverageInFlightRequestsFinder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,512]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : AverageInFlightRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,516]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:average_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,516]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : AverageRequestsInflightEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,517]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : AverageServedRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:average_served_request_count:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : AverageServedRequestsEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_served_request_count:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan is deployed successfully and in active state  : AverageInFlightRequestsFinder
+TID: [0] [STRATOS] [2015-04-22 20:45:19,521]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution Plan was undeployed successfully : GradientOfRequestsInFlightFinder.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,527]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : GradientInFlightRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,531]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:gradient_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,531]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : GradientInFlightRequestsEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,531]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,531]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:gradient_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,531]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan is deployed successfully and in active state  : GradientOfRequestsInFlightFinder
+TID: [0] [STRATOS] [2015-04-22 20:45:19,531]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : LoadBalancerStatisticsEventBuilder
+TID: [0] [STRATOS] [2015-04-22 20:45:19,539]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:member_average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,539]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : MemberAverageLoadAverageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,547]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:member_average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,547]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : MemberAverageMemoryConsumptionEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,554]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:member_gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,555]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : MemberGradientLoadAverageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,562]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:member_gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,562]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : MemberGradientMemoryConsumptionEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,570]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : MemberSecondDerivativeLoadAverageEventFormatter.xml, waiting for dependency : member_second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,578]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : MemberSecondDerivativeMemoryConsumptionEventFormatter.xml, waiting for dependency : member_second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,603]  INFO {org.wso2.carbon.webapp.mgt.TomcatGenericWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/STRATOS_ROOT].File[/opt/wso2/apache-stratos/repository/deployment/server/webapps/STRATOS_ROOT]
+TID: [0] [STRATOS] [2015-04-22 20:45:19,614]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : SecondDerivativeInFlightRequestsEventFormatter.xml, waiting for dependency : second_derivative_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,621]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : SecondDerivativeLoadAverageEventFormatter.xml, waiting for dependency : second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,628]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter deployment held back and in inactive state : SecondDerivativeMemoryConsumptionEventFormatter.xml, waiting for dependency : second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,647]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : SecondDerivativeMemoryConsumptionEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,651]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,652]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : SecondDerivativeMemoryConsumptionEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,652]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : SecondDerivativeLoadAverageEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,655]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,655]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : SecondDerivativeLoadAverageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,656]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : MemberSecondDerivativeMemoryConsumptionEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,660]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:member_second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,660]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : MemberSecondDerivativeMemoryConsumptionEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,660]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : MemberSecondDerivativeLoadAverageEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:member_second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : MemberSecondDerivativeLoadAverageEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:cartridge_agent_health_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,664]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan is deployed successfully and in active state  : SecondDerivativeOfHealthRequest
+TID: [0] [STRATOS] [2015-04-22 20:45:19,669]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter undeployed successfully : SecondDerivativeInFlightRequestsEventFormatter.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:19,673]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:second_derivative_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,673]  INFO {org.wso2.carbon.event.formatter.core.EventFormatterDeployer} -  Event Formatter configuration successfully deployed and in active state : SecondDerivativeEventFormatter
+TID: [0] [STRATOS] [2015-04-22 20:45:19,673]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Consumer added to the junction. Stream:in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,673]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:second_derivative_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:19,674]  INFO {org.wso2.carbon.event.processor.core.EventProcessorDeployer} -  Execution plan is deployed successfully and in active state  : SecondDerivativeOfRequestsInFlightFinder
+TID: [0] [STRATOS] [2015-04-22 20:45:19,750]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: Version {super-tenant}
+TID: [0] [STRATOS] [2015-04-22 20:45:19,773]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Version.aar - file:/opt/wso2/apache-stratos/repository/deployment/server/axis2services/Version.aar
+TID: [0] [STRATOS] [2015-04-22 20:45:20,582]  INFO {org.springframework.web.context.support.XmlWebApplicationContext} -  Refreshing Root WebApplicationContext: startup date [Wed Apr 22 20:45:20 UTC 2015]; root of context hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:20,627]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from class path resource [META-INF/cxf/cxf.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:20,699]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from URL [jndi:/localhost/api/WEB-INF/cxf-servlet.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:20,841]  INFO {org.springframework.beans.factory.support.DefaultListableBeanFactory} -  Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@68204c69: defining beans [cxf,org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor,org.apache.cxf.bus.spring.Jsr250BeanPostProcessor,org.apache.cxf.bus.spring.BusExtensionPostProcessor,stratosApi,stratosApiV40,stratosApiV41,stratosApiBeanV40,stratosApiBeanV41,basicAuthenticationFilter,sessionAuthenticationFilter,authorizationFilterV40,authorizationFilterV41,exceptionHandler,badRequestExceptionHandler,genericExceptionHandler,throwableExceptionHandler,componentSynchronizerHandler,OAuthFilter,jsonProvider,schemaHolder,theSchemas]; root of factory hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:21,353]  INFO {org.apache.cxf.endpoint.ServerImpl} -  Setting the server's publish address to be /
+TID: [0] [STRATOS] [2015-04-22 20:45:21,471]  INFO {org.apache.cxf.endpoint.ServerImpl} -  Setting the server's publish address to be /v4.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,495]  INFO {org.apache.cxf.endpoint.ServerImpl} -  Setting the server's publish address to be /v4.1
+TID: [0] [STRATOS] [2015-04-22 20:45:21,528]  WARN {org.apache.cxf.jaxrs.utils.ResourceUtils} -  No resource classpath:META-INF/jax-rs-catalog.xml is available
+TID: [0] [STRATOS] [2015-04-22 20:45:21,552]  INFO {org.wso2.carbon.webapp.mgt.TomcatGenericWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/api].File[/opt/wso2/apache-stratos/repository/deployment/server/webapps/api.war]
+TID: [0] [STRATOS] [2015-04-22 20:45:21,601]  INFO {org.wso2.carbon.webapp.mgt.TomcatGenericWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/authenticationendpoint].File[/opt/wso2/apache-stratos/repository/deployment/server/webapps/authenticationendpoint.war]
+TID: [0] [STRATOS] [2015-04-22 20:45:21,606]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: average_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,607]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,607]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : average_in_flight_requests_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:21,611]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,612]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,612]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : average_load_average_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:21,616]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,617]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,617]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : average_memory_consumption_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:21,621]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: average_served_request_count:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,622]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:average_served_request_count:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:21,623]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : average_served_request_count_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:21,627]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : cartridge_agent_health_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:21,636]  WARN {org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler} -  SecretManager has not been initialized.Cannot collect secrets.
+TID: [0] [STRATOS] [2015-04-22 20:45:21,636]  WARN {org.apache.stratos.cloud.controller.config.parser.IaasProviderConfigParser} -  Unable to find a value for identity element from Secure Vault.Hence we will try to assign the plain text value (if specified).
+TID: [0] [STRATOS] [2015-04-22 20:45:21,637]  WARN {org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler} -  SecretManager has not been initialized.Cannot collect secrets.
+TID: [0] [STRATOS] [2015-04-22 20:45:21,637]  WARN {org.apache.stratos.cloud.controller.config.parser.IaasProviderConfigParser} -  Unable to find a value for credential element from Secure Vault.Hence we will try to assign the plain text value (if specified).
+TID: [0] [STRATOS] [2015-04-22 20:45:21,637]  INFO {org.apache.stratos.cloud.controller.deployers.CloudControllerDeployer} -  Successfully deployed the cloud-controller XML file located at /opt/wso2/apache-stratos/repository/deployment/server/../../conf/cloud-controller.xml
+TID: [0] [STRATOS] [2015-04-22 20:45:22,397]  INFO {org.jaggeryjs.jaggery.app.mgt.TomcatJaggeryWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/console].File[/opt/wso2/apache-stratos/repository/deployment/server/jaggeryapps/console]
+TID: [0] [STRATOS] [2015-04-22 20:45:22,402]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: fault_message:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,403]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:fault_message:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,403]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : fault_message_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,407]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: gradient_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,408]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:gradient_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,408]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : gradient_in_flight_requests_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,412]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,413]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,414]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : gradient_load_average_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,417]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,419]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,419]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : gradient_memory_consumption_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,422]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : in_flight_requests_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,426]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: member_average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,428]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_average_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,428]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : member_average_load_average_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,431]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: member_average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,433]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_average_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,433]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : member_average_memory_consumption_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,437]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: member_gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,438]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_gradient_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,438]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : member_gradient_load_average_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,442]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: member_gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,444]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_gradient_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,444]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : member_gradient_memory_consumption_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,447]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: member_second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,449]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,449]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : member_second_derivative_load_average_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:22,453]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: member_second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,455]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:member_second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:22,455]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : member_second_derivative_memory_consumption_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:23,187]  INFO {org.springframework.web.context.support.XmlWebApplicationContext} -  Refreshing Root WebApplicationContext: startup date [Wed Apr 22 20:45:23 UTC 2015]; root of context hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:23,229]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from class path resource [META-INF/cxf/cxf.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:23,264]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from URL [jndi:/localhost/metadata/WEB-INF/cxf-servlet.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:23,364]  INFO {org.springframework.beans.factory.support.DefaultListableBeanFactory} -  Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1b01b46a: defining beans [cxf,org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor,org.apache.cxf.bus.spring.Jsr250BeanPostProcessor,org.apache.cxf.bus.spring.BusExtensionPostProcessor,stratosMetaDataAdmin,stratosRestEndpointBean,exceptionHandler,genericExceptionHandler,throwableExceptionHandler,OAuthFilter,jsonProvider]; root of factory hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:23,855]  INFO {org.apache.cxf.endpoint.ServerImpl} -  Setting the server's publish address to be /api
+TID: [0] [STRATOS] [2015-04-22 20:45:23,906]  INFO {org.wso2.carbon.webapp.mgt.TomcatGenericWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/metadata].File[/opt/wso2/apache-stratos/repository/deployment/server/webapps/metadata.war]
+TID: [0] [STRATOS] [2015-04-22 20:45:24,621]  INFO {org.springframework.web.context.support.XmlWebApplicationContext} -  Refreshing Root WebApplicationContext: startup date [Wed Apr 22 20:45:24 UTC 2015]; root of context hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:24,664]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from class path resource [META-INF/cxf/cxf.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:24,696]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from URL [jndi:/localhost/mock-iaas/WEB-INF/cxf-servlet.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:24,784]  INFO {org.springframework.beans.factory.support.DefaultListableBeanFactory} -  Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@3b141caf: defining beans [cxf,org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor,org.apache.cxf.bus.spring.Jsr250BeanPostProcessor,org.apache.cxf.bus.spring.BusExtensionPostProcessor,mockIaasApi,mockIaasApiBean,exceptionHandler,badRequestExceptionHandler,genericExceptionHandler,throwableExceptionHandler,jsonProvider]; root of factory hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:25,146]  INFO {org.apache.cxf.endpoint.ServerImpl} -  Setting the server's publish address to be /api
+TID: [0] [STRATOS] [2015-04-22 20:45:25,197]  INFO {org.wso2.carbon.webapp.mgt.TomcatGenericWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/mock-iaas].File[/opt/wso2/apache-stratos/repository/deployment/server/webapps/mock-iaas.war]
+TID: [0] [STRATOS] [2015-04-22 20:45:25,997]  INFO {org.springframework.web.context.support.XmlWebApplicationContext} -  Refreshing Root WebApplicationContext: startup date [Wed Apr 22 20:45:25 UTC 2015]; root of context hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:26,039]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from class path resource [META-INF/cxf/cxf.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:26,071]  INFO {org.springframework.beans.factory.xml.XmlBeanDefinitionReader} -  Loading XML bean definitions from URL [jndi:/localhost/oauth2/WEB-INF/cxf-servlet.xml]
+TID: [0] [STRATOS] [2015-04-22 20:45:26,151]  INFO {org.springframework.beans.factory.support.DefaultListableBeanFactory} -  Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@6a9f420c: defining beans [cxf,org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor,org.apache.cxf.bus.spring.Jsr250BeanPostProcessor,org.apache.cxf.bus.spring.BusExtensionPostProcessor,tokEP,authzEndpointBean,tokenEndpointBean,revokeEndpointBean,userinfoEndpointBean]; root of factory hierarchy
+TID: [0] [STRATOS] [2015-04-22 20:45:26,496]  INFO {org.apache.cxf.endpoint.ServerImpl} -  Setting the server's publish address to be /
+TID: [0] [STRATOS] [2015-04-22 20:45:26,558]  INFO {org.wso2.carbon.webapp.mgt.TomcatGenericWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/oauth2].File[/opt/wso2/apache-stratos/repository/deployment/server/webapps/oauth2.war]
+TID: [0] [STRATOS] [2015-04-22 20:45:26,569]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: second_derivative_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:26,570]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:second_derivative_in_flight_requests:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:26,570]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : second_derivative_in_flight_requests_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:26,573]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:26,575]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:second_derivative_load_average_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:26,575]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : second_derivative_load_average_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:26,579]  INFO {org.wso2.carbon.event.processor.core.internal.listener.EventReceiverStreamNotificationListenerImpl} -  Trying to redeploy configuration files for stream: second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:26,580]  INFO {org.wso2.carbon.event.processor.core.internal.stream.EventJunction} -  Producer added to the junction. Stream:second_derivative_memory_consumption_stats:1.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:26,581]  INFO {org.wso2.carbon.event.builder.core.EventBuilderDeployer} -  Event Builder deployed successfully and in active state : second_derivative_memory_consumption_stats_1.0.0_builder
+TID: [0] [STRATOS] [2015-04-22 20:45:26,806]  INFO {org.jaggeryjs.jaggery.app.mgt.TomcatJaggeryWebappsDeployer} -  Deployed webapp: StandardEngine[Catalina].StandardHost[localhost].StandardContext[/sso].File[/opt/wso2/apache-stratos/repository/deployment/server/jaggeryapps/sso]
+TID: [0] [STRATOS] [2015-04-22 20:45:26,873]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: addressing-1.6.1-wso2v10 - file:/opt/wso2/apache-stratos/repository/deployment/client/modules/addressing-1.6.1-wso2v10.mar
+TID: [0] [STRATOS] [2015-04-22 20:45:26,877]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: rampart-1.6.1-wso2v8 - file:/opt/wso2/apache-stratos/repository/deployment/client/modules/rampart-1.6.1-wso2v8.mar
+TID: [0] [STRATOS] [2015-04-22 20:45:26,879]  INFO {org.apache.axis2.transport.tcp.TCPTransportSender} -  TCP Sender started
+TID: [0] [STRATOS] [2015-04-22 20:45:27,123]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: AutoscalerService {super-tenant}
+TID: [0] [STRATOS] [2015-04-22 20:45:27,369]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.apache.stratos.autoscaler - 
+TID: [0] [STRATOS] [2015-04-22 20:45:27,477]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: CloudControllerService {super-tenant}
+TID: [0] [STRATOS] [2015-04-22 20:45:27,653]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.apache.stratos.cloud.controller - 
+TID: [0] [STRATOS] [2015-04-22 20:45:27,679]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: StratosManagerService {super-tenant}
+TID: [0] [STRATOS] [2015-04-22 20:45:27,749]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.apache.stratos.manager - 
+TID: [0] [STRATOS] [2015-04-22 20:45:28,223]  WARN {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator} -  We don't support method overloading. Ignoring [validateAudienceRestriction]
+TID: [0] [STRATOS] [2015-04-22 20:45:28,524]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.idp.mgt - 
+TID: [0] [STRATOS] [2015-04-22 20:45:28,892]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: wso2carbon-sts {super-tenant}
+TID: [0] [STRATOS] [2015-04-22 20:45:28,940]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.sts - 
+TID: [0] [STRATOS] [2015-04-22 20:45:29,182]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  Repository       : /opt/wso2/apache-stratos/repository/deployment/server/
+TID: [0] [STRATOS] [2015-04-22 20:45:29,234]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  Component activation check interval: 1 seconds
+TID: [0] [STRATOS] [2015-04-22 20:45:29,235]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  Component activation timeout: 600 seconds
+TID: [0] [STRATOS] [2015-04-22 20:45:29,241]  INFO {org.apache.stratos.common.internal.CommonServiceComponent} -  Stratos common service component is activated
+TID: [0] [STRATOS] [2015-04-22 20:45:29,320]  INFO {org.wso2.carbon.core.internal.permission.update.PermissionUpdater} -  Permission cache updated for tenant -1234
+TID: [0] [STRATOS] [2015-04-22 20:45:29,566]  INFO {org.wso2.carbon.databridge.receiver.thrift.internal.ThriftDataReceiver} -  Thrift Server started at 0.0.0.0
+TID: [0] [STRATOS] [2015-04-22 20:45:29,574]  INFO {org.wso2.carbon.databridge.receiver.thrift.internal.ThriftDataReceiver} -  Thrift SSL port : 7711
+TID: [0] [STRATOS] [2015-04-22 20:45:29,578]  INFO {org.wso2.carbon.databridge.receiver.thrift.internal.ThriftDataReceiver} -  Thrift port : 7611
+TID: [0] [STRATOS] [2015-04-22 20:45:29,643]  INFO {org.wso2.carbon.event.input.adaptor.wsevent.local.internal.ds.WSEventLocalEventAdaptorServiceDS} -  Successfully deployed the input WSEventLocal adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,649]  INFO {org.wso2.carbon.event.output.adaptor.wsevent.local.internal.ds.WSEventLocalEventAdaptorServiceDS} -  Successfully deployed the output WSEventLocal adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,656]  INFO {org.wso2.carbon.event.input.adaptor.email.internal.ds.EmailEventAdaptorServiceDS} -  Successfully deployed the input email event service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,662]  INFO {org.wso2.carbon.event.input.adaptor.wsevent.internal.ds.WSEventAdaptorServiceDS} -  Successfully deployed the input WSEvent adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,667]  INFO {org.wso2.carbon.event.output.adaptor.email.internal.ds.EmailEventAdaptorServiceDS} -  Successfully deployed the output Email event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,671]  INFO {org.wso2.carbon.event.output.adaptor.sms.internal.ds.SMSEventAdaptorServiceDS} -  Successfully deployed the output SMS event adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,676]  INFO {org.wso2.carbon.event.output.adaptor.wsevent.internal.ds.WSEventAdaptorServiceDS} -  Successfully deployed the output WSEvent adaptor service
+TID: [0] [STRATOS] [2015-04-22 20:45:29,680]  INFO {org.wso2.carbon.identity.application.mgt.ui.internal.ApplicationMgtUIServiceComponent} -  Application Management UI bundle acticated!
+TID: [0] [STRATOS] [2015-04-22 20:45:29,715]  INFO {org.wso2.carbon.idp.mgt.internal.IdPManagementServiceComponent} -  Identity Application Management Database initialization not attempted since 'setup' variable was not provided during startup
+TID: [0] [STRATOS] [2015-04-22 20:45:29,770]  INFO {org.wso2.carbon.identity.core.internal.IdentityCoreServiceComponent} -  Identity Database schema initialization check was skipped since 'setup' variable was not given during startup
+TID: [0] [STRATOS] [2015-04-22 20:45:29,838]  INFO {org.wso2.carbon.core.transports.http.HttpsTransportListener} -  HTTPS port       : 9443
+TID: [0] [STRATOS] [2015-04-22 20:45:29,838]  INFO {org.wso2.carbon.core.transports.http.HttpTransportListener} -  HTTP port        : 9763
+TID: [0] [STRATOS] [2015-04-22 20:45:29,924]  INFO {org.wso2.carbon.ntask.core.service.impl.TaskServiceImpl} -  Task service starting in STANDALONE mode...
+TID: [0] [STRATOS] [2015-04-22 20:45:29,956]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Executor Service [id] autoscaler.thread.pool [size] 50
+TID: [0] [STRATOS] [2015-04-22 20:45:29,956]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Scheduled Executor Service [id] autoscaler.scheduler.thread.pool [size] 5
+TID: [0] [STRATOS] [2015-04-22 20:45:29,958]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  Autoscaler component is waiting for CloudController component to become active...
+TID: [0] [STRATOS] [2015-04-22 20:45:29,961]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Executor Service [id] cloud.controller.thread.pool [size] 10
+TID: [0] [STRATOS] [2015-04-22 20:45:29,961]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Scheduled Executor Service [id] cloud.controller.scheduler.thread.pool [size] 5
+TID: [0] [STRATOS] [2015-04-22 20:45:29,964]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Executor Service [id] stratos.manager.thread.pool [size] 20
+TID: [0] [STRATOS] [2015-04-22 20:45:29,964]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Scheduled Executor Service [id] stratos.manager.scheduler.thread.pool [size] 5
+TID: [0] [STRATOS] [2015-04-22 20:45:29,964]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Executor Service [id] cloud.controller.context.thread.pool [size] 10
+TID: [0] [STRATOS] [2015-04-22 20:45:29,966]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  StratosManager component is waiting for CloudController component to become active...
+TID: [0] [STRATOS] [2015-04-22 20:45:29,970]  INFO {org.apache.stratos.common.threading.StratosThreadPool} -  Thread pool created: [type] Executor Service [id] cloud.controller.instance.manager.thread.pool [size] 50
+TID: [0] [STRATOS] [2015-04-22 20:45:29,984]  INFO {org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationEventReceiver} -  Cloud controller application event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:29,990]  INFO {org.apache.stratos.cloud.controller.internal.CloudControllerServiceComponent} -  Application event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:29,990]  INFO {org.apache.stratos.messaging.message.receiver.application.ApplicationsEventMessageDelegator} -  Application status event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,008]  INFO {org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver} -  Cloud controller Cluster status thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,011]  INFO {org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventMessageDelegator} -  Cluster Status event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,011]  INFO {org.apache.stratos.cloud.controller.internal.CloudControllerServiceComponent} -  Cluster status event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,021]  INFO {org.wso2.carbon.core.init.JMXServerManager} -  JMX Service URL  : service:jmx:rmi://localhost:11111/jndi/rmi://localhost:9999/jmxrmi
+TID: [0] [STRATOS] [2015-04-22 20:45:30,021]  INFO {org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver} -  Cloud controller application status thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,022]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  Server           :  Apache Stratos-4.1.0
+TID: [0] [STRATOS] [2015-04-22 20:45:30,022]  INFO {org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver} -  Cloud controller application status thread terminated
+TID: [0] [STRATOS] [2015-04-22 20:45:30,026]  INFO {org.apache.stratos.cloud.controller.internal.CloudControllerServiceComponent} -  Instance status event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,026]  INFO {org.apache.stratos.cloud.controller.internal.CloudControllerServiceComponent} -  Scheduling topology synchronizer task
+TID: [0] [STRATOS] [2015-04-22 20:45:30,021]  INFO {org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventMessageDelegator} -  Instance notifier event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,026]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  WSO2 Carbon started in 27 sec
+TID: [0] [STRATOS] [2015-04-22 20:45:30,027]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  CloudController component became active
+TID: [0] [STRATOS] [2015-04-22 20:45:30,027]  INFO {org.apache.stratos.cloud.controller.internal.CloudControllerServiceComponent} -  Cloud controller service component activated
+TID: [0] [STRATOS] [2015-04-22 20:45:30,487]  INFO {org.wso2.carbon.ui.internal.CarbonUIServiceComponent} -  Mgt Console URL  : https://172.16.2.207:9443/carbon/
+TID: [0] [STRATOS] [2015-04-22 20:45:30,966]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  StratosManager component is waiting for Autoscaler component to become active...
+TID: [0] [STRATOS] [2015-04-22 20:45:30,987]  INFO {org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver} -  Autoscaler topology receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:30,988]  INFO {org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator} -  Topology event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:46,012]  INFO {org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver} -  Autoscaler health stat event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:46,015]  INFO {org.apache.stratos.messaging.message.receiver.health.stat.HealthStatEventMessageDelegator} -  Health stat event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:46,029]  INFO {org.apache.stratos.autoscaler.internal.AutoscalerServiceComponent} -  Scheduling tasks to publish applications
+TID: [0] [STRATOS] [2015-04-22 20:45:46,029]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  Autoscaler component became active
+TID: [0] [STRATOS] [2015-04-22 20:45:46,029]  INFO {org.apache.stratos.autoscaler.internal.AutoscalerServiceComponent} -  Autoscaler service component activated
+TID: [0] [STRATOS] [2015-04-22 20:45:46,970]  INFO {org.apache.stratos.manager.utils.CartridgeConfigFileReader} -  Setting config properties into System properties
+TID: [0] [STRATOS] [2015-04-22 20:45:46,989]  INFO {org.apache.stratos.manager.internal.StratosManagerServiceComponent} -  Tenant event publisher initialized
+TID: [0] [STRATOS] [2015-04-22 20:45:46,993]  INFO {org.apache.stratos.manager.messaging.receiver.StratosManagerInstanceStatusEventReceiver} -  Stratos manager instance status event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:46,995]  INFO {org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventMessageDelegator} -  Instance notifier event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:47,057]  INFO {org.apache.stratos.manager.messaging.receiver.StratosManagerTopologyEventReceiver} -  Stratos manager topology event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:47,058]  INFO {org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator} -  Topology event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:47,060]  INFO {org.apache.stratos.manager.messaging.receiver.StratosManagerApplicationEventReceiver} -  Stratos manager application event receiver thread started
+TID: [0] [STRATOS] [2015-04-22 20:45:47,060]  INFO {org.apache.stratos.messaging.message.receiver.application.ApplicationsEventMessageDelegator} -  Application status event message delegator started
+TID: [0] [STRATOS] [2015-04-22 20:45:47,104]  INFO {org.apache.stratos.common.internal.ComponentStartUpSynchronizerImpl} -  StratosManager component became active
+TID: [0] [STRATOS] [2015-04-22 20:45:47,106]  INFO {org.apache.stratos.manager.internal.StratosManagerServiceComponent} -  Stratos manager component is activated
+TID: [0] [STRATOS] [2015-04-22 20:45:47,249]  INFO {org.apache.stratos.messaging.message.processor.topology.CompleteTopologyMessageProcessor} -  Topology initialized
+TID: [0] [STRATOS] [2015-04-22 20:45:47,249]  INFO {org.apache.stratos.messaging.message.processor.topology.CompleteTopologyMessageProcessor} -  Topology initialized
+TID: [0] [STRATOS] [2015-04-22 20:45:47,250]  INFO {org.apache.stratos.messaging.message.processor.topology.CompleteTopologyMessageProcessor} -  Topology initialized
+TID: [0] [STRATOS] [2015-04-22 20:45:47,250]  INFO {org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver} -  [CompleteTopologyEvent] Received: class org.apache.stratos.messaging.event.topology.CompleteTopologyEvent
+TID: [0] [STRATOS] [2015-04-22 20:45:59,750]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding network partition: [network-partition-id] RegionOne-AZ-1
+TID: [0] [STRATOS] [2015-04-22 20:45:59,751]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Validating partition: [network-partition-id] RegionOne-AZ-1 [partition-id] RegionOne-AZ-1
+TID: [0] [STRATOS] [2015-04-22 20:46:01,196] ERROR {org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas} -  Invalid zone: AZ-1 in the region: RegionOne and of the iaas: Core
+TID: [0] [STRATOS] [2015-04-22 20:46:01,197] ERROR {org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator} -  Invalid partition detected: [partition-id] RegionOne-AZ-1Invalid zone: AZ-1 in the region: RegionOne and of the iaas: Core
+org.apache.stratos.cloud.controller.exception.InvalidZoneException: Invalid zone: AZ-1 in the region: RegionOne and of the iaas: Core
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas.isValidZone(OpenstackIaas.java:289)
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator.validate(OpenstackPartitionValidator.java:69)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(CloudControllerServiceUtil.java:97)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartition(CloudControllerServiceUtil.java:108)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.validatePartition(CloudControllerServiceImpl.java:1015)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.addNetworkPartition(CloudControllerServiceImpl.java:1432)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.axis2.rpc.receivers.RPCUtil.invokeServiceClass(RPCUtil.java:212)
+	at org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver.invokeBusinessLogic(RPCInOnlyMessageReceiver.java:66)
+	at org.apache.axis2.receivers.AbstractMessageReceiver.receive(AbstractMessageReceiver.java:110)
+	at org.apache.axis2.engine.AxisEngine.receive(AxisEngine.java:180)
+	at org.apache.axis2.transport.http.HTTPTransportUtils.processHTTPPostRequest(HTTPTransportUtils.java:172)
+	at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:146)
+	at org.wso2.carbon.core.transports.CarbonServlet.doPost(CarbonServlet.java:231)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.eclipse.equinox.http.servlet.internal.ServletRegistration.service(ServletRegistration.java:61)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.processAlias(ProxyServlet.java:128)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.service(ProxyServlet.java:68)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.wso2.carbon.tomcat.ext.servlet.DelegationServlet.service(DelegationServlet.java:68)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.wso2.carbon.tomcat.ext.filter.CharacterSetFilter.doFilter(CharacterSetFilter.java:61)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+TID: [0] [STRATOS] [2015-04-22 20:46:01,198] ERROR {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Could not add network partition
+TID: [0] [STRATOS] [2015-04-22 20:46:01,199] ERROR {org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver} -  Could not add network partition
+org.apache.stratos.cloud.controller.exception.CloudControllerException: Could not add network partition
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.addNetworkPartition(CloudControllerServiceImpl.java:1452)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.axis2.rpc.receivers.RPCUtil.invokeServiceClass(RPCUtil.java:212)
+	at org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver.invokeBusinessLogic(RPCInOnlyMessageReceiver.java:66)
+	at org.apache.axis2.receivers.AbstractMessageReceiver.receive(AbstractMessageReceiver.java:110)
+	at org.apache.axis2.engine.AxisEngine.receive(AxisEngine.java:180)
+	at org.apache.axis2.transport.http.HTTPTransportUtils.processHTTPPostRequest(HTTPTransportUtils.java:172)
+	at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:146)
+	at org.wso2.carbon.core.transports.CarbonServlet.doPost(CarbonServlet.java:231)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.eclipse.equinox.http.servlet.internal.ServletRegistration.service(ServletRegistration.java:61)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.processAlias(ProxyServlet.java:128)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.service(ProxyServlet.java:68)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.wso2.carbon.tomcat.ext.servlet.DelegationServlet.service(DelegationServlet.java:68)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.wso2.carbon.tomcat.ext.filter.CharacterSetFilter.doFilter(CharacterSetFilter.java:61)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.apache.stratos.cloud.controller.exception.InvalidPartitionException: Invalid partition detected: [partition-id] RegionOne-AZ-1Invalid zone: AZ-1 in the region: RegionOne and of the iaas: Core
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator.validate(OpenstackPartitionValidator.java:85)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(CloudControllerServiceUtil.java:97)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartition(CloudControllerServiceUtil.java:108)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.validatePartition(CloudControllerServiceImpl.java:1015)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.addNetworkPartition(CloudControllerServiceImpl.java:1432)
+	... 44 more
+Caused by: org.apache.stratos.cloud.controller.exception.InvalidZoneException: Invalid zone: AZ-1 in the region: RegionOne and of the iaas: Core
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas.isValidZone(OpenstackIaas.java:289)
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator.validate(OpenstackPartitionValidator.java:69)
+	... 48 more
+TID: [0] [STRATOS] [2015-04-22 20:46:01,218] ERROR {org.apache.stratos.rest.endpoint.api.StratosApiV41Utils} -  Could not add network partition
+TID: [0] [STRATOS] [2015-04-22 20:46:01,220] ERROR {org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper} -  Internal server error
+java.lang.RuntimeException: Could not add network partition
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.addNetworkPartition(StratosApiV41Utils.java:1991)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41.addNetworkPartition(StratosApiV41.java:522)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.cxf.service.invoker.AbstractInvoker.performInvocation(AbstractInvoker.java:180)
+	at org.apache.cxf.service.invoker.AbstractInvoker.invoke(AbstractInvoker.java:96)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:194)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:100)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor$1.run(ServiceInvokerInterceptor.java:57)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor.handleMessage(ServiceInvokerInterceptor.java:93)
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:271)
+	at org.apache.cxf.transport.ChainInitiationObserver.onMessage(ChainInitiationObserver.java:121)
+	at org.apache.cxf.transport.http.AbstractHTTPDestination.invoke(AbstractHTTPDestination.java:239)
+	at org.apache.cxf.transport.servlet.ServletController.invokeDestination(ServletController.java:223)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:203)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:137)
+	at org.apache.cxf.transport.servlet.CXFNonSpringServlet.invoke(CXFNonSpringServlet.java:159)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.handleRequest(AbstractHTTPServlet.java:286)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.doPost(AbstractHTTPServlet.java:206)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.service(AbstractHTTPServlet.java:262)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.apache.axis2.AxisFault: Could not add network partition
+	at org.apache.axis2.util.Utils.getInboundFaultFromMessageContext(Utils.java:531)
+	at org.apache.axis2.description.RobustOutOnlyAxisOperation$RobustOutOnlyOperationClient.handleResponse(RobustOutOnlyAxisOperation.java:91)
+	at org.apache.axis2.description.OutInAxisOperationClient.send(OutInAxisOperation.java:445)
+	at org.apache.axis2.description.OutInAxisOperationClient.executeImpl(OutInAxisOperation.java:225)
+	at org.apache.axis2.client.OperationClient.execute(OperationClient.java:149)
+	at org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub.addNetworkPartition(CloudControllerServiceStub.java:7832)
+	at org.apache.stratos.common.client.CloudControllerServiceClient.addNetworkPartition(CloudControllerServiceClient.java:224)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.addNetworkPartition(StratosApiV41Utils.java:1987)
+	... 45 more
+TID: [0] [STRATOS] [2015-04-22 20:46:01,387]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding network partition: [network-partition-id] RegionOne-AZ-2
+TID: [0] [STRATOS] [2015-04-22 20:46:01,387]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Validating partition: [network-partition-id] RegionOne-AZ-2 [partition-id] RegionOne-AZ-2
+TID: [0] [STRATOS] [2015-04-22 20:46:01,563] ERROR {org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas} -  Invalid zone: AZ-2 in the region: RegionOne and of the iaas: Core
+TID: [0] [STRATOS] [2015-04-22 20:46:01,564] ERROR {org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator} -  Invalid partition detected: [partition-id] RegionOne-AZ-2Invalid zone: AZ-2 in the region: RegionOne and of the iaas: Core
+org.apache.stratos.cloud.controller.exception.InvalidZoneException: Invalid zone: AZ-2 in the region: RegionOne and of the iaas: Core
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas.isValidZone(OpenstackIaas.java:289)
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator.validate(OpenstackPartitionValidator.java:69)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(CloudControllerServiceUtil.java:97)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartition(CloudControllerServiceUtil.java:108)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.validatePartition(CloudControllerServiceImpl.java:1015)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.addNetworkPartition(CloudControllerServiceImpl.java:1432)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.axis2.rpc.receivers.RPCUtil.invokeServiceClass(RPCUtil.java:212)
+	at org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver.invokeBusinessLogic(RPCInOnlyMessageReceiver.java:66)
+	at org.apache.axis2.receivers.AbstractMessageReceiver.receive(AbstractMessageReceiver.java:110)
+	at org.apache.axis2.engine.AxisEngine.receive(AxisEngine.java:180)
+	at org.apache.axis2.transport.http.HTTPTransportUtils.processHTTPPostRequest(HTTPTransportUtils.java:172)
+	at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:146)
+	at org.wso2.carbon.core.transports.CarbonServlet.doPost(CarbonServlet.java:231)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.eclipse.equinox.http.servlet.internal.ServletRegistration.service(ServletRegistration.java:61)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.processAlias(ProxyServlet.java:128)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.service(ProxyServlet.java:68)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.wso2.carbon.tomcat.ext.servlet.DelegationServlet.service(DelegationServlet.java:68)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.wso2.carbon.tomcat.ext.filter.CharacterSetFilter.doFilter(CharacterSetFilter.java:61)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+TID: [0] [STRATOS] [2015-04-22 20:46:01,565] ERROR {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Could not add network partition
+TID: [0] [STRATOS] [2015-04-22 20:46:01,565] ERROR {org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver} -  Could not add network partition
+org.apache.stratos.cloud.controller.exception.CloudControllerException: Could not add network partition
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.addNetworkPartition(CloudControllerServiceImpl.java:1452)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.axis2.rpc.receivers.RPCUtil.invokeServiceClass(RPCUtil.java:212)
+	at org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver.invokeBusinessLogic(RPCInOnlyMessageReceiver.java:66)
+	at org.apache.axis2.receivers.AbstractMessageReceiver.receive(AbstractMessageReceiver.java:110)
+	at org.apache.axis2.engine.AxisEngine.receive(AxisEngine.java:180)
+	at org.apache.axis2.transport.http.HTTPTransportUtils.processHTTPPostRequest(HTTPTransportUtils.java:172)
+	at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:146)
+	at org.wso2.carbon.core.transports.CarbonServlet.doPost(CarbonServlet.java:231)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.eclipse.equinox.http.servlet.internal.ServletRegistration.service(ServletRegistration.java:61)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.processAlias(ProxyServlet.java:128)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.service(ProxyServlet.java:68)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.wso2.carbon.tomcat.ext.servlet.DelegationServlet.service(DelegationServlet.java:68)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.wso2.carbon.tomcat.ext.filter.CharacterSetFilter.doFilter(CharacterSetFilter.java:61)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.apache.stratos.cloud.controller.exception.InvalidPartitionException: Invalid partition detected: [partition-id] RegionOne-AZ-2Invalid zone: AZ-2 in the region: RegionOne and of the iaas: Core
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator.validate(OpenstackPartitionValidator.java:85)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(CloudControllerServiceUtil.java:97)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil.validatePartition(CloudControllerServiceUtil.java:108)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.validatePartition(CloudControllerServiceImpl.java:1015)
+	at org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl.addNetworkPartition(CloudControllerServiceImpl.java:1432)
+	... 44 more
+Caused by: org.apache.stratos.cloud.controller.exception.InvalidZoneException: Invalid zone: AZ-2 in the region: RegionOne and of the iaas: Core
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas.isValidZone(OpenstackIaas.java:289)
+	at org.apache.stratos.cloud.controller.iaases.openstack.OpenstackPartitionValidator.validate(OpenstackPartitionValidator.java:69)
+	... 48 more
+TID: [0] [STRATOS] [2015-04-22 20:46:01,577] ERROR {org.apache.stratos.rest.endpoint.api.StratosApiV41Utils} -  Could not add network partition
+TID: [0] [STRATOS] [2015-04-22 20:46:01,578] ERROR {org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper} -  Internal server error
+java.lang.RuntimeException: Could not add network partition
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.addNetworkPartition(StratosApiV41Utils.java:1991)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41.addNetworkPartition(StratosApiV41.java:522)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.cxf.service.invoker.AbstractInvoker.performInvocation(AbstractInvoker.java:180)
+	at org.apache.cxf.service.invoker.AbstractInvoker.invoke(AbstractInvoker.java:96)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:194)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:100)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor$1.run(ServiceInvokerInterceptor.java:57)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor.handleMessage(ServiceInvokerInterceptor.java:93)
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:271)
+	at org.apache.cxf.transport.ChainInitiationObserver.onMessage(ChainInitiationObserver.java:121)
+	at org.apache.cxf.transport.http.AbstractHTTPDestination.invoke(AbstractHTTPDestination.java:239)
+	at org.apache.cxf.transport.servlet.ServletController.invokeDestination(ServletController.java:223)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:203)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:137)
+	at org.apache.cxf.transport.servlet.CXFNonSpringServlet.invoke(CXFNonSpringServlet.java:159)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.handleRequest(AbstractHTTPServlet.java:286)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.doPost(AbstractHTTPServlet.java:206)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.service(AbstractHTTPServlet.java:262)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.apache.axis2.AxisFault: Could not add network partition
+	at org.apache.axis2.util.Utils.getInboundFaultFromMessageContext(Utils.java:531)
+	at org.apache.axis2.description.RobustOutOnlyAxisOperation$RobustOutOnlyOperationClient.handleResponse(RobustOutOnlyAxisOperation.java:91)
+	at org.apache.axis2.description.OutInAxisOperationClient.send(OutInAxisOperation.java:445)
+	at org.apache.axis2.description.OutInAxisOperationClient.executeImpl(OutInAxisOperation.java:225)
+	at org.apache.axis2.client.OperationClient.execute(OperationClient.java:149)
+	at org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub.addNetworkPartition(CloudControllerServiceStub.java:7832)
+	at org.apache.stratos.common.client.CloudControllerServiceClient.addNetworkPartition(CloudControllerServiceClient.java:224)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.addNetworkPartition(StratosApiV41Utils.java:1987)
+	... 45 more
+TID: [0] [STRATOS] [2015-04-22 20:46:01,735]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding network partition: [network-partition-id] RegionOne
+TID: [0] [STRATOS] [2015-04-22 20:46:01,736]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Validating partition: [network-partition-id] RegionOne [partition-id] whole-region
+TID: [0] [STRATOS] [2015-04-22 20:46:01,871]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Partition validated successfully: [network-partition-id] RegionOne [partition-id] whole-region
+TID: [0] [STRATOS] [2015-04-22 20:46:01,892]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Network partition added successfully: [network-partition-id] RegionOne
+TID: [0] [STRATOS] [2015-04-22 20:46:02,106]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Validating deployment policy { deployment-policy-id : autoscale-1-5, network-partitions : [org.apache.stratos.common.partition.NetworkPartition@4f91deef]
+TID: [0] [STRATOS] [2015-04-22 20:46:02,126]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Adding deployment policy: [deployment-policy-id] autoscale-1-5
+TID: [0] [STRATOS] [2015-04-22 20:46:02,147]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Deployment policy is added successfully: [deployment-policy-id] autoscale-1-5
+TID: [0] [STRATOS] [2015-04-22 20:46:02,147]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Successfully added deployment policy: [deployment-policy-id] autoscale-1-5
+TID: [0] [STRATOS] [2015-04-22 20:46:02,292]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Validating deployment policy { deployment-policy-id : autoscale-2-10-ha, network-partitions : [org.apache.stratos.common.partition.NetworkPartition@5cef20e6]
+TID: [0] [STRATOS] [2015-04-22 20:46:02,306]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Adding deployment policy: [deployment-policy-id] autoscale-2-10-ha
+TID: [0] [STRATOS] [2015-04-22 20:46:02,313]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Deployment policy is added successfully: [deployment-policy-id] autoscale-2-10-ha
+TID: [0] [STRATOS] [2015-04-22 20:46:02,313]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Successfully added deployment policy: [deployment-policy-id] autoscale-2-10-ha
+TID: [0] [STRATOS] [2015-04-22 20:46:02,448]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Validating deployment policy { deployment-policy-id : static-1, network-partitions : [org.apache.stratos.common.partition.NetworkPartition@124d3b5e]
+TID: [0] [STRATOS] [2015-04-22 20:46:02,459]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Adding deployment policy: [deployment-policy-id] static-1
+TID: [0] [STRATOS] [2015-04-22 20:46:02,467]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Deployment policy is added successfully: [deployment-policy-id] static-1
+TID: [0] [STRATOS] [2015-04-22 20:46:02,468]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Successfully added deployment policy: [deployment-policy-id] static-1
+TID: [0] [STRATOS] [2015-04-22 20:46:02,607]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Validating deployment policy { deployment-policy-id : static-2-ha, network-partitions : [org.apache.stratos.common.partition.NetworkPartition@8e9b72]
+TID: [0] [STRATOS] [2015-04-22 20:46:02,617]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Adding deployment policy: [deployment-policy-id] static-2-ha
+TID: [0] [STRATOS] [2015-04-22 20:46:02,626]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Deployment policy is added successfully: [deployment-policy-id] static-2-ha
+TID: [0] [STRATOS] [2015-04-22 20:46:02,627]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Successfully added deployment policy: [deployment-policy-id] static-2-ha
+TID: [0] [STRATOS] [2015-04-22 20:46:02,799]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Adding application policy : [application-policy-id] default-iaas
+TID: [0] [STRATOS] [2015-04-22 20:46:02,815]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Application policy is added successfully: [application-policy-id] default-iaas
+TID: [0] [STRATOS] [2015-04-22 20:46:02,959]  INFO {org.apache.stratos.rest.endpoint.api.StratosApiV41Utils} -  Adding autoscaling policy: [id] economyPolicy
+TID: [0] [STRATOS] [2015-04-22 20:46:02,970]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Adding autoscaling policy: [id] economyPolicy
+TID: [0] [STRATOS] [2015-04-22 20:46:02,984]  INFO {org.apache.stratos.autoscaler.pojo.policy.PolicyManager} -  Autoscaling policy is added successfully: [id] economyPolicy
+TID: [0] [STRATOS] [2015-04-22 20:46:03,225]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] bwext
+TID: [0] [STRATOS] [2015-04-22 20:46:03,260]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] bwext
+TID: [0] [STRATOS] [2015-04-22 20:46:03,288]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] bwext
+TID: [0] [STRATOS] [2015-04-22 20:46:03,294]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] bwext
+TID: [0] [STRATOS] [2015-04-22 20:46:03,467]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] mrf
+TID: [0] [STRATOS] [2015-04-22 20:46:03,494]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] mrf
+TID: [0] [STRATOS] [2015-04-22 20:46:03,510]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] mrf
+TID: [0] [STRATOS] [2015-04-22 20:46:03,512]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] mrf
+TID: [0] [STRATOS] [2015-04-22 20:46:03,683]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] ns-01
+TID: [0] [STRATOS] [2015-04-22 20:46:03,717]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] ns-01
+TID: [0] [STRATOS] [2015-04-22 20:46:03,731]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] ns-01
+TID: [0] [STRATOS] [2015-04-22 20:46:03,732]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] ns-01
+TID: [0] [STRATOS] [2015-04-22 20:46:03,897]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] ns-02
+TID: [0] [STRATOS] [2015-04-22 20:46:03,936]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] ns-02
+TID: [0] [STRATOS] [2015-04-22 20:46:03,953]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] ns-02
+TID: [0] [STRATOS] [2015-04-22 20:46:03,954]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] ns-02
+TID: [0] [STRATOS] [2015-04-22 20:46:04,117]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] ps-obs
+TID: [0] [STRATOS] [2015-04-22 20:46:04,150]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] ps-obs
+TID: [0] [STRATOS] [2015-04-22 20:46:04,165]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] ps-obs
+TID: [0] [STRATOS] [2015-04-22 20:46:04,168]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] ps-obs
+TID: [0] [STRATOS] [2015-04-22 20:46:04,329]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] ps
+TID: [0] [STRATOS] [2015-04-22 20:46:04,357]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] ps
+TID: [0] [STRATOS] [2015-04-22 20:46:04,369]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] ps
+TID: [0] [STRATOS] [2015-04-22 20:46:04,374]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] ps
+TID: [0] [STRATOS] [2015-04-22 20:46:04,536]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] c1
+TID: [0] [STRATOS] [2015-04-22 20:46:04,564]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] c1
+TID: [0] [STRATOS] [2015-04-22 20:46:04,578]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] c1
+TID: [0] [STRATOS] [2015-04-22 20:46:04,579]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] c1
+TID: [0] [STRATOS] [2015-04-22 20:46:04,741]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] c2
+TID: [0] [STRATOS] [2015-04-22 20:46:04,772]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] c2
+TID: [0] [STRATOS] [2015-04-22 20:46:04,786]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] c2
+TID: [0] [STRATOS] [2015-04-22 20:46:04,787]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] c2
+TID: [0] [STRATOS] [2015-04-22 20:46:04,949]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] c3
+TID: [0] [STRATOS] [2015-04-22 20:46:04,983]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] c3
+TID: [0] [STRATOS] [2015-04-22 20:46:04,996]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] c3
+TID: [0] [STRATOS] [2015-04-22 20:46:04,997]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] c3
+TID: [0] [STRATOS] [2015-04-22 20:46:05,157]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] c4
+TID: [0] [STRATOS] [2015-04-22 20:46:05,185]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] c4
+TID: [0] [STRATOS] [2015-04-22 20:46:05,199]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] c4
+TID: [0] [STRATOS] [2015-04-22 20:46:05,200]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] c4
+TID: [0] [STRATOS] [2015-04-22 20:46:05,358]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] c5
+TID: [0] [STRATOS] [2015-04-22 20:46:05,389]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] c5
+TID: [0] [STRATOS] [2015-04-22 20:46:05,402]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] c5
+TID: [0] [STRATOS] [2015-04-22 20:46:05,403]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] c5
+TID: [0] [STRATOS] [2015-04-22 20:46:05,566]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] cisco-sample-vm-fixed-ip
+TID: [0] [STRATOS] [2015-04-22 20:46:05,596]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] cisco-sample-vm-fixed-ip
+TID: [0] [STRATOS] [2015-04-22 20:46:05,609]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] cisco-sample-vm-fixed-ip
+TID: [0] [STRATOS] [2015-04-22 20:46:05,610]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] cisco-sample-vm-fixed-ip
+TID: [0] [STRATOS] [2015-04-22 20:46:05,771]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] cisco-sample-vm-volume
+TID: [0] [STRATOS] [2015-04-22 20:46:05,801]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] cisco-sample-vm-volume
+TID: [0] [STRATOS] [2015-04-22 20:46:05,814]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] cisco-sample-vm-volume
+TID: [0] [STRATOS] [2015-04-22 20:46:05,815]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] cisco-sample-vm-volume
+TID: [0] [STRATOS] [2015-04-22 20:46:05,973]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] cisco-sample-vm
+TID: [0] [STRATOS] [2015-04-22 20:46:06,003]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] cisco-sample-vm
+TID: [0] [STRATOS] [2015-04-22 20:46:06,016]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] cisco-sample-vm
+TID: [0] [STRATOS] [2015-04-22 20:46:06,019]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] cisco-sample-vm
+TID: [0] [STRATOS] [2015-04-22 20:46:06,175]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] xs
+TID: [0] [STRATOS] [2015-04-22 20:46:06,199]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] xs
+TID: [0] [STRATOS] [2015-04-22 20:46:06,213]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] xs
+TID: [0] [STRATOS] [2015-04-22 20:46:06,217]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] xs
+TID: [0] [STRATOS] [2015-04-22 20:46:06,390]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Adding cartridge: [cartridge-type] xsp
+TID: [0] [STRATOS] [2015-04-22 20:46:06,414]  INFO {org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher} -  Publishing service created event: [service-name] xsp
+TID: [0] [STRATOS] [2015-04-22 20:46:06,428]  INFO {org.apache.stratos.messaging.message.processor.topology.ServiceCreatedMessageProcessor} -  Service created: [service] xsp
+TID: [0] [STRATOS] [2015-04-22 20:46:06,430]  INFO {org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl} -  Successfully added cartridge: [cartridge-type] xsp
+TID: [0] [STRATOS] [2015-04-22 20:46:55,669] ERROR {org.apache.stratos.rest.endpoint.api.StratosApiV41Utils} -  Cartridge group: [group-name] subscription-G1-G2-G3 cannot be removed since it does not exist
+TID: [0] [STRATOS] [2015-04-22 20:46:55,669] ERROR {org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper} -  Error while fulfilling the request
+org.apache.stratos.rest.endpoint.exception.RestAPIException
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.removeServiceGroup(StratosApiV41Utils.java:994)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41.removeServiceGroup(StratosApiV41.java:491)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.cxf.service.invoker.AbstractInvoker.performInvocation(AbstractInvoker.java:180)
+	at org.apache.cxf.service.invoker.AbstractInvoker.invoke(AbstractInvoker.java:96)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:194)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:100)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor$1.run(ServiceInvokerInterceptor.java:57)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor.handleMessage(ServiceInvokerInterceptor.java:93)
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:271)
+	at org.apache.cxf.transport.ChainInitiationObserver.onMessage(ChainInitiationObserver.java:121)
+	at org.apache.cxf.transport.http.AbstractHTTPDestination.invoke(AbstractHTTPDestination.java:239)
+	at org.apache.cxf.transport.servlet.ServletController.invokeDestination(ServletController.java:223)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:203)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:137)
+	at org.apache.cxf.transport.servlet.CXFNonSpringServlet.invoke(CXFNonSpringServlet.java:159)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.handleRequest(AbstractHTTPServlet.java:286)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.doDelete(AbstractHTTPServlet.java:217)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:761)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.service(AbstractHTTPServlet.java:262)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.apache.stratos.rest.endpoint.exception.RestAPIException: Cartridge group: [group-name] subscription-G1-G2-G3 cannot be removed since it does not exist
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.removeServiceGroup(StratosApiV41Utils.java:971)
+	... 45 more
+TID: [0] [STRATOS] [2015-04-22 20:46:56,406]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Adding cartridge group: [group-name] subscription-G1-G2-G3
+TID: [0] [STRATOS] [2015-04-22 20:46:56,421]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Cartridge group successfully added: [group-name] subscription-G1-G2-G3
+TID: [0] [STRATOS] [2015-04-22 20:46:57,259]  INFO {org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl} -  Adding application: [application-id] subscription-G1-G2-G3
+TID: [0] [STRATOS] [2015-04-22 20:46:57,345]  INFO {org.wso2.carbon.core.services.util.CarbonAuthenticationUtil} -  'admin@carbon.super [-1234]' logged in at [2015-04-22 20:46:57,344+0000]
+TID: [0] [STRATOS] [2015-04-22 20:46:57,384]  INFO {org.wso2.carbon.core.services.util.CarbonAuthenticationUtil} -  'admin@carbon.super [-1234]' logged in at [2015-04-22 20:46:57,384+0000]
+TID: [0] [STRATOS] [2015-04-22 20:46:57,405]  INFO {org.wso2.carbon.core.services.util.CarbonAuthenticationUtil} -  'admin@carbon.super [-1234]' logged in at [2015-04-22 20:46:57,405+0000]
+TID: [0] [STRATOS] [2015-04-22 20:46:57,452]  INFO {org.wso2.carbon.core.services.util.CarbonAuthenticationUtil} -  'admin@carbon.super [-1234]' logged in at [2015-04-22 20:46:57,452+0000]
+TID: [0] [STRATOS] [2015-04-22 20:46:57,493]  INFO {org.wso2.carbon.core.services.util.CarbonAuthenticationUtil} -  'admin@carbon.super [-1234]' logged in at [2015-04-22 20:46:57,493+0000]
+TID: [0] [STRATOS] [2015-04-22 20:46:58,495] ERROR {org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver} -  Cartridge c3 not defined in cartridge group: [application] subscription-G1-G2-G3 [cartridge-group-name] subscription-G1-G2-G3 [cartridge-group-alias] subscription-G1-G2-G3
+java.lang.RuntimeException: Cartridge c3 not defined in cartridge group: [application] subscription-G1-G2-G3 [cartridge-group-name] subscription-G1-G2-G3 [cartridge-group-alias] subscription-G1-G2-G3
+	at org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser.validateCartridgeGroupReference(DefaultApplicationParser.java:590)
+	at org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser.parseGroups(DefaultApplicationParser.java:569)
+	at org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser.buildCompositeAppStructure(DefaultApplicationParser.java:314)
+	at org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser.parse(DefaultApplicationParser.java:105)
+	at org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl.addApplication(AutoscalerServiceImpl.java:134)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.axis2.rpc.receivers.RPCUtil.invokeServiceClass(RPCUtil.java:212)
+	at org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver.invokeBusinessLogic(RPCInOnlyMessageReceiver.java:66)
+	at org.apache.axis2.receivers.AbstractMessageReceiver.receive(AbstractMessageReceiver.java:110)
+	at org.apache.axis2.engine.AxisEngine.receive(AxisEngine.java:180)
+	at org.apache.axis2.transport.http.HTTPTransportUtils.processHTTPPostRequest(HTTPTransportUtils.java:172)
+	at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:146)
+	at org.wso2.carbon.core.transports.CarbonServlet.doPost(CarbonServlet.java:231)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.eclipse.equinox.http.servlet.internal.ServletRegistration.service(ServletRegistration.java:61)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.processAlias(ProxyServlet.java:128)
+	at org.eclipse.equinox.http.servlet.internal.ProxyServlet.service(ProxyServlet.java:68)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:848)
+	at org.wso2.carbon.tomcat.ext.servlet.DelegationServlet.service(DelegationServlet.java:68)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.wso2.carbon.tomcat.ext.filter.CharacterSetFilter.doFilter(CharacterSetFilter.java:61)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+TID: [0] [STRATOS] [2015-04-22 20:46:58,501] ERROR {org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper} -  Error while fulfilling the request
+org.apache.stratos.rest.endpoint.exception.RestAPIException
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.addApplication(StratosApiV41Utils.java:1098)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41.addApplication(StratosApiV41.java:599)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.cxf.service.invoker.AbstractInvoker.performInvocation(AbstractInvoker.java:180)
+	at org.apache.cxf.service.invoker.AbstractInvoker.invoke(AbstractInvoker.java:96)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:194)
+	at org.apache.cxf.jaxrs.JAXRSInvoker.invoke(JAXRSInvoker.java:100)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor$1.run(ServiceInvokerInterceptor.java:57)
+	at org.apache.cxf.interceptor.ServiceInvokerInterceptor.handleMessage(ServiceInvokerInterceptor.java:93)
+	at org.apache.cxf.phase.PhaseInterceptorChain.doIntercept(PhaseInterceptorChain.java:271)
+	at org.apache.cxf.transport.ChainInitiationObserver.onMessage(ChainInitiationObserver.java:121)
+	at org.apache.cxf.transport.http.AbstractHTTPDestination.invoke(AbstractHTTPDestination.java:239)
+	at org.apache.cxf.transport.servlet.ServletController.invokeDestination(ServletController.java:223)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:203)
+	at org.apache.cxf.transport.servlet.ServletController.invoke(ServletController.java:137)
+	at org.apache.cxf.transport.servlet.CXFNonSpringServlet.invoke(CXFNonSpringServlet.java:159)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.handleRequest(AbstractHTTPServlet.java:286)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.doPost(AbstractHTTPServlet.java:206)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:755)
+	at org.apache.cxf.transport.servlet.AbstractHTTPServlet.service(AbstractHTTPServlet.java:262)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:305)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:472)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.continueInvocation(CompositeValve.java:178)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve$1.invoke(CarbonTomcatValve.java:47)
+	at org.wso2.carbon.webapp.mgt.TenantLazyLoaderValve.invoke(TenantLazyLoaderValve.java:56)
+	at org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer.invokeValves(TomcatValveContainer.java:47)
+	at org.wso2.carbon.tomcat.ext.valves.CompositeValve.invoke(CompositeValve.java:141)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonStuckThreadDetectionValve.invoke(CarbonStuckThreadDetectionValve.java:156)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:936)
+	at org.wso2.carbon.tomcat.ext.valves.CarbonContextCreatorValve.invoke(CarbonContextCreatorValve.java:52)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:407)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1004)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.run(NioEndpoint.java:1653)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.apache.axis2.AxisFault: Cartridge c3 not defined in cartridge group: [application] subscription-G1-G2-G3 [cartridge-group-name] subscription-G1-G2-G3 [cartridge-group-alias] subscription-G1-G2-G3
+	at org.apache.axis2.util.Utils.getInboundFaultFromMessageContext(Utils.java:531)
+	at org.apache.axis2.description.RobustOutOnlyAxisOperation$RobustOutOnlyOperationClient.handleResponse(RobustOutOnlyAxisOperation.java:91)
+	at org.apache.axis2.description.OutInAxisOperationClient.send(OutInAxisOperation.java:445)
+	at org.apache.axis2.description.OutInAxisOperationClient.executeImpl(OutInAxisOperation.java:225)
+	at org.apache.axis2.client.OperationClient.execute(OperationClient.java:149)
+	at org.apache.stratos.autoscaler.stub.AutoscalerServiceStub.addApplication(AutoscalerServiceStub.java:5734)
+	at org.apache.stratos.common.client.AutoscalerServiceClient.addApplication(AutoscalerServiceClient.java:94)
+	at org.apache.stratos.rest.endpoint.api.StratosApiV41Utils.addApplication(StratosApiV41Utils.java:1086)
+	... 45 more

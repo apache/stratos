@@ -274,51 +274,47 @@ public class AutoscalerUtil {
             int retries = 5;
             boolean success = false;
             ApplicationMonitor applicationMonitor = null;
-            try {
-                while ((!success && retries != 0)) {
+            while (!success && retries != 0) {
+
+                try {
+                    startTime = System.currentTimeMillis();
+                    log.info("Starting monitor: [application] " + applicationId);
                     try {
-                        startTime = System.currentTimeMillis();
-                        log.info("Starting monitor: [application] " + applicationId);
-                        try {
-                            applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
-                        } catch (PolicyValidationException e) {
-                            String msg = "Monitor creation failed: [application] " + applicationId;
-                            log.warn(msg, e);
-                            retries--;
-                        }
-                        success = true;
-                        endTime = System.currentTimeMillis();
-                    } catch (DependencyBuilderException e) {
-                        String msg = "Monitor creation failed: [application] " + applicationId;
-                        log.warn(msg, e);
-                        retries--;
-                    } catch (TopologyInConsistentException e) {
+                        applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
+                    } catch (PolicyValidationException e) {
                         String msg = "Monitor creation failed: [application] " + applicationId;
                         log.warn(msg, e);
                         retries--;
                     }
+                    success = true;
+                    endTime = System.currentTimeMillis();
+                } catch (DependencyBuilderException e) {
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Monitor creation failed: [application] " + applicationId;
+                    log.warn(msg, e);
+                    retries--;
                 }
+            }
 
-                if (applicationMonitor == null) {
-                    String msg = "Monitor creation failed, even after retrying for 5 times: "
-                            + "[application] " + applicationId;
-                    log.error(msg);
-                    throw new RuntimeException(msg);
-                }
-                AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
-                autoscalerContext.removeApplicationPendingMonitor(applicationId);
-                autoscalerContext.removeAppMonitor(applicationId);
-                autoscalerContext.addAppMonitor(applicationMonitor);
+            if (applicationMonitor == null) {
+                String msg = "Monitor creation failed, even after retrying for 5 times: "
+                        + "[application] " + applicationId;
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+            AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+            autoscalerContext.removeApplicationPendingMonitor(applicationId);
+            autoscalerContext.removeAppMonitor(applicationId);
+            autoscalerContext.addAppMonitor(applicationMonitor);
 
-                long startupTime = ((endTime - startTime) / 1000);
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
-                                    "[startup-time] %d seconds", applicationMonitor.getId(),
-                            applicationMonitor.getStartupDependencyTree(), startupTime));
-                }
-            } catch (Exception e) {
-                String msg = "Monitor creation failed: [application] " + applicationId;
-                log.error(msg, e);
+            long startupTime = ((endTime - startTime) / 1000);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
+                                "[startup-time] %d seconds", applicationMonitor.getId(),
+                        applicationMonitor.getStartupDependencyTree(), startupTime));
             }
         }
     }

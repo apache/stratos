@@ -1,0 +1,15 @@
+{
+  "id": "economyPolicy",
+  "loadThresholds": {
+    "requestsInFlight": {
+      "threshold": 50
+    },
+    "memoryConsumption": {
+      "threshold": 40
+    },
+    "loadAverage": {
+      "threshold": 40
+    }
+  }
+}
+

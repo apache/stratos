@@ -32,7 +32,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -190,7 +189,7 @@ public class ADCMTAppTenantUserTest extends PythonAgentTestManager {
      */
     private Topology createTestTopology() {
         Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant, UUID.randomUUID().toString());
+        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
         topology.addService(service);
 
         Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
