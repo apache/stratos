@@ -228,7 +228,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding application: [tenant-id] %d [application-uuid] %s [application-name] %s",
-                    applicationContext.getTenantId(), applicationContext.getApplicationUuid(), applicationContext.getApplicationId()));
+                    applicationContext.getTenantId(), applicationContext.getApplicationUuid(), applicationContext.getName()));
         }
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
