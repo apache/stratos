@@ -395,6 +395,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Create member context
             String applicationId = clusterContext.getApplicationId();
+
+            // if the IaaS Provider type is 'ec2', add region and zone information to the Member via
+            // properties of Instance Context -> properties of Member Context
+            if (CloudControllerConstants.IAAS_TYPE_EC2.equalsIgnoreCase(iaasProvider.getType())) {
+                instanceContext.getProperties().addProperty(new Property(CloudControllerConstants.INSTANCE_CTXT_EC2_REGION,
+                        instanceContext.getPartition().getProperties().getProperty(CloudControllerConstants.REGION_ELEMENT).getValue()));
+                instanceContext.getProperties().addProperty(new Property(CloudControllerConstants.INSTANCE_CTXT_EC2_AVAILABILITY_ZONE,
+                        instanceContext.getPartition().getProperties().getProperty(CloudControllerConstants.ZONE_ELEMENT).getValue()));
+                if (log.isDebugEnabled()) {
+                    log.debug("ec2Region in InstanceContext: " + instanceContext.getProperties()
+                            .getProperty(CloudControllerConstants.INSTANCE_CTXT_EC2_REGION));
+                    log.debug("ec2AvailabilityZone in InstanceContext: " + instanceContext.getProperties()
+                            .getProperty(CloudControllerConstants.INSTANCE_CTXT_EC2_AVAILABILITY_ZONE));
+                }
+            }
+
             MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId,
                     CloudControllerUtil.getLoadBalancingIPTypeEnumFromString(cartridge.getLoadBalancingIPType()),
                     instanceContext);
