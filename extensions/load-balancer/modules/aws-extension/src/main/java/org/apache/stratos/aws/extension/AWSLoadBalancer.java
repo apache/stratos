@@ -75,31 +75,24 @@ public class AWSLoadBalancer implements LoadBalancer {
 		for (Service service : topology.getServices()) {
 			for (Cluster cluster : service.getClusters()) {
 				// Check if a load balancer is created for this cluster
-				if (clusterIdToLoadBalancerMap.containsKey(cluster
-						.getClusterId())) {
+				if (clusterIdToLoadBalancerMap.containsKey(cluster.getClusterId())) {
 					// A load balancer is already present for this cluster
 					// Get the load balancer and update it.
 
 					if (log.isDebugEnabled()) {
-						log.debug("Load balancer for cluster "
-								+ cluster.getClusterId()
-								+ " is already present.");
+						log.debug("Load balancer for cluster "  + cluster.getClusterId()  + " is already present.");
 					}
 
-					LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap
-							.get(cluster.getClusterId());
+					LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
 
 					String loadBalancerName = loadBalancerInfo.getName();
 					String region = loadBalancerInfo.getRegion();
 
-					// Get all the instances attached
-					// Attach newly added instances to load balancer
+					// Get all the instances attached - Attach newly added instances to load balancer
 
-					// attachedInstances list is useful in finding out what
-					// all new instances which
+					// attachedInstances list is useful in finding out what are the new instances which
 					// should be attached to this load balancer.
-					List<Instance> attachedInstances = awsHelper
-							.getAttachedInstances(loadBalancerName, region);
+					List<Instance> attachedInstances = awsHelper.getAttachedInstances(loadBalancerName, region);
 
 					// clusterMembers stores all the members of a cluster.
 					Collection<Member> clusterMembers = cluster.getMembers();
@@ -114,22 +107,14 @@ public class AWSLoadBalancer implements LoadBalancer {
 							// if instance id of member is not in
 							// attachedInstances
 							// add this to instancesToAddToLoadBalancer
-							Instance instance = new Instance(
-									awsHelper.getAWSInstanceName(member
-											.getInstanceId()));
+							Instance instance = new Instance(awsHelper.getAWSInstanceName(member.getInstanceId()));
 
-							if (attachedInstances == null
-									|| !attachedInstances.contains(instance)) {
+							if (attachedInstances == null || !attachedInstances.contains(instance)) {
 								instancesToAddToLoadBalancer.add(instance);
 
-
 								if (log.isDebugEnabled()) {
-									log.debug("Instance "
-											+ awsHelper
-													.getAWSInstanceName(member
-															.getInstanceId())
-											+ " needs to be registered to load balancer "
-											+ loadBalancerName);
+									log.debug("Instance " + awsHelper.getAWSInstanceName(member.getInstanceId())  +
+                                            " needs to be registered to load balancer " + loadBalancerName);
 								}
 
 								// LB Common Member has a property 'EC2_AVAILABILITY_ZONE' points to the ec2 availability zone
@@ -160,17 +145,13 @@ public class AWSLoadBalancer implements LoadBalancer {
 					if (clusterMembers.size() > 0) {
 						Member aMember = clusterMembers.iterator().next();
 
-						// a unique load balancer name with user-defined
-						// prefix and a sequence number.
-						String loadBalancerName = awsHelper
-								.generateLoadBalancerName(cluster.getServiceName());
+						// a unique load balancer name with user-defined prefix and a sequence number.
+						String loadBalancerName = awsHelper.generateLoadBalancerName(cluster.getServiceName());
 
 						String region = awsHelper.getAWSRegion(aMember.getInstanceId());
 
-						// list of AWS listeners obtained using port
-						// mappings of one of the members of the cluster.
-						List<Listener> listenersForThisCluster = awsHelper
-								.getRequiredListeners(aMember);
+						// list of AWS listeners obtained using port mappings of one of the members of the cluster.
+						List<Listener> listenersForThisCluster = awsHelper.getRequiredListeners(aMember);
 
 						// Get the zone from the first member and use in LB creation. Zone will be updated for each member below
 						String initialAvailabilityZone = getEC2AvaialbilityZoneOfMember(aMember);
@@ -181,39 +162,26 @@ public class AWSLoadBalancer implements LoadBalancer {
 						}
 
 						// Returns DNS name of load balancer which was created.
-						// This is used in the domain mapping of this
-						// cluster.
-						String loadBalancerDNSName = awsHelper
-								.createLoadBalancer(loadBalancerName,
-										listenersForThisCluster, region, initialAvailabilityZone, AWSExtensionContext.getInstance().isOperatingInVPC());
+						// This is used in the domain mapping of this cluster.
+						String loadBalancerDNSName = awsHelper.createLoadBalancer(loadBalancerName, listenersForThisCluster,
+                                region, initialAvailabilityZone, AWSExtensionContext.getInstance().isOperatingInVPC());
 
 						// enable connection draining (default) and cross zone load balancing (if specified in aws-extension.sh)
-						awsHelper.modifyLBAttributes(loadBalancerName, region, AWSExtensionContext.getInstance().isCrossZoneLoadBalancingEnabled(),
-								true);
+						awsHelper.modifyLBAttributes(loadBalancerName, region, AWSExtensionContext.getInstance().
+                                isCrossZoneLoadBalancingEnabled(), true);
 
-						// Add the inbound rule the security group of the load
-						// balancer
-						// For each listener, add a new rule with load
-						// balancer port as allowed protocol in the security
-						// group.
+						// Add the inbound rule the security group of the load balancer
+						// For each listener, add a new rule with load balancer port as allowed protocol in the security group.
 						for (Listener listener : listenersForThisCluster) {
 							int port = listener.getLoadBalancerPort();
 
-							for (String protocol : awsHelper
-									.getAllowedProtocolsForLBSecurityGroup()) {
-								awsHelper
-										.addInboundRuleToSecurityGroup(
-												awsHelper.getSecurityGroupId(
-														awsHelper
-																.getLbSecurityGroupName(),
-														region), region,
-												protocol, port);
+							for (String protocol : awsHelper.getAllowedProtocolsForLBSecurityGroup()) {
+								awsHelper.addInboundRuleToSecurityGroup(awsHelper.getSecurityGroupId(awsHelper
+																.getLbSecurityGroupName(), region), region, protocol, port);
 							}
 						}
 
-						log.info("Load balancer '" + loadBalancerDNSName
-								+ "' created for cluster '"
-								+ cluster.getClusterId());
+						log.info("Load balancer '" + loadBalancerDNSName  + "' created for cluster '" + cluster.getClusterId());
 
 						// Register instances in the cluster to load balancer
 						List<Instance> instances = new ArrayList<Instance>();
@@ -223,16 +191,12 @@ public class AWSLoadBalancer implements LoadBalancer {
 							String instanceId = member.getInstanceId();
 
 							if (log.isDebugEnabled()) {
-								log.debug("Instance "
-										+ awsHelper
-												.getAWSInstanceName(instanceId)
-										+ " needs to be registered to load balancer "
-										+ loadBalancerName);
+								log.debug("Instance " + awsHelper.getAWSInstanceName(instanceId)  + " needs to be registered to load balancer "
+                                        + loadBalancerName);
 							}
 
 							Instance instance = new Instance();
-							instance.setInstanceId(awsHelper
-									.getAWSInstanceName(instanceId));
+							instance.setInstanceId(awsHelper.getAWSInstanceName(instanceId));
 
 							instances.add(instance);
 							// LB Common Member has a property 'EC2_AVAILABILITY_ZONE' which points to the ec2 availability
@@ -243,8 +207,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 							}
 						}
 
-						awsHelper.registerInstancesToLoadBalancer(
-								loadBalancerName, instances, region);
+						awsHelper.registerInstancesToLoadBalancer(loadBalancerName, instances, region);
 
 						// update LB with the zones
 						if (!availabilityZones.isEmpty()) {
@@ -253,13 +216,14 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 						// add stickiness policy
 						if (awsHelper.getAppStickySessionCookie() != null && !awsHelper.getAppStickySessionCookie().isEmpty()) {
-							CreateAppCookieStickinessPolicyResult result = awsHelper.createStickySessionPolicy(loadBalancerName, awsHelper.getAppStickySessionCookie(),
-									Constants.STICKINESS_POLICY, region);
+							CreateAppCookieStickinessPolicyResult result = awsHelper.createStickySessionPolicy(loadBalancerName,
+                                    awsHelper.getAppStickySessionCookie(), Constants.STICKINESS_POLICY, region);
 
 							if (result != null) {
 								// Take a single port mapping from a member, and apply the policy for
 								// the LB Listener port (Proxy port of the port mapping)
-								awsHelper.applyPolicyToLBListenerPorts(aMember.getPorts(), loadBalancerName, Constants.STICKINESS_POLICY, region);
+								awsHelper.applyPolicyToLBListenerPorts(aMember.getPorts(), loadBalancerName,
+                                        Constants.STICKINESS_POLICY, region);
 							}
 						}
 
@@ -309,9 +273,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 				// Remove load balancer for this cluster.
 				final String loadBalancerName = clusterIdToLoadBalancerMap.get(clusterId).getName();
 				final String region = clusterIdToLoadBalancerMap.get(clusterId).getRegion();
-				awsHelper.deleteLoadBalancer(
-						loadBalancerName,
-						region);
+				awsHelper.deleteLoadBalancer(loadBalancerName, region);
 				//remove and persist
 				try {
 					persistenceManager.remove(new LBInfoDTO(loadBalancerName, clusterId, region));
