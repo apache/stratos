@@ -1305,6 +1305,16 @@ public class StratosApiV41 extends AbstractApi {
         }
     }
 
+    @POST
+    @Path("/reponotification")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/stratos/applicationSignUps/manage")
+    public void getRepoNotification(GitNotificationPayloadBean payload) throws RestAPIException {
+
+        StratosApiV41Utils.notifyArtifactUpdatedEvent(payload);
+
+    }
     /**
      * Delete an application.
      *
