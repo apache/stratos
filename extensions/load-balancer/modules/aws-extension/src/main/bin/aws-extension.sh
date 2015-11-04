@@ -27,6 +27,7 @@ class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Daws.properties.file=${script_path}/../conf/aws.properties
+            -Dlb.info.file=${script_path}/../resources/lbinformation.ser
             -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=wso2carbon
             -Dthrift.client.config.file.path=${script_path}/../conf/thrift-client-config.xml
@@ -35,7 +36,11 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=network-partition-1
             -Dcluster.id=cluster-1
-            -Dservice.name=service-1"
+            -Dservice.name=service-1
+            -Dterminate.lbs.on.extension.stop=false
+            -Dterminate.lb.on.cluster.removal=true
+            -Doperating.in.vpc=true
+            -Denable.cross.zone.load.balancing=true"
 
 
 # Uncomment below line to enable remote debugging

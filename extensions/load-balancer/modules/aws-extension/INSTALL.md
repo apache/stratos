@@ -24,9 +24,11 @@ below steps to proceed with the installation:
 
 1. Extract org.apache.stratos.aws.extension-<version>.zip to a desired location: <aws-extension-home>.
 
-2. Open <aws-extension-home>/conf/aws-credentials.conf file in text editor and update AWS access key and secret key information. 
+2. Open <aws-extension-home>/conf/aws.properties file in text editor and update AWS access key and secret key information.
    If you are using HTTPS as the FE protocol for the AWS LBs, upload a certificate [1] for the LBs and update 
    load-balancer-ssl-certificate-id with the ARN [2].
+   To enable application level sticky sessions, update app-sticky-session-cookie-name with the relevant cookie name. By default
+   its using JSESSIONID.
 
 3. Open <aws-extension-home>/bin/aws-extension.sh file in a text editor and update following system properties:
    ```
@@ -37,6 +39,12 @@ below steps to proceed with the installation:
    -Dthrift.receiver.ip=127.0.0.1
    -Dthrift.receiver.port=7615
    -Dnetwork.partition.id=network-partition-1
+
+   # if running in a VPC, set:
+   -Doperating.in.vpc=true
+
+   # if cross-zone loadbalancing is required, set:
+   -Denable.cross.zone.load.balancing=true
    ```
 
 4. Open <aws-extension-home>/conf/jndi.properties file in a text editor and update message broker information:

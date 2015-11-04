@@ -54,4 +54,11 @@ public class Constants {
 	public static final String STATISTICS_INTERVAL = "statistics-interval";
 	public static final int STATISTICS_INTERVAL_MULTIPLE_OF = 60;
 	public static final String LOAD_BALANCER_SSL_CERTIFICATE_ID = "load-balancer-ssl-certificate-id";
+	public static final String APP_STICKY_SESSION_COOKIE_NAME = "app-sticky-session-cookie-name";
+	public static final String TERMINATE_LBS_ON_EXTENSION_STOP = "terminate.lbs.on.extension.stop";
+	public static final String TERMINATE_LB_ON_CLUSTER_REMOVAL = "terminate.lb.on.cluster.removal";
+	public static final String STICKINESS_POLICY = "stickiness-policy";
+	public static final String OPERATIMG_IN_VPC = "operating.in.vpc";
+	public static final String ENABLE_CROSS_ZONE_LOADBALANCING = "enable.cross.zone.load.balancing";
+	public static final String EC2_AVAILABILITY_ZONE_PROPERTY = "EC2_AVAILABILITY_ZONE";
 }

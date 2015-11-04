@@ -22,16 +22,13 @@ package org.apache.stratos.aws.extension;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.elasticloadbalancing.model.Instance;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.domain.*;
@@ -48,13 +45,6 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
-import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
-import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
-import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
-import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
-import com.amazonaws.services.ec2.model.IpPermission;
-import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.*;
 
@@ -67,6 +57,7 @@ public class AWSHelper {
 	private String allowedCidrIpForLBSecurityGroup;
 	private int statisticsInterval;
 	private String sslCertificateId;
+	private String appStickySessionCookie;
 
 	private AtomicInteger lbSequence;
 
@@ -130,7 +121,10 @@ public class AWSHelper {
 			// Read the SSL certificate Id. This is mandatory if only we are using HTTPS as the front end protocol.
 			// http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/using-elb-listenerconfig-quickref.html
 			this.sslCertificateId = properties
-					.getProperty(Constants.LOAD_BALANCER_SSL_CERTIFICATE_ID);
+					.getProperty(Constants.LOAD_BALANCER_SSL_CERTIFICATE_ID).trim();
+
+			// Cookie name for application level stickiness
+			this.appStickySessionCookie = properties.getProperty(Constants.APP_STICKY_SESSION_COOKIE_NAME).trim();
 
 			this.allowedCidrIpForLBSecurityGroup = properties
 					.getProperty(Constants.ALLOWED_CIDR_IP_KEY);
@@ -233,7 +227,7 @@ public class AWSHelper {
 	 * @throws LoadBalancerExtensionException
 	 */
 	public String createLoadBalancer(String name, List<Listener> listeners,
-			String region) throws LoadBalancerExtensionException {
+			String region, String availabilityZone, boolean inVPC) throws LoadBalancerExtensionException {
 
 		log.info("Creating load balancer " + name);
 
@@ -242,18 +236,23 @@ public class AWSHelper {
 
 		createLoadBalancerRequest.setListeners(listeners);
 
+		// don't need this now since we are anyway updating zone according to the member
+//		Set<String> availabilityZones = new HashSet<String>();
+//		availabilityZones.add(getAvailabilityZoneFromRegion(region));
+//
+//		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
 		Set<String> availabilityZones = new HashSet<String>();
-		availabilityZones.add(getAvailabilityZoneFromRegion(region));
-
+		availabilityZones.add(availabilityZone);
 		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
 
 		try {
-			String securityGroupId = getSecurityGroupIdForRegion(region);
+			if (inVPC) {
+				String securityGroupId = getSecurityGroupIdForRegion(region);
+				List<String> securityGroups = new ArrayList<String>();
+				securityGroups.add(securityGroupId);
 
-			List<String> securityGroups = new ArrayList<String>();
-			securityGroups.add(securityGroupId);
-
-			createLoadBalancerRequest.setSecurityGroups(securityGroups);
+				createLoadBalancerRequest.setSecurityGroups(securityGroups);
+			}
 
 			elbClient.setEndpoint(String.format(
 					Constants.ELB_ENDPOINT_URL_FORMAT, region));
@@ -264,8 +263,9 @@ public class AWSHelper {
 			return clbResult.getDNSName();
 
 		} catch (AmazonClientException e) {
-			throw new LoadBalancerExtensionException(
-					"Could not create load balancer " + name, e);
+			String errorMsg = "Could not create load balancer " + name;
+			log.error(errorMsg, e);
+			throw new LoadBalancerExtensionException(errorMsg, e);
 		}
 	}
 
@@ -378,7 +378,7 @@ public class AWSHelper {
 	 *            of the load balancer
 	 * @return description of the load balancer
 	 */
-	private LoadBalancerDescription getLoadBalancerDescription(
+	public LoadBalancerDescription getLoadBalancerDescription(
 			String loadBalancerName, String region) {
 
 		List<String> loadBalancers = new ArrayList<String>();
@@ -430,8 +430,9 @@ public class AWSHelper {
 		} catch (AmazonClientException e) {
 			log.error("Could not find instances attached  load balancer "
 					+ loadBalancerName, e);
-			return null;
 		}
+
+		return null;
 	}
 
 	/**
@@ -886,11 +887,12 @@ public class AWSHelper {
 	 * @return name of the load balancer
 	 * @throws LoadBalancerExtensionException
 	 */
-	public String generateLoadBalancerName()
+	public String generateLoadBalancerName(String serviceName)
 			throws LoadBalancerExtensionException {
 		String name = null;
 
-		name = lbPrefix + getNextLBSequence();
+		//name = lbPrefix + getNextLBSequence();
+		name = lbPrefix + serviceName;
 
 		if (name.length() > Constants.LOAD_BALANCER_NAME_MAX_LENGTH)
 			throw new LoadBalancerExtensionException(
@@ -942,7 +944,171 @@ public class AWSHelper {
 			return null;
 	}
 
+	public CreateAppCookieStickinessPolicyResult createStickySessionPolicy(String lbName, String cookieName, String policyName, String region) {
+
+		elbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+
+		CreateAppCookieStickinessPolicyRequest stickinessPolicyReq = new CreateAppCookieStickinessPolicyRequest().
+				withLoadBalancerName(lbName).withCookieName(cookieName).withPolicyName(policyName);
+
+		CreateAppCookieStickinessPolicyResult stickinessPolicyResult = null;
+		try {
+			stickinessPolicyResult = elbClient.createAppCookieStickinessPolicy(stickinessPolicyReq);
+
+		} catch (AmazonServiceException e) {
+			log.error(e.getMessage(), e);
+
+		} catch (AmazonClientException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		if (stickinessPolicyResult == null) {
+			log.error("Error in creating Application Stickiness policy for for cookie name: " + cookieName + ", policy: " + policyName);
+		} else {
+			log.info("Enabled Application stickiness using: " + cookieName + ", policy: " + policyName + " for LB " + lbName);
+		}
+
+		return stickinessPolicyResult;
+	}
+
+	public void applyPolicyToLBListenerPorts(Collection<Port> ports, String loadBalancerName, String policyName, String region) {
+
+		for (Port port : ports) {
+			if ("HTTP".equalsIgnoreCase(port.getProtocol()) || "HTTPS".equalsIgnoreCase(port.getProtocol())) {
+				applyPolicyToListener(loadBalancerName, port.getProxy(), policyName, region);
+				// hack to stop too many calls to AWS API :(
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {}
+			}
+		}
+	}
+
+	private void applyPolicyToListener (String loadBalancerName, int listenerPort, String policyName, String region) {
+
+		SetLoadBalancerPoliciesOfListenerRequest loadBalancerPoliciesOfListenerReq =  new SetLoadBalancerPoliciesOfListenerRequest().
+				withLoadBalancerName(loadBalancerName).withLoadBalancerPort(listenerPort).withPolicyNames(policyName);
+
+		elbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+
+		SetLoadBalancerPoliciesOfListenerResult setLBPoliciesOfListenerRes = null;
+		try {
+			setLBPoliciesOfListenerRes =  elbClient.setLoadBalancerPoliciesOfListener(loadBalancerPoliciesOfListenerReq);
+
+		} catch (AmazonServiceException e) {
+			log.error(e.getMessage(), e);
+
+		} catch (AmazonClientException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		if (setLBPoliciesOfListenerRes == null) {
+			log.error("Unable to apply policy " + policyName + " for Listener port: " + listenerPort + " for LB: " + loadBalancerName);
+		} else {
+			log.info("Successfully applied policy " + policyName + " for Listener port: " + listenerPort + " for LB: " + loadBalancerName);
+		}
+	}
+
+	public List<String> getAvailabilityZonesFromRegion (final String region) {
+
+		DescribeAvailabilityZonesRequest availabilityZonesReq = new DescribeAvailabilityZonesRequest();
+		List<Filter> availabilityZoneFilters = new ArrayList<Filter>();
+		availabilityZoneFilters.add(new Filter("region-name", new ArrayList<String>() {{
+			add(region);
+		}}));
+		availabilityZoneFilters.add(new Filter("state", new ArrayList<String>() {{
+			add("available");
+		}}));
+
+		ec2Client.setEndpoint(String.format(Constants.EC2_ENDPOINT_URL_FORMAT, region));
+		DescribeAvailabilityZonesResult availabilityZonesRes = null;
+
+		try {
+			availabilityZonesRes = ec2Client.describeAvailabilityZones(availabilityZonesReq);
+
+		} catch (AmazonServiceException e) {
+			log.error(e.getMessage(), e);
+
+		} catch (AmazonClientException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		List<String> availabilityZones = null;
+
+		if (availabilityZonesRes != null) {
+			availabilityZones = new ArrayList<>();
+			for (AvailabilityZone zone : availabilityZonesRes.getAvailabilityZones()) {
+				availabilityZones.add(zone.getZoneName());
+			}
+		} else {
+			log.error("Unable to retrieve the active availability zones for region " + region);
+		}
+
+		return availabilityZones;
+	}
+
+	public void addAvailabilityZonesForLoadBalancer (String loadBalancerName, List<String> availabilityZones, String region) {
+
+		EnableAvailabilityZonesForLoadBalancerRequest enableAvailabilityZonesReq = new EnableAvailabilityZonesForLoadBalancerRequest()
+				.withLoadBalancerName(loadBalancerName).withAvailabilityZones(availabilityZones);
+
+		elbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+
+		EnableAvailabilityZonesForLoadBalancerResult enableAvailabilityZonesRes = null;
+
+		try {
+			enableAvailabilityZonesRes = elbClient.enableAvailabilityZonesForLoadBalancer(enableAvailabilityZonesReq);
+
+		} catch (AmazonServiceException e) {
+			log.error(e.getMessage(), e);
+
+		} catch (AmazonClientException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		if (enableAvailabilityZonesRes != null) {
+			log.info("Availability zones successfully added to LB " + loadBalancerName + ". Updated zone list: ");
+			for (String zone : enableAvailabilityZonesRes.getAvailabilityZones()) {
+				log.info(zone);
+			}
+		} else {
+			log.error("Updating availability zones failed for LB " + loadBalancerName);
+		}
+	}
+
+	public void modifyLBAttributes (String loadBalancerName, String region, boolean enableCrossZoneLbing, boolean enableConnDraining) {
+
+		if (!enableCrossZoneLbing && !enableConnDraining) {
+			log.info("No attributes specified to modify in the LB " + loadBalancerName);
+			return;
+		}
+
+		ModifyLoadBalancerAttributesRequest modifyLBAttributesReq = new ModifyLoadBalancerAttributesRequest().withLoadBalancerName(loadBalancerName);
+		LoadBalancerAttributes modifiedLbAttributes = new LoadBalancerAttributes();
+		if (enableCrossZoneLbing) {
+			modifiedLbAttributes.setCrossZoneLoadBalancing(new CrossZoneLoadBalancing().withEnabled(true));
+		}
+		if (enableConnDraining) {
+			modifiedLbAttributes.setConnectionDraining(new ConnectionDraining().withEnabled(true));
+		}
+
+		modifyLBAttributesReq.setLoadBalancerAttributes(modifiedLbAttributes);
+
+		elbClient.setEndpoint(String.format(Constants.ELB_ENDPOINT_URL_FORMAT, region));
+
+		ModifyLoadBalancerAttributesResult modifyLBAttributesRes = elbClient.modifyLoadBalancerAttributes(modifyLBAttributesReq);
+		if (modifyLBAttributesRes != null) {
+			log.info("Successfully enabled cross zone load balancing and connection draining for " + loadBalancerName);
+		} else {
+			log.error("Failed to enable cross zone load balancing and connection draining for " + loadBalancerName);
+		}
+	}
+
 	public String getSslCertificateId() {
 		return sslCertificateId;
+	}
+
+	public String getAppStickySessionCookie() {
+		return appStickySessionCookie;
 	}
 }
