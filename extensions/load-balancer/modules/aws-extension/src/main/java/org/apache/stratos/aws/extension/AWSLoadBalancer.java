@@ -153,18 +153,28 @@ public class AWSLoadBalancer implements LoadBalancer {
                         // list of AWS listeners obtained using port mappings of one of the members of the cluster.
                         List<Listener> listenersForThisCluster = awsHelper.getRequiredListeners(aMember);
 
-                        // Get the zone from the first member and use in LB creation. Zone will be updated for each member below
-                        String initialAvailabilityZone = getEC2AvaialbilityZoneOfMember(aMember);
-                        if (initialAvailabilityZone == null) {
-                            // could not get the availability zone from the Member property 'EC2_AVAILABILITY_ZONE'
+                        // Get the initial zone identifier list (a, b, c) to consider in creating
+                        // the LB as defined in aws.properties file
+                        Set<String> initialZones = awsHelper.getInitialZones();
+
+                        Set<String> initialAvailabilityZones = new HashSet<>();
+                        if (initialZones.isEmpty()) {
+                            // initial availability zones not defined
                             // use the default (<region>a)
-                            initialAvailabilityZone = awsHelper.getAvailabilityZoneFromRegion(region);
+                            initialAvailabilityZones.add(awsHelper.getAvailabilityZoneFromRegion
+                                    (region));
+                        } else {
+                            // prepend the region and construct the availability zone list with
+                            // full names (<region> + <zone>)
+                            for (String zone : initialZones) {
+                                initialAvailabilityZones.add(region + zone);
+                            }
                         }
 
                         // Returns DNS name of load balancer which was created.
                         // This is used in the domain mapping of this cluster.
                         String loadBalancerDNSName = awsHelper.createLoadBalancer(loadBalancerName, listenersForThisCluster,
-                                region, initialAvailabilityZone, AWSExtensionContext.getInstance().isOperatingInVPC());
+                                region, initialAvailabilityZones, AWSExtensionContext.getInstance().isOperatingInVPC());
 
                         // enable connection draining (default) and cross zone load balancing (if specified in aws-extension.sh)
                         awsHelper.modifyLBAttributes(loadBalancerName, region, AWSExtensionContext.getInstance().

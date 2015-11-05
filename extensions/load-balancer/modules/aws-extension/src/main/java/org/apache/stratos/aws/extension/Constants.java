@@ -60,5 +60,6 @@ public class Constants {
 	public static final String STICKINESS_POLICY = "stickiness-policy";
 	public static final String OPERATIMG_IN_VPC = "operating.in.vpc";
 	public static final String ENABLE_CROSS_ZONE_LOADBALANCING = "enable.cross.zone.load.balancing";
+	public static final String INITIAL_AVAILABILITY_ZONES = "initial-availability-zones";
 	public static final String EC2_AVAILABILITY_ZONE_PROPERTY = "EC2_AVAILABILITY_ZONE";
 }

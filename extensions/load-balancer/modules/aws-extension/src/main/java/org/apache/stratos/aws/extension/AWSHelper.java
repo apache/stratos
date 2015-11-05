@@ -58,6 +58,7 @@ public class AWSHelper {
     private int statisticsInterval;
     private String sslCertificateId;
     private String appStickySessionCookie;
+    private Set<String> initialZones = new HashSet<>();
 
     private AtomicInteger lbSequence;
 
@@ -171,6 +172,12 @@ public class AWSHelper {
 
             this.lbSecurityGroupDescription = Constants.LOAD_BALANCER_SECURITY_GROUP_DESCRIPTION;
 
+            String commaSeparatedInitialZones = properties.getProperty(Constants.INITIAL_AVAILABILITY_ZONES);
+            if (commaSeparatedInitialZones != null && !commaSeparatedInitialZones.isEmpty())  {
+                initialZones.addAll(Arrays.asList(commaSeparatedInitialZones.trim().split("\\s*," +
+                        "\\s*")));
+            }
+
             regionToSecurityGroupIdMap = new ConcurrentHashMap<String, String>();
 
             awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
@@ -224,7 +231,8 @@ public class AWSHelper {
      * @throws LoadBalancerExtensionException
      */
     public String createLoadBalancer(String name, List<Listener> listeners,
-                                     String region, String availabilityZone, boolean inVPC) throws LoadBalancerExtensionException {
+                                     String region, Set<String> availabilityZones, boolean inVPC)
+            throws LoadBalancerExtensionException {
 
         log.info("Creating load balancer " + name);
 
@@ -238,8 +246,6 @@ public class AWSHelper {
 //		availabilityZones.add(getAvailabilityZoneFromRegion(region));
 //
 //		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
-        Set<String> availabilityZones = new HashSet<String>();
-        availabilityZones.add(availabilityZone);
         createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
 
         try {
@@ -1088,5 +1094,9 @@ public class AWSHelper {
 
     public String getAppStickySessionCookie() {
         return appStickySessionCookie;
+    }
+
+    public Set<String> getInitialZones() {
+        return initialZones;
     }
 }
