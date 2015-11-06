@@ -28,20 +28,28 @@
     <div class="row text-center">
         {{#each content_body.sections}}
             <a href="{{#if linkexternal}}
-                        {{link}}
-                     {{else}}
-                        {{url ""}}/{{link}}
-            {{/if}}" {{#if linkexternal}} target="_blank"{{/if}} class="block">
-                <div class="col-md-4  content-menu-block border-right" >
-                    <div class="content-menu-icon">
-                        <i class="fa {{icon}} block"></i>
-                    </div>
-                    <div class="content-menu-title">
-                        <h2>{{title}}</h2>
-                    </div>
-                    <div class="content-menu-description">{{description}} </div>
-
+                {{link}}
+            {{else}}
+                {{url ""}}/{{link}}
+            {{/if}}"{{#if linkexternal}} target="_blank"{{/if}} class="block">
+                {{#ifCond title "==" "Monitoring" }}
+                    {{#ifCond link "!=" "" }}
+                    <div class="col-md-4  content-menu-block border-right">
+                    {{else}}
+                    <div class="col-md-4  content-menu-block-disabled border-right">
+                    {{/ifCond}}
+                {{else}}
+                    <div class="col-md-4  content-menu-block border-right">
+                {{/ifCond}}
+                <div class="content-menu-icon">
+                    <i class="fa {{icon}} block"></i>
                 </div>
+                <div class="content-menu-title">
+                    <h2>{{title}}</h2>
+                </div>
+                <div class="content-menu-description">{{description}} </div>
+
+            </div>
 
             </a>
         {{/each}}
