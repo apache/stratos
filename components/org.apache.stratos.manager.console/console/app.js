@@ -19,7 +19,12 @@
  *
  */
 
-var caramel = require('caramel');
+var caramel = require('caramel'),
+    carbon = require('carbon'),
+    server = new carbon.server.Server(),
+    conf = carbon.server.loadConfig('thrift-client-config.xml'),
+    dasConfig = conf. *::['config']. *::['das'],
+    dasStatsPublisherEnabled = false;
 
 caramel.configs({
     context: '/console',
@@ -29,3 +34,11 @@ caramel.configs({
         return 'theme0';
     }
 });
+
+for (var i = 0; i < dasConfig.node.length(); i++) {
+    dasStatsPublisherEnabled = dasConfig.node[i].statsPublisherEnabled.text();
+    if (dasStatsPublisherEnabled == true) {
+        break;
+    }
+}
+application.put("dasStatsPublisherEnabled",dasStatsPublisherEnabled);
