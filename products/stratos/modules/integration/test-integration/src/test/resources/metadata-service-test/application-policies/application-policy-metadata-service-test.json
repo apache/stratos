@@ -1,0 +1,17 @@
+{
+    "id": "application-policy-metadata-service-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-metadata-service-test"
+    ],
+    "properties": [
+        {
+            "name": "networkPartitionGroups",
+            "value": "network-partition-metadata-service-test"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}
