@@ -61,7 +61,7 @@ public class OAuthAdminServiceClient {
             //String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             //TODO StratosAuthenticationHandler does not set to carbon context, thus user name becomes null.
             // For the moment username is hardcoded since above is fixed.
-            String username = "admin";
+            String username = conf.getString("autoscaler.identity.adminUser", "admin");
             Utility.setAuthHeaders(stub._getServiceClient(), username);
 
         } catch (AxisFault axisFault) {

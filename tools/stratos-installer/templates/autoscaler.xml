@@ -35,6 +35,7 @@
                 <hostname>SM_HOSTNAME</hostname>
                 <port>SM_LISTEN_PORT</port>                    
                 <clientTimeout>300000</clientTimeout>
+                <adminUser>admin</adminUser>
 	    </identity>
             <member>
                 <!-- this is the maximum time(ms) a member can be in pending member state -->
