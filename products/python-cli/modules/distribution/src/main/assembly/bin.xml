@@ -27,7 +27,7 @@
             <directory>
                 ${project.basedir}/../../../../components/org.apache.stratos.python.cli/src/main/python/cli
             </directory>
-            <outputDirectory>.</outputDirectory>
+            <outputDirectory>cli</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
