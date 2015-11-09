@@ -94,42 +94,24 @@ class HealthStatisticsPublisher:
     def __init__(self):
 
         self.publishers = []
-        cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
-        cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+        self.deactive_publishers = []
+        self.cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
+        self.cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+        self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
+        HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
+
         # 1.1.1.1:1883,2.2.2.2:1883
         cep_urls = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_URLS)
         cep_urls = cep_urls.split(',')
         for cep_url in cep_urls:
-            self.ports = []
-            cep_ip = cep_url.split(':')[0]
-            cep_port = cep_url.split(':')[1]
-            self.ports.append(cep_port)
-            cartridgeagentutils.wait_until_ports_active(
-                cep_ip,
-                self.ports,
-                int(Config.read_property("port.check.timeout", critical=False)))
 
-            cep_active = cartridgeagentutils.check_ports_active(
-                cep_ip,
-                self.ports)
+            cep_active = self.is_cep_active(cep_url)
 
-            if not cep_active:
-                raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
-
-            self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
-            HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
-
-            publisher = ThriftPublisher(
-                cep_ip,
-                cep_port,
-                cep_admin_username,
-                cep_admin_password,
-                self.stream_definition)
-
-            self.publishers.append(publisher)
-
-            HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized. %r %r",
-                                                cep_ip, cep_port)
+            if cep_active:
+                self.add_publishers(cep_url)
+            else:
+                HealthStatisticsPublisher.log.warn("CEP server is not active... %r" % cep_url)
+                self.deactive_publishers.append(cep_url)
 
     @staticmethod
     def create_stream_definition():
@@ -201,11 +183,61 @@ class HealthStatisticsPublisher:
 
         self.publish_event(event)
 
+    def add_publishers(self, cep_url):
+        """
+        Add publishers to the publisher list for publishing
+        """
+        cep_ip = cep_url.split(':')[0]
+        cep_port = cep_url.split(':')[1]
+
+        publisher = ThriftPublisher(
+            cep_ip,
+            cep_port,
+            self.cep_admin_username,
+            self.cep_admin_password,
+            self.stream_definition)
+
+        self.publishers.append(publisher)
+
+
+    def is_cep_active(self, cep_url):
+        """
+        Check if the cep node is active
+        return true if active
+        """
+        self.ports = []
+        cep_ip = cep_url.split(':')[0]
+        cep_port = cep_url.split(':')[1]
+        self.ports.append(cep_port)
+
+        cep_active = cartridgeagentutils.check_ports_active(
+            cep_ip,
+            self.ports)
+
+        return cep_active
+
+
     def publish_event(self, event):
+        """
+        Publish events to cep nodes
+        """
         for publisher in self.publishers:
-            publisher.publish(event)
+            try:
+                publisher.publish(event)
+            except Exception as ex:
+                raise ThriftReceiverOfflineException(ex)
+
+        deactive_ceps = self.deactive_publishers
+        for cep_url in deactive_ceps:
+            cep_active = self.is_cep_active(cep_url)
+            if cep_active:
+                self.add_publishers(cep_url)
+                self.deactive_publishers.remove(cep_url)
 
     def disconnect_publisher(self):
+        """
+        Disconnect publishers
+        """
         for publisher in self.publishers:
             publisher.disconnect()
 
