@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -18,33 +19,37 @@
 import sys
 import readline
 import getpass
-from CLI import CLI
-import Configs
+from cli import CLI
+import config
+from exception import BadResponseError
+import requests
 
 # Fix Python 2.x.
-from Stratos import Stratos
-from Exceptions import BadResponseError
+from restclient import StratosClient
 
 try:
-    input = raw_input
+    user_input = raw_input
 except NameError:
     pass
 
 
 def prompt_for_credentials():
     """Prompt for user credentials"""
-    while Configs.stratos_username is "" or Configs.stratos_password is "":
-        if Configs.stratos_username is "":
-            Configs.stratos_username = input("Username: ")
+    while config.stratos_username is "" or config.stratos_password is "":
+        if config.stratos_username is "":
+            config.stratos_username = user_input("Username: ")
 
-        if Configs.stratos_password is "":
-            Configs.stratos_password = getpass.getpass("Password: ")
-    if Stratos.authenticate():
-        print("Successfully authenticated [%s]" % Configs.stratos_url)
-    else:
-        print("Could not authenticate")
+        if config.stratos_password is "":
+            config.stratos_password = getpass.getpass("Password: ")
+    try:
+        StratosClient.authenticate()
+        print("Successfully Authenticated with [%s]" % config.stratos_url)
+    except BadResponseError:
+        print("Authentication Failed.")
         exit()
-
+    except requests.exceptions.ConnectionError:
+        print("Connection to Server at [%s] failed. Terminating Stratos CLI." % config.stratos_url)
+        exit()
 
 
 def main():
