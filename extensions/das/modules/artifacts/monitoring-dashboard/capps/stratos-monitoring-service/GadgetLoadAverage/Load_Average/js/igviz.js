@@ -146,7 +146,7 @@
             "type": "y",
             "scale": "y",
             "angle": 0,
-            "title": "Load Average",
+            "title": "Load Average (%)",
             "grid": true,
             "dx": 0,
             "dy": 0,
