@@ -25,17 +25,7 @@ var log = new Log("controller.login"),
         server = new carbon.server.Server(),
         conf = carbon.server.loadConfig('carbon.xml'),
         offset = conf. *::['Ports']. *::['Offset'].text(),
-        hostName = conf. *::['HostName'].text().toString(),
-        conf = carbon.server.loadConfig('thrift-client-config.xml'),
-        dasConfig = conf. *::['config']. *::['das'],
-        dasStatsPublisherEnabled = false;
-
-for (var i = 0; i < dasConfig.node.length(); i++) {
-    dasStatsPublisherEnabled = dasConfig.node[i].statsPublisherEnabled.text();
-    if (dasStatsPublisherEnabled == true) {
-        break;
-    }
-}
+        hostName = conf. *::['HostName'].text().toString();
 
 if (hostName === null || hostName === '') {
     hostName = 'localhost';
@@ -45,6 +35,10 @@ var httpPort = 9763 + parseInt(offset, 10),
         httpsPort = 9443 + parseInt(offset, 10);
 
 var meteringDashboardUrl = process.getProperty("das.metering.dashboard.url");
+var monitoringDashboardUrl = process.getProperty("das.monitoring.dashboard.url");
+
+application.put("meteringDashboardUrl", meteringDashboardUrl);
+application.put("monitoringDashboardUrl", monitoringDashboardUrl);
 
 process.setProperty('server.host', hostName);
 process.setProperty('http.port', httpPort.toString());
@@ -72,10 +66,6 @@ try {
         session.put("TENANT_DOMAIN", userObject.domain);
         session.put("ROLE_ARRAY", roles);
         session.put("TENANT_ID", userObject.tenantId);
-        session.put("DAS_STATS_PUBLISHER_ENABLED", dasStatsPublisherEnabled);
-        if (dasStatsPublisherEnabled) {
-            session.put("METERING_DASHBOARD_URL", meteringDashboardUrl);
-        }
 
         try {
             //get all user permission

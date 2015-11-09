@@ -1,0 +1,24 @@
+{
+    "alias": "application-metadata-service-test-1",
+    "applicationId": "application-metadata-service-test-1",
+    "components": {
+      "cartridges": [
+        {
+          "type": "c1-application-metadata-service-test",
+          "cartridgeMin": 3,
+          "cartridgeMax": 3,
+          "subscribableInfo": {
+            "alias": "c1-1x0-metadata-service-test",
+            "autoscalingPolicy": "autoscaling-policy-metadata-service-test",
+            "deploymentPolicy": "deployment-policy-metadata-service-test",
+            "artifactRepository": {
+              "privateRepo": false,
+              "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+              "repoUsername": "",
+              "repoPassword": ""
+            }
+          }
+        }
+      ]
+    }
+}

@@ -32,7 +32,7 @@
                 "/permission/admin/stratos/kubernetesclusters/manage",
                 "/permission/admin/stratos/kubernetesclusters/view"
             ],
-            "description": "Configure network partitions, policies, cartridges, cartridge groups and kubernetes clusters",
+            "description": "Configure network partitions, policies, cartridges, cartridge groups and kubernetes clusters.",
             "sub-menu": [
                 {
                     "link": "configure/network-partitions/",
@@ -188,6 +188,18 @@
                 "/permission/admin/stratos/applications/manage",
                 "/permission/admin/stratos/applications/view"],
             "description": "Manage applications."
+        },
+        {
+            "link": "",
+            "linkexternal": true,
+            "context": "/",
+            "title": "Monitoring",
+            "icon": "fa-laptop",
+            "permissionPaths": [
+                "/permission",
+                "/permission/admin"
+            ],
+            "description": "Monitor health statistics of clusters and members."
         },
         {
             "link": "https://issues.apache.org/jira/",

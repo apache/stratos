@@ -21,7 +21,6 @@ package org.apache.stratos.integration.tests.application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -36,13 +35,9 @@ import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+import static org.testng.Assert.*;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -189,9 +184,9 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
 
         PropertyBean propertyBean = restClient.getApplicationProperty(appId, key, accessToken);
         log.info("Retrieved metadata property: " + gson.toJson(propertyBean));
-        Assert.assertTrue(propertyBean != null && propertyBean.getValues().length > 0, "Empty property list");
-        boolean hasPropertiesAdded = ArrayUtils.contains(propertyBean.getValues(), val1) && ArrayUtils
-                .contains(propertyBean.getValues(), val2);
+        Assert.assertTrue(propertyBean != null && propertyBean.getValues().size() > 0, "Empty property list");
+        List<String> addedValues = new ArrayList<>(Arrays.asList(val1, val2));
+        boolean hasPropertiesAdded = propertyBean.getValues().containsAll(addedValues);
 
         Assert.assertTrue(hasPropertiesAdded, "Metadata properties retrieved are not correct");
         log.info("Metadata test completed successfully");
