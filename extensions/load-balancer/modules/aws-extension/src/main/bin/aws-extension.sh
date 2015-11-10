@@ -39,7 +39,7 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Dservice.name=service-1
             -Dterminate.lbs.on.extension.stop=false
             -Dterminate.lb.on.cluster.removal=true
-            -Doperating.in.vpc=true
+            -Doperating.in.vpc=false
             -Denable.cross.zone.load.balancing=true"
 
 
