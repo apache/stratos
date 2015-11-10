@@ -34,7 +34,7 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.common.*;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -42,7 +42,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -55,12 +54,14 @@ import java.util.concurrent.locks.Lock;
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-    private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
+	private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
 
     private static final String PERSISTENCE_MAPPING = "PERSISTENCE_MAPPING";
     public static final String PAYLOAD_PARAMETER = "payload_parameter.";
+	public static final String KUBERNETES_PROVIDER = "kubernetes";
+	public static final String KUBERNETES_CLUSTER = "cluster";
 
-    private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
+	private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
     private ExecutorService executorService;
 
     public CloudControllerServiceImpl() {
@@ -1374,6 +1375,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id cannot be empty");
         }
+	    Collection<NetworkPartition> networkPartitions=CloudControllerContext.getInstance().getNetworkPartitions();
+	    for(NetworkPartition networkPartition:networkPartitions){
+		    if(networkPartition.getProvider().equals(KUBERNETES_PROVIDER)){
+			    for(Property property:networkPartition.getProperties().getProperties()){
+				    if(property.getName().equals(KUBERNETES_CLUSTER)&&property.getValue().equals(kubernetesClusterId)){
+					    new KubernetesClusterAlreadyUsedException("Kubernetes cluster is already used in the network partition");
+				    }
+			    }
+		    }
+	    }
 
         Lock lock = null;
         try {
