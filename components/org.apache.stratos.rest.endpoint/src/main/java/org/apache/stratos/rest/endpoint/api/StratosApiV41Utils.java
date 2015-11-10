@@ -2292,7 +2292,7 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException, CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException {
 
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();

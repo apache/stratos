@@ -161,7 +161,7 @@ public class CloudControllerServiceClient {
     }
 
     public void undeployKubernetesCluster(String kubernetesClusterId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException, CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException {
         stub.removeKubernetesCluster(kubernetesClusterId);
     }
 

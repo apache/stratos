@@ -1371,20 +1371,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public boolean removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException {
+    public boolean removeKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException, KubernetesClusterAlreadyUsedException {
         if (StringUtils.isEmpty(kubernetesClusterId)) {
             throw new NonExistingKubernetesClusterException("Kubernetes cluster id cannot be empty");
         }
-	    Collection<NetworkPartition> networkPartitions=CloudControllerContext.getInstance().getNetworkPartitions();
-	    for(NetworkPartition networkPartition:networkPartitions){
-		    if(networkPartition.getProvider().equals(KUBERNETES_PROVIDER)){
-			    for(Property property:networkPartition.getProperties().getProperties()){
-				    if(property.getName().equals(KUBERNETES_CLUSTER)&&property.getValue().equals(kubernetesClusterId)){
-					    new KubernetesClusterAlreadyUsedException("Kubernetes cluster is already used in the network partition");
-				    }
-			    }
-		    }
-	    }
+        Collection<NetworkPartition> networkPartitions = CloudControllerContext.getInstance().getNetworkPartitions();
+        for (NetworkPartition networkPartition : networkPartitions) {
+            if (networkPartition.getProvider().equals(KUBERNETES_PROVIDER)) {
+                for (Partition partition : networkPartition.getPartitions()) {
+                    for (Property property : partition.getProperties().getProperties()) {
+                        if (property.getName().equals(KUBERNETES_CLUSTER) && property.getValue().equals(kubernetesClusterId)) {
+                            throw new KubernetesClusterAlreadyUsedException("Kubernetes cluster is already used in the network partition");
+                        }
+                    }
+                }
+            }
+        }
 
         Lock lock = null;
         try {

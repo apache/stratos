@@ -330,7 +330,7 @@ public interface CloudControllerService {
      * @param groupId
      * @throws NonExistingKubernetesClusterException
      */
-    public boolean removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException;
+    public boolean removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException, KubernetesClusterAlreadyUsedException;
 
     /**
      * Update a Kubernetes host.

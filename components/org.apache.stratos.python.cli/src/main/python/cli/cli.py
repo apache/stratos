@@ -1349,7 +1349,7 @@ class CLI(Cmd):
                 print("No Kubernetes clusters found")
             else:
                 table = PrintableTable()
-                rows = [["Group ID", "Description"]]
+                rows = [["Cluster ID", "Description"]]
                 for kubernetes_cluster in kubernetes_clusters:
                     rows.append([kubernetes_cluster['clusterId'], kubernetes_cluster['description']])
                 table.add_rows(rows)
