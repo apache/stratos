@@ -29,7 +29,7 @@
             </directory>
             <outputDirectory>cli</outputDirectory>
             <includes>
-                <include>**/*</include>
+                <include>**/*.py</include>
             </includes>
             <excludes>
                 <exclude>**/*.pyc</exclude>
@@ -37,18 +37,11 @@
             <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
-            <directory>
-                ${project.basedir}/../../../../components/org.apache.stratos.python.cli/src/main/python/
-            </directory>
+            <directory>${project.basedir}/src/main/bin</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>setup.cfg</include>
-                <include>setup.py</include>
-                <include>tox.ini</include>
+                <include>stratos.sh</include>
             </includes>
-            <excludes>
-                <exclude>**/*.pyc</exclude>
-            </excludes>
             <fileMode>0755</fileMode>
         </fileSet>
     </fileSets>

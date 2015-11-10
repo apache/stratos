@@ -15,32 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import logging
 import os
-from setuptools import setup
+import config
 
+if not os.path.exists(config.stratos_dir_path):
+    try:
+        os.makedirs(config.stratos_dir_path)
+        logging.info("Created directory: " + config.stratos_dir_path)
+    except OSError:
+        logging.warning("Failed to create directory: " + config.stratos_dir_path)
 
-# Utility function to read the README file.
-def read(file_name):
-    return open(os.path.join(os.path.dirname(__file__), file_name)).read()
-
-setup(
-    name="stratos-cli",
-    version="4.1.5",
-    author="Apache Stratos",
-    author_email="dev@stratos.apache.org",
-    description="CLI tool to interact with Apache Stratos",
-    keywords="stratos",
-    url="http://stratos.apache.org/",
-    packages=['cli'],
-    install_requires=['cmd2', 'requests', 'texttable'],
-    long_description=read('README.md'),
-    classifiers=[
-        "Development Status :: 1 - Planning",
-        "Topic :: Utilities",
-        "License :: OSI Approved :: Apache Software License",
-    ],
-    entry_points='''
-        [console_scripts]
-        stratos-cli=cli.Main:main
-    ''',
-)
+logging.basicConfig(filename=config.log_file_path, level=logging.DEBUG)

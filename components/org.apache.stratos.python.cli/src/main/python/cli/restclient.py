@@ -17,12 +17,12 @@
 
 import requests
 import json
-import Configs
-from Logging import logging
-from Exceptions import BadResponseError
+import config
+from logutils import logging
+from exception import BadResponseError
 
 
-class Stratos:
+class StratosClient:
     """Apache Stratos Python API"""
 
     def __init__(self):
@@ -38,7 +38,7 @@ class Stratos:
     """
     @staticmethod
     def list_users():
-        return Stratos.get('users')
+        return StratosClient.get('users')
 
     @staticmethod
     def add_users(username, password, role_name, first_name, last_name, email, profile_name):
@@ -48,9 +48,10 @@ class Stratos:
             "role": role_name,
             "firstName": first_name,
             "lastName": last_name,
-            "email": email
+            "email": email,
+            "profileName": profile_name
         }
-        return Stratos.post('users', json.dumps(data))
+        return StratosClient.post('users', json.dumps(data))
 
     @staticmethod
     def update_user(username, password, role_name, first_name, last_name, email, profile_name):
@@ -60,13 +61,14 @@ class Stratos:
             "role": role_name,
             "firstName": first_name,
             "lastName": last_name,
-            "email": email
+            "email": email,
+            "profileName": profile_name
         }
-        return Stratos.put('users', json.dumps(data))
+        return StratosClient.put('users', json.dumps(data))
 
     @staticmethod
     def remove_user(name):
-        return Stratos.delete('users/'+name)
+        return StratosClient.delete('users/' + name)
 
     """
     # Applications
@@ -80,34 +82,35 @@ class Stratos:
     """
     @staticmethod
     def list_applications():
-        return Stratos.get('applications')
+        return StratosClient.get('applications')
 
     @staticmethod
     def describe_application(application_id):
-        return Stratos.get('applications/'+application_id)
+        return StratosClient.get('applications/' + application_id)
 
     @staticmethod
-    def add_application(json):
-        return Stratos.post('applications', json)
+    def add_application(json_input):
+        return StratosClient.post('applications', json_input)
 
     @staticmethod
-    def update_application(application_id, json):
-        return Stratos.put('applications/'+application_id, json)
+    def update_application(application_id, json_input):
+        return StratosClient.put('applications/' + application_id, json_input)
 
     @staticmethod
     def remove_application(application):
-        return Stratos.delete('applications/'+application)
+        return StratosClient.delete('applications/' + application)
 
     @staticmethod
     def deploy_application(application_id, application_policy_id):
-        return Stratos.post('applications/'+application_id+'/deploy/'+application_policy_id, None)
+        return StratosClient.post('applications/' + application_id + '/deploy/' + application_policy_id, None)
 
     @staticmethod
     def undeploy_application(application_id):
-        return Stratos.post('applications/'+application_id+'/undeploy', None)
+        return StratosClient.post('applications/' + application_id + '/undeploy', None)
+
     @staticmethod
     def describe_application_runtime(application_id):
-        return Stratos.get('applications/'+application_id+"/runtime")
+        return StratosClient.get('applications/' + application_id + "/runtime")
 
     """
     # Application signup
@@ -117,14 +120,15 @@ class Stratos:
     """
     @staticmethod
     def describe_application_signup(application_id):
-        return Stratos.get('applications/'+application_id+'/signup')
+        return StratosClient.get('applications/' + application_id + '/signup')
+
     @staticmethod
-    def add_application_signup(application_id, json):
-        return Stratos.post('applications/'+application_id+"/runtime", json)
+    def add_application_signup(application_id, json_input):
+        return StratosClient.post('applications/' + application_id + "/runtime", json_input)
 
     @staticmethod
     def remove_application_signup(application_id):
-        return Stratos.delete('applications/'+application_id + '/signup')
+        return StratosClient.delete('applications/' + application_id + '/signup')
 
     """
     # Tenants
@@ -138,15 +142,15 @@ class Stratos:
     """
     @staticmethod
     def list_tenants():
-        return Stratos.get('tenants')
+        return StratosClient.get('tenants')
 
     @staticmethod
     def list_tenants_by_partial_domain(partial_domain):
-        return Stratos.get('tenants/search/'+partial_domain)
+        return StratosClient.get('tenants/search/' + partial_domain)
 
     @staticmethod
     def describe_tenant(tenant_domain_name):
-        return Stratos.get('tenants/'+tenant_domain_name)
+        return StratosClient.get('tenants/' + tenant_domain_name)
 
     @staticmethod
     def add_tenant(username, first_name, last_name, password, domain_name, email):
@@ -159,7 +163,7 @@ class Stratos:
             "email": email,
             "active": "true"
         }
-        return Stratos.post('tenants', json.dumps(data))
+        return StratosClient.post('tenants', json.dumps(data))
 
     @staticmethod
     def update_tenant(username, first_name, last_name, password, domain_name, email, tenant_id):
@@ -173,15 +177,15 @@ class Stratos:
             "email": email,
             "active": "true"
         }
-        return Stratos.put('tenants', json.dumps(data))
+        return StratosClient.put('tenants', json.dumps(data))
 
     @staticmethod
     def activate_tenant(tenant_domain):
-        return Stratos.put('tenants/activate/'+tenant_domain, "")
+        return StratosClient.put('tenants/activate/' + tenant_domain, "")
 
     @staticmethod
     def deactivate_tenant(tenant_domain):
-        return Stratos.put('tenants/deactivate/'+tenant_domain, "")
+        return StratosClient.put('tenants/deactivate/' + tenant_domain, "")
 
     """
     # Cartridges
@@ -193,27 +197,27 @@ class Stratos:
     """
     @staticmethod
     def list_cartridges():
-        return Stratos.get('cartridges')
+        return StratosClient.get('cartridges')
 
     @staticmethod
     def list_cartridges_by_filter(filter_text):
-        return Stratos.get('cartridges/filter/'+filter_text)
+        return StratosClient.get('cartridges/filter/' + filter_text)
 
     @staticmethod
     def describe_cartridge(cartridge_type):
-        return Stratos.get('cartridges/'+cartridge_type)
+        return StratosClient.get('cartridges/' + cartridge_type)
 
     @staticmethod
-    def add_cartridge(json):
-        return Stratos.post('cartridges', json)
+    def add_cartridge(json_input):
+        return StratosClient.post('cartridges', json_input)
 
     @staticmethod
-    def update_cartridge(json):
-        return Stratos.put('cartridges', json)
+    def update_cartridge(json_input):
+        return StratosClient.put('cartridges', json_input)
 
     @staticmethod
     def remove_cartridge(cartridge_type):
-        return Stratos.delete('cartridges/'+cartridge_type)
+        return StratosClient.delete('cartridges/' + cartridge_type)
 
     """
     # Cartridge groups
@@ -226,23 +230,23 @@ class Stratos:
 
     @staticmethod
     def list_cartridge_groups():
-        return Stratos.get('cartridgeGroups')
+        return StratosClient.get('cartridgeGroups')
 
     @staticmethod
     def describe_cartridge_group(group_definition_name):
-        return Stratos.get('cartridgeGroups/'+group_definition_name)
+        return StratosClient.get('cartridgeGroups/' + group_definition_name)
 
     @staticmethod
-    def add_cartridge_group(json):
-        return Stratos.post('cartridgeGroups', json)
+    def add_cartridge_group(json_input):
+        return StratosClient.post('cartridgeGroups', json_input)
 
     @staticmethod
-    def update_cartridge_group(json):
-        return Stratos.put('cartridgeGroups', json)
+    def update_cartridge_group(json_input):
+        return StratosClient.put('cartridgeGroups', json_input)
 
     @staticmethod
     def remove_cartridge_group(group_definition_name):
-        return Stratos.delete('cartridgeGroups/'+group_definition_name)
+        return StratosClient.delete('cartridgeGroups/' + group_definition_name)
 
     """
     # Deployment Policy
@@ -255,21 +259,23 @@ class Stratos:
     """
     @staticmethod
     def list_deployment_policies():
-        return Stratos.get('deploymentPolicies')
-    @staticmethod
-    def describe_deployment_policy(deployment_policy_name):
-        return Stratos.get('deploymentPolicies/'+ deployment_policy_name)
-    @staticmethod
-    def add_deployment_policy(json):
-        return Stratos.post('deploymentPolicies', json)
+        return StratosClient.get('deploymentPolicies')
 
     @staticmethod
-    def update_deployment_policy(json):
-        return Stratos.put('deploymentPolicies', json)
+    def describe_deployment_policy(deployment_policy_name):
+        return StratosClient.get('deploymentPolicies/' + deployment_policy_name)
+
+    @staticmethod
+    def add_deployment_policy(json_input):
+        return StratosClient.post('deploymentPolicies', json_input)
+
+    @staticmethod
+    def update_deployment_policy(json_input):
+        return StratosClient.put('deploymentPolicies', json_input)
 
     @staticmethod
     def remove_deployment_policy(deployment_policy_id):
-        return Stratos.delete('deploymentPolicies/'+deployment_policy_id)
+        return StratosClient.delete('deploymentPolicies/' + deployment_policy_id)
 
     """
     # Application Policy
@@ -281,17 +287,19 @@ class Stratos:
     """
     @staticmethod
     def list_application_policies():
-        return Stratos.get('applicationPolicies')
+        return StratosClient.get('applicationPolicies')
+
     @staticmethod
     def describe_application_policy(application_policy_name):
-        return Stratos.get('applicationPolicies/'+ application_policy_name)
+        return StratosClient.get('applicationPolicies/' + application_policy_name)
+
     @staticmethod
-    def update_application_policy(json):
-        return Stratos.put('applicationPolicies', json)
+    def update_application_policy(json_input):
+        return StratosClient.put('applicationPolicies', json_input)
 
     @staticmethod
     def remove_application_policy(application_policy_id):
-        return Stratos.delete('applicationPolicies/'+application_policy_id)
+        return StratosClient.delete('applicationPolicies/' + application_policy_id)
 
     """
     # Network partitions
@@ -304,22 +312,23 @@ class Stratos:
     """
     @staticmethod
     def list_network_partitions():
-        return Stratos.get('networkPartitions')
+        return StratosClient.get('networkPartitions')
 
     @staticmethod
     def describe_network_partition(network_partition_id):
-        return Stratos.get('networkPartitions/'+network_partition_id)
-    @staticmethod
-    def add_network_partition(json):
-        return Stratos.post('networkPartitions', json)
-    @staticmethod
-    def update_network_partition(json):
-        return Stratos.put('networkPartitions', json)
+        return StratosClient.get('networkPartitions/' + network_partition_id)
 
+    @staticmethod
+    def add_network_partition(json_input):
+        return StratosClient.post('networkPartitions', json_input)
+
+    @staticmethod
+    def update_network_partition(json_input):
+        return StratosClient.put('networkPartitions', json_input)
 
     @staticmethod
     def remove_network_partition(network_partition_id):
-        return Stratos.delete('networkPartitions/'+network_partition_id)
+        return StratosClient.delete('networkPartitions/' + network_partition_id)
 
     """
     # Auto-scaling policies
@@ -332,26 +341,27 @@ class Stratos:
     """
     @staticmethod
     def list_autoscaling_policies():
-        return Stratos.get('autoscalingPolicies')
+        return StratosClient.get('autoscalingPolicies')
+
     @staticmethod
     def describe_autoscaling_policy(autoscaling_policy_id):
-        return Stratos.get('autoscalingPolicies/'+autoscaling_policy_id)
+        return StratosClient.get('autoscalingPolicies/' + autoscaling_policy_id)
 
     @staticmethod
-    def add_autoscaling_policy(json):
-        return Stratos.post('autoscalingPolicies', json)
+    def add_autoscaling_policy(json_input):
+        return StratosClient.post('autoscalingPolicies', json_input)
 
     @staticmethod
-    def add_application_policy(json):
-        return Stratos.post('applicationPolicies', json)
+    def add_application_policy(json_input):
+        return StratosClient.post('applicationPolicies', json_input)
 
     @staticmethod
-    def update_autoscaling_policy(json):
-        return Stratos.put('autoscalingPolicies', json)
+    def update_autoscaling_policy(json_input):
+        return StratosClient.put('autoscalingPolicies', json_input)
 
     @staticmethod
     def remove_autoscaling_policy(autoscaling_policy_id):
-        return Stratos.delete('autoscalingPolicies/'+autoscaling_policy_id)
+        return StratosClient.delete('autoscalingPolicies/' + autoscaling_policy_id)
 
     """
     # Kubernetes clusters/hosts
@@ -368,42 +378,43 @@ class Stratos:
     """
     @staticmethod
     def list_kubernetes_clusters():
-        return Stratos.get('kubernetesClusters')
+        return StratosClient.get('kubernetesClusters')
 
     @staticmethod
     def describe_kubernetes_cluster(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id)
+        return StratosClient.get('kubernetesClusters/' + kubernetes_cluster_id)
+
     @staticmethod
     def describe_kubernetes_master(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/master')
+        return StratosClient.get('kubernetesClusters/' + kubernetes_cluster_id + '/master')
 
     @staticmethod
-    def add_kubernetes_cluster(json):
-        return Stratos.post('kubernetesClusters', json)
+    def add_kubernetes_cluster(json_input):
+        return StratosClient.post('kubernetesClusters', json_input)
 
     @staticmethod
-    def add_kubernetes_host(kubernetes_cluster_id, json):
-        return Stratos.post('kubernetesClusters/'+kubernetes_cluster_id+'/minion', json)
+    def add_kubernetes_host(kubernetes_cluster_id, json_input):
+        return StratosClient.post('kubernetesClusters/' + kubernetes_cluster_id + '/minion', json_input)
 
     @staticmethod
     def list_kubernetes_hosts(kubernetes_cluster_id):
-        return Stratos.get('kubernetesClusters/'+kubernetes_cluster_id+'/hosts')
+        return StratosClient.get('kubernetesClusters/' + kubernetes_cluster_id + '/hosts')
 
     @staticmethod
-    def update_kubernetes_master(cluster_id, json):
-        return Stratos.put('kubernetesClusters/'+cluster_id+'/master', json)
+    def update_kubernetes_master(cluster_id, json_input):
+        return StratosClient.put('kubernetesClusters/' + cluster_id + '/master', json_input)
 
     @staticmethod
-    def update_kubernetes_host(json):
-        return Stratos.put('kubernetesClusters/update/host', json)
+    def update_kubernetes_host(json_input):
+        return StratosClient.put('kubernetesClusters/update/host', json_input)
 
     @staticmethod
     def remove_kubernetes_cluster(kubernetes_cluster_id):
-        return Stratos.delete('kubernetesClusters/'+kubernetes_cluster_id)
+        return StratosClient.delete('kubernetesClusters/' + kubernetes_cluster_id)
 
     @staticmethod
     def remove_kubernetes_host(kubernetes_cluster_id, host_id):
-        return Stratos.delete('kubernetesClusters/'+kubernetes_cluster_id+"/hosts/"+host_id)
+        return StratosClient.delete('kubernetesClusters/' + kubernetes_cluster_id + "/hosts/" + host_id)
 
     """
     # Domain Mapping
@@ -415,15 +426,15 @@ class Stratos:
 
     @staticmethod
     def list_domain_mappings(application_id):
-        return Stratos.get('applications/'+application_id+'/domainMappings')
+        return StratosClient.get('applications/' + application_id + '/domainMappings')
 
     @staticmethod
     def remove_domain_mappings(application_id):
-        return Stratos.delete('applications/'+application_id+'/domainMappings')
+        return StratosClient.delete('applications/' + application_id + '/domainMappings')
 
     @staticmethod
-    def add_domain_mapping(application_id, json):
-        return Stratos.post('applications/'+application_id+'/domainMappings', json)
+    def add_domain_mapping(application_id, json_input):
+        return StratosClient.post('applications/' + application_id + '/domainMappings', json_input)
 
     """
     # Utils
@@ -432,42 +443,37 @@ class Stratos:
 
     @staticmethod
     def authenticate():
-        try:
-            Stratos.get('init')
-            return True
-        except BadResponseError as e:
-            return False
+        StratosClient.get('init')
 
     @staticmethod
     def get(resource):
-        r = requests.get(Configs.stratos_api_url + resource,
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        return Stratos.response(r)
+        r = requests.get(config.stratos_api_url + resource,
+                         auth=(config.stratos_username, config.stratos_password), verify=False)
+        return StratosClient.response(r)
 
     @staticmethod
     def delete(resource):
-        r = requests.delete(Configs.stratos_api_url + resource,
-                            auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        return Stratos.response(r)
+        r = requests.delete(config.stratos_api_url + resource,
+                            auth=(config.stratos_username, config.stratos_password), verify=False)
+        return StratosClient.response(r)
 
     @staticmethod
     def post(resource, data):
         headers = {'content-type': 'application/json'}
-        r = requests.post(Configs.stratos_api_url + resource, data, headers=headers,
-                          auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        return Stratos.response(r)
+        r = requests.post(config.stratos_api_url + resource, data, headers=headers,
+                          auth=(config.stratos_username, config.stratos_password), verify=False)
+        return StratosClient.response(r)
 
     @staticmethod
     def put(resource, data):
         headers = {'content-type': 'application/json'}
-        r = requests.put(Configs.stratos_api_url + resource, data, headers=headers,
-                         auth=(Configs.stratos_username, Configs.stratos_password), verify=False)
-        return Stratos.response(r)
-
+        r = requests.put(config.stratos_api_url + resource, data, headers=headers,
+                         auth=(config.stratos_username, config.stratos_password), verify=False)
+        return StratosClient.response(r)
 
     @staticmethod
     def response(r):
-        if "False" not in Configs.debug_cli:
+        if "False" not in config.debug_cli:
             # print responses if debug is turned on
             print(r)
             print(r.text)
@@ -485,5 +491,3 @@ class Stratos:
             else:
                 logging.error("HTTP "+str(r.status_code)+" : Could not connect to Stratos server")
                 raise BadResponseError(str(r.status_code), "Could not connect to Stratos server")
-
-

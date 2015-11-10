@@ -1,4 +1,4 @@
-Apache Stratos CLI
+Apache Stratos Python CLI
 ==================
 
 #Pre-requisites
@@ -10,37 +10,9 @@ pip install texttable
 
 ```
 
-#Build 
-Build and install stratos CLI by,
+#Running Stratos Python CLI
+Run the `stratos.sh` Bash file.
 
-``` 
-$ python setup.py build
-$ python setup.py install
+```Bash
+./stratos.sh
 ```
-
-or use
-```
- $ python setup.py develop
-```
-
-instead `install` if developing
-
-To start the Python CLI issue, 
-
-```
-$ stratos-cli
-```
-
-Install with Pip
-
-```
-pip install stratos
-```
-
-or to install a specific version use
- 
-```
-pip install stratos==1.0
-```
- 
- 

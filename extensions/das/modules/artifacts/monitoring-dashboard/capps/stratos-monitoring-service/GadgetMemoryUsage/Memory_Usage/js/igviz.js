@@ -146,7 +146,7 @@
             "type": "y",
             "scale": "y",
             "angle": 0,
-            "title": "Memory Usage",
+            "title": "Memory Usage (%)",
             "grid": true,
             "dx": 0,
             "dy": 0,
