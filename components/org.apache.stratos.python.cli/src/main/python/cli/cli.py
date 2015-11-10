@@ -43,9 +43,8 @@ class CLI(Cmd):
         """
         Override help display function
         """
-
         if arg:
-            Cmd.do_help(self, arg)
+            Cmd.do_help(self, arg.replace("-", "_"))
         else:
             cmds_doc = ["list-applications",
                         "list-application-policies",
@@ -124,8 +123,6 @@ class CLI(Cmd):
 
             self.stdout.write("%s\n" % str(self.doc_leader))
             self.print_topics(self.doc_header, cmds_doc, 15, 80)
-            # self.print_topics(self.misc_header, help_commands.keys(), 15, 80)
-            # self.print_topics(self.undoc_header, cmds_undoc, 15, 80)
 
     """
 
