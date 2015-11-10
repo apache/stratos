@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.services.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
@@ -979,7 +978,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new InvalidCartridgeTypeException(msg);
             }
 
-            Map<String, Future<IaasProvider>> jobList = new HashMap<>();
             for (Partition partition : networkPartition.getPartitions()) {
                 if (validatedPartitions != null && validatedPartitions.contains(partition.getId())) {
                     // partition cache hit
@@ -990,38 +988,35 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     continue;
                 }
 
-                Callable<IaasProvider> worker = new PartitionValidatorCallable(partition, cartridge);
-                Future<IaasProvider> job = CloudControllerContext.getInstance().getExecutorService().submit(worker);
-                jobList.put(partition.getId(), job);
-            }
-
-            // Retrieve the results of the concurrently performed sanity checks.
-            for (Entry<String, Future<IaasProvider>> entry : jobList.entrySet()) {
-                if (entry == null) {
-                    continue;
+                if (log.isDebugEnabled()) {
+                    log.debug("Partition validation started for " + partition + " of " + cartridge);
                 }
-                String partitionId = entry.getKey();
-                Future<IaasProvider> job = entry.getValue();
+
+                // cache miss
+                IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProvider
+                        (cartridge.getType(), partition.getProvider());
+                IaasProvider updatedIaasProvider = CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(partition,
+                        iaasProvider);
+
                 try {
-                    // add to a temporary Map
-                    IaasProvider iaasProvider = job.get();
-                    if (iaasProvider != null) {
-                        partitionToIaasProviders.put(partitionId, iaasProvider);
+                    if (updatedIaasProvider != null) {
+                        partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
                     }
 
                     // add to cache
-                    CloudControllerContext.getInstance().addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
-
+                    CloudControllerContext.getInstance().addToCartridgeTypeToPartitionIdMap(cartridgeType, partition.getId());
                     if (log.isDebugEnabled()) {
-                        log.debug("Partition " + partitionId + " added to the cache against cartridge: " +
+                        log.debug("Partition " + partition.getId() + " added to the cache against " + "cartridge: " +
                                 "[cartridge-type] " + cartridgeType);
                     }
+
                 } catch (Exception e) {
                     String message = "Could not cache partitions against the cartridge: [cartridge-type] "
                             + cartridgeType;
                     log.error(message, e);
                     throw new InvalidPartitionException(message, e);
                 }
+
             }
 
             // if and only if the deployment policy valid

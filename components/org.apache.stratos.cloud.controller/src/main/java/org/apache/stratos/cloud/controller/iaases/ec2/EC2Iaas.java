@@ -117,6 +117,10 @@ public class EC2Iaas extends JcloudsIaas {
             }
         }
 
+        log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$44 " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
+        log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$44 " + template.getLocation().getScope()
+                .toString() + " & " + template.getLocation().getId());
+
         // if you wish to auto assign IPs, instance spawning call should be
         // blocking, but if you
         // wish to assign IPs manually, it can be non-blocking.

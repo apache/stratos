@@ -75,7 +75,7 @@ public class CloudControllerServiceUtil {
             throws InvalidPartitionException {
         if (iaasProvider != null) {
             // if this is a IaaS based partition
-            Iaas iaas = iaasProvider.buildIaas();
+            Iaas iaas = iaasProvider.getIaas();
             PartitionValidator validator = iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);
             Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
