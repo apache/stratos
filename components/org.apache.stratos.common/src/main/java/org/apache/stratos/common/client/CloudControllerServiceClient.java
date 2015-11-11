@@ -46,14 +46,17 @@ public class CloudControllerServiceClient {
                 StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
                 System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT);
 
-        String ccConnectionTimeout = System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT) == null ?
-                StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
-                System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT);
+        String ccConnectionTimeout =
+                System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT) == null ?
+                        StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
+                        System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT);
 
         try {
             stub = new CloudControllerServiceStub(epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(ccSocketTimeout));
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(ccConnectionTimeout));
+            stub._getServiceClient().getOptions()
+                    .setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(ccSocketTimeout));
+            stub._getServiceClient().getOptions()
+                    .setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(ccConnectionTimeout));
 
         } catch (AxisFault axisFault) {
             String msg = "Could not initialize cloud controller service client";
@@ -66,7 +69,8 @@ public class CloudControllerServiceClient {
         if (instance == null) {
             synchronized (CloudControllerServiceClient.class) {
                 if (instance == null) {
-                    String cloudControllerServiceUrl = System.getProperty(StratosConstants.CLOUD_CONTROLLER_SERVICE_URL);
+                    String cloudControllerServiceUrl = System
+                            .getProperty(StratosConstants.CLOUD_CONTROLLER_SERVICE_URL);
                     if (StringUtils.isBlank(cloudControllerServiceUrl)) {
                         throw new RuntimeException(String.format("System property not found: %s",
                                 StratosConstants.CLOUD_CONTROLLER_SERVICE_URL));
@@ -80,35 +84,40 @@ public class CloudControllerServiceClient {
 
     public void addCartridge(Cartridge cartridgeConfig)
             throws RemoteException, CloudControllerServiceCartridgeAlreadyExistsExceptionException,
-            CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
-            CloudControllerServiceInvalidIaasProviderExceptionException {
+                   CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
+                   CloudControllerServiceInvalidIaasProviderExceptionException {
         stub.addCartridge(cartridgeConfig);
     }
 
     public void updateCartridge(Cartridge cartridgeConfig)
             throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
-            CloudControllerServiceInvalidIaasProviderExceptionException,
-            CloudControllerServiceCartridgeDefinitionNotExistsExceptionException {
+                   CloudControllerServiceInvalidIaasProviderExceptionException,
+                   CloudControllerServiceCartridgeDefinitionNotExistsExceptionException {
         stub.updateCartridge(cartridgeConfig);
     }
 
-    public void removeCartridge(String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
+    public void removeCartridge(String cartridgeType)
+            throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
         stub.removeCartridge(cartridgeType);
     }
 
-    public String[] getServiceGroupSubGroups(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    public String[] getServiceGroupSubGroups(String name)
+            throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
         return stub.getServiceGroupSubGroups(name);
     }
 
-    public String[] getServiceGroupCartridges(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    public String[] getServiceGroupCartridges(String name)
+            throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
         return stub.getServiceGroupCartridges(name);
     }
 
-    public Dependencies getServiceGroupDependencies(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    public Dependencies getServiceGroupDependencies(String name)
+            throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
         return stub.getServiceGroupDependencies(name);
     }
 
-    public ServiceGroup getServiceGroup(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    public ServiceGroup getServiceGroup(String name)
+            throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
         return stub.getServiceGroup(name);
     }
 
@@ -116,8 +125,8 @@ public class CloudControllerServiceClient {
         return stub.getCartridges();
     }
 
-    public Cartridge getCartridge(String cartridgeType) throws RemoteException,
-            CloudControllerServiceCartridgeNotFoundExceptionException {
+    public Cartridge getCartridge(String cartridgeType)
+            throws RemoteException, CloudControllerServiceCartridgeNotFoundExceptionException {
         return stub.getCartridge(cartridgeType);
     }
 
@@ -126,28 +135,27 @@ public class CloudControllerServiceClient {
         return stub.getClusterContext(clusterId);
     }
 
-    public boolean updateKubernetesCluster(KubernetesCluster kubernetesCluster) throws RemoteException,
-            CloudControllerServiceInvalidKubernetesClusterExceptionException {
+    public boolean updateKubernetesCluster(KubernetesCluster kubernetesCluster)
+            throws RemoteException, CloudControllerServiceInvalidKubernetesClusterExceptionException {
         return stub.updateKubernetesCluster(kubernetesCluster);
     }
 
-
-    public boolean deployKubernetesCluster(KubernetesCluster kubernetesCluster) throws RemoteException,
-            CloudControllerServiceInvalidKubernetesClusterExceptionException,
-            CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException {
+    public boolean deployKubernetesCluster(KubernetesCluster kubernetesCluster)
+            throws RemoteException, CloudControllerServiceInvalidKubernetesClusterExceptionException,
+                   CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException {
         return stub.addKubernetesCluster(kubernetesCluster);
     }
 
     public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost)
             throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+                   CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
         return stub.addKubernetesHost(kubernetesClusterId, kubernetesHost);
     }
 
-    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws RemoteException,
-            CloudControllerServiceInvalidKubernetesMasterExceptionException,
-            CloudControllerServiceNonExistingKubernetesMasterExceptionException {
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws RemoteException, CloudControllerServiceInvalidKubernetesMasterExceptionException,
+                   CloudControllerServiceNonExistingKubernetesMasterExceptionException {
         return stub.updateKubernetesMaster(kubernetesMaster);
     }
 
@@ -155,57 +163,57 @@ public class CloudControllerServiceClient {
         return stub.getKubernetesClusters();
     }
 
-    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId)
+            throws RemoteException, CloudControllerServiceNonExistingKubernetesClusterExceptionException {
         return stub.getKubernetesCluster(kubernetesClusterId);
     }
 
-    public void undeployKubernetesCluster(String kubernetesClusterId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException, CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException {
+    public void undeployKubernetesCluster(String kubernetesClusterId)
+            throws RemoteException, CloudControllerServiceNonExistingKubernetesClusterExceptionException,
+                   CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException {
         stub.removeKubernetesCluster(kubernetesClusterId);
     }
 
-    public boolean undeployKubernetesHost(String kubernetesHostId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesHostExceptionException {
+    public boolean undeployKubernetesHost(String kubernetesHostId)
+            throws RemoteException, CloudControllerServiceNonExistingKubernetesHostExceptionException {
         return stub.removeKubernetesHost(kubernetesHostId);
     }
 
-    public KubernetesHost[] getKubernetesHosts(String kubernetesClusterId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+    public KubernetesHost[] getKubernetesHosts(String kubernetesClusterId)
+            throws RemoteException, CloudControllerServiceNonExistingKubernetesClusterExceptionException {
         return stub.getHostsForKubernetesCluster(kubernetesClusterId);
     }
 
-    public KubernetesMaster getKubernetesMaster(String kubernetesClusterId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+    public KubernetesMaster getKubernetesMaster(String kubernetesClusterId)
+            throws RemoteException, CloudControllerServiceNonExistingKubernetesClusterExceptionException {
         return stub.getMasterForKubernetesCluster(kubernetesClusterId);
     }
 
-    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws RemoteException,
-            CloudControllerServiceInvalidKubernetesHostExceptionException,
-            CloudControllerServiceNonExistingKubernetesHostExceptionException {
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost)
+            throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
+                   CloudControllerServiceNonExistingKubernetesHostExceptionException {
         return stub.updateKubernetesHost(kubernetesHost);
     }
 
     public void validateNetworkPartitionOfDeploymentPolicy(String cartridgeType, String networkPartitionId)
-            throws RemoteException,
-            CloudControllerServiceInvalidPartitionExceptionException,
-            CloudControllerServiceInvalidCartridgeTypeExceptionException {
+            throws RemoteException, CloudControllerServiceInvalidPartitionExceptionException,
+                   CloudControllerServiceInvalidCartridgeTypeExceptionException {
         stub.validateDeploymentPolicyNetworkPartition(cartridgeType, networkPartitionId);
     }
 
-    public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException,
-            CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException,
-            CloudControllerServiceInvalidNetworkPartitionExceptionException {
+    public void addNetworkPartition(NetworkPartition networkPartition)
+            throws RemoteException, CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException,
+                   CloudControllerServiceInvalidNetworkPartitionExceptionException {
         stub.addNetworkPartition(networkPartition);
     }
 
-    public void removeNetworkPartition(String networkPartitionId) throws RemoteException,
-            CloudControllerServiceNetworkPartitionNotExistsExceptionException {
+    public void removeNetworkPartition(String networkPartitionId)
+            throws RemoteException, CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         stub.removeNetworkPartition(networkPartitionId);
     }
 
-    public void updateNetworkPartition(NetworkPartition networkPartition) throws RemoteException,
-            CloudControllerServiceNetworkPartitionNotExistsExceptionException {
+    public void updateNetworkPartition(NetworkPartition networkPartition)
+            throws RemoteException, CloudControllerServiceNetworkPartitionNotExistsExceptionException {
         stub.updateNetworkPartition(networkPartition);
     }
 
@@ -217,12 +225,10 @@ public class CloudControllerServiceClient {
         return stub.getNetworkPartition(networkPartitionId);
     }
 
-    public void createClusterInstance(String serviceType, String clusterId,
-                                      String alias, String instanceId, String partitionId,
-                                      String networkPartitionId) throws RemoteException {
+    public void createClusterInstance(String serviceType, String clusterId, String alias, String instanceId,
+            String partitionId, String networkPartitionId) throws RemoteException {
         try {
-            stub.createClusterInstance(serviceType, clusterId, alias,
-                    instanceId, partitionId, networkPartitionId);
+            stub.createClusterInstance(serviceType, clusterId, alias, instanceId, partitionId, networkPartitionId);
 
         } catch (CloudControllerServiceClusterInstanceCreationExceptionException e) {
             String msg = e.getFaultMessage().getClusterInstanceCreationException().getMessage();
