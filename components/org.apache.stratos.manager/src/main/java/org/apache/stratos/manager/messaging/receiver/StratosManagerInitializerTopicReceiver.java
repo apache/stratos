@@ -46,7 +46,7 @@ public class StratosManagerInitializerTopicReceiver {
         initializerEventReceiver.setExecutorService(executorService);
         initializerEventReceiver.execute();
         if (log.isInfoEnabled()) {
-            log.info("Cloud controller initializer topic receiver started");
+            log.info("Stratos manager initializer topic receiver started");
         }
     }
 

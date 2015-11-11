@@ -42,7 +42,7 @@ public class InitializerTopicReceiver {
         initializerEventReceiver.setExecutorService(executorService);
         initializerEventReceiver.execute();
         if (log.isInfoEnabled()) {
-            log.info("Cloud controller initializer topic receiver started");
+            log.info("Autoscaler initializer topic receiver started");
         }
     }
 
