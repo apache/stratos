@@ -34,12 +34,6 @@ if (hostName === null || hostName === '') {
 var httpPort = 9763 + parseInt(offset, 10),
         httpsPort = 9443 + parseInt(offset, 10);
 
-var meteringDashboardUrl = process.getProperty("das.metering.dashboard.url");
-var monitoringDashboardUrl = process.getProperty("das.monitoring.dashboard.url");
-
-application.put("meteringDashboardUrl", meteringDashboardUrl);
-application.put("monitoringDashboardUrl", monitoringDashboardUrl);
-
 process.setProperty('server.host', hostName);
 process.setProperty('http.port', httpPort.toString());
 process.setProperty('https.port', httpsPort.toString());
