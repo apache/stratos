@@ -19,7 +19,9 @@
 
 package org.apache.stratos.autoscaler.applications.parser;
 
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
+import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
@@ -110,6 +112,47 @@ public class ParserUtils {
         return startupOrders;
     }
 
+    
+    public static void validateStartupOrderAlias(String[] startupOrderArr, ApplicationContext applicationContext)
+            throws ApplicationDefinitionException {
+
+        for (String commaSeparatedStartupOrder : startupOrderArr) {
+            List<String> components = Arrays.asList(commaSeparatedStartupOrder.split(","));
+            for (String component : components) {
+                boolean aliasFound = false;
+                if (component.startsWith(AutoscalerConstants.GROUP)) {
+                    String groupAlias = component.substring(AutoscalerConstants.GROUP.length() + 1);
+                    if (applicationContext.getComponents().getGroupContexts() != null) {
+                        for (GroupContext context : applicationContext.getComponents().getGroupContexts()) {
+                            if (context.getAlias().equals(groupAlias)) {
+                                aliasFound = true;
+                            }
+                        }
+                    }
+
+                } else {
+                    String cartridgeAlias = component.substring(
+                            AutoscalerConstants.CARTRIDGE.length() + 1);
+                    if (applicationContext.getComponents().getCartridgeContexts() != null) {
+                        for (CartridgeContext context : applicationContext.getComponents().getCartridgeContexts()) {
+                            if (context.getSubscribableInfoContext().getAlias().equals(cartridgeAlias)) {
+                                aliasFound = true;
+                            }
+                        }
+                    }
+                }
+                if (!aliasFound) {
+                    String msg = "The startup-order defined in the [application] " + applicationContext.getApplicationId()
+                            + " is not correct. [startup-order-alias] " + component +
+                            " is not there in the application.";
+                    throw new ApplicationDefinitionException(msg);
+                }
+            }
+        }
+
+    }
+    
+    
     private static StartupOrder getStartupOrder(List<String> components, GroupContext groupContext)
             throws ApplicationDefinitionException {
 

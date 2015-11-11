@@ -294,7 +294,9 @@ public class DefaultApplicationParser implements ApplicationParser {
                     if (log.isDebugEnabled()) {
                         log.debug("Parsing application: startupOrders != null for app alias: " +
                                 applicationContext.getAlias() + " #: " + startupOrders.length);
-                    }
+                    }                    
+                    // validate alias
+                    ParserUtils.validateStartupOrderAlias(startupOrders, applicationContext);
                     dependencyOrder.setStartupOrders(ParserUtils.convertStartupOrder(startupOrders));
                 } else {
                     if (log.isDebugEnabled()) {
@@ -355,8 +357,9 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
         return application;
     }
+   
 
-    /**
+	/**
      * Parse Subscription Information
      *
      * @param appId                Application id
