@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,22 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.message.receiver.initializer;
 
-package org.apache.stratos.autoscaler.applications;
+import org.apache.stratos.messaging.domain.Message;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class ApplicationEventSynchronizer implements Runnable {
-
-    private static final Log log = LogFactory.getLog(ApplicationEventSynchronizer.class);
-
-    @Override
-    public void run() {
-        if (log.isDebugEnabled()) {
-            log.debug("Executing applications synchronization task");
-        }
-        ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
-    }
+public class InitializerEventMessageQueue extends LinkedBlockingQueue<Message> {
 }

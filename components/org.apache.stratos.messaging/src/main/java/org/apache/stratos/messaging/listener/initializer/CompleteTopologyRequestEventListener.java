@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,21 +17,10 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.applications;
+package org.apache.stratos.messaging.listener.initializer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
+import org.apache.stratos.messaging.listener.EventListener;
 
-public class ApplicationEventSynchronizer implements Runnable {
+public abstract class CompleteTopologyRequestEventListener extends EventListener {
 
-    private static final Log log = LogFactory.getLog(ApplicationEventSynchronizer.class);
-
-    @Override
-    public void run() {
-        if (log.isDebugEnabled()) {
-            log.debug("Executing applications synchronization task");
-        }
-        ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
-    }
 }

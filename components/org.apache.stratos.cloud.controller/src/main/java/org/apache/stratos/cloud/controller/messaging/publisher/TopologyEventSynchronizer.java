@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
+import org.apache.stratos.cloud.controller.messaging.topology.TopologyHolder;
 
 /**
  * Topology event synchronizer publishes complete topology event periodically.
@@ -53,10 +53,8 @@ public class TopologyEventSynchronizer implements Runnable {
 
         try {
             // Publish complete topology event
-            if (TopologyManager.getTopology() != null) {
-                CloudControllerContext.getInstance().setTopologySyncRunning(true);
-                TopologyEventPublisher.sendCompleteTopologyEvent(TopologyManager.getTopology());
-            }
+            CloudControllerContext.getInstance().setTopologySyncRunning(true);
+            TopologyEventPublisher.sendCompleteTopologyEvent(TopologyHolder.getTopology());
         } finally {
             CloudControllerContext.getInstance().setTopologySyncRunning(false);
         }

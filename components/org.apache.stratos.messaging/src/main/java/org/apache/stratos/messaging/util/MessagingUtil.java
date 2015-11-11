@@ -63,6 +63,7 @@ public class MessagingUtil {
      */
     public static enum Topics {
         TOPOLOGY_TOPIC("topology/#"),
+        INITIALIZER_TOPIC("initializer/#"),
         HEALTH_STAT_TOPIC("summarized-health-stats/#"),
         INSTANCE_STATUS_TOPIC("instance/status/#"),
         INSTANCE_NOTIFIER_TOPIC("instance/notifier/#"),

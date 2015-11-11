@@ -31,13 +31,13 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 /**
  * Persistence and retrieval of Topology from Registry
  */
-public class TopologyManager {
-    private static final Log log = LogFactory.getLog(TopologyManager.class);
+public class TopologyHolder {
+    private static final Log log = LogFactory.getLog(TopologyHolder.class);
 
     private static volatile ReadWriteLock lock = new ReadWriteLock("topology-manager");
     private static volatile Topology topology;
 
-    private TopologyManager() {
+    private TopologyHolder() {
     }
 
     public static void acquireReadLock() {
@@ -70,7 +70,7 @@ public class TopologyManager {
 
     public static Topology getTopology() {
         if (topology == null) {
-            synchronized (TopologyManager.class) {
+            synchronized (TopologyHolder.class) {
                 if (topology == null) {
                     if (log.isDebugEnabled()) {
                         log.debug("Trying to retrieve topology from registry");
@@ -97,7 +97,7 @@ public class TopologyManager {
      * @param updatedTopology
      */
     public static void updateTopology(Topology updatedTopology) throws RegistryException {
-        synchronized (TopologyManager.class) {
+        synchronized (TopologyHolder.class) {
             if (log.isDebugEnabled()) {
                 log.debug("Updating topology");
             }

@@ -85,6 +85,9 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
                 log.debug("No Application information found in Complete Applications event");
             }
         }
+        if (log.isInfoEnabled()) {
+            log.info("Application topology initialized");
+        }
 
         // Set topology initialized
         applications.setInitialized(true);

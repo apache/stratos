@@ -35,6 +35,10 @@ import org.apache.stratos.messaging.listener.application.*;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
+import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpManager;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
@@ -55,12 +59,18 @@ public class TopologyHandler {
     public static final int APPLICATION_ACTIVATION_TIMEOUT = 500000;
     public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 500000;
     public static final int MEMBER_TERMINATION_TIMEOUT = 500000;
-    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 120000;
+    public static final int APPLICATION_INIT_TIMEOUT = 20000;
+    public static final int TENANT_INIT_TIMEOUT = 20000;
+    public static final int APPLICATION_SIGNUP_INIT_TIMEOUT = 20000;
+    public static final int TOPOLOGY_INIT_TIMEOUT = 20000;
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
     private ApplicationsEventReceiver applicationsEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
+    private TenantEventReceiver tenantEventReceiver;
+    private ApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     public static TopologyHandler topologyHandler;
+    private ExecutorService executorService = StratosThreadPool.getExecutorService("stratos.integration.test.pool", 10);
     private Map<String, Long> terminatedMembers = new ConcurrentHashMap<String, Long>();
     private Map<String, Long> terminatingMembers = new ConcurrentHashMap<String, Long>();
     private Map<String, Long> createdMembers = new ConcurrentHashMap<String, Long>();
@@ -70,10 +80,26 @@ public class TopologyHandler {
     private TopologyHandler() {
         initializeApplicationEventReceiver();
         initializeTopologyEventReceiver();
+        initializeTenantEventReceiver();
+        initializeApplicationSignUpEventReceiver();
         assertApplicationTopologyInitialized();
         assertTopologyInitialized();
+        assertTenantInitialized();
+        assertApplicationSignUpInitialized();
         addTopologyEventListeners();
         addApplicationEventListeners();
+    }
+
+    private void initializeApplicationSignUpEventReceiver() {
+        applicationSignUpEventReceiver = new ApplicationSignUpEventReceiver();
+        applicationSignUpEventReceiver.setExecutorService(executorService);
+        applicationSignUpEventReceiver.execute();
+    }
+
+    private void initializeTenantEventReceiver() {
+        tenantEventReceiver = new TenantEventReceiver();
+        tenantEventReceiver.setExecutorService(executorService);
+        tenantEventReceiver.execute();
     }
 
     public static TopologyHandler getInstance() {
@@ -91,30 +117,25 @@ public class TopologyHandler {
      * Initialize application event receiver
      */
     private void initializeApplicationEventReceiver() {
-        if (applicationsEventReceiver == null) {
-            applicationsEventReceiver = new ApplicationsEventReceiver();
-            ExecutorService executorService = StratosThreadPool.getExecutorService("STRATOS_TEST_SERVER", 1);
-            applicationsEventReceiver.setExecutorService(executorService);
-            applicationsEventReceiver.execute();
-        }
+        applicationsEventReceiver = new ApplicationsEventReceiver();
+        applicationsEventReceiver.setExecutorService(executorService);
+        applicationsEventReceiver.execute();
     }
 
     /**
      * Initialize Topology event receiver
      */
     private void initializeTopologyEventReceiver() {
-        if (topologyEventReceiver == null) {
-            topologyEventReceiver = new TopologyEventReceiver();
-            ExecutorService executorService = StratosThreadPool.getExecutorService("STRATOS_TEST_SERVER1", 1);
-            topologyEventReceiver.setExecutorService(executorService);
-            topologyEventReceiver.execute();
-        }
+        topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver.setExecutorService(executorService);
+        topologyEventReceiver.execute();
     }
 
     /**
      * Assert application Topology initialization
      */
     private void assertApplicationTopologyInitialized() {
+        log.info(String.format("Asserting application topology initialization within %d ms", APPLICATION_INIT_TIMEOUT));
         long startTime = System.currentTimeMillis();
         boolean applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
         while (!applicationTopologyInitialized) {
@@ -123,18 +144,24 @@ public class TopologyHandler {
             } catch (InterruptedException ignore) {
             }
             applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
-            if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_TIMEOUT) {
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_INIT_TIMEOUT) {
                 break;
             }
         }
-        assertEquals(String.format("Application Topology didn't get initialized "), applicationTopologyInitialized,
-                true);
+        if (applicationTopologyInitialized) {
+            log.info(String.format("Application topology initialized under %d ms",
+                    (System.currentTimeMillis() - startTime)));
+        }
+        assertEquals(
+                String.format("Application topology didn't get initialized within %d ms", APPLICATION_INIT_TIMEOUT),
+                applicationTopologyInitialized, true);
     }
 
     /**
      * Assert Topology initialization
      */
     private void assertTopologyInitialized() {
+        log.info(String.format("Asserting topology initialization within %d ms", TOPOLOGY_INIT_TIMEOUT));
         long startTime = System.currentTimeMillis();
         boolean topologyInitialized = TopologyManager.getTopology().isInitialized();
         while (!topologyInitialized) {
@@ -143,11 +170,59 @@ public class TopologyHandler {
             } catch (InterruptedException ignore) {
             }
             topologyInitialized = TopologyManager.getTopology().isInitialized();
-            if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_TIMEOUT) {
+            if ((System.currentTimeMillis() - startTime) > TOPOLOGY_INIT_TIMEOUT) {
                 break;
             }
         }
-        assertEquals(String.format("Topology didn't get initialized "), topologyInitialized, true);
+        if (topologyInitialized) {
+            log.info(String.format("Topology initialized under %d ms", (System.currentTimeMillis() - startTime)));
+        }
+        assertEquals(String.format("Topology didn't get initialized within %d ms", TOPOLOGY_INIT_TIMEOUT),
+                topologyInitialized, true);
+    }
+
+    private void assertTenantInitialized() {
+        log.info(String.format("Asserting tenant model initialization within %d ms", TENANT_INIT_TIMEOUT));
+        long startTime = System.currentTimeMillis();
+        boolean tenantInitialized = TenantManager.getInstance().isInitialized();
+        while (!tenantInitialized) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            tenantInitialized = TenantManager.getInstance().isInitialized();
+            if ((System.currentTimeMillis() - startTime) > TENANT_INIT_TIMEOUT) {
+                break;
+            }
+        }
+        if (tenantInitialized) {
+            log.info(String.format("Tenant model initialized under %d ms", (System.currentTimeMillis() - startTime)));
+        }
+        assertEquals(String.format("Tenant model didn't get initialized within %d ms", TENANT_INIT_TIMEOUT),
+                tenantInitialized, true);
+    }
+
+    private void assertApplicationSignUpInitialized() {
+        log.info(String.format("Asserting application signup initialization within %d ms",
+                APPLICATION_SIGNUP_INIT_TIMEOUT));
+        long startTime = System.currentTimeMillis();
+        boolean applicationSignUpInitialized = ApplicationSignUpManager.getInstance().isInitialized();
+        while (!applicationSignUpInitialized) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+            applicationSignUpInitialized = ApplicationSignUpManager.getInstance().isInitialized();
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_SIGNUP_INIT_TIMEOUT) {
+                break;
+            }
+        }
+        if (applicationSignUpInitialized) {
+            log.info(String.format("Application signup initialized under %d ms",
+                    (System.currentTimeMillis() - startTime)));
+        }
+        assertEquals(String.format("Application signup didn't get initialized within %d ms",
+                APPLICATION_SIGNUP_INIT_TIMEOUT), applicationSignUpInitialized, true);
     }
 
     /**

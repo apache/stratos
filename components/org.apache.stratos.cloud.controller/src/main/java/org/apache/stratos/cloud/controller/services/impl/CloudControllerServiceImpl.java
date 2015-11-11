@@ -30,7 +30,7 @@ import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
+import org.apache.stratos.cloud.controller.messaging.topology.TopologyHolder;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -640,8 +640,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // check if status == active, if true, then this is a termination on member faulty
-            TopologyManager.acquireWriteLock();
-            Topology topology = TopologyManager.getTopology();
+            TopologyHolder.acquireWriteLock();
+            Topology topology = TopologyHolder.getTopology();
             org.apache.stratos.messaging.domain.topology.Service service = topology
                     .getService(memberContext.getCartridgeType());
 
@@ -679,7 +679,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(message, e);
             throw new CloudControllerException(message, e);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyHolder.releaseWriteLock();
         }
         return true;
     }
@@ -826,7 +826,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.error(msg);
                     return;
                 }
-                Collection<Member> members = TopologyManager.getTopology().
+                Collection<Member> members = TopologyHolder.getTopology().
                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
                 //finding the responding members from the existing members in the topology.
                 int sizeOfRespondingMembers = 0;
@@ -872,7 +872,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         log.error(msg);
                         return;
                     }
-                    Collection<Member> members = TopologyManager.getTopology().
+                    Collection<Member> members = TopologyHolder.getTopology().
                             getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
 
                     while (members.size() > 0) {

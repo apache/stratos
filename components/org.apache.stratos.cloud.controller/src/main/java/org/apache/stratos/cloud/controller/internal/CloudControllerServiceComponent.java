@@ -29,11 +29,11 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventSynchronizer;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationEventReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
+import org.apache.stratos.cloud.controller.messaging.receiver.initializer.InitializerTopicReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
 import org.apache.stratos.common.Component;
-import org.apache.stratos.common.services.ComponentActivationEventListener;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -57,9 +57,11 @@ import java.util.concurrent.TimeUnit;
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
  * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
  * cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
- * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.services.DistributedObjectProvider"
+ * @scr.reference name="distributedObjectProvider"
+ * interface="org.apache.stratos.common.services.DistributedObjectProvider"
  * cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
- * @scr.reference name="componentStartUpSynchronizer" interface="org.apache.stratos.common.services.ComponentStartUpSynchronizer"
+ * @scr.reference name="componentStartUpSynchronizer"
+ * interface="org.apache.stratos.common.services.ComponentStartUpSynchronizer"
  * cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
@@ -79,6 +81,7 @@ public class CloudControllerServiceComponent {
     private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
     private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
     private ApplicationEventReceiver applicationEventReceiver;
+    private InitializerTopicReceiver initializerTopicReceiver;
     private ExecutorService executorService;
     private ScheduledExecutorService scheduler;
 
@@ -88,15 +91,15 @@ public class CloudControllerServiceComponent {
         }
         try {
             executorService = StratosThreadPool.getExecutorService(THREAD_POOL_ID, THREAD_POOL_SIZE);
-            scheduler = StratosThreadPool.getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID,
-                    SCHEDULER_THREAD_POOL_SIZE);
+            scheduler = StratosThreadPool
+                    .getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID, SCHEDULER_THREAD_POOL_SIZE);
 
             Runnable cloudControllerActivator = new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        ComponentStartUpSynchronizer componentStartUpSynchronizer =
-                                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
+                        ComponentStartUpSynchronizer componentStartUpSynchronizer = ServiceReferenceHolder.getInstance()
+                                .getComponentStartUpSynchronizer();
 
                         // Register cloud controller service
                         BundleContext bundleContext = context.getBundleContext();
@@ -125,8 +128,8 @@ public class CloudControllerServiceComponent {
                             executeCoordinatorTasks();
                         }
 
-                        componentStartUpSynchronizer.waitForAxisServiceActivation(Component.CloudController,
-                                "CloudControllerService");
+                        componentStartUpSynchronizer
+                                .waitForAxisServiceActivation(Component.CloudController, "CloudControllerService");
                         componentStartUpSynchronizer.setComponentStatus(Component.CloudController, true);
                         log.info("Cloud controller service component activated");
                     } catch (Exception e) {
@@ -166,27 +169,17 @@ public class CloudControllerServiceComponent {
             log.info("Instance status event receiver thread started");
         }
 
+        initializerTopicReceiver = new InitializerTopicReceiver();
+        initializerTopicReceiver.setExecutorService(executorService);
+        initializerTopicReceiver.execute();
+
+        if (log.isInfoEnabled()) {
+            log.info("Initializer event receiver thread started");
+        }
+
         if (log.isInfoEnabled()) {
             log.info("Scheduling topology synchronizer task");
         }
-
-        ComponentStartUpSynchronizer componentStartUpSynchronizer =
-                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-        if (componentStartUpSynchronizer.isEnabled()) {
-            componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
-                @Override
-                public void activated(Component component) {
-                    if (component == Component.StratosManager) {
-                        scheduleEventSynchronizers();
-                    }
-                }
-            });
-        } else {
-            scheduleEventSynchronizers();
-        }
-    }
-
-    private void scheduleEventSynchronizers() {
         Runnable topologySynchronizer = new TopologyEventSynchronizer();
         scheduler.scheduleAtFixedRate(topologySynchronizer, 0, 1, TimeUnit.MINUTES);
     }
@@ -228,8 +221,8 @@ public class CloudControllerServiceComponent {
     }
 
     protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
-        ServiceReferenceHolder.getInstance().setAxisConfiguration(
-                cfgCtxService.getServerConfigContext().getAxisConfiguration());
+        ServiceReferenceHolder.getInstance()
+                .setAxisConfiguration(cfgCtxService.getServerConfigContext().getAxisConfiguration());
     }
 
     protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {

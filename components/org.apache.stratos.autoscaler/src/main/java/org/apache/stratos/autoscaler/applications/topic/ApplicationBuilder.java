@@ -57,19 +57,6 @@ import java.util.Set;
 public class ApplicationBuilder {
     private static final Log log = LogFactory.getLog(ApplicationBuilder.class);
 
-    public static synchronized void handleCompleteApplication(Applications applications) {
-        if (log.isDebugEnabled()) {
-            log.debug("Handling complete application event");
-        }
-
-        try {
-            ApplicationHolder.acquireReadLock();
-            ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);
-        } finally {
-            ApplicationHolder.releaseReadLock();
-        }
-    }
-
     /**
      * Create application clusters in cloud controller and send application created event.
      *

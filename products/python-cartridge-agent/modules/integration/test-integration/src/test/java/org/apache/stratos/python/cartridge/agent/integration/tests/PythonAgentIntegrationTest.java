@@ -33,6 +33,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
+import org.apache.stratos.messaging.message.receiver.initializer.InitializerEventReceiver;
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
@@ -72,6 +73,7 @@ public class PythonAgentIntegrationTest {
     protected boolean eventReceiverInitiated = false;
     protected TopologyEventReceiver topologyEventReceiver;
     protected InstanceStatusEventReceiver instanceStatusEventReceiver;
+    protected InitializerEventReceiver initializerEventReceiver;
     protected boolean instanceStarted;
     protected boolean instanceActivated;
     protected ByteArrayOutputStreamLocal outputStream;
@@ -112,14 +114,17 @@ public class PythonAgentIntegrationTest {
                 }
             });
 
+            initializerEventReceiver = new InitializerEventReceiver();
+            initializerEventReceiver.setExecutorService(executorService);
+            initializerEventReceiver.execute();
+
             this.eventReceiverInitiated = true;
         }
 
         // Start CEP Thrift test server
         thriftTestServer = new ThriftTestServer();
 
-        File file =
-                new File(getResourcesPath() + PATH_SEP + "common" + PATH_SEP + "stratos-health-stream-def.json");
+        File file = new File(getResourcesPath() + PATH_SEP + "common" + PATH_SEP + "stratos-health-stream-def.json");
         FileInputStream fis = new FileInputStream(file);
         byte[] data = new byte[(int) file.length()];
         fis.read(data);
@@ -139,7 +144,6 @@ public class PythonAgentIntegrationTest {
         this.outputStream = executeCommand("python " + agentPath + PATH_SEP + "agent.py", timeout);
     }
 
-
     protected void tearDown() {
         tearDown(null);
     }
@@ -155,8 +159,7 @@ public class PythonAgentIntegrationTest {
                 log.info("Terminating process: " + commandText);
                 executor.setExitValue(0);
                 executor.getWatchdog().destroyProcess();
-            }
-            catch (Exception ignore) {
+            } catch (Exception ignore) {
             }
         }
         // wait until everything cleans up to avoid connection errors
@@ -165,36 +168,34 @@ public class PythonAgentIntegrationTest {
             try {
                 log.info("Stopping socket server: " + serverSocket.getLocalSocketAddress());
                 serverSocket.close();
-            }
-            catch (IOException ignore) {
+            } catch (IOException ignore) {
             }
         }
         try {
             if (thriftTestServer != null) {
                 thriftTestServer.stop();
             }
-        }
-        catch (Exception ignore) {
+        } catch (Exception ignore) {
         }
 
         if (sourcePath != null) {
             try {
                 log.info("Deleting source checkout folder...");
                 FileUtils.deleteDirectory(new File(sourcePath));
-            }
-            catch (Exception ignore) {
+            } catch (Exception ignore) {
             }
         }
+        log.info("Terminating event receivers...");
         this.instanceStatusEventReceiver.terminate();
         this.topologyEventReceiver.terminate();
+        this.initializerEventReceiver.terminate();
 
         this.instanceActivated = false;
         this.instanceStarted = false;
         try {
             broker.stop();
             broker = null;
-        }
-        catch (Exception ignore) {
+        } catch (Exception ignore) {
         }
         // TODO: use thread synchronization and assert all connections are properly closed
         // leave some room to clear up active connections
@@ -203,8 +204,7 @@ public class PythonAgentIntegrationTest {
 
     public PythonAgentIntegrationTest() throws IOException {
         integrationProperties
-                .load(PythonAgentIntegrationTest.class
-                        .getResourceAsStream(PATH_SEP + "integration-test.properties"));
+                .load(PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
         distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
         amqpBindAddress = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_ADDRESS);
         mqttBindAddress = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_ADDRESS);
@@ -223,7 +223,7 @@ public class PythonAgentIntegrationTest {
         AuthenticationUser authenticationUser = new AuthenticationUser("system", "manager", "users,admins");
         List<AuthenticationUser> authUserList = new ArrayList<>();
         authUserList.add(authenticationUser);
-        broker.setPlugins(new BrokerPlugin[]{new SimpleAuthenticationPlugin(authUserList)});
+        broker.setPlugins(new BrokerPlugin[] { new SimpleAuthenticationPlugin(authUserList) });
         broker.setBrokerName("testBroker");
         broker.setDataDirectory(
                 PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
@@ -244,8 +244,7 @@ public class PythonAgentIntegrationTest {
                             if (line.contains("Exception in thread") || line.contains("ERROR")) {
                                 try {
                                     throw new RuntimeException(line);
-                                }
-                                catch (Exception e) {
+                                } catch (Exception e) {
                                     log.error("ERROR found in PCA log", e);
                                 }
                             }
@@ -284,8 +283,7 @@ public class PythonAgentIntegrationTest {
                             log.info("Message received for [port] " + port + ", [message] " + output);
                         }
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     String message = "Could not start server socket: [port] " + port;
                     log.error(message, e);
                     throw new RuntimeException(message, e);
@@ -299,7 +297,6 @@ public class PythonAgentIntegrationTest {
         return PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
                 ".." + PATH_SEP + "src" + PATH_SEP + "test" + PATH_SEP + "resources" + PATH_SEP + "common";
     }
-
 
     public static String getResourcesPath() {
         return PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
@@ -320,13 +317,12 @@ public class PythonAgentIntegrationTest {
         try {
             log.info("Setting up python cartridge agent...");
 
-
             String srcAgentPath = PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() +
                     PATH_SEP + ".." + PATH_SEP + ".." + PATH_SEP + ".." + PATH_SEP + ".." + PATH_SEP + "distribution" +
                     PATH_SEP + "target" + PATH_SEP + distributionName + ".zip";
-            String unzipDestPath =
-                    PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
-                            PYTHON_AGENT_DIR_NAME + PATH_SEP;
+            String unzipDestPath = PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".."
+                    + PATH_SEP +
+                    PYTHON_AGENT_DIR_NAME + PATH_SEP;
             //FileUtils.copyFile(new File(srcAgentPath), new File(destAgentPath));
             unzip(srcAgentPath, unzipDestPath);
             String destAgentPath = PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." +
@@ -370,8 +366,7 @@ public class PythonAgentIntegrationTest {
             log.info("Python cartridge agent setup completed");
 
             return destAgentPath;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = "Could not copy cartridge agent distribution";
             log.error(message, e);
             throw new RuntimeException(message, e);
@@ -442,8 +437,7 @@ public class PythonAgentIntegrationTest {
             });
             executorList.put(commandText, exec);
             return outputStream;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(outputStream.toString(), e);
             throw new RuntimeException(e);
         }
@@ -457,8 +451,7 @@ public class PythonAgentIntegrationTest {
     protected void sleep(long time) {
         try {
             Thread.sleep(time);
-        }
-        catch (InterruptedException ignore) {
+        } catch (InterruptedException ignore) {
         }
     }
 
@@ -494,7 +487,6 @@ public class PythonAgentIntegrationTest {
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
         eventPublisher.publish(event);
     }
-
 
     /**
      * Implements ByteArrayOutputStream.isClosed() method

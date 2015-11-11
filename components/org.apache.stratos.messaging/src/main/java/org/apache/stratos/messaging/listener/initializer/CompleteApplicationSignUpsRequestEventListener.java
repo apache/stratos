@@ -16,22 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.listener.initializer;
 
-package org.apache.stratos.autoscaler.applications;
+import org.apache.stratos.messaging.listener.EventListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
-
-public class ApplicationEventSynchronizer implements Runnable {
-
-    private static final Log log = LogFactory.getLog(ApplicationEventSynchronizer.class);
-
-    @Override
-    public void run() {
-        if (log.isDebugEnabled()) {
-            log.debug("Executing applications synchronization task");
-        }
-        ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
-    }
+public abstract class CompleteApplicationSignUpsRequestEventListener extends EventListener {
 }

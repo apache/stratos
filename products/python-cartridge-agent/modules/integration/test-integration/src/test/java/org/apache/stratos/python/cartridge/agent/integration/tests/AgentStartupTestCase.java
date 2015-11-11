@@ -22,10 +22,14 @@ package org.apache.stratos.python.cartridge.agent.integration.tests;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
+import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
+import org.apache.stratos.messaging.listener.initializer.CompleteTenantRequestEventListener;
+import org.apache.stratos.messaging.listener.initializer.CompleteTopologyRequestEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -55,6 +59,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private static final String SERVICE_NAME = "php";
     private boolean startupTestCompleted = false;
     private boolean topologyContextTestCompleted = false;
+    private boolean completeTenantInitialized = false;
     private boolean thriftTestCompleted = false;
     private Topology topology = createTestTopology();
 
@@ -74,7 +79,6 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         startServerSocket(8080);
     }
 
-
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */
@@ -83,8 +87,9 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         tearDown();
     }
 
-    @Test(timeOut = STARTUP_TIMEOUT, description = "Test PCA initialization, activation, health stat publishing and " +
-            "topology context update", groups = {"smoke"})
+    @Test(timeOut = STARTUP_TIMEOUT,
+          description = "Test PCA initialization, activation, health stat publishing and " + "topology context update",
+          groups = { "smoke" })
     public void testPythonCartridgeAgent() {
         startCommunicatorThread();
         subscribeToThriftDatabridge();
@@ -99,24 +104,6 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
-                            if (line.contains("Subscribed to 'topology/#'")) {
-                                sleep(2000);
-                                // Send complete topology event
-                                log.info("Publishing complete topology event...");
-                                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-                                publishEvent(completeTopologyEvent);
-                                log.info("Complete topology event published");
-
-                                // Publish member initialized event
-                                log.info("Publishing member initialized event...");
-                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID, INSTANCE_ID
-                                );
-                                publishEvent(memberInitializedEvent);
-                                log.info("Member initialized event published");
-                            }
-
                             if (line.contains("Published event to thrift stream")) {
                                 startupTestCompleted = true;
                             }
@@ -124,6 +111,11 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                             // assert topology context update
                             if (line.contains("Topology context update test passed!")) {
                                 topologyContextTestCompleted = true;
+                            }
+
+                            // assert complete tenant initialization
+                            if (line.contains("Tenant context updated with")){
+                                completeTenantInitialized = true;
                             }
                         }
                     }
@@ -133,6 +125,35 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         });
 
         startupTestThread.start();
+
+        initializerEventReceiver.addEventListener(new CompleteTopologyRequestEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                // Send complete topology event
+                log.info("CompleteTopologyRequestEvent received. Publishing complete topology event...");
+                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
+                publishEvent(completeTopologyEvent);
+                log.info("Complete topology event published");
+
+                // Publish member initialized event
+                log.info("Publishing member initialized event...");
+                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(SERVICE_NAME, CLUSTER_ID,
+                        CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID, INSTANCE_ID);
+                publishEvent(memberInitializedEvent);
+                log.info("Member initialized event published");
+            }
+        });
+
+        initializerEventReceiver.addEventListener(new CompleteTenantRequestEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                // Send complete tenant event
+                log.info("CompleteTenantRequestEvent received. Publishing complete tenant event...");
+                CompleteTenantEvent completeTenantEvent = new CompleteTenantEvent(createTestTenantList());
+                publishEvent(completeTenantEvent);
+                log.info("Complete tenant event published");
+            }
+        });
 
         instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
             @Override
@@ -148,7 +169,7 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         });
 
         while (!instanceStarted || !instanceActivated || !startupTestCompleted || !topologyContextTestCompleted ||
-                !thriftTestCompleted) {
+                !thriftTestCompleted || !completeTenantInitialized) {
             // wait until the instance activated event is received.
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);
@@ -180,6 +201,19 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     }
 
     /**
+     * Create test tenant list
+     *
+     * @return List of tenant objects with mock information
+     */
+    private List<Tenant> createTestTenantList() {
+        List<Tenant> tenantList = new ArrayList<>();
+        tenantList.add(new Tenant(1, "test.one.domain"));
+        tenantList.add(new Tenant(2, "test.two.domain"));
+        tenantList.add(new Tenant(3, "test.three.domain"));
+        return tenantList;
+    }
+
+    /**
      * Create test topology
      *
      * @return Topology object with mock information
@@ -193,9 +227,8 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
                 AUTOSCALING_POLICY_NAME, APP_ID);
         service.addCluster(cluster);
 
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID,
-                CLUSTER_INSTANCE_ID, NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private,
-                System.currentTimeMillis());
+        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID, CLUSTER_INSTANCE_ID,
+                NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
 
         member.setDefaultPrivateIP("10.0.0.1");
         member.setDefaultPublicIP("20.0.0.1");
