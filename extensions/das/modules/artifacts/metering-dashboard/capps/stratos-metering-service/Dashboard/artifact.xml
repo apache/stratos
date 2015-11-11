@@ -20,5 +20,5 @@
 
 -->
 <artifact name="Dashboard" version="1.0.0" type="dashboards/dashboard" serverRole="DataAnalyticsServer">
-    <file>stratos-metering-dashboard.json</file>
+    <file>metering-dashboard.json</file>
 </artifact>

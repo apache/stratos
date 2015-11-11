@@ -1,6 +1,6 @@
 {
-  "id": "stratos-metering-dashboard",
-  "title": "Stratos Metering Dashboard",
+  "id": "metering-dashboard",
+  "title": "Metering Dashboard",
   "description": "This dashboard is to show metering data.",
   "permissions": {
     "viewers": [
