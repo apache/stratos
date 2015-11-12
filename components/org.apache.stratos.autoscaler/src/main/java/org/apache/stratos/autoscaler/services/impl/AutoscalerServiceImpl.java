@@ -1042,7 +1042,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.error(message);
             throw new DeploymentPolicyAlreadyExistsException(message);
         }
-        // Add cartridge to the cloud controller context and persist
+
         PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
 
         if (log.isInfoEnabled()) {
