@@ -81,4 +81,9 @@ public class NetworkPartitionRef implements Serializable {
     public void setPartitionAlgo(String partitionAlgo) {
         this.partitionAlgo = partitionAlgo;
     }
+
+    @Override
+    public String toString() {
+        return "Network partition [id=" + id + ", partitions=" + Arrays.toString(partitionRefs) + ", partition algorithm=" + partitionAlgo + "]";
+    }
 }

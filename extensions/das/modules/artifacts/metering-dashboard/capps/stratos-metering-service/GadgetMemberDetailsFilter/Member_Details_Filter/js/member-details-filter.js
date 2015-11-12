@@ -24,24 +24,20 @@ var clusterId;
 $(document).ready(function () {
     loadApplication();
 
-    setTimeout(function () {
-        if (applicationId != null) {
-            loadCluster(applicationId);
-            $('#' + window.frameElement.id).ready(function () {
-                $(this).contents().find('body').contents().find('#application-filter').val(applicationId);
-                publish();
-            });
-        }
-    }, 2000);
+    if (applicationId != null) {
+        loadCluster(applicationId);
+        $('#' + window.frameElement.id).ready(function () {
+            $(this).contents().find('body').contents().find('#application-filter').val(applicationId);
+            publish();
+        });
+    }
 
-    setTimeout(function () {
-        if (clusterId != null) {
-            $('#' + window.frameElement.id).ready(function () {
-                $(this).contents().find('body').contents().find('#cluster-filter').val(clusterId);
-                publish();
-            });
-        }
-    }, 3000);
+    if (clusterId != null) {
+        $('#' + window.frameElement.id).ready(function () {
+            $(this).contents().find('body').contents().find('#cluster-filter').val(clusterId);
+            publish();
+        });
+    }
 
 });
 

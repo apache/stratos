@@ -36,7 +36,7 @@ var log = new Log("apachestratos.applications_form"),
         editorDeploymentPolicies = applicationPolicyData = applicationJSON = '',
         isEdit = isForm = false,
         userPermissions = session.get('PERMISSIONS'),
-        dasStatsPublisherEnabled = application.get("dasStatsPublisherEnabled");
+        dasStatsPublisherEnabled = application.get("dasStatsPublisherEnabled"),
         meteringDashboardUrl = '';
 
 //create left menu
