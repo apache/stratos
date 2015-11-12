@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.python.cartridge.agent.integration.tests;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
@@ -44,22 +45,19 @@ import java.util.Properties;
 
 public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
 
-    public CEPHAModeTestCase() throws IOException {
-    }
-
     private static final Log log = LogFactory.getLog(CEPHAModeTestCase.class);
     private static final int STARTUP_TIMEOUT = 5 * 60000;
-    private static final String CLUSTER_ID = "php.php.domain";
+    private static final String CLUSTER_ID = "tomcat.tomcat.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
     private static final String APP_ID = "application-1";
-    private static final String MEMBER_ID = "php.member-1";
+    private static final String MEMBER_ID = "tomcat.member-1";
     private static final String INSTANCE_ID = "instance-1";
     private static final String CLUSTER_INSTANCE_ID = "cluster-1-instance-1";
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
-    private static final String SERVICE_NAME = "php";
+    private static final String SERVICE_NAME = "tomcat";
     private boolean startupTestCompleted = false;
     private Topology topology = createTestTopology();
     private static final int ADC_TIMEOUT = 300000;
@@ -67,11 +65,21 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
     private boolean thriftTestCompletedinServerTwo = false;
     private boolean thriftTestCompletedinServerOne = false;
     private boolean failDetected = false;
+    public static final String CEP_SERVER_TWO_PORT = "cep.server.two.port";
+    private int cepServerTwoPort;
+
+    public CEPHAModeTestCase() throws IOException {
+
+        integrationProperties
+                .load(PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
+        cepServerTwoPort = Integer.parseInt(integrationProperties.getProperty(CEP_SERVER_TWO_PORT));
+
+    }
 
 
     @BeforeMethod(alwaysRun = true)
-    public void setupADCExtensionTest() throws Exception {
-        log.info("Setting up ADCExtensionTestCase");
+    public void setupCEPHAModeTest() throws Exception {
+        log.info("Setting up CEPHAModeTestCase");
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
 
@@ -83,17 +91,14 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
         File file =
                 new File(getResourcesPath() + PATH_SEP + "common" + PATH_SEP + "stratos-health-stream-def.json");
         FileInputStream fis = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        fis.read(data);
-        fis.close();
+        String str = IOUtils.toString(fis, "UTF-8");
 
-        String str = new String(data, "UTF-8");
         if (str.equals("")) {
             log.warn("Stream definition of health stat stream is empty. Thrift server will not function properly");
         }
         secondThriftTestServer.addStreamDefinition(str, Integer.parseInt(TENANT_ID));
         // start with non-ssl port; test server will automatically bind to ssl port
-        secondThriftTestServer.start(cepPort + 1);
+        secondThriftTestServer.start(cepServerTwoPort);
         log.info("Started Thrift server with stream definition: " + str);
 
         // Simulate server socket
@@ -158,6 +163,7 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
 
                             if (line.contains("Couldn't publish health statistics to CEP. Thrift Receiver offline.")) {
                                 failDetected = true;
+                                log.info("Fail detected in the stopped cep server.");
                             }
 
                         }
@@ -233,6 +239,7 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
                 // if the list contains an event that means PCA was able to successfully publish health stats
                 if (eventList.size() > 0) {
                     thriftTestCompletedinServerOne = true;
+                    log.info("Health stats received for thirft server one");
                 }
             }
         });
@@ -257,6 +264,7 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
                 // if the list contains an event that means PCA was able to successfully publish health stats
                 if (eventList.size() > 0) {
                     thriftTestCompletedinServerTwo = true;
+                    log.info("Health stats received for thirft server two");
                 }
             }
         });

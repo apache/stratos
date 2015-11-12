@@ -38,6 +38,7 @@ import org.apache.stratos.messaging.message.receiver.instance.status.InstanceSta
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 import org.apache.stratos.python.cartridge.agent.integration.common.ThriftTestServer;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -56,9 +57,10 @@ public class PythonAgentIntegrationTest {
     public static final String NEW_LINE = System.getProperty("line.separator");
     public static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "activemq.amqp.bind.address";
     public static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "activemq.mqtt.bind.address";
-    public static final String CEP_PORT = "cep.port";
-    public static final String CEP_SSL_PORT = "cep.ssl.port";
+    public static final String CEP_PORT = "cep.server.one.port";
+    public static final String CEP_SSL_PORT = "cep.server.one.ssl.port";
     public static final String DISTRIBUTION_NAME = "distribution.name";
+    public static final String TEST_THREAD_POOL_SIZE = "test.thread.pool.size";
     protected final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
 
     protected Map<Integer, ServerSocket> serverSocketMap = new HashMap<>();
@@ -69,6 +71,7 @@ public class PythonAgentIntegrationTest {
     protected String amqpBindAddress;
     protected String mqttBindAddress;
     protected String distributionName;
+    protected int testThreadPoolSize;
 
     protected boolean eventReceiverInitiated = false;
     protected TopologyEventReceiver topologyEventReceiver;
@@ -87,7 +90,7 @@ public class PythonAgentIntegrationTest {
         startBroker();
 
         if (!this.eventReceiverInitiated) {
-            ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 15);
+            ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", testThreadPoolSize);
             topologyEventReceiver = new TopologyEventReceiver();
             topologyEventReceiver.setExecutorService(executorService);
             topologyEventReceiver.execute();
@@ -126,10 +129,8 @@ public class PythonAgentIntegrationTest {
 
         File file = new File(getResourcesPath() + PATH_SEP + "common" + PATH_SEP + "stratos-health-stream-def.json");
         FileInputStream fis = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        fis.read(data);
-        fis.close();
-        String str = new String(data, "UTF-8");
+        String str = IOUtils.toString(fis, "UTF-8");
+
         if (str.equals("")) {
             log.warn("Stream definition of health stat stream is empty. Thrift server will not function properly");
         }
@@ -210,6 +211,7 @@ public class PythonAgentIntegrationTest {
         mqttBindAddress = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_ADDRESS);
         cepPort = Integer.parseInt(integrationProperties.getProperty(CEP_PORT));
         cepSSLPort = Integer.parseInt(integrationProperties.getProperty(CEP_SSL_PORT));
+        testThreadPoolSize = Integer.parseInt(integrationProperties.getProperty(TEST_THREAD_POOL_SIZE));
         log.info("PCA integration properties: " + integrationProperties.toString());
     }
 
@@ -223,7 +225,7 @@ public class PythonAgentIntegrationTest {
         AuthenticationUser authenticationUser = new AuthenticationUser("system", "manager", "users,admins");
         List<AuthenticationUser> authUserList = new ArrayList<>();
         authUserList.add(authenticationUser);
-        broker.setPlugins(new BrokerPlugin[] { new SimpleAuthenticationPlugin(authUserList) });
+        broker.setPlugins(new BrokerPlugin[]{new SimpleAuthenticationPlugin(authUserList)});
         broker.setBrokerName("testBroker");
         broker.setDataDirectory(
                 PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
