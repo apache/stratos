@@ -40,12 +40,14 @@ function menuGenerator(context, jsonobject, permissions) {
 
             if (hasPermission.length > 0) {
                 if (jsonPermission.title == "Monitoring") {
+                    if(jsonPermission.linkexternal){
+                        target = "_blank";
+                    }
                     if (application.get("dasStatsPublisherEnabled") == true) {
                         link = application.get("monitoringDashboardUrl");
                         menu_html += '<li><a href="' + link + '" target="' + target + '">';
                     } else {
                         link = jsonPermission.link;
-                        target = "_blank";
                         menu_html += '<li><a href="' + link + '" target="' + target + '" class="disabled">';
                     }
                 } else {
