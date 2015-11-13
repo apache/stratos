@@ -82,7 +82,7 @@ public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher i
         List<Object> payload = new ArrayList<Object>();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Publishing health statistics: [timestamp] %d [cluster] %s " +
+            log.debug(String.format("Publishing health statistics: [cluster] %s " +
                             "[cluster-instance] %s [network-partition] %s [in-flight-request-count] %d",
                     clusterId, clusterInstanceId, networkPartitionId, inFlightRequestCount));
         }
