@@ -35,7 +35,7 @@ import org.apache.stratos.manager.messaging.receiver.StratosManagerInstanceStatu
 import org.apache.stratos.manager.messaging.receiver.StratosManagerTopologyEventReceiver;
 import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
-import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
+import org.apache.stratos.common.util.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.MessagingUtil;

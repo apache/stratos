@@ -48,6 +48,7 @@ import org.apache.stratos.common.Component;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.common.util.CartridgeConfigFileReader;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
@@ -114,7 +115,7 @@ public class AutoscalerServiceComponent {
                                 .waitForComponentActivation(Component.Autoscaler, Component.CloudController);
 
                         ServiceReferenceHolder.getInstance().setExecutorService(executorService);
-
+                        CartridgeConfigFileReader.readProperties();
                         if (AutoscalerContext.getInstance().isClustered()) {
                             Thread coordinatorElectorThread = new Thread() {
                                 @Override
@@ -161,6 +162,15 @@ public class AutoscalerServiceComponent {
             throws InvalidPolicyException, InvalidDeploymentPolicyException, InvalidApplicationPolicyException,
                    AutoScalingPolicyAlreadyExistException {
 
+        syncInMemoryWithRegistry();
+
+        //starting the processor chain
+        ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
+        ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
+
+        GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
+        ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
+
         // Start topology receiver
         asTopologyReceiver = new AutoscalerTopologyEventReceiver();
         asTopologyReceiver.setExecutorService(executorService);
@@ -185,6 +195,15 @@ public class AutoscalerServiceComponent {
             log.debug("Initializer receiver thread started");
         }
 
+        if (log.isInfoEnabled()) {
+            log.info("Scheduling tasks to publish applications");
+        }
+        Runnable applicationSynchronizer = new ApplicationEventSynchronizer();
+        scheduler.scheduleAtFixedRate(applicationSynchronizer, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private void syncInMemoryWithRegistry() throws AutoScalingPolicyAlreadyExistException,
+            InvalidDeploymentPolicyException, InvalidApplicationPolicyException {
         // Add AS policies to information model
         List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
         Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();
@@ -223,19 +242,6 @@ public class AutoscalerServiceComponent {
 
         //Adding application context from registry
         AutoscalerUtil.readApplicationContextsFromRegistry();
-
-        //starting the processor chain
-        ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
-        ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
-
-        GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
-        ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
-
-        if (log.isInfoEnabled()) {
-            log.info("Scheduling tasks to publish applications");
-        }
-        Runnable applicationSynchronizer = new ApplicationEventSynchronizer();
-        scheduler.scheduleAtFixedRate(applicationSynchronizer, 0, 1, TimeUnit.MINUTES);
     }
 
     protected void deactivate(ComponentContext context) {
