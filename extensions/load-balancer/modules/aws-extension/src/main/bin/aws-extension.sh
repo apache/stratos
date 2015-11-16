@@ -38,8 +38,8 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Dcluster.id=cluster-1
             -Dservice.name=service-1
             -Dterminate.lbs.on.extension.stop=false
-            -Dterminate.lb.on.cluster.removal=true
-            -Doperating.in.vpc=false
+            -Dterminate.lb.on.cluster.removal=false
+            -Doperating.in.vpc=true
             -Denable.cross.zone.load.balancing=true"
 
 

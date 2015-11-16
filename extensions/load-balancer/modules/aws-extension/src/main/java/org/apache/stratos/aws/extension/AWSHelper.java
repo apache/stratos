@@ -53,12 +53,16 @@ public class AWSHelper {
     private String awsSecretKey;
     private String lbPrefix;
     private String lbSecurityGroupName;
+    private String lbSecurityGroupId;
     private String lbSecurityGroupDescription;
     private String allowedCidrIpForLBSecurityGroup;
     private int statisticsInterval;
     private String sslCertificateId;
     private String appStickySessionCookie;
     private Set<String> initialZones = new HashSet<>();
+    private Set<String> subnetIds = new HashSet<>();
+    private Set<String> vpcIds = new HashSet<>();
+    private String lbScheme;
 
     private AtomicInteger lbSequence;
 
@@ -113,11 +117,18 @@ public class AWSHelper {
             this.lbSecurityGroupName = properties
                     .getProperty(Constants.LOAD_BALANCER_SECURITY_GROUP_NAME);
 
-            if (this.lbSecurityGroupName.isEmpty()
-                    || this.lbSecurityGroupName.length() > Constants.SECURITY_GROUP_NAME_MAX_LENGTH) {
-                throw new LoadBalancerExtensionException(
-                        "Invalid load balancer security group name.");
+            lbSecurityGroupId = properties.getProperty(Constants.LOAD_BALANCER_SECURITY_GROUP_ID);
+
+            if ((lbSecurityGroupId == null || lbSecurityGroupId.isEmpty()) && (this.lbSecurityGroupName.isEmpty()
+                    || this.lbSecurityGroupName.length() > Constants.SECURITY_GROUP_NAME_MAX_LENGTH)) {
+                throw new LoadBalancerExtensionException("Either security group name or security " +
+                        "group id is required");
             }
+
+//            if (this.lbSecurityGroupName.isEmpty() || this.lbSecurityGroupName.length() >
+//                    Constants.SECURITY_GROUP_NAME_MAX_LENGTH) {
+//                throw new LoadBalancerExtensionException("Invalid load balancer security group name.");
+//            }
 
             // Read the SSL certificate Id. This is mandatory if only we are using HTTPS as the front end protocol.
             // http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/using-elb-listenerconfig-quickref.html
@@ -177,6 +188,20 @@ public class AWSHelper {
                 initialZones.addAll(Arrays.asList(commaSeparatedInitialZones.trim().split("\\s*," +
                         "\\s*")));
             }
+
+            String commaSeparatedSubnetIds = properties.getProperty(Constants.SUBNET_IDS);
+            if (commaSeparatedSubnetIds != null && !commaSeparatedSubnetIds.isEmpty()) {
+                subnetIds.addAll(Arrays.asList(commaSeparatedSubnetIds.trim().split("\\s*," +
+                        "\\s*")));
+            }
+
+            String commaSeparatedVPCIds = properties.getProperty(Constants.VPC_IDS);
+            if (commaSeparatedVPCIds != null && !commaSeparatedVPCIds.isEmpty()) {
+                vpcIds.addAll(Arrays.asList(commaSeparatedVPCIds.trim().split("\\s*," +
+                        "\\s*")));
+            }
+
+            lbScheme = properties.getProperty(Constants.LB_SCHEME);
 
             regionToSecurityGroupIdMap = new ConcurrentHashMap<String, String>();
 
@@ -246,15 +271,36 @@ public class AWSHelper {
 //		availabilityZones.add(getAvailabilityZoneFromRegion(region));
 //
 //		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
-        createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
+        
 
         try {
             if (inVPC) {
-                String securityGroupId = getSecurityGroupIdForRegion(region);
+               
                 List<String> securityGroups = new ArrayList<String>();
-                securityGroups.add(securityGroupId);
+                if (!vpcIds.isEmpty()) {
+                    for (String vpcId : vpcIds) {
+                        String securityGroupId = getSecurityGroupIdForRegion(region, vpcId);
+                        securityGroups.add(securityGroupId);
+                    }
+                } else {
+                    String securityGroupId = getSecurityGroupIdForRegion(region, null);
+                    securityGroups.add(securityGroupId);
+                }
 
                 createLoadBalancerRequest.setSecurityGroups(securityGroups);
+
+                // set subnet ids
+                if (!getSubnetIds().isEmpty()) {
+                    createLoadBalancerRequest.setSubnets(subnetIds);
+                }
+
+                // set scheme to 'internal' if specified
+                if (getLbScheme() != null && getLbScheme().equals(Constants.LB_SCHEME_INTERNAL)) {
+                    createLoadBalancerRequest.setScheme(getLbScheme());
+                }
+            } else {
+                // set initial availability zones
+                createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
             }
 
             elbClient.setEndpoint(String.format(
@@ -309,8 +355,7 @@ public class AWSHelper {
     public void registerInstancesToLoadBalancer(String loadBalancerName,
                                                 List<Instance> instances, String region) {
 
-        log.info("Registering following instance(s) to load balancer "
-                + loadBalancerName);
+        log.info("Registering following instance(s) to load balancer " + loadBalancerName);
 
         for (Instance instance : instances) {
             log.info(instance.getInstanceId());
@@ -319,16 +364,26 @@ public class AWSHelper {
         RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest = new RegisterInstancesWithLoadBalancerRequest(
                 loadBalancerName, instances);
 
+        RegisterInstancesWithLoadBalancerResult registerInstancesWithLBRes = null;
+
         try {
             elbClient.setEndpoint(String.format(
                     Constants.ELB_ENDPOINT_URL_FORMAT, region));
 
-            elbClient
+            registerInstancesWithLBRes = elbClient
                     .registerInstancesWithLoadBalancer(registerInstancesWithLoadBalancerRequest);
 
         } catch (AmazonClientException e) {
             log.error("Could not register instances to load balancer "
                     + loadBalancerName, e);
+        }
+
+        if (registerInstancesWithLBRes != null && registerInstancesWithLBRes.getInstances().size() > 0) {
+            log.info("Total instances attached to the LB " + loadBalancerName + " : " +
+                    registerInstancesWithLBRes.getInstances().size());
+
+        }  else {
+            log.warn("No instances attached to the LB " + loadBalancerName);
         }
     }
 
@@ -484,11 +539,17 @@ public class AWSHelper {
         }
 
         DescribeSecurityGroupsRequest describeSecurityGroupsRequest = new DescribeSecurityGroupsRequest();
-
-        List<String> groupNames = new ArrayList<String>();
-        groupNames.add(groupName);
-
-        describeSecurityGroupsRequest.setGroupNames(groupNames);
+        if (AWSExtensionContext.getInstance().isOperatingInVPC()) {
+            if (getVpcIds().size() > 0) {
+                // vpc id filter
+                Set<Filter> filters = getFilters(getVpcIds().iterator().next(), lbSecurityGroupName);
+                describeSecurityGroupsRequest.setFilters(filters);
+            } else {
+                List<String> groupNames = new ArrayList<String>();
+                groupNames.add(groupName);
+                describeSecurityGroupsRequest.setGroupNames(groupNames);
+            }
+        }
 
         try {
             ec2Client.setEndpoint(String.format(
@@ -502,6 +563,8 @@ public class AWSHelper {
 
             if (securityGroups != null && securityGroups.size() > 0) {
                 return securityGroups.get(0).getGroupId();
+            } else {
+                log.warn("Could not find security group id for group " + groupName);
             }
         } catch (AmazonClientException e) {
             log.debug("Could not describe security groups.", e);
@@ -520,7 +583,8 @@ public class AWSHelper {
      * @throws LoadBalancerExtensionException
      */
     public String createSecurityGroup(String groupName, String description,
-                                      String region) throws LoadBalancerExtensionException {
+                                      String region, String vpcId) throws
+            LoadBalancerExtensionException {
         if (groupName == null || groupName.isEmpty()) {
             throw new LoadBalancerExtensionException(
                     "Invalid Security Group Name.");
@@ -529,6 +593,9 @@ public class AWSHelper {
         CreateSecurityGroupRequest createSecurityGroupRequest = new CreateSecurityGroupRequest();
         createSecurityGroupRequest.setGroupName(groupName);
         createSecurityGroupRequest.setDescription(description);
+        if (vpcId != null) {
+            createSecurityGroupRequest.setVpcId(vpcId);
+        }
 
         try {
             ec2Client.setEndpoint(String.format(
@@ -589,7 +656,10 @@ public class AWSHelper {
 
             if (securityGroups != null && securityGroups.size() > 0) {
                 secirutyGroup = securityGroups.get(0);
+            } else {
+                log.warn("No Security Groups found for group id " + groupId);
             }
+
         } catch (AmazonClientException e) {
             log.error("Could not describe security groups.", e);
         }
@@ -626,14 +696,15 @@ public class AWSHelper {
                 ec2Client.setEndpoint(String.format(
                         Constants.EC2_ENDPOINT_URL_FORMAT, region));
 
-                ec2Client
-                        .authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
+                ec2Client.authorizeSecurityGroupIngress(authorizeSecurityGroupIngressRequest);
 
             } catch (AmazonClientException e) {
                 throw new LoadBalancerExtensionException(
                         "Could not add inbound rule to security group "
                                 + groupId + ".", e);
             }
+        } else {
+            log.info("Rules already present for security group " + groupId);
         }
     }
 
@@ -643,30 +714,88 @@ public class AWSHelper {
      * in that region.
      *
      * @param region
+     * @param vpcId
      * @return Id of the security group
      * @throws LoadBalancerExtensionException
      */
-    public String getSecurityGroupIdForRegion(String region)
+    public String getSecurityGroupIdForRegion(String region, String vpcId)
             throws LoadBalancerExtensionException {
-        if (region == null)
-            return null;
+//        if (region == null)
+//            return null;
+//
+//        if (this.regionToSecurityGroupIdMap.contains(region)) {
+//            return this.regionToSecurityGroupIdMap.get(region);
+//        } else {
+//            // Get the the security group id if it is already present.
+//            String securityGroupId = getSecurityGroupId(
+//                    this.lbSecurityGroupName, region);
+//
+//            if (securityGroupId == null) {
+//                securityGroupId = createSecurityGroup(this.lbSecurityGroupName,
+//                        this.lbSecurityGroupDescription, region, vpcId);
+//            }
+//
+//            this.regionToSecurityGroupIdMap.put(region, securityGroupId);
+//
+//            return securityGroupId;
+//        }
 
-        if (this.regionToSecurityGroupIdMap.contains(region)) {
-            return this.regionToSecurityGroupIdMap.get(region);
+        // if lb security group id is defined, use that, do not create a new security group
+        if (lbSecurityGroupId != null && !lbSecurityGroupId.isEmpty()) {
+            return lbSecurityGroupId;
+        }
+
+        // check if the security group is already exists
+        DescribeSecurityGroupsRequest describeSecurityGroupsReq = new
+                DescribeSecurityGroupsRequest();
+        // set filter for vpc id
+        if (vpcId != null) {
+            Set<Filter> filters = getFilters(vpcId, lbSecurityGroupName);
+            describeSecurityGroupsReq.setFilters(filters);
         } else {
-            // Get the the security group id if it is already present.
-            String securityGroupId = getSecurityGroupId(
-                    this.lbSecurityGroupName, region);
+            // no vpc id defined, assume default vpc
+            List<String> groupNames = new ArrayList<String>();
+            groupNames.add(lbSecurityGroupName);
+            describeSecurityGroupsReq.setGroupNames(groupNames);
+        }
 
-            if (securityGroupId == null) {
-                securityGroupId = createSecurityGroup(this.lbSecurityGroupName,
-                        this.lbSecurityGroupDescription, region);
+        DescribeSecurityGroupsResult describeSecurityGroupsRes = null;
+        try {
+            ec2Client.setEndpoint(String.format(
+                    Constants.EC2_ENDPOINT_URL_FORMAT, region));
+
+            describeSecurityGroupsRes = ec2Client.describeSecurityGroups(describeSecurityGroupsReq);
+            if (describeSecurityGroupsRes != null && describeSecurityGroupsRes.getSecurityGroups() != null) {
+                // already exists, return the id
+                if(describeSecurityGroupsRes.getSecurityGroups().size() > 0) {
+                    return describeSecurityGroupsRes.getSecurityGroups().get(0).getGroupId();
+                }
             }
 
-            this.regionToSecurityGroupIdMap.put(region, securityGroupId);
-
-            return securityGroupId;
+        } catch (AmazonClientException e) {
+            throw new LoadBalancerExtensionException(e.getMessage(), e);
         }
+        return createSecurityGroup(this.lbSecurityGroupName, this.lbSecurityGroupDescription, region, vpcId);
+    }
+
+    private Set<Filter> getFilters(String vpcId, String securityGroupName) {
+        // vpc id filter
+        Filter vpcIdFilter = new Filter();
+        vpcIdFilter.setName("vpc-id");
+        Set<String> singleVpcIdSet = new HashSet<>();
+        singleVpcIdSet.add(vpcId);
+        vpcIdFilter.setValues(singleVpcIdSet);
+        // group name filter
+        Filter groupNameFilter = new Filter();
+        groupNameFilter.setName("group-name");
+        Set<String> singleGroupNameSet = new HashSet<>();
+        singleGroupNameSet.add(securityGroupName);
+        groupNameFilter.setValues(singleGroupNameSet);
+
+        Set<Filter> filters = new HashSet<>();
+        filters.add(vpcIdFilter);
+        filters.add(groupNameFilter);
+        return filters;
     }
 
     /**
@@ -1098,5 +1227,21 @@ public class AWSHelper {
 
     public Set<String> getInitialZones() {
         return initialZones;
+    }
+
+    public Set<String> getSubnetIds () {
+        return subnetIds;
+    }
+
+    public String getLbScheme() {
+        return lbScheme;
+    }
+
+    public Set<String> getVpcIds() {
+        return vpcIds;
+    }
+
+    public String getLbSecurityGroupIdDefinedInConfiguration () {
+        return lbSecurityGroupId;
     }
 }

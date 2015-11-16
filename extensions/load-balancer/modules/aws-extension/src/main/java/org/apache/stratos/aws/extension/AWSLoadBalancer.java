@@ -133,7 +133,7 @@ public class AWSLoadBalancer implements LoadBalancer {
                         }
 
                         // update LB with the zones
-                        if (!availabilityZones.isEmpty()) {
+                        if (!availabilityZones.isEmpty() && !AWSExtensionContext.getInstance().isOperatingInVPC()) {
                             awsHelper.addAvailabilityZonesForLoadBalancer(loadBalancerName, availabilityZones, region);
                         }
                     }
@@ -182,12 +182,22 @@ public class AWSLoadBalancer implements LoadBalancer {
 
                         // Add the inbound rule the security group of the load balancer
                         // For each listener, add a new rule with load balancer port as allowed protocol in the security group.
+                        // if security group id is defined, directly use that
                         for (Listener listener : listenersForThisCluster) {
                             int port = listener.getLoadBalancerPort();
 
-                            for (String protocol : awsHelper.getAllowedProtocolsForLBSecurityGroup()) {
-                                awsHelper.addInboundRuleToSecurityGroup(awsHelper.getSecurityGroupId(awsHelper
-                                        .getLbSecurityGroupName(), region), region, protocol, port);
+                            if (awsHelper.getLbSecurityGroupIdDefinedInConfiguration() != null && !awsHelper.
+                                    getLbSecurityGroupIdDefinedInConfiguration().isEmpty())  {
+                                for (String protocol : awsHelper.getAllowedProtocolsForLBSecurityGroup()) {
+                                    awsHelper.addInboundRuleToSecurityGroup(awsHelper.getLbSecurityGroupIdDefinedInConfiguration(),
+                                            region, protocol, port);
+                                }
+                            } else if (awsHelper.getLbSecurityGroupName() != null && !awsHelper
+                                    .getLbSecurityGroupName().isEmpty()) {
+                                for (String protocol : awsHelper.getAllowedProtocolsForLBSecurityGroup()) {
+                                    awsHelper.addInboundRuleToSecurityGroup(awsHelper.getSecurityGroupId(awsHelper
+                                            .getLbSecurityGroupName(), region), region, protocol, port);
+                                }
                             }
                         }
 
@@ -220,7 +230,7 @@ public class AWSLoadBalancer implements LoadBalancer {
                         awsHelper.registerInstancesToLoadBalancer(loadBalancerName, instances, region);
 
                         // update LB with the zones
-                        if (!availabilityZones.isEmpty()) {
+                        if (!availabilityZones.isEmpty() && !AWSExtensionContext.getInstance().isOperatingInVPC()) {
                             awsHelper.addAvailabilityZonesForLoadBalancer(loadBalancerName, availabilityZones, region);
                         }
 
