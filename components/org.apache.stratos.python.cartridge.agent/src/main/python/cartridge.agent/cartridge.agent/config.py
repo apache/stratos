@@ -140,6 +140,14 @@ class Config:
     """ :type : bool """
     maintenance = False
     """ :type : bool """
+    mb_urls = []
+    """ :type : list """
+    mb_username = None
+    """ :type : str """
+    mb_password = None
+    """ :type : str """
+    mb_publisher_timeout = None
+    """ :type : int """
 
     @staticmethod
     def read_conf_file():
@@ -171,6 +179,7 @@ class Config:
     def read_payload_file(param_file_path):
         """
         Reads the payload file of the cartridge and stores the values in a dictionary
+        :param param_file_path: payload parameter file path
         :return: Payload parameter dictionary of values
         :rtype: dict
         """
@@ -235,6 +244,7 @@ class Config:
     def read_property(property_key, critical=True):
         """
         Returns the value of the provided property
+        :param critical: If absence of this value should throw an error
         :param str property_key: the name of the property to be read
         :return: Value of the property
         :exception: ParameterNotFoundException if the provided property cannot be found
@@ -339,6 +349,10 @@ class Config:
 
             Config.is_primary = Config.read_property(constants.CLUSTERING_PRIMARY_KEY, False)
 
+            Config.mb_username = Config.read_property(constants.MB_USERNAME, False)
+            Config.mb_password = Config.read_property(constants.MB_PASSWORD, False)
+            Config.mb_urls = Config.read_property(constants.MB_URLS).split(",")
+            Config.mb_publisher_timeout = int(Config.read_property(constants.MB_PUBLISHER_TIMEOUT))
         except ParameterNotFoundException as ex:
             raise RuntimeError(ex)
 

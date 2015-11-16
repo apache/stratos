@@ -15,13 +15,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import threading
 import paho.mqtt.publish as publish
+import time
 
 import constants
 import healthstats
 from config import Config
 from modules.event.instance.status.events import *
 from modules.util import cartridgeagentutils
+from modules.util.cartridgeagentutils import IncrementalCeilingListIterator
 from modules.util.log import *
 
 log = LogFactory().get_log(__name__)
@@ -211,20 +214,55 @@ class EventPublisher:
 
     def __init__(self, topic):
         self.__topic = topic
+        self.__log = LogFactory().get_log(__name__)
+        self.__start_time = int(time.time())
 
     def publish(self, event):
-        mb_ip = Config.read_property(constants.MB_IP)
-        mb_port = Config.read_property(constants.MB_PORT)
-        mb_username = Config.read_property(constants.MB_USERNAME, False)
-        mb_password = Config.read_property(constants.MB_PASSWORD, False)
-        if mb_username is None:
+        publisher_thread = threading.Thread(target=self.__publish_event, args=(event,))
+        publisher_thread.start()
+
+    def __publish_event(self, event):
+        """
+        Publishes the given event to the message broker.
+
+        When a list of message brokers are given the event is published to the first message broker
+        available. Therefore the message brokers should share the data (ex: Sharing the KahaDB in ActiveMQ).
+
+        When the event cannot be published, it will be retried until the mb_publisher_timeout is exceeded.
+        This value is set in the agent.conf.
+
+        :param event:
+        :return: True if the event was published.
+        """
+        if Config.mb_username is None:
             auth = None
         else:
-            auth = {"username": mb_username, "password": mb_password}
+            auth = {"username": Config.mb_username, "password": Config.mb_password}
 
         payload = event.to_json()
-        publish.single(self.__topic,
-                       payload,
-                       hostname=mb_ip,
-                       port=mb_port,
-                       auth=auth)
+
+        retry_iterator = IncrementalCeilingListIterator([2, 2, 5, 5, 10, 10, 20, 20, 30, 30, 40, 40, 50, 50, 60], False)
+
+        # Retry to publish the event until the timeout exceeds
+        while int(time.time()) - self.__start_time < (Config.mb_publisher_timeout * 1000):
+            retry_interval = retry_iterator.get_next_retry_interval()
+
+            for mb_url in Config.mb_urls:
+                mb_ip, mb_port = mb_url.split(":")
+
+                try:
+                    publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port, auth=auth)
+                    self.__log.debug("Event published to %s:%s" % (mb_ip, mb_port))
+                    return True
+                except:
+                    self.__log.debug("Could not publish event to message broker %s:%s." % (mb_ip, mb_port))
+
+            self.__log.debug(
+                "Could not publish event to any of the provided message brokers. Retrying in %s seconds."
+                % retry_interval)
+
+            time.sleep(retry_interval)
+
+        self.__log.warn("Could not publish even to any of the provided message brokers before "
+                        "the timeout [%s] exceeded. The event will be dropped." % Config.mb_publisher_timeout)
+        return False

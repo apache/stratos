@@ -19,10 +19,10 @@ PARAM_FILE_PATH = "param.file.path"
 PLUGINS_DIR = "plugins.dir"
 EXTENSIONS_DIR = "extensions.dir"
 
-MB_IP = "mb.ip"
-MB_PORT = "mb.port"
+MB_URLS = "mb.urls"
 MB_USERNAME = "mb.username"
 MB_PASSWORD = "mb.password"
+MB_PUBLISHER_TIMEOUT = "mb.publisher.timeout"
 
 CARTRIDGE_KEY = "CARTRIDGE_KEY"
 APPLICATION_ID = "APPLICATION_ID"

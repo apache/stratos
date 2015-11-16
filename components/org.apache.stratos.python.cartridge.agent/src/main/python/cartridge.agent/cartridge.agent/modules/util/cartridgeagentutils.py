@@ -31,6 +31,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 
+
 def decrypt_password(pass_str, secret):
     """
     Decrypts the given password using the given secret. The encryption is assumed to be done
@@ -74,18 +75,19 @@ def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
 
-    log.debug("Port check timeout: %r" % ports_check_timeout)
+    log.debug("Port check timeout: %s" % ports_check_timeout)
 
     active = False
     start_time = current_milli_time()
     while not active:
-        log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
+        log.info("Waiting for ports to be active: [ip] %s [ports] %s" % (ip_address, ports))
         active = check_ports_active(ip_address, ports)
         end_time = current_milli_time()
         duration = end_time - start_time
 
         if duration > ports_check_timeout:
-            log.info("Port check timeout reached: [ip] %r [ports] %r [timeout] %r" % (ip_address, ports, ports_check_timeout))
+            log.info("Port check timeout reached: [ip] %s [ports] %s [timeout] %s"
+                     % (ip_address, ports, ports_check_timeout))
             return False
 
         time.sleep(5)
@@ -110,10 +112,39 @@ def check_ports_active(ip_address, ports):
         s.settimeout(5)
         try:
             s.connect((ip_address, int(port)))
-            log.debug("Port %r is active" % port)
+            log.debug("Port %s is active" % port)
             s.close()
         except socket.error:
-            log.debug("Port %r is not active" % port)
+            log.debug("Port %s is not active" % port)
             return False
 
     return True
+
+
+class IncrementalCeilingListIterator(object):
+    """
+    Iterates through a given list and returns elements. At the end of the list if terminate_at_end is set to false,
+    the last element will be returned repeatedly. If terminate_at_end is set to true, an IndexError will be thrown.
+    """
+
+    def __init__(self, intervals, terminate_at_end):
+        self.__intervals = intervals
+        self.__index = 0
+        self.__terminate_at_end = terminate_at_end
+
+    def get_next_retry_interval(self):
+        """
+        Retrieves the next element in the list.
+        :return:
+        :rtype: int
+        """
+        if self.__index < len(self.__intervals):
+            next_interval = self.__intervals[self.__index]
+            self.__index += 1
+        else:
+            if self.__terminate_at_end:
+                raise IndexError("Reached the end of the list")
+            else:
+                next_interval = self.__intervals[-1]
+
+        return next_interval

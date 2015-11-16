@@ -49,27 +49,30 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class PythonAgentIntegrationTest {
-    protected final Properties integrationProperties = new Properties();
-    public static final String PATH_SEP = File.separator;
-    private static final Log log = LogFactory.getLog(PythonAgentIntegrationTest.class);
-    protected BrokerService broker;
 
+    public static final String PATH_SEP = File.separator;
     public static final String NEW_LINE = System.getProperty("line.separator");
-    public static final String ACTIVEMQ_AMQP_BIND_ADDRESS = "activemq.amqp.bind.address";
-    public static final String ACTIVEMQ_MQTT_BIND_ADDRESS = "activemq.mqtt.bind.address";
+
+    public static final String ACTIVEMQ_AMQP_BIND_PORTS = "activemq.amqp.bind.ports";
+    public static final String ACTIVEMQ_MQTT_BIND_PORTS = "activemq.mqtt.bind.ports";
     public static final String CEP_PORT = "cep.server.one.port";
     public static final String CEP_SSL_PORT = "cep.server.one.ssl.port";
     public static final String DISTRIBUTION_NAME = "distribution.name";
+
+    private static final Log log = LogFactory.getLog(PythonAgentIntegrationTest.class);
+
     public static final String TEST_THREAD_POOL_SIZE = "test.thread.pool.size";
     protected final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
+//    protected final String defaultBrokerName = "testBrokerDefault";
+    protected final Properties integrationProperties = new Properties();
 
     protected Map<Integer, ServerSocket> serverSocketMap = new HashMap<>();
     protected Map<String, Executor> executorList = new HashMap<>();
 
     protected int cepPort;
     protected int cepSSLPort;
-    protected String amqpBindAddress;
-    protected String mqttBindAddress;
+    protected String[] amqpBindPorts;
+    protected String[] mqttBindPorts;
     protected String distributionName;
     protected int testThreadPoolSize;
 
@@ -82,12 +85,38 @@ public class PythonAgentIntegrationTest {
     protected ByteArrayOutputStreamLocal outputStream;
     protected ThriftTestServer thriftTestServer;
 
+    private Map<String, BrokerService> messageBrokers;
+
+
     /**
      * Setup method for test method testPythonCartridgeAgent
      */
     protected void setup(int timeout) throws Exception {
+        messageBrokers = new HashMap<>();
+
+        distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
+
+        cepPort = Integer.parseInt(integrationProperties.getProperty(CEP_PORT));
+        cepSSLPort = Integer.parseInt(integrationProperties.getProperty(CEP_SSL_PORT));
+
+        Properties jndiProperties = new Properties();
+        jndiProperties.load(new FileInputStream(new File(System.getProperty("jndi.properties.dir") + PATH_SEP + "jndi.properties")));
+        if (!jndiProperties.containsKey(ACTIVEMQ_AMQP_BIND_PORTS) || !jndiProperties.containsKey(ACTIVEMQ_MQTT_BIND_PORTS)) {
+            amqpBindPorts = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_PORTS).split(",");
+            mqttBindPorts = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_PORTS).split(",");
+        }else{
+            amqpBindPorts = jndiProperties.getProperty(ACTIVEMQ_AMQP_BIND_PORTS).split(",");
+            mqttBindPorts = jndiProperties.getProperty(ACTIVEMQ_MQTT_BIND_PORTS).split(",");
+        }
+
+        if (amqpBindPorts.length != mqttBindPorts.length) {
+            throw new RuntimeException("The number of AMQP ports and MQTT ports should be equal in integration-test.properties.");
+        }
+
         // start ActiveMQ test server
-        startBroker();
+        for (int i = 0; i < amqpBindPorts.length; i++){
+            startActiveMQInstance(Integer.parseInt(amqpBindPorts[i]), Integer.parseInt(mqttBindPorts[i]), true);
+        }
 
         if (!this.eventReceiverInitiated) {
             ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", testThreadPoolSize);
@@ -193,45 +222,86 @@ public class PythonAgentIntegrationTest {
 
         this.instanceActivated = false;
         this.instanceStarted = false;
-        try {
-            broker.stop();
-            broker = null;
-        } catch (Exception ignore) {
+
+        // stop the broker services
+        for (Map.Entry<String, BrokerService> entry : this.messageBrokers.entrySet()) {
+            try {
+                    log.debug("Stopping broker service [" + entry.getKey() + "]");
+                entry.getValue().stop();
+            } catch (Exception ignore) {
+            }
         }
+
+        this.messageBrokers = null;
+
         // TODO: use thread synchronization and assert all connections are properly closed
         // leave some room to clear up active connections
         sleep(1000);
     }
 
     public PythonAgentIntegrationTest() throws IOException {
-        integrationProperties
-                .load(PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
+        integrationProperties.load(
+                PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
         distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
-        amqpBindAddress = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_ADDRESS);
-        mqttBindAddress = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_ADDRESS);
         cepPort = Integer.parseInt(integrationProperties.getProperty(CEP_PORT));
         cepSSLPort = Integer.parseInt(integrationProperties.getProperty(CEP_SSL_PORT));
         testThreadPoolSize = Integer.parseInt(integrationProperties.getProperty(TEST_THREAD_POOL_SIZE));
         log.info("PCA integration properties: " + integrationProperties.toString());
     }
 
-    protected void startBroker() throws Exception {
+    protected String startActiveMQInstance(int amqpPort, int mqttPort, boolean secured) throws Exception {
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(amqpPort);
+            serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException("AMQP port " + amqpPort + " is already in use.", e);
+        }
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(mqttPort);
+            serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException("MQTT port " + mqttPort + " is already in use.", e);
+        }
+
         System.setProperty("mb.username", "system");
         System.setProperty("mb.password", "manager");
 
-        broker = new BrokerService();
-        broker.addConnector(amqpBindAddress);
-        broker.addConnector(mqttBindAddress);
-        AuthenticationUser authenticationUser = new AuthenticationUser("system", "manager", "users,admins");
-        List<AuthenticationUser> authUserList = new ArrayList<>();
-        authUserList.add(authenticationUser);
-        broker.setPlugins(new BrokerPlugin[]{new SimpleAuthenticationPlugin(authUserList)});
-        broker.setBrokerName("testBroker");
+        String brokerName = "testBroker-" + amqpPort + "-" + mqttPort;
+
+        log.info("Starting an ActiveMQ instance");
+        BrokerService broker = new BrokerService();
+        broker.addConnector("tcp://localhost:" + (amqpPort));
+        broker.addConnector("mqtt://localhost:" + (mqttPort));
+
+        if (secured) {
+            AuthenticationUser authenticationUser = new AuthenticationUser("system", "manager", "users,admins");
+            List<AuthenticationUser> authUserList = new ArrayList<>();
+            authUserList.add(authenticationUser);
+            broker.setPlugins(new BrokerPlugin[]{new SimpleAuthenticationPlugin(authUserList)});
+        }
+
+        broker.setBrokerName(brokerName);
         broker.setDataDirectory(
                 PythonAgentIntegrationTest.class.getResource(PATH_SEP).getPath() + PATH_SEP + ".." + PATH_SEP +
-                        PYTHON_AGENT_DIR_NAME + PATH_SEP + "activemq-data");
+                        PYTHON_AGENT_DIR_NAME + PATH_SEP + "activemq-data-" + brokerName);
         broker.start();
-        log.info("Broker service started!");
+        this.messageBrokers.put(brokerName, broker);
+        log.info("ActiveMQ Broker service [" + brokerName + "] started! [AMQP] " + amqpPort + " [MQTT] " + mqttPort);
+
+        return brokerName;
+    }
+
+    protected void stopActiveMQInstance(String brokerName){
+        if (this.messageBrokers.containsKey(brokerName)){
+            log.debug("Stopping broker service [" + brokerName + "]");
+            BrokerService broker = this.messageBrokers.get(brokerName);
+            try {
+                broker.stop();
+            } catch (Exception ignore) {
+            }
+        }
     }
 
     protected void startCommunicatorThread() {
