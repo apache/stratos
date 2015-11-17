@@ -230,7 +230,8 @@ public class AWSHelper {
     }
 
 	public AWSHelper(String awsAccessKey, String awsSecretKey){
-
+		this.awsAccessKey=awsAccessKey;
+		this.awsSecretKey=awsSecretKey;
 	}
     public int getStatisticsInterval() {
         return statisticsInterval;
