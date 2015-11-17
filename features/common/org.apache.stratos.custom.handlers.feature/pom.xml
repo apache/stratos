@@ -55,8 +55,17 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.custom.handlers:${project.version}</bundleDef>
-                                <bundleDef>com.nimbusds.wso2:nimbus-jose-jwt:2.26.1.wso2v2</bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon:org.wso2.carbon.identity.oauth:${carbon.platform.patch.version.4.2.3}
+                                </bundleDef>
+
+                                <!-- Stratos bundles -->
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.custom.handlers:${project.version}
+                                </bundleDef>
+
+                                <!-- Misc -->
+                                <bundleDef>com.nimbusds.wso2:nimbus-jose-jwt:${nimbus.jose.jwt.wso2.version}</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

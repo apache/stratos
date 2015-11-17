@@ -32,19 +32,42 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.logging</artifactId>
+        </dependency>
+
+        <!-- Stratos components -->
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.mock.iaas</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents.wso2</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents.wso2</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.axis2.wso2</groupId>
+                    <artifactId>axis2-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Misc -->
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.3.0.wso2v1</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore-osgi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.5.wso2v1</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-osgi</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -53,23 +76,15 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
+            <groupId>commons-lang.wso2</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.mock.iaas</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -88,14 +103,18 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.mock.iaas.client.*,
+                            org.apache.stratos.mock.iaas.client.*
                         </Export-Package>
-                        <Private-Package>
-                            org.apache.stratos.mock.iaas.client.internal;
-                        </Private-Package>
                         <Import-Package>
-                            !org.apache.commons.logging,
-                            org.apache.commons.logging; version=0.0.0,
+                            org.apache.stratos.mock.iaas.*;version="${project.version}",
+
+                            org.apache.commons.logging.*;version="${commons.logging.imp.pkg.version.range}",
+                            com.google.gson.*;version="${gson.imp.pkg.version.range}",
+                            org.apache.http.auth.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.cookie.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.conn.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.client.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.impl.*;version="${http.client.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

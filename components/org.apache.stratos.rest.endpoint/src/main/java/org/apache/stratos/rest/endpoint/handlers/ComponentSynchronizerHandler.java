@@ -25,7 +25,7 @@ import org.apache.cxf.message.Message;
 import org.apache.stratos.common.Component;
 import org.apache.stratos.common.beans.ResponseMessageBean;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
-import org.apache.stratos.manager.internal.ServiceReferenceHolder;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import javax.ws.rs.core.Response;
 
@@ -35,8 +35,13 @@ import javax.ws.rs.core.Response;
 public class ComponentSynchronizerHandler implements RequestHandler {
 
     public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
-        ComponentStartUpSynchronizer componentStartUpSynchronizer =
-                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        Object serviceObj = carbonContext.getOSGiService(ComponentStartUpSynchronizer.class);
+        if (serviceObj == null || !(serviceObj instanceof ComponentStartUpSynchronizer)) {
+            throw new RuntimeException("Could not retrieve ComponentSynchronizerHandler OSGi service");
+        }
+
+        ComponentStartUpSynchronizer componentStartUpSynchronizer = (ComponentStartUpSynchronizer) serviceObj;
         if (!componentStartUpSynchronizer.isComponentActive(Component.StratosManager)) {
             ResponseMessageBean responseBean = new ResponseMessageBean();
             responseBean.setMessage("Stratos manager component is not active");

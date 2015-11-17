@@ -17,7 +17,7 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -249,12 +249,140 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Carbon dependencies -->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>SecVerifier</artifactId>
                 <type>aar</type>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.user.core</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.base</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.user.api</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.core</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
+                <version>${carbon.platform.patch.version.4.2.3}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.identity.application.mgt.stub</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.utils</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.securevault</groupId>
+                <artifactId>org.wso2.securevault</artifactId>
+                <version>${wso2.securevault.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.analytics.hive.stub</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ntask.core</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth</artifactId>
+                <version>${carbon.platform.patch.version.4.2.3}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.logging</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.mediation.initializer</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core.common</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core.services</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.mediation.dependency.mgt</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ui</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.tenant.mgt</artifactId>
+                <version>${wso2.carbon.tenant.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.stratos.common</artifactId>
+                <version>${wso2.carbon.stratos.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.mediator.bridge</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
+
+            <!-- Misc -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -316,17 +444,530 @@
                 <version>${commons.exec.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.das.extension</artifactId>
-                <version>${project.version}</version>
+                <groupId>commons-lang.wso2</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons.lang.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>${commons.configuration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec.wso2</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-core</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-compiler</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-decisiontables</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-jsr94</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>knowledge-internal-api</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>knowledge-api</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-verifier</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-templates</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>${xstream.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr</artifactId>
+                <version>${antlr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr-runtime</artifactId>
+                <version>${antlr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>stringtemplate</artifactId>
+                <version>${antlr.stringtemplate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mvel</groupId>
+                <artifactId>mvel2</artifactId>
+                <version>${mvel2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jdt.core.compiler</groupId>
+                <artifactId>ecj</artifactId>
+                <version>${eclipse.ecj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xmlpull</groupId>
+                <artifactId>xmlpull</artifactId>
+                <version>${xmlpull.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xpp3</groupId>
+                <artifactId>xpp3_min</artifactId>
+                <version>${xpp3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lowagie</groupId>
+                <artifactId>itext</artifactId>
+                <version>${itext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jsr94</groupId>
+                <artifactId>jsr94</artifactId>
+                <version>${jsr94.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.lingala.zip4j</groupId>
+                <artifactId>zip4j</artifactId>
+                <version>${zip4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.andes.wso2</groupId>
+                <artifactId>andes-client</artifactId>
+                <version>${andes.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.log4j12.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jms_1.1_spec</artifactId>
+                <version>${geronimo.jms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jgit.wso2</groupId>
+                <artifactId>org.eclipse.jgit</artifactId>
+                <version>${eclipse.jgit.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${commons.httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore-osgi</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-osgi</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${commons.cli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons.validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>opensaml.wso2</groupId>
+                <artifactId>opensaml2</artifactId>
+                <version>${opensaml2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.nimbusds.wso2</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus.jose.jwt.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>${libthrift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${felix.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.main</artifactId>
+                <version>${felix.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${osgi.compendium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.equinox</groupId>
+                <artifactId>org.eclipse.equinox.http.servlet</artifactId>
+                <version>${eclipse.equinox.http.servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.equinox</groupId>
+                <artifactId>org.eclipse.equinox.http.helper</artifactId>
+                <version>${eclipse.equinox.http.helper.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.equinox</groupId>
+                <artifactId>org.eclipse.equinox.jsp.jasper</artifactId>
+                <version>${equinox.jsp.jasper.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.equinox</groupId>
+                <artifactId>javax.servlet.jsp</artifactId>
+                <version>${javax.servlet.jsp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jamesmurty.utils.wso2</groupId>
+                <artifactId>java-xmlbuilder</artifactId>
+                <version>${java.xmlbuilder.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>mqtt-client</artifactId>
+                <version>${paho.mqtt.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-all</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-jaas</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-mqtt</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-api</artifactId>
+                <version>${kubernetes.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>cxf-utils</artifactId>
+                <version>${kubernetes.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>kubernetes-api</artifactId>
+                <version>${kubernetes.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-codegen</artifactId>
+                <version>${kubernetes.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-model</artifactId>
+                <version>${kubernetes.model.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>fabric8-utils</artifactId>
+                <version>${kubernetes.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.oauth.core</groupId>
+                <artifactId>oauth</artifactId>
+                <version>${oauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dnsjava</groupId>
+                <artifactId>dnsjava</artifactId>
+                <version>${dnsjava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.websocket</groupId>
+                <artifactId>websocket-client</artifactId>
+                <version>${websocket.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-io</artifactId>
+                <version>${jetty.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-util</artifactId>
+                <version>${jetty.util.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>${guice.assistedinject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${guice.multibindings.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.99soft.guice</groupId>
+                <artifactId>rocoto</artifactId>
+                <version>${rocoto.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.schmizz</groupId>
+                <artifactId>sshj</artifactId>
+                <version>${net.schmizz.sshj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk</artifactId>
+                <version>${aws.java.sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>bouncycastle</groupId>
+                <artifactId>bcprov-jdk15</artifactId>
+                <version>${bcprov.jdk15.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rampart</groupId>
+                <artifactId>rampart</artifactId>
+                <type>mar</type>
+                <version>${rampart.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+                <version>${geronimo.j2ee.management_1.1_spec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.hawtbuf</groupId>
+                <artifactId>hawtbuf</artifactId>
+                <version>${hawtbuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jta_1.1_spec</artifactId>
+                <version>${geronimo.jta_1.1_spec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.amber.wso2</groupId>
+                <artifactId>amber</artifactId>
+                <version>${amber.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>${aopalliance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.santuario</groupId>
+                <artifactId>xmlsec</artifactId>
+                <version>${xmlsec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.xmlschema</groupId>
+                <artifactId>xmlschema-core</artifactId>
+                <version>${xmlschema.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore-nio</artifactId>
+                <version>${httpcore.nio.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.rs.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>${jaxb.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-asl</artifactId>
+                <version>${woodstox.core.asl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <version>${stax2.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jettison</groupId>
+                <artifactId>jettison</artifactId>
+                <version>${jettison.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.security</groupId>
+                <artifactId>wss4j</artifactId>
+                <version>${wss4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-resolver</groupId>
+                <artifactId>xml-resolver</artifactId>
+                <version>${xml.resolver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache-core</artifactId>
+                <version>${ehcache.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpasyncclient</artifactId>
+                <version>${httpasyncclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation.api.version}</version>
+            </dependency>
+
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-base</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
 
             <!-- Automation framework dependencies -->
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
                 <version>${carbon.automation.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
@@ -342,19 +983,16 @@
                 <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
                 <version>${carbon.automationutils.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
                 <version>${carbon.automationutils.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
                 <version>${carbon.automationutils.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -366,6 +1004,340 @@
                 <artifactId>org.jacoco.agent</artifactId>
                 <version>${jacoco.agent.version}</version>
             </dependency>
+
+            <!-- Stratos components -->
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.manager.service.stub</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.das.extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.manager</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.kubernetes.client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.load.balancer.common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.wso2.carbon.ui</artifactId>
+                <version>${carbon.ui.stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.integration.common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.cli</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.messaging</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.mock.iaas</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.load.balancer.extension.api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.cartridge.agent</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.python.cartridge.agent.integration.common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.cep300.extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.metadata.client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Stratos features -->
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.common.server.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.custom.handlers.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.event.processor.server.feature</artifactId>
+                <version>${project.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.event.processor.ui.feature</artifactId>
+                <version>${carbon.event.processor.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <!-- jclouds dependencies -->
+            <dependency>
+                <groupId>org.apache.jclouds.api</groupId>
+                <artifactId>cloudstack</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds</groupId>
+                <artifactId>jclouds-core</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds</groupId>
+                <artifactId>jclouds-compute</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-enterprise</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.api</groupId>
+                <artifactId>ec2</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>aws-ec2</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.api</groupId>
+                <artifactId>openstack-nova</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.labs</groupId>
+                <artifactId>openstack-neutron</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.api</groupId>
+                <artifactId>openstack-keystone</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds</groupId>
+                <artifactId>jclouds-scriptbuilder</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>google-compute-engine</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-log4j</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-slf4j</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-sshj</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.labs</groupId>
+                <artifactId>google-cloud-storage</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.labs</groupId>
+                <artifactId>google-compute-engine</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.labs</groupId>
+                <artifactId>googlecloud</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds</groupId>
+                <artifactId>jclouds-blobstore</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-bouncycastle</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-joda</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.driver</groupId>
+                <artifactId>jclouds-netty</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.labs</groupId>
+                <artifactId>oauth</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.common</groupId>
+                <artifactId>openstack-common</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jclouds.api</groupId>
+                <artifactId>sts</artifactId>
+                <version>${jclouds.version}</version>
+            </dependency>
+
+            <!-- Spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-asm</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <!-- CXF -->
+            <dependency>
+                <groupId>org.apache.cxf.xjcplugins</groupId>
+                <artifactId>cxf-xjc-dv</artifactId>
+                <version>${cxf.xjc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf.xjc-utils</groupId>
+                <artifactId>cxf-xjc-runtime</artifactId>
+                <version>${cxf.xjc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf.xjcplugins</groupId>
+                <artifactId>cxf-xjc-ts</artifactId>
+                <version>${cxf.xjc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf.xjcplugins</groupId>
+                <artifactId>cxf-xjc-boolean</artifactId>
+                <version>${cxf.xjc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf.xjcplugins</groupId>
+                <artifactId>cxf-xjc-bug671</artifactId>
+                <version>${cxf.xjc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-bundle</artifactId>
+                <version>${cxf.bundle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-client</artifactId>
+                <version>${cxf.rs.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf.rs.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                <version>${cxf.rt.frontend.jaxrs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-core</artifactId>
+                <version>${cxf.core.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -374,14 +1346,14 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>2.1</version>
+                <version>${maven.wagon.ssh.extension.version}</version>
             </extension>
         </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.3.1</version>
+                <version>${maven.enforcer.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -405,7 +1377,7 @@
             <plugin>
                 <groupId>org.jvnet.maven.incrementalbuild</groupId>
                 <artifactId>incremental-build-plugin</artifactId>
-                <version>1.3</version>
+                <version>${maven.incremental.build.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -600,6 +1572,14 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven.deploy.plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>${maven.antrun.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -613,6 +1593,7 @@
         <carbon.analytics.common.version>5.0.0</carbon.analytics.common.version>
         <carbon.ui.stratos.version>4.2.0-stratosv2</carbon.ui.stratos.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
+        <carbon.platform.version.4.2.0>4.2.0</carbon.platform.version.4.2.0>
         <carbon.platform.patch.version.4.2.1>4.2.1</carbon.platform.patch.version.4.2.1>
         <carbon.platform.patch.version.4.2.2>4.2.2</carbon.platform.patch.version.4.2.2>
         <carbon.platform.patch.version.4.2.3>4.2.3</carbon.platform.patch.version.4.2.3>
@@ -621,6 +1602,40 @@
         <carbon.platform.patch.version.4.2.6>4.2.6</carbon.platform.patch.version.4.2.6>
         <carbon.platform.patch.version.4.2.7>4.2.7</carbon.platform.patch.version.4.2.7>
         <carbon.platform.patch.version.4.2.8>4.2.8</carbon.platform.patch.version.4.2.8>
+        <wso2.securevault.version>1.0.0-wso2v2</wso2.securevault.version>
+        <wso2.carbon.tenant.mgt.version>2.2.2</wso2.carbon.tenant.mgt.version>
+        <wso2.carbon.stratos.common.version>2.2.0</wso2.carbon.stratos.common.version>
+        <wso2.carbon.stratos.common.feature.version>2.2.2</wso2.carbon.stratos.common.feature.version>
+        <carbon.event.processor.version>1.0.0</carbon.event.processor.version>
+
+        <!-- OSGi import ranges -->
+        <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
+        <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
+        <axiom.imp.pkg.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.imp.pkg.version.range>
+        <axis2.imp.pkg.version.range>[1.6.1.wso2v10, 2.0.0)</axis2.imp.pkg.version.range>
+        <jzlib.imp.pkg.version.range>[1.0, 2)</jzlib.imp.pkg.version.range>
+        <slf4j.imp.pkg.version.range>[1.6, 2)</slf4j.imp.pkg.version.range>
+        <bouncycastle.imp.pkg.version.range>[1.45.0, 2)</bouncycastle.imp.pkg.version.range>
+        <netty.imp.pkg.version.range>[3.3, 4)</netty.imp.pkg.version.range>
+        <javax.servlet.imp.pkg.version.range>[2.6.0, 3.0.0)</javax.servlet.imp.pkg.version.range>
+        <carbon.platform.imp.pkg.version.range>[4.2.0, 4.3.0)</carbon.platform.imp.pkg.version.range>
+        <carbon.base.imp.pkg.version.range>[1.0.0, 2.0.0)</carbon.base.imp.pkg.version.range>
+        <carbon.user.api.imp.pkg.version.range>[1.0.1, 2.0.0)</carbon.user.api.imp.pkg.version.range>
+        <aopalliance.imp.pkg.version.range>[1.0, 2)</aopalliance.imp.pkg.version.range>
+        <guice.imp.pkg.version.range>[3.0, 4.0)</guice.imp.pkg.version.range>
+        <identity.oauth2.imp.pkg.version.range>[4.2.3, 4.3)</identity.oauth2.imp.pkg.version.range>
+        <carbon.kernel.registry.imp.pkg.version.range>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version.range>
+        <nimbus.jose.jwt.imp.pkg.version.range>[2.26.1, 2.27)</nimbus.jose.jwt.imp.pkg.version.range>
+        <gson.imp.pkg.version.range>[2.3.1, 3.0.0)</gson.imp.pkg.version.range>
+        <commons.lang.imp.pkg.version.range>[2.6.0, 3.0.0)</commons.lang.imp.pkg.version.range>
+        <commons.lang3.imp.pkg.version.range>[3.1, 3.2)</commons.lang3.imp.pkg.version.range>
+        <commons.codec.imp.pkg.version.range>[1.4.0, 2.0.0)</commons.codec.imp.pkg.version.range>
+        <commons.logging.imp.pkg.version.range>[1.1.1, 2.0)</commons.logging.imp.pkg.version.range>
+        <commons.configuration.imp.pkg.version.range>[1.9, 2.0)</commons.configuration.imp.pkg.version.range>
+        <commons.collections.imp.pkg.version.range>[3.2.0, 4.0.0)</commons.collections.imp.pkg.version.range>
+        <opensaml2.imp.pkg.version.range>[2.4.1.wso2v1, 3.0.0)</opensaml2.imp.pkg.version.range>
+        <http.core.imp.pkg.version.range>[4.4.4, 4.5.0)</http.core.imp.pkg.version.range>
+        <http.client.imp.pkg.version.range>[4.5.1, 4.6.0)</http.client.imp.pkg.version.range>
 
         <!-- 3rd party library versions -->
         <synapse.wso2.feature.version>2.1.2-wso2v3</synapse.wso2.feature.version>
@@ -630,19 +1645,14 @@
         <axis2.wso2.client.version>1.6.1.wso2v10</axis2.wso2.client.version>
         <axiom.wso2.version>1.2.11.wso2v4</axiom.wso2.version>
         <junit.version>4.11</junit.version>
-        <version.commons.logging>1.1.1</version.commons.logging>
-        <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
-        <commons-httpclient.version>3.0.1</commons-httpclient.version>
-        <json.wso2.version>2.0.0.wso2v1</json.wso2.version>
+        <commons.httpclient.version>3.0.1</commons.httpclient.version>
+        <json.wso2.version>1.0.0.wso2v1</json.wso2.version>
         <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
-        <rampart.wso2.version>1.6.1.wso2v9</rampart.wso2.version>
         <wsdl4j.wso2.version>1.6.2.wso2v4</wsdl4j.wso2.version>
-        <version.commons.logging>1.1.1</version.commons.logging>
         <xmlschema.wso2.version>1.4.7.wso2v2</xmlschema.wso2.version>
-        <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
         <jclouds.version>1.9.1</jclouds.version>
         <kubernetes.api.version>2.2.16</kubernetes.api.version>
-        <store.version>1.0.1</store.version>
+        <wso2.store.version>1.0.1</wso2.store.version>
         <gson.version>2.3.1</gson.version>
         <guice.version>3.0</guice.version>
         <guice.assistedinject.version>3.0</guice.assistedinject.version>
@@ -654,34 +1664,109 @@
         <slf4j.version>1.7.6</slf4j.version>
         <wiremock.version>1.46</wiremock.version>
         <quartz.wso2.version>2.1.1.wso2v1</quartz.wso2.version>
-        <json.wso2.version>2.0.0.wso2v1</json.wso2.version>
         <kaptcha.wso2.version>2.3.0.wso2v1</kaptcha.wso2.version>
-        <rampart.mar.version>1.6.1-wso2v8</rampart.mar.version>
-        <opencsv.version>1.8</opencsv.version>
-        <poi.version>3.0-FINAL</poi.version>
-        <servlet-api.version>2.4</servlet-api.version>
-        <log4j.version>1.2.17</log4j.version>
-        <commons.logging.version>1.1</commons.logging.version>
-        <quartz.wso2.version>2.1.1.wso2v1</quartz.wso2.version>
+        <commons.logging.version>1.1.1</commons.logging.version>
         <siddhi.version>2.0.0-wso2v5</siddhi.version>
         <siddhi.event.processor.version>1.0.0</siddhi.event.processor.version>
         <scr.annotations.version>1.9.12</scr.annotations.version>
         <testng.version>6.1.1</testng.version>
         <jacoco.agent.version>0.7.4.201502262128</jacoco.agent.version>
         <commons.exec.version>1.0.1</commons.exec.version>
-        <httpcore.version>4.3.0.wso2v1</httpcore.version>
-        <httpclient.version>4.2.5.wso2v1</httpclient.version>
-
-        <!-- OSGi import ranges -->
-        <axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>
-        <jzlib.imp.pkg.version>[1.0,2)</jzlib.imp.pkg.version>
-        <slf4j.imp.pkg.version>[1.6,2)</slf4j.imp.pkg.version>
-        <bouncycastle.imp.pkg.version>[1.45.0,2)</bouncycastle.imp.pkg.version>
-        <netty.imp.pkg.version>[3.3,4)</netty.imp.pkg.version>
-        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
-        <carbon.platform.package.import.version.range>[4.2.0, 5.0.0)</carbon.platform.package.import.version.range>
-        <aopalliance.imp.pkg.version>[1.0,2)</aopalliance.imp.pkg.version>
-        <guice.imp.pkg.version>[3.0,4.0)</guice.imp.pkg.version>
+        <httpcore.version>4.4.4</httpcore.version>
+        <httpclient.version>4.5.1</httpclient.version>
+        <commons.lang.version>2.6.0.wso2v1</commons.lang.version>
+        <commons.lang3.version>3.1</commons.lang3.version>
+        <commons.configuration.version>1.9</commons.configuration.version>
+        <commons.codec.version>1.4.0.wso2v1</commons.codec.version>
+        <xstream.version>1.4.1</xstream.version>
+        <antlr.version>3.3</antlr.version>
+        <antlr.stringtemplate.version>3.2.1</antlr.stringtemplate.version>
+        <mvel2.version>2.1.3.Final</mvel2.version>
+        <eclipse.ecj.version>3.5.1</eclipse.ecj.version>
+        <xmlpull.version>1.1.3.1</xmlpull.version>
+        <xpp3.version>1.1.4c</xpp3.version>
+        <itext.version>2.1.2</itext.version>
+        <jsr94.version>1.1</jsr94.version>
+        <zip4j.version>1.3.2</zip4j.version>
+        <andes.client.version>0.13.wso2v8</andes.client.version>
+        <slf4j.log4j12.version>1.7.5</slf4j.log4j12.version>
+        <eclipse.jgit.wso2.version>2.3.1.wso2v2</eclipse.jgit.wso2.version>
+        <eclipse.jgit.wso2.osgi.version>2.1.0.wso2v1</eclipse.jgit.wso2.osgi.version>
+        <gitblit.version>1.2.0.wso2v1</gitblit.version>
+        <commons.io.version>2.0</commons.io.version>
+        <commons.io.wso2.version>2.0.0.wso2v1</commons.io.wso2.version>
+        <jdom.wso2.version>1.0.0.wso2v1</jdom.wso2.version>
+        <jsch.version>0.1.49.wso2v1</jsch.version>
+        <commons.cli.version>1.2</commons.cli.version>
+        <jline.version>2.11</jline.version>
+        <commons.validator.version>1.4.0</commons.validator.version>
+        <nimbus.jose.jwt.wso2.version>2.26.1.wso2v2</nimbus.jose.jwt.wso2.version>
+        <opensaml2.version>2.4.1.wso2v1</opensaml2.version>
+        <libthrift.version>0.9.1</libthrift.version>
+        <felix.version>1.0.3</felix.version>
+        <osgi.compendium.version>1.0.0</osgi.compendium.version>
+        <eclipse.equinox.http.servlet.version>2.2.2</eclipse.equinox.http.servlet.version>
+        <eclipse.equinox.http.helper.version>1.0.0</eclipse.equinox.http.helper.version>
+        <equinox.jsp.jasper.version>1.0.1.R33x_v20070816</equinox.jsp.jasper.version>
+        <javax.servlet.jsp.version>2.0.0.v200706191603</javax.servlet.jsp.version>
+        <commons.collections.version>3.2.2.wso2v1</commons.collections.version>
+        <java.xmlbuilder.wso2.version>0.4.wso2v1</java.xmlbuilder.wso2.version>
+        <kubernetes.model.version>1.0.2</kubernetes.model.version>
+        <jackson.version>2.4.1</jackson.version>
+        <cxf.core.version>3.0.4</cxf.core.version>
+        <cxf.rs.client.version>3.0.4</cxf.rs.client.version>
+        <cxf.rt.frontend.jaxrs.version>3.0.4</cxf.rt.frontend.jaxrs.version>
+        <cxf.bundle.version>2.7.7</cxf.bundle.version>
+        <snakeyaml.version>1.5</snakeyaml.version>
+        <json.version>20140107</json.version>
+        <oauth.version>20100527</oauth.version>
+        <dnsjava.version>2.1.7</dnsjava.version>
+        <websocket.client.version>9.1.5.v20140505</websocket.client.version>
+        <jetty.io.version>9.1.5.v20140505</jetty.io.version>
+        <jetty.util.version>9.1.5.v20140505</jetty.util.version>
+        <assertj.core.version>1.7.0</assertj.core.version>
+        <aws.java.sdk.version>1.8.8</aws.java.sdk.version>
+        <velocity.version>1.7</velocity.version>
+        <bcprov.jdk15.version>132</bcprov.jdk15.version>
+        <rampart.version>1.6.1-wso2v8</rampart.version>
+        <hawtbuf.version>1.9</hawtbuf.version>
+        <geronimo.jta_1.1_spec.version>1.1.1</geronimo.jta_1.1_spec.version>
+        <geronimo.jms.version>1.1.1</geronimo.jms.version>
+        <geronimo.j2ee.management_1.1_spec.version>1.0.1</geronimo.j2ee.management_1.1_spec.version>
+        <paho.mqtt.client.version>0.4.0</paho.mqtt.client.version>
+        <activemq.version>5.10.0</activemq.version>
+        <jaggeryjs.version>0.9.0.ALPHA4.wso2v3</jaggeryjs.version>
+        <caramel.version>1.0.1</caramel.version>
+        <netty.version>3.5.9.Final</netty.version>
+        <guava.version>16.0.1</guava.version>
+        <jsch.agentproxy.version>0.0.8</jsch.agentproxy.version>
+        <jsch.agentproxy.sshj.version>0.0.8_1</jsch.agentproxy.sshj.version>
+        <commons.compress.version>1.5</commons.compress.version>
+        <servicemix.bundles.aopalliance.version>1.0_6</servicemix.bundles.aopalliance.version>
+        <aopalliance.version>1.0</aopalliance.version>
+        <servicemix.bundles.javax.inject.version>1_2</servicemix.bundles.javax.inject.version>
+        <jsr311.api.version>1.1.1</jsr311.api.version>
+        <bcprov.jdk16.version>1.45.wso2v1</bcprov.jdk16.version>
+        <servicemix.bundles.jzlib.version>1.1.1_1</servicemix.bundles.jzlib.version>
+        <jna.version>4.1.0</jna.version>
+        <usocket.nc.version>0.0.8</usocket.nc.version>
+        <amber.version>0.22.1358727.wso2v4</amber.version>
+        <spring.version>3.0.7.RELEASE</spring.version>
+        <cxf.xjc.version>2.6.2</cxf.xjc.version>
+        <xmlsec.version>1.5.5</xmlsec.version>
+        <xmlschema.core.version>2.2.1</xmlschema.core.version>
+        <httpcore.nio.version>4.2.4</httpcore.nio.version>
+        <jaxb.impl.version>2.1.13</jaxb.impl.version>
+        <jaxb.xjc.version>2.1.13</jaxb.xjc.version>
+        <woodstox.core.asl.version>4.2.0</woodstox.core.asl.version>
+        <stax2.api.version>3.1.1</stax2.api.version>
+        <jettison.version>1.3.4</jettison.version>
+        <wss4j.version>1.6.11</wss4j.version>
+        <xml.resolver.version>1.2</xml.resolver.version>
+        <ehcache.core.version>2.5.1</ehcache.core.version>
+        <httpasyncclient.version>4.0</httpasyncclient.version>
+        <javax.ws.rs.api.version>2.0.1</javax.ws.rs.api.version>
+        <javax.annotation.api.version>1.2</javax.annotation.api.version>
 
         <!-- product distribution properties -->
         <stratos.distribution.name>apache-stratos</stratos.distribution.name>
@@ -715,6 +1800,9 @@
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
         <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+        <maven.clean.plugin.version>2.4.1</maven.clean.plugin.version>
+        <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
+        <maven.wagon.ssh.extension.version>2.1</maven.wagon.ssh.extension.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

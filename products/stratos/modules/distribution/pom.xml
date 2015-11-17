@@ -36,53 +36,43 @@
         <dependency>
             <groupId>org.apache.rampart</groupId>
             <artifactId>rampart</artifactId>
-            <version>${rampart.mar.version}</version>
             <type>mar</type>
         </dependency>
         <dependency>
             <groupId>bouncycastle</groupId>
             <artifactId>bcprov-jdk15</artifactId>
-            <version>132</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.mediator.bridge</artifactId>
-            <version>${carbon.kernel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
-            <version>5.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
-            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.fusesource.hawtbuf</groupId>
             <artifactId>hawtbuf</artifactId>
-            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>mqtt-client</artifactId>
-            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.cep300.extension</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>${carbon.ui.stratos.version}</version>
         </dependency>
     </dependencies>
 
@@ -91,7 +81,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>maven-buildnumber-plugin</artifactId>
-                <version>0.9.4</version>
                 <configuration>
                     <format>{0,date,dd MMM yyyy}</format>
                     <items>

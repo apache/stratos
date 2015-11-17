@@ -34,25 +34,25 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.logging</artifactId>
+        </dependency>
+
+        <!-- Stratos components -->
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>kubernetes-api</artifactId>
+        </dependency>
+
+        <!-- Misc -->
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>kubernetes-api</artifactId>
-            <version>${kubernetes.api.version}</version>
         </dependency>
     </dependencies>
 
@@ -67,10 +67,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.kubernetes.client,
-                            org.apache.stratos.kubernetes.client.exceptions,
+                            org.apache.stratos.kubernetes.client.*
                         </Export-Package>
                         <Import-Package>
+                            org.apache.commons.logging.*;version="${commons.logging.imp.pkg.version.range}",
+                            org.apache.commons.lang3.*;version="${commons.lang3.imp.pkg.version.range}",
                             io.fabric8.kubernetes.api.*;version=${kubernetes.api.version},
                             io.fabric8.kubernetes.api.model.*;version=${kubernetes.api.version},
                             *;resolution:=optional

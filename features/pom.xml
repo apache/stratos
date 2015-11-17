@@ -20,17 +20,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
         <version>4.1.5-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>stratos-features-parent</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Features</name>
-    <url>http://apache.org</url>
 
     <modules>
         <module>load-balancer</module>
@@ -42,13 +41,4 @@
         <module>common</module>
         <module>cep</module>
     </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

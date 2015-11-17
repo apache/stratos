@@ -81,13 +81,20 @@
                             </adviceFile>
                             <bundles>
                                 <!-- Stratos bundles -->
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}
                                 </bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.kubernetes.client:${project.version}
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.kubernetes.client:${project.version}
                                 </bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.mock.iaas.client:${project.version}
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.mock.iaas.client:${project.version}
                                 </bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.messaging:${project.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.common:${project.version}
                                 </bundleDef>
 
                                 <!-- Kubernetes API wrapper -->
@@ -99,6 +106,7 @@
                                 <!-- jclouds bundles -->
                                 <bundleDef>org.apache.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.driver:jclouds-slf4j:${jclouds.version}</bundleDef>
+
                                 <!-- jclouds wrappers in Stratos -->
                                 <bundleDef>org.apache.stratos:google-compute-engine:${jclouds.version}
                                 </bundleDef>
@@ -122,54 +130,68 @@
                                 <bundleDef>org.apache.stratos:jclouds-sshj:${jclouds.version}</bundleDef>
 
                                 <!-- jclouds dependencies -->
-                                <bundleDef>com.jcraft:jsch.agentproxy.core:0.0.8</bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.connector-factory:0.0.8</bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.sshagent:0.0.8</bundleDef>
+                                <bundleDef>com.jcraft:jsch.agentproxy.core:${jsch.agentproxy.version}</bundleDef>
                                 <bundleDef>
-                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-sshj:0.0.8_1
+                                    com.jcraft:jsch.agentproxy.connector-factory:${jsch.agentproxy.version}
                                 </bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.usocket-nc:0.0.8</bundleDef>
-                                <bundleDef>io.netty:netty:3.5.9.Final</bundleDef>
-                                <bundleDef>com.google.guava:guava:16.0.1</bundleDef>
-                                <bundleDef>net.java.dev.jna:jna:4.1.0</bundleDef>
-                                <bundleDef>net.java.dev.jna:jna-platform:4.1.0</bundleDef>
-                                <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jzlib:1.1.1_1
+                                <bundleDef>com.jcraft:jsch.agentproxy.sshagent:${jsch.agentproxy.version}</bundleDef>
+                                <bundleDef>
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-sshj:${jsch.agentproxy.sshj.version}
+                                </bundleDef>
+                                <bundleDef>com.jcraft:jsch.agentproxy.usocket-nc:${usocket.nc.version}</bundleDef>
+                                <bundleDef>io.netty:netty:${netty.version}</bundleDef>
+                                <bundleDef>com.google.guava:guava:${guava.version}</bundleDef>
+                                <bundleDef>net.java.dev.jna:jna:${jna.version}</bundleDef>
+                                <bundleDef>net.java.dev.jna:jna-platform:${jna.version}</bundleDef>
+                                <bundleDef>
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.jzlib:${servicemix.bundles.jzlib.version}
                                 </bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
-                                <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:1.45.wso2v1</bundleDef>
-                                <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
+                                <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:${bcprov.jdk16.version}</bundleDef>
+                                <bundleDef>javax.ws.rs:jsr311-api:${jsr311.api.version}</bundleDef>
                                 <bundleDef>
-                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.javax-inject:1_2
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.javax-inject:${servicemix.bundles.javax.inject.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:1.0_6
+                                    org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:${servicemix.bundles.aopalliance.version}
                                 </bundleDef>
 
                                 <!-- jclouds dependency wrappers in Stratos -->
-                                <bundleDef>org.apache.stratos:guice:3.0</bundleDef>
-                                <bundleDef>org.apache.stratos:net.schmizz.sshj:0.8.1</bundleDef>
-                                <bundleDef>org.apache.stratos:guice-assistedinject:3.0</bundleDef>
-                                <bundleDef>org.apache.stratos:guice-multibindings:3.0</bundleDef>
-                                <bundleDef>org.apache.stratos:rocoto:6.1</bundleDef>
+                                <bundleDef>org.apache.stratos:guice:${guice.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:net.schmizz.sshj:${net.schmizz.sshj.version}</bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:guice-assistedinject:${guice.assistedinject.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:guice-multibindings:${guice.multibindings.version}
+                                </bundleDef>
+                                <bundleDef>org.apache.stratos:rocoto:${rocoto.version}</bundleDef>
 
                                 <!-- Misc -->
                                 <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
-                                <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
-                                <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
-                                <bundleDef>commons-io.wso2:commons-io:2.0.0.wso2v1</bundleDef>
-                                <bundleDef>org.slf4j:slf4j-api:1.7.0</bundleDef>
-                                <bundleDef>org.slf4j:slf4j-log4j12:1.7.0</bundleDef>
+                                <bundleDef>org.apache.commons:commons-compress:${commons.compress.version}</bundleDef>
+                                <bundleDef>
+                                    com.jamesmurty.utils.wso2:java-xmlbuilder:${java.xmlbuilder.wso2.version}
+                                </bundleDef>
+                                <bundleDef>commons-io.wso2:commons-io:${commons.io.wso2.version}</bundleDef>
+                                <bundleDef>org.slf4j:slf4j-api:${slf4j.version}</bundleDef>
+                                <bundleDef>org.slf4j:slf4j-log4j12:${slf4j.log4j12.version}</bundleDef>
                                 <bundleDef>com.google.common.wso2:google-collect:${google.collect.osgi.version}
                                 </bundleDef>
-                                <bundleDef>jdom.wso2:jdom:1.0.0.wso2v1</bundleDef>
-                                <bundleDef>org.json.wso2:json:1.0.0.wso2v1</bundleDef>
-                                <bundleDef>org.apache.httpcomponents.wso2:httpcore:4.3.0.wso2v1</bundleDef>
-                                <bundleDef>org.apache.httpcomponents.wso2:httpclient:4.2.5.wso2v1</bundleDef>
+                                <bundleDef>jdom.wso2:jdom:${jdom.wso2.version}</bundleDef>
+                                <bundleDef>org.json.wso2:json:${json.wso2.version}</bundleDef>
+                                <bundleDef>org.apache.httpcomponents:httpclient-osgi:${httpclient.version}</bundleDef>
+                                <bundleDef>org.apache.httpcomponents:httpcore-osgi:${httpcore.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.core.server:${carbon.kernel.version}
+                                </importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.ntask.core:${carbon.platform.patch.version.4.2.1}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
