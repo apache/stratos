@@ -31,12 +31,12 @@ popd
 
 pushd ${script_path}/base-image/
 echo "Building base Docker image..."
-sudo docker build -t stratos/base-image:4.1.5 .
+docker build -t stratos/base-image:4.1.5 .
 
 pushd ${script_path}/service-images/php
 echo "Building PHP Docker image..."
-sudo docker build -t stratos/php:4.1.5 .
+docker build -t stratos/php:4.1.5 .
 
 pushd ${script_path}/service-images/tomcat
 echo "Building Tomcat Docker image..."
-sudo docker build -t stratos/tomcat:4.1.5 .
+docker build -t stratos/tomcat:4.1.5 .
