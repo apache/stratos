@@ -41,12 +41,8 @@
   ],
   "property": [
     {
-      "name": "payload_parameter.MB_IP",
-      "value": "54.179.197.243"
-    },
-    {
-      "name": "payload_parameter.MB_PORT",
-      "value": "1883"
+      "name": "payload_parameter.MB_URLS",
+      "value": "54.179.197.243:1883"
     },
     {
       "name": "payload_parameter.MB_USERNAME",
