@@ -327,12 +327,14 @@ public class CloudControllerUtil {
             }
         }
 
-        //TODO: make debug
-        logProperties(iaasProvider.getType(), iaasProvider.getProperties(), cartridge.getType(),
-                partition.getId());
+        if (log.isDebugEnabled()) {
+            logProperties(iaasProvider.getType(), iaasProvider.getProperties(), cartridge.getType(),
+                    partition.getId());
+        }
 
-        //TODO: make debug
-        logNetworkInterfaces(iaasProvider.getType(), iaasProvider.getNetworkInterfaces());
+        if (log.isDebugEnabled()) {
+            logNetworkInterfaces(iaasProvider.getType(), iaasProvider.getNetworkInterfaces());
+        }
 
         return iaasProvider;
     }
@@ -402,16 +404,14 @@ public class CloudControllerUtil {
                                           String attributeDefinedInCC, boolean logInfo) throws InvalidIaasProviderException {
 
         if (attributeDefinedInCartridge != null) {
-            // TODO: make debug
-            if (logInfo) {
-                log.info("Selected " + attributeName + "=" +
+            if (log.isDebugEnabled() && logInfo) {
+                log.debug("Selected " + attributeName + "=" +
                         attributeDefinedInCartridge + " from Cartridge Definition");
             }
             return attributeDefinedInCartridge;
         } else if (attributeDefinedInCC != null) {
-            // TODO: make debug
-            if (logInfo) {
-                log.info("Selected " + attributeName + "=" +
+            if (log.isDebugEnabled() && logInfo) {
+                log.debug("Selected " + attributeName + "=" +
                         attributeDefinedInCC + " from cloud-controller.xml configuration");
             }
             return attributeDefinedInCC;
@@ -426,10 +426,10 @@ public class CloudControllerUtil {
     private static void logNetworkInterfaces (String iaasProviderType, NetworkInterface[] networkInterfaces) {
 
         if (networkInterfaces != null) {
-            log.info("All Network interfaces in IaasProvider object for type: " +
+            log.debug("All Network interfaces in IaasProvider object for type: " +
                     iaasProviderType);
             for (NetworkInterface nwInterface : networkInterfaces) {
-                log.info("Interface " + nwInterface.toString());
+                log.debug("Interface " + nwInterface.toString());
             }
         }
     }
@@ -438,11 +438,11 @@ public class CloudControllerUtil {
                                       String cartridgeType, String partitionId) {
 
         if (properties != null) {
-            log.info("Properties defined in IaasProvider object for type: " +
+            log.debug("Properties defined in IaasProvider object for type: " +
                     iaasProviderType + ", cartridge type: " + cartridgeType + ", partition: " +
                     partitionId);
             for (Map.Entry<String, String> property : properties.entrySet()) {
-                log.info("Property key: " + property.getKey() + ", value: " +
+                log.debug("Property key: " + property.getKey() + ", value: " +
                         property.getValue());
             }
         }
