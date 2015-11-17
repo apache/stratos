@@ -38,10 +38,11 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 
@@ -967,7 +968,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
             }
 
-            Map<String, IaasProvider> partitionToIaasProviders = new ConcurrentHashMap<>();
+            Map<String, IaasProvider> partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
 
             if (log.isDebugEnabled()) {
                 log.debug("Deployment policy validation started for cartridge type: " + cartridgeType);
