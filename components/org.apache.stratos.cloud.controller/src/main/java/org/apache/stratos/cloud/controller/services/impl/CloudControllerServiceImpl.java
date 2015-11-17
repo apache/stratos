@@ -38,11 +38,10 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 
@@ -1588,6 +1587,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     partition.setProvider(networkPartition.getProvider());
                     try {
                         validatePartition(partition);
+                        // add Partition to partition map
+                        CloudControllerContext.getInstance().addPartition(partition);
                     } catch (InvalidPartitionException e) {
                         //Following message is shown to the end user in all the the API clients(GUI/CLI/Rest API)
                         throw new InvalidNetworkPartitionException(String.format(
@@ -1638,6 +1639,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.error(message);
                 throw new NetworkPartitionNotExistsException(message);
             }
+
+            // remove partitions from the partition map
+            for (Partition partition : cloudControllerContext.getNetworkPartition(networkPartitionId)
+                    .getPartitions()) {
+                CloudControllerContext.getInstance().removePartition(partition.getId());
+            }
+
             // removing from CC-Context
             CloudControllerContext.getInstance().removeNetworkPartition(networkPartitionId);
             // persisting CC-Context
@@ -1682,6 +1690,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         // Overwrites partition provider with network partition provider
                         partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
+                        // add Partition to partition map
+                        CloudControllerContext.getInstance().addPartition(partition);
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s "
                                     + "[partition-id] %s", networkPartition.getId(), partition.getId()));

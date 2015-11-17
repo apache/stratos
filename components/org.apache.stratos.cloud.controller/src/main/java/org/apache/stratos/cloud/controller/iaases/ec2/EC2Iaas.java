@@ -97,6 +97,18 @@ public class EC2Iaas extends JcloudsIaas {
                     break;
                 }
             }
+        } else if (iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT) != null) {
+            Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
+            for (Location location : locations) {
+                if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) && location
+                        .getId().equals(iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT))) {
+                    templateBuilder.locationId(location.getId());
+                    log.info("ZONE has been set as " + iaasInfo.getProperty
+                            (CloudControllerConstants.ZONE_ELEMENT)
+                            + " with id: " + location.getId());
+                    break;
+                }
+            }
         }
 
         if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
