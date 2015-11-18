@@ -246,8 +246,9 @@ public abstract class JcloudsIaas extends Iaas {
 
                 memberContext.setAllocatedIPs(associatedIPs.toArray(new String[associatedIPs.size()]));
                 log.info(String.format("IP addresses allocated to member: [cartridge-type] %s [member-id] %s "
-                                + "[allocated-ip-addresses] %s ", memberContext.getCartridgeType(),
-                        memberContext.getMemberId(), memberContext.getAllocatedIPs()));
+                                + "[allocated-ip-addresses] %s ", memberContext.getCartridgeType(), memberContext
+                        .getMemberId(),
+                        memberContext.getAllocatedIPs()));
 
                 // build the node with the new ip
                 nodeMetadata = NodeMetadataBuilder.fromNodeMetadata(nodeMetadata).publicAddresses(associatedIPs)
@@ -302,7 +303,7 @@ public abstract class JcloudsIaas extends Iaas {
 
         if (cartridge == null) {
             String msg = String.format("Member termination failed, could not find cartridge in cloud controller "
-                            + "context: [cartridge-type] %s [member-id] %s", cartridgeType, memberId);
+                    + "context: [cartridge-type] %s [member-id] %s", cartridgeType, memberId);
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
@@ -310,13 +311,12 @@ public abstract class JcloudsIaas extends Iaas {
         // if no matching node id can be found.
         if (nodeId == null) {
             String msg = String.format("Member termination failed, could not find node id in member context: "
-                            + "[cartridge-type] %s [member-id] %s", cartridgeType, memberId);
-            log.error(msg);
+                    + "[cartridge-type] %s [member-id] %s", cartridgeType, memberId);
             // Execute member termination post process
             try {
                 CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
             } catch (RegistryException e) {
-                log.error("Could not persist data in registry data store", e);
+                log.error("Instance member termination post process failed! " + memberContext.toString(), e);
             }
             throw new InvalidMemberException(msg);
         }

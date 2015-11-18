@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 
 import java.util.concurrent.locks.Lock;
@@ -49,18 +48,21 @@ public class InstanceTerminator implements Runnable {
 
     @Override
     public void run() {
-        Lock lock = null;
+        if (log.isDebugEnabled()) {
+            log.debug("Running instance terminator process for member: " + memberContext.toString());
+        }
+        Lock lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
         try {
-            lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
-            // Terminate the instance
-            iaas.terminateInstance(memberContext);
-
+            try {
+                // Terminate the instance
+                iaas.terminateInstance(memberContext);
+            } catch (Exception e) {
+                log.error("Instance terminator failed to terminate instance: " + memberContext.toString(), e);
+            }
             // Execute member termination post process
             CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
         } catch (Exception e) {
-            String msg = "Instance termination failed! " + memberContext.toString();
-            log.error(msg, e);
-            throw new CloudControllerException(msg, e);
+            log.error("Instance terminator member termination post process failed! " + memberContext.toString(), e);
         } finally {
             if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);

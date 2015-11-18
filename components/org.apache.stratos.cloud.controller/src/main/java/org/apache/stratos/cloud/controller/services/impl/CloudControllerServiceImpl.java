@@ -629,7 +629,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
             if (memberContext == null) {
                 String msg = "Could not terminate instance, member context not found: [member-id] " + memberId;
-                log.error(msg);
+                if (log.isErrorEnabled()) {
+                    log.error(msg);
+                }
                 throw new InvalidMemberException(msg);
             }
 
@@ -639,6 +641,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             + ", removing member from topology...", memberContext.getMemberId()));
                 }
                 CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
+                String msg = "Could not terminate instance, member instance id is empty: " + memberContext.toString();
+                throw new InvalidMemberException(msg);
             }
 
             // check if status == active, if true, then this is a termination on member faulty
@@ -670,15 +674,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                 }
             }
-
             executorService.execute(new InstanceTerminator(memberContext));
-        } catch (InvalidMemberException e) {
-            String message = "Could not terminate instance: [member-id] " + memberId;
-            log.error(message, e);
-            throw e;
         } catch (Exception e) {
             String message = "Could not terminate instance: [member-id] " + memberId;
-            log.error(message, e);
             throw new CloudControllerException(message, e);
         } finally {
             TopologyHolder.releaseWriteLock();
@@ -1642,8 +1640,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // remove partitions from the partition map
-            for (Partition partition : cloudControllerContext.getNetworkPartition(networkPartitionId)
-                    .getPartitions()) {
+            for (Partition partition : cloudControllerContext.getNetworkPartition(networkPartitionId).getPartitions()) {
                 CloudControllerContext.getInstance().removePartition(partition.getId());
             }
 
