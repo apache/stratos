@@ -70,14 +70,14 @@ public class OpenstackIaas extends JcloudsIaas {
         if (openstackNetworkingProvider != null && openstackNetworkingProvider
                 .equals(CloudControllerConstants.OPENSTACK_NEUTRON_NETWORKING)) {
             if (log.isDebugEnabled()) {
-                String msg = String.format("Openstack networking provider is %s. Trying to instanstiate %s",
+                String msg = String.format("Openstack networking provider is %s. Trying to instantiate %s",
                         openstackNetworkingProvider, NeutronNetworkingApi.class.getName());
                 log.debug(msg);
             }
             openstackNetworkingApi = new NeutronNetworkingApi(iaasProvider);
         } else {
             if (log.isDebugEnabled()) {
-                String msg = String.format("Openstack networking provider is %s. Hence trying to instanstiate %s",
+                String msg = String.format("Openstack networking provider is %s. Hence trying to instantiate %s",
                         openstackNetworkingProvider, NovaNetworkingApi.class.getName());
                 log.debug(msg);
             }
