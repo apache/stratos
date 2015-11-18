@@ -829,7 +829,9 @@ public class CloudControllerContext implements Serializable {
 
         // if the two objects are equal, no need to build again
         if (cachedIaasProvider.equals(newIaasProvider)) {
-            log.info("New IaaSProvider object is equal to the cached one, no need to re-build");
+            if (log.isDebugEnabled()) {
+                log.debug("New IaaSProvider object is equal to the cached one, no need to re-build");
+            }
             return cachedIaasProvider;
         }
 

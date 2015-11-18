@@ -86,18 +86,7 @@ public class EC2Iaas extends JcloudsIaas {
         // set image id specified
         templateBuilder.imageId(iaasInfo.getImage());
 
-        if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
-            Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
-            for (Location location : locations) {
-                if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) && location
-                        .getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
-                    templateBuilder.locationId(location.getId());
-                    log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
-                            + " with id: " + location.getId());
-                    break;
-                }
-            }
-        } else if (iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT) != null) {
+        if (iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
             for (Location location : locations) {
                 if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) && location
@@ -105,6 +94,17 @@ public class EC2Iaas extends JcloudsIaas {
                     templateBuilder.locationId(location.getId());
                     log.info("ZONE has been set as " + iaasInfo.getProperty
                             (CloudControllerConstants.ZONE_ELEMENT)
+                            + " with id: " + location.getId());
+                    break;
+                }
+            }
+        } else if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+            Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
+            for (Location location : locations) {
+                if (location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) && location
+                        .getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+                    templateBuilder.locationId(location.getId());
+                    log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
                             + " with id: " + location.getId());
                     break;
                 }
@@ -119,7 +119,15 @@ public class EC2Iaas extends JcloudsIaas {
         // build the Template
         Template template = templateBuilder.build();
 
-        if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+        if (iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT) != null) {
+            if (!template.getLocation().getId()
+                    .equals(iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT))) {
+                log.warn("couldn't find assignable ZONE of id :" +
+                        iaasInfo.getProperty(CloudControllerConstants.ZONE_ELEMENT) + " in the IaaS. " +
+                        "Hence using the default location as " + template.getLocation().getScope().toString() +
+                        " with the id " + template.getLocation().getId());
+            }
+        } else if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             if (!template.getLocation().getId()
                     .equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
                 log.warn("couldn't find assignable ZONE of id :" +
