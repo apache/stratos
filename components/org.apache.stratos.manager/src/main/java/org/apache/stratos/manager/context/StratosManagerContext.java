@@ -46,8 +46,10 @@ public class StratosManagerContext implements Serializable {
 
     private static final String SM_CARTRIDGES_CARTRIDGEGROUPS_WRITE_LOCK = "SM_CARTRIDGES_CARTRIDGEGROUPS_WRITE_LOCK";
     private static final String SM_CARTRIDGES_APPLICATIONS_WRITE_LOCK = "SM_CARTRIDGES_APPLICATIONS_WRITE_LOCK";
-    private static final String SM_CARTRIDGEGROUPS_CARTRIDGESUBGROUPS_WRITE_LOCK = "SM_CARTRIDGEGROUPS_CARTRIDGESUBGROUPS_WRITE_LOCK";
-    private static final String SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK = "SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK";
+    private static final String SM_CARTRIDGEGROUPS_CARTRIDGESUBGROUPS_WRITE_LOCK
+            = "SM_CARTRIDGEGROUPS_CARTRIDGESUBGROUPS_WRITE_LOCK";
+    private static final String SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK
+            = "SM_CARTRIDGEGROUPS_APPLICATIONS_WRITE_LOCK";
     private static final Log log = LogFactory.getLog(StratosManagerContext.class);
     private static volatile StratosManagerContext instance;
     private final transient DistributedObjectProvider distributedObjectProvider;
@@ -91,7 +93,8 @@ public class StratosManagerContext implements Serializable {
         // Get maps from distributed object provider
         cartridgeTypeToCartridgeGroupsMap = distributedObjectProvider.getMap(SM_CARTRIDGE_TYPE_TO_CARTIDGE_GROUPS_MAP);
         cartridgeTypeToApplicationsMap = distributedObjectProvider.getMap(SM_CARTRIDGE_TYPE_TO_APPLICATIONS_MAP);
-        cartridgeGroupToCartridgeSubGroupsMap = distributedObjectProvider.getMap(SM_CARTRIDGE_GROUP_TO_CARTIDGE_GROUPS_MAP);
+        cartridgeGroupToCartridgeSubGroupsMap = distributedObjectProvider
+                .getMap(SM_CARTRIDGE_GROUP_TO_CARTIDGE_GROUPS_MAP);
         cartridgeGroupToApplicationsMap = distributedObjectProvider.getMap(SM_CARTRIDGE_GROUP_TO_APPLICATIONS_MAP);
 
         // Update context from the registry
@@ -256,7 +259,8 @@ public class StratosManagerContext implements Serializable {
         }
     }
 
-    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) {
+    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName,
+            String[] cartridgeGroupNames) {
         if (cartridgeGroupNames == null) {
             return;
         }
@@ -343,7 +347,8 @@ public class StratosManagerContext implements Serializable {
 
                         copyMap(serializedObj.cartridgeTypeToCartridgeGroupsMap, cartridgeTypeToCartridgeGroupsMap);
                         copyMap(serializedObj.cartridgeTypeToApplicationsMap, cartridgeTypeToApplicationsMap);
-                        copyMap(serializedObj.cartridgeGroupToCartridgeSubGroupsMap, cartridgeGroupToCartridgeSubGroupsMap);
+                        copyMap(serializedObj.cartridgeGroupToCartridgeSubGroupsMap,
+                                cartridgeGroupToCartridgeSubGroupsMap);
                         copyMap(serializedObj.cartridgeGroupToApplicationsMap, cartridgeGroupToApplicationsMap);
 
                         if (log.isDebugEnabled()) {
@@ -356,8 +361,8 @@ public class StratosManagerContext implements Serializable {
                     }
                 }
             } catch (Exception e) {
-                String msg = "Unable to read Stratos Manager context from the registry. " +
-                        "Hence, any historical data will not be reflected";
+                String msg = "Unable to read Stratos Manager context from the registry. "
+                        + "Hence, any historical data will not be reflected";
                 log.warn(msg, e);
             }
         }

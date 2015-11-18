@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-bouncycastle</artifactId>
-            <version>${jclouds.version}</version>
         </dependency>
     </dependencies>
 
@@ -51,10 +50,11 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.jclouds.encryption.bouncycastle*;version="${jclouds.version}"</Export-Package>
+                        <Export-Package>org.jclouds.encryption.bouncycastle*;version="${jclouds.version}"
+                        </Export-Package>
                         <Import-Package>
                             org.jclouds*;version="${jclouds.version}",
-                            com.google.inject.*;version="${guice.imp.pkg.version}",
+                            com.google.inject.*;version="${guice.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

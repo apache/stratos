@@ -37,32 +37,4 @@
         <module>modules/p2-profile-gen</module>
         <module>modules/distribution</module>
     </modules>
-
-    <profiles>
-        <profile>
-            <id>signed-build</id>
-            <activation>
-                <property>
-                    <name>sign</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

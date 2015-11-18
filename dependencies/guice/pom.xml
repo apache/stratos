@@ -52,7 +52,7 @@
                         </Export-Package>
                         <Import-Package>
                             javax.inject;version="${javax.inject.imp.pkg.version}",
-                            org.aopalliance*;version="${aopalliance.imp.pkg.version}",
+                            org.aopalliance*;version="${aopalliance.imp.pkg.version.range}",
                             com.google.inject.internal.asm.util.*;resolution:=optional,
                             *;resolution:=optional
                         </Import-Package>

@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
 import org.apache.stratos.metadata.service.MetadataTopologyEventReceiver;
+import org.apache.stratos.metadata.service.ServiceHolder;
 import org.apache.stratos.metadata.service.definition.Property;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
@@ -250,8 +251,7 @@ public class MetadataApiRegistry implements DataStore {
     }
 
     private UserRegistry getRegistry() throws RegistryException {
-        return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().
-                getRegistryService().getGovernanceSystemRegistry();
+        return ServiceHolder.getRegistryService().getGovernanceSystemRegistry();
     }
 
     /**

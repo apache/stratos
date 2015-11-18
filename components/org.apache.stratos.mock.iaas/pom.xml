@@ -33,28 +33,35 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.core</artifactId>
-            <version>${carbon.kernel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.logging</artifactId>
-            <version>${carbon.kernel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.databridge.commons</artifactId>
-            <version>${carbon.kernel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
+        </dependency>
+
+        <!-- Stratos components -->
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Misc -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
     </dependencies>
 
@@ -73,15 +80,22 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.mock.iaas.*,
-                            org.apache.stratos.mock.iaas.domain.*,
-                            org.apache.stratos.mock.iaas.services.MockIaasService,
+                            !org.apache.stratos.mock.iaas.internal.*,
+                            org.apache.stratos.mock.iaas.*
                         </Export-Package>
                         <Private-Package>
-                            org.apache.stratos.mock.iaas.internal;
+                            org.apache.stratos.mock.iaas.internal.*
                         </Private-Package>
                         <Import-Package>
-                            org.apache.stratos.common.*,
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version.range}",
+                            org.wso2.carbon.utils.*;version="${carbon.platform.imp.pkg.version.range}",
+
+                            org.apache.stratos.common.*="${project.version}",
+                            org.apache.stratos.messaging.*;version="${project.version}",
+
+                            org.apache.commons.logging.*;version="${commons.logging.imp.pkg.version.range}",
+                            org.apache.commons.lang.*;version="${commons.lang.imp.pkg.version.range}",
+                            org.apache.commons.lang3.*;version="${commons.lang3.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

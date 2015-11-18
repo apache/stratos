@@ -37,13 +37,11 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.event.processor.server.feature</artifactId>
-            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.event.processor.ui.feature</artifactId>
-            <version>1.0.0</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -71,7 +69,7 @@
                                     org.apache.stratos:org.apache.stratos.event.processor.server.feature:${project.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon:org.wso2.carbon.event.processor.ui.feature:1.0.0
+                                    org.wso2.carbon:org.wso2.carbon.event.processor.ui.feature:${carbon.event.processor.version}
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>

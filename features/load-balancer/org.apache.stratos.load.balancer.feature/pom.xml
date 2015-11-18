@@ -55,13 +55,32 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.load.balancer:${project.version}
+                                <!-- Stratos bundles -->
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.load.balancer:${project.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.autoscaler.service.stub:${project.version}
+                                </bundleDef>
+
+                                <!-- Misc -->
+                                <bundleDef>
+                                    org.wso2.orbit.commons-collections:commons-collections:${commons.collections.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    commons-configuration:commons-configuration:${commons.configuration.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
+                                <importFeatureDef>
+                                    org.wso2.carbon.core.server:${carbon.kernel.version}
                                 </importFeatureDef>
-                                <importFeatureDef>org.apache.synapse.wso2:${synapse.wso2.feature.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.apache.synapse.wso2:${synapse.wso2.feature.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

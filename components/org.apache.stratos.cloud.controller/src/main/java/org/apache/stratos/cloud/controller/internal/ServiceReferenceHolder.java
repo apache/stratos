@@ -34,7 +34,7 @@ public class ServiceReferenceHolder {
     private static volatile ServiceReferenceHolder instance;
 
     private TaskService taskService;
-    private Registry registry;
+    private UserRegistry registry;
     private AxisConfiguration axisConfiguration;
     private DistributedObjectProvider distributedObjectProvider;
     private HazelcastInstance hazelcastInstance;
@@ -74,7 +74,7 @@ public class ServiceReferenceHolder {
         registry = governanceSystemRegistry;
     }
 
-    public Registry getRegistry() {
+    public UserRegistry getRegistry() {
         return registry;
     }
 

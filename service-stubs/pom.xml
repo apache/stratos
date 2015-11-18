@@ -30,20 +30,10 @@
     <artifactId>stratos-service-stubs-parent</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Service Stubs</name>
-    <url>http://apache.org</url>
 
     <modules>
         <module>org.apache.stratos.cloud.controller.service.stub</module>
         <module>org.apache.stratos.manager.service.stub</module>
         <module>org.apache.stratos.autoscaler.service.stub</module>
     </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

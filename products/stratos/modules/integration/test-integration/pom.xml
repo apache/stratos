@@ -37,11 +37,6 @@
             <artifactId>commons-exec</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.automation</groupId>
             <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
         </dependency>
@@ -104,28 +99,23 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-all</artifactId>
-            <version>5.10.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>${httpcore.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -139,7 +129,6 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.integration.common</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -223,6 +212,7 @@
             </plugin>
         </plugins>
     </build>
+
     <properties>
         <suiteFile>${basedir}/src/test/resources/test-suite-all.xml</suiteFile>
     </properties>

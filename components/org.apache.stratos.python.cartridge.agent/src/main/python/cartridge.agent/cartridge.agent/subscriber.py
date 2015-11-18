@@ -112,7 +112,12 @@ class EventSubscriber(threading.Thread):
         EventSubscriber.log.debug("Registered handler for event %r" % event)
 
     def on_connect(self, client, userdata, flags, rc):
-        EventSubscriber.log.debug("Connected to message broker.")
+        if rc != 0:
+            EventSubscriber.log.debug("Connection to the message broker didn't succeed. Disconnecting client.")
+            client.disconnect()
+            return
+
+        EventSubscriber.log.debug("Connected to message broker %s:%s successfully." % (client._host, client._port))
         self.__mb_client.subscribe(self.__topic)
         EventSubscriber.log.debug("Subscribed to %r" % self.__topic)
 

@@ -32,13 +32,15 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.3.5</version>
+            <artifactId>httpclient-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore-osgi</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
-            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -61,13 +63,16 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.metadata.client.*,
+                            org.apache.stratos.metadata.client.*
                         </Export-Package>
                         <Import-Package>
-                            !org.apache.stratos.metadata.client,
-                            org.apache.commons.logging; version=0.0.0,
-                            org.apache.commons.configuration; version=0.0.0,
-                            org.apache.http.conn.ssl;version=0.0.0,
+                            com.google.gson.*;version="${gson.imp.pkg.version.range}",
+                            org.apache.commons.configuration.*;version="${commons.configuration.imp.pkg.version.range}",
+                            org.apache.http.auth.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.cookie.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.conn.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.client.*;version="${http.client.imp.pkg.version.range}",
+                            org.apache.http.entity.*;version="${http.client.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

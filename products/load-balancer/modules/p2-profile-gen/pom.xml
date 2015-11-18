@@ -255,12 +255,6 @@
                                     org.wso2.carbon:org.wso2.carbon.endpoint.server.feature:${carbon.kernel.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.load.balancer.feature:${project.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.load.balancer.common.feature:${project.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.sequences.server.feature:${carbon.kernel.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
@@ -271,9 +265,6 @@
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.ntask.core.feature:${carbon.kernel.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.registry.core.feature:${carbon.kernel.version}
@@ -298,6 +289,17 @@
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.event.server.feature:${carbon.kernel.version}
+                                </featureArtifactDef>
+
+                                <!-- Stratos features -->
+                                <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.load.balancer.feature:${project.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.load.balancer.common.feature:${project.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
@@ -374,6 +376,16 @@
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
+                                    <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
+                                    <version>${carbon.kernel.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.event.server.feature.group</id>
+                                    <version>${carbon.kernel.version}</version>
+                                </feature>
+
+                                <!-- Stratos features -->
+                                <feature>
                                     <id>org.apache.stratos.messaging.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
@@ -384,14 +396,6 @@
                                 <feature>
                                     <id>org.apache.stratos.load.balancer.common.feature.group</id>
                                     <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
-                                    <version>${carbon.kernel.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.event.server.feature.group</id>
-                                    <version>${carbon.kernel.version}</version>
                                 </feature>
                             </features>
                         </configuration>
