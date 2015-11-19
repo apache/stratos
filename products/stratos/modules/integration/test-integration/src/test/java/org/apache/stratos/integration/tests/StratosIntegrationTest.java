@@ -18,12 +18,15 @@ package org.apache.stratos.integration.tests;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.integration.common.StratosTestServerManager;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.common.extensions.StratosServerExtension;
 import org.apache.stratos.integration.common.rest.RestClient;
 import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+
+import java.util.List;
 
 public class StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(StratosIntegrationTest.class);
@@ -36,6 +39,7 @@ public class StratosIntegrationTest {
     protected MockIaasApiClient mockIaasApiClient;
     public static final int GLOBAL_TEST_TIMEOUT = 5 * 60 * 1000; // 5 mins
     public static final int APPLICATION_TEST_TIMEOUT = 20 * 60 * 1000; // 20 mins
+    protected StratosTestServerManager stratosTestServerManager;
 
     public StratosIntegrationTest() {
         try {
@@ -50,6 +54,7 @@ public class StratosIntegrationTest {
             stratosSecuredBackendURL = StratosServerExtension.getStratosTestServerManager().getWebAppURLHttps();
             restClient = new RestClient(stratosBackendURL, stratosSecuredBackendURL, adminUsername, adminPassword);
             mockIaasApiClient = new MockIaasApiClient(stratosBackendURL + "/mock-iaas/api");
+            stratosTestServerManager = StratosServerExtension.getStratosTestServerManager();
             // initialize topology handler before running the tests
             TopologyHandler.getInstance();
         } catch (Exception e) {

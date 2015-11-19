@@ -263,6 +263,14 @@ public class StratosTestServerManager extends TestServerManager {
     public void setWebAppURLHttps(String webAppURLHttps) {
         this.webAppURLHttps = webAppURLHttps;
     }
+
+    public ServerLogReader getLogReader () {
+        return ((StratosServerManager)carbonServer).getInputLogStreamReader();
+    }
+
+    public ServerLogReader getErrorLogReader () {
+        return ((StratosServerManager)carbonServer).getErrorStreamReader();
+    }
 }
 
 // TODO: get rid of this class once startup script issue is fixed in automation engine
@@ -619,5 +627,13 @@ class StratosServerManager extends CarbonServerManager {
             this.insertJacocoAgentToShellScript(scriptName);
         }
 
+    }
+
+    public ServerLogReader getInputLogStreamReader () {
+        return inputStreamHandler;
+    }
+
+    public ServerLogReader getErrorStreamReader () {
+        return errorStreamHandler;
     }
 }

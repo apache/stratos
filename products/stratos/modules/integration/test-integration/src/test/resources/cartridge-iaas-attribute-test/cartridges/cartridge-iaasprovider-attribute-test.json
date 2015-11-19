@@ -1,0 +1,54 @@
+{
+  "type": "cartridge-iaasprovider-attribute-test",
+  "category": "framework",
+  "provider": "wso2",
+  "host": "as.wso2.org",
+  "displayName": "WSO2 Default Cartridge",
+  "description": "WSO2 Default Cartridge",
+  "version": "1.0.0",
+  "multiTenant": false,
+  "loadBalancingIPType": "public",
+  "portMapping": [
+    {
+      "name": "mgt-http",
+      "protocol": "http",
+      "port": 9763,
+      "proxyPort": 80
+    }
+  ],
+  "iaasProvider": [
+    {
+      "type": "mock",
+      "property": [
+        {
+          "name":"tag:Name",
+          "value":"WSO2 PPaaS Default Server"
+        },
+        {
+          "name":"property1",
+          "value":"cartridge_property_value_1"
+        }
+      ]
+    }
+  ],
+  "deployment": {
+  },
+  "property": [
+    {
+      "name": "payload_parameter.CONFIG_PARAM_WORKER_HOST_NAME",
+      "value": "default.wso2.com"
+    },
+    {
+      "name": "payload_parameter.CONFIG_PARAM_CLUSTERING",
+      "value": "false"
+    },
+    {
+      "name": "payload_parameter.CONFIG_PARAM_MEMBERSHIP_SCHEME",
+      "value": "stratos"
+    },
+    {
+      "name": "payload_parameter.APPLICATION_PATH",
+      "value": "/var/www"
+    }
+  ]
+}

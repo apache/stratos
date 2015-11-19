@@ -1,0 +1,19 @@
+{
+  "id": "network-partition-iaasprovider-attribute-test",
+  "provider": "mock",
+  "partitions": [
+    {
+      "id": "partition-1",
+      "property": [
+        {
+          "name": "region",
+          "value": "default"
+        },
+        {
+          "name": "zone",
+          "value": "default-1"
+        }
+      ]
+    }
+  ]
+}
