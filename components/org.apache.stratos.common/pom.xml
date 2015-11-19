@@ -32,6 +32,14 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>javax.cache.wso2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>
         </dependency>
         <dependency>
@@ -121,6 +129,8 @@
                             org.apache.stratos.common.*
                         </Export-Package>
                         <Import-Package>
+                            org.wso2.carbon.core.*;version="${carbon.platform.imp.pkg.version.range}",
+                            org.wso2.carbon.caching.impl.*;version="${carbon.platform.imp.pkg.version.range}",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version.range}",
                             org.wso2.carbon.user.core.*;version="${carbon.platform.imp.pkg.version.range}",
                             org.wso2.carbon.user.mgt.*;version="${carbon.platform.imp.pkg.version.range}",

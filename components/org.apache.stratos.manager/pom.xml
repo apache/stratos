@@ -38,6 +38,10 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.base</artifactId>
         </dependency>
         <dependency>
@@ -126,6 +130,7 @@
                         <Import-Package>
                             org.wso2.carbon.utils.*;version="${carbon.platform.imp.pkg.version.range}",
                             org.wso2.carbon.base.*;version="${carbon.base.imp.pkg.version.range}",
+                            org.wso2.carbon.user.core.*;version="${carbon.platform.imp.pkg.version.range}",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version.range}",
                             org.wso2.carbon.ntask.core.*;version="0.0.0",
                             org.wso2.carbon.databridge.commons.*;version="${carbon.platform.imp.pkg.version.range}",
