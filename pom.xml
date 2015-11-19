@@ -381,6 +381,11 @@
                 <artifactId>org.wso2.carbon.mediator.bridge</artifactId>
                 <version>${carbon.platform.version.4.2.0}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>javax.cache.wso2</artifactId>
+                <version>${carbon.platform.version.4.2.0}</version>
+            </dependency>
 
             <!-- Misc -->
             <dependency>
