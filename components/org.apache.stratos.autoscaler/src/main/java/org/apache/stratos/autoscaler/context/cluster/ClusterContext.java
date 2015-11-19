@@ -374,7 +374,8 @@ public class ClusterContext extends AbstractClusterContext {
                                 clusterLevelPartitionContext.getPartitionId(), memberId));
                     }
                 } else if (MemberStatus.Created.equals(member.getStatus())
-                        || MemberStatus.Starting.equals(member.getStatus())) {
+                        || MemberStatus.Starting.equals(member.getStatus())
+                        || MemberStatus.Initialized.equals(member.getStatus())) {
                     clusterLevelPartitionContext.addPendingMember(memberContext);
                     if (log.isDebugEnabled()) {
                         String msg = String.format("Created or starting member read from topology and added to " +
