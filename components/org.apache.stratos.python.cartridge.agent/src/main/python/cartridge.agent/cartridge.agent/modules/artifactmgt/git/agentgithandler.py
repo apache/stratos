@@ -15,22 +15,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from threading import current_thread
-import subprocess
 import shutil
-import time
-import os
+import subprocess
 import tempfile
-from git import *
 import urllib
+import os
+from distutils.dir_util import copy_tree
+from threading import current_thread
 
 import constants
+import time
 from config import Config
-from ...util.log import LogFactory
-from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
-from ...artifactmgt.repository import Repository
 from exception import GitRepositorySynchronizationException
-from distutils.dir_util import copy_tree
+from git import *
+
+from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
+from ...util.log import LogFactory
 
 
 class AgentGitHandler:
@@ -44,6 +44,7 @@ class AgentGitHandler:
     log = LogFactory().get_log(__name__)
 
     __git_repositories = {}
+
     # (tenant_id => GitRepository)
 
     @staticmethod
@@ -143,11 +144,14 @@ class AgentGitHandler:
     def clone(git_repo):
         try:
             # create a temporary location to clone
-            temp_repo_path = os.path.join(tempfile.gettempdir(), "pca-temp-" + git_repo.tenant_id)
+            temp_repo_path = os.path.join(tempfile.gettempdir(), "pca_temp_" + git_repo.tenant_id)
             if os.path.isdir(temp_repo_path) and os.listdir(temp_repo_path) != []:
                 GitUtils.delete_folder_tree(temp_repo_path)
                 GitUtils.create_dir(temp_repo_path)
+
             # clone the repo to a temporary location first to avoid conflicts
+            AgentGitHandler.log.debug(
+                "Cloning artifacts from URL: %s to temp location: %s" % (git_repo.repo_url, temp_repo_path))
             Repo.clone_from(git_repo.repo_url, temp_repo_path)
 
             # move the cloned dir to application path
