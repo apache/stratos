@@ -148,6 +148,7 @@
                 <value>metadataKeys</value>
                 <value>networkInterfaces</value>
                 <value>iaasProvider</value>
+                <value>iaasProviders</value>
                 <value>floatingNetworks</value>
                 <value>scalingDependents</value>
                 <value>aliases</value>
