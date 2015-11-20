@@ -34,10 +34,10 @@ class python_agent(
   $agent_name = "apache-stratos-python-${service_code}-${version}"
   $agent_home= "${target}/${agent_name}"
 
-  $split_mburls = split($mb_url, "//")
-  $split_mburl = split($split_mburls[1], ":")
-  $mb_ip = $split_mburl[0]
-  $mb_port = $split_mburl[1]
+  $split_mburls = split($mb_urls, ",")
+
+  # Generate the line for JNDI properties file -> failover:(tcp://host:port, tcp://host:port)
+  $jndi_mb_string = inline_template('failover:(<%= @split_mburls.map {|mb_url| "tcp://" + mb_url}.join(", ") %>)')
 
   tag($service_code)
 

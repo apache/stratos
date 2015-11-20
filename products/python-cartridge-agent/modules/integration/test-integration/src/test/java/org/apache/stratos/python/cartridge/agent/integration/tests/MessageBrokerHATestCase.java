@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Created by chamilad on 11/11/15.
+ * Test case to test the messsage broker connection resilience in the Python Cartridge Agent
  */
 public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
     public MessageBrokerHATestCase() throws IOException {

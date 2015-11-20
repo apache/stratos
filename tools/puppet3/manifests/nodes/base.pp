@@ -21,11 +21,11 @@ node 'base' {
 #essential variables
   $package_repo              = 'http://10.4.128.7'
   $local_package_dir         = '/mnt/packs'
-  $mb_url                    = 'tcp://127.0.0.1:1883'
+  $mb_urls                   = '127.0.0.1:1883'  # comma separated list of MB URLs
   $mb_type                   = 'activemq' #in wso2 mb case, value should be 'wso2mb'
+  $mb_username               = ''
+  $mb_password               = ''
   $cep_urls                  = '127.0.0.1:7711'   # comma separated list of CEP URLs
-  $cep_ip                    = '127.0.0.1'
-  $cep_port                  = '7711'
   $cep_username              = 'admin'
   $cep_password              = 'admin'
   $truststore_password       = 'wso2carbon'
