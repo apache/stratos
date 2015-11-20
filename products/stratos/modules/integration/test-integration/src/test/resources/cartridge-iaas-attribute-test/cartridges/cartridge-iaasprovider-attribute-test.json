@@ -23,10 +23,6 @@
         {
           "name":"tag:Name",
           "value":"WSO2 PPaaS Default Server"
-        },
-        {
-          "name":"property1",
-          "value":"cartridge_property_value_1"
         }
       ]
     }

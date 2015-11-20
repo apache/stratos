@@ -39,7 +39,6 @@ public class StratosIntegrationTest {
     protected MockIaasApiClient mockIaasApiClient;
     public static final int GLOBAL_TEST_TIMEOUT = 5 * 60 * 1000; // 5 mins
     public static final int APPLICATION_TEST_TIMEOUT = 20 * 60 * 1000; // 20 mins
-    protected StratosTestServerManager stratosTestServerManager;
 
     public StratosIntegrationTest() {
         try {
@@ -54,7 +53,6 @@ public class StratosIntegrationTest {
             stratosSecuredBackendURL = StratosServerExtension.getStratosTestServerManager().getWebAppURLHttps();
             restClient = new RestClient(stratosBackendURL, stratosSecuredBackendURL, adminUsername, adminPassword);
             mockIaasApiClient = new MockIaasApiClient(stratosBackendURL + "/mock-iaas/api");
-            stratosTestServerManager = StratosServerExtension.getStratosTestServerManager();
             // initialize topology handler before running the tests
             TopologyHandler.getInstance();
         } catch (Exception e) {
