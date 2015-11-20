@@ -25,10 +25,12 @@ import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
 import org.apache.stratos.integration.common.RestConstants;
+import org.apache.stratos.integration.common.ServerLogClient;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.Test;
+import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
 import java.util.List;
 
@@ -50,7 +52,7 @@ public class IaasProviderAttributeTest extends StratosIntegrationTest {
     private static final String APPLICATION = "app-iaasprovider-attribute-test";
 
     @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas.attributes", "all"})
-    public void testIaasProviderAttributesForDefaultCartridge () throws Exception {
+    public void testIaasProviderAttributes () throws Exception {
 
         // add autoscaling policy
         log.info("Adding autoscaling policy [autoscale policy id] " + AUTOSCALING_POLICY);
@@ -118,66 +120,70 @@ public class IaasProviderAttributeTest extends StratosIntegrationTest {
 
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
-        long time = System.currentTimeMillis() + 300000L;
+        log.info("Waiting for application status to become ACTIVE...");
+        topologyHandler.assertApplicationStatus(applicationBean.getApplicationId(), ApplicationStatus.Active);
 
+        // create a ServerLogClientInstance and get logs
         boolean found = false;
-        while (System.currentTimeMillis() < time) {
-            if (!stratosTestServerManager.getLogReader().getOutput().contains("cc_property_value_1")
-                    && stratosTestServerManager.getLogReader().getOutput().contains("cartridge_property_value_1")) {
-                found = true;
-                break;
+        ServerLogClient serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/",
+                adminUsername,
+                adminPassword);
+        LogEvent [] logEvents = serverLogClient.getLogViewerClient().getAllRemoteSystemLogs();
+        if (logEvents.length > 0) {
+            for (int i = 0; i < logEvents.length; i++) {
+                if (!logEvents[i].getMessage().contains("cartridge_property_value_1") &&
+                logEvents[i].getMessage().contains("cc_property_value_1")) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        assertTrue("Property 'property1' not found | value not equal to 'cc_property_value_1'", found);
+
+        // undeploy application
+        log.info("Un-deploying the application [application id] app-iaasprovider-attribute-test");
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
+                RestConstants.APPLICATIONS_UNDEPLOY;
+
+        boolean undeployedApp = restClient.undeployEntity(resourcePathUndeploy, RestConstants
+                .APPLICATIONS_NAME);
+        assertTrue(undeployedApp);
+        log.info("Undeployed application 'app-iaasprovider-attribute-test'");
+
+        // force undeploy to make sure its undeployed
+        log.info("Force undeployment is going to start for the [application] app-iaasprovider-attribute-test");
+        restClient.undeployEntity(RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
+                RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
+
+        boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("app-iaasprovider-attribute-test");
+        assertTrue(String.format("Forceful undeployment failed for the application %s",
+                "app-iaasprovider-attribute-test"), forceUndeployed);
+
+        // update cartridge
+        boolean updated = restClient.updateEntity(RESOURCES_PATH + "/cartridges/" + UPDATED_CARTRIDGE + ".json",
+                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertTrue(updated);
+        log.info("Updated cartridge 'cartridge-iaasprovider-attribute-test'");
+
+        // re-deplpoy the application
+        resourcePath = RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + APPLICATION_POLICY;
+        appDeployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
+        assertTrue(appDeployed);
+        log.info("Re-deployed application 'app-iaasprovider-attribute-test'");
+
+        logEvents = serverLogClient.getLogViewerClient().getAllRemoteSystemLogs();
+        if (logEvents.length > 0) {
+            for (int i = 0; i < logEvents.length; i++) {
+                if (logEvents[i].getMessage().contains("cartridge_property_value_1")) {
+                    found = true;
+                    break;
+                }
             }
         }
 
         assertTrue("Property 'property1' not found | value not equal to 'cartridge_property_value_1'", found);
-
-//        log.info("Waiting for application status to become ACTIVE...");
-//        topologyHandler.assertApplicationStatus(applicationBean.getApplicationId(),
-//                ApplicationStatus.Active);
-//
-//        // undeploy application
-//        log.info("Un-deploying the application [application id] app-iaasprovider-attribute-test");
-//        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
-//                RestConstants.APPLICATIONS_UNDEPLOY;
-//
-//        boolean undeployedApp = restClient.undeployEntity(resourcePathUndeploy, RestConstants
-//                .APPLICATIONS_NAME);
-//        assertTrue(undeployedApp);
-//        log.info("Undeployed application 'app-iaasprovider-attribute-test'");
-//
-//        // force undeploy to make sure its undeployed
-//        log.info("Force undeployment is going to start for the [application] app-iaasprovider-attribute-test");
-//        restClient.undeployEntity(RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
-//                RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
-//
-//        boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("app-iaasprovider-attribute-test");
-//        assertTrue(String.format("Forceful undeployment failed for the application %s",
-//                "app-iaasprovider-attribute-test"), forceUndeployed);
-//
-//        // update cartridge
-//        boolean updated = restClient.updateEntity(RESOURCES_PATH + "/cartridges/" + UPDATED_CARTRIDGE + ".json",
-//                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-//        assertTrue(updated);
-//        log.info("Updated cartridge 'cartridge-iaasprovider-attribute-test'");
-//
-//        // re-deplpoy the application
-//        resourcePath = RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
-//                RestConstants.APPLICATIONS_DEPLOY + "/" + APPLICATION_POLICY;
-//        appDeployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
-//        assertTrue(appDeployed);
-//        log.info("Re-deployed application 'app-iaasprovider-attribute-test'");
-//
-//        time = System.currentTimeMillis() + 300000L;
-//
-//        found = false;
-//        while (System.currentTimeMillis() < time) {
-//            if (stratosTestServerManager.getLogReader().getOutput().contains("cartridge_property_value_1")) {
-//                found = true;
-//                break;
-//            }
-//        }
-//
-//        assertTrue("Property 'property1' not found | value not equal to 'cartridge_property_value_1'", found);
 
         terminateAndRemoveAllArtifacts();
     }
