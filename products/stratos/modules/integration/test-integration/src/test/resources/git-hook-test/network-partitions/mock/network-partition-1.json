@@ -1,0 +1,15 @@
+{
+    "id": "network-partition-1",
+    "provider": "mock",
+    "partitions": [
+        {
+            "id": "partition-1",
+            "property": [
+                {
+                    "name": "region",
+                    "value": "default"
+                }
+            ]
+        }
+    ]
+}

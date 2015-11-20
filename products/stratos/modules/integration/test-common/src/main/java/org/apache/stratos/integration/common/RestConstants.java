@@ -34,6 +34,7 @@ public class RestConstants {
     public static final String APPLICATIONS_RUNTIME = "/runtime";
     public static final String APPLICATIONS_DEPLOY = "/deploy";
     public static final String APPLICATIONS_UNDEPLOY = "/undeploy";
+    public static final String REPO_NOTIFY = "/" + API + "/repo/notify";
 
     public static final String AUTOSCALING_POLICIES_PATH = "/autoscaling-policies/";
     public static final String AUTOSCALING_POLICIES_NAME = "autoscalingPolicy";
