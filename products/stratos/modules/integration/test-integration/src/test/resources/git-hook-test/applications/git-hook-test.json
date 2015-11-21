@@ -1,17 +1,17 @@
 {
-    "applicationId": "single-cartridge-app",
-    "alias": "single-cartridge-app",
+    "applicationId": "git-hook-test",
+    "alias": "git-hook-test",
     "multiTenant": false,
     "components": {
         "cartridges": [
             {
-                "type": "php",
+                "type": "c1-git-hook-test",
                 "cartridgeMin": 1,
                 "cartridgeMax": 5,
                 "subscribableInfo": {
-                    "alias": "my-php",
-                    "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy": "deployment-policy-1",
+                    "alias": "my-c1-git-hook-test",
+                    "autoscalingPolicy": "autoscaling-policy-git-hook-test",
+                    "deploymentPolicy": "deployment-policy-git-hook-test",
                     "artifactRepository": {
                         "privateRepo": false,
                         "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
