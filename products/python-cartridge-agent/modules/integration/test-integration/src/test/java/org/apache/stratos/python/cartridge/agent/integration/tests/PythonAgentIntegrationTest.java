@@ -24,6 +24,7 @@ import org.apache.activemq.security.AuthenticationUser;
 import org.apache.activemq.security.SimpleAuthenticationPlugin;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +39,6 @@ import org.apache.stratos.messaging.message.receiver.instance.status.InstanceSta
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 import org.apache.stratos.python.cartridge.agent.integration.common.ThriftTestServer;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -63,7 +63,7 @@ public class PythonAgentIntegrationTest {
 
     public static final String TEST_THREAD_POOL_SIZE = "test.thread.pool.size";
     protected final UUID PYTHON_AGENT_DIR_NAME = UUID.randomUUID();
-//    protected final String defaultBrokerName = "testBrokerDefault";
+    //    protected final String defaultBrokerName = "testBrokerDefault";
     protected final Properties integrationProperties = new Properties();
 
     protected Map<Integer, ServerSocket> serverSocketMap = new HashMap<>();
@@ -76,7 +76,7 @@ public class PythonAgentIntegrationTest {
     protected String distributionName;
     protected int testThreadPoolSize;
 
-    protected boolean eventReceiverInitiated = false;
+    protected boolean eventReceiverInitialized = false;
     protected TopologyEventReceiver topologyEventReceiver;
     protected InstanceStatusEventReceiver instanceStatusEventReceiver;
     protected InitializerEventReceiver initializerEventReceiver;
@@ -86,7 +86,6 @@ public class PythonAgentIntegrationTest {
     protected ThriftTestServer thriftTestServer;
 
     private Map<String, BrokerService> messageBrokers;
-
 
     /**
      * Setup method for test method testPythonCartridgeAgent
@@ -100,58 +99,58 @@ public class PythonAgentIntegrationTest {
         cepSSLPort = Integer.parseInt(integrationProperties.getProperty(CEP_SSL_PORT));
 
         Properties jndiProperties = new Properties();
-        jndiProperties.load(new FileInputStream(new File(System.getProperty("jndi.properties.dir") + PATH_SEP + "jndi.properties")));
-        if (!jndiProperties.containsKey(ACTIVEMQ_AMQP_BIND_PORTS) || !jndiProperties.containsKey(ACTIVEMQ_MQTT_BIND_PORTS)) {
+        jndiProperties.load(new FileInputStream(
+                new File(System.getProperty("jndi.properties.dir") + PATH_SEP + "jndi.properties")));
+        if (!jndiProperties.containsKey(ACTIVEMQ_AMQP_BIND_PORTS) || !jndiProperties
+                .containsKey(ACTIVEMQ_MQTT_BIND_PORTS)) {
             amqpBindPorts = integrationProperties.getProperty(ACTIVEMQ_AMQP_BIND_PORTS).split(",");
             mqttBindPorts = integrationProperties.getProperty(ACTIVEMQ_MQTT_BIND_PORTS).split(",");
-        }else{
+        } else {
             amqpBindPorts = jndiProperties.getProperty(ACTIVEMQ_AMQP_BIND_PORTS).split(",");
             mqttBindPorts = jndiProperties.getProperty(ACTIVEMQ_MQTT_BIND_PORTS).split(",");
         }
 
         if (amqpBindPorts.length != mqttBindPorts.length) {
-            throw new RuntimeException("The number of AMQP ports and MQTT ports should be equal in integration-test.properties.");
+            throw new RuntimeException(
+                    "The number of AMQP ports and MQTT ports should be equal in integration-test.properties.");
         }
 
         // start ActiveMQ test server
-        for (int i = 0; i < amqpBindPorts.length; i++){
+        for (int i = 0; i < amqpBindPorts.length; i++) {
+            log.info("Starting ActiveMQ instance with AMQP: " + amqpBindPorts[i] + ", MQTT: " + mqttBindPorts[i]);
             startActiveMQInstance(Integer.parseInt(amqpBindPorts[i]), Integer.parseInt(mqttBindPorts[i]), true);
         }
 
-        if (!this.eventReceiverInitiated) {
-            ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", testThreadPoolSize);
-            topologyEventReceiver = new TopologyEventReceiver();
-            topologyEventReceiver.setExecutorService(executorService);
-            topologyEventReceiver.execute();
+        ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", testThreadPoolSize);
+        topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver.setExecutorService(executorService);
+        topologyEventReceiver.execute();
 
-            instanceStatusEventReceiver = new InstanceStatusEventReceiver();
-            instanceStatusEventReceiver.setExecutorService(executorService);
-            instanceStatusEventReceiver.execute();
+        instanceStatusEventReceiver = new InstanceStatusEventReceiver();
+        instanceStatusEventReceiver.setExecutorService(executorService);
+        instanceStatusEventReceiver.execute();
 
-            this.instanceStarted = false;
-            instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
-                @Override
-                protected void onEvent(Event event) {
-                    log.info("Instance started event received");
-                    instanceStarted = true;
-                }
-            });
+        instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                log.info("Instance started event received");
+                instanceStarted = true;
+            }
+        });
 
-            this.instanceActivated = false;
-            instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
-                @Override
-                protected void onEvent(Event event) {
-                    log.info("Instance activated event received");
-                    instanceActivated = true;
-                }
-            });
+        instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                log.info("Instance activated event received");
+                instanceActivated = true;
+            }
+        });
 
-            initializerEventReceiver = new InitializerEventReceiver();
-            initializerEventReceiver.setExecutorService(executorService);
-            initializerEventReceiver.execute();
+        initializerEventReceiver = new InitializerEventReceiver();
+        initializerEventReceiver.setExecutorService(executorService);
+        initializerEventReceiver.execute();
 
-            this.eventReceiverInitiated = true;
-        }
+        this.eventReceiverInitialized = true;
 
         // Start CEP Thrift test server
         thriftTestServer = new ThriftTestServer();
@@ -226,7 +225,7 @@ public class PythonAgentIntegrationTest {
         // stop the broker services
         for (Map.Entry<String, BrokerService> entry : this.messageBrokers.entrySet()) {
             try {
-                    log.debug("Stopping broker service [" + entry.getKey() + "]");
+                log.debug("Stopping broker service [" + entry.getKey() + "]");
                 entry.getValue().stop();
             } catch (Exception ignore) {
             }
@@ -240,8 +239,8 @@ public class PythonAgentIntegrationTest {
     }
 
     public PythonAgentIntegrationTest() throws IOException {
-        integrationProperties.load(
-                PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
+        integrationProperties
+                .load(PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
         distributionName = integrationProperties.getProperty(DISTRIBUTION_NAME);
         cepPort = Integer.parseInt(integrationProperties.getProperty(CEP_PORT));
         cepSSLPort = Integer.parseInt(integrationProperties.getProperty(CEP_SSL_PORT));
@@ -279,7 +278,7 @@ public class PythonAgentIntegrationTest {
             AuthenticationUser authenticationUser = new AuthenticationUser("system", "manager", "users,admins");
             List<AuthenticationUser> authUserList = new ArrayList<>();
             authUserList.add(authenticationUser);
-            broker.setPlugins(new BrokerPlugin[]{new SimpleAuthenticationPlugin(authUserList)});
+            broker.setPlugins(new BrokerPlugin[] { new SimpleAuthenticationPlugin(authUserList) });
         }
 
         broker.setBrokerName(brokerName);
@@ -293,8 +292,8 @@ public class PythonAgentIntegrationTest {
         return brokerName;
     }
 
-    protected void stopActiveMQInstance(String brokerName){
-        if (this.messageBrokers.containsKey(brokerName)){
+    protected void stopActiveMQInstance(String brokerName) {
+        if (this.messageBrokers.containsKey(brokerName)) {
             log.debug("Stopping broker service [" + brokerName + "]");
             BrokerService broker = this.messageBrokers.get(brokerName);
             try {
@@ -320,7 +319,7 @@ public class PythonAgentIntegrationTest {
                                     log.error("ERROR found in PCA log", e);
                                 }
                             }
-                            log.info("[PCA] " + line);
+                            log.debug("[PCA] " + line);
                         }
                     }
                     sleep(100);

@@ -179,7 +179,7 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
         Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!eventReceiverInitiated) {
+                while (!eventReceiverInitialized) {
                     sleep(1000);
                 }
                 List<String> outputLines = new ArrayList<>();
