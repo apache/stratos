@@ -1,10 +1,10 @@
 {
-    "type": "php",
+    "type": "c1-git-hook-test",
     "provider": "apache",
     "category": "framework",
-    "host": "php.stratos.org",
-    "displayName": "php",
-    "description": "php Cartridge",
+    "host": "c1-git-hook-test.stratos.org",
+    "displayName": "c1-git-hook-test",
+    "description": "c1-git-hook-test cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
