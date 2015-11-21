@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.apache.stratos.common.test.TestLogAppender;
 import org.apache.stratos.integration.common.StratosTestServerManager;
 import org.apache.stratos.integration.common.Util;
+import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.exceptions.AutomationFrameworkException;
@@ -41,20 +42,18 @@ import static org.testng.Assert.assertNotNull;
  */
 public class StratosServerExtension extends ExecutionListenerExtension {
     private static final Log log = LogFactory.getLog(StratosServerExtension.class);
-    private TestLogAppender testLogAppender;
+    private static final String MOCK_IAAS_API_EP = "/mock-iaas/api";
     private static StratosTestServerManager stratosTestServerManager;
     private static BrokerService broker;
+    private static MockIaasApiClient mockIaasApiClient;
 
     @Override
     public void initiate() throws AutomationFrameworkException {
         broker = new BrokerService();
-        testLogAppender = new TestLogAppender();
     }
 
     @Override
     public void onExecutionStart() throws AutomationFrameworkException {
-        Logger.getRootLogger().addAppender(testLogAppender);
-        Logger.getRootLogger().setLevel(Level.INFO);
         int activeMQDynamicPort = startActiveMQServer();
         startStratosServer(activeMQDynamicPort);
     }
@@ -107,11 +106,10 @@ public class StratosServerExtension extends ExecutionListenerExtension {
             long time3 = System.currentTimeMillis();
             String carbonHome = stratosTestServerManager.startServer();
             assertNotNull(carbonHome, "CARBON_HOME is null");
-            while (!serverStarted()) {
-                log.info("Waiting for topology to be initialized...");
-                Thread.sleep(5000);
-            }
-            while (!mockServiceStarted()) {
+
+            // checking whether mock iaas component is ready. If it is ready, all the components are activated.
+            mockIaasApiClient = new MockIaasApiClient(stratosTestServerManager.getWebAppURL() + MOCK_IAAS_API_EP);
+            while (!StratosServerExtension.mockIaasApiClient.isMockIaaSReady()) {
                 log.info("Waiting for mock service to be initialized...");
                 Thread.sleep(1000);
             }
@@ -172,22 +170,20 @@ public class StratosServerExtension extends ExecutionListenerExtension {
         }
     }
 
-    private boolean serverStarted() {
-        for (String message : testLogAppender.getMessages()) {
-            if (message.contains("Topology initialized")) {
-                return true;
+    public static void restartStratosServer() throws AutomationFrameworkException {
+        log.info("Restarting Stratos server...");
+        long time1 = System.currentTimeMillis();
+        try {
+            stratosTestServerManager.restartGracefully();
+            while (!StratosServerExtension.mockIaasApiClient.isMockIaaSReady()) {
+                log.info("Waiting for mock service to be initialized...");
+                Thread.sleep(1000);
             }
+            long time2 = System.currentTimeMillis();
+            log.info(String.format("Stratos server restarted in %d sec", (time2 - time1) / 1000));
+        } catch (Exception e) {
+            throw new AutomationFrameworkException("Could not restart Stratos server", e);
         }
-        return false;
-    }
-
-    private boolean mockServiceStarted() {
-        for (String message : testLogAppender.getMessages()) {
-            if (message.contains("Mock IaaS service component activated")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static StratosTestServerManager getStratosTestServerManager() {
