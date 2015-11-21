@@ -39,6 +39,7 @@ import java.util.*;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
@@ -148,8 +149,8 @@ public class PartitionRoundRobinClusterTestCase extends StratosIntegrationTest {
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("partition-round-robin-test");
-            assertEquals(forceUndeployed, true, String.format("Forceful undeployment failed for the application %s",
-                    "partition-round-robin-test"));
+            assertTrue(String.format("Forceful undeployment failed for the application %s",
+                    "partition-round-robin-test"), forceUndeployed);
 
         }
 

@@ -154,7 +154,7 @@ public class GitHookTestCase extends StratosIntegrationTest {
             //Need to forcefully undeploy the application
             log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
 
-            restClient.undeployEntity(RestConstants.APPLICATIONS + applicationId +
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = TopologyHandler.getInstance().assertApplicationUndeploy(applicationId);

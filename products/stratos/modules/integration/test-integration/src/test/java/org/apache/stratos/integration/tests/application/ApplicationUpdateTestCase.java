@@ -35,6 +35,7 @@ import org.apache.stratos.messaging.message.receiver.application.ApplicationMana
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Sample application tests with application add, .
@@ -197,8 +198,8 @@ public class ApplicationUpdateTestCase extends StratosIntegrationTest {
 
             boolean forceUndeployed =
                     topologyHandler.assertApplicationUndeploy("g-sc-G123-1-application-update-test");
-            assertEquals(String.format("Forceful undeployment failed for the application %s",
-                    "g-sc-G123-1-application-update-test"), forceUndeployed, true);
+            assertTrue(String.format("Forceful undeployment failed for the application %s",
+                    "g-sc-G123-1-application-update-test"), forceUndeployed);
 
         }
 

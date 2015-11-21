@@ -40,6 +40,7 @@ import java.util.*;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
@@ -142,8 +143,8 @@ public class PartitionOneAfterAnotherClusterTestCase extends StratosIntegrationT
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
-            assertEquals(forceUndeployed, true, String.format("Forceful undeployment failed for the application %s",
-                    "single-cluster-scaling-test"));
+            assertTrue(String.format("Forceful undeployment failed for the application %s",
+                    "single-cluster-scaling-test"), forceUndeployed);
 
         }
 
