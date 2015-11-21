@@ -52,7 +52,7 @@ public class MockIaasApi {
     }
 
     @GET
-    @Path("/init")
+    @Path("/status")
     @Produces("application/json")
     public Response init() throws MockIaasApiException {
 

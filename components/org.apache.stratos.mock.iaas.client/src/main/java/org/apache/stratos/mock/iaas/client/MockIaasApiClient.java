@@ -39,7 +39,7 @@ public class MockIaasApiClient {
 
     private static final Log log = LogFactory.getLog(MockIaasApiClient.class);
     private static final String INSTANCES_CONTEXT = "/instances/";
-    private static final String INIT_CONTEXT = "/init";
+    private static final String INIT_CONTEXT = "/status";
 
     private RestClient restClient;
     private String endpoint;
@@ -53,10 +53,7 @@ public class MockIaasApiClient {
         try {
             URI uri = new URIBuilder(endpoint + INIT_CONTEXT).build();
             HttpResponse response = restClient.doGet(uri);
-            if (response != null) {
-                return response.getStatusCode() == 200;
-            }
-            throw new RuntimeException("An unknown error occurred");
+            return response != null && response.getStatusCode() == 200;
         } catch (Exception e) {
             String message = "Could not check whether mock-iaas is active";
             throw new RuntimeException(message, e);
