@@ -1,5 +1,5 @@
 {
-    "id": "autoscaling-policy-1",
+    "id": "autoscaling-policy-git-hook-test",
     "loadThresholds": {
         "requestsInFlight": {
             "threshold": 20

@@ -1,8 +1,8 @@
 {
-    "id": "deployment-policy-1",
+    "id": "deployment-policy-git-hook-test",
     "networkPartitions": [
         {
-            "id": "network-partition-1",
+            "id": "network-partition-git-hook-test",
             "partitionAlgo": "one-after-another",
             "partitions": [
                 {
