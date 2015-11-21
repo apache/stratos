@@ -164,7 +164,7 @@ public class ApplicationBurstingTestCase extends StratosIntegrationTest {
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("application-bursting-test");
-            assertEquals(String.format("Forceful undeployment failed for the application %s",
+            assertTrue(String.format("Forceful undeployment failed for the application %s",
                     "application-bursting-test"), forceUndeployed);
 
         }
