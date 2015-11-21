@@ -29,6 +29,8 @@ import org.apache.stratos.integration.common.ServerLogClient;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
@@ -50,6 +52,12 @@ public class IaasProviderAttributeTest extends StratosIntegrationTest {
     private static final String CARTRIDGE = "cartridge-iaasprovider-attribute-test";
     private static final String UPDATED_CARTRIDGE = "cartridge-iaasprovider-attribute-test-updated";
     private static final String APPLICATION = "app-iaasprovider-attribute-test";
+    private ServerLogClient serverLogClient;
+
+    @BeforeClass
+    public void setup () throws Exception {
+        serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/", adminUsername, adminPassword);
+    }
 
     @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas.attributes", "all"})
     public void testIaasProviderAttributes () throws Exception {
@@ -125,14 +133,10 @@ public class IaasProviderAttributeTest extends StratosIntegrationTest {
 
         // create a ServerLogClientInstance and get logs
         boolean found = false;
-        ServerLogClient serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/",
-                adminUsername,
-                adminPassword);
-        LogEvent [] logEvents = serverLogClient.getLogViewerClient().getAllRemoteSystemLogs();
+        LogEvent[] logEvents = serverLogClient.getLogLines();
         if (logEvents.length > 0) {
-            for (int i = 0; i < logEvents.length; i++) {
-                if (!logEvents[i].getMessage().contains("cartridge_property_value_1") &&
-                logEvents[i].getMessage().contains("cc_property_value_1")) {
+            for (LogEvent log : logEvents) {
+                if (!log.getMessage().contains("cartridge_property_value_1") && log.getMessage().contains("cc_property_value_1")) {
                     found = true;
                     break;
                 }
@@ -173,10 +177,14 @@ public class IaasProviderAttributeTest extends StratosIntegrationTest {
         assertTrue(appDeployed);
         log.info("Re-deployed application 'app-iaasprovider-attribute-test'");
 
-        logEvents = serverLogClient.getLogViewerClient().getAllRemoteSystemLogs();
+        log.info("Waiting for application status to become ACTIVE...");
+        topologyHandler.assertApplicationStatus(applicationBean.getApplicationId(), ApplicationStatus.Active);
+
+        logEvents = serverLogClient.getLogLines();
+        found = false;
         if (logEvents.length > 0) {
-            for (int i = 0; i < logEvents.length; i++) {
-                if (logEvents[i].getMessage().contains("cartridge_property_value_1")) {
+            for (LogEvent log : logEvents) {
+                if (log.getMessage().contains("cartridge_property_value_1")) {
                     found = true;
                     break;
                 }
@@ -184,7 +192,10 @@ public class IaasProviderAttributeTest extends StratosIntegrationTest {
         }
 
         assertTrue("Property 'property1' not found | value not equal to 'cartridge_property_value_1'", found);
+    }
 
+    @AfterClass
+    public void tearDown () throws Exception {
         terminateAndRemoveAllArtifacts();
     }
 
