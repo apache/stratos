@@ -122,7 +122,7 @@ public class ADCMTAppTestCase extends PythonAgentIntegrationTest {
         Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!eventReceiverInitiated) {
+                while (!eventReceiverInitialized) {
                     sleep(1000);
                 }
                 List<String> outputLines = new ArrayList<String>();
@@ -165,6 +165,7 @@ public class ADCMTAppTestCase extends PythonAgentIntegrationTest {
         while (!instanceStarted || !instanceActivated) {
             // wait until the instance activated event is received.
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
+            log.info("Waiting for agent activation...");
             sleep(2000);
         }
     }

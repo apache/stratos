@@ -16,6 +16,7 @@
 # under the License.
 
 import threading
+
 import paho.mqtt.publish as publish
 import time
 
@@ -58,7 +59,6 @@ def publish_instance_started_event():
         publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)
         Config.started = True
-        log.info("Instance started event published")
     else:
         log.warn("Instance already started")
 
@@ -95,9 +95,7 @@ def publish_instance_activated_event():
             publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_ACTIVATED_EVENT)
             publisher.publish(instance_activated_event)
 
-            log.info("Instance activated event published")
             log.info("Starting health statistics notifier")
-
             health_stat_publishing_enabled = Config.read_property(constants.CEP_PUBLISHER_ENABLED, True)
 
             if health_stat_publishing_enabled:
@@ -151,14 +149,13 @@ def publish_maintenance_mode_event():
         publisher.publish(instance_maintenance_mode_event)
 
         Config.maintenance = True
-        log.info("Instance maintenance mode event published")
     else:
         log.warn("Instance already in a maintenance mode")
 
 
 def publish_instance_ready_to_shutdown_event():
     if not Config.ready_to_shutdown:
-        log.info("Publishing instance activated event...")
+        log.info("Publishing instance ready to shutdown event...")
 
         service_name = Config.service_name
         cluster_id = Config.cluster_id
@@ -181,7 +178,6 @@ def publish_instance_ready_to_shutdown_event():
         publisher.publish(instance_shutdown_event)
 
         Config.ready_to_shutdown = True
-        log.info("Instance ReadyToShutDown event published")
     else:
         log.warn("Instance already in a ReadyToShutDown event...")
 
@@ -190,14 +186,12 @@ def publish_complete_topology_request_event():
     complete_topology_request_event = CompleteTopologyRequestEvent()
     publisher = get_publisher(constants.INITIALIZER_TOPIC + constants.COMPLETE_TOPOLOGY_REQUEST_EVENT)
     publisher.publish(complete_topology_request_event)
-    log.info("Complete topology request event published")
 
 
 def publish_complete_tenant_request_event():
     complete_tenant_request_event = CompleteTenantRequestEvent()
     publisher = get_publisher(constants.INITIALIZER_TOPIC + constants.COMPLETE_TENANT_REQUEST_EVENT)
     publisher.publish(complete_tenant_request_event)
-    log.info("Complete tenant request event published")
 
 
 def get_publisher(topic):
@@ -252,10 +246,11 @@ class EventPublisher:
 
                 try:
                     publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port, auth=auth)
-                    self.__log.debug("Event published to %s:%s" % (mb_ip, mb_port))
+                    self.__log.debug("Event type: %s published to MB: %s:%s" % (str(event.__class__), mb_ip, mb_port))
                     return True
                 except:
-                    self.__log.debug("Could not publish event to message broker %s:%s." % (mb_ip, mb_port))
+                    self.__log.debug(
+                        "Could not publish event to message broker %s:%s." % (mb_ip, mb_port))
 
             self.__log.debug(
                 "Could not publish event to any of the provided message brokers. Retrying in %s seconds."
@@ -263,6 +258,6 @@ class EventPublisher:
 
             time.sleep(retry_interval)
 
-        self.__log.warn("Could not publish even to any of the provided message brokers before "
+        self.__log.warn("Could not publish event to any of the provided message brokers before "
                         "the timeout [%s] exceeded. The event will be dropped." % Config.mb_publisher_timeout)
         return False

@@ -18,14 +18,15 @@
 import json
 from threading import Thread
 
-from ..util import cartridgeagentutils
-from ..artifactmgt.git.agentgithandler import *
-from ..artifactmgt.repository import Repository
-from config import Config
 import publisher
 from entity import *
-from ..util.log import LogFactory
+
 import constants
+from config import Config
+from ..artifactmgt.git.agentgithandler import *
+from ..artifactmgt.repository import Repository
+from ..util import cartridgeagentutils
+from ..util.log import LogFactory
 
 SUPER_TENANT_ID = "-1234"
 SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
@@ -368,14 +369,9 @@ class EventHandler:
         self.execute_event_extendables(constants.APPLICATION_SIGNUP_REMOVAL_EVENT, {})
 
     def cleanup(self, event):
-        self.__log.debug("Executing cleanup extension for event %s" % event)
-
+        self.__log.debug("Executing cleanup extension for event %s..." % event)
         publisher.publish_maintenance_mode_event()
-
         self.execute_event_extendables("clean", {})
-        self.__log.info("Cleaning up finished in the cartridge instance...")
-
-        self.__log.info("Publishing ready to shutdown event...")
         publisher.publish_instance_ready_to_shutdown_event()
 
     def execute_event_extendables(self, event, input_values):
