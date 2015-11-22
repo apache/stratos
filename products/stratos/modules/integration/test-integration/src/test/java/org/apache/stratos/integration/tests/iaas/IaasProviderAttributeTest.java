@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.integration.tests.other;
+package org.apache.stratos.integration.tests.iaas;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

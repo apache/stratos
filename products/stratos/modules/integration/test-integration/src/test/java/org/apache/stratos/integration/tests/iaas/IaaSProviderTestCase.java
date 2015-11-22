@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.integration.tests.application;
+package org.apache.stratos.integration.tests.iaas;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.either;
@@ -38,7 +38,7 @@ public class IaaSProviderTestCase extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/api";
     private static final String IDENTIFIER = "/iaasProviders";
     
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment", "failed"})
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"iaas"})
     public void testListIaaSProviders() throws Exception {
         assertTrue(true);  
         
