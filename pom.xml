@@ -1674,7 +1674,7 @@
         <siddhi.version>2.0.0-wso2v5</siddhi.version>
         <siddhi.event.processor.version>1.0.0</siddhi.event.processor.version>
         <scr.annotations.version>1.9.12</scr.annotations.version>
-        <testng.version>6.1.1</testng.version>
+        <testng.version>6.9.9</testng.version>
         <jacoco.agent.version>0.7.4.201502262128</jacoco.agent.version>
         <commons.exec.version>1.0.1</commons.exec.version>
         <httpcore.version>4.4.4</httpcore.version>
