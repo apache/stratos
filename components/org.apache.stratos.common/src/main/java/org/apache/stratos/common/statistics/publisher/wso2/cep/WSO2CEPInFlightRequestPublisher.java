@@ -38,13 +38,24 @@ import java.util.List;
  */
 public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher implements InFlightRequestPublisher {
     private static final Log log = LogFactory.getLog(WSO2CEPInFlightRequestPublisher.class);
-
+    private static volatile WSO2CEPInFlightRequestPublisher wso2CEPInFlightRequestPublisher;
     private static final String DATA_STREAM_NAME = "in_flight_requests";
     private static final String VERSION = "1.0.0";
     private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
-    public WSO2CEPInFlightRequestPublisher() {
+    private WSO2CEPInFlightRequestPublisher() {
         super(createStreamDefinition(), CEP_THRIFT_CLIENT_NAME);
+    }
+
+    public static  WSO2CEPInFlightRequestPublisher getInstance() {
+        if (wso2CEPInFlightRequestPublisher == null) {
+            synchronized ( WSO2CEPInFlightRequestPublisher.class) {
+                if (wso2CEPInFlightRequestPublisher == null) {
+                    wso2CEPInFlightRequestPublisher = new  WSO2CEPInFlightRequestPublisher();
+                }
+            }
+        }
+        return wso2CEPInFlightRequestPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {

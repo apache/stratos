@@ -38,22 +38,36 @@ import java.util.concurrent.ExecutorService;
 public class DASScalingDecisionPublisher extends ThriftStatisticsPublisher implements ScalingDecisionPublisher {
 
     private static final Log log = LogFactory.getLog(DASScalingDecisionPublisher.class);
+    private static volatile DASScalingDecisionPublisher dasScalingDecisionPublisher;
     private static final String DATA_STREAM_NAME = "scaling_decision";
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
+    private static final int STATS_PUBLISHER_THREAD_POOL_SIZE = 10;
     private ExecutorService executorService;
 
     public DASScalingDecisionPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService("autoscaler.stats.publisher.thread.pool", 10);
+        executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
+                STATS_PUBLISHER_THREAD_POOL_SIZE);
+    }
+
+    public static DASScalingDecisionPublisher getInstance() {
+        if (dasScalingDecisionPublisher == null) {
+            synchronized (DASScalingDecisionPublisher.class) {
+                if (dasScalingDecisionPublisher == null) {
+                    dasScalingDecisionPublisher = new DASScalingDecisionPublisher();
+                }
+            }
+        }
+        return dasScalingDecisionPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {
         try {
             // Create stream definition
             StreamDefinition streamDefinition = new StreamDefinition(DATA_STREAM_NAME, VERSION);
-            streamDefinition.setNickName("Member Information");
-            streamDefinition.setDescription("Member Information");
+            streamDefinition.setNickName("Scaling Decision");
+            streamDefinition.setDescription("Scaling Decision");
             List<Attribute> payloadData = new ArrayList<Attribute>();
 
             // Set payload definition

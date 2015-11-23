@@ -38,14 +38,27 @@ import java.util.concurrent.ExecutorService;
 public class DASMemberStatusPublisher extends ThriftStatisticsPublisher implements MemberStatusPublisher {
 
     private static final Log log = LogFactory.getLog(DASMemberStatusPublisher.class);
+    private static volatile DASMemberStatusPublisher dasMemberStatusPublisher;
     private static final String DATA_STREAM_NAME = "member_lifecycle";
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
+    private static final int STATS_PUBLISHER_THREAD_POOL_SIZE = 10;
     private ExecutorService executorService;
 
-    public DASMemberStatusPublisher() {
+    private DASMemberStatusPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService("cloud.controller.stats.publisher.thread.pool", 10);
+        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID, STATS_PUBLISHER_THREAD_POOL_SIZE);
+    }
+
+    public static DASMemberStatusPublisher getInstance() {
+        if (dasMemberStatusPublisher == null) {
+            synchronized (DASMemberStatusPublisher.class) {
+                if (dasMemberStatusPublisher == null) {
+                    dasMemberStatusPublisher = new DASMemberStatusPublisher();
+                }
+            }
+        }
+        return dasMemberStatusPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {

@@ -72,6 +72,7 @@ public final class AutoscalerConstants {
     public static final String PAYLOAD_DEPLOYMENT = "default";
 
     public static final String MONITOR_THREAD_POOL_ID = "monitor.thread.pool";
+    public static final String STATS_PUBLISHER_THREAD_POOL_ID = "autoscaler.stats.publisher.thread.pool";
     public static final String MONITOR_THREAD_POOL_SIZE = "monitor.thread.pool.size";
     public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
     public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";

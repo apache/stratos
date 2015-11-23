@@ -36,13 +36,24 @@ import java.util.List;
 public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher implements HealthStatisticsPublisher {
 
     private static final Log log = LogFactory.getLog(WSO2CEPHealthStatisticsPublisher.class);
-
+    private static volatile WSO2CEPHealthStatisticsPublisher wso2CEPHealthStatisticsPublisher;
     private static final String DATA_STREAM_NAME = "cartridge_agent_health_stats";
     private static final String VERSION = "1.0.0";
     private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
-    public WSO2CEPHealthStatisticsPublisher() {
+    private WSO2CEPHealthStatisticsPublisher() {
         super(createStreamDefinition(), CEP_THRIFT_CLIENT_NAME);
+    }
+
+    public static WSO2CEPHealthStatisticsPublisher getInstance() {
+        if (wso2CEPHealthStatisticsPublisher == null) {
+            synchronized (WSO2CEPHealthStatisticsPublisher.class) {
+                if (wso2CEPHealthStatisticsPublisher == null) {
+                    wso2CEPHealthStatisticsPublisher = new WSO2CEPHealthStatisticsPublisher();
+                }
+            }
+        }
+        return wso2CEPHealthStatisticsPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {
