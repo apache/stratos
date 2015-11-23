@@ -444,8 +444,6 @@ public class TopologyBuilder {
                             .getProperty(StratosConstants.SCALING_DECISION_ID).getValue();
                     memInfoPublisher.publish(memberContext.getMemberId(), scalingDecisionId,
                             memberContext.getInstanceMetadata());
-                } else {
-                    log.warn("Member information publisher is not enabled");
                 }
                 if (memStatusPublisher.isEnabled()) {
                     if (log.isInfoEnabled()) {
