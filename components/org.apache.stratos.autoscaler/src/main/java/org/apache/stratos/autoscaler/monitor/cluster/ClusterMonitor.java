@@ -41,6 +41,8 @@ import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.RuleTasksDelegator;
+import org.apache.stratos.autoscaler.statistics.publisher.AutoscalerPublisherFactory;
+import org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
@@ -51,6 +53,7 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
@@ -98,7 +101,8 @@ public class ClusterMonitor extends Monitor {
     private boolean hasScalingDependents;
     private boolean groupScalingEnabledSubtree;
     private String deploymentPolicyId;
-
+    private ScalingDecisionPublisher scalingDecisionPublisher =
+            AutoscalerPublisherFactory.createScalingDecisionPublisher(StatisticsPublisherType.WSO2DAS);
 
     public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree,
                           String deploymentPolicyId) {
@@ -337,6 +341,9 @@ public class ClusterMonitor extends Monitor {
                                 instanceContext.getMinCheckKnowledgeSession().setGlobal("algorithmName",
                                         paritionAlgo);
 
+                                instanceContext.getMinCheckKnowledgeSession().setGlobal("scalingDecisionPublisher",
+                                        scalingDecisionPublisher);
+
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running minimum check for [cluster instance] %s, " +
                                                     "[cluster id] %s",
@@ -350,7 +357,7 @@ public class ClusterMonitor extends Monitor {
 
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running maximum check for [cluster instance] %s, " +
-                                                    "[cluster id] %s", instanceContext.getId(), clusterId));
+                                            "[cluster id] %s", instanceContext.getId(), clusterId));
                                 }
                                 instanceContext.setMaxCheckFactHandle(evaluate(instanceContext.
                                                 getMaxCheckKnowledgeSession(),
@@ -376,6 +383,8 @@ public class ClusterMonitor extends Monitor {
                                             clusterContext.getAutoscalePolicy());
                                     instanceContext.getScaleCheckKnowledgeSession().setGlobal("arspiReset",
                                             averageRequestServedPerInstanceReset);
+                                    instanceContext.getScaleCheckKnowledgeSession().setGlobal("scalingDecisionPublisher",
+                                            scalingDecisionPublisher);
                                     if (log.isDebugEnabled()) {
                                         log.debug("Running scale check, [Is rif Reset] " + rifReset + ", " +
                                                 "[Is memoryConsumption Reset] " + memoryConsumptionReset + ", " +
@@ -552,8 +561,12 @@ public class ClusterMonitor extends Monitor {
         clusterInstanceContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
 
         clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
-        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount",
+                roundedRequiredInstanceCount);
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName",
+                clusterInstanceContext.getPartitionAlgorithm());
+        clusterInstanceContext.getDependentScaleCheckKnowledgeSession().setGlobal("scalingDecisionPublisher",
+                scalingDecisionPublisher);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Running dependent scale check for [cluster instance] %s, " +

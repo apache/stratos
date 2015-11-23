@@ -19,12 +19,18 @@
 
 package org.apache.stratos.cloud.controller.statistics.publisher;
 
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
+import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 /**
  * Member Status Publisher Interface.
  */
-public interface MemberStatusPublisher extends StatisticsPublisher {
+public abstract class MemberStatusPublisher extends ThriftStatisticsPublisher {
+
+    public MemberStatusPublisher(StreamDefinition streamDefinition, String thriftClientName) {
+        super(streamDefinition, thriftClientName);
+    }
+
     /**
      * Publishing member status.
      *
@@ -39,7 +45,7 @@ public interface MemberStatusPublisher extends StatisticsPublisher {
      * @param memberId           Member Id
      * @param status             Member Status
      */
-    void publish(Long timestamp, String applicationId, String clusterId,
-                 String clusterAlias, String clusterInstanceId, String serviceName,
-                 String networkPartitionId, String partitionId, String memberId, String status);
+    public abstract void publish(Long timestamp, String applicationId, String clusterId,
+                                 String clusterAlias, String clusterInstanceId, String serviceName,
+                                 String networkPartitionId, String partitionId, String memberId, String status);
 }

@@ -22,7 +22,6 @@ package org.apache.stratos.common.statistics.publisher.wso2.cep;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.statistics.publisher.InFlightRequestPublisher;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -36,15 +35,26 @@ import java.util.List;
  * In-flight request count:
  * Number of requests being served at a given moment could be identified as in-flight request count.
  */
-public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher implements InFlightRequestPublisher {
+public class WSO2CEPInFlightRequestPublisher extends InFlightRequestPublisher {
     private static final Log log = LogFactory.getLog(WSO2CEPInFlightRequestPublisher.class);
-
+    private static volatile WSO2CEPInFlightRequestPublisher wso2CEPInFlightRequestPublisher;
     private static final String DATA_STREAM_NAME = "in_flight_requests";
     private static final String VERSION = "1.0.0";
     private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
-    public WSO2CEPInFlightRequestPublisher() {
+    private WSO2CEPInFlightRequestPublisher() {
         super(createStreamDefinition(), CEP_THRIFT_CLIENT_NAME);
+    }
+
+    public static WSO2CEPInFlightRequestPublisher getInstance() {
+        if (wso2CEPInFlightRequestPublisher == null) {
+            synchronized (WSO2CEPInFlightRequestPublisher.class) {
+                if (wso2CEPInFlightRequestPublisher == null) {
+                    wso2CEPInFlightRequestPublisher = new WSO2CEPInFlightRequestPublisher();
+                }
+            }
+        }
+        return wso2CEPInFlightRequestPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {
@@ -70,10 +80,10 @@ public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher i
     /**
      * Publish in-flight request count of a cluster.
      *
-     * @param clusterId
-     * @param clusterInstanceId
-     * @param networkPartitionId
-     * @param inFlightRequestCount
+     * @param clusterId             Cluster id
+     * @param clusterInstanceId     Cluster instance id
+     * @param networkPartitionId    Cluster's network partition id
+     * @param inFlightRequestCount  Cluster's in-flight-request count
      */
     @Override
     public void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
@@ -91,6 +101,6 @@ public class WSO2CEPInFlightRequestPublisher extends ThriftStatisticsPublisher i
         payload.add(networkPartitionId);
         payload.add((double) inFlightRequestCount);
 
-        super.publish(payload.toArray());
+        publish(payload.toArray());
     }
 }

@@ -19,10 +19,16 @@
 
 package org.apache.stratos.common.statistics.publisher;
 
+import org.wso2.carbon.databridge.commons.StreamDefinition;
+
 /**
  * Health statistics publisher interface.
  */
-public interface HealthStatisticsPublisher extends StatisticsPublisher {
+public abstract class HealthStatisticsPublisher extends ThriftStatisticsPublisher {
+
+    public HealthStatisticsPublisher(StreamDefinition streamDefinition, String thriftClientName) {
+        super(streamDefinition, thriftClientName);
+    }
 
     /**
      * Publish health statistics to complex event processor.
@@ -35,6 +41,6 @@ public interface HealthStatisticsPublisher extends StatisticsPublisher {
      * @param health             Health type: memory_consumption | load_average
      * @param value              Health type value
      */
-    void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
-                 String memberId, String partitionId, String health, double value);
+    public abstract void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
+                                 String memberId, String partitionId, String health, double value);
 }

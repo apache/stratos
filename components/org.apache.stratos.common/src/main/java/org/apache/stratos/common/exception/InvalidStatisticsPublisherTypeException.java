@@ -17,22 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.statistics.publisher;
-
-import org.apache.stratos.common.exception.InvalidStatisticsPublisherTypeException;
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
+package org.apache.stratos.common.exception;
 
 /**
- * Creating ScalingDecisionPublisher.
+ * This exception will be thrown when trying to create a publisher with invalid statistics publisher type.
  */
-public class AutoscalerPublisherFactory {
+public class InvalidStatisticsPublisherTypeException extends RuntimeException {
 
-    public static ScalingDecisionPublisher createScalingDecisionPublisher(StatisticsPublisherType type) {
-
-        if (type == StatisticsPublisherType.WSO2DAS) {
-            return DASScalingDecisionPublisher.getInstance();
-        } else {
-            throw new InvalidStatisticsPublisherTypeException("Invalid statistics publisher type is used to create publisher.");
-        }
+    public InvalidStatisticsPublisherTypeException(String message) {
+        super(message);
     }
 }
