@@ -47,14 +47,13 @@ public class DASMemberInformationPublisher extends MemberInformationPublisher {
     private static final String DATA_STREAM_NAME = "member_info";
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
-    private static final int STATS_PUBLISHER_THREAD_POOL_SIZE = 10;
     private static final String VALUE_NOT_FOUND = "Value Not Found";
     private ExecutorService executorService;
 
     private DASMemberInformationPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
         executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
-                STATS_PUBLISHER_THREAD_POOL_SIZE);
+                CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 
     public static DASMemberInformationPublisher getInstance() {

@@ -163,6 +163,7 @@ public final class CloudControllerConstants {
     public static final String SCALING_DECISION_ID_COL = "scaling_decision_id";
 
     public static final String STATS_PUBLISHER_THREAD_POOL_ID = "cloud.controller.stats.publisher.thread.pool";
+    public static final int STATS_PUBLISHER_THREAD_POOL_SIZE = 10;
 
     /**
      * Properties
