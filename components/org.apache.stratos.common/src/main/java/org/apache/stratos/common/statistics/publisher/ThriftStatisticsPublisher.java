@@ -63,14 +63,12 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
     }
 
     private boolean isPublisherEnabled() {
-        boolean publisherEnabled = false;
         for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
-            publisherEnabled = thriftClientInfo.isStatsPublisherEnabled();
-            if (publisherEnabled) {
-                break;
+            if (thriftClientInfo.isStatsPublisherEnabled()) {
+                return true;
             }
         }
-        return publisherEnabled;
+        return false;
     }
 
     private void init() {
