@@ -77,9 +77,7 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
         loadBalancingDataPublisher = new LoadBalancingDataPublisher(getReceiverGroups());
 
         //adding stream definition
-        if (!loadBalancingDataPublisher.isStreamDefinitionAdded(streamDefinition)) {
-            loadBalancingDataPublisher.addStreamDefinition(streamDefinition);
-        }
+        loadBalancingDataPublisher.addStreamDefinition(streamDefinition);
     }
 
     private ArrayList<ReceiverGroup> getReceiverGroups() {

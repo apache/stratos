@@ -27,7 +27,6 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.InstanceMetadata;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
@@ -41,7 +40,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * MemberInfoPublisher to publish member information/metadata to DAS.
  */
-public class DASMemberInformationPublisher extends ThriftStatisticsPublisher implements MemberInformationPublisher {
+public class DASMemberInformationPublisher extends MemberInformationPublisher {
 
     private static final Log log = LogFactory.getLog(DASMemberInformationPublisher.class);
     private static volatile DASMemberInformationPublisher dasMemberInformationPublisher;
@@ -54,7 +53,8 @@ public class DASMemberInformationPublisher extends ThriftStatisticsPublisher imp
 
     private DASMemberInformationPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID, STATS_PUBLISHER_THREAD_POOL_SIZE);
+        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
+                STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 
     public static DASMemberInformationPublisher getInstance() {
@@ -158,7 +158,7 @@ public class DASMemberInformationPublisher extends ThriftStatisticsPublisher imp
                                 metadata.getOperatingSystemName(), metadata.getOperatingSystemVersion(),
                                 metadata.getOperatingSystemArchitecture(), metadata.isOperatingSystem64bit()));
                     }
-                    DASMemberInformationPublisher.super.publish(payload.toArray());
+                    publish(payload.toArray());
                 }
             }
         };

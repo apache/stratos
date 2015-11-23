@@ -22,7 +22,6 @@ package org.apache.stratos.cloud.controller.statistics.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
@@ -35,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Publishing member status to DAS.
  */
-public class DASMemberStatusPublisher extends ThriftStatisticsPublisher implements MemberStatusPublisher {
+public class DASMemberStatusPublisher extends MemberStatusPublisher {
 
     private static final Log log = LogFactory.getLog(DASMemberStatusPublisher.class);
     private static volatile DASMemberStatusPublisher dasMemberStatusPublisher;
@@ -47,7 +46,8 @@ public class DASMemberStatusPublisher extends ThriftStatisticsPublisher implemen
 
     private DASMemberStatusPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID, STATS_PUBLISHER_THREAD_POOL_SIZE);
+        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
+                STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 
     public static DASMemberStatusPublisher getInstance() {
@@ -131,7 +131,7 @@ public class DASMemberStatusPublisher extends ThriftStatisticsPublisher implemen
                 payload.add(partitionId);
                 payload.add(memberId);
                 payload.add(status);
-                DASMemberStatusPublisher.super.publish(payload.toArray());
+                publish(payload.toArray());
             }
         };
         executorService.execute(publisher);

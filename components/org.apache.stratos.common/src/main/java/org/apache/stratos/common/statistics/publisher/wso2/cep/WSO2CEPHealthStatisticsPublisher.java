@@ -22,7 +22,6 @@ package org.apache.stratos.common.statistics.publisher.wso2.cep;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -33,7 +32,7 @@ import java.util.List;
 /**
  * Health statistics publisher for publishing statistics to WSO2 CEP.
  */
-public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher implements HealthStatisticsPublisher {
+public class WSO2CEPHealthStatisticsPublisher extends HealthStatisticsPublisher {
 
     private static final Log log = LogFactory.getLog(WSO2CEPHealthStatisticsPublisher.class);
     private static volatile WSO2CEPHealthStatisticsPublisher wso2CEPHealthStatisticsPublisher;
@@ -109,6 +108,6 @@ public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher 
         payload.add(health);
         payload.add(value);
 
-        super.publish(payload.toArray());
+        publish(payload.toArray());
     }
 }

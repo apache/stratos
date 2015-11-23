@@ -22,7 +22,6 @@ package org.apache.stratos.autoscaler.statistics.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
@@ -35,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * MemberInfoPublisher to publish member information/metadata to DAS.
  */
-public class DASScalingDecisionPublisher extends ThriftStatisticsPublisher implements ScalingDecisionPublisher {
+public class DASScalingDecisionPublisher extends ScalingDecisionPublisher {
 
     private static final Log log = LogFactory.getLog(DASScalingDecisionPublisher.class);
     private static volatile DASScalingDecisionPublisher dasScalingDecisionPublisher;
@@ -165,7 +164,7 @@ public class DASScalingDecisionPublisher extends ThriftStatisticsPublisher imple
                 payload.add(activeInstanceCount);
                 payload.add(additionalInstanceCount);
                 payload.add(scalingReason);
-                DASScalingDecisionPublisher.super.publish(payload.toArray());
+                publish(payload.toArray());
             }
 
         };

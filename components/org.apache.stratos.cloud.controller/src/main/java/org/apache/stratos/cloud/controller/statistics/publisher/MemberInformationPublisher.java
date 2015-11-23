@@ -20,12 +20,18 @@
 package org.apache.stratos.cloud.controller.statistics.publisher;
 
 import org.apache.stratos.cloud.controller.domain.InstanceMetadata;
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
+import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 /**
  * Member Information Publisher interface.
  */
-public interface MemberInformationPublisher extends StatisticsPublisher {
+public abstract class MemberInformationPublisher extends ThriftStatisticsPublisher {
+
+    public MemberInformationPublisher(StreamDefinition streamDefinition, String thriftClientName) {
+        super(streamDefinition, thriftClientName);
+    }
+
     /**
      * Publishing member information.
      *
@@ -33,6 +39,6 @@ public interface MemberInformationPublisher extends StatisticsPublisher {
      * @param scalingDecisionId Scaling Decision Id
      * @param metadata          InstanceMetadata
      */
-    public void publish(String memberId, String scalingDecisionId, InstanceMetadata metadata);
+    public abstract void publish(String memberId, String scalingDecisionId, InstanceMetadata metadata);
 
 }

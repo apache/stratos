@@ -19,12 +19,18 @@
 
 package org.apache.stratos.autoscaler.statistics.publisher;
 
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
+import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 /**
  * Scaling Decision Publisher interface.
  */
-public interface ScalingDecisionPublisher extends StatisticsPublisher {
+public abstract class ScalingDecisionPublisher extends ThriftStatisticsPublisher {
+
+    public ScalingDecisionPublisher(StreamDefinition streamDefinition, String thriftClientName) {
+        super(streamDefinition, thriftClientName);
+    }
+
     /**
      * Publishing scaling decision to DAS.
      *
@@ -47,11 +53,11 @@ public interface ScalingDecisionPublisher extends StatisticsPublisher {
      * @param additionalInstanceCount Additional Instance Needed
      * @param scalingReason           Scaling Reason
      */
-    public void publish(Long timestamp, String scalingDecisionId, String clusterId,
-                        int minInstanceCount, int maxInstanceCount,
-                        int rifPredicted, int rifThreshold, int rifRequiredInstances,
-                        int mcPredicted, int mcThreshold, int mcRequiredInstances,
-                        int laPredicted, int laThreshold, int laRequiredInstance,
-                        int requiredInstanceCount, int activeInstanceCount, int additionalInstanceCount,
-                        String scalingReason);
+    public abstract void publish(Long timestamp, String scalingDecisionId, String clusterId,
+                                 int minInstanceCount, int maxInstanceCount,
+                                 int rifPredicted, int rifThreshold, int rifRequiredInstances,
+                                 int mcPredicted, int mcThreshold, int mcRequiredInstances,
+                                 int laPredicted, int laThreshold, int laRequiredInstance,
+                                 int requiredInstanceCount, int activeInstanceCount, int additionalInstanceCount,
+                                 String scalingReason);
 }

@@ -22,7 +22,7 @@ package org.apache.stratos.common.exception;
 /**
  * This exception will be thrown when trying to create a publisher with invalid statistics publisher type.
  */
-public class InvalidStatisticsPublisherTypeException extends Exception {
+public class InvalidStatisticsPublisherTypeException extends RuntimeException {
 
     public InvalidStatisticsPublisherTypeException(String message) {
         super(message);
