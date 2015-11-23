@@ -41,9 +41,9 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.AssertJUnit.assertTrue;
 
-public class IaasProviderAttributeTest extends StratosIntegrationTest {
+public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
 
-    private static final Log log = LogFactory.getLog(IaasProviderAttributeTest.class);
+    private static final Log log = LogFactory.getLog(IaasProviderAttributeTestCase.class);
     private static final String RESOURCES_PATH = "/cartridge-iaas-attribute-test";
     private static final String AUTOSCALING_POLICY = "autoscaling-policy-iaasprovider-attribute-test";
     private static final String NETWORK_PARTITION = "network-partition-iaasprovider-attribute-test";
