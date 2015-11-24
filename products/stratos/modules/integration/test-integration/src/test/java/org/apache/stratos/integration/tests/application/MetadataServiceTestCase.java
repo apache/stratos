@@ -52,6 +52,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * Deploy a sample application on mock IaaS and load test metadata service with high load of concurrent read/write
  * operations from multiple clients
  */
+@Test(groups = { "stratos.application.deployment", "metadata" })
 public class MetadataServiceTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(MetadataServiceTestCase.class);
     private static final String RESOURCES_PATH = "/metadata-service-test";
@@ -76,8 +77,7 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
     public static final String APPLICATION_POLICY_ID = "application-policy-metadata-service-test";
     public static final String DEPLOYMENT_POLICY_ID = "deployment-policy-metadata-service-test";
 
-    @BeforeTest(timeOut = APPLICATION_TEST_TIMEOUT,
-                groups = { "stratos.application.deployment" })
+    @BeforeTest(timeOut = APPLICATION_TEST_TIMEOUT)
     public void deployApplications() throws Exception {
         startTime = System.currentTimeMillis();
         log.info("Adding autoscaling policy [autoscale policy id] " + AUTOSCALE_POLICY_ID);
@@ -202,7 +202,6 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service basic test",
-          groups = { "stratos.application.deployment" },
           priority = 1)
     public void testBasicOperations() throws Exception {
         String key = "mykey";
@@ -264,13 +263,11 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         PropertyBean propertyBeanCleaned = restClient.getApplicationProperty(APPLICATION_1_ID, key, app1AccessToken);
         log.info("Retrieved metadata property: " + gson.toJson(propertyBeanCleaned));
         Assert.assertNull(propertyBeanCleaned, "Metadata properties have not been cleaned properly");
-
         log.info("Metadata service basic test completed successfully");
     }
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service concurrency test",
-          groups = { "stratos.application.deployment" },
           priority = 2)
     public void metadataConcurrencyTest() throws Exception {
         log.info("Starting multiple clients to add properties");
@@ -294,7 +291,6 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service security test",
-          groups = { "stratos.application.deployment" },
           priority = 3)
     public void metadataSecurityTest() throws Exception {
         String key = "mykey";
@@ -327,7 +323,6 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service concurrency test",
-          groups = { "stratos.application.deployment" },
           priority = 10)
     public void cleanupAfterUndeployingAppTest() throws Exception {
         // undeploy the app and check whether metadata entries are cleared
@@ -372,8 +367,7 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         };
     }
 
-    @AfterTest(timeOut = APPLICATION_TEST_TIMEOUT,
-               groups = { "stratos.application.deployment" })
+    @AfterTest(timeOut = APPLICATION_TEST_TIMEOUT)
     public void cleanup() throws Exception {
         // remove app-1
         log.info("Removing the application [application id] " + APPLICATION_1_ID);

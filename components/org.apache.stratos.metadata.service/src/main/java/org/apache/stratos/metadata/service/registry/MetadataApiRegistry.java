@@ -75,8 +75,9 @@ public class MetadataApiRegistry implements DataStore {
             acquireReadLock(applicationId);
             return getRegistryResourceProperties(resourcePath, applicationId);
         } catch (Exception e) {
-            String msg = String.format("Failed to get application properties from registry [resource-path] %s for "
-                    + "[application-id] %s", resourcePath, applicationId);
+            String msg = String
+                    .format("Failed to get properties from registry [resource-path] %s for " + "[application-id] %s",
+                            resourcePath, applicationId);
             log.error(msg, e);
             throw new RegistryException(msg, e);
         } finally {
@@ -101,9 +102,8 @@ public class MetadataApiRegistry implements DataStore {
             acquireReadLock(applicationId);
             return getRegistryResourceProperties(resourcePath, applicationId);
         } catch (Exception e) {
-            String msg = String
-                    .format("Failed to get cluster properties from registry [resource-path] %s for [application-id] "
-                            + "%s, [cluster-id] %s", resourcePath, applicationId, clusterId);
+            String msg = String.format("Failed to get properties from registry [resource-path] %s for [application-id] "
+                    + "%s, [cluster-id] %s", resourcePath, applicationId, clusterId);
             log.error(msg, e);
             throw new RegistryException(msg, e);
         } finally {
@@ -159,7 +159,7 @@ public class MetadataApiRegistry implements DataStore {
             } else {
                 nodeResource = registry.newCollection();
                 if (log.isDebugEnabled()) {
-                    log.debug("Registry resource created for application: " + applicationId);
+                    log.debug(String.format("Registry resource created: [resource-path] %s", resourcePath));
                 }
             }
 
@@ -168,27 +168,29 @@ public class MetadataApiRegistry implements DataStore {
                 if (!propertyValueExist(nodeResource, property.getKey(), value)) {
                     updated = true;
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Registry property is added: [resource-path] %s "
-                                + "[Property Name] %s [Property Value] %s", resourcePath, property.getKey(), value));
+                        log.debug(String.format("Registry property updated: [resource-path] %s, [key] %s [value] %s",
+                                resourcePath, property.getKey(), value));
                     }
                     nodeResource.addProperty(property.getKey(), value);
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Property value already exist property=%s value=%s", property.getKey(),
-                                value));
+                        log.debug(
+                                String.format("Registry value already exists: [resource-path] %s, [key] %s, [value] %s",
+                                        resourcePath, property.getKey(), value));
                     }
                 }
             }
             if (updated) {
                 registry.put(resourcePath, nodeResource);
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] "
-                                    + "%s", resourcePath, property.getKey(), Arrays.asList(property.getValues())));
+                    log.debug(String.format("Registry property is persisted: [resource-path] %s, [key] %s, [values] %s",
+                            resourcePath, property.getKey(), Arrays.asList(property.getValues())));
                 }
             }
         } catch (Exception e) {
-            String msg = "Failed to persist properties in registry: " + resourcePath;
+            String msg = String
+                    .format("Failed to persist properties in registry: [resource-path] %s, [key] %s, [values] %s",
+                            resourcePath, property.getKey(), Arrays.asList(property.getValues()));
             log.error(msg, e);
             throw new RegistryException(msg, e);
         } finally {
@@ -205,7 +207,7 @@ public class MetadataApiRegistry implements DataStore {
 
     }
 
-    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove)
+    public boolean removePropertyValueFromApplication(String applicationId, String propertyKey, String valueToRemove)
             throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
@@ -220,16 +222,20 @@ public class MetadataApiRegistry implements DataStore {
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
             } else {
-                log.warn(String.format("Registry [resource] %s not found ", resourcePath));
+                log.warn(String.format("Registry property not found: [resource-path] %s, [key] %s", resourcePath,
+                        propertyKey));
                 return false;
             }
-            nodeResource.removePropertyValue(propertyName, valueToRemove);
+            nodeResource.removePropertyValue(propertyKey, valueToRemove);
             registry.put(resourcePath, nodeResource);
-            log.info(String.format("Application %s property %s value %s is removed from metadata ", applicationId,
-                    propertyName, valueToRemove));
+            log.info(
+                    String.format("Registry property removed: [application-id] %s, [key] %s, [value] %s", applicationId,
+                            propertyKey, valueToRemove));
             return true;
         } catch (Exception e) {
-            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
+            throw new RegistryException(
+                    String.format("Could not remove registry resource: [resource-path] %s, [key] %s, [value] %s",
+                            resourcePath, propertyKey, valueToRemove), e);
         } finally {
             try {
                 releaseWriteLock(applicationId);
@@ -263,16 +269,18 @@ public class MetadataApiRegistry implements DataStore {
             } else {
                 nodeResource = registry.newResource();
                 if (log.isDebugEnabled()) {
-                    log.debug("Registry resource created for cluster" + clusterId);
+                    log.debug(String.format("Registry resource created for [cluster-id] %s", clusterId));
                 }
             }
             nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
             registry.put(resourcePath, nodeResource);
             log.info(String.format(
-                    "Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
+                    "Registry property persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
                     resourcePath, property.getKey(), Arrays.asList(property.getValues())));
         } catch (Exception e) {
-            throw new RegistryException("Could not add registry resource: [resource-path] " + resourcePath, e);
+            throw new RegistryException(
+                    String.format("Could not add registry resource: [resource-path] %s, [key] %s, [value] %s",
+                            resourcePath, property.getKey(), Arrays.asList(property.getValues())), e);
 
         } finally {
             try {
@@ -308,12 +316,12 @@ public class MetadataApiRegistry implements DataStore {
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             if (registry.resourceExists(resourcePath)) {
                 registry.delete(resourcePath);
-                log.info(String.format("Application [application-id ] properties removed from registry %s",
-                        applicationId));
+                log.info(String.format("Registry properties removed for [application-id] %s", applicationId));
             }
             return true;
         } catch (Exception e) {
-            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
+            throw new RegistryException(
+                    String.format("Could not remove registry resource: [resource-path] %s", resourcePath), e);
         } finally {
             try {
                 releaseWriteLock(applicationId);
@@ -322,7 +330,7 @@ public class MetadataApiRegistry implements DataStore {
         }
     }
 
-    public boolean removePropertyFromApplication(String applicationId, String propertyName)
+    public boolean removePropertyFromApplication(String applicationId, String propertyKey)
             throws org.wso2.carbon.registry.api.RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
@@ -336,12 +344,12 @@ public class MetadataApiRegistry implements DataStore {
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
-                if (nodeResource.getProperty(propertyName) == null) {
-                    log.info(String.format("[application-id] %s does not have a property [property-name] %s ",
-                            applicationId, propertyName));
+                if (nodeResource.getProperty(propertyKey) == null) {
+                    log.info(String.format("Registry property not found: [application-id] %s [key] %s ", applicationId,
+                            propertyKey));
                     return false;
                 } else {
-                    nodeResource.removeProperty(propertyName);
+                    nodeResource.removeProperty(propertyKey);
                     registry.put(resourcePath, nodeResource);
                 }
             } else {
@@ -349,11 +357,13 @@ public class MetadataApiRegistry implements DataStore {
                 return false;
             }
 
-            log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ",
-                    applicationId, propertyName));
+            log.info(String.format("Registry property removed: [application-id] %s, [key] %s", applicationId,
+                    propertyKey));
             return true;
         } catch (Exception e) {
-            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
+            throw new RegistryException(
+                    String.format("Could not remove registry resource: [resource-path] %s, [key] %s", resourcePath,
+                            propertyKey), e);
         } finally {
             try {
                 releaseWriteLock(applicationId);

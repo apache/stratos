@@ -495,25 +495,22 @@ public class RestClient {
         @Override
         public PropertyBean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
-            JsonObject jObj = json.getAsJsonObject();
-            JsonElement jsonElement = jObj.get(RestConstants.METADATA_RESPONSE_ATTRIBUTE_VALUES);
-            JsonPrimitive jsonPrimitive = jObj.getAsJsonPrimitive(RestConstants.METADATA_RESPONSE_ATTRIBUTE_KEY);
+            JsonObject responseJsonObject = json.getAsJsonObject();
+            JsonElement valuesJsonEl = responseJsonObject.get(RestConstants.METADATA_RESPONSE_ATTRIBUTE_VALUES);
+            JsonPrimitive keyJsonPrimitive = responseJsonObject
+                    .getAsJsonPrimitive(RestConstants.METADATA_RESPONSE_ATTRIBUTE_KEY);
             List<String> tags = new ArrayList<>();
 
-            // Json structure is invalid. Return an empty property
-            if (jsonPrimitive == null) {
-                return new PropertyBean("", "");
+            // Json structure is invalid
+            if (keyJsonPrimitive == null || valuesJsonEl == null) {
+                return null;
             }
-            // Json structure is invalid. Return a property with empty values list
-            String metadataKey = jsonPrimitive.getAsString();
-            if (jsonElement == null) {
-                return new PropertyBean(metadataKey, tags);
-            }
-            if (jsonElement.isJsonArray()) {
-                tags = context.deserialize(jsonElement.getAsJsonArray(), new TypeToken<List<String>>() {
+            String metadataKey = keyJsonPrimitive.getAsString();
+            if (valuesJsonEl.isJsonArray()) {
+                tags = context.deserialize(valuesJsonEl.getAsJsonArray(), new TypeToken<List<String>>() {
                 }.getType());
             } else {
-                tags.add(metadataKey);
+                tags.add(valuesJsonEl.getAsString());
             }
             return new PropertyBean(metadataKey, tags);
         }
