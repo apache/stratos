@@ -438,7 +438,7 @@ public class TopologyBuilder {
 
                 if (memInfoPublisher.isEnabled()) {
                     if (log.isInfoEnabled()) {
-                        log.info("Publishing member information to DAS...");
+                        log.info("Publishing member information to DAS");
                     }
                     String scalingDecisionId = memberContext.getProperties()
                             .getProperty(StratosConstants.SCALING_DECISION_ID).getValue();
@@ -447,7 +447,7 @@ public class TopologyBuilder {
                 }
                 if (memStatusPublisher.isEnabled()) {
                     if (log.isInfoEnabled()) {
-                        log.info("Publishing member status to DAS...");
+                        log.info("Publishing member status to DAS");
                     }
                     memStatusPublisher.publish(timestamp, applicationId, memberContext.getClusterId(), clusterAlias,
                             memberContext.getClusterInstanceId(), memberContext.getCartridgeType(),
