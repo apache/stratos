@@ -60,7 +60,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/", adminUsername, adminPassword);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas.attributes", "all"})
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas", "all"})
     public void testIaasProviderAttributes () throws Exception {
 
         // add autoscaling policy
