@@ -496,15 +496,26 @@ public class RestClient {
         public PropertyBean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             JsonObject jObj = json.getAsJsonObject();
-            JsonElement jElement = jObj.get("values");
+            JsonElement jsonElement = jObj.get(RestConstants.METADATA_RESPONSE_ATTRIBUTE_VALUES);
+            JsonPrimitive jsonPrimitive = jObj.getAsJsonPrimitive(RestConstants.METADATA_RESPONSE_ATTRIBUTE_KEY);
             List<String> tags = new ArrayList<>();
-            if (jElement.isJsonArray()) {
-                tags = context.deserialize(jElement.getAsJsonArray(), new TypeToken<List<String>>() {
+
+            // Json structure is invalid. Return an empty property
+            if (jsonPrimitive == null) {
+                return new PropertyBean("", "");
+            }
+            // Json structure is invalid. Return a property with empty values list
+            String metadataKey = jsonPrimitive.getAsString();
+            if (jsonElement == null) {
+                return new PropertyBean(metadataKey, tags);
+            }
+            if (jsonElement.isJsonArray()) {
+                tags = context.deserialize(jsonElement.getAsJsonArray(), new TypeToken<List<String>>() {
                 }.getType());
             } else {
-                tags.add(jObj.getAsJsonPrimitive("values").getAsString());
+                tags.add(metadataKey);
             }
-            return new PropertyBean(jObj.getAsJsonPrimitive("key").getAsString(), tags);
+            return new PropertyBean(metadataKey, tags);
         }
     }
 }

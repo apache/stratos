@@ -22,9 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
+import org.apache.stratos.metadata.service.MetadataApplicationEventReceiver;
 import org.apache.stratos.metadata.service.MetadataTopologyEventReceiver;
 import org.apache.stratos.metadata.service.ServiceHolder;
 import org.apache.stratos.metadata.service.definition.Property;
+import org.apache.stratos.metadata.service.exception.MetadataException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
@@ -35,6 +37,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Carbon registry implementation
@@ -46,57 +49,75 @@ public class MetadataApiRegistry implements DataStore {
     private static Log log = LogFactory.getLog(MetadataApiRegistry.class);
     @Context
     HttpServletRequest httpServletRequest;
-    private static final Map<String, ReadWriteLock> applicationIdToReadWriteLockMap = new HashMap<>();
+    private static final ConcurrentHashMap<String, ReadWriteLock> applicationIdToReadWriteLockMap
+            = new ConcurrentHashMap<>();
     private MetadataTopologyEventReceiver metadataTopologyEventReceiver;
+    private MetadataApplicationEventReceiver metadataApplicationEventReceiver;
 
     public MetadataApiRegistry() {
         metadataTopologyEventReceiver = new MetadataTopologyEventReceiver();
         metadataTopologyEventReceiver.execute();
-    }
 
-    public List<Property> getApplicationProperties(String applicationName) throws RegistryException {
-        Registry tempRegistry = getRegistry();
-        String resourcePath = mainResource + applicationName;
-
-        if (!tempRegistry.resourceExists(resourcePath)) {
-            return null;
-        }
-        // We are using only super tenant registry to persist
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-        Resource regResource = tempRegistry.get(resourcePath);
-        ArrayList<Property> newProperties = new ArrayList<Property>();
-
-        Properties props = regResource.getProperties();
-        Enumeration<?> x = props.propertyNames();
-        while (x.hasMoreElements()) {
-            String key = (String) x.nextElement();
-            List<String> values = regResource.getPropertyValues(key);
-            Property property = new Property();
-            property.setKey(key);
-            String[] valueArr = new String[values.size()];
-            property.setValues(values.toArray(valueArr));
-
-            newProperties.add(property);
-        }
-        return newProperties;
+        metadataApplicationEventReceiver = new MetadataApplicationEventReceiver();
+        metadataApplicationEventReceiver.execute();
     }
 
     /**
-     * Get Properties of clustor
+     * Get Properties of application
      *
-     * @param applicationName
-     * @param clusterId
-     * @return
+     * @param applicationId Application ID under which properties should be retrieved
+     * @return List of properties
      * @throws RegistryException
      */
-    public List<Property> getClusterProperties(String applicationName, String clusterId) throws RegistryException {
-        Registry tempRegistry = getRegistry();
-        String resourcePath = mainResource + applicationName + "/" + clusterId;
+    public List<Property> getApplicationProperties(String applicationId) throws RegistryException {
+        String resourcePath = mainResource + applicationId;
+        try {
+            acquireReadLock(applicationId);
+            return getRegistryResourceProperties(resourcePath, applicationId);
+        } catch (Exception e) {
+            String msg = String.format("Failed to get application properties from registry [resource-path] %s for "
+                    + "[application-id] %s", resourcePath, applicationId);
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        } finally {
+            try {
+                releaseReadLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
+        }
+    }
 
-        if (!tempRegistry.resourceExists(resourcePath)) {
+    /**
+     * Get properties of cluster
+     *
+     * @param applicationId Application ID under which properties should be retrieved
+     * @param clusterId     Cluster ID under which properties should be retrieved
+     * @return List of properties
+     * @throws RegistryException
+     */
+    public List<Property> getClusterProperties(String applicationId, String clusterId) throws RegistryException {
+        String resourcePath = mainResource + applicationId + "/" + clusterId;
+        try {
+            acquireReadLock(applicationId);
+            return getRegistryResourceProperties(resourcePath, applicationId);
+        } catch (Exception e) {
+            String msg = String
+                    .format("Failed to get cluster properties from registry [resource-path] %s for [application-id] "
+                            + "%s, [cluster-id] %s", resourcePath, applicationId, clusterId);
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        } finally {
+            try {
+                releaseReadLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
+        }
+    }
+
+    private List<Property> getRegistryResourceProperties(String registryResourcePath, String applicationId)
+            throws RegistryException, MetadataException {
+        Registry tempRegistry = getRegistry();
+        if (!tempRegistry.resourceExists(registryResourcePath)) {
             return null;
         }
 
@@ -105,10 +126,8 @@ public class MetadataApiRegistry implements DataStore {
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        Resource regResource = tempRegistry.get(resourcePath);
-
-        ArrayList<Property> newProperties = new ArrayList<Property>();
-
+        Resource regResource = tempRegistry.get(registryResourcePath);
+        ArrayList<Property> newProperties = new ArrayList<>();
         Properties props = regResource.getProperties();
         Enumeration<?> x = props.propertyNames();
         while (x.hasMoreElements()) {
@@ -121,20 +140,20 @@ public class MetadataApiRegistry implements DataStore {
 
             newProperties.add(property);
         }
-
         return newProperties;
     }
 
     public void addPropertyToApplication(String applicationId, Property property) throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
-        acquireWriteLock(applicationId);
+
         try {
+            acquireWriteLock(applicationId);
             // We are using only super tenant registry to persist
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-            Resource nodeResource = null;
+            Resource nodeResource;
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
             } else {
@@ -150,8 +169,7 @@ public class MetadataApiRegistry implements DataStore {
                     updated = true;
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Registry property is added: [resource-path] %s "
-                                        + "[Property Name] %s [Property Value] %s", resourcePath, property.getKey(),
-                                value));
+                                + "[Property Name] %s [Property Value] %s", resourcePath, property.getKey(), value));
                     }
                     nodeResource.addProperty(property.getKey(), value);
                 } else {
@@ -174,7 +192,10 @@ public class MetadataApiRegistry implements DataStore {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         } finally {
-            releaseWriteLock(applicationId);
+            try {
+                releaseWriteLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
         }
     }
 
@@ -188,8 +209,9 @@ public class MetadataApiRegistry implements DataStore {
             throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
-        acquireWriteLock(applicationId);
+
         try {
+            acquireWriteLock(applicationId);
             // We are using only super tenant registry to persist
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
@@ -209,29 +231,33 @@ public class MetadataApiRegistry implements DataStore {
         } catch (Exception e) {
             throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         } finally {
-            releaseWriteLock(applicationId);
+            try {
+                releaseWriteLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
         }
     }
 
     /**
      * Add property to cluster
      *
-     * @param applicationId
-     * @param clusterId
-     * @param property
+     * @param applicationId Application ID against which added property will be stored
+     * @param clusterId     Cluster ID against which added property will be stored
+     * @param property      Property to be stored in the registry
      * @throws RegistryException
      */
     public void addPropertyToCluster(String applicationId, String clusterId, Property property)
             throws RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId + "/" + clusterId;
-        acquireWriteLock(applicationId);
+
         try {
+            acquireWriteLock(applicationId);
             // We are using only super tenant registry to persist
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-            Resource nodeResource = null;
+            Resource nodeResource;
             if (registry.resourceExists(resourcePath)) {
                 nodeResource = registry.get(resourcePath);
             } else {
@@ -245,8 +271,14 @@ public class MetadataApiRegistry implements DataStore {
             log.info(String.format(
                     "Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
                     resourcePath, property.getKey(), Arrays.asList(property.getValues())));
+        } catch (Exception e) {
+            throw new RegistryException("Could not add registry resource: [resource-path] " + resourcePath, e);
+
         } finally {
-            releaseWriteLock(applicationId);
+            try {
+                releaseWriteLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
         }
     }
 
@@ -267,8 +299,9 @@ public class MetadataApiRegistry implements DataStore {
         }
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
-        acquireWriteLock(applicationId);
+
         try {
+            acquireWriteLock(applicationId);
             // We are using only super tenant registry to persist
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
@@ -282,7 +315,10 @@ public class MetadataApiRegistry implements DataStore {
         } catch (Exception e) {
             throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         } finally {
-            releaseWriteLock(applicationId);
+            try {
+                releaseWriteLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
         }
     }
 
@@ -290,9 +326,10 @@ public class MetadataApiRegistry implements DataStore {
             throws org.wso2.carbon.registry.api.RegistryException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
-        acquireWriteLock(applicationId);
         Resource nodeResource;
+
         try {
+            acquireWriteLock(applicationId);
             // We are using only super tenant registry to persist
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
@@ -315,14 +352,19 @@ public class MetadataApiRegistry implements DataStore {
             log.info(String.format("Application [application-id] %s property [property-name] %s removed from Registry ",
                     applicationId, propertyName));
             return true;
+        } catch (Exception e) {
+            throw new RegistryException("Could not remove registry resource: [resource-path] " + resourcePath, e);
         } finally {
-            releaseWriteLock(applicationId);
+            try {
+                releaseWriteLock(applicationId);
+            } catch (MetadataException ignored) {
+            }
         }
     }
 
-    public void acquireReadLock(String applicationId) {
+    public void acquireReadLock(String applicationId) throws MetadataException {
         if (applicationIdToReadWriteLockMap.get(applicationId) == null) {
-            throw new RuntimeException(
+            throw new MetadataException(
                     String.format("Invalid application [application-id] %s not found. Failed to acquire read lock.",
                             applicationId));
         } else {
@@ -330,9 +372,9 @@ public class MetadataApiRegistry implements DataStore {
         }
     }
 
-    public void acquireWriteLock(String applicationId) {
+    public void acquireWriteLock(String applicationId) throws MetadataException {
         if (applicationIdToReadWriteLockMap.get(applicationId) == null) {
-            throw new RuntimeException(
+            throw new MetadataException(
                     String.format("Invalid application [application-id] %s not found. Failed to acquire write lock.",
                             applicationId));
         } else {
@@ -340,9 +382,9 @@ public class MetadataApiRegistry implements DataStore {
         }
     }
 
-    public void releaseReadLock(String applicationId) {
+    public void releaseReadLock(String applicationId) throws MetadataException {
         if (applicationIdToReadWriteLockMap.get(applicationId) == null) {
-            throw new RuntimeException(
+            throw new MetadataException(
                     String.format("Invalid application [application-id] %s not found. Failed to release read lock.",
                             applicationId));
         } else {
@@ -350,9 +392,9 @@ public class MetadataApiRegistry implements DataStore {
         }
     }
 
-    public void releaseWriteLock(String applicationId) {
+    public void releaseWriteLock(String applicationId) throws MetadataException {
         if (applicationIdToReadWriteLockMap.get(applicationId) == null) {
-            throw new RuntimeException(
+            throw new MetadataException(
                     String.format("Invalid application [application-id] %s not found. Failed to release write lock.",
                             applicationId));
         } else {
@@ -360,11 +402,15 @@ public class MetadataApiRegistry implements DataStore {
         }
     }
 
-    public static Map<String, ReadWriteLock> getApplicationIdToReadWriteLockMap() {
+    public static ConcurrentHashMap<String, ReadWriteLock> getApplicationIdToReadWriteLockMap() {
         return applicationIdToReadWriteLockMap;
     }
 
     public void stopTopologyReceiver() {
         metadataTopologyEventReceiver.terminate();
+    }
+
+    public void stopApplicationReceiver() {
+        metadataApplicationEventReceiver.terminate();
     }
 }

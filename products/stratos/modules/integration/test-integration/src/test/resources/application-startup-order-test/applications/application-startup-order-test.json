@@ -1,43 +1,43 @@
 {
-    "alias": "mycompositeapp",
-    "applicationId": "my-compositeapp",
+    "alias": "application-startup-order-test",
+    "applicationId": "application-startup-order-test",
     "components": {
         "groups": [
             {
-                "name": "app-group",
-                "alias": "my-appgroup",
+                "name": "app-group-application-startup-order-test",
+                "alias": "my-appgroup-application-startup-order-test",
                 "cartridges": [
                     {
-                        "type": "tomcat",
+                        "type": "tomcat-application-startup-order-test",
                         "cartridgeMax": 2,
                         "cartridgeMin": 1,
                         "subscribableInfo": {
-                            "alias": "my-tomcat",
+                            "alias": "my-tomcat-application-startup-order-test",
                             "artifactRepository": {
-                                "alias": "my-tomcat",
+                                "alias": "my-tomcat-application-startup-order-test",
                                 "privateRepo": true,
                                 "repoPassword": "password",
                                 "repoUrl": "http://xxx:10080/git/default.git",
                                 "repoUsername": "user"
                             },
-                            "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-1"
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
                         }
                     },
                     {
-                        "type": "php",
+                        "type": "php-application-startup-order-test",
                         "cartridgeMax": 2,
                         "cartridgeMin": 1,
                         "subscribableInfo": {
-                            "alias": "my-php",
+                            "alias": "my-php-application-startup-order-test",
                             "artifactRepository": {
                                 "privateRepo": true,
                                 "repoPassword": "password",
                                 "repoUrl": "http://xxx:10080/git/default.git",
                                 "repoUsername": "user"
                             },
-                            "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-1"
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
                         }
                     }
                 ],
@@ -46,41 +46,41 @@
                 "groupScalingEnabled": true
             },
             {
-                "name": "db-group",
-                "alias": "my-dbgroup",
+                "name": "db-group-application-startup-order-test",
+                "alias": "my-dbgroup-application-startup-order-test",
                 "cartridges": [
                     {
-                        "type": "postgres",
+                        "type": "postgres-application-startup-order-test",
                         "cartridgeMax": 2,
                         "cartridgeMin": 1,
                         "subscribableInfo": {
-                            "alias": "my-postgres",
+                            "alias": "my-postgres-application-startup-order-test",
                             "artifactRepository": {
-                                "alias": "my-postgres",
+                                "alias": "my-postgres-application-startup-order-test",
                                 "privateRepo": false,
                                 "repoPassword": "password",
                                 "repoUrl": "http://xxx:10080/git/default.git",
                                 "repoUsername": "user"
                             },
-                            "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-1"
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
                         }
                     },
                     {
-                        "type": "mysql",
+                        "type": "mysql-application-startup-order-test",
                         "cartridgeMax": 2,
                         "cartridgeMin": 1,
                         "subscribableInfo": {
-                            "alias": "my-mysql",
+                            "alias": "my-mysql-application-startup-order-test",
                             "artifactRepository": {
-                                "alias": "my-mysql",
+                                "alias": "my-mysql-application-startup-order-test",
                                 "privateRepo": true,
                                 "repoPassword": "password",
                                 "repoUrl": "http://xxx:10080/git/default.git",
                                 "repoUsername": "user"
                             },
-                            "autoscalingPolicy": "autoscaling-policy-1",
-                            "deploymentPolicy": "deployment-policy-1"
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
                         }
                     }
                 ],
@@ -91,19 +91,19 @@
         ],
         "cartridges": [
             {
-                "type": "esb",
+                "type": "esb-application-startup-order-test",
                 "cartridgeMax": 2,
                 "cartridgeMin": 1,
                 "subscribableInfo": {
-                    "alias": "my-esb",
+                    "alias": "my-esb-application-startup-order-test",
                     "artifactRepository": {
                         "privateRepo": true,
                         "repoPassword": "password",
                         "repoUrl": "http://xxx:10080/git/default.git",
                         "repoUsername": "user"
                     },
-                    "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy": "deployment-policy-1"
+                    "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                    "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
                 }
             }
         ],
@@ -111,7 +111,7 @@
             "scalingDependents": [
                 {
                     "aliases": [
-                        "group.my-appgroup, cartridge.my-esb"
+                        "group.my-appgroup-application-startup-order-test, cartridge.my-esb-application-startup-order-test"
                     ]
                 }
             ],

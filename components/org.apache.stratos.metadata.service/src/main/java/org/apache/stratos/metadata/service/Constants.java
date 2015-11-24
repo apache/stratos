@@ -22,7 +22,6 @@ package org.apache.stratos.metadata.service;
  * Global constants used in this module
  */
 public class Constants {
-
     public static final String METADATASERVICE_CONFIG_FILE_NAME = "metadataservice.xml";
-
+    public static final String METADATA_SERVICE_THREAD_POOL_ID = "metadata.service.thread.pool.";
 }

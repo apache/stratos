@@ -5,7 +5,7 @@
         "cartridges": [],
         "groups": [
             {
-                "name": "G1-application-update-test",
+                "name": "cartridge-nested-application-update-test",
                 "groupMaxInstances": 1,
                 "groupMinInstances": 1,
                 "alias": "group1-application-update-test",

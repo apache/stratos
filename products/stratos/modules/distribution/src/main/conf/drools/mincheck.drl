@@ -38,9 +38,6 @@ import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import java.util.UUID;
-import org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher;
-import org.apache.stratos.autoscaler.statistics.publisher.AutoscalerPublisherFactory;
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.pojo.policy.PolicyManager manager;
@@ -49,6 +46,7 @@ global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
 global java.lang.String algorithmName;
+global org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher scalingDecisionPublisher;
 
 rule "Minimum Rule"
 dialect "mvel"
@@ -74,7 +72,7 @@ dialect "mvel"
         String scalingDecisionId = clusterId + "-" + UUID.randomUUID().toString();
         long scalingTime = System.currentTimeMillis();
         String scalingReason = "MIN";
-        ScalingDecisionPublisher scalingDecisionPublisher = AutoscalerPublisherFactory.createScalingDecisionPublisher(StatisticsPublisherType.WSO2DAS);
+
         if (scalingDecisionPublisher.isEnabled()) {
         log.debug("Publishing scaling decision to DAS");
         scalingDecisionPublisher.publish(scalingTime, scalingDecisionId, clusterId,
@@ -83,9 +81,8 @@ dialect "mvel"
                                  0, 0, 0, 0, 0, 0,0, 0, 0,
                                  clusterInstanceContext.getMinInstanceCount(), 0,
                                  additionalInstances, scalingReason);
-        } else {
-            log.warn("Scaling decision publisher is not enabled");
         }
+
         while(count != additionalInstances && partitionsAvailable){
 
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)partitionAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());

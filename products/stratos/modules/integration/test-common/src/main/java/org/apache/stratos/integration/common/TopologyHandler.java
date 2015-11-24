@@ -235,6 +235,8 @@ public class TopologyHandler {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
         while (!((application != null) && (application.getStatus() == status))) {
             try {
+                log.info(String.format("Waiting for [application] %s to become [status] %s...", applicationName,
+                        status));
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }

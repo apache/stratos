@@ -1,10 +1,10 @@
 {
-    "type": "mysql",
+    "type": "tomcat-application-startup-order-test",
     "provider": "apache",
-    "host": "stratos.apache.org",
-    "category": "data",
-    "displayName": "c4",
-    "description": "mysql Cartridge",
+    "host": "tomcat.stratos.org",
+    "category": "framework",
+    "displayName": "tomcat-application-startup-order-test",
+    "description": "tomcat-application-startup-order-test Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
@@ -13,6 +13,11 @@
             "protocol": "http",
             "port": "22",
             "proxyPort": "8280"
+        },
+        {
+            "protocol": "http",
+            "port": "8080",
+            "proxyPort": "80"
         }
     ],
     "deployment": {
@@ -43,8 +48,6 @@
         }
     ],
     "metadataKeys": [
-        "server_ip",
-        "username",
-        "password"
+        "url"
     ]
 }

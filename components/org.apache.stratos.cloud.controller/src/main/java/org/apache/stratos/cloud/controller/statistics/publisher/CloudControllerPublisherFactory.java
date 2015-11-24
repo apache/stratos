@@ -19,6 +19,7 @@
 
 package org.apache.stratos.cloud.controller.statistics.publisher;
 
+import org.apache.stratos.common.exception.InvalidStatisticsPublisherTypeException;
 import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 
 /**
@@ -33,9 +34,9 @@ public class CloudControllerPublisherFactory {
      */
     public static MemberInformationPublisher createMemberInformationPublisher(StatisticsPublisherType type) {
         if (type == StatisticsPublisherType.WSO2DAS) {
-            return new DASMemberInformationPublisher();
+            return DASMemberInformationPublisher.getInstance();
         } else {
-            throw new RuntimeException("Unknown statistics publisher type");
+            throw new InvalidStatisticsPublisherTypeException("Invalid statistics publisher type is used to create publisher.");
         }
     }
 
@@ -47,9 +48,9 @@ public class CloudControllerPublisherFactory {
      */
     public static MemberStatusPublisher createMemberStatusPublisher(StatisticsPublisherType type) {
         if (type == StatisticsPublisherType.WSO2DAS) {
-            return new DASMemberStatusPublisher();
+            return DASMemberStatusPublisher.getInstance();
         } else {
-            throw new RuntimeException("Unknown statistics publisher type");
+            throw new InvalidStatisticsPublisherTypeException("Invalid statistics publisher type is used to create publisher.");
         }
     }
 }

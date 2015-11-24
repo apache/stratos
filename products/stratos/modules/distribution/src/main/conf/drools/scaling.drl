@@ -40,9 +40,6 @@ import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import java.util.UUID;
-import org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher;
-import org.apache.stratos.autoscaler.statistics.publisher.AutoscalerPublisherFactory;
-import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption
 
@@ -56,6 +53,7 @@ global java.lang.Boolean mcReset;
 global java.lang.Boolean laReset;
 global java.lang.Boolean arspiReset;
 global java.lang.String algorithmName;
+global org.apache.stratos.autoscaler.statistics.publisher.ScalingDecisionPublisher scalingDecisionPublisher;
 
 rule "Scaling Rule"
 dialect "mvel"
@@ -168,7 +166,7 @@ dialect "mvel"
 
                     String scalingDecisionId = clusterId + "-" + UUID.randomUUID().toString();
                     long scalingTime = System.currentTimeMillis();
-                    ScalingDecisionPublisher scalingDecisionPublisher = AutoscalerPublisherFactory.createScalingDecisionPublisher(StatisticsPublisherType.WSO2DAS);
+
                     if (scalingDecisionPublisher.isEnabled()) {
                         log.debug("Publishing scaling decision to DAS");
                         scalingDecisionPublisher.publish(scalingTime, scalingDecisionId, clusterId,
@@ -178,8 +176,6 @@ dialect "mvel"
                                             laPredictedValue, laThreshold, numberOfInstancesReuquiredBasedOnLoadAverage,
                                             numberOfRequiredInstances, activeInstancesCount,
                                             additionalInstances, scalingReason);
-                    } else {
-                        log.warn("Scaling decision publisher is not enabled");
                     }
 
                     while(count != additionalInstances && partitionsAvailable){

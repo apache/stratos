@@ -49,12 +49,18 @@ import static org.testng.AssertJUnit.assertTrue;
 public class StratosServerRestartTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(StratosServerRestartTestCase.class);
     private static final String RESOURCES_PATH = "/stratos-server-restart-test";
+    private static final String autoscalingPolicyId = "autoscaling-policy-stratos-server-restart-test";
+    private static final String cartridgeId = "c1-stratos-server-restart-test";
+    private static final String networkPartitionId = "network-partition-stratos-server-restart-test";
+    private static final String deploymentPolicyId = "deployment-policy-stratos-server-restart-test";
+    private static final String applicationId = "stratos-server-restart-test";
+    private static final String applicationPolicyId = "application-policy-stratos-server-restart-test";
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
-            groups = { "stratos.server.restart", "server" },
+            groups = { "stratos.server.restart"},
             dependsOnGroups = { "stratos.application.deployment" })
     public void stratosServerRestartTest() throws Exception {
-        String autoscalingPolicyId = "autoscaling-policy-stratos-server-restart-test";
+
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
         log.info("Adding autoscaling policy [autoscale policy id] " + autoscalingPolicyId);
@@ -63,91 +69,60 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(addedScalingPolicy);
 
-        log.info("Adding cartridge [cartridge type] c1-stratos-server-restart-test");
+        log.info(String.format("Adding cartridge [cartridge type] %s", cartridgeId));
         boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-stratos-server-restart-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC1);
 
-        log.info("Adding network partition [network partition id] stratos-server-restart-test");
+        log.info(String.format("Adding network partition [network partition id] %s", networkPartitionId));
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-stratos-server-restart-test.json", RestConstants.NETWORK_PARTITIONS,
+                        networkPartitionId + ".json", RestConstants.NETWORK_PARTITIONS,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
-        log.info("Adding deployment policy [deployment policy id] deployment-policy-stratos-server-restart-test");
+        log.info(String.format("Adding deployment policy [deployment policy id] %s", deploymentPolicyId));
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-stratos-server-restart-test.json", RestConstants.DEPLOYMENT_POLICIES,
+                        deploymentPolicyId + ".json", RestConstants.DEPLOYMENT_POLICIES,
                 RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(addedDep);
 
-        log.info("Adding application [application id] stratos-server-restart-test");
+        log.info(String.format("Adding application [application id] %s", applicationId));
         boolean addedApp = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                "stratos-server-restart-test.json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
+                applicationId + ".json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
         assertEquals(addedApp, true);
 
         ApplicationBean bean = (ApplicationBean) restClient
-                .getEntity(RestConstants.APPLICATIONS, "stratos-server-restart-test", ApplicationBean.class,
+                .getEntity(RestConstants.APPLICATIONS, applicationId, ApplicationBean.class,
                         RestConstants.APPLICATIONS_NAME);
-        assertEquals(bean.getApplicationId(), "stratos-server-restart-test");
+        assertEquals(bean.getApplicationId(), applicationId);
 
-        log.info(
-                "Adding application policy [application policy id] application-policy-stratos-server-restart-test");
+        log.info(String.format("Adding application policy [application policy id] %s", applicationPolicyId));
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        "application-policy-stratos-server-restart-test.json", RestConstants.APPLICATION_POLICIES,
+                        applicationPolicyId + ".json", RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(addAppPolicy);
 
         ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient
-                .getEntity(RestConstants.APPLICATION_POLICIES, "application-policy-stratos-server-restart-test",
+                .getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
                         ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(policyBean.getId(), "application-policy-stratos-server-restart-test");
+        assertEquals(policyBean.getId(), applicationPolicyId);
 
-        // Used policies/cartridges should not removed...asserting validations when removing policies
-        log.info("Trying to remove the used autoscaling policy...");
-        boolean removedUsedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
-                RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertFalse(removedUsedAuto);
-
-        log.info("Trying to remove the used network partition...");
-        boolean removedUsedNet = restClient
-                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-stratos-server-restart-test",
-                        RestConstants.NETWORK_PARTITIONS_NAME);
-        assertFalse(removedUsedNet);
-
-        log.info("Trying to remove the used deployment policy...");
-        boolean removedUsedDep = restClient
-                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-stratos-server-restart-test",
-                        RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertFalse(removedUsedDep);
-
-        log.info("Deploying application [application id] stratos-server-restart-test using [application policy id] "
-                + "application-policy-stratos-server-restart-test");
-        String resourcePath = RestConstants.APPLICATIONS + "/stratos-server-restart-test" +
-                RestConstants.APPLICATIONS_DEPLOY + "/application-policy-stratos-server-restart-test";
+        log.info(String.format("Deploying application [application id] %s using [application policy id] %s", applicationId, applicationPolicyId));
+        String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
         boolean deployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
         assertTrue(deployed);
 
-        log.info("Trying to remove the used application policy");
-        boolean removedUsedAppPolicy = restClient
-                .removeEntity(RestConstants.APPLICATION_POLICIES, "application-policy-stratos-server-restart-test",
-                        RestConstants.APPLICATION_POLICIES_NAME);
-        assertFalse(removedUsedAppPolicy);
-
-        log.info("Trying to remove the deployed application without undeploying first");
-        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "stratos-server-restart-test",
-                RestConstants.APPLICATIONS_NAME);
-        assertFalse(removed);
-
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
+        topologyHandler.assertApplicationStatus(applicationId, ApplicationStatus.Active);
 
         log.info("Waiting for cluster status to become ACTIVE...");
-        topologyHandler.assertClusterActivation(bean.getApplicationId());
+        topologyHandler.assertClusterActivation(applicationId);
 
-        List<Member> memberList = topologyHandler.getMembersForApplication(bean.getApplicationId());
+        List<Member> memberList = topologyHandler.getMembersForApplication(applicationId);
         Assert.assertTrue(memberList.size() == 1,
-                String.format("Active member list for application %s is empty", bean.getApplicationId()));
+                String.format("Active member list for application %s is empty", applicationId));
 
         log.info("Terminating members in [cluster id] c1-stratos-server-restart-test in mock IaaS directly to "
                 + "simulate faulty members...");
@@ -182,67 +157,61 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         Assert.assertTrue(memberList.size() == 1,
                 String.format("Active member list for application %s is empty", bean.getApplicationId()));
 
-        log.info("Un-deploying the application [application id] stratos-server-restart-test");
-        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/stratos-server-restart-test" +
+        log.info(String.format("Un-deploying the application [application id] %s", applicationId));
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId+
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
         boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy, RestConstants.APPLICATIONS_NAME);
         assertTrue(unDeployed);
 
-        boolean undeploy = topologyHandler.assertApplicationUndeploy("stratos-server-restart-test");
+        boolean undeploy = topologyHandler.assertApplicationUndeploy(applicationId);
         if (!undeploy) {
             //Need to forcefully undeploy the application
-            log.info("Force undeployment is going to start for the [application] stratos-server-restart-test");
-
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/stratos-server-restart-test" +
+            log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId+
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("stratos-server-restart-test");
+            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy(applicationId);
             assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    "stratos-server-restart-test"), forceUndeployed);
+                    applicationId), forceUndeployed);
         }
 
-        log.info("Removing the application [application id] stratos-server-restart-test");
-        boolean removedApp = restClient.removeEntity(RestConstants.APPLICATIONS, "stratos-server-restart-test",
+        log.info(String.format("Removing the application [application id] %s", applicationId));
+        boolean removedApp = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(removedApp);
 
         ApplicationBean beanRemoved = (ApplicationBean) restClient
-                .getEntity(RestConstants.APPLICATIONS, "stratos-server-restart-test", ApplicationBean.class,
+                .getEntity(RestConstants.APPLICATIONS, applicationId, ApplicationBean.class,
                         RestConstants.APPLICATIONS_NAME);
         assertNull(beanRemoved);
 
-        log.info("Removing the application policy [application policy id] "
-                + "application-policy-stratos-server-restart-test");
+        log.info(String.format("Removing the application policy [application policy id] %s", applicationPolicyId));
         boolean removeAppPolicy = restClient
-                .removeEntity(RestConstants.APPLICATION_POLICIES, "application-policy-stratos-server-restart-test",
+                .removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
                         RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
 
-        log.info("Removing the cartridge [cartridge type] c1-stratos-server-restart-test");
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-stratos-server-restart-test",
+        log.info(String.format("Removing the cartridge [cartridge type] %s", cartridgeId));
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC1);
 
-        log.info("Removing the autoscaling policy [autoscaling policy id] " + autoscalingPolicyId);
+        log.info(String.format("Removing the autoscaling policy [autoscaling policy id] %s", autoscalingPolicyId));
         boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
                 RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(removedAuto);
 
-        log.info("Removing the deployment policy [deployment policy id] "
-                + "deployment-policy-stratos-server-restart-test");
+        log.info(String.format("Removing the deployment policy [deployment policy id] %s", deploymentPolicyId));
         boolean removedDep = restClient
-                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-stratos-server-restart-test",
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
                         RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
 
-        log.info("Removing the network partition [network partition id] "
-                + "network-partition-stratos-server-restart-test");
+        log.info(String.format("Removing the network partition [network partition id] %s", networkPartitionId));
         boolean removedNet = restClient
-                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-stratos-server-restart-test",
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                         RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
-
-        // asserting whether instances are terminated from IaaS
     }
 }
