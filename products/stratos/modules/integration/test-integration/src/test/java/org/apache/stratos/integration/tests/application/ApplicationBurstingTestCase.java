@@ -27,6 +27,7 @@ import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -214,5 +215,13 @@ public class ApplicationBurstingTestCase extends StratosIntegrationTest {
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
                 applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
+
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                networkPartition1, RestConstants.NETWORK_PARTITIONS_NAME);
+        Assert.assertTrue(removedNet);
+
+        removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                networkPartition2, RestConstants.NETWORK_PARTITIONS_NAME);
+        Assert.assertTrue(removedN2);
     }
 }

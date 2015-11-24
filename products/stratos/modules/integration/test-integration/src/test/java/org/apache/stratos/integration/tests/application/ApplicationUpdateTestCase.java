@@ -248,5 +248,13 @@ public class ApplicationUpdateTestCase extends StratosIntegrationTest {
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
                 applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
         assertEquals(removeAppPolicy, true);
+
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                networkPartitionId1, RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedNet, true);
+
+        removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                networkPartitionId2, RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedN2, true);
     }
 }

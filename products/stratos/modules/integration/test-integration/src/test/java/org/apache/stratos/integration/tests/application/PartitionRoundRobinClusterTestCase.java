@@ -33,11 +33,14 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -47,52 +50,59 @@ import static org.testng.AssertJUnit.assertTrue;
 public class PartitionRoundRobinClusterTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(PartitionRoundRobinClusterTestCase.class);
     private static final String RESOURCES_PATH = "/partition-round-robin-cluster-test";
+    private static final String autoscalingPolicyId = "autoscaling-policy-partition-round-robin-test";
+    private static final String cartridgeId = "c7-partition-round-robin-test";
+    private static final String networkPartitionId = "network-partition-partition-round-robin-test";
+    private static final String deploymentPolicyId = "deployment-policy-partition-round-robin-test";
+    private static final String applicationId = "partition-round-robin-test";
+    private static final String applicationPolicyId = "application-policy-partition-round-robin-test";
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testDeployApplication() throws Exception {
+
+
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
-        String autoscalingPolicyId = "autoscaling-policy-partition-round-robin-test";
 
         boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                         + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(addedScalingPolicy, true);
+        Assert.assertTrue(addedScalingPolicy);
 
         boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7-partition-round-robin-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-        assertEquals(addedC1, true);
+        Assert.assertTrue(addedC1);
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-partition-round-robin-test.json",
+                        networkPartitionId + ".json",
                 RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(addedN1, true);
+        Assert.assertTrue(addedN1);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-partition-round-robin-test.json",
+                        deploymentPolicyId + ".json",
                 RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(addedDep, true);
+        Assert.assertTrue(addedDep);
 
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        "partition-round-robin-test.json", RestConstants.APPLICATIONS,
+                        applicationId + ".json", RestConstants.APPLICATIONS,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(added, true);
+        Assert.assertTrue(added);
 
         ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "partition-round-robin-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-        assertEquals(bean.getApplicationId(), "partition-round-robin-test");
+                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertEquals(bean.getApplicationId(), applicationId);
 
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        "application-policy-partition-round-robin-test.json", RestConstants.APPLICATION_POLICIES,
+                        applicationPolicyId + ".json", RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(addAppPolicy, true);
+        Assert.assertTrue(addAppPolicy);
 
         //deploy the application
-        String resourcePath = RestConstants.APPLICATIONS + "/" + "partition-round-robin-test" +
-                RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-partition-round-robin-test";
+        String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
         boolean deployed = restClient.deployEntity(resourcePath,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(deployed, true);
+        Assert.assertTrue(deployed);
 
 
         //Application active handling
@@ -120,73 +130,71 @@ public class PartitionRoundRobinClusterTestCase extends StratosIntegrationTest {
 
         boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                 autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(removedAuto, false);
+        assertFalse(removedAuto);
 
         boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-partition-round-robin-test",
+                networkPartitionId,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
-        assertEquals(removedNet, false);
+        assertFalse(removedNet);
 
         boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-partition-round-robin-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(removedDep, false);
+                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
+        assertFalse(removedDep);
 
         //Un-deploying the application
-        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "partition-round-robin-test" +
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
         boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(unDeployed, true);
+        Assert.assertTrue(unDeployed);
 
-        boolean undeploy = topologyHandler.assertApplicationUndeploy("partition-round-robin-test");
+        boolean undeploy = topologyHandler.assertApplicationUndeploy(applicationId);
         if (!undeploy) {
             //Need to forcefully undeploy the application
-            log.info("Force undeployment is going to start for the [application] " + "partition-round-robin-test");
+            log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
 
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "partition-round-robin-test" +
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("partition-round-robin-test");
+            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy(applicationId);
             assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    "partition-round-robin-test"), forceUndeployed);
+                    applicationId), forceUndeployed);
 
         }
 
-        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "partition-round-robin-test",
+        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(removed, true);
+        Assert.assertTrue(removed);
 
         ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "partition-round-robin-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-        assertEquals(beanRemoved, null);
+                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertNull(beanRemoved);
 
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c7-partition-round-robin-test",
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId,
                 RestConstants.CARTRIDGES_NAME);
-        assertEquals(removedC1, true);
-
+        Assert.assertTrue(removedC1);
 
         removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                 autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(removedAuto, true);
+        Assert.assertTrue(removedAuto);
 
         removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-partition-round-robin-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(removedDep, true);
+                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
+        Assert.assertTrue(removedDep);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-partition-round-robin-test", RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedNet, false);
-
+                networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
+        assertFalse(removedNet);
 
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                "application-policy-partition-round-robin-test", RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(removeAppPolicy, true);
+                applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
+        Assert.assertTrue(removeAppPolicy);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-partition-round-robin-test", RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedNet, true);
+                networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
+        Assert.assertTrue(removedNet);
     }
 
     /**

@@ -310,6 +310,10 @@ public class GroupStartupOrderTestCase extends StratosIntegrationTest {
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
                 applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
+
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
+                networkPartitionId1, RestConstants.NETWORK_PARTITIONS_NAME);
+        assertTrue(removedNet);
     }
 
     private void assertCreationOfNodes(String firstNodeId, String secondNodeId) {

@@ -35,11 +35,14 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -66,27 +69,27 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
         boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                         + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(addedScalingPolicy, true);
+        Assert.assertTrue(addedScalingPolicy);
 
         boolean addedC1 = restClient.addEntity(
                 RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-        assertEquals(addedC1, true);
+        Assert.assertTrue(addedC1);
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
                         networkPartitionId + ".json",
                 RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(addedN1, true);
+        Assert.assertTrue(addedN1);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
                         deploymentPolicyId + ".json",
                 RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(addedDep, true);
+        Assert.assertTrue(addedDep);
 
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                         applicationId + ".json", RestConstants.APPLICATIONS,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(added, true);
+        Assert.assertTrue(added);
 
         ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
                 applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
@@ -95,14 +98,14 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                         applicationPolicyId + ".json", RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(addAppPolicy, true);
+        Assert.assertTrue(addAppPolicy);
 
         //deploy the application
         String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
         boolean deployed = restClient.deployEntity(resourcePath,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(deployed, true);
+        Assert.assertTrue(deployed);
 
         //Application active handling
         topologyHandler.assertApplicationStatus(bean.getApplicationId()
@@ -122,17 +125,17 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
 
         boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                 autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(removedAuto, false);
+        assertFalse(removedAuto);
 
         boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                 networkPartitionId,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
-        assertEquals(removedNet, false);
+        assertFalse(removedNet);
 
         boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                 deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(removedDep, false);
+        assertFalse(removedDep);
 
         //Un-deploying the application
         String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId +
@@ -140,7 +143,7 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
 
         boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(unDeployed, true);
+        Assert.assertTrue(unDeployed);
 
         boolean undeploy = topologyHandler.assertApplicationUndeploy(applicationId);
         if (!undeploy) {
@@ -157,35 +160,35 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
 
         boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(removed, true);
+        Assert.assertTrue(removed);
 
         ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
                 applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-        assertEquals(beanRemoved, null);
+        assertNull(beanRemoved);
 
         boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId,
                 RestConstants.CARTRIDGES_NAME);
-        assertEquals(removedC1, true);
+        Assert.assertTrue(removedC1);
 
         removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                 autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(removedAuto, true);
+        Assert.assertTrue(removedAuto);
 
         removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
                 deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(removedDep, true);
+        Assert.assertTrue(removedDep);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                 networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedNet, false);
+        assertFalse(removedNet);
 
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
                 applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(removeAppPolicy, true);
+        Assert.assertTrue(removeAppPolicy);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
                 networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedNet, true);
+        Assert.assertTrue(removedNet);
     }
 
     /**
