@@ -19,17 +19,17 @@
 
 package org.apache.stratos.integration.tests.iaas;
 
+import org.apache.stratos.common.beans.IaasProviderInfoBean;
+import org.apache.stratos.integration.tests.StratosIntegrationTest;
+import org.testng.annotations.Test;
+
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.either;
 import static org.junit.Assert.assertThat;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
-
-import java.util.List;
-
-import org.apache.stratos.common.beans.IaasProviderInfoBean;
-import org.apache.stratos.integration.tests.StratosIntegrationTest;
-import org.testng.annotations.Test;
 
 /**
  * IaaS provider related test cases
@@ -38,7 +38,7 @@ public class IaaSProviderTestCase extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/api";
     private static final String IDENTIFIER = "/iaasProviders";
     
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"iaas"})
+    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas"})
     public void testListIaaSProviders() throws Exception {
         assertTrue(true);  
         

@@ -19,6 +19,7 @@
 
 package org.apache.stratos.integration.tests.iaas;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -59,7 +60,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/", adminUsername, adminPassword);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas.attributes", "all"})
+    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas", "all"})
     public void testIaasProviderAttributes () throws Exception {
 
         // add autoscaling policy
@@ -133,7 +134,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
 
         // create a ServerLogClientInstance and get logs
         boolean found = false;
-        LogEvent[] logEvents = serverLogClient.getLogLines();
+        LogEvent[] logEvents = serverLogClient.getAllLogLines();
         if (logEvents.length > 0) {
             for (LogEvent log : logEvents) {
                 if (!log.getMessage().contains("cartridge_property_value_1") && log.getMessage().contains("cc_property_value_1")) {
@@ -180,7 +181,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         log.info("Waiting for application status to become ACTIVE...");
         topologyHandler.assertApplicationStatus(applicationBean.getApplicationId(), ApplicationStatus.Active);
 
-        logEvents = serverLogClient.getLogLines();
+        logEvents = serverLogClient.getAllLogLines();
         found = false;
         if (logEvents.length > 0) {
             for (LogEvent log : logEvents) {

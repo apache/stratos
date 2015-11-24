@@ -20,6 +20,7 @@
 package org.apache.stratos.integration.common;
 
 import org.apache.axis2.AxisFault;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.integration.common.admin.client.LogViewerClient;
@@ -28,6 +29,7 @@ import org.wso2.carbon.logging.view.stub.LogViewerLogViewerException;
 import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 public class ServerLogClient {
 
@@ -51,9 +53,21 @@ public class ServerLogClient {
         }
     }
 
-    public LogEvent[] getLogLines () throws AutomationUtilException {
+    /**
+     * Return all log lines from server stratup till now
+     *
+     * @return Array of LogEvent instances corresponding to the logs
+     * @throws AutomationUtilException
+     */
+    public LogEvent[] getAllLogLines () throws AutomationUtilException {
+
+        LogEvent[] allLogs = null;
+
         try {
-            return logViewerClient.getAllRemoteSystemLogs();
+            allLogs = logViewerClient.getAllRemoteSystemLogs();
+            // logViewerClient.getAllRemoteSystemLogs() returns most recent logs first, need to reverse
+            ArrayUtils.reverse(allLogs);
+            return allLogs;
 
         } catch (RemoteException e) {
             String errorMsg = "Error in creating getting remote system logs";
@@ -67,34 +81,65 @@ public class ServerLogClient {
         }
     }
 
-    public LogEvent[] getLogLines (String logType, String searchKey, String domain, String serverKey)
-            throws AutomationUtilException {
+    /**
+     * Return all log lines up to now, starting from the previous location. The previous location
+     * is the last log line returned, if this method was called earlier on the same
+     * ServerLogClient instance.
+     *
+     * @return all log lines, starting from the last log line returned
+     * @throws AutomationUtilException
+     */
+    public String[] getLogLines () throws AutomationUtilException {
+
+        LogEvent[] allLogs = null;
         try {
-            return logViewerClient.getRemoteLogs(logType, searchKey, domain, serverKey);
-        } catch (RemoteException e) {
+            allLogs = logViewerClient.getAllRemoteSystemLogs();
+
+       } catch (RemoteException e) {
             String errorMsg = "Error in creating getting remote system logs";
             log.error(errorMsg, e);
             throw new AutomationUtilException(errorMsg, e);
 
-        } catch (LogViewerLogViewerException e) {
+       } catch (LogViewerLogViewerException e) {
             String errorMsg = "Error in creating getting remote system logs";
             log.error(errorMsg, e);
             throw new AutomationUtilException(errorMsg, e);
         }
+
+        if (allLogs.length == 0) {
+            allLogs = new LogEvent[0];
+        }
+
+        // logViewerClient.getAllRemoteSystemLogs() returns most recent logs first, need to reverse
+        ArrayUtils.reverse(allLogs);
+
+        if (logCount > allLogs.length) {
+            // cannot happen, return
+            return getLogsAsStrings(allLogs);
+        }
+
+        log.info("Total no. of log lines: " + Integer.toString(allLogs.length));
+        log.info("Previously returned count : " + Integer.toString(logCount));
+        log.info("Current count : " + Integer.toString(allLogs.length - logCount));
+
+        LogEvent[] selectedLogs = Arrays.copyOfRange(allLogs, logCount, allLogs.length);
+        logCount += (allLogs.length - logCount);
+
+        return getLogsAsStrings(selectedLogs);
     }
 
-//    public String[] getLogLines() throws AutomationUtilException {
+//    public String[] getLogLines (int lines) throws AutomationUtilException {
 //
 //        LogEvent[] allLogs = null;
 //        try {
 //            allLogs = logViewerClient.getAllRemoteSystemLogs();
 //
-//       } catch (RemoteException e) {
+//        } catch (RemoteException e) {
 //            String errorMsg = "Error in creating getting remote system logs";
 //            log.error(errorMsg, e);
 //            throw new AutomationUtilException(errorMsg, e);
 //
-//       } catch (LogViewerLogViewerException e) {
+//        } catch (LogViewerLogViewerException e) {
 //            String errorMsg = "Error in creating getting remote system logs";
 //            log.error(errorMsg, e);
 //            throw new AutomationUtilException(errorMsg, e);
@@ -104,6 +149,9 @@ public class ServerLogClient {
 //            allLogs = new LogEvent[0];
 //        }
 //
+//        // logViewerClient.getAllRemoteSystemLogs() returns most recent logs first, need to reverse
+//        ArrayUtils.reverse(allLogs);
+//
 //        if (logCount > allLogs.length) {
 //            // cannot happen, return
 //            return getLogsAsStrings(allLogs);
@@ -111,21 +159,22 @@ public class ServerLogClient {
 //
 //        log.info("Total no. of log lines: " + Integer.toString(allLogs.length));
 //        log.info("Previously returned count : " + Integer.toString(logCount));
-//        log.info("Current count : " + Integer.toString(allLogs.length - logCount));
+//        log.info("Current count : " + Integer.toString(lines));
 //
-//        LogEvent[] selectedLogs = Arrays.copyOfRange(allLogs, logCount, allLogs.length);
-//        logCount += (allLogs.length - logCount);
+//        LogEvent[] selectedLogs = Arrays.copyOfRange(allLogs, logCount, logCount + lines);
+//        logCount += lines;
 //
 //        return getLogsAsStrings(selectedLogs);
 //    }
-//
-//    private String[] getLogsAsStrings(LogEvent[] selectedLogs) {
-//
-//        String [] logs = new String[selectedLogs.length];
-//        for (int i = 0 ; i < selectedLogs.length ; i++) {
-//            logs [i] = selectedLogs [i].getMessage();
-//        }
-//        return logs;
-//    }
+
+
+    private String[] getLogsAsStrings(LogEvent[] selectedLogs) {
+
+        String [] logs = new String[selectedLogs.length];
+        for (int i = 0 ; i < selectedLogs.length ; i++) {
+            logs[i] = selectedLogs[i].getMessage();
+        }
+        return logs;
+    }
 
 }
