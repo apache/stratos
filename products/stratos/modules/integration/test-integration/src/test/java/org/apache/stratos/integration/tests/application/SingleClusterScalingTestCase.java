@@ -49,6 +49,12 @@ import static org.testng.AssertJUnit.assertTrue;
 public class SingleClusterScalingTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SingleClusterScalingTestCase.class);
     private static final String RESOURCES_PATH = "/single-cluster-scaling-test";
+    private static final String autoscalingPolicyId = "autoscaling-policy-single-cluster-scaling-test";
+    private static final String cartridgeId = "c7-single-cluster-scaling-test";
+    private static final String networkPartitionId = "network-partition-single-cluster-scaling-test";
+    private static final String deploymentPolicyId = "deployment-policy-single-cluster-scaling-test";
+    private static final String applicationPolicyId = "application-policy-single-cluster-scaling-test";
+    private static final String applicationId = "single-cluster-scaling-test";
     private static final int CLUSTER_SCALE_UP_TIMEOUT = 180000;
     private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 360000;
     private int activeInstancesAfterScaleup = 0;
@@ -56,7 +62,6 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
     @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
     public void testDeployApplication() throws Exception {
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
-        String autoscalingPolicyId = "autoscaling-policy-single-cluster-scaling-test";
 
         boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                         + "/" + autoscalingPolicyId + ".json",
@@ -64,42 +69,37 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
         assertEquals(addedScalingPolicy, true);
 
         boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7-single-cluster-scaling-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertEquals(addedC1, true);
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-single-cluster-scaling-test.json",
+                        networkPartitionId + ".json",
                 RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         assertEquals(addedN1, true);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-single-cluster-scaling-test.json",
+                        deploymentPolicyId + ".json",
                 RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertEquals(addedDep, true);
 
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        "single-cluster-scaling-test.json", RestConstants.APPLICATIONS,
+                        applicationId + ".json", RestConstants.APPLICATIONS,
                 RestConstants.APPLICATIONS_NAME);
         assertEquals(added, true);
 
         ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-        assertEquals(bean.getApplicationId(), "single-cluster-scaling-test");
+                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertEquals(bean.getApplicationId(), applicationId);
 
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        "application-policy-single-cluster-scaling-test.json", RestConstants.APPLICATION_POLICIES,
+                        applicationPolicyId + ".json", RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
         assertEquals(addAppPolicy, true);
 
-        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient.getEntity(
-                RestConstants.APPLICATION_POLICIES,
-                "application-policy-single-cluster-scaling-test", ApplicationPolicyBean.class,
-                RestConstants.APPLICATION_POLICIES_NAME);
-
         //deploy the application
-        String resourcePath = RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
-                RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-single-cluster-scaling-test";
+        String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
         boolean deployed = restClient.deployEntity(resourcePath,
                 RestConstants.APPLICATIONS_NAME);
         assertEquals(deployed, true);
@@ -125,68 +125,66 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
         assertEquals(removedAuto, false);
 
         boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-single-cluster-scaling-test",
+                networkPartitionId,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
         assertEquals(removedNet, false);
 
         boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-single-cluster-scaling-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertEquals(removedDep, false);
 
         //Un-deploying the application
-        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
         boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
                 RestConstants.APPLICATIONS_NAME);
         assertEquals(unDeployed, true);
 
-        boolean undeploy = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
+        boolean undeploy = topologyHandler.assertApplicationUndeploy(applicationId);
         if (!undeploy) {
             //Need to forcefully undeploy the application
-            log.info("Force undeployment is going to start for the [application] " + "single-cluster-scaling-test");
+            log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
 
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId+
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
+            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy(applicationId);
             assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    "single-cluster-scaling-test"), forceUndeployed);
+                    applicationId), forceUndeployed);
         }
 
-        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "single-cluster-scaling-test",
+        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
                 RestConstants.APPLICATIONS_NAME);
         assertEquals(removed, true);
 
         ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
         assertEquals(beanRemoved, null);
 
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c7-single-cluster-scaling-test",
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId,
                 RestConstants.CARTRIDGES_NAME);
         assertEquals(removedC1, true);
-
 
         removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
                 autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
         assertEquals(removedAuto, true);
 
         removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-single-cluster-scaling-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertEquals(removedDep, true);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-single-cluster-scaling-test", RestConstants.NETWORK_PARTITIONS_NAME);
+                networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
         assertEquals(removedNet, false);
 
-
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                "application-policy-single-cluster-scaling-test", RestConstants.APPLICATION_POLICIES_NAME);
+                applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
         assertEquals(removeAppPolicy, true);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-single-cluster-scaling-test", RestConstants.NETWORK_PARTITIONS_NAME);
+                networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
         assertEquals(removedNet, true);
     }
 

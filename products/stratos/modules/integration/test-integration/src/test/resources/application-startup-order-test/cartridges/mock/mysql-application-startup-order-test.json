@@ -1,24 +1,18 @@
 {
-    "type": "php",
+    "type": "mysql-application-startup-order-test",
     "provider": "apache",
-    "category": "framework",
-    "host": "php.stratos.org",
-    "displayName": "php",
-    "description": "php Cartridge",
+    "host": "stratos.apache.org",
+    "category": "data",
+    "displayName": "c4",
+    "description": "mysql-application-startup-order-test Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
         {
-            "name": "http-80",
-            "protocol": "http",
-            "port": "8080",
-            "proxyPort": "8280"
-        },
-        {
             "name": "http-22",
-            "protocol": "tcp",
+            "protocol": "http",
             "port": "22",
-            "proxyPort": "8222"
+            "proxyPort": "8280"
         }
     ],
     "deployment": {
@@ -39,7 +33,7 @@
                 },
                 {
                     "name": "keyPair",
-                    "value": "reka"
+                    "value": "vishanth-key"
                 },
                 {
                     "name": "securityGroups",
@@ -47,5 +41,10 @@
                 }
             ]
         }
+    ],
+    "metadataKeys": [
+        "server_ip",
+        "username",
+        "password"
     ]
 }

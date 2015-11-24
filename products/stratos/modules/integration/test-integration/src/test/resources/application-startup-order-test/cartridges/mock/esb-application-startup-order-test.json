@@ -1,10 +1,10 @@
 {
-    "type": "esb",
+    "type": "esb-application-startup-order-test",
     "provider": "apache",
     "host": "stratos.apache.org",
     "category": "framework",
     "displayName": "c4",
-    "description": "mysql Cartridge",
+    "description": "esb-application-startup-order-test Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [

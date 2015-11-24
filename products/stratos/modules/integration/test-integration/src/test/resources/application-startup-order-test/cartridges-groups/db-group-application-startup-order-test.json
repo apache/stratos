@@ -1,0 +1,13 @@
+{
+    "name": "db-group-application-startup-order-test",
+    "cartridges": [
+        "mysql-application-startup-order-test",
+        "postgres-application-startup-order-test"
+    ],
+    "dependencies": {
+        "terminationBehaviour": "terminate-all"
+    },
+    "groupScalingEnabled": true
+}
+
+

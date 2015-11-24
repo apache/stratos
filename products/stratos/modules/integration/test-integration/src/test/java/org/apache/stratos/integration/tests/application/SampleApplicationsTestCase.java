@@ -70,7 +70,7 @@ public class SampleApplicationsTestCase extends StratosIntegrationTest {
         assertEquals(addedC3, true);
 
         boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                        "/" + "cartrdige-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
+                        "/" + "cartridge-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertEquals(addedG1, true);
 
@@ -270,7 +270,7 @@ public class SampleApplicationsTestCase extends StratosIntegrationTest {
             assertEquals(addedC3, true);
 
             boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "cartrdige-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
+                            "/" + "cartridge-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
                     RestConstants.CARTRIDGE_GROUPS_NAME);
             assertEquals(addedG1, true);
 

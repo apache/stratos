@@ -1,5 +1,5 @@
 {
-    "id": "network-partition-2",
+    "id": "network-partition-2-application-startup-order-test",
     "provider": "mock",
     "partitions": [
         {

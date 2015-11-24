@@ -1,8 +1,8 @@
 {
-    "id": "deployment-policy-1",
+    "id": "deployment-policy-1-application-startup-order-test",
     "networkPartitions": [
         {
-            "id": "network-partition-1",
+            "id": "network-partition-1-application-startup-order-test",
             "partitionAlgo": "one-after-another",
             "partitions": [
                 {

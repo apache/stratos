@@ -1,23 +1,24 @@
 {
-    "type": "tomcat",
+    "type": "php-application-startup-order-test",
     "provider": "apache",
-    "host": "tomcat.stratos.org",
     "category": "framework",
-    "displayName": "tomcat",
-    "description": "tomcat Cartridge",
+    "host": "php.stratos.org",
+    "displayName": "php-application-startup-order-test",
+    "description": "php-application-startup-order-test Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
         {
-            "name": "http-22",
+            "name": "http-80",
             "protocol": "http",
-            "port": "22",
+            "port": "8080",
             "proxyPort": "8280"
         },
         {
-            "protocol": "http",
-            "port": "8080",
-            "proxyPort": "80"
+            "name": "http-22",
+            "protocol": "tcp",
+            "port": "22",
+            "proxyPort": "8222"
         }
     ],
     "deployment": {
@@ -38,7 +39,7 @@
                 },
                 {
                     "name": "keyPair",
-                    "value": "vishanth-key"
+                    "value": "reka"
                 },
                 {
                     "name": "securityGroups",
@@ -46,8 +47,5 @@
                 }
             ]
         }
-    ],
-    "metadataKeys": [
-        "url"
     ]
 }

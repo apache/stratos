@@ -34,6 +34,19 @@ import org.testng.annotations.Test;
  */
 public class ApplicationStartupOrderTestCase extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/application-startup-order-test";
+    private static final String autoscalingPolicyId = "autoscaling-policy-application-startup-order-test";
+    private static final String cartridgeId1 = "esb-application-startup-order-test";
+    private static final String cartridgeId2 = "php-application-startup-order-test";
+    private static final String cartridgeId3 = "mysql-application-startup-order-test";
+    private static final String cartridgeId4 = "postgres-application-startup-order-test";
+    private static final String cartridgeId5 = "tomcat-application-startup-order-test";
+    private static final String cartridgeGroupId1 = "app-group-application-startup-order-test";
+    private static final String cartridgeGroupId2 = "db-group-application-startup-order-test";
+    private static final String networkPartitionId1 = "network-partition-1-application-startup-order-test";
+    private static final String networkPartitionId2 = "network-partition-2-application-startup-order-test";
+    private static final String deploymentPolicyId1 = "deployment-policy-1-application-startup-order-test";
+    private static final String deploymentPolicyId2 = "deployment-policy-2-application-startup-order-test";
+    private static final String applicationId = "application-startup-order-test";
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -43,8 +56,7 @@ public class ApplicationStartupOrderTestCase extends StratosIntegrationTest {
     	
     	thrown.expect(RuntimeException.class);
     	thrown.expectMessage(
-    			"{\"status\":\"error\",\"message\":\"The startup-order defined in the [application] my-compositeapp is not correct. [startup-order-alias] group.my-dbgroup3333 is not there in the application.\"}");
-        String autoscalingPolicyId = "autoscaling-policy-1";
+    			"{\"status\":\"error\",\"message\":\"The startup-order defined in the [application] application-startup-order-test is not correct. [startup-order-alias] group.my-dbgroup3333 is not there in the application.\"}");
 
         boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
                         + "/" + autoscalingPolicyId + ".json",
@@ -52,79 +64,77 @@ public class ApplicationStartupOrderTestCase extends StratosIntegrationTest {
         assertTrue(addedScalingPolicy);
 
         boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "esb.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId1 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC1);
 
         boolean addedC2 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "php.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId2 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC2);
 
         boolean addedC3 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "mysql.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId3 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC3);
 
+        boolean addedC4 = restClient.addEntity(
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId4 + ".json",
+                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertTrue(addedC4);
+
         boolean addedC5 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "postgres.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId5 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC5);
 
-        boolean addedC6 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "tomcat.json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-        assertTrue(addedC6);
+        boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                        "/" + cartridgeGroupId1 + ".json", RestConstants.CARTRIDGE_GROUPS,
+                RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertTrue(addedG1);
 
         boolean addedG2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                        "/" + "app-group.json", RestConstants.CARTRIDGE_GROUPS,
+                        "/" + cartridgeGroupId2 + ".json", RestConstants.CARTRIDGE_GROUPS,
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertTrue(addedG2);
 
-        boolean addedG3 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                        "/" + "db-group.json", RestConstants.CARTRIDGE_GROUPS,
-                RestConstants.CARTRIDGE_GROUPS_NAME);
-        assertTrue(addedG3);
-
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-1.json",
+                        networkPartitionId1 + ".json",
                 RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
-        
+
         boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                		"network-partition-2.json",
+                        networkPartitionId2 + ".json",
         RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN2);
-        
+
         boolean addedDep1 = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-1.json",
+                        deploymentPolicyId1 + ".json",
                 RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(addedDep1);
-        
+
         boolean addedDep2 = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-2.json",
+                        deploymentPolicyId2 + ".json",
                 RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(addedDep2);
             	     			
     	try {
-    	  restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        "application.json", RestConstants.APPLICATIONS,
+            restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+                            applicationId + ".json", RestConstants.APPLICATIONS,
                 RestConstants.APPLICATIONS_NAME);
         	fail("Should throw an exception if the aliases mentioned in dependency order section are not defined");
     	} catch (Exception e) {
     		assertThat(
-    				e.getMessage(),containsString("The startup-order defined in the [application] my-compositeapp is not correct. [startup-order-alias] group.my-dbgroup3333 is not there in the application."));
+    				e.getMessage(),containsString("The startup-order defined in the [application] application-startup-order-test is not correct. [startup-order-alias] group.my-dbgroup3333 is not there in the application."));
     	}
-
-    	
     	// Clean up        
         boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
-                "app-group",
+                cartridgeGroupId1,
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertTrue(removedGroup);
 
         removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
-                "db-group",
+                cartridgeGroupId2,
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertTrue(removedGroup);
 
@@ -133,44 +143,41 @@ public class ApplicationStartupOrderTestCase extends StratosIntegrationTest {
         assertTrue(removedAuto);   
                 
         boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-1", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                deploymentPolicyId1, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
         
         removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-2", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                deploymentPolicyId2, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
         
         boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-1",
+                networkPartitionId1,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
         
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-2",
+                networkPartitionId2,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
-        
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "php",
+
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId1,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC1);
-
-        boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "tomcat",
+        
+        boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId2,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC2);
 
-        boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "postgres",
+        boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId3,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC3);
 
-        boolean removedC4 = restClient.removeEntity(RestConstants.CARTRIDGES, "mysql",
+        boolean removedC4 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId4,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC4);
 
-        boolean removedC5 = restClient.removeEntity(RestConstants.CARTRIDGES, "esb",
+        boolean removedC5 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId5,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC5);
-
-        assertTrue(true);
     }
-   
 }
