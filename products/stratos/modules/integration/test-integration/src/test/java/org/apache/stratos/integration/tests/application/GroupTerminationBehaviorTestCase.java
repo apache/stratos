@@ -45,11 +45,19 @@ import static org.testng.AssertJUnit.assertTrue;
 public class GroupTerminationBehaviorTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(GroupTerminationBehaviorTestCase.class);
     private static final String RESOURCES_PATH = "/group-termination-behavior-test";
+    private static final String autoscalingPolicyId = "autoscaling-policy-group-termination-behavior-test";
+    private static final String cartridgeId1 = "c1-group-termination-behavior-test";
+    private static final String cartridgeId2 = "c2-group-termination-behavior-test";
+    private static final String cartridgeId3 = "c3-group-termination-behavior-test";
+    private static final String cartridgeId4 = "c4-group-termination-behavior-test";
+    private static final String cartridgeGroupId = "cartridge-groups-group-termination-behavior-test";
+    private static final String networkPartitionId1 = "network-partition-group-termination-behavior-test-1";
+    private static final String deploymentPolicyId = "deployment-policy-group-termination-behavior-test";
     private static final int GROUP_INACTIVE_TIMEOUT = 180000;
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment", "failed"})
     public void testTerminationBehavior() throws Exception {
-        String autoscalingPolicyId = "autoscaling-policy-group-termination-behavior-test";
+
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
         boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
@@ -58,27 +66,27 @@ public class GroupTerminationBehaviorTestCase extends StratosIntegrationTest {
         assertTrue(addedScalingPolicy);
 
         boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-group-termination-behavior-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId1 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC1);
 
         boolean addedC2 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-group-termination-behavior-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId2 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC2);
 
         boolean addedC3 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-group-termination-behavior-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId3 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC3);
 
         boolean addedC4 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c4-group-termination-behavior-test.json",
+                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId4 + ".json",
                 RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC4);
 
         boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                        "/" + "cartridge-groups-group-termination-behavior-test.json",
+                        "/" + cartridgeGroupId + ".json",
                 RestConstants.CARTRIDGE_GROUPS,
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertTrue(addedG1);
@@ -89,38 +97,35 @@ public class GroupTerminationBehaviorTestCase extends StratosIntegrationTest {
         assertEquals(beanG1.getName(), "g-sc-G4-group-termination-behavior-test");
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-group-termination-behavior-test-1.json",
+                        networkPartitionId1 + ".json",
                 RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-group-termination-behavior-test.json",
+                        deploymentPolicyId + ".json",
                 RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(addedDep);
 
+        final String applicationId = "group-termination-behavior-test";
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        "group-termination-behavior-test.json", RestConstants.APPLICATIONS,
+                        applicationId + ".json", RestConstants.APPLICATIONS,
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(added);
 
         ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "group-termination-behavior-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
         assertEquals(bean.getApplicationId(), "group-termination-behavior-test");
 
+        final String applicationPolicyId = "application-policy-group-termination-behavior-test";
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        "application-policy-group-termination-behavior-test.json",
+                        applicationPolicyId + ".json",
                 RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(addAppPolicy);
 
-        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient.getEntity(
-                RestConstants.APPLICATION_POLICIES,
-                "application-policy-group-termination-behavior-test", ApplicationPolicyBean.class,
-                RestConstants.APPLICATION_POLICIES_NAME);
-
         //deploy the application
-        String resourcePath = RestConstants.APPLICATIONS + "/" + "group-termination-behavior-test" +
-                RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-group-termination-behavior-test";
+        String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
+                RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
         boolean deployed = restClient.deployEntity(resourcePath,
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(deployed);
@@ -199,44 +204,43 @@ public class GroupTerminationBehaviorTestCase extends StratosIntegrationTest {
         assertFalse(removedAuto);
 
         boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-group-termination-behavior-test-1",
+                networkPartitionId1,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
         assertFalse(removedNet);
 
         boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-group-termination-behavior-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertFalse(removedDep);
 
         //Un-deploying the application
-        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "group-termination-behavior-test" +
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
         boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(unDeployed);
 
-        boolean undeploy = topologyHandler.assertApplicationUndeploy("group-termination-behavior-test");
+        boolean undeploy = topologyHandler.assertApplicationUndeploy(applicationId);
         if (!undeploy) {
             //Need to forcefully undeploy the application
-            log.info("Force undeployment is going to start for the [application] " +
-                    "group-termination-behavior-test");
+            log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
 
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + "group-termination-behavior-test" +
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
-            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("group-termination-behavior-test");
+            boolean forceUndeployed = topologyHandler.assertApplicationUndeploy(applicationId);
             assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    "group-termination-behavior-test"), forceUndeployed);
+                    applicationId), forceUndeployed);
 
         }
 
-        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "group-termination-behavior-test",
+        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(removed);
 
         ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "group-termination-behavior-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
         assertNull(beanRemoved);
 
         removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS,
@@ -244,19 +248,19 @@ public class GroupTerminationBehaviorTestCase extends StratosIntegrationTest {
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertTrue(removedGroup);
 
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-group-termination-behavior-test",
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId1,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC1);
 
-        boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c2-group-termination-behavior-test",
+        boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId2,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC2);
 
-        boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c3-group-termination-behavior-test",
+        boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId3,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC3);
 
-        boolean removedC4 = restClient.removeEntity(RestConstants.CARTRIDGES, "c4-group-termination-behavior-test",
+        boolean removedC4 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId4,
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC4);
 
@@ -265,20 +269,16 @@ public class GroupTerminationBehaviorTestCase extends StratosIntegrationTest {
         assertTrue(removedAuto);
 
         removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-group-termination-behavior-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
 
         removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-group-termination-behavior-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+                networkPartitionId1, RestConstants.NETWORK_PARTITIONS_NAME);
         assertFalse(removedNet);
 
         boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                "application-policy-group-termination-behavior-test", RestConstants.APPLICATION_POLICIES_NAME);
+                applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
-
-        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-group-termination-behavior-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-        assertTrue(removedNet);
     }
 
     private void assertGroupInactive(String groupId, String clusterId) {
