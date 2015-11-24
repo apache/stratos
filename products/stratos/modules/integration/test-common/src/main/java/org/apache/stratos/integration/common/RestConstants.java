@@ -52,4 +52,6 @@ public class RestConstants {
     public static final String APPLICATION_POLICIES_PATH = "/application-policies/";
     public static final String APPLICATION_POLICIES_NAME = "applicationPolicy";
 
+    public static final String METADATA_RESPONSE_ATTRIBUTE_KEY = "key";
+    public static final String METADATA_RESPONSE_ATTRIBUTE_VALUES = "values";
 }
