@@ -1,5 +1,5 @@
 {
-    "name": "G1-application-update-test",
+    "name": "cartridge-nested-application-update-test",
     "dependencies": {
         "terminationBehaviour": "terminate-none",
         "startupOrders": [
