@@ -19,8 +19,6 @@
 
 package org.apache.stratos.integration.tests.server;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -31,15 +29,14 @@ import org.apache.stratos.integration.common.extensions.StratosServerExtension;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.metadata.client.beans.PropertyBean;
-import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
-import static org.testng.Assert.*;
-import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 /**
@@ -58,7 +55,7 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
 
     @Test(timeOut = APPLICATION_TEST_TIMEOUT,
             groups = { "stratos.server.restart"},
-            dependsOnGroups = { "stratos.application.deployment" })
+            dependsOnGroups = { "stratos.application.deployment","stratos.cartridge.iaas", "stratos.policy.management","adc","all","smoke","metadata"})
     public void stratosServerRestartTest() throws Exception {
 
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
