@@ -19,7 +19,6 @@
 
 package org.apache.stratos.integration.tests.iaas;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
@@ -37,9 +36,7 @@ import org.wso2.carbon.logging.view.stub.types.carbon.LogEvent;
 
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+import static org.testng.Assert.*;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
@@ -60,7 +57,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/", adminUsername, adminPassword);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas", "all"})
+    @Test(timeOut = IAAS_PROVIDER_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas", "all"})
     public void testIaasProviderAttributes () throws Exception {
 
         // add autoscaling policy
