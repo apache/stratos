@@ -178,7 +178,6 @@ class EventExecutor(threading.Thread):
     def __init__(self, event_queue):
         threading.Thread.__init__(self)
         self.__event_queue = event_queue
-        # TODO: several handlers for one event
         self.__event_handlers = {}
         EventSubscriber.log = LogFactory().get_log(__name__)
 
@@ -191,10 +190,9 @@ class EventExecutor(threading.Thread):
                 try:
                     EventSubscriber.log.debug("Executing handler for event %r" % event)
                     handler(event_msg)
-                except:
-                    EventSubscriber.log.exception("Error processing %r event" % event)
+                except Exception as err:
+                    EventSubscriber.log.exception("Error processing %r event: %s" % (event, err))
             else:
-
                 EventSubscriber.log.debug("Event handler not found for event : %r" % event)
 
     def register_event_handler(self, event, handler):
@@ -226,7 +224,7 @@ class MessageBrokerHeartBeatChecker(AbstractAsyncScheduledTask):
         try:
             self.__mb_client.connect(self.__mb_ip, self.__mb_port, 60)
             self.__mb_client.disconnect()
-        except:
+        except Exception:
             self.__log.info(
                 "Message broker %s:%s cannot be reached. Disconnecting client..." % (self.__mb_ip, self.__mb_port))
             self.__connected_client.disconnect()

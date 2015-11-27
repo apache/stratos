@@ -76,6 +76,11 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
 
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
 
     @BeforeMethod(alwaysRun = true)
     public void setupCEPHAModeTest() throws Exception {

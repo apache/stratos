@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class PythonAgentIntegrationTest {
+public abstract class PythonAgentIntegrationTest {
 
     public static final String PATH_SEP = File.separator;
     public static final String NEW_LINE = System.getProperty("line.separator");
@@ -219,6 +219,10 @@ public class PythonAgentIntegrationTest {
         this.topologyEventReceiver.terminate();
         this.initializerEventReceiver.terminate();
 
+        this.instanceStatusEventReceiver = null;
+        this.topologyEventReceiver = null;
+        this.initializerEventReceiver = null;
+
         this.instanceActivated = false;
         this.instanceStarted = false;
 
@@ -319,7 +323,7 @@ public class PythonAgentIntegrationTest {
                                     log.error("ERROR found in PCA log", e);
                                 }
                             }
-                            log.debug("[PCA] " + line);
+                            log.debug("[" + getClassName() + "] [PCA] " + line);
                         }
                     }
                     sleep(100);
@@ -328,6 +332,12 @@ public class PythonAgentIntegrationTest {
         });
         communicatorThread.start();
     }
+
+    /**
+     * Return concrete class name
+     * @return
+     */
+    protected abstract String getClassName();
 
     /**
      * Start server socket

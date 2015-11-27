@@ -79,6 +79,11 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         startServerSocket(8080);
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     /**
      * TearDown method for test method testPythonCartridgeAgent
      */

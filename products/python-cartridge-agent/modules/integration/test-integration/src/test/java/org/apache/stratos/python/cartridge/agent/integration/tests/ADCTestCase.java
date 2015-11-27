@@ -63,6 +63,11 @@ public class ADCTestCase extends PythonAgentIntegrationTest {
     public ADCTestCase() throws IOException {
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     @BeforeMethod(alwaysRun = true)
     public void setupADCTest() throws Exception {
         log.info("Setting up ADCTestCase");
