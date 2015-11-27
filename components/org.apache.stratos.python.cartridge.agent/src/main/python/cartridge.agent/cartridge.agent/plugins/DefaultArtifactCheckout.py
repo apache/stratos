@@ -21,6 +21,9 @@ from modules.artifactmgt.git.agentgithandler import AgentGitHandler
 from config import Config
 import constants
 from exception import *
+import shutil
+import errno
+import os
 
 
 class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
@@ -90,6 +93,10 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                           git_repo.repo_url, git_repo.local_repo_path)
             self.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
                           git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
+
+            # copy default artifacts (if any) to a /tmp/default_artifacts
+            self.backupDefaultArtifacts(git_repo.local_repo_path, "/tmp/default_artifacts")
+
             try:
                 git_repo = AgentGitHandler.clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
@@ -101,3 +108,18 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                 self.log.info("Retrying git clone operation...")
                 AgentGitHandler.retry_clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
+
+    def backupDefaultArtifacts(src, dest):
+        try:
+            if not os.path.isdir(src):
+                self.log.info ('Direcotry ' + src + ' does not exist')
+                return
+            if os.path.isdir(dest):
+                self.log.info('Directory ' + dest + ' already exists, will delete')
+                shutil.rmtree(dest)
+            self.log.info('Copying default artifacts from ' + src + ' to ' + dest)
+            shutil.copytree(src, dest)
+        except OSError as e:
+            self.log.error('Directory not copied. Error: %s' % e)
+
+
