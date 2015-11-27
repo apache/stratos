@@ -42,6 +42,11 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
     public MessageBrokerHATestCase() throws IOException {
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     private static final Log log = LogFactory.getLog(MessageBrokerHATestCase.class);
     private static final int HA_TEST_TIMEOUT = 300000;
     private static final String CLUSTER_ID = "php.php.domain";
@@ -169,10 +174,11 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
                                 MEMBER_ID);
                         publishEvent(instanceCleanupMemberEvent);
                         publishCleanupEvent = true;
-                        waitUntilCleanupEventIsReceivedAndStopDefaultMB();
+
+                        stopActiveMQInstance("testBroker-" + amqpBindPorts[0] + "-" + mqttBindPorts[0]);
                     }
 
-                    if (line.contains("Could not publish event to message broker localhost:1885.")) {
+                    if (line.contains("Could not publish [event] ")) {
                         log.info("Event publishing to default message broker failed and the next option is tried.");
                         exit = true;
                     }
@@ -184,26 +190,6 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
 
         //        assertAgentActivation();
         log.info("MessageBrokerHATestCase publisher test completed successfully.");
-    }
-
-    private void waitUntilCleanupEventIsReceivedAndStopDefaultMB() {
-        boolean eventReceived = false;
-        List<String> outputLines = new ArrayList<>();
-
-        while (!eventReceived) {
-            List<String> newLines = getNewLines(outputLines, outputStream.toString());
-            if (newLines.size() > 0) {
-                for (String line : newLines) {
-                    if (line.contains("Message received: instance/notifier/InstanceCleanupMemberEvent")) {
-                        // take down the default broker
-                        stopActiveMQInstance("testBroker-" + amqpBindPorts[0] + "-" + mqttBindPorts[0]);
-                        eventReceived = true;
-                    }
-                }
-            }
-            log.info("Waiting until cleanup event is received by PCA...");
-        }
-        log.info("Cleanup event is received by PCA.");
     }
 
     private void assertAgentActivation() {
