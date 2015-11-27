@@ -311,7 +311,7 @@ public abstract class PythonAgentIntegrationTest {
         Thread communicatorThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                List<String> outputLines = new ArrayList<String>();
+                List<String> outputLines = new ArrayList<>();
                 while (!outputStream.isClosed()) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
@@ -544,12 +544,13 @@ public abstract class PythonAgentIntegrationTest {
      * @return new lines printed by Python agent process
      */
     protected List<String> getNewLines(List<String> currentOutputLines, String output) {
-        List<String> newLines = new ArrayList<String>();
+        List<String> newLines = new ArrayList<>();
 
         if (StringUtils.isNotBlank(output)) {
-            String[] lines = output.split(NEW_LINE);
-            for (String line : lines) {
-                if (!currentOutputLines.contains(line)) {
+            List<String> lines = Arrays.asList(output.split(NEW_LINE));
+            if (lines.size() > 0) {
+                int readStartIndex = (currentOutputLines.size() > 0) ? currentOutputLines.size() - 1 : 0;
+                for (String line : lines.subList(readStartIndex , lines.size() - 1)) {
                     currentOutputLines.add(line);
                     newLines.add(line);
                 }
