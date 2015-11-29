@@ -163,9 +163,10 @@ public class RestClient {
     }
 
     public boolean addEntity(String filePath, String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Adding [entity] %s, [resource-path] %s, [file-path] %s", entityName, resourcePath,
+                filePath));
         String content = getJsonStringFromFile(filePath);
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPost(uri, content);
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -178,8 +179,8 @@ public class RestClient {
     }
 
     public boolean deployEntity(String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Deploying [entity] %s, [resource-path] %s", entityName, resourcePath));
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPost(uri, "");
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -192,8 +193,8 @@ public class RestClient {
     }
 
     public boolean undeployEntity(String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Undeploying [entity] %s, [resource-path] %s", entityName, resourcePath));
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPost(uri, "");
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -207,6 +208,8 @@ public class RestClient {
 
     public Object getEntity(String resourcePath, String identifier, Class responseJsonClass, String entityName)
             throws Exception {
+        log.info(String.format("Retrieving [entity] %s, [resource-path] %s, [identifier] %s, [response-class] %s",
+                entityName, resourcePath, identifier, responseJsonClass.getSimpleName()));
         URI uri = new URIBuilder(this.endPoint + resourcePath + "/" + identifier).build();
         HttpResponse response = doGet(uri);
         if (response != null) {
@@ -222,6 +225,7 @@ public class RestClient {
     }
 
     public Object listEntity(String resourcePath, Type type, String entityName) throws Exception {
+        log.info(String.format("Listing [entity] %s, [resource-path] %s, [type] %s", entityName, resourcePath, type));
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
         HttpResponse response = doGet(uri);
         if (response != null) {
@@ -237,6 +241,8 @@ public class RestClient {
     }
 
     public boolean removeEntity(String resourcePath, String identifier, String entityName) throws Exception {
+        log.info(String.format("Removing [entity] %s, [resource-path] %s, [identifier] %s", entityName, resourcePath,
+                identifier));
         URI uri = new URIBuilder(this.endPoint + "/" + resourcePath + "/" + identifier).build();
         HttpResponse response = doDelete(uri);
         if (response != null) {
@@ -244,9 +250,9 @@ public class RestClient {
                 return true;
             } else {
                 ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                log.error("Error response while removing entity [identifier] " + identifier + ", [entity name] " +
-                        entityName + ", [error] " + errorResponse.getErrorMessage() + ", [error code] " + errorResponse
-                        .getErrorCode());
+                log.error(String.format(
+                        "Error response while removing entity [identifier] %s, [entity name] %s, [error] %s, [code] %s",
+                        identifier, entityName, errorResponse.getErrorMessage(), errorResponse.getErrorCode()));
                 return false;
             }
         }
@@ -254,9 +260,10 @@ public class RestClient {
     }
 
     public boolean updateEntity(String filePath, String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Updating [entity] %s, [resource-path] %s, [file-path] %s", entityName, resourcePath,
+                filePath));
         String content = getJsonStringFromFile(filePath);
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPut(uri, content);
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -273,6 +280,8 @@ public class RestClient {
 
     public boolean addPropertyToApplication(String appId, String propertyKey, String propertyValue, String accessToken)
             throws Exception {
+        log.info(String.format("Adding property to application [application-id] %s, [key] %s, [value] %s, [token] %s",
+                appId, propertyKey, propertyValue, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties").build();
         PropertyBean property = new PropertyBean(propertyKey, propertyValue);
@@ -290,7 +299,6 @@ public class RestClient {
         } finally {
             releaseConnection(postRequest);
         }
-
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                 return true;
@@ -303,6 +311,9 @@ public class RestClient {
 
     public boolean addPropertyToCluster(String appId, String clusterId, String propertyKey, String propertyValue,
             String accessToken) throws Exception {
+        log.info(String.format(
+                "Adding property to cluster [application-id] %s, [cluster-id] %s, [key] %s, [value] %s, [token] %s",
+                appId, clusterId, propertyKey, propertyValue, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/clusters/" + clusterId
                         + "/properties").build();
@@ -332,11 +343,13 @@ public class RestClient {
         throw new Exception("Null response received. Could not add property to cluster: " + clusterId);
     }
 
-    public PropertyBean getClusterProperty(String appId, String clusterId, String propertyName, String accessToken)
+    public PropertyBean getClusterProperty(String appId, String clusterId, String propertyKey, String accessToken)
             throws Exception {
+        log.info(String.format("Retrieving cluster property [application-id] %s, [cluster-id] %s, [key] %s, [token] %s",
+                appId, clusterId, propertyKey, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/cluster/" + clusterId
-                        + "/properties/" + propertyName).build();
+                        + "/properties/" + propertyKey).build();
         HttpResponse response;
         HttpGet getRequest = null;
         try {
@@ -353,10 +366,12 @@ public class RestClient {
         }.getType());
     }
 
-    public PropertyBean getApplicationProperty(String appId, String propertyName, String accessToken) throws Exception {
+    public PropertyBean getApplicationProperty(String appId, String propertyKey, String accessToken) throws Exception {
+        log.info(String.format("Retrieving application property [application-id] %s, [key] %s, [token] %s", appId,
+                propertyKey, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties/"
-                        + propertyName).build();
+                        + propertyKey).build();
         HttpResponse response;
         HttpGet getRequest = null;
         try {
@@ -376,6 +391,8 @@ public class RestClient {
     }
 
     public boolean deleteApplicationProperties(String appId, String accessToken) throws Exception {
+        log.info(String.format("Deleting application properties in [application-id] %s, [token] %s", appId,
+                accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties").build();
         HttpResponse response;
@@ -401,10 +418,12 @@ public class RestClient {
                 String.format("Null response received. Could not delete properties for [application] %s", appId));
     }
 
-    public boolean deleteApplicationProperty(String appId, String propertyName, String accessToken) throws Exception {
+    public boolean deleteApplicationProperty(String appId, String propertyKey, String accessToken) throws Exception {
+        log.info(String.format("Deleting application property in [application-id] %s, [key] %s, [token] %s", appId,
+                propertyKey, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties/"
-                        + propertyName).build();
+                        + propertyKey).build();
         HttpResponse response;
         HttpDelete httpDelete = null;
         try {
@@ -424,15 +443,19 @@ public class RestClient {
                 throw new RuntimeException(response.getContent());
             }
         }
-        throw new Exception(String.format("Null response received. Could not delete [property] %s in [application] %s",
-                propertyName, appId));
+        throw new Exception(
+                String.format("Null response received. Could not delete [property] %s in [application] %s", propertyKey,
+                        appId));
     }
 
-    public boolean deleteApplicationPropertyValue(String appId, String propertyName, String value, String accessToken)
+    public boolean deleteApplicationPropertyValue(String appId, String propertyKey, String value, String accessToken)
             throws Exception {
+        log.info(String.format(
+                "Deleting application property value in [application-id] %s, [key] %s, [value] %s, [token] %s", appId,
+                propertyKey, value, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties/"
-                        + propertyName + "/value/" + value).build();
+                        + propertyKey + "/value/" + value).build();
         HttpResponse response;
         HttpDelete httpDelete = null;
         try {
@@ -454,7 +477,7 @@ public class RestClient {
         }
         throw new Exception(
                 String.format("Null response received. Could not delete [value] %s, [property] %s in [application] %s",
-                        value, propertyName, appId));
+                        value, propertyKey, appId));
     }
 
     /**
