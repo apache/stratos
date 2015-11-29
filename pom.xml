@@ -1028,6 +1028,16 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.cep300.extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.cep.310.extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.das.extension</artifactId>
                 <version>${project.version}</version>
             </dependency>

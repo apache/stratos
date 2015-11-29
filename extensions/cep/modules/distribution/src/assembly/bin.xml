@@ -56,4 +56,13 @@
             <fileMode>644</fileMode>
         </file>
     </files>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>${project.artifactId}-${project.version}/lib</outputDirectory>
+            <includes>
+                <include>org.apache.stratos:org.apache.stratos.cep300.extension:jar</include>
+                <include>org.apache.stratos:org.apache.stratos.cep.310.extension:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 </assembly>
