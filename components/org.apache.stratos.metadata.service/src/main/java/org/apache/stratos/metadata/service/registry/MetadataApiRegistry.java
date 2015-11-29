@@ -67,9 +67,9 @@ public class MetadataApiRegistry implements DataStore {
      *
      * @param applicationId Application ID under which properties should be retrieved
      * @return List of properties
-     * @throws RegistryException
+     * @throws MetadataException
      */
-    public List<Property> getApplicationProperties(String applicationId) throws RegistryException {
+    public List<Property> getApplicationProperties(String applicationId) throws MetadataException {
         String resourcePath = mainResource + applicationId;
         try {
             acquireReadLock(applicationId);
@@ -79,7 +79,7 @@ public class MetadataApiRegistry implements DataStore {
                     .format("Failed to get properties from registry [resource-path] %s for " + "[application-id] %s",
                             resourcePath, applicationId);
             log.error(msg, e);
-            throw new RegistryException(msg, e);
+            throw new MetadataException(msg, e);
         } finally {
             try {
                 releaseReadLock(applicationId);
@@ -94,9 +94,9 @@ public class MetadataApiRegistry implements DataStore {
      * @param applicationId Application ID under which properties should be retrieved
      * @param clusterId     Cluster ID under which properties should be retrieved
      * @return List of properties
-     * @throws RegistryException
+     * @throws MetadataException
      */
-    public List<Property> getClusterProperties(String applicationId, String clusterId) throws RegistryException {
+    public List<Property> getClusterProperties(String applicationId, String clusterId) throws MetadataException {
         String resourcePath = mainResource + applicationId + "/" + clusterId;
         try {
             acquireReadLock(applicationId);
@@ -105,7 +105,7 @@ public class MetadataApiRegistry implements DataStore {
             String msg = String.format("Failed to get properties from registry [resource-path] %s for [application-id] "
                     + "%s, [cluster-id] %s", resourcePath, applicationId, clusterId);
             log.error(msg, e);
-            throw new RegistryException(msg, e);
+            throw new MetadataException(msg, e);
         } finally {
             try {
                 releaseReadLock(applicationId);
@@ -143,7 +143,8 @@ public class MetadataApiRegistry implements DataStore {
         return newProperties;
     }
 
-    public void addPropertyToApplication(String applicationId, Property property) throws RegistryException {
+    public void addPropertyToApplication(String applicationId, Property property)
+            throws RegistryException, MetadataException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
 
@@ -192,7 +193,7 @@ public class MetadataApiRegistry implements DataStore {
                     .format("Failed to persist properties in registry: [resource-path] %s, [key] %s, [values] %s",
                             resourcePath, property.getKey(), Arrays.asList(property.getValues()));
             log.error(msg, e);
-            throw new RegistryException(msg, e);
+            throw new MetadataException(msg, e);
         } finally {
             try {
                 releaseWriteLock(applicationId);
@@ -208,7 +209,7 @@ public class MetadataApiRegistry implements DataStore {
     }
 
     public boolean removePropertyValueFromApplication(String applicationId, String propertyKey, String valueToRemove)
-            throws RegistryException {
+            throws RegistryException, MetadataException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
 
@@ -233,7 +234,7 @@ public class MetadataApiRegistry implements DataStore {
                             propertyKey, valueToRemove));
             return true;
         } catch (Exception e) {
-            throw new RegistryException(
+            throw new MetadataException(
                     String.format("Could not remove registry resource: [resource-path] %s, [key] %s, [value] %s",
                             resourcePath, propertyKey, valueToRemove), e);
         } finally {
@@ -250,10 +251,10 @@ public class MetadataApiRegistry implements DataStore {
      * @param applicationId Application ID against which added property will be stored
      * @param clusterId     Cluster ID against which added property will be stored
      * @param property      Property to be stored in the registry
-     * @throws RegistryException
+     * @throws RegistryException, MetadataException
      */
     public void addPropertyToCluster(String applicationId, String clusterId, Property property)
-            throws RegistryException {
+            throws RegistryException, MetadataException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId + "/" + clusterId;
 
@@ -278,7 +279,7 @@ public class MetadataApiRegistry implements DataStore {
                     "Registry property persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
                     resourcePath, property.getKey(), Arrays.asList(property.getValues())));
         } catch (Exception e) {
-            throw new RegistryException(
+            throw new MetadataException(
                     String.format("Could not add registry resource: [resource-path] %s, [key] %s, [value] %s",
                             resourcePath, property.getKey(), Arrays.asList(property.getValues())), e);
 
@@ -299,9 +300,9 @@ public class MetadataApiRegistry implements DataStore {
      *
      * @param applicationId ID of the application.
      * @return True if resource exist and able to delete, else false.
-     * @throws RegistryException
+     * @throws RegistryException, MetadataException
      */
-    public boolean deleteApplicationProperties(String applicationId) throws RegistryException {
+    public boolean deleteApplicationProperties(String applicationId) throws RegistryException, MetadataException {
         if (StringUtils.isBlank(applicationId)) {
             throw new IllegalArgumentException("Application ID can not be null");
         }
@@ -320,7 +321,7 @@ public class MetadataApiRegistry implements DataStore {
             }
             return true;
         } catch (Exception e) {
-            throw new RegistryException(
+            throw new MetadataException(
                     String.format("Could not remove registry resource: [resource-path] %s", resourcePath), e);
         } finally {
             try {
@@ -331,7 +332,7 @@ public class MetadataApiRegistry implements DataStore {
     }
 
     public boolean removePropertyFromApplication(String applicationId, String propertyKey)
-            throws org.wso2.carbon.registry.api.RegistryException {
+            throws RegistryException, MetadataException {
         Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId;
         Resource nodeResource;
@@ -361,7 +362,7 @@ public class MetadataApiRegistry implements DataStore {
                     propertyKey));
             return true;
         } catch (Exception e) {
-            throw new RegistryException(
+            throw new MetadataException(
                     String.format("Could not remove registry resource: [resource-path] %s, [key] %s", resourcePath,
                             propertyKey), e);
         } finally {
