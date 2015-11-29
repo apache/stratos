@@ -67,4 +67,19 @@ public class InitializerMessageProcessorChain extends MessageProcessorChain {
             throw new RuntimeException("Unknown event listener");
         }
     }
+
+    @Override
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof CompleteTopologyRequestEventListener) {
+            completeTopologyRequestMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof CompleteApplicationsRequestEventListener) {
+            completeApplicationsRequestMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof CompleteTenantRequestEventListener) {
+            completeTenantRequestMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof CompleteApplicationSignUpsRequestEventListener) {
+            completeApplicationSignUpsRequestMessageProcessor.removeEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener");
+        }
+    }
 }
