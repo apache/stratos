@@ -85,11 +85,13 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
         ArrayList<ReceiverGroup> receiverGroups = new ArrayList<ReceiverGroup>();
 
         for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
-            ArrayList<DataPublisherHolder> dataPublisherHolders = new ArrayList<DataPublisherHolder>();
-            DataPublisherHolder aNode = new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(), thriftClientInfo.getPassword());
-            dataPublisherHolders.add(aNode);
-            ReceiverGroup group = new ReceiverGroup(dataPublisherHolders);
-            receiverGroups.add(group);
+            if (thriftClientInfo.isStatsPublisherEnabled()) {
+                ArrayList<DataPublisherHolder> dataPublisherHolders = new ArrayList<DataPublisherHolder>();
+                DataPublisherHolder aNode = new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(), thriftClientInfo.getPassword());
+                dataPublisherHolders.add(aNode);
+                ReceiverGroup group = new ReceiverGroup(dataPublisherHolders);
+                receiverGroups.add(group);
+            }
         }
         return receiverGroups;
 
