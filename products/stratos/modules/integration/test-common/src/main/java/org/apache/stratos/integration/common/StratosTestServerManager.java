@@ -137,8 +137,7 @@ public class StratosTestServerManager extends TestServerManager {
 
             // set truststores and jndi.properties path
             setSystemproperties();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new AutomationFrameworkException("Could not configure Stratos server", e);
         }
     }
@@ -157,15 +156,13 @@ public class StratosTestServerManager extends TestServerManager {
         copyConfigFile(commonResourcesPath, CARTRIDGE_CONFIG_PROPERTIES_FILENAME, Util.CARBON_CONF_PATH);
         copyConfigFile(commonResourcesPath, IDENTITY_FILENAME, Util.CARBON_CONF_PATH);
         copyConfigFile(commonResourcesPath, THRIFT_CLIENT_CONFIG_FILENAME, Util.CARBON_CONF_PATH);
-        copyConfigFile(commonResourcesPath, SCALING_DROOL_FILENAME,
-                Util.CARBON_CONF_PATH + PATH_SEP + "drools");
+        copyConfigFile(commonResourcesPath, SCALING_DROOL_FILENAME, Util.CARBON_CONF_PATH + PATH_SEP + "drools");
         copyConfigFile(commonResourcesPath, JMS_OUTPUT_ADAPTER_FILENAME,
                 "repository" + PATH_SEP + "deployment" + PATH_SEP + "server" + PATH_SEP + "outputeventadaptors");
 
     }
 
-    private void copyConfigFile(String filePath, String fileName, String destinationFolder)
-            throws IOException {
+    private void copyConfigFile(String filePath, String fileName, String destinationFolder) throws IOException {
         assertNotNull(carbonHome, "CARBON_HOME is null");
         String fileAbsPath = filePath + PATH_SEP + fileName;
         log.info("Copying file: " + fileAbsPath);
@@ -178,19 +175,18 @@ public class StratosTestServerManager extends TestServerManager {
         // replace placeholders with dynamic values
         String content = IOUtils.toString(new FileInputStream(destFile), StandardCharsets.UTF_8.displayName());
         content = content.replaceAll(Util.ACTIVEMQ_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(activeMQDynamicPort));
-        content = content.replaceAll(Util.STRATOS_SECURE_DYNAMIC_PORT_PLACEHOLDER,
-                String.valueOf(stratosSecureDynamicPort));
-        content = content.replaceAll(Util.STRATOS_DYNAMIC_PORT_PLACEHOLDER,
-                String.valueOf(stratosDynamicPort));
-        content = content.replaceAll(Util.THRIFT_SECURE_DYNAMIC_PORT_PLACEHOLDER,
-                String.valueOf(thriftSecureDynamicPort));
+        content = content
+                .replaceAll(Util.STRATOS_SECURE_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(stratosSecureDynamicPort));
+        content = content.replaceAll(Util.STRATOS_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(stratosDynamicPort));
+        content = content
+                .replaceAll(Util.THRIFT_SECURE_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(thriftSecureDynamicPort));
         content = content.replaceAll(Util.THRIFT_DYNAMIC_PORT_PLACEHOLDER, String.valueOf(thriftDynamicPort));
         IOUtils.write(content, new FileOutputStream(destFile), StandardCharsets.UTF_8.displayName());
     }
 
     public void setSystemproperties() throws AutomationFrameworkException {
-        URL resourceUrl = getClass().getResource(File.separator + "keystores" + File.separator
-                + "products" + File.separator + "wso2carbon.jks");
+        URL resourceUrl = getClass().getResource(
+                File.separator + "keystores" + File.separator + "products" + File.separator + "wso2carbon.jks");
         System.setProperty("javax.net.ssl.trustStore", resourceUrl.getPath());
         System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
         System.setProperty("javax.net.ssl.trustStoreType", "JKS");
@@ -202,8 +198,7 @@ public class StratosTestServerManager extends TestServerManager {
             String autoscalerServiceURL = webAppURLHttps + "/services/AutoscalerService";
             System.setProperty(StratosConstants.AUTOSCALER_SERVICE_URL, autoscalerServiceURL);
             log.info("Autoscaler service URL set to " + autoscalerServiceURL);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new AutomationFrameworkException("Could not set autoscaler service URL system property", e);
         }
     }
@@ -282,6 +277,7 @@ class StratosServerManager extends CarbonServerManager {
     private static final String CMD_ARG = "cmdArg";
     private static int defaultHttpPort = Integer.parseInt("9763");
     private static int defaultHttpsPort = Integer.parseInt("9443");
+    private static final long RESTART_TIMEOUT = 600000;
 
     public StratosServerManager(AutomationContext context) {
         super(context);
@@ -306,11 +302,11 @@ class StratosServerManager extends CarbonServerManager {
                 String[] cmdArray;
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                     e = new File(carbonHome + File.separator + "bin");
-                    cmdArray = new String[]{"cmd.exe", "/c", scriptName + ".bat"};
+                    cmdArray = new String[] { "cmd.exe", "/c", scriptName + ".bat" };
                     cmdArray = this.mergePropertiesToCommandArray(parameters, cmdArray);
                     tempProcess = Runtime.getRuntime().exec(cmdArray, (String[]) null, e);
                 } else {
-                    cmdArray = new String[]{"sh", "bin/" + scriptName + ".sh"};
+                    cmdArray = new String[] { "sh", "bin/" + scriptName + ".sh" };
                     cmdArray = this.mergePropertiesToCommandArray(parameters, cmdArray);
                     tempProcess = Runtime.getRuntime().exec(cmdArray, (String[]) null, e);
                 }
@@ -323,8 +319,7 @@ class StratosServerManager extends CarbonServerManager {
                     public void run() {
                         try {
                             StratosServerManager.this.serverShutdown(StratosServerManager.this.portOffset);
-                        }
-                        catch (Exception var2) {
+                        } catch (Exception var2) {
                             log.error("Error while server shutdown ..", var2);
                         }
 
@@ -335,8 +330,8 @@ class StratosServerManager extends CarbonServerManager {
                 long time = System.currentTimeMillis() + 60000L;
 
                 while (true) {
-                    if (this.inputStreamHandler.getOutput().contains("Mgt Console URL") ||
-                            System.currentTimeMillis() >= time) {
+                    if (this.inputStreamHandler.getOutput().contains("Mgt Console URL")
+                            || System.currentTimeMillis() >= time) {
                         int httpsPort = defaultHttpsPort + this.portOffset;
                         String backendURL = this.automationContext.getContextUrls().getSecureServiceUrl()
                                 .replaceAll("(:\\d+)", ":" + httpsPort);
@@ -346,8 +341,7 @@ class StratosServerManager extends CarbonServerManager {
                         break;
                     }
                 }
-            }
-            catch (XPathExpressionException | IOException var13) {
+            } catch (XPathExpressionException | IOException var13) {
                 throw new IllegalStateException("Unable to start server", var13);
             }
 
@@ -399,17 +393,14 @@ class StratosServerManager extends CarbonServerManager {
                 String baseDir = System.getProperty("basedir", ".") + File.separator + "target";
                 log.info("Extracting carbon zip file.. ");
                 (new ArchiveExtractor()).extractFile(carbonServerZipFile, baseDir + File.separator + extractDir);
-                this.carbonHome =
-                        (new File(baseDir)).getAbsolutePath() + File.separator + extractDir + File.separator +
-                                extractedCarbonDir;
+                this.carbonHome = (new File(baseDir)).getAbsolutePath() + File.separator + extractDir + File.separator +
+                        extractedCarbonDir;
 
                 try {
-                    this.isCoverageEnable =
-                            Boolean.parseBoolean(this.automationContext.getConfigurationValue("//coverage"));
-                }
-                catch (XPathExpressionException var8) {
-                    throw new AutomationFrameworkException("Coverage configuration not found in automation.xml",
-                            var8);
+                    this.isCoverageEnable = Boolean
+                            .parseBoolean(this.automationContext.getConfigurationValue("//coverage"));
+                } catch (XPathExpressionException var8) {
+                    throw new AutomationFrameworkException("Coverage configuration not found in automation.xml", var8);
                 }
                 // Fix startup script issue by copying stratos.sh as stratos-server.sh
                 // TODO: remove this class after automation engine provides a way to pass startup script name
@@ -435,8 +426,7 @@ class StratosServerManager extends CarbonServerManager {
 
                 try {
                     url = this.automationContext.getContextUrls().getBackEndUrl();
-                }
-                catch (XPathExpressionException var10) {
+                } catch (XPathExpressionException var10) {
                     throw new AutomationFrameworkException("Get context failed", var10);
                 }
 
@@ -446,18 +436,16 @@ class StratosServerManager extends CarbonServerManager {
                     ClientConnectionUtil.sendForcefulShutDownRequest(backendURL,
                             this.automationContext.getSuperTenant().getContextUser().getUserName(),
                             this.automationContext.getSuperTenant().getContextUser().getPassword());
-                }
-                catch (AutomationFrameworkException var8) {
+                } catch (AutomationFrameworkException var8) {
                     throw new AutomationFrameworkException("Get context failed", var8);
-                }
-                catch (XPathExpressionException var9) {
+                } catch (XPathExpressionException var9) {
                     throw new AutomationFrameworkException("Get context failed", var9);
                 }
 
                 long time = System.currentTimeMillis() + 300000L;
 
-                while (!this.inputStreamHandler.getOutput().contains("Halting JVM") &&
-                        System.currentTimeMillis() < time) {
+                while (!this.inputStreamHandler.getOutput().contains("Halting JVM")
+                        && System.currentTimeMillis() < time) {
                     ;
                 }
 
@@ -471,11 +459,10 @@ class StratosServerManager extends CarbonServerManager {
             if (this.isCoverageEnable) {
                 try {
                     log.info("Generating Jacoco code coverage...");
-                    this.generateCoverageReport(new File(
-                            this.carbonHome + File.separator + "repository" + File.separator + "components" +
+                    this.generateCoverageReport(
+                            new File(this.carbonHome + File.separator + "repository" + File.separator + "components" +
                                     File.separator + "plugins" + File.separator));
-                }
-                catch (IOException var7) {
+                } catch (IOException var7) {
                     log.error("Failed to generate code coverage ", var7);
                     throw new AutomationFrameworkException("Failed to generate code coverage ", var7);
                 }
@@ -490,11 +477,9 @@ class StratosServerManager extends CarbonServerManager {
 
     private void generateCoverageReport(File classesDir) throws IOException, AutomationFrameworkException {
         CodeCoverageUtils
-                .executeMerge(FrameworkPathUtil.getJacocoCoverageHome(),
-                        FrameworkPathUtil.getCoverageMergeFilePath());
-        ReportGenerator reportGenerator =
-                new ReportGenerator(new File(FrameworkPathUtil.getCoverageMergeFilePath()), classesDir,
-                        new File(CodeCoverageUtils.getJacocoReportDirectory()), (File) null);
+                .executeMerge(FrameworkPathUtil.getJacocoCoverageHome(), FrameworkPathUtil.getCoverageMergeFilePath());
+        ReportGenerator reportGenerator = new ReportGenerator(new File(FrameworkPathUtil.getCoverageMergeFilePath()),
+                classesDir, new File(CodeCoverageUtils.getJacocoReportDirectory()), (File) null);
         reportGenerator.create();
         log.info("Jacoco coverage dump file path : " + FrameworkPathUtil.getCoverageDumpFilePath());
         log.info("Jacoco class file path : " + classesDir);
@@ -505,12 +490,11 @@ class StratosServerManager extends CarbonServerManager {
     public synchronized void restartGracefully() throws AutomationFrameworkException {
         try {
             int time = defaultHttpsPort + this.portOffset;
-            String backendURL =
-                    this.automationContext.getContextUrls().getSecureServiceUrl().replaceAll("(:\\d+)", ":" + time);
+            String backendURL = this.automationContext.getContextUrls().getSecureServiceUrl()
+                    .replaceAll("(:\\d+)", ":" + time);
             User e = this.automationContext.getSuperTenant().getTenantAdmin();
             ClientConnectionUtil.sendGraceFullRestartRequest(backendURL, e.getUserName(), e.getPassword());
-        }
-        catch (XPathExpressionException var5) {
+        } catch (XPathExpressionException var5) {
             throw new AutomationFrameworkException("restart failed", var5);
         }
 
@@ -529,10 +513,9 @@ class StratosServerManager extends CarbonServerManager {
         try {
             ClientConnectionUtil.waitForPort(
                     Integer.parseInt((String) this.automationContext.getInstance().getPorts().get("https")),
-                    (String) this.automationContext.getInstance().getHosts().get("default"));
+                    RESTART_TIMEOUT, true, (String) this.automationContext.getInstance().getHosts().get("default"));
             ClientConnectionUtil.waitForLogin(this.automationContext);
-        }
-        catch (XPathExpressionException var4) {
+        } catch (XPathExpressionException var4) {
             throw new AutomationFrameworkException("Connection attempt to carbon server failed", var4);
         }
     }
@@ -578,8 +561,7 @@ class StratosServerManager extends CarbonServerManager {
     }
 
     private int getPortOffsetFromCommandMap(Map<String, String> commandMap) {
-        return commandMap.containsKey("-DportOffset") ? Integer.parseInt((String) commandMap.get("-DportOffset")) :
-                0;
+        return commandMap.containsKey("-DportOffset") ? Integer.parseInt((String) commandMap.get("-DportOffset")) : 0;
     }
 
     private String[] mergerArrays(String[] array1, String[] array2) {
