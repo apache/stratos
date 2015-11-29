@@ -41,7 +41,6 @@ import java.util.Map;
 public abstract class GroupStatusProcessor extends StatusProcessor {
     private static final Log log = LogFactory.getLog(GroupStatusProcessor.class);
 
-
     /**
      * Message processing and delegating logic.
      *
@@ -95,8 +94,8 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
      * @param status      the status to check of the group
      * @return whether all groups in the same state or not
      */
-    protected boolean getAllClusterInSameState(Map<String, ClusterDataHolder> clusterData,
-                                               ClusterStatus status, String instanceId) {
+    protected boolean getAllClusterInSameState(Map<String, ClusterDataHolder> clusterData, ClusterStatus status,
+            String instanceId) {
         boolean clusterStat = false;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             String serviceName = clusterDataHolderEntry.getValue().getServiceType();
@@ -108,8 +107,8 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 ClusterInstance context = cluster.getInstanceContexts(instanceId);
                 if (context != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Checking the status of cluster " + clusterId + " instance status is: " +
-                                context.getStatus().toString());
+                        log.debug(String.format("Cluster instance: [cluster-id] %s, [instance-id] %s, [status] %s",
+                                clusterId, instanceId, context.getStatus().toString()));
                     }
                     if (context.getStatus() == status) {
                         clusterStat = true;
@@ -131,5 +130,4 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
         }
         return clusterStat;
     }
-
 }
