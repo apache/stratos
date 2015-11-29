@@ -32,9 +32,7 @@ import org.apache.stratos.messaging.util.MessagingUtil;
  * This processor responsible to process the application Inactivation even and update the Topology.
  */
 public class ApplicationInstanceTerminatedMessageProcessor extends MessageProcessor {
-    private static final Log log =
-            LogFactory.getLog(ApplicationInstanceTerminatedMessageProcessor.class);
-
+    private static final Log log = LogFactory.getLog(ApplicationInstanceTerminatedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -43,15 +41,15 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
         this.nextProcessor = nextProcessor;
     }
 
-
     @Override
     public boolean process(String type, String message, Object object) {
         Applications applications = (Applications) object;
 
         if (ApplicationInstanceTerminatedEvent.class.getName().equals(type)) {
             // Return if applications has not been initialized
-            if (!applications.isInitialized())
+            if (!applications.isInitialized()) {
                 return false;
+            }
 
             // Parse complete message and build event
             ApplicationInstanceTerminatedEvent event = (ApplicationInstanceTerminatedEvent) MessagingUtil.
@@ -71,16 +69,18 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, applications);
             } else {
-                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process message using available message processors: [type] %s [body] %s", type,
+                        message));
             }
         }
     }
 
     private boolean doProcess(ApplicationInstanceTerminatedEvent event, Applications applications) {
-
         // check if required properties are available
         if (event.getAppId() == null) {
-            String errorMsg = "Application Id of application removed event is invalid";
+            String errorMsg = "Application Id of application to be removed event is null. Failed to process "
+                    + "ApplicationInstanceTerminatedEvent";
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -89,12 +89,15 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
         String appId = event.getAppId();
         String instanceId = event.getInstanceId();
         if (applications.applicationExists(appId)) {
-            log.warn("Application with id [ " + appId + " ] still exists in Applications, removing it");
+            log.warn(String.format(
+                    "Application [application-id] %s still exists. Removing application instance [instance-id] %s",
+                    appId, instanceId));
             ApplicationInstance instance = applications.getApplication(appId).
                     getInstanceContexts(instanceId);
             if (instance == null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Application [Instance] " + instanceId + " has already been removed");
+                    log.debug(String.format("Application instance [instance-id] %s has already been removed",
+                            instanceId));
                 }
             } else {
                 instance.setStatus(ApplicationStatus.Terminated);
@@ -102,9 +105,7 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
             }
 
         }
-
         notifyEventListeners(event);
         return true;
-
     }
 }
