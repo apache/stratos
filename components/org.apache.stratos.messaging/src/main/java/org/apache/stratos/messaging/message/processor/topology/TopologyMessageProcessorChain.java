@@ -171,4 +171,52 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             throw new RuntimeException("Unknown event listener");
         }
     }
+
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof CompleteTopologyEventListener) {
+            completeTopologyMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterCreatedEventListener) {
+            clusterCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationClustersCreatedEventListener) {
+            appClustersCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationClustersRemovedEventListener) {
+            appClustersRemovedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceActivatedEventListener) {
+            clusterActivatedProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceInactivateEventListener) {
+            clusterInactivateProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterRemovedEventListener) {
+            clusterRemovedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceCreatedEventListener) {
+            clusterInstanceCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceTerminatedEventListener) {
+            clusterTerminatedProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterResetEventListener) {
+            clusterResetMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceTerminatingEventListener) {
+            clusterTerminatingProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberCreatedEventListener) {
+            memberCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberInitializedEventListener) {
+            memberInitializedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberActivatedEventListener) {
+            memberActivatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberStartedEventListener) {
+            memberStartedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberReadyToShutdownEventListener) {
+            memberReadyToShutdownProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberSuspendedEventListener) {
+            memberSuspendedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberTerminatedEventListener) {
+            memberTerminatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ServiceCreatedEventListener) {
+            serviceCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ServiceRemovedEventListener) {
+            serviceRemovedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberMaintenanceListener) {
+            memberMaintenanceModeProcessor.removeEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener");
+        }
+    }
 }

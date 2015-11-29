@@ -93,7 +93,6 @@ public class HealthStatMessageProcessorChain extends MessageProcessorChain {
     }
 
     public void addEventListener(EventListener eventListener) {
-
         if (eventListener instanceof AverageLoadAverageEventListener) {
             averageLoadAverageMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof AverageMemoryConsumptionEventListener) {
@@ -126,10 +125,48 @@ public class HealthStatMessageProcessorChain extends MessageProcessorChain {
             secondDerivativeOfLoadAverageMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof SecondDerivativeOfMemoryConsumptionEventListener) {
             secondDerivativeOfMemoryConsumptionMessageProcessor.addEventListener(eventListener);
-
         } else if (eventListener instanceof SecondDerivativeOfRequestsInFlightEventListener) {
             secondDerivativeOfRequestsInFlightMessageProcessor.addEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener");
+        }
+    }
 
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof AverageLoadAverageEventListener) {
+            averageLoadAverageMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof AverageMemoryConsumptionEventListener) {
+            averageMemoryConsumptionMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof AverageRequestsInFlightEventListener) {
+            averageRequestsInFlightMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof AverageRequestsServingCapabilityEventListener) {
+            averageRequestsServingCapabilityMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GradientOfLoadAverageEventListener) {
+            gradientOfLoadAverageMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GradientOfMemoryConsumptionEventListener) {
+            gradientOfMemoryConsumptionMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GradientOfRequestsInFlightEventListener) {
+            gradientOfRequestsInFlightMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberAverageLoadAverageEventListener) {
+            memberAverageLoadAverageMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberAverageMemoryConsumptionEventListener) {
+            memberAverageMemoryConsumptionMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberFaultEventListener) {
+            memberFaultMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberGradientOfLoadAverageEventListener) {
+            memberGradientOfLoadAverageMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberGradientOfMemoryConsumptionEventListener) {
+            memberGradientOfMemoryConsumptionMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberSecondDerivativeOfLoadAverageEventListener) {
+            memberSecondDerivativeOfLoadAverageMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof MemberSecondDerivativeOfMemoryConsumptionEventListener) {
+            memberSecondDerivativeOfMemoryConsumptionMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof SecondDerivativeOfLoadAverageEventListener) {
+            secondDerivativeOfLoadAverageMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof SecondDerivativeOfMemoryConsumptionEventListener) {
+            secondDerivativeOfMemoryConsumptionMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof SecondDerivativeOfRequestsInFlightEventListener) {
+            secondDerivativeOfRequestsInFlightMessageProcessor.removeEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");
         }
