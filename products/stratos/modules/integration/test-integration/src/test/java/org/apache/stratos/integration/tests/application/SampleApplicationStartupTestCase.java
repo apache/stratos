@@ -28,7 +28,6 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.metadata.client.beans.PropertyBean;
 import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
@@ -45,9 +44,11 @@ import static org.testng.AssertJUnit.assertTrue;
  * Deploy a sample application on mock IaaS and assert whether application instance, cluster instance, member instances
  * are getting activated. Kill the mock instance and check whether
  */
+@Test(groups = { "application", "smoke" })
 public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SampleApplicationStartupTestCase.class);
     private static final String RESOURCES_PATH = "/sample-application-startup-test";
+    private TopologyHandler topologyHandler = TopologyHandler.getInstance();
     private static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
     private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
     private static final String PAYLOAD_PARAMETER_TOKEN_KEY = "TOKEN";
@@ -55,13 +56,13 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
     private GsonBuilder gsonBuilder = new GsonBuilder();
     private Gson gson = gsonBuilder.create();
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
-          description = "Application startup, activation and faulty member " + "detection",
-          groups = { "stratos.application.startup", "smoke" })
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
+          description = "Application startup, activation and faulty member detection")
     public void testApplication() throws Exception {
-        String autoscalingPolicyId = "autoscaling-policy-sample-application-startup-test";
-        TopologyHandler topologyHandler = TopologyHandler.getInstance();
+        log.info("Running SampleApplicationStartupTestCase.testApplication test method...");
+        long startTime = System.currentTimeMillis();
 
+        String autoscalingPolicyId = "autoscaling-policy-sample-application-startup-test";
         log.info("Adding autoscaling policy [autoscale policy id] " + autoscalingPolicyId);
         boolean addedScalingPolicy = restClient.addEntity(
                 RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
@@ -89,7 +90,7 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         log.info("Adding application [application id] sample-application-startup-test");
         boolean addedApp = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
                 "sample-application-startup-test.json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
-        assertEquals(addedApp, true);
+        Assert.assertTrue(addedApp);
 
         ApplicationBean bean = (ApplicationBean) restClient
                 .getEntity(RestConstants.APPLICATIONS, "sample-application-startup-test", ApplicationBean.class,
@@ -109,18 +110,18 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         assertEquals(policyBean.getId(), "application-policy-sample-application-startup-test");
 
         // Used policies/cartridges should not removed...asserting validations when removing policies
-        log.info("Trying to remove the used autoscaling policy...");
+        log.info("Trying to remove used autoscaling policy...");
         boolean removedUsedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
                 RestConstants.AUTOSCALING_POLICIES_NAME);
         assertFalse(removedUsedAuto);
 
-        log.info("Trying to remove the used network partition...");
+        log.info("Trying to remove used network partition...");
         boolean removedUsedNet = restClient
                 .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-application-startup-test",
                         RestConstants.NETWORK_PARTITIONS_NAME);
         assertFalse(removedUsedNet);
 
-        log.info("Trying to remove the used deployment policy...");
+        log.info("Trying to remove used deployment policy...");
         boolean removedUsedDep = restClient
                 .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-application-startup-test",
                         RestConstants.DEPLOYMENT_POLICIES_NAME);
@@ -145,7 +146,8 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         assertFalse(removed);
 
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
+        //topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean.getApplicationId());
 
         log.info("Waiting for cluster status to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean.getApplicationId());
@@ -187,9 +189,7 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         Assert.assertTrue(propertyBean != null && propertyBean.getValues().size() > 0, "Empty property list");
         List<String> addedValues = new ArrayList<>(Arrays.asList(val1, val2));
         boolean hasPropertiesAdded = propertyBean.getValues().containsAll(addedValues);
-
         Assert.assertTrue(hasPropertiesAdded, "Metadata properties retrieved are not correct");
-        log.info("Metadata test completed successfully");
 
         log.info("Terminating members in [cluster id] c1-sample-application-startup-test in mock IaaS directly to "
                 + "simulate faulty members...");
@@ -202,11 +202,12 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
         }
         // application status should be marked as inactive since some members are faulty
         log.info("Waiting for application status to become INACTIVE");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Inactive);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean.getApplicationId());
 
         // application should recover itself and become active after spinning more instances
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
+        //topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean.getApplicationId());
 
         log.info("Waiting for cluster status to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean.getApplicationId());
@@ -231,7 +232,7 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
                     "sample-application-startup-test"), forceUndeployed);
         }
 
-        log.info("Removing the application [application id] sample-application-startup-test");
+        log.info("Removing application [application id] sample-application-startup-test");
         boolean removedApp = restClient.removeEntity(RestConstants.APPLICATIONS, "sample-application-startup-test",
                 RestConstants.APPLICATIONS_NAME);
         assertTrue(removedApp);
@@ -241,35 +242,36 @@ public class SampleApplicationStartupTestCase extends StratosIntegrationTest {
                         RestConstants.APPLICATIONS_NAME);
         assertNull(beanRemoved);
 
-        log.info("Removing the application policy [application policy id] "
+        log.info("Removing application policy [application policy id] "
                 + "application-policy-sample-application-startup-test");
         boolean removeAppPolicy = restClient
                 .removeEntity(RestConstants.APPLICATION_POLICIES, "application-policy-sample-application-startup-test",
                         RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
 
-        log.info("Removing the cartridge [cartridge type] c1-sample-application-startup-test");
+        log.info("Removing cartridge [cartridge type] c1-sample-application-startup-test");
         boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-sample-application-startup-test",
                 RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC1);
 
-        log.info("Removing the autoscaling policy [autoscaling policy id] " + autoscalingPolicyId);
+        log.info("Removing autoscaling policy [autoscaling policy id] " + autoscalingPolicyId);
         boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
                 RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(removedAuto);
 
-        log.info("Removing the deployment policy [deployment policy id] "
+        log.info("Removing deployment policy [deployment policy id] "
                 + "deployment-policy-sample-application-startup-test");
         boolean removedDep = restClient
                 .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-application-startup-test",
                         RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
 
-        log.info("Removing the network partition [network partition id] "
-                + "network-partition-sample-application-startup-test");
+        log.info("Removing network partition [network partition id] network-partition-sample-application-startup-test");
         boolean removedNet = restClient
                 .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-application-startup-test",
                         RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("SampleApplicationStartupTestCase completed in [duration] %s ms", duration));
     }
 }

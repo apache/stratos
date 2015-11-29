@@ -35,11 +35,12 @@ import static org.testng.AssertJUnit.*;
 /**
  * Handling users
  */
+@Test(groups = { "users" })
 public class UserTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(UserTestCase.class);
     private static final String RESOURCES_PATH = "/user-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"user.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void addUser() throws Exception {
         String userId = "user-1";
         boolean addedUser1 = restClient.addEntity(RESOURCES_PATH + "/" +

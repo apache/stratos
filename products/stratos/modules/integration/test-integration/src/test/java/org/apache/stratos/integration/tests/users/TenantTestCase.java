@@ -28,15 +28,15 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Handling users
  */
+@Test(groups = { "users", "disabled" })
 public class TenantTestCase extends StratosIntegrationTest {
     private static final String RESOURCES_PATH = "/user-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"user.management", "smoke", "disabled"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void addUser() throws Exception {
         String tenantId = "tenant-1";
         boolean addedUser1 = restClient.addEntity(RESOURCES_PATH + "/" +
-                        tenantId + ".json",
-                RestConstants.USERS, RestConstants.USERS_NAME);
+                tenantId + ".json", RestConstants.USERS, RestConstants.USERS_NAME);
         assertTrue(addedUser1);
     }
 }
