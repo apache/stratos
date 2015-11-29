@@ -45,9 +45,8 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
             if (!applications.isInitialized()) {
                 return false;
             }
-            ApplicationInstanceCreatedEvent event =
-                    (ApplicationInstanceCreatedEvent) MessagingUtil.jsonToObject(message,
-                            ApplicationInstanceCreatedEvent.class);
+            ApplicationInstanceCreatedEvent event = (ApplicationInstanceCreatedEvent) MessagingUtil
+                    .jsonToObject(message, ApplicationInstanceCreatedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationInstanceCreatedEvent");
                 return false;
@@ -56,8 +55,7 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
             ApplicationsUpdater.acquireWriteLockForApplications();
             try {
                 return doProcess(event, applications);
-            }
-            finally {
+            } finally {
                 ApplicationsUpdater.releaseWriteLockForApplications();
             }
         } else {
@@ -73,12 +71,12 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
     }
 
     private boolean doProcess(ApplicationInstanceCreatedEvent event, Applications applications) {
-
         // check if required properties are available
         if (event.getApplicationInstance() == null || event.getApplicationId() == null) {
-            String errorMsg = "Application instance object of ApplicationInstanceCreatedEvent is invalid. " +
-                    "[ApplicationId] " + event.getApplicationId() + ", [ApplicationInstance] " +
-                    event.getApplicationInstance();
+            String errorMsg = String
+                    .format("Application instance object of ApplicationInstanceCreatedEvent is invalid: "
+                                    + "[application-id] %s, [app-instance-id] %s", event.getApplicationId(),
+                            event.getApplicationInstance().getInstanceId());
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -90,8 +88,8 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
         ApplicationInstance applicationInstance = event.getApplicationInstance();
 
         if (applicationInstance.getInstanceId() == null || applicationInstance.getInstanceId().isEmpty()) {
-            String errorMsg = "App instance id of application instance created event is invalid: [ "
-                    + applicationInstance.getInstanceId() + " ]";
+            String errorMsg = String.format("Application instance created event is invalid: [app-instance-id] %s",
+                    applicationInstance.getInstanceId());
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -99,7 +97,8 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
         // check if an Application instance with same name exists in applications instance
         if (null != applications.getApplication(event.getApplicationId()).
                 getInstanceByNetworkPartitionId(applicationInstance.getNetworkPartitionId())) {
-            log.warn("Application instance [AppInstanceId] " + applicationInstance.getInstanceId() + " already exists");
+            log.warn(String.format("Application instance [app-instance-id] %s already exists",
+                    applicationInstance.getInstanceId()));
         } else {
             // add application instance to Application Topology
             applications.getApplication(event.getApplicationId())

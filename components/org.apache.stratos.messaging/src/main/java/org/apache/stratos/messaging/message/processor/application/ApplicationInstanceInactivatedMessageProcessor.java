@@ -33,9 +33,7 @@ import org.apache.stratos.messaging.util.MessagingUtil;
  * This processor responsible to process the application Inactivation even and update the Topology.
  */
 public class ApplicationInstanceInactivatedMessageProcessor extends MessageProcessor {
-    private static final Log log =
-            LogFactory.getLog(ApplicationInstanceInactivatedMessageProcessor.class);
-
+    private static final Log log = LogFactory.getLog(ApplicationInstanceInactivatedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -44,15 +42,15 @@ public class ApplicationInstanceInactivatedMessageProcessor extends MessageProce
         this.nextProcessor = nextProcessor;
     }
 
-
     @Override
     public boolean process(String type, String message, Object object) {
         Applications applications = (Applications) object;
 
         if (ApplicationInstanceInactivatedEvent.class.getName().equals(type)) {
             // Return if applications has not been initialized
-            if (!applications.isInitialized())
+            if (!applications.isInitialized()) {
                 return false;
+            }
 
             // Parse complete message and build event
             ApplicationInstanceInactivatedEvent event = (ApplicationInstanceInactivatedEvent) MessagingUtil.
@@ -72,38 +70,44 @@ public class ApplicationInstanceInactivatedMessageProcessor extends MessageProce
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, applications);
             } else {
-                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process message using available message processors: [type] %s [body] %s", type,
+                        message));
             }
         }
     }
 
     private boolean doProcess(ApplicationInstanceInactivatedEvent event, Applications applications) {
-
         // Validate event against the existing applications
         Application application = applications.getApplication(event.getAppId());
         if (application == null) {
             if (log.isWarnEnabled()) {
-                log.warn(String.format("Application does not exist: [service] %s",
-                        event.getAppId()));
+                log.warn(String.format("Application does not exist: [service] %s", event.getAppId()));
             }
             return false;
         } else {
             // Apply changes to the applications
-            ApplicationInstance context = application.getInstanceContexts(event.getInstanceId());
-            if (context == null) {
+            ApplicationInstance applicationInstance = application.getInstanceContexts(event.getInstanceId());
+            if (applicationInstance == null) {
                 if (log.isWarnEnabled()) {
-                    log.warn(String.format("Application instance not exists in group: [application-id] %s" +
-                            "[instance-id] %s", event.getAppId(), event.getInstanceId()));
+                    log.warn(String.format(
+                            "Application instance not exists in group: [application-id] %s, [instance-id] %s",
+                            event.getAppId(), event.getInstanceId()));
                 }
 
                 return false;
             }
-            ApplicationStatus status = ApplicationStatus.Inactive;
-            if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid state transfer from [ " + context.getStatus() +
-                        " ] to [ " + status + " ]");
+            ApplicationStatus currentStatus = applicationInstance.getStatus();
+            if (!applicationInstance.isStateTransitionValid(ApplicationStatus.Inactive)) {
+                log.error(String.format("Invalid application state transfer [from] %s [to] %s", currentStatus,
+                        ApplicationStatus.Inactive));
+                return false;
             }
-            context.setStatus(status);
+            applicationInstance.setStatus(ApplicationStatus.Inactive);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Application instance status updated [from] %s [to] %s for [instance-id] %s",
+                        currentStatus, ApplicationStatus.Inactive, applicationInstance.getInstanceId()));
+            }
         }
 
         // Notify event listeners
