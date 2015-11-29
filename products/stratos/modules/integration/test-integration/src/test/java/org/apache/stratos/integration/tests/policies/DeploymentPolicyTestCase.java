@@ -40,11 +40,12 @@ import static org.testng.AssertJUnit.*;
 /**
  * Test to handle Deployment policy CRUD operations
  */
+@Test(groups = { "policies" })
 public class DeploymentPolicyTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(DeploymentPolicyTestCase.class);
     private static final String RESOURCES_PATH = "/deployment-policy-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void testDeploymentPolicy() throws Exception {
         String deploymentPolicyId = "deployment-policy-deployment-policy-test";
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
@@ -166,7 +167,7 @@ public class DeploymentPolicyTestCase extends StratosIntegrationTest {
         assertNull(beanRemovedN2);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void testDeploymentPolicyList() throws Exception {
         String deploymentPolicyId1 = "deployment-policy-deployment-policy-test-1";
         String deploymentPolicyId2 = "deployment-policy-deployment-policy-test-2";

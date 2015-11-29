@@ -38,11 +38,12 @@ import static org.testng.AssertJUnit.*;
 /**
  * Test to handle Network partition CRUD operations
  */
+@Test(groups = { "policies" })
 public class NetworkPartitionTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(NetworkPartitionTestCase.class);
     private static final String RESOURCES_PATH = "/network-partition-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void testNetworkPartition() throws Exception {
         String networkPartitionId = "network-partition-network-partition-test";
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
@@ -89,7 +90,7 @@ public class NetworkPartitionTestCase extends StratosIntegrationTest {
         assertNull(beanRemoved);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void testNetworkPartitionList() throws Exception {
         String networkPartitionId1 = "network-partition-network-partition-test-1";
         String networkPartitionId2 = "network-partition-network-partition-test-2";

@@ -41,32 +41,37 @@ import static org.testng.AssertJUnit.assertTrue;
 /**
  * Sample application tests with application add, .
  */
+@Test(groups = { "application" })
 public class SampleApplicationsTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SampleApplicationsTestCase.class);
     private static final String RESOURCES_PATH = "/sample-applications-test";
+    long startTime;
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
+          priority = 1)
     public void testApplication() throws Exception {
-        String autoscalingPolicyId = "autoscaling-policy-sample-applications-test";
+        startTime = System.currentTimeMillis();
+        log.info("Running SampleApplicationsTestCase.testApplication test method...");
 
-        boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                        + "/" + autoscalingPolicyId + ".json",
+        String autoscalingPolicyId = "autoscaling-policy-sample-applications-test";
+        boolean addedScalingPolicy = restClient.addEntity(
+                RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
         assertEquals(addedScalingPolicy, true);
 
-        boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean addedC1 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertEquals(addedC1, true);
 
-        boolean addedC2 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-sample-applications-test.json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean addedC2 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-sample-applications-test.json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertEquals(addedC2, true);
 
-        boolean addedC3 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-sample-applications-test.json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean addedC3 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-sample-applications-test.json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertEquals(addedC3, true);
 
         boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
@@ -75,23 +80,23 @@ public class SampleApplicationsTestCase extends StratosIntegrationTest {
         assertEquals(addedG1, true);
 
         CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClient.
-                getEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
-                        CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
+                getEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test", CartridgeGroupBean.class,
+                        RestConstants.CARTRIDGE_GROUPS_NAME);
         assertEquals(beanG1.getName(), "G1-sample-applications-test");
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-sample-applications-test-1.json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-sample-applications-test-1.json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertEquals(addedN1, true);
 
         boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-sample-applications-test-2.json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-sample-applications-test-2.json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertEquals(addedN2, true);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-sample-applications-test.json",
-                RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
+                        "deployment-policy-sample-applications-test.json", RestConstants.DEPLOYMENT_POLICIES,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertEquals(addedDep, true);
 
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
@@ -99,8 +104,9 @@ public class SampleApplicationsTestCase extends StratosIntegrationTest {
                 RestConstants.APPLICATIONS_NAME);
         assertEquals(added, true);
 
-        ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean bean = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-sample-applications-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertEquals(bean.getApplicationId(), "g-sc-G123-1-sample-applications-test");
 
         CartridgeGroupReferenceBean group1 = bean.getComponents().getGroups().get(0);
@@ -138,12 +144,13 @@ public class SampleApplicationsTestCase extends StratosIntegrationTest {
         assertEquals(c3.getCartridgeMax(), 2);
 
         boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH +
-                        "/g-sc-G123-1-sample-applications-test-v1.json",
-                RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
+                        "/g-sc-G123-1-sample-applications-test-v1.json", RestConstants.APPLICATIONS,
+                RestConstants.APPLICATIONS_NAME);
         assertEquals(updated, true);
 
-        ApplicationBean updatedBean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean updatedBean = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-sample-applications-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
 
         assertEquals(bean.getApplicationId(), "g-sc-G123-1-sample-applications-test");
 
@@ -181,224 +188,226 @@ public class SampleApplicationsTestCase extends StratosIntegrationTest {
         assertEquals(c3.getCartridgeMin(), 2);
         assertEquals(c3.getCartridgeMax(), 3);
 
-
-        boolean removedGroup =
-                restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
-                        RestConstants.CARTRIDGE_GROUPS_NAME);
+        boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
+                RestConstants.CARTRIDGE_GROUPS_NAME);
         assertFalse(removedGroup);
 
-        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         assertFalse(removedAuto);
 
-        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-sample-applications-test-1",
-                RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-applications-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
         assertFalse(removedNet);
 
-        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-sample-applications-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+        boolean removedDep = restClient
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-applications-test",
+                        RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertFalse(removedDep);
 
-        boolean removed =
-                restClient.removeEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-sample-applications-test",
-                        RestConstants.APPLICATIONS_NAME);
+        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-sample-applications-test",
+                RestConstants.APPLICATIONS_NAME);
         assertTrue(removed);
 
-        ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "g-sc-G123-1-sample-applications-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean beanRemoved = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "g-sc-G123-1-sample-applications-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertNull(beanRemoved);
 
         removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
                 RestConstants.CARTRIDGE_GROUPS_NAME);
         assertEquals(removedGroup, true);
 
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-sample-applications-test",
-                RestConstants.CARTRIDGES_NAME);
+        boolean removedC1 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, "c1-sample-applications-test", RestConstants.CARTRIDGES_NAME);
         assertEquals(removedC1, true);
 
-        boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c2-sample-applications-test",
-                RestConstants.CARTRIDGES_NAME);
+        boolean removedC2 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, "c2-sample-applications-test", RestConstants.CARTRIDGES_NAME);
         assertEquals(removedC2, true);
 
-        boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c3-sample-applications-test",
-                RestConstants.CARTRIDGES_NAME);
+        boolean removedC3 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, "c3-sample-applications-test", RestConstants.CARTRIDGES_NAME);
         assertEquals(removedC3, true);
 
-        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         assertEquals(removedAuto, true);
 
-        removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-sample-applications-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
+        removedDep = restClient
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-applications-test",
+                        RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertEquals(removedDep, true);
 
-        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-sample-applications-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-applications-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertEquals(removedNet, true);
 
-        boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-sample-applications-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedN2, true, String.format(
-                "[Network partition] network-partition-sample-applications-test-2 could not be removed for " +
-                        "[application] g-sc-G123-1-sample-applications-test"));
+        boolean removedN2 = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-applications-test-2",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedN2, true,
+                "[Network partition] network-partition-sample-applications-test-2 could not be removed for "
+                        + "[application] g-sc-G123-1-sample-applications-test");
     }
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
+          priority = 2)
     public void testApplicationList() throws Exception {
-            String autoscalingPolicyId = "autoscaling-policy-sample-applications-test";
+        log.info("Running SampleApplicationsTestCase.testApplicationList test method...");
 
-            boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                            + "/" + autoscalingPolicyId + ".json",
-                    RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(addedScalingPolicy, true);
+        String autoscalingPolicyId = "autoscaling-policy-sample-applications-test";
+        boolean addedScalingPolicy = restClient.addEntity(
+                RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
+                RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+        assertEquals(addedScalingPolicy, true);
 
-            boolean addedC1 = restClient.addEntity(
-                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC1, true);
+        boolean addedC1 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c1-sample-applications-test.json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertEquals(addedC1, true);
 
-            boolean addedC2 = restClient.addEntity(
-                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-sample-applications-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC2, true);
+        boolean addedC2 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c2-sample-applications-test.json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertEquals(addedC2, true);
 
-            boolean addedC3 = restClient.addEntity(
-                    RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-sample-applications-test.json",
-                    RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-            assertEquals(addedC3, true);
+        boolean addedC3 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c3-sample-applications-test.json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        assertEquals(addedC3, true);
 
-            boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
-                            "/" + "cartridge-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(addedG1, true);
+        boolean addedG1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGE_GROUPS_PATH +
+                        "/" + "cartridge-nested-sample-applications-test.json", RestConstants.CARTRIDGE_GROUPS,
+                RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertEquals(addedG1, true);
 
-            CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClient.
-                    getEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
-                            CartridgeGroupBean.class, RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(beanG1.getName(), "G1-sample-applications-test");
+        CartridgeGroupBean beanG1 = (CartridgeGroupBean) restClient.
+                getEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test", CartridgeGroupBean.class,
+                        RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertEquals(beanG1.getName(), "G1-sample-applications-test");
 
-            boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-sample-applications-test-1.json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN1, true);
+        boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                        "network-partition-sample-applications-test-1.json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(addedN1, true);
 
-            boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                            "network-partition-sample-applications-test-2.json",
-                    RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(addedN2, true);
+        boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
+                        "network-partition-sample-applications-test-2.json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(addedN2, true);
 
-            boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                            "deployment-policy-sample-applications-test.json",
-                    RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertEquals(addedDep, true);
+        boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
+                        "deployment-policy-sample-applications-test.json", RestConstants.DEPLOYMENT_POLICIES,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
+        assertEquals(addedDep, true);
 
-            String app1 = "sample-applications-test-1";
-            String app2 = "sample-applications-test-2";
-            boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                            app1 + ".json", RestConstants.APPLICATIONS,
-                    RestConstants.APPLICATIONS_NAME);
-            assertEquals(added, true);
+        String app1 = "sample-applications-test-1";
+        String app2 = "sample-applications-test-2";
+        boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+                app1 + ".json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
+        assertEquals(added, true);
 
-            added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                            app2 + ".json", RestConstants.APPLICATIONS,
-                    RestConstants.APPLICATIONS_NAME);
-            assertEquals(added, true);
+        added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
+                app2 + ".json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
+        assertEquals(added, true);
 
-            Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
-            }.getType();
+        Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
+        }.getType();
 
-            List<ApplicationBean> applicationList = (List<ApplicationBean>) restClient.
-                    listEntity(RestConstants.APPLICATIONS,
-                            listType, RestConstants.APPLICATIONS_NAME);
-            assertTrue(applicationList.size() >= 2);
+        List<ApplicationBean> applicationList = (List<ApplicationBean>) restClient.
+                listEntity(RestConstants.APPLICATIONS, listType, RestConstants.APPLICATIONS_NAME);
+        assertTrue(applicationList.size() >= 2);
 
-
-            ApplicationBean bean1 = null;
-            for (ApplicationBean applicationBean : applicationList) {
-                if (applicationBean.getApplicationId().equals(app1)) {
-                    bean1 = applicationBean;
-                }
+        ApplicationBean bean1 = null;
+        for (ApplicationBean applicationBean : applicationList) {
+            if (applicationBean.getApplicationId().equals(app1)) {
+                bean1 = applicationBean;
             }
-            assertNotNull(bean1);
+        }
+        assertNotNull(bean1);
 
-            ApplicationBean bean2 = null;
-            for (ApplicationBean applicationBean : applicationList) {
-                if (applicationBean.getApplicationId().equals(app2)) {
-                    bean2 = applicationBean;
-                }
+        ApplicationBean bean2 = null;
+        for (ApplicationBean applicationBean : applicationList) {
+            if (applicationBean.getApplicationId().equals(app2)) {
+                bean2 = applicationBean;
             }
-            assertNotNull(bean2);
+        }
+        assertNotNull(bean2);
 
+        boolean removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
+                RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertFalse(removedGroup);
 
-            boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, app1,
-                    RestConstants.APPLICATIONS_NAME);
-            assertTrue(removed);
+        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
+        assertFalse(removedAuto);
 
-            ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                    app1, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertNull(beanRemoved);
+        boolean removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-applications-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
+        //Trying to remove the used network partition
+        assertFalse(removedNet);
 
-            boolean removedGroup =
-                    restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
-                            RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertFalse(removedGroup);
+        boolean removedDep = restClient
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-applications-test",
+                        RestConstants.DEPLOYMENT_POLICIES_NAME);
+        assertFalse(removedDep);
 
-            boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                    autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertFalse(removedAuto);
+        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, app1, RestConstants.APPLICATIONS_NAME);
+        assertTrue(removed);
 
-            boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-sample-applications-test-1",
-                    RestConstants.NETWORK_PARTITIONS_NAME);
-            //Trying to remove the used network partition
-            assertFalse(removedNet);
+        ApplicationBean beanRemoved = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, app1, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertNull(beanRemoved);
 
-            boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-sample-applications-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertFalse(removedDep);
+        removed = restClient.removeEntity(RestConstants.APPLICATIONS, app2, RestConstants.APPLICATIONS_NAME);
+        assertTrue(removed);
 
-            removed = restClient.removeEntity(RestConstants.APPLICATIONS, app2,
-                    RestConstants.APPLICATIONS_NAME);
-            assertTrue(removed);
+        beanRemoved = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, app2, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        assertNull(beanRemoved);
 
-            beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                    app2, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
-            assertNull(beanRemoved);
+        removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
+                RestConstants.CARTRIDGE_GROUPS_NAME);
+        assertEquals(removedGroup, true);
 
-            removedGroup = restClient.removeEntity(RestConstants.CARTRIDGE_GROUPS, "G1-sample-applications-test",
-                    RestConstants.CARTRIDGE_GROUPS_NAME);
-            assertEquals(removedGroup, true);
+        boolean removedC1 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, "c1-sample-applications-test", RestConstants.CARTRIDGES_NAME);
+        assertEquals(removedC1, true);
 
-            boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c1-sample-applications-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC1, true);
+        boolean removedC2 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, "c2-sample-applications-test", RestConstants.CARTRIDGES_NAME);
+        assertEquals(removedC2, true);
 
-            boolean removedC2 = restClient.removeEntity(RestConstants.CARTRIDGES, "c2-sample-applications-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC2, true);
+        boolean removedC3 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, "c3-sample-applications-test", RestConstants.CARTRIDGES_NAME);
+        assertEquals(removedC3, true);
 
-            boolean removedC3 = restClient.removeEntity(RestConstants.CARTRIDGES, "c3-sample-applications-test",
-                    RestConstants.CARTRIDGES_NAME);
-            assertEquals(removedC3, true);
+        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
+        assertEquals(removedAuto, true);
 
-            removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                    autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-            assertEquals(removedAuto, true);
+        removedDep = restClient
+                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-sample-applications-test",
+                        RestConstants.DEPLOYMENT_POLICIES_NAME);
+        assertEquals(removedDep, true);
 
-            removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                    "deployment-policy-sample-applications-test", RestConstants.DEPLOYMENT_POLICIES_NAME);
-            assertEquals(removedDep, true);
+        removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-applications-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedNet, true);
 
-            removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-sample-applications-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedNet, true);
-
-            boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                    "network-partition-sample-applications-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
-            assertEquals(removedN2, true, String.format(
-                    "[Network partition] network-partition-sample-applications-test-2 could not be removed for " +
-                            "[application] g-sc-G123-1-sample-applications-test"));
+        boolean removedN2 = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-sample-applications-test-2",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
+        assertEquals(removedN2, true,
+                "[Network partition] network-partition-sample-applications-test-2 could not be removed for "
+                        + "[application] g-sc-G123-1-sample-applications-test");
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("SampleApplicationsTestCase completed in [duration] %s ms", duration));
     }
 }

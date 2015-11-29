@@ -28,7 +28,6 @@ import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.ServerLogClient;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -39,6 +38,7 @@ import java.util.List;
 import static org.testng.Assert.*;
 import static org.testng.AssertJUnit.assertTrue;
 
+@Test(groups = { "iaas" })
 public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
 
     private static final Log log = LogFactory.getLog(IaasProviderAttributeTestCase.class);
@@ -51,34 +51,36 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
     private static final String UPDATED_CARTRIDGE = "cartridge-iaasprovider-attribute-test-updated";
     private static final String APPLICATION = "app-iaasprovider-attribute-test";
     private ServerLogClient serverLogClient;
+    private long startTime;
 
     @BeforeClass
-    public void setup () throws Exception {
+    public void setup() throws Exception {
         serverLogClient = new ServerLogClient(stratosSecuredBackendURL + "/services/", adminUsername, adminPassword);
     }
 
-    @Test(timeOut = IAAS_PROVIDER_TEST_TIMEOUT, groups = {"stratos.cartridge.iaas", "all"})
-    public void testIaasProviderAttributes () throws Exception {
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT)
+    public void testIaasProviderAttributes() throws Exception {
+        log.info("Running IaasProviderAttributeTestCase.testIaasProviderAttributes test method...");
+        startTime = System.currentTimeMillis();
 
         // add autoscaling policy
         log.info("Adding autoscaling policy [autoscale policy id] " + AUTOSCALING_POLICY);
         boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.
-                        AUTOSCALING_POLICIES_PATH + "/" + AUTOSCALING_POLICY + ".json",
-                RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
+                        AUTOSCALING_POLICIES_PATH + "/" + AUTOSCALING_POLICY + ".json", RestConstants
+                .AUTOSCALING_POLICIES,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(addedScalingPolicy);
 
         // add network partition
         log.info("Adding network partition [network partition id] " + NETWORK_PARTITION);
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + "/network-partitions" + "/" +
-                        NETWORK_PARTITION + ".json", RestConstants.NETWORK_PARTITIONS,
-                RestConstants.NETWORK_PARTITIONS_NAME);
+                NETWORK_PARTITION + ".json", RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
         // add deployment policy
         log.info("Adding deployment policy [deployment policy id] " + DEPLOYMENT_POLICY);
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        DEPLOYMENT_POLICY + ".json", RestConstants.DEPLOYMENT_POLICIES,
-                RestConstants.DEPLOYMENT_POLICIES_NAME);
+                DEPLOYMENT_POLICY + ".json", RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(addedDep);
 
         // add application policy
@@ -89,8 +91,9 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         assertTrue(addAppPolicy);
 
         // deploy a default cartridge
-        boolean defaultCartridgeAdded = restClient.addEntity(RESOURCES_PATH + "/cartridges/" + CARTRIDGE + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean defaultCartridgeAdded = restClient
+                .addEntity(RESOURCES_PATH + "/cartridges/" + CARTRIDGE + ".json", RestConstants.CARTRIDGES,
+                        RestConstants.CARTRIDGES_NAME);
         assertTrue("Default cartridge not deployed properly", defaultCartridgeAdded);
 
         // deploy application
@@ -100,16 +103,16 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         assertEquals(addedApp, true);
 
         // Test Iaas Provider attributes
-        CartridgeBean defaultCartridgeBean = (CartridgeBean) restClient.getEntity(RestConstants.CARTRIDGES, CARTRIDGE, CartridgeBean.class,
-                RestConstants.CARTRIDGES_NAME);
+        CartridgeBean defaultCartridgeBean = (CartridgeBean) restClient
+                .getEntity(RestConstants.CARTRIDGES, CARTRIDGE, CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
 
         assertEquals(CARTRIDGE, defaultCartridgeBean.getType());
         List<IaasProviderBean> iaasProviders = defaultCartridgeBean.getIaasProvider();
         assertNotNull(iaasProviders, "No Iaas Providers found in default cartridge definition");
         IaasProviderBean mockIaasProvider = getMockIaasProvider(iaasProviders);
         assertNotNull(mockIaasProvider, "Mock Iaas Provider not found in default cartridge definition");
-        assertNotNull(mockIaasProvider.getProperty(), "No properties found in Iaas Provider " +
-                "config of default cartridge definition");
+        assertNotNull(mockIaasProvider.getProperty(),
+                "No properties found in Iaas Provider " + "config of default cartridge definition");
 
         ///applications/{applicationId}/deploy/{applicationPolicyId}
         log.info("Deploying application [application id] app-iaasprovider-attribute-test using [application policy id] "
@@ -127,14 +130,15 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(applicationBean.getApplicationId(), ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(applicationBean.getApplicationId());
 
         // create a ServerLogClientInstance and get logs
         boolean found = false;
         LogEvent[] logEvents = serverLogClient.getAllLogLines();
         if (logEvents.length > 0) {
             for (LogEvent log : logEvents) {
-                if (!log.getMessage().contains("cartridge_property_value_1") && log.getMessage().contains("cc_property_value_1")) {
+                if (!log.getMessage().contains("cartridge_property_value_1") && log.getMessage()
+                        .contains("cc_property_value_1")) {
                     found = true;
                     break;
                 }
@@ -148,8 +152,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         String resourcePathUndeploy = RestConstants.APPLICATIONS + "/app-iaasprovider-attribute-test" +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
-        boolean undeployedApp = restClient.undeployEntity(resourcePathUndeploy, RestConstants
-                .APPLICATIONS_NAME);
+        boolean undeployedApp = restClient.undeployEntity(resourcePathUndeploy, RestConstants.APPLICATIONS_NAME);
         assertTrue(undeployedApp);
         log.info("Undeployed application 'app-iaasprovider-attribute-test'");
 
@@ -159,12 +162,14 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
                 RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
         boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("app-iaasprovider-attribute-test");
-        assertTrue(String.format("Forceful undeployment failed for the application %s",
-                "app-iaasprovider-attribute-test"), forceUndeployed);
+        assertTrue(
+                String.format("Forceful undeployment failed for the application %s", "app-iaasprovider-attribute-test"),
+                forceUndeployed);
 
         // update cartridge
-        boolean updated = restClient.updateEntity(RESOURCES_PATH + "/cartridges/" + UPDATED_CARTRIDGE + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean updated = restClient
+                .updateEntity(RESOURCES_PATH + "/cartridges/" + UPDATED_CARTRIDGE + ".json", RestConstants.CARTRIDGES,
+                        RestConstants.CARTRIDGES_NAME);
         assertTrue(updated);
         log.info("Updated cartridge 'cartridge-iaasprovider-attribute-test'");
 
@@ -176,7 +181,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         log.info("Re-deployed application 'app-iaasprovider-attribute-test'");
 
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(applicationBean.getApplicationId(), ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(applicationBean.getApplicationId());
 
         logEvents = serverLogClient.getAllLogLines();
         found = false;
@@ -193,8 +198,10 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
     }
 
     @AfterClass
-    public void tearDown () throws Exception {
+    public void tearDown() throws Exception {
         terminateAndRemoveAllArtifacts();
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("IaasProviderAttributeTestCase completed in [duration] %s ms", duration));
     }
 
     private IaasProviderBean getMockIaasProvider(List<IaasProviderBean> iaasProviders) {
@@ -206,7 +213,7 @@ public class IaasProviderAttributeTestCase extends StratosIntegrationTest {
         return null;
     }
 
-    private void terminateAndRemoveAllArtifacts () throws Exception {
+    private void terminateAndRemoveAllArtifacts() throws Exception {
 
         TopologyHandler topologyHandler = TopologyHandler.getInstance();
 

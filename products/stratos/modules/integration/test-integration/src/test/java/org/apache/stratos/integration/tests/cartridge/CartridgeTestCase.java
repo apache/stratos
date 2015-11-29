@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.integration.tests.group;
+package org.apache.stratos.integration.tests.cartridge;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.logging.Log;
@@ -40,20 +40,24 @@ import static org.testng.AssertJUnit.assertTrue;
 /**
  * Test to handle Cartridge CRUD operations
  */
+@Test(groups = { "cartridge" })
 public class CartridgeTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(CartridgeTestCase.class);
     private static final String RESOURCES_PATH = "/cartridge-test";
+    private long startTime;
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.deployment", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT,
+          priority = 1)
     public void testCartridge() throws Exception {
+        log.info("Running CartridgeTestCase.testCartridge test method...");
+        startTime = System.currentTimeMillis();
+
         String cartridgeType = "c0-cartridge-test";
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
-                        cartridgeType + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+                cartridgeType + ".json", RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(added);
         CartridgeBean bean = (CartridgeBean) restClient.
-                getEntity(RestConstants.CARTRIDGES, cartridgeType,
-                        CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+                getEntity(RestConstants.CARTRIDGES, cartridgeType, CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
         assertEquals(bean.getCategory(), "Application");
         assertEquals(bean.getHost(), "qmog.cisco.com");
         for (PropertyBean property : bean.getProperty()) {
@@ -80,14 +84,11 @@ public class CartridgeTestCase extends StratosIntegrationTest {
             }
         }
 
-
         boolean updated = restClient.updateEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
-                        cartridgeType + "-v1.json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+                cartridgeType + "-v1.json", RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(updated);
         CartridgeBean updatedBean = (CartridgeBean) restClient.
-                getEntity(RestConstants.CARTRIDGES, cartridgeType,
-                        CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+                getEntity(RestConstants.CARTRIDGES, cartridgeType, CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
         assertEquals(updatedBean.getType(), "c0-cartridge-test");
         assertEquals(updatedBean.getCategory(), "Data");
         assertEquals(updatedBean.getHost(), "qmog.cisco.com12");
@@ -115,35 +116,35 @@ public class CartridgeTestCase extends StratosIntegrationTest {
             }
         }
 
-        boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType,
-                RestConstants.CARTRIDGES_NAME);
+        boolean removed = restClient
+                .removeEntity(RestConstants.CARTRIDGES, cartridgeType, RestConstants.CARTRIDGES_NAME);
         assertTrue(removed);
 
         CartridgeBean beanRemoved = (CartridgeBean) restClient.
-                getEntity(RestConstants.CARTRIDGES, cartridgeType,
-                        CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+                getEntity(RestConstants.CARTRIDGES, cartridgeType, CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
         assertNull(beanRemoved);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.cartridge.deployment", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT,
+          priority = 2)
     public void testCartridgeList() throws Exception {
+        log.info("Running CartridgeTestCase.testCartridgeList test method...");
+
         String cartridgeType1 = "c1-cartridge-test";
         String cartridgeType2 = "c2-cartridge-test";
         boolean added1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
-                        cartridgeType1 + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+                cartridgeType1 + ".json", RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(added1);
 
         boolean added2 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" +
-                        cartridgeType2 + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+                cartridgeType2 + ".json", RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(added2);
 
         Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
         }.getType();
 
-        List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(RestConstants.CARTRIDGES,
-                listType, RestConstants.CARTRIDGES_NAME);
+        List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient
+                .listEntity(RestConstants.CARTRIDGES, listType, RestConstants.CARTRIDGES_NAME);
         assertTrue(cartridgeList.size() >= 2);
 
         CartridgeBean bean1 = null;
@@ -162,22 +163,21 @@ public class CartridgeTestCase extends StratosIntegrationTest {
         }
         assertNotNull(bean2);
 
-        boolean removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType1,
-                RestConstants.CARTRIDGES_NAME);
+        boolean removed = restClient
+                .removeEntity(RestConstants.CARTRIDGES, cartridgeType1, RestConstants.CARTRIDGES_NAME);
         assertTrue(removed);
 
         CartridgeBean beanRemoved = (CartridgeBean) restClient.
-                getEntity(RestConstants.CARTRIDGES, cartridgeType1,
-                        CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+                getEntity(RestConstants.CARTRIDGES, cartridgeType1, CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
         assertEquals(beanRemoved, null);
 
-        removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType2,
-                RestConstants.CARTRIDGES_NAME);
+        removed = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeType2, RestConstants.CARTRIDGES_NAME);
         assertTrue(removed);
 
         beanRemoved = (CartridgeBean) restClient.
-                getEntity(RestConstants.CARTRIDGES, cartridgeType2,
-                        CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
+                getEntity(RestConstants.CARTRIDGES, cartridgeType2, CartridgeBean.class, RestConstants.CARTRIDGES_NAME);
         assertNull(beanRemoved);
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("CartridgeTestCase completed in [duration] %s ms", duration));
     }
 }

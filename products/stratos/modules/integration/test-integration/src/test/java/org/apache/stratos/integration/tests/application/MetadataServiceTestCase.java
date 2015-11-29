@@ -28,14 +28,11 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.metadata.client.beans.PropertyBean;
 import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +49,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * Deploy a sample application on mock IaaS and load test metadata service with high load of concurrent read/write
  * operations from multiple clients
  */
-@Test(groups = { "stratos.application.deployment", "metadata" })
+@Test(groups = { "application", "metadata" })
 public class MetadataServiceTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(MetadataServiceTestCase.class);
     private static final String RESOURCES_PATH = "/metadata-service-test";
@@ -77,10 +74,10 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
     public static final String APPLICATION_POLICY_ID = "application-policy-metadata-service-test";
     public static final String DEPLOYMENT_POLICY_ID = "deployment-policy-metadata-service-test";
 
-    @BeforeTest(timeOut = APPLICATION_TEST_TIMEOUT)
+    @BeforeClass(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT)
     public void deployApplications() throws Exception {
+        log.info("Running MetadataServiceTestCase.deployApplications method...");
         startTime = System.currentTimeMillis();
-        log.info("Adding autoscaling policy [autoscale policy id] " + AUTOSCALE_POLICY_ID);
         boolean addedScalingPolicy = restClient.addEntity(
                 RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + AUTOSCALE_POLICY_ID + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
@@ -154,13 +151,13 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         assertTrue(deployed);
 
         log.info("Waiting for application-1 status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean1.getApplicationId(), ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean1.getApplicationId());
 
         log.info("Waiting for cluster status of application-1 to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean1.getApplicationId());
 
         log.info("Waiting for application-2 status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean2.getApplicationId(), ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean2.getApplicationId());
 
         log.info("Waiting for cluster status of application-2 to become ACTIVE...");
         topologyHandler.assertClusterActivation(bean2.getApplicationId());
@@ -200,10 +197,11 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         return payloadProperties;
     }
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service basic test",
           priority = 1)
     public void testBasicOperations() throws Exception {
+        log.info("Running MetadataServiceTestCase.testBasicOperations test method...");
         String key = "mykey";
         String val1 = "myval1";
         String val2 = "myval2";
@@ -266,10 +264,11 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         log.info("Metadata service basic test completed successfully");
     }
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service concurrency test",
           priority = 2)
     public void metadataConcurrencyTest() throws Exception {
+        log.info("Running MetadataServiceTestCase.metadataConcurrencyTest test method...");
         log.info("Starting multiple clients to add properties");
         ExecutorService taskExecutor = Executors.newFixedThreadPool(5);
         List<Callable<Void>> tasks = new ArrayList<>();
@@ -289,10 +288,11 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         log.info("Metadata service concurrency test completed successfully");
     }
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service security test",
           priority = 3)
     public void metadataSecurityTest() throws Exception {
+        log.info("Running MetadataServiceTestCase.metadataSecurityTest test method...");
         String key = "mykey";
         String val1 = "myval1";
 
@@ -321,10 +321,11 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         log.info("Metadata service security test completed successfully");
     }
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT,
           description = "Application startup, activation and metadata service concurrency test",
           priority = 10)
     public void cleanupAfterUndeployingAppTest() throws Exception {
+        log.info("Running MetadataServiceTestCase.cleanupAfterUndeployingAppTest test method...");
         // undeploy the app and check whether metadata entries are cleared
         log.info("Un-deploying the application [application id] " + APPLICATION_1_ID);
         String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + APPLICATION_1_ID +
@@ -367,8 +368,9 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
         };
     }
 
-    @AfterTest(timeOut = APPLICATION_TEST_TIMEOUT)
+    @AfterClass(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT)
     public void cleanup() throws Exception {
+        log.info("Running MetadataServiceTestCase.cleanup method...");
         // remove app-1
         log.info("Removing the application [application id] " + APPLICATION_1_ID);
         boolean removedApp = restClient
@@ -436,6 +438,6 @@ public class MetadataServiceTestCase extends StratosIntegrationTest {
                 RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
         long duration = System.currentTimeMillis() - startTime;
-        log.info("Metadata test completed in " + duration + " ms");
+        log.info(String.format("MetadataServiceTestCase completed in [duration] %s ms", duration));
     }
 }

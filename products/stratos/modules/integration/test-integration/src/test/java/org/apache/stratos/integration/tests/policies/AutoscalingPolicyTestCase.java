@@ -35,11 +35,12 @@ import static org.testng.AssertJUnit.*;
 /**
  * Test to handle autoscaling policy CRUD operations
  */
+@Test(groups = { "policies" })
 public class AutoscalingPolicyTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(AutoscalingPolicyTestCase.class);
     private static final String RESOURCES_PATH = "/autoscaling-policy-test";
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void testAutoscalingPolicy() throws Exception {
         String policyId = "autoscaling-policy-autoscaling-policy-test";
         boolean added = restClient
@@ -87,7 +88,7 @@ public class AutoscalingPolicyTestCase extends StratosIntegrationTest {
                 policyId), beanRemoved);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void testAutoscalingPolicyList() throws Exception {
         String policyId1 = "autoscaling-policy-autoscaling-policy-test-1";
         String policyId2 = "autoscaling-policy-autoscaling-policy-test-2";
