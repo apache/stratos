@@ -53,8 +53,9 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, clusterId, instanceId);
             } else {
-                log.warn(String.format("No possible state change found for [type] %s [cluster] %s " +
-                        "[instance] %s", type, clusterId, instanceId));
+                log.warn(
+                        String.format("No possible state change found for [type] %s, [cluster] %s, [instance] %s", type,
+                                clusterId, instanceId));
             }
         }
         return false;
@@ -64,12 +65,10 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
         ClusterMonitor monitor = AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
         boolean clusterActive = false;
-        for (NetworkPartitionContext clusterLevelNetworkPartitionContext :
-                monitor.getNetworkPartitionCtxts()) {
+        for (NetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getNetworkPartitionCtxts()) {
             //minimum check per partition
-            ClusterInstanceContext instanceContext =
-                    (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
-                            getInstanceContext(instanceId);
+            ClusterInstanceContext instanceContext = (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
+                    getInstanceContext(instanceId);
             if (instanceContext != null) {
                 if (instanceContext.getActiveMembers() >= instanceContext.getMinInstanceCount()) {
                     clusterActive = true;
@@ -79,12 +78,13 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
         }
         if (clusterActive) {
             if (log.isInfoEnabled()) {
-                log.info("Publishing cluster activated event for [application]: "
-                        + monitor.getAppId() + " [cluster]: " + clusterId);
+                log.info(String.format("Publishing cluster activated event for [application-id] %s, [cluster-id] %s, "
+                        + "[cluster-instance-id] %s", monitor.getAppId(), clusterId, instanceId));
             }
             //TODO service call
-            ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
-                    monitor.getServiceId(), monitor.getClusterId(), instanceId);
+            ClusterStatusEventPublisher
+                    .sendClusterActivatedEvent(monitor.getAppId(), monitor.getServiceId(), monitor.getClusterId(),
+                            instanceId);
         }
         return clusterActive;
     }
