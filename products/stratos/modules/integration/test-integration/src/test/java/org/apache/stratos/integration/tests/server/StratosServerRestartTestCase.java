@@ -27,7 +27,6 @@ import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.common.extensions.StratosServerExtension;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,6 +42,9 @@ import static org.testng.AssertJUnit.assertTrue;
  * Deploy a sample application on mock IaaS and assert whether application instance, cluster instance, member instances
  * are getting activated. Restart the Stratos and check all again.
  */
+@Test(groups = { "server" },
+      dependsOnGroups = { "adc", "application", "cartridge", "iaas", "policies", "users" },
+      alwaysRun = true)
 public class StratosServerRestartTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(StratosServerRestartTestCase.class);
     private static final String RESOURCES_PATH = "/stratos-server-restart-test";
@@ -52,30 +54,27 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
     private static final String deploymentPolicyId = "deployment-policy-stratos-server-restart-test";
     private static final String applicationId = "stratos-server-restart-test";
     private static final String applicationPolicyId = "application-policy-stratos-server-restart-test";
+    private TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT,
-            groups = { "stratos.server.restart"},
-            dependsOnGroups = { "stratos.application.deployment","stratos.cartridge.iaas", "stratos.policy.management","adc","all","smoke","metadata"})
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT)
     public void stratosServerRestartTest() throws Exception {
+        log.info("Running StratosServerRestartTestCase.stratosServerRestartTest test method...");
+        long startTime = System.currentTimeMillis();
 
-        TopologyHandler topologyHandler = TopologyHandler.getInstance();
-
-        log.info("Adding autoscaling policy [autoscale policy id] " + autoscalingPolicyId);
         boolean addedScalingPolicy = restClient.addEntity(
                 RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
         assertTrue(addedScalingPolicy);
 
         log.info(String.format("Adding cartridge [cartridge type] %s", cartridgeId));
-        boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean addedC1 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         assertTrue(addedC1);
 
         log.info(String.format("Adding network partition [network partition id] %s", networkPartitionId));
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        networkPartitionId + ".json", RestConstants.NETWORK_PARTITIONS,
-                RestConstants.NETWORK_PARTITIONS_NAME);
+                networkPartitionId + ".json", RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
         log.info(String.format("Adding deployment policy [deployment policy id] %s", deploymentPolicyId));
@@ -101,18 +100,19 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         assertTrue(addAppPolicy);
 
         ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient
-                .getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                        ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+                .getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId, ApplicationPolicyBean.class,
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertEquals(policyBean.getId(), applicationPolicyId);
 
-        log.info(String.format("Deploying application [application id] %s using [application policy id] %s", applicationId, applicationPolicyId));
+        log.info(String.format("Deploying application [application id] %s using [application policy id] %s",
+                applicationId, applicationPolicyId));
         String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
         boolean deployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
         assertTrue(deployed);
 
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(applicationId, ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(applicationId);
 
         log.info("Waiting for cluster status to become ACTIVE...");
         topologyHandler.assertClusterActivation(applicationId);
@@ -121,6 +121,15 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         Assert.assertTrue(memberList.size() == 1,
                 String.format("Active member list for application %s is empty", applicationId));
 
+        /*
+        * Restarting Stratos server
+        */
+        StratosServerExtension.restartStratosServer();
+
+        /*
+        * Assert whether cluster monitors were re-created by terminating mock instances. Application status should
+        * become inactive
+        */
         log.info("Terminating members in [cluster id] c1-stratos-server-restart-test in mock IaaS directly to "
                 + "simulate faulty members...");
         Map<String, Member> memberMap = TopologyHandler.getInstance()
@@ -132,30 +141,21 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         }
         // application status should be marked as inactive since some members are faulty
         log.info("Waiting for application status to become INACTIVE");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Inactive);
+        TopologyHandler.getInstance().assertApplicationInActiveStatus(bean.getApplicationId());
+
+        log.info("Waiting for cluster status to become ACTIVE...");
+        topologyHandler.assertClusterActivation(bean.getApplicationId());
 
         // application should recover itself and become active after spinning more instances
         log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
-
-        log.info("Waiting for cluster status to become ACTIVE...");
-        topologyHandler.assertClusterActivation(bean.getApplicationId());
-
-        // restart stratos server
-        StratosServerExtension.restartStratosServer();
-
-        log.info("Waiting for application status to become ACTIVE...");
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(), ApplicationStatus.Active);
-
-        log.info("Waiting for cluster status to become ACTIVE...");
-        topologyHandler.assertClusterActivation(bean.getApplicationId());
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean.getApplicationId());
 
         memberList = topologyHandler.getMembersForApplication(bean.getApplicationId());
         Assert.assertTrue(memberList.size() == 1,
                 String.format("Active member list for application %s is empty", bean.getApplicationId()));
 
         log.info(String.format("Un-deploying the application [application id] %s", applicationId));
-        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId+
+        String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
         boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy, RestConstants.APPLICATIONS_NAME);
@@ -165,17 +165,17 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         if (!undeploy) {
             //Need to forcefully undeploy the application
             log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId+
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = topologyHandler.assertApplicationUndeploy(applicationId);
-            assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    applicationId), forceUndeployed);
+            assertTrue(String.format("Forceful undeployment failed for the application %s", applicationId),
+                    forceUndeployed);
         }
 
         log.info(String.format("Removing the application [application id] %s", applicationId));
-        boolean removedApp = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
-                RestConstants.APPLICATIONS_NAME);
+        boolean removedApp = restClient
+                .removeEntity(RestConstants.APPLICATIONS, applicationId, RestConstants.APPLICATIONS_NAME);
         assertTrue(removedApp);
 
         ApplicationBean beanRemoved = (ApplicationBean) restClient
@@ -184,14 +184,13 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         assertNull(beanRemoved);
 
         log.info(String.format("Removing the application policy [application policy id] %s", applicationPolicyId));
-        boolean removeAppPolicy = restClient
-                .removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                        RestConstants.APPLICATION_POLICIES_NAME);
+        boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removeAppPolicy);
 
         log.info(String.format("Removing the cartridge [cartridge type] %s", cartridgeId));
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId,
-                RestConstants.CARTRIDGES_NAME);
+        boolean removedC1 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, cartridgeId, RestConstants.CARTRIDGES_NAME);
         assertTrue(removedC1);
 
         log.info(String.format("Removing the autoscaling policy [autoscaling policy id] %s", autoscalingPolicyId));
@@ -200,15 +199,16 @@ public class StratosServerRestartTestCase extends StratosIntegrationTest {
         assertTrue(removedAuto);
 
         log.info(String.format("Removing the deployment policy [deployment policy id] %s", deploymentPolicyId));
-        boolean removedDep = restClient
-                .removeEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
-                        RestConstants.DEPLOYMENT_POLICIES_NAME);
+        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertTrue(removedDep);
 
         log.info(String.format("Removing the network partition [network partition id] %s", networkPartitionId));
-        boolean removedNet = restClient
-                .removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
-                        RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedNet);
+
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("StratosServerRestartTestCase completed in [duration] %s ms", duration));
     }
 }
