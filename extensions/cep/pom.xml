@@ -32,8 +32,8 @@
     <description>Apache Stratos CEP Extensions</description>
 
     <modules>
-        <module>modules/distribution</module>
         <module>modules/stratos-cep-extension/wso2cep-3.0.0</module>
         <module>modules/stratos-cep-extension/wso2cep-3.1.0</module>
+        <module>modules/distribution</module>
     </modules>
 </project>
