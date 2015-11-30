@@ -59,8 +59,8 @@ def decrypt_password(pass_str, secret):
 
     # remove nonprintable characters that are padded in the decrypted password
     dec_pass = filter(lambda x: x in string.printable, dec_pass)
-    dec_pass_md5 = hashlib.md5(dec_pass.encode('utf-8')).hexdigest()
-    log.debug("Decrypted password md5sum: [%r]" % dec_pass_md5)
+    # dec_pass_md5 = hashlib.md5(dec_pass.encode('utf-8')).hexdigest()
+    # log.debug("Decrypted password md5sum: [%r]" % dec_pass_md5)
     return dec_pass
 
 
