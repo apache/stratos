@@ -59,6 +59,11 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
     public ADCValidationTestCase() throws IOException {
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws Exception {
         log.info("Setting up ADCTestCase");
@@ -75,7 +80,7 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
         tearDown();
     }
 
-    @Test(timeOut = ADC_TEST_TIMEOUT, groups = {"adddddd"})
+    @Test(timeOut = ADC_TEST_TIMEOUT, groups = {"smoke"})
     public void testAppPathValidation(){
         log.info("Testing app path validation for ADC");
         startCommunicatorThread();
