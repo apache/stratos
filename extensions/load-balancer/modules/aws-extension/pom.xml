@@ -28,7 +28,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.apache.stratos.aws.extension</artifactId>
+    <artifactId>apache-stratos-aws-extension</artifactId>
     <name>Apache Stratos - AWS LB Extension</name>
     <description>Apache Stratos AWS Extension for Load Balancing</description>
 
