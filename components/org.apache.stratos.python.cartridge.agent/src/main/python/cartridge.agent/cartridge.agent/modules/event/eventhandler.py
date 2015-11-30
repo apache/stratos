@@ -90,6 +90,11 @@ class EventHandler:
             self.__log.error("Repository path is empty. Failed to process artifact updated event.")
             return
 
+        if not EventHandler.validate_repo_path(Config.app_path):
+            self.__log.error(
+                "Repository path cannot be accessed, or is invalid. Failed to process artifact updated event.")
+            return
+
         repo_username = artifacts_updated_event.repo_username
         tenant_id = artifacts_updated_event.tenant_id
         is_multitenant = Config.is_multiTenant
@@ -632,6 +637,13 @@ class EventHandler:
             raise RuntimeError("Tenant could not be found: [tenant-id] %s" % str(tenant_id))
 
         return tenant.tenant_domain
+
+    @staticmethod
+    def validate_repo_path(app_path):
+        # app path would be ex: /var/www, or /opt/server/data
+        return os.access(app_path, os.W_OK)
+
+
 
 
 class PluginExecutor(Thread):

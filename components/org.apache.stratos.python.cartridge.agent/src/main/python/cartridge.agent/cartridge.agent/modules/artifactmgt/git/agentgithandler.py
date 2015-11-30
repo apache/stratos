@@ -152,7 +152,7 @@ class AgentGitHandler:
             # clone the repo to a temporary location first to avoid conflicts
             AgentGitHandler.log.debug(
                 "Cloning artifacts from URL: %s to temp location: %s" % (git_repo.repo_url, temp_repo_path))
-            Repo.clone_from(git_repo.repo_url, temp_repo_path)
+            Repo.clone_from(git_repo.auth_url, temp_repo_path)
 
             # move the cloned dir to application path
             copy_tree(temp_repo_path, git_repo.local_repo_path)
@@ -216,7 +216,8 @@ class AgentGitHandler:
         git_repo = GitRepository()
         git_repo.tenant_id = repo_info.tenant_id
         git_repo.local_repo_path = repo_info.repo_path
-        git_repo.repo_url = AgentGitHandler.create_auth_url(repo_info)
+        git_repo.repo_url = repo_info.repo_url
+        git_repo.auth_url = AgentGitHandler.create_auth_url(repo_info)
         git_repo.repo_username = repo_info.repo_username
         git_repo.repo_password = repo_info.repo_password
         git_repo.commit_enabled = repo_info.commit_enabled
@@ -378,6 +379,8 @@ class GitRepository:
     def __init__(self):
         self.repo_url = None
         """ :type : str  """
+        self.auth_url = None
+        """ :type : str """
         self.local_repo_path = None
         """ :type : str  """
         self.cloned = False
