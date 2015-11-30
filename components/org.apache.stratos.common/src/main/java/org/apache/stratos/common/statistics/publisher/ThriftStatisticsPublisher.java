@@ -43,6 +43,8 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
     private LoadBalancingDataPublisher loadBalancingDataPublisher;
     private List<ThriftClientInfo> thriftClientInfoList;
     private boolean enabled = false;
+    private ArrayList<ReceiverGroup> receiverGroups;
+    private ArrayList<DataPublisherHolder> dataPublisherHolders;
 
     /**
      * Credential information stored inside thrift-client-config.xml file
@@ -58,6 +60,8 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
 
         if (isPublisherEnabled()) {
             this.enabled = true;
+            receiverGroups = new ArrayList<ReceiverGroup>();
+            dataPublisherHolders = new ArrayList<DataPublisherHolder>();
             init();
         }
     }
@@ -82,29 +86,27 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
 
     private ArrayList<ReceiverGroup> getReceiverGroups() {
 
-        ArrayList<ReceiverGroup> receiverGroups = new ArrayList<ReceiverGroup>();
-        ArrayList<DataPublisherHolder> dataPublisherHolders = new ArrayList<DataPublisherHolder>();
-        DataPublisherHolder aNode;
-
         for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
             if (thriftClientInfo.isStatsPublisherEnabled()) {
-                aNode = new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(),
-                        thriftClientInfo.getPassword());
-                dataPublisherHolders.add(aNode);
+                dataPublisherHolders.add(new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(),
+                        thriftClientInfo.getPassword()));
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Thrift client [id] %s [ip] %s [port] %s is added to data publisher holder",
                             thriftClientInfo.getId(), thriftClientInfo.getIp(), thriftClientInfo.getPort()));
                 }
             }
         }
-        ReceiverGroup group = new ReceiverGroup(dataPublisherHolders);
-        receiverGroups.add(group);
+        receiverGroups.add(new ReceiverGroup(dataPublisherHolders));
         return receiverGroups;
 
     }
 
     private String buildUrl(ThriftClientInfo thriftClientInfo) {
         return String.format("tcp://%s:%s", thriftClientInfo.getIp(), thriftClientInfo.getPort());
+    }
+
+    public ArrayList<DataPublisherHolder> getDataPublisherHolders() {
+        return dataPublisherHolders;
     }
 
     @Override
