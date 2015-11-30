@@ -70,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.cep.310.extension</artifactId>
+            <artifactId>org.apache.stratos.cep310.extension</artifactId>
         </dependency>
     </dependencies>
 </project>
