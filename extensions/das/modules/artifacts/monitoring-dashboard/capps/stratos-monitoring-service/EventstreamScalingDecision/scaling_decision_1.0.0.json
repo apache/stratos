@@ -1,8 +1,8 @@
 {
   "name": "scaling_decision",
   "version": "1.0.0",
-  "nickName": "Member Information",
-  "description": "Member Information",
+  "nickName": "Scaling Decision",
+  "description": "Scaling Decision",
   "payloadData": [
     {
       "name": "timestamp",
