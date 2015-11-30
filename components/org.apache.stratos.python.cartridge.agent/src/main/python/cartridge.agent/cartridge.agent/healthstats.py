@@ -62,7 +62,7 @@ class HealthStatisticsPublisherManager(Thread):
 
                 self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
                 self.publisher.publish_load_average(cartridge_stats.load_avg)
-            except ThriftReceiverOfflineException:
+            except Exception as e:
                 self.log.exception(
                     "Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
                 self.publisher = HealthStatisticsPublisher()
@@ -186,6 +186,7 @@ class HealthStatisticsPublisher:
     def add_publishers(self, cep_url):
         """
         Add publishers to the publisher list for publishing
+        :param cep_url:
         """
         cep_ip = cep_url.split(':')[0]
         cep_port = cep_url.split(':')[1]
@@ -199,27 +200,28 @@ class HealthStatisticsPublisher:
 
         self.publishers.append(publisher)
 
-
-    def is_cep_active(self, cep_url):
+    @staticmethod
+    def is_cep_active(cep_url):
         """
         Check if the cep node is active
         return true if active
+        :param cep_url:
         """
-        self.ports = []
+        ports = []
         cep_ip = cep_url.split(':')[0]
         cep_port = cep_url.split(':')[1]
-        self.ports.append(cep_port)
+        ports.append(cep_port)
 
         cep_active = cartridgeagentutils.check_ports_active(
             cep_ip,
-            self.ports)
+            ports)
 
         return cep_active
-
 
     def publish_event(self, event):
         """
         Publish events to cep nodes
+        :param event:
         """
         for publisher in self.publishers:
             try:
