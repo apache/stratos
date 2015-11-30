@@ -83,27 +83,28 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
     private ArrayList<ReceiverGroup> getReceiverGroups() {
 
         ArrayList<ReceiverGroup> receiverGroups = new ArrayList<ReceiverGroup>();
+        ArrayList<DataPublisherHolder> dataPublisherHolders = new ArrayList<DataPublisherHolder>();
+        DataPublisherHolder aNode;
 
         for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
             if (thriftClientInfo.isStatsPublisherEnabled()) {
-                ArrayList<DataPublisherHolder> dataPublisherHolders = new ArrayList<DataPublisherHolder>();
-                DataPublisherHolder aNode = new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(), thriftClientInfo.getPassword());
+                aNode = new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(),
+                        thriftClientInfo.getPassword());
                 dataPublisherHolders.add(aNode);
-                ReceiverGroup group = new ReceiverGroup(dataPublisherHolders);
-                receiverGroups.add(group);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Thrift client [id] %s [ip] %s [port] %s is added to data publisher holder",
+                            thriftClientInfo.getId(), thriftClientInfo.getIp(), thriftClientInfo.getPort()));
+                }
             }
         }
+        ReceiverGroup group = new ReceiverGroup(dataPublisherHolders);
+        receiverGroups.add(group);
         return receiverGroups;
 
     }
 
     private String buildUrl(ThriftClientInfo thriftClientInfo) {
-        String url = new StringBuilder()
-                .append("tcp://")
-                .append(thriftClientInfo.getIp())
-                .append(":")
-                .append(thriftClientInfo.getPort()).toString();
-        return url;
+        return String.format("tcp://%s:%s", thriftClientInfo.getIp(), thriftClientInfo.getPort());
     }
 
     @Override
