@@ -20,31 +20,38 @@
 
 <!-- Apache thrift client configuration for publishing statistics to WSO2 CEP and WSO2 DAS -->
 <thriftClientConfiguration>
-     <config>
+    <config>
         <cep>
-             <node id="node-01">
-                  <statsPublisherEnabled>true</statsPublisherEnabled>
-                  <username>admincep1</username>
-                  <password>1234cep1</password>
-                  <ip>192.168.10.10</ip>
-                  <port>9300</port>
-             </node>
-             <node id="node-02">
-                  <statsPublisherEnabled>true</statsPublisherEnabled>
-                  <username>admincep2</username>
-                  <password>1234cep2</password>
-                  <ip>192.168.10.20</ip>
-                  <port>9300</port>
-             </node>
+            <node id="node-01">
+                <statsPublisherEnabled>true</statsPublisherEnabled>
+                <username>admincep1</username>
+                <password>1234cep1</password>
+                <ip>192.168.10.10</ip>
+                <port>9300</port>
+            </node>
+            <node id="node-02">
+                <statsPublisherEnabled>true</statsPublisherEnabled>
+                <username>admincep2</username>
+                <password>1234cep2</password>
+                <ip>192.168.10.20</ip>
+                <port>9300</port>
+            </node>
         </cep>
         <das>
-             <node id="node-01">
-                  <statsPublisherEnabled>true</statsPublisherEnabled>
-                  <username>admindas1</username>
-                  <password>1234das1</password>
-                  <ip>192.168.10.11</ip>
-                  <port>9301</port>
-             </node>
+            <node id="node-01">
+                <statsPublisherEnabled>true</statsPublisherEnabled>
+                <username>admindas1</username>
+                <password>1234das1</password>
+                <ip>192.168.10.11</ip>
+                <port>9301</port>
+            </node>
+            <node id="node-02">
+                <statsPublisherEnabled>false</statsPublisherEnabled>
+                <username>admindas2</username>
+                <password>1234das2</password>
+                <ip>192.168.10.21</ip>
+                <port>9301</port>
+            </node>
         </das>
-    </config>  
+    </config>
 </thriftClientConfiguration>
