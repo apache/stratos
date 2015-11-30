@@ -61,7 +61,17 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
     private boolean topologyContextTestCompleted = false;
     private boolean completeTenantInitialized = false;
     private boolean thriftTestCompleted = false;
-    private Topology topology = createTestTopology();
+    private Topology topology = PythonAgentIntegrationTest.createTestTopology(
+            SERVICE_NAME,
+            CLUSTER_ID,
+            DEPLOYMENT_POLICY_NAME,
+            AUTOSCALING_POLICY_NAME,
+            APP_ID,
+            MEMBER_ID,
+            CLUSTER_INSTANCE_ID,
+            NETWORK_PARTITION_ID,
+            PARTITION_ID,
+            ServiceType.SingleTenant);
 
     public AgentStartupTestCase() throws IOException {
     }
@@ -216,32 +226,5 @@ public class AgentStartupTestCase extends PythonAgentIntegrationTest {
         tenantList.add(new Tenant(2, "test.two.domain"));
         tenantList.add(new Tenant(3, "test.three.domain"));
         return tenantList;
-    }
-
-    /**
-     * Create test topology
-     *
-     * @return Topology object with mock information
-     */
-    private Topology createTestTopology() {
-        Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
-        topology.addService(service);
-
-        Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
-                AUTOSCALING_POLICY_NAME, APP_ID);
-        service.addCluster(cluster);
-
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID, CLUSTER_INSTANCE_ID,
-                NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
-
-        member.setDefaultPrivateIP("10.0.0.1");
-        member.setDefaultPublicIP("20.0.0.1");
-        Properties properties = new Properties();
-        properties.setProperty("prop1", "value1");
-        member.setProperties(properties);
-        member.setStatus(MemberStatus.Created);
-        cluster.addMember(member);
-        return topology;
     }
 }

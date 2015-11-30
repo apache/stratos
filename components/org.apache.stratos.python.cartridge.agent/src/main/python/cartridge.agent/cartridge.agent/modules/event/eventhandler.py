@@ -89,6 +89,13 @@ def on_artifact_updated_event(artifacts_updated_event):
         log.error("Repository path is empty. Failed to process artifact updated event.")
         return
 
+    if not validate_repo_path(Config.app_path):
+        log.error(
+            "Repository path cannot be accessed, or is invalid. Failed to process artifact updated event. [App Path] %s"
+            % Config.app_path)
+
+        return
+
     repo_username = artifacts_updated_event.repo_username
     tenant_id = artifacts_updated_event.tenant_id
     is_multitenant = Config.is_multiTenant
@@ -666,7 +673,7 @@ def find_tenant_domain(tenant_id):
 
 def validate_repo_path(app_path):
     # app path would be ex: /var/www, or /opt/server/data
-    return os.access(app_path, os.W_OK)
+    return os.path.isabs(app_path)
 
 
 class PluginExecutor(Thread):
