@@ -415,7 +415,6 @@ public class TopologyBuilder {
                 log.error("Invalid state transition from " + member.getStatus() + " to " +
                         MemberStatus.Initialized);
             } else {
-
                 Cluster cluster = service.getCluster(memberContext.getClusterId());
                 String clusterId = cluster.getClusterId();
                 ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);

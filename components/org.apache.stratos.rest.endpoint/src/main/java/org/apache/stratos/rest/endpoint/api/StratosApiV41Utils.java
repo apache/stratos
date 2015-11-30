@@ -1578,8 +1578,6 @@ public class StratosApiV41Utils {
                 if (group.getCartridges() != null) {
                     if (group.getDeploymentPolicy() != null) {
                         groupParentHasDeploymentPolicy = true;
-                    } else {
-                        groupParentHasDeploymentPolicy = false;
                     }
                     validateCartridgesForDeploymentPolicy(group.getCartridges(), groupParentHasDeploymentPolicy);
                 }
@@ -1610,9 +1608,9 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     private static void validateCartridgesForDeploymentPolicy(List<CartridgeReferenceBean> cartridgeReferenceBeans,
-            boolean hasDeploymentPolicy) throws RestAPIException {
+            boolean groupParentHasDeploymentPolicy) throws RestAPIException {
 
-        if (hasDeploymentPolicy) {
+        if (groupParentHasDeploymentPolicy) {
             for (CartridgeReferenceBean cartridge : cartridgeReferenceBeans) {
                 if (cartridge.getSubscribableInfo().getDeploymentPolicy() != null) {
                     String message = "Group deployment policy already exists. Remove deployment policy from " +
