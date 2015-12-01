@@ -63,4 +63,14 @@
             </build>
         </profile>
     </profiles>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cep300.extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cep310.extension</artifactId>
+        </dependency>
+    </dependencies>
 </project>

@@ -42,6 +42,11 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
     public MessageBrokerHATestCase() throws IOException {
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     private static final Log log = LogFactory.getLog(MessageBrokerHATestCase.class);
     private static final int HA_TEST_TIMEOUT = 300000;
     private static final String CLUSTER_ID = "php.php.domain";
@@ -169,10 +174,11 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
                                 MEMBER_ID);
                         publishEvent(instanceCleanupMemberEvent);
                         publishCleanupEvent = true;
-                        waitUntilCleanupEventIsReceivedAndStopDefaultMB();
+
+                        stopActiveMQInstance("testBroker-" + amqpBindPorts[0] + "-" + mqttBindPorts[0]);
                     }
 
-                    if (line.contains("Could not publish event to message broker localhost:1885.")) {
+                    if (line.contains("Could not publish [event] ")) {
                         log.info("Event publishing to default message broker failed and the next option is tried.");
                         exit = true;
                     }
@@ -184,26 +190,6 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
 
         //        assertAgentActivation();
         log.info("MessageBrokerHATestCase publisher test completed successfully.");
-    }
-
-    private void waitUntilCleanupEventIsReceivedAndStopDefaultMB() {
-        boolean eventReceived = false;
-        List<String> outputLines = new ArrayList<>();
-
-        while (!eventReceived) {
-            List<String> newLines = getNewLines(outputLines, outputStream.toString());
-            if (newLines.size() > 0) {
-                for (String line : newLines) {
-                    if (line.contains("Message received: instance/notifier/InstanceCleanupMemberEvent")) {
-                        // take down the default broker
-                        stopActiveMQInstance("testBroker-" + amqpBindPorts[0] + "-" + mqttBindPorts[0]);
-                        eventReceived = true;
-                    }
-                }
-            }
-            log.info("Waiting until cleanup event is received by PCA...");
-        }
-        log.info("Cleanup event is received by PCA.");
     }
 
     private void assertAgentActivation() {
@@ -226,7 +212,18 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
                                 sleep(2000);
                                 // Send complete topology event
                                 log.info("Publishing complete topology event...");
-                                Topology topology = createTestTopology();
+                                Topology topology = PythonAgentIntegrationTest.createTestTopology(
+                                        SERVICE_NAME,
+                                        CLUSTER_ID,
+                                        DEPLOYMENT_POLICY_NAME,
+                                        AUTOSCALING_POLICY_NAME,
+                                        APP_ID,
+                                        MEMBER_ID,
+                                        CLUSTER_INSTANCE_ID,
+                                        NETWORK_PARTITION_ID,
+                                        PARTITION_ID,
+                                        ServiceType.SingleTenant);
+
                                 CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
                                 publishEvent(completeTopologyEvent);
                                 log.info("Complete topology event published");
@@ -259,30 +256,5 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
         log.info("PCA activation assertion passed.");
     }
 
-    /**
-     * Create test topology
-     *
-     * @return
-     */
-    private Topology createTestTopology() {
-        Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
-        topology.addService(service);
 
-        Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
-                AUTOSCALING_POLICY_NAME, APP_ID);
-        service.addCluster(cluster);
-
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID, CLUSTER_INSTANCE_ID,
-                NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
-
-        member.setDefaultPrivateIP("10.0.0.1");
-        member.setDefaultPublicIP("20.0.0.1");
-        Properties properties = new Properties();
-        properties.setProperty("prop1", "value1");
-        member.setProperties(properties);
-        member.setStatus(MemberStatus.Created);
-        cluster.addMember(member);
-        return topology;
-    }
 }

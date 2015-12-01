@@ -21,12 +21,9 @@ package org.apache.stratos.python.cartridge.agent.integration.tests;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
-import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.apache.stratos.python.cartridge.agent.integration.common.ThriftTestServer;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -41,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
 
@@ -59,7 +55,18 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "tomcat";
     private boolean startupTestCompleted = false;
-    private Topology topology = createTestTopology();
+    private Topology topology = PythonAgentIntegrationTest.createTestTopology(
+            SERVICE_NAME,
+            CLUSTER_ID,
+            DEPLOYMENT_POLICY_NAME,
+            AUTOSCALING_POLICY_NAME,
+            APP_ID,
+            MEMBER_ID,
+            CLUSTER_INSTANCE_ID,
+            NETWORK_PARTITION_ID,
+            PARTITION_ID,
+            ServiceType.SingleTenant);
+
     private static final int ADC_TIMEOUT = 300000;
     private ThriftTestServer secondThriftTestServer;
     private boolean thriftTestCompletedinServerTwo = false;
@@ -74,6 +81,11 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
                 .load(PythonAgentIntegrationTest.class.getResourceAsStream(PATH_SEP + "integration-test.properties"));
         cepServerTwoPort = Integer.parseInt(integrationProperties.getProperty(CEP_SERVER_TWO_PORT));
 
+    }
+
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
     }
 
 
@@ -175,19 +187,6 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
 
         startupTestThread.start();
 
-        instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                log.info("Publishing complete topology with a new member...");
-                Member newMember = new Member(SERVICE_NAME, CLUSTER_ID, "new-member", CLUSTER_INSTANCE_ID,
-                        NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private, System.currentTimeMillis());
-                topology.getService(SERVICE_NAME).getCluster(CLUSTER_ID).addMember(newMember);
-                CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-                publishEvent(completeTopologyEvent);
-                log.info("Complete topology event published with new member");
-            }
-        });
-
         while (!instanceStarted || !instanceActivated || !startupTestCompleted ||
                 !thriftTestCompletedinServerOne || !thriftTestCompletedinServerTwo) {
             // wait until the instance activated event is received.
@@ -268,33 +267,5 @@ public class CEPHAModeTestCase extends PythonAgentIntegrationTest {
                 }
             }
         });
-    }
-
-    /**
-     * Create test topology
-     *
-     * @return Topology object with mock information
-     */
-    private Topology createTestTopology() {
-        Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
-        topology.addService(service);
-
-        Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
-                AUTOSCALING_POLICY_NAME, APP_ID);
-        service.addCluster(cluster);
-
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID,
-                CLUSTER_INSTANCE_ID, NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private,
-                System.currentTimeMillis());
-
-        member.setDefaultPrivateIP("10.0.0.1");
-        member.setDefaultPublicIP("20.0.0.1");
-        Properties properties = new Properties();
-        properties.setProperty("prop1", "value1");
-        member.setProperties(properties);
-        member.setStatus(MemberStatus.Created);
-        cluster.addMember(member);
-        return topology;
     }
 }

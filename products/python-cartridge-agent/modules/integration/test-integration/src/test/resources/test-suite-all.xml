@@ -24,6 +24,7 @@
     <test name="all" preserve-order="true" parallel="false">
         <groups>
             <run>
+                <exclude name="ha"/>
                 <exclude name="failed"/>
                 <exclude name="disabled"/>
             </run>

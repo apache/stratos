@@ -79,6 +79,24 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
         } else {
             throw new RuntimeException("Unknown event listener " + eventListener.toString());
         }
+    }
 
+    @Override
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof ClusterStatusClusterResetEventListener) {
+            clusterResetMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterStatusClusterInactivateEventListener) {
+            clusterInactivateMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterStatusClusterActivatedEventListener) {
+            clusterActivatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterStatusClusterTerminatingEventListener) {
+            clusterTerminatingMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterStatusClusterTerminatedEventListener) {
+            clusterTerminatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ClusterStatusClusterInstanceCreatedEventListener) {
+            clusterInstanceCreatedMessageProcessor.removeEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener " + eventListener.toString());
+        }
     }
 }

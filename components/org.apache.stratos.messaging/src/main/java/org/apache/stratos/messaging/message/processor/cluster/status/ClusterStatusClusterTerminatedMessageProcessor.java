@@ -25,7 +25,6 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-
 public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(ClusterStatusClusterTerminatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
@@ -43,7 +42,10 @@ public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProce
                     jsonToObject(message, ClusterStatusClusterTerminatedEvent.class);
 
             if (log.isDebugEnabled()) {
-                log.debug("Received ClusterStatusClusterTerminatedEvent: " + event.toString());
+                log.debug(String.format(
+                        "Received ClusterStatusClusterTerminatedEvent: [application-id] %s, [cluster-id] %s, "
+                                + "[cluster-instance-id] %s", event.getAppId(), event.getClusterId(),
+                        event.getInstanceId()));
             }
 
             TopologyManager.getTopology().removeFromClusterMap(event.getClusterId());
@@ -54,7 +56,9 @@ public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProce
             if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
             } else {
-                throw new RuntimeException(String.format("Failed to process cluster activated message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process cluster activated message using available message processors: [type] %s "
+                                + "[body] %s", type, message));
             }
         }
     }

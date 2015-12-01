@@ -40,31 +40,37 @@ import static org.testng.AssertJUnit.assertTrue;
 /**
  * Test to handle Network partition CRUD operations
  */
+@Test(groups = { "policies" })
 public class ApplicationPolicyTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(ApplicationPolicyTestCase.class);
     private static final String RESOURCES_PATH = "/application-policy-test";
+    private long startTime;
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT,
+          priority = 1)
     public void testApplicationPolicy() throws Exception {
+        log.info("Running ApplicationPolicyTestCase.testApplicationPolicy test method...");
+        startTime = System.currentTimeMillis();
+
         String applicationPolicyId = "application-policy-application-policy-test";
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-application-policy-test-1" + ".json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-application-policy-test-1" + ".json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
         boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-application-policy-test-2" + ".json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-application-policy-test-2" + ".json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN2);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        applicationPolicyId + ".json",
-                RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
+                        applicationPolicyId + ".json", RestConstants.APPLICATION_POLICIES,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(addedDep);
 
         ApplicationPolicyBean bean = (ApplicationPolicyBean) restClient.
-                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                        ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId, ApplicationPolicyBean.class,
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertEquals(bean.getId(), applicationPolicyId);
         assertEquals(bean.getAlgorithm(), "one-after-another",
                 String.format("The expected algorithm %s is not found in %s", "one-after-another",
@@ -85,33 +91,34 @@ public class ApplicationPolicyTestCase extends StratosIntegrationTest {
                 assertEquals(propertyBean.getValue(),
                         "network-partition-application-policy-test-1,network-partition-application-policy-test-2",
                         String.format("The networkPartitionGroups algorithm %s is not found in %s",
-                                "network-partition-application-policy-test-1, network-partition-application-policy-test-2",
-                                applicationPolicyId));
+                                "network-partition-application-policy-test-1, "
+                                        + "network-partition-application-policy-test-2", applicationPolicyId));
                 algoFound = true;
 
             }
         }
         if (!algoFound) {
-            assertNull(String.format("The networkPartitionGroups property is not found in %s",
-                    applicationPolicyId));
+            assertNull(String.format("The networkPartitionGroups property is not found in %s", applicationPolicyId));
         }
 
-        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
         assertFalse(removedNet);
 
-        boolean removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
+        boolean removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removedDep);
 
         ApplicationPolicyBean beanRemovedDep = (ApplicationPolicyBean) restClient.
-                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
-                        ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId, ApplicationPolicyBean.class,
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertNull(beanRemovedDep);
 
-        boolean removedN1 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedN1 = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedN1);
 
         NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClient.
@@ -119,8 +126,9 @@ public class ApplicationPolicyTestCase extends StratosIntegrationTest {
                         NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
         assertNull(beanRemovedN1);
 
-        boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-application-policy-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedN2 = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-2",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedN2);
 
         NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClient.
@@ -129,37 +137,37 @@ public class ApplicationPolicyTestCase extends StratosIntegrationTest {
         assertNull(beanRemovedN2);
     }
 
-    @Test(timeOut = GLOBAL_TEST_TIMEOUT, groups = {"stratos.policy.management", "smoke"})
+    @Test(timeOut = DEFAULT_TEST_TIMEOUT,
+          priority = 2)
     public void testApplicationPolicyList() throws Exception {
         String applicationPolicyId1 = "application-policy-application-policy-test-1";
         String applicationPolicyId2 = "application-policy-application-policy-test-2";
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-application-policy-test-1" + ".json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-application-policy-test-1" + ".json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN1);
 
         boolean addedN2 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-application-policy-test-2" + ".json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                        "network-partition-application-policy-test-2" + ".json", RestConstants.NETWORK_PARTITIONS,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(addedN2);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        applicationPolicyId1 + ".json",
-                RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
+                        applicationPolicyId1 + ".json", RestConstants.APPLICATION_POLICIES,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(addedDep);
 
         addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
-                        applicationPolicyId2 + ".json",
-                RestConstants.APPLICATION_POLICIES, RestConstants.APPLICATION_POLICIES_NAME);
+                        applicationPolicyId2 + ".json", RestConstants.APPLICATION_POLICIES,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(addedDep);
 
         Type listType = new TypeToken<ArrayList<ApplicationPolicyBean>>() {
         }.getType();
 
         List<ApplicationPolicyBean> applicationPolicyList = (List<ApplicationPolicyBean>) restClient.
-                listEntity(RestConstants.APPLICATION_POLICIES,
-                        listType, RestConstants.APPLICATION_POLICIES_NAME);
+                listEntity(RestConstants.APPLICATION_POLICIES, listType, RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(applicationPolicyList.size() >= 2);
 
         ApplicationPolicyBean bean1 = null;
@@ -178,31 +186,33 @@ public class ApplicationPolicyTestCase extends StratosIntegrationTest {
         }
         assertNotNull(bean2);
 
-        boolean removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                applicationPolicyId1, RestConstants.APPLICATION_POLICIES_NAME);
+        boolean removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId1,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removedDep);
 
         ApplicationPolicyBean beanRemovedDep = (ApplicationPolicyBean) restClient.
-                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId1,
-                        ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId1, ApplicationPolicyBean.class,
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertNull(beanRemovedDep);
 
-        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedNet = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
         assertFalse(removedNet);
 
-        removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                applicationPolicyId2, RestConstants.APPLICATION_POLICIES_NAME);
+        removedDep = restClient.removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId2,
+                RestConstants.APPLICATION_POLICIES_NAME);
         assertTrue(removedDep);
 
         beanRemovedDep = (ApplicationPolicyBean) restClient.
-                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId2,
-                        ApplicationPolicyBean.class, RestConstants.APPLICATION_POLICIES_NAME);
+                getEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId2, ApplicationPolicyBean.class,
+                        RestConstants.APPLICATION_POLICIES_NAME);
         assertNull(beanRemovedDep);
 
-        boolean removedN1 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-application-policy-test-1", RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedN1 = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-1",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedN1);
 
         NetworkPartitionBean beanRemovedN1 = (NetworkPartitionBean) restClient.
@@ -210,13 +220,16 @@ public class ApplicationPolicyTestCase extends StratosIntegrationTest {
                         NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
         assertNull(beanRemovedN1);
 
-        boolean removedN2 = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-application-policy-test-2", RestConstants.NETWORK_PARTITIONS_NAME);
+        boolean removedN2 = restClient
+                .removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-2",
+                        RestConstants.NETWORK_PARTITIONS_NAME);
         assertTrue(removedN2);
 
         NetworkPartitionBean beanRemovedN2 = (NetworkPartitionBean) restClient.
                 getEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-application-policy-test-2",
                         NetworkPartitionBean.class, RestConstants.NETWORK_PARTITIONS_NAME);
         assertNull(beanRemovedN2);
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("IaaSProviderTestCase completed in [duration] %s ms", duration));
     }
 }

@@ -47,6 +47,10 @@ public class ApplicationsEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
+    }
+
     public void execute() {
         try {
             // Start topic subscriber thread

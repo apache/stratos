@@ -34,7 +34,6 @@ import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
@@ -44,7 +43,6 @@ import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -465,7 +463,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
 
         if (appMonitor == null) {
-            log.info(String.format("Could not find application monitor for the application %s, " + "hence returning",
+            log.info(String.format("Could not find application monitor for [application-id] %s, hence returning false",
                     applicationId));
             return false;
         }
@@ -505,7 +503,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         return false;
                     } else {
                         log.info(String.format("Previous graceful un-deployment is in progress for "
-                                        + "[application-id] %s , thus  terminating instances directly", applicationId));
+                                + "[application-id] %s , thus  terminating instances directly", applicationId));
                         appMonitor.setForce(true);
                         terminateAllMembersAndClustersForcefully(applicationId);
                     }
@@ -996,8 +994,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                                         .terminateInstanceForcefully(memberIdToTerminate);
                             } catch (Exception e) {
                                 log.error(String.format(
-                                                "Forceful termination of member %s has failed, but continuing forceful "
-                                                        + "deletion of other members", memberIdToTerminate));
+                                        "Forceful termination of member %s has failed, but continuing forceful "
+                                                + "deletion of other members", memberIdToTerminate));
                             }
                         }
                     }
@@ -1114,9 +1112,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     }
                 }
                 if (isPartitionFound == false) {
-                    String msg = String.format("Partition Id is not found: [deployment-policy-id] %s "
-                                    + "[network-partition-id] %s [partition-id] %s", deploymentPolicyId,
-                            networkPartitionId, partitionId);
+                    String msg = String
+                            .format("Partition Id is not found: [deployment-policy-id] %s [network-partition-id] %s "
+                                    + "[partition-id] %s", deploymentPolicyId, networkPartitionId, partitionId);
                     log.error(msg);
                     throw new InvalidDeploymentPolicyException(msg);
                 }
@@ -1125,9 +1123,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // partition algorithm can't be null or empty
             String partitionAlgorithm = networkPartitionRef.getPartitionAlgo();
             if (StringUtils.isBlank(partitionAlgorithm)) {
-                String msg = String.format("Partition algorithm is blank: [deployment-policy-id] %s "
-                                + "[network-partition-id] %s [partition-algorithm] %s", deploymentPolicyId,
-                        networkPartitionId, partitionAlgorithm);
+                String msg = String
+                        .format("Partition algorithm is blank: [deployment-policy-id] %s [network-partition-id] %s "
+                                        + "[partition-algorithm] %s", deploymentPolicyId, networkPartitionId,
+                                partitionAlgorithm);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
@@ -1135,10 +1134,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // partition algorithm should be either one-after-another or round-robin
             if ((!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm))
                     && (!StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm))) {
-                String msg = String.format("Partition algorithm is not valid: [deployment-policy-id] %s " +
-                                "[network-partition-id] %s [partition-algorithm] %s. : " +
-                                "Partition algorithm should be either one-after-another or round-robin ",
-                        deploymentPolicyId, networkPartitionId, partitionAlgorithm);
+                String msg = String
+                        .format("Partition algorithm is not valid: [deployment-policy-id] %s [network-partition-id] "
+                                        + "%s [partition-algorithm] %s. Partition algorithm should be either "
+                                        + "one-after-another or round-robin ", deploymentPolicyId, networkPartitionId,
+                                partitionAlgorithm);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }
@@ -1146,9 +1146,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // a network partition reference should contain at least one partition reference
             PartitionRef[] partitions = networkPartitionRef.getPartitionRefs();
             if (null == partitions || partitions.length == 0) {
-                String msg = String.format("Network partition does not have any partition references: "
-                                + "[deployment-policy-id] %s [network-partition-id] %s", deploymentPolicyId,
-                        networkPartitionId);
+                String msg = String
+                        .format("Network partition does not have any partition references [deployment-policy-id] %s "
+                                + "[network-partition-id] %s", deploymentPolicyId, networkPartitionId);
                 log.error(msg);
                 throw new InvalidDeploymentPolicyException(msg);
             }

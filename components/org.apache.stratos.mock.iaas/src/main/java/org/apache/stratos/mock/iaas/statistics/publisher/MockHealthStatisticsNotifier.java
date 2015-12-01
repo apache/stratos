@@ -42,12 +42,12 @@ public class MockHealthStatisticsNotifier implements Runnable {
 
     public MockHealthStatisticsNotifier(MockInstanceContext mockMemberContext) {
         this.mockMemberContext = mockMemberContext;
-        this.healthStatisticsPublisher = HealthStatisticsPublisherFactory.createHealthStatisticsPublisher(
-                StatisticsPublisherType.WSO2CEP);
+        this.healthStatisticsPublisher = HealthStatisticsPublisherFactory
+                .createHealthStatisticsPublisher(StatisticsPublisherType.WSO2CEP);
         this.healthStatisticsPublisher.setEnabled(true);
 
-        this.inFlightRequestPublisher = InFlightRequestPublisherFactory.createInFlightRequestPublisher(
-                StatisticsPublisherType.WSO2CEP);
+        this.inFlightRequestPublisher = InFlightRequestPublisherFactory
+                .createInFlightRequestPublisher(StatisticsPublisherType.WSO2CEP);
         this.inFlightRequestPublisher.setEnabled(true);
     }
 
@@ -61,22 +61,17 @@ public class MockHealthStatisticsNotifier implements Runnable {
         }
 
         try {
-            double memoryConsumption = MockHealthStatistics.getInstance().getStatistics(
-                    mockMemberContext.getServiceName(), MockScalingFactor.MemoryConsumption);
+            double memoryConsumption = MockHealthStatistics.getInstance()
+                    .getStatistics(mockMemberContext.getServiceName(), MockScalingFactor.MemoryConsumption);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
                         mockMemberContext.getMemberId(), memoryConsumption));
             }
-            healthStatisticsPublisher.publish(
-                    mockMemberContext.getClusterId(),
-                    mockMemberContext.getClusterInstanceId(),
-                    mockMemberContext.getNetworkPartitionId(),
-                    mockMemberContext.getMemberId(),
-                    mockMemberContext.getPartitionId(),
-                    MEMORY_CONSUMPTION,
-                    memoryConsumption
-            );
+            healthStatisticsPublisher
+                    .publish(mockMemberContext.getClusterId(), mockMemberContext.getClusterInstanceId(),
+                            mockMemberContext.getNetworkPartitionId(), mockMemberContext.getMemberId(),
+                            mockMemberContext.getPartitionId(), MEMORY_CONSUMPTION, memoryConsumption);
         } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
@@ -84,23 +79,17 @@ public class MockHealthStatisticsNotifier implements Runnable {
             }
         }
 
-
         try {
-            double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
-                    mockMemberContext.getServiceName(), MockScalingFactor.LoadAverage);
+            double loadAvereage = MockHealthStatistics.getInstance()
+                    .getStatistics(mockMemberContext.getServiceName(), MockScalingFactor.LoadAverage);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
                         mockMemberContext.getMemberId(), loadAvereage));
             }
-            healthStatisticsPublisher.publish(
-                    mockMemberContext.getClusterId(),
-                    mockMemberContext.getClusterInstanceId(),
-                    mockMemberContext.getNetworkPartitionId(),
-                    mockMemberContext.getMemberId(),
-                    mockMemberContext.getPartitionId(),
-                    LOAD_AVERAGE,
-                    loadAvereage
-            );
+            healthStatisticsPublisher
+                    .publish(mockMemberContext.getClusterId(), mockMemberContext.getClusterInstanceId(),
+                            mockMemberContext.getNetworkPartitionId(), mockMemberContext.getMemberId(),
+                            mockMemberContext.getPartitionId(), LOAD_AVERAGE, loadAvereage);
         } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
@@ -109,17 +98,14 @@ public class MockHealthStatisticsNotifier implements Runnable {
         }
 
         try {
-            int requestsInFlight = MockHealthStatistics.getInstance().getStatistics(
-                    mockMemberContext.getServiceName(), MockScalingFactor.RequestsInFlight);
+            int requestsInFlight = MockHealthStatistics.getInstance()
+                    .getStatistics(mockMemberContext.getServiceName(), MockScalingFactor.RequestsInFlight);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Publishing requests in flight: [member-id] %s [value] %f",
+                log.debug(String.format("Publishing requests in flight: [member-id] %s [value] %d",
                         mockMemberContext.getMemberId(), requestsInFlight));
             }
-            inFlightRequestPublisher.publish(
-                    mockMemberContext.getClusterId(),
-                    mockMemberContext.getClusterInstanceId(),
-                    mockMemberContext.getNetworkPartitionId(),
-                    requestsInFlight);
+            inFlightRequestPublisher.publish(mockMemberContext.getClusterId(), mockMemberContext.getClusterInstanceId(),
+                    mockMemberContext.getNetworkPartitionId(), requestsInFlight);
         } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {

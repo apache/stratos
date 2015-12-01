@@ -25,6 +25,8 @@
         <groups>
             <run>
                 <include name="smoke"/>
+                <!--<include name="ha"/>-->
+                <exclude name="ha"/>
                 <exclude name="failed"/>
                 <exclude name="disabled"/>
             </run>

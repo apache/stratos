@@ -39,15 +39,14 @@ public class ApplicationDeletedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-
         Applications applications = (Applications) object;
-
         if (ApplicationDeletedEvent.class.getName().equals(type)) {
             if (!applications.isInitialized()) {
                 return false;
             }
 
-            ApplicationDeletedEvent event = (ApplicationDeletedEvent) MessagingUtil.jsonToObject(message, ApplicationDeletedEvent.class);
+            ApplicationDeletedEvent event = (ApplicationDeletedEvent) MessagingUtil
+                    .jsonToObject(message, ApplicationDeletedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationDeletedEvent");
                 return false;
@@ -66,13 +65,14 @@ public class ApplicationDeletedMessageProcessor extends MessageProcessor {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, applications);
             } else {
-                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process message using available message processors: [type] %s [body] %s", type,
+                        message));
             }
         }
     }
 
     private boolean doProcess(ApplicationDeletedEvent event, Applications applications) {
-
         // check if required properties are available
         if (event.getAppId() == null || event.getAppId().isEmpty()) {
             String errorMsg = "App id of application deleted event is invalid: [ " + event.getAppId() + " ]";
@@ -82,13 +82,11 @@ public class ApplicationDeletedMessageProcessor extends MessageProcessor {
 
         // Remove application and clusters from topology
         applications.removeApplication(event.getAppId());
-
         notifyEventListeners(event);
 
         if (log.isInfoEnabled()) {
             log.info("[Application] " + event.getAppId() + " has been successfully removed");
         }
-
         return true;
     }
 }

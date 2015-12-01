@@ -75,7 +75,7 @@ public class CloudControllerServiceComponent {
     private static final String CLOUD_CONTROLLER_COORDINATOR_LOCK = "cloud.controller.coordinator.lock";
     private static final String THREAD_POOL_ID = "cloud.controller.thread.pool";
     private static final String SCHEDULER_THREAD_POOL_ID = "cloud.controller.scheduler.thread.pool";
-    private static final int THREAD_POOL_SIZE = 10;
+    private static final int THREAD_POOL_SIZE = 20;
     private static final int SCHEDULER_THREAD_POOL_SIZE = 5;
 
     private ClusterStatusTopicReceiver clusterStatusTopicReceiver;

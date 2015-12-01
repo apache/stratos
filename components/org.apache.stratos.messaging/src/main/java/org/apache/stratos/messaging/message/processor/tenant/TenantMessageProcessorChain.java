@@ -71,4 +71,18 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
             throw new RuntimeException("Unknown event listener");
         }
     }
+
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof CompleteTenantEventListener) {
+            completeTenantMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof TenantCreatedEventListener) {
+            tenantCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof TenantUpdatedEventListener) {
+            tenantUpdatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof TenantRemovedEventListener) {
+            tenantRemovedMessageProcessor.removeEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener");
+        }
+    }
 }

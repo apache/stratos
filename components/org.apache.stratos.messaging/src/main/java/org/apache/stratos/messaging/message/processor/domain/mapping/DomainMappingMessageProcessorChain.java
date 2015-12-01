@@ -55,4 +55,15 @@ public class DomainMappingMessageProcessorChain extends MessageProcessorChain {
             throw new RuntimeException("Unknown event listener");
         }
     }
+
+    @Override
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof DomainMappingAddedEventListener) {
+            domainNameAddedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof DomainMappingRemovedEventListener) {
+            domainNameRemovedMessageProcessor.removeEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener");
+        }
+    }
 }

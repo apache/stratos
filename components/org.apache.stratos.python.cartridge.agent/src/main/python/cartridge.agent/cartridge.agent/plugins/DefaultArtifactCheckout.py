@@ -75,8 +75,8 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                 self.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
                                git_repo.tenant_id, git_repo.repo_url)
                 updated = AgentGitHandler.pull(git_repo)
-                self.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
-                               git_repo.tenant_id, git_repo.repo_url)
+                self.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s [SUCCESS] %s",
+                               git_repo.tenant_id, git_repo.repo_url, updated)
             else:
                 # not a valid repository, might've been corrupted. do a re-clone
                 self.log.debug("Local repository is not valid. Doing a re-clone to purify.")

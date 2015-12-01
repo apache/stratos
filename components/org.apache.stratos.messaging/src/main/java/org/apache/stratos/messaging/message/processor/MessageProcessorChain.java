@@ -39,6 +39,8 @@ public abstract class MessageProcessorChain {
 
     public abstract void addEventListener(EventListener eventListener);
 
+    public abstract void removeEventListener(EventListener eventListener);
+
     public void add(MessageProcessor messageProcessor) {
         if (list.size() > 0) {
             list.getLast().setNext(messageProcessor);

@@ -39,15 +39,13 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-
         Applications applications = (Applications) object;
-
         if (ApplicationCreatedEvent.class.getName().equals(type)) {
             if (!applications.isInitialized()) {
                 return false;
             }
-
-            ApplicationCreatedEvent event = (ApplicationCreatedEvent) MessagingUtil.jsonToObject(message, ApplicationCreatedEvent.class);
+            ApplicationCreatedEvent event = (ApplicationCreatedEvent) MessagingUtil
+                    .jsonToObject(message, ApplicationCreatedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationCreatedEvent");
                 return false;
@@ -60,19 +58,19 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             } finally {
                 ApplicationsUpdater.releaseWriteLockForApplications();
             }
-
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, applications);
             } else {
-                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process message using available message processors: [type] %s, [body] %s", type,
+                        message));
             }
         }
     }
 
     private boolean doProcess(ApplicationCreatedEvent event, Applications applications) {
-
         // check if required properties are available
         if (event.getApplication() == null) {
             String errorMsg = "Application object of application created event is invalid";
@@ -80,8 +78,10 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             throw new RuntimeException(errorMsg);
         }
 
-        if (event.getApplication().getUniqueIdentifier() == null || event.getApplication().getUniqueIdentifier().isEmpty()) {
-            String errorMsg = "App id of application created event is invalid: [ " + event.getApplication().getUniqueIdentifier() + " ]";
+        if (event.getApplication().getUniqueIdentifier() == null || event.getApplication().getUniqueIdentifier()
+                .isEmpty()) {
+            String errorMsg = String.format("App id of application created event is invalid: [%s]",
+                    event.getApplication().getUniqueIdentifier());
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -89,16 +89,17 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
         // check if an Application with same name exists in applications
         if (applications.applicationExists(event.getApplication().getUniqueIdentifier())) {
             if (log.isDebugEnabled()) {
-                log.debug("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists");
+                log.debug(String.format("App id of application created event already exists: [%s]",
+                        event.getApplication().getUniqueIdentifier()));
             }
         } else {
             // add application and the clusters to Topology
             applications.addApplication(event.getApplication());
             if (log.isInfoEnabled()) {
-                log.info("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] created");
+                log.info(String.format("Application created with id: [%s]",
+                        event.getApplication().getUniqueIdentifier()));
             }
         }
-
         notifyEventListeners(event);
         return true;
     }

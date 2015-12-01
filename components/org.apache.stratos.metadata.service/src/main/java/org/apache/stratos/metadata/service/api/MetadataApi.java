@@ -68,7 +68,7 @@ public class MetadataApi {
                 propertiesArr = new Property[properties.size()];
                 propertiesArr = properties.toArray(propertiesArr);
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Error occurred while getting properties ";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -98,7 +98,7 @@ public class MetadataApi {
                 propertiesArr = new Property[properties.size()];
                 propertiesArr = properties.toArray(propertiesArr);
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Error occurred while getting properties ";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -133,7 +133,7 @@ public class MetadataApi {
                     break;
                 }
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Error occurred while getting property";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -169,7 +169,7 @@ public class MetadataApi {
                     break;
                 }
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Error occurred while getting property";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -194,7 +194,7 @@ public class MetadataApi {
 
         try {
             registry.addPropertyToApplication(applicationId, property);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Error occurred while adding properties ";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -212,7 +212,7 @@ public class MetadataApi {
 
         try {
             registry.addPropertyToCluster(applicationId, clusterId, property);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Error occurred while adding properties ";
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -232,7 +232,7 @@ public class MetadataApi {
             if (!deleted) {
                 log.warn(String.format("No metadata is associated with given appId %s", applicationId));
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "Resource attached with appId could not be deleted [application-id] " + applicationId;
             log.error(msg, e);
             throw new RestAPIException(msg, e);
@@ -252,7 +252,7 @@ public class MetadataApi {
             if (!deleted) {
                 log.warn(String.format("No metadata is associated with given appId %s", applicationId));
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = String
                     .format("[application-id] %s [property-name] %s deletion failed ", applicationId, propertyName);
             log.error(msg, e);
@@ -274,7 +274,7 @@ public class MetadataApi {
             if (!deleted) {
                 log.warn(String.format("No metadata is associated with given [application-id] %s", applicationId));
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = String
                     .format("[application-id] %s [property-name] %s [value] %s deletion failed" + applicationId,
                             propertyName, propertyValue);

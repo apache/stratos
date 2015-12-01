@@ -21,12 +21,10 @@ package org.apache.stratos.integration.tests.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -40,15 +38,14 @@ import org.testng.annotations.Test;
 
 import java.util.Set;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNull;
+import static org.testng.Assert.*;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
  */
+@Test(groups = { "application", "scale" })
 public class SingleClusterScalingTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(SingleClusterScalingTestCase.class);
     private static final String RESOURCES_PATH = "/single-cluster-scaling-test";
@@ -61,38 +58,39 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
     private static final int CLUSTER_SCALE_UP_TIMEOUT = 180000;
     private static final int CLUSTER_SCALE_DOWN_TIMEOUT = 360000;
     private int activeInstancesAfterScaleup = 0;
+    private TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment"})
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT)
     public void testDeployApplication() throws Exception {
-        TopologyHandler topologyHandler = TopologyHandler.getInstance();
+        log.info("Running SingleClusterScalingTestCase.testDeployApplication test method...");
+        long startTime = System.currentTimeMillis();
 
-        boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                        + "/" + autoscalingPolicyId + ".json",
+        boolean addedScalingPolicy = restClient.addEntity(
+                RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
         Assert.assertTrue(addedScalingPolicy);
 
-        boolean addedC1 = restClient.addEntity(
-                RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
+        boolean addedC1 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + cartridgeId + ".json",
+                        RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
         Assert.assertTrue(addedC1);
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        networkPartitionId + ".json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+                networkPartitionId + ".json", RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
         Assert.assertTrue(addedN1);
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        deploymentPolicyId + ".json",
-                RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
+                        deploymentPolicyId + ".json", RestConstants.DEPLOYMENT_POLICIES,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
         Assert.assertTrue(addedDep);
 
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        applicationId + ".json", RestConstants.APPLICATIONS,
-                RestConstants.APPLICATIONS_NAME);
+                applicationId + ".json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
         Assert.assertTrue(added);
 
-        ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean bean = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, applicationId, ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertEquals(bean.getApplicationId(), applicationId);
 
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
@@ -103,13 +101,11 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
         //deploy the application
         String resourcePath = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_DEPLOY + "/" + applicationPolicyId;
-        boolean deployed = restClient.deployEntity(resourcePath,
-                RestConstants.APPLICATIONS_NAME);
+        boolean deployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
         Assert.assertTrue(deployed);
 
         //Application active handling
-        topologyHandler.assertApplicationStatus(bean.getApplicationId()
-                , ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean.getApplicationId());
 
         //Cluster active handling
         topologyHandler.assertClusterActivation(bean.getApplicationId());
@@ -123,26 +119,24 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
         //Check whether cluster could scale-down upto the minimum
         assertClusterScaleDownToMinimumCount(bean.getApplicationId());
 
-        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         assertFalse(removedAuto);
 
-        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                networkPartitionId,
+        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
                 RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
         assertFalse(removedNet);
 
-        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
+        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
         assertFalse(removedDep);
 
         //Un-deploying the application
         String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + applicationId +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
-        boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
-                RestConstants.APPLICATIONS_NAME);
+        boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy, RestConstants.APPLICATIONS_NAME);
         Assert.assertTrue(unDeployed);
 
         boolean undeploy = topologyHandler.assertApplicationUndeploy(applicationId);
@@ -150,45 +144,48 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
             //Need to forcefully undeploy the application
             log.info(String.format("Force undeployment is going to start for the [application] %s", applicationId));
 
-            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId+
+            restClient.undeployEntity(RestConstants.APPLICATIONS + "/" + applicationId +
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = topologyHandler.assertApplicationUndeploy(applicationId);
-            assertTrue(String.format("Forceful undeployment failed for the application %s",
-                    applicationId), forceUndeployed);
+            assertTrue(String.format("Forceful undeployment failed for the application %s", applicationId),
+                    forceUndeployed);
         }
 
-        boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, applicationId,
-                RestConstants.APPLICATIONS_NAME);
+        boolean removed = restClient
+                .removeEntity(RestConstants.APPLICATIONS, applicationId, RestConstants.APPLICATIONS_NAME);
         Assert.assertTrue(removed);
 
-        ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                applicationId, ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean beanRemoved = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, applicationId, ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertNull(beanRemoved);
 
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, cartridgeId,
-                RestConstants.CARTRIDGES_NAME);
+        boolean removedC1 = restClient
+                .removeEntity(RestConstants.CARTRIDGES, cartridgeId, RestConstants.CARTRIDGES_NAME);
         Assert.assertTrue(removedC1);
 
-        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
+        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
         Assert.assertTrue(removedAuto);
 
-        removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                deploymentPolicyId, RestConstants.DEPLOYMENT_POLICIES_NAME);
+        removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES, deploymentPolicyId,
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
         Assert.assertTrue(removedDep);
 
-        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         assertFalse(removedNet);
 
-        boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                applicationPolicyId, RestConstants.APPLICATION_POLICIES_NAME);
+        boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES, applicationPolicyId,
+                RestConstants.APPLICATION_POLICIES_NAME);
         Assert.assertTrue(removeAppPolicy);
 
-        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                networkPartitionId, RestConstants.NETWORK_PARTITIONS_NAME);
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, networkPartitionId,
+                RestConstants.NETWORK_PARTITIONS_NAME);
         Assert.assertTrue(removedNet);
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("SingleClusterScalingTestCase completed in [duration] %s ms", duration));
     }
 
     /**
@@ -198,24 +195,22 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
      */
     private void assertClusterWithScalingup(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
         boolean clusterScaleup = false;
         String clusterId = null;
         long startTime = System.currentTimeMillis();
         while (!clusterScaleup) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
             for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
                 String serviceName = clusterDataHolder.getServiceType();
                 clusterId = clusterDataHolder.getClusterId();
                 Service service = TopologyManager.getTopology().getService(serviceName);
-                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                        applicationName, serviceName), service);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                        serviceName), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
@@ -252,24 +247,22 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
      */
     private void assertClusterWithScaleDown(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
         boolean clusterScaleDown = false;
         String clusterId = null;
         long startTime = System.currentTimeMillis();
         while (!clusterScaleDown) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
             for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
                 String serviceName = clusterDataHolder.getServiceType();
                 clusterId = clusterDataHolder.getClusterId();
                 Service service = TopologyManager.getTopology().getService(serviceName);
-                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                        applicationName, serviceName), service);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                        serviceName), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
@@ -312,24 +305,22 @@ public class SingleClusterScalingTestCase extends StratosIntegrationTest {
      */
     private void assertClusterScaleDownToMinimumCount(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
         boolean clusterScaleDown = false;
         String clusterId = null;
         long startTime = System.currentTimeMillis();
         while (!clusterScaleDown) {
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException ignore) {
+            } catch (InterruptedException ignore) {
             }
             Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
             for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
                 String serviceName = clusterDataHolder.getServiceType();
                 clusterId = clusterDataHolder.getClusterId();
                 Service service = TopologyManager.getTopology().getService(serviceName);
-                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                        applicationName, serviceName), service);
+                assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                        serviceName), service);
 
                 Cluster cluster = service.getCluster(clusterId);
                 assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",

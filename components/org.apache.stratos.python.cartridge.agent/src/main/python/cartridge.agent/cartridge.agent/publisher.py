@@ -15,10 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import threading
-
+from threading import Thread
 import paho.mqtt.publish as publish
 import time
+from Queue import Queue, Empty
 
 import constants
 import healthstats
@@ -201,7 +201,7 @@ def get_publisher(topic):
     return publishers[topic]
 
 
-class EventPublisher:
+class EventPublisher(object):
     """
     Handles publishing events to topics to the provided message broker
     """
@@ -210,24 +210,9 @@ class EventPublisher:
         self.__topic = topic
         self.__log = LogFactory().get_log(__name__)
         self.__start_time = int(time.time())
+        self.__msg_queue = Queue()
 
     def publish(self, event):
-        publisher_thread = threading.Thread(target=self.__publish_event, args=(event,))
-        publisher_thread.start()
-
-    def __publish_event(self, event):
-        """
-        Publishes the given event to the message broker.
-
-        When a list of message brokers are given the event is published to the first message broker
-        available. Therefore the message brokers should share the data (ex: Sharing the KahaDB in ActiveMQ).
-
-        When the event cannot be published, it will be retried until the mb_publisher_timeout is exceeded.
-        This value is set in the agent.conf.
-
-        :param event:
-        :return: True if the event was published.
-        """
         if Config.mb_username is None:
             auth = None
         else:
@@ -244,20 +229,59 @@ class EventPublisher:
             for mb_url in Config.mb_urls:
                 mb_ip, mb_port = mb_url.split(":")
 
-                try:
-                    publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port, auth=auth)
-                    self.__log.debug("Event type: %s published to MB: %s:%s" % (str(event.__class__), mb_ip, mb_port))
-                    return True
-                except:
-                    self.__log.debug(
-                        "Could not publish event to message broker %s:%s." % (mb_ip, mb_port))
+                # start a thread to execute publish event
+                publisher_thread = Thread(target=self.__publish_event, args=(event, mb_ip, mb_port, auth, payload))
+                publisher_thread.start()
 
+                # give sometime for the thread to complete
+                time.sleep(5)
+
+                # check if thread is still running and notify
+                if publisher_thread.isAlive():
+                    self.__log.debug(
+                        "Event publishing timed out before succeeding. The message broker could be offline.")
+
+                # check if publish.single() succeeded
+                try:
+                    published = self.__msg_queue.get(block=False)
+                except Empty:
+                    published = False
+
+                if published:
+                    return True
+
+            # All the brokers on the list were offline
             self.__log.debug(
                 "Could not publish event to any of the provided message brokers. Retrying in %s seconds."
                 % retry_interval)
 
             time.sleep(retry_interval)
 
+        # Even publisher timeout exceeded
         self.__log.warn("Could not publish event to any of the provided message brokers before "
                         "the timeout [%s] exceeded. The event will be dropped." % Config.mb_publisher_timeout)
         return False
+
+    def __publish_event(self, event, mb_ip, mb_port, auth, payload):
+        """
+        Publishes the given event to the message broker.
+
+        When a list of message brokers are given the event is published to the first message broker
+        available. Therefore the message brokers should share the data (ex: Sharing the KahaDB in ActiveMQ).
+
+        When the event cannot be published, it will be retried until the mb_publisher_timeout is exceeded.
+        This value is set in the agent.conf.
+
+        :param event:
+        :return: True if the event was published.
+        """
+        try:
+            self.__log.debug("Publishing [event] %s to %s:%s" % (event.__class__.__name__, mb_ip, mb_port))
+            publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port, auth=auth)
+            self.__log.debug("[Event] %s published to MB: %s:%s" % (str(event.__class__.__name__), mb_ip, mb_port))
+            self.__msg_queue.put(True)
+        except Exception as err:
+            self.__log.debug(
+                "Could not publish [event] %s to message broker %s:%s. : %s"
+                % (str(event.__class__.__name__), mb_ip, mb_port, err))
+            self.__msg_queue.put(False)

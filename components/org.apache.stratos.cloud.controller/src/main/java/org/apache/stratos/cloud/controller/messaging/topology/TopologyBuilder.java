@@ -69,8 +69,8 @@ public class TopologyBuilder {
         if (cartridgeList == null) {
             throw new RuntimeException("Cartridge list is empty");
         }
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             for (Cartridge cartridge : cartridgeList) {
                 if (!topology.serviceExists(cartridge.getType())) {
                     ServiceType serviceType = cartridge.isMultiTenant() ?
@@ -126,8 +126,8 @@ public class TopologyBuilder {
                 throw new RuntimeException(String.format("Service %s does not exist", cartridge.getType()));
             }
             if (service.getClusters().size() == 0) {
+                TopologyHolder.acquireWriteLock();
                 try {
-                    TopologyHolder.acquireWriteLock();
                     topology.removeService(cartridge.getType());
                     TopologyHolder.updateTopology(topology);
                 } finally {
@@ -149,8 +149,8 @@ public class TopologyBuilder {
             for (Cluster cluster : appClusters) {
                 Service service = topology.getService(cluster.getServiceName());
                 if (service == null) {
-                    throw new RuntimeException("Service " + cluster.getServiceName()
-                            + " not found in topology, unable to create cluster");
+                    throw new RuntimeException(
+                            "Service " + cluster.getServiceName() + " not found in topology, unable to create cluster");
                 }
                 service.addCluster(cluster);
                 log.info("Cluster created: [cluster] " + cluster.getClusterId());
@@ -312,8 +312,8 @@ public class TopologyBuilder {
             throw new RuntimeException(String.format("Cluster %s does not exist for service %s", ctxt.getClusterId(),
                     ctxt.getCartridgeType()));
         }
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             Cluster cluster = service.removeCluster(ctxt.getClusterId());
             deploymentPolicy = cluster.getDeploymentPolicyName();
             TopologyHolder.updateTopology(topology);
@@ -344,8 +344,8 @@ public class TopologyBuilder {
         if (cluster.memberExists(memberId)) {
             throw new RuntimeException(String.format("Member %s already exists", memberId));
         }
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             Member member = new Member(service.getServiceName(), clusterId, memberId, clusterInstanceId,
                     networkPartitionId, partitionId, memberContext.getLoadBalancingIPType(), initTime);
             member.setStatus(MemberStatus.Created);
@@ -396,9 +396,8 @@ public class TopologyBuilder {
         if (member == null) {
             throw new RuntimeException(String.format("Member %s does not exist", memberContext.getMemberId()));
         }
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
-
             // Set instance id returned by the IaaS
             member.setInstanceId(memberContext.getInstanceId());
             // Set ip addresses
@@ -416,7 +415,6 @@ public class TopologyBuilder {
                 log.error("Invalid state transition from " + member.getStatus() + " to " +
                         MemberStatus.Initialized);
             } else {
-
                 Cluster cluster = service.getCluster(memberContext.getClusterId());
                 String clusterId = cluster.getClusterId();
                 ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
@@ -493,9 +491,8 @@ public class TopologyBuilder {
                 throw new RuntimeException(
                         String.format("Member %s does not exist", instanceStartedEvent.getMemberId()));
             }
-
+            TopologyHolder.acquireWriteLock();
             try {
-                TopologyHolder.acquireWriteLock();
                 // try update lifecycle state
                 if (!member.isStateTransitionValid(MemberStatus.Starting)) {
                     log.error("Invalid State Transition from " + member.getStatus() + " to " +
@@ -564,8 +561,8 @@ public class TopologyBuilder {
         // grouping - set grouid
         //TODO
         memberActivatedEvent.setApplicationId(null);
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.Active)) {
                 log.error("Invalid state transition from [" + member.getStatus() + "] to [" +
@@ -665,9 +662,8 @@ public class TopologyBuilder {
                 instanceReadyToShutdownEvent.getNetworkPartitionId(), instanceReadyToShutdownEvent.getPartitionId());
         //member ReadyToShutDown state change time
         Long timestamp = null;
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
-
             if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
                 throw new RuntimeException("Invalid State Transition from " + member.getStatus() + " to " +
                         MemberStatus.ReadyToShutDown);
@@ -723,8 +719,8 @@ public class TopologyBuilder {
                 instanceMaintenanceModeEvent.getServiceName(), instanceMaintenanceModeEvent.getClusterId(),
                 instanceMaintenanceModeEvent.getClusterInstanceId(), instanceMaintenanceModeEvent.getMemberId(),
                 instanceMaintenanceModeEvent.getNetworkPartitionId(), instanceMaintenanceModeEvent.getPartitionId());
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.In_Maintenance)) {
                 throw new RuntimeException(
@@ -769,15 +765,15 @@ public class TopologyBuilder {
         String clusterAlias = CloudControllerUtil.getAliasFromClusterId(clusterId);
         Member member = cluster.getMember(memberId);
         if (member == null) {
-            throw new RuntimeException((String.format("Member %s does not exist", memberId)));
+            throw new RuntimeException((String.format("Member [member-id] %s does not exist", memberId)));
         }
 
         String clusterInstanceId = member.getClusterInstanceId();
 
         //member terminated time
         Long timestamp = null;
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             properties = member.getProperties();
             cluster.removeMember(member);
             TopologyHolder.updateTopology(topology);
@@ -804,7 +800,6 @@ public class TopologyBuilder {
 
     public static void handleClusterActivatedEvent(
             ClusterStatusClusterActivatedEvent clusterStatusClusterActivatedEvent) throws RegistryException {
-
         Topology topology = TopologyHolder.getTopology();
         Service service = topology.getService(clusterStatusClusterActivatedEvent.getServiceName());
         //update the status of the cluster
@@ -830,12 +825,10 @@ public class TopologyBuilder {
         ClusterInstanceActivatedEvent clusterInstanceActivatedEvent = new ClusterInstanceActivatedEvent(
                 clusterStatusClusterActivatedEvent.getAppId(), clusterStatusClusterActivatedEvent.getServiceName(),
                 clusterStatusClusterActivatedEvent.getClusterId(), clusterStatusClusterActivatedEvent.getInstanceId());
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
-
             Collection<KubernetesService> kubernetesServices = clusterContext
                     .getKubernetesServices(clusterStatusClusterActivatedEvent.getInstanceId());
-
             if ((kubernetesServices != null) && (kubernetesServices.size() > 0)) {
                 try {
                     // Generate access URLs for kubernetes services
@@ -850,28 +843,28 @@ public class TopologyBuilder {
                                 // Using type URI since only http, https, ftp, file, jar protocols are
                                 // supported in URL
                                 int port = kubernetesService.getPort();
-                                if(cluster.getLoadBalancerIps().size() > 0) {
+                                if (cluster.getLoadBalancerIps().size() > 0) {
                                     // Load balancer ips have been provided, need to use proxy port
                                     port = findProxyPort(applicationId, clusterId, kubernetesService.getPortName());
                                 }
-                                URI accessURL = new URI(kubernetesService.getProtocol(), null, hostname,
-                                        port, null, null, null);
+                                URI accessURL = new URI(kubernetesService.getProtocol(), null, hostname, port, null,
+                                        null, null);
                                 cluster.addAccessUrl(clusterStatusClusterActivatedEvent.getInstanceId(),
                                         accessURL.toString());
                                 clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
                             }
                         }
                     }
-                    if(cluster.getLoadBalancerIps().size() == 0) {
+                    if (cluster.getLoadBalancerIps().size() == 0) {
                         // Load balancer ips not given, use node public ips as load balancer ips
                         List<String> nodePublicIpsList = new ArrayList<>();
                         nodePublicIpsList.addAll(nodePublicIps);
                         cluster.setLoadBalancerIps(nodePublicIpsList);
                         clusterInstanceActivatedEvent.setLoadBalancerIps(nodePublicIpsList);
                     }
-                    log.info(String.format("Access URLs generated for kubernetes services: [application] %s " +
-                                    "[cluster] %s [access-urls] %s",
-                            applicationId, clusterId, clusterInstanceActivatedEvent.getAccessUrls()));
+                    log.info(String.format("Access URLs generated for kubernetes services: [application] %s "
+                                    + "[cluster] %s [access-urls] %s", applicationId, clusterId,
+                            clusterInstanceActivatedEvent.getAccessUrls()));
                 } catch (URISyntaxException e) {
                     log.error("Could not generate access URLs for Kubernetes services", e);
                 }
@@ -881,8 +874,8 @@ public class TopologyBuilder {
                             getClusterPortMappings(applicationId, clusterId);
                     for (ClusterPortMapping portMapping : portMappings) {
                         for (String hostname : cluster.getHostNames()) {
-                            URI accessURL = new URI(portMapping.getProtocol(), null, hostname,
-                                    portMapping.getPort(), null, null, null);
+                            URI accessURL = new URI(portMapping.getProtocol(), null, hostname, portMapping.getPort(),
+                                    null, null, null);
                             cluster.addAccessUrl(clusterStatusClusterActivatedEvent.getInstanceId(),
                                     accessURL.toString());
                             clusterInstanceActivatedEvent.addAccessUrl(accessURL.toString());
@@ -924,13 +917,14 @@ public class TopologyBuilder {
     private static int findProxyPort(String applicationId, String clusterId, String portName) {
         List<ClusterPortMapping> portMappings = CloudControllerContext.getInstance().
                 getClusterPortMappings(applicationId, clusterId);
-        for(ClusterPortMapping portMapping : portMappings) {
-            if(portMapping.getName().equals(portName)) {
+        for (ClusterPortMapping portMapping : portMappings) {
+            if (portMapping.getName().equals(portName)) {
                 return portMapping.getProxyPort();
             }
         }
-        throw new RuntimeException(String.format("Port mapping not found: [application] %s [cluster] %s " +
-                        "[port-name] %s", applicationId, clusterId, portName));
+        throw new RuntimeException(
+                String.format("Port mapping not found: [application] %s [cluster] %s " + "[port-name] %s",
+                        applicationId, clusterId, portName));
     }
 
     public static void handleClusterInactivateEvent(ClusterStatusClusterInactivateEvent clusterInactivateEvent)
@@ -953,8 +947,8 @@ public class TopologyBuilder {
         ClusterInstanceInactivateEvent clusterInactivatedEvent1 = new ClusterInstanceInactivateEvent(
                 clusterInactivateEvent.getAppId(), clusterInactivateEvent.getServiceName(),
                 clusterInactivateEvent.getClusterId(), clusterInactivateEvent.getInstanceId());
+        TopologyHolder.acquireWriteLock();
         try {
-            TopologyHolder.acquireWriteLock();
             ClusterInstance context = cluster.getInstanceContexts(clusterInactivateEvent.getInstanceId());
             if (context == null) {
                 throw new RuntimeException("Cluster Instance Context is not found for [cluster] " +
@@ -1024,14 +1018,11 @@ public class TopologyBuilder {
         } finally {
             TopologyHolder.releaseWriteLock();
         }
-
     }
 
     public static void handleClusterTerminatingEvent(ClusterStatusClusterTerminatingEvent event)
             throws RegistryException {
-
         TopologyHolder.acquireWriteLock();
-
         try {
             Topology topology = TopologyHolder.getTopology();
             Cluster cluster = topology.getService(event.getServiceName()).

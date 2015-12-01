@@ -28,9 +28,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
@@ -48,7 +50,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class PythonAgentIntegrationTest {
+public abstract class PythonAgentIntegrationTest {
 
     public static final String PATH_SEP = File.separator;
     public static final String NEW_LINE = System.getProperty("line.separator");
@@ -219,6 +221,10 @@ public class PythonAgentIntegrationTest {
         this.topologyEventReceiver.terminate();
         this.initializerEventReceiver.terminate();
 
+        this.instanceStatusEventReceiver = null;
+        this.topologyEventReceiver = null;
+        this.initializerEventReceiver = null;
+
         this.instanceActivated = false;
         this.instanceStarted = false;
 
@@ -307,7 +313,7 @@ public class PythonAgentIntegrationTest {
         Thread communicatorThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                List<String> outputLines = new ArrayList<String>();
+                List<String> outputLines = new ArrayList<>();
                 while (!outputStream.isClosed()) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
@@ -319,7 +325,7 @@ public class PythonAgentIntegrationTest {
                                     log.error("ERROR found in PCA log", e);
                                 }
                             }
-                            log.debug("[PCA] " + line);
+                            log.debug("[" + getClassName() + "] [PCA] " + line);
                         }
                     }
                     sleep(100);
@@ -328,6 +334,12 @@ public class PythonAgentIntegrationTest {
         });
         communicatorThread.start();
     }
+
+    /**
+     * Return concrete class name
+     * @return
+     */
+    protected abstract String getClassName();
 
     /**
      * Start server socket
@@ -534,12 +546,13 @@ public class PythonAgentIntegrationTest {
      * @return new lines printed by Python agent process
      */
     protected List<String> getNewLines(List<String> currentOutputLines, String output) {
-        List<String> newLines = new ArrayList<String>();
+        List<String> newLines = new ArrayList<>();
 
         if (StringUtils.isNotBlank(output)) {
-            String[] lines = output.split(NEW_LINE);
-            for (String line : lines) {
-                if (!currentOutputLines.contains(line)) {
+            List<String> lines = Arrays.asList(output.split(NEW_LINE));
+            if (lines.size() > 0) {
+                int readStartIndex = (currentOutputLines.size() > 0) ? (currentOutputLines.size() - 1) : 0;
+                for (String line : lines.subList(readStartIndex , lines.size())) {
                     currentOutputLines.add(line);
                     newLines.add(line);
                 }
@@ -574,5 +587,60 @@ public class PythonAgentIntegrationTest {
         public boolean isClosed() {
             return closed;
         }
+    }
+
+    /**
+     * Create a test topology object
+     *
+     * @param serviceName
+     * @param clusterId
+     * @param depPolicyName
+     * @param autoscalingPolicyName
+     * @param appId
+     * @param memberId
+     * @param clusterInstanceId
+     * @param networkPartitionId
+     * @param partitionId
+     * @param serviceType
+     * @return
+     */
+    protected static Topology createTestTopology(
+            String serviceName,
+            String clusterId,
+            String depPolicyName,
+            String autoscalingPolicyName,
+            String appId,
+            String memberId,
+            String clusterInstanceId,
+            String networkPartitionId,
+            String partitionId,
+            ServiceType serviceType) {
+
+
+        Topology topology = new Topology();
+        Service service = new Service(serviceName, serviceType);
+        topology.addService(service);
+
+        Cluster cluster = new Cluster(service.getServiceName(), clusterId, depPolicyName, autoscalingPolicyName, appId);
+        service.addCluster(cluster);
+
+        Member member = new Member(
+                service.getServiceName(),
+                cluster.getClusterId(),
+                memberId,
+                clusterInstanceId,
+                networkPartitionId,
+                partitionId,
+                LoadBalancingIPType.Private,
+                System.currentTimeMillis());
+
+        member.setDefaultPrivateIP("10.0.0.1");
+        member.setDefaultPublicIP("20.0.0.1");
+        Properties properties = new Properties();
+        properties.setProperty("prop1", "value1");
+        member.setProperties(properties);
+        member.setStatus(MemberStatus.Created);
+        cluster.addMember(member);
+        return topology;
     }
 }
