@@ -61,8 +61,9 @@ class ScheduledExecutor(Thread):
         """
         while not self.terminated:
             time.sleep(self.delay)
-            task_thread = Thread(target=self.task.execute_task)
-            task_thread.start()
+            if not self.terminated:
+                task_thread = Thread(target=self.task.execute_task)
+                task_thread.start()
 
     def terminate(self):
         """
