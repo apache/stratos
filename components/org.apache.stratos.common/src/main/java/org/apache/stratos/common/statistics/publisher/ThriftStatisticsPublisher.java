@@ -88,8 +88,9 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
 
         for (ThriftClientInfo thriftClientInfo : thriftClientInfoList) {
             if (thriftClientInfo.isStatsPublisherEnabled()) {
-                dataPublisherHolders.add(new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(),
-                        thriftClientInfo.getPassword()));
+                dataPublisherHolders
+                        .add(new DataPublisherHolder(null, buildUrl(thriftClientInfo), thriftClientInfo.getUsername(),
+                                thriftClientInfo.getPassword()));
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Thrift client [id] %s [ip] %s [port] %s is added to data publisher holder",
                             thriftClientInfo.getId(), thriftClientInfo.getIp(), thriftClientInfo.getPort()));
@@ -112,9 +113,6 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if (this.enabled) {
-            init();
-        }
     }
 
     @Override
@@ -134,15 +132,14 @@ public class ThriftStatisticsPublisher implements StatisticsPublisher {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Publishing thrift event: [stream] %s [version] %s",
-                        streamDefinition.getName(), streamDefinition.getVersion()));
+                log.debug(String.format("Publishing thrift event: [stream] %s [version] %s", streamDefinition.getName(),
+                        streamDefinition.getVersion()));
             }
             loadBalancingDataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Successfully Published thrift event: [stream] %s [version] %s",
                         streamDefinition.getName(), streamDefinition.getVersion()));
             }
-
 
         } catch (AgentException e) {
             if (log.isErrorEnabled()) {
