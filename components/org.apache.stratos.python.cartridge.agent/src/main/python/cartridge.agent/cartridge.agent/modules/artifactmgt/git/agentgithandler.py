@@ -21,6 +21,7 @@ import tempfile
 import urllib
 import os
 from distutils.dir_util import copy_tree
+import distutils.dir_util
 from threading import current_thread
 
 import constants
@@ -155,6 +156,9 @@ class AgentGitHandler:
                 "Cloning artifacts from URL: %s to temp location: %s" % (git_repo.repo_url, temp_repo_path))
             Repo.clone_from(git_repo.auth_url, temp_repo_path)
 
+            # clear the paths to get rid of the following bug in distutils:
+            # http://stackoverflow.com/questions/9160227/dir-util-copy-tree-fails-after-shutil-rmtree
+            distutils.dir_util._path_created = {}
             # move the cloned dir to application path
             copy_tree(temp_repo_path, git_repo.local_repo_path)
             AgentGitHandler.log.info("Git clone operation for tenant %s successful" % git_repo.tenant_id)
@@ -209,8 +213,16 @@ class AgentGitHandler:
 
     @staticmethod
     def clear_repo(tenant_id):
+        tenant_id = str(tenant_id)
+        AgentGitHandler.log.info ('########################## in clear_repo method...' + tenant_id)
         if tenant_id in AgentGitHandler.__git_repositories:
             del AgentGitHandler.__git_repositories[tenant_id]
+            AgentGitHandler.log.info('########################## cached repo object deleted for tenant ' +
+                  tenant_id)
+        if tenant_id in AgentGitHandler.__git_repositories:
+            AgentGitHandler.log.info('########################## cached repo object still exists for tenant ' + tenant_id)
+        else:
+            AgentGitHandler.log.info('########################## no cached obj found for ' + tenant_id)
 
     @staticmethod
     def create_git_repo(repo_info):
