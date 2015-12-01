@@ -110,6 +110,13 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                 AgentGitHandler.add_repo(git_repo)
 
     def check_and_backup_initial_artifacts(self, initial_artifact_dir):
+        """
+        verifies if there are any default artifacts by checking the 'initial_artifact_dir' and
+        whether its empty, and takes a backup to a directory  initial_artifact_dir_backup in the
+        same location
+
+        :param initial_artifact_dir: path to local artifact directory
+        """
         # copy default artifacts (if any) to a a temp location
         # if directory name is dir, the backup directory name would be dir_backup
         if self.initial_artifacts_exists(initial_artifact_dir):

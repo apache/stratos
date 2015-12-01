@@ -214,15 +214,9 @@ class AgentGitHandler:
     @staticmethod
     def clear_repo(tenant_id):
         tenant_id = str(tenant_id)
-        AgentGitHandler.log.info ('########################## in clear_repo method...' + tenant_id)
         if tenant_id in AgentGitHandler.__git_repositories:
             del AgentGitHandler.__git_repositories[tenant_id]
-            AgentGitHandler.log.info('########################## cached repo object deleted for tenant ' +
-                  tenant_id)
-        if tenant_id in AgentGitHandler.__git_repositories:
-            AgentGitHandler.log.info('########################## cached repo object still exists for tenant ' + tenant_id)
-        else:
-            AgentGitHandler.log.info('########################## no cached obj found for ' + tenant_id)
+            AgentGitHandler.log.debug('Cached repo object deleted for tenant ' + tenant_id)
 
     @staticmethod
     def create_git_repo(repo_info):
@@ -338,13 +332,18 @@ class AgentGitHandler:
         return True
 
     @staticmethod
-    def restore_default_artifacts(default_dir):
+    def restore_default_artifacts(initial_artifact_dir):
+        """
+        Restores the initial artifacts from the previously taken backup, if the backup exists
+
+        :param initial_artifact_dir: path to local artifact directory
+        """
         try:
-            Utils.move_directory(Utils.strip_trailing_slash(default_dir) + constants.BACKUP_DIR_SUFFIX, default_dir)
-            AgentGitHandler.log.info('Restored contents from backup location ' +Utils.strip_trailing_slash(default_dir)
+            Utils.move_directory(Utils.strip_trailing_slash(initial_artifact_dir) + constants.BACKUP_DIR_SUFFIX, initial_artifact_dir)
+            AgentGitHandler.log.info('Restored contents from backup location ' + Utils.strip_trailing_slash(initial_artifact_dir)
                                      + constants.BACKUP_DIR_SUFFIX)
         except OSError as e:
-            AgentGitHandler.log.error('Contents of ' + default_dir + ' not restored. Error: %s' % e)
+            AgentGitHandler.log.error('Contents of ' + initial_artifact_dir + ' not restored. Error: %s' % e)
 
     @staticmethod
     def execute_git_command(command, repo_path):
