@@ -21,6 +21,8 @@ import time
 import socket
 import string
 import hashlib
+import shutil
+import os
 
 from log import LogFactory
 
@@ -120,6 +122,59 @@ def check_ports_active(ip_address, ports):
 
     return True
 
+class Utils (object):
+
+    @staticmethod
+    def directory_exists(dir):
+        """
+        Checks if the given directory exists
+        :param dir: directory to check
+        :return: True if the directory dir exists, else False
+        :rtype: bool
+        """
+        try:
+            return os.path.isdir(dir)
+        except OSError as e:
+            log.error("Unable to check directory existance [%s]" % e)
+            return False
+
+    @staticmethod
+    def copy_directory(src, destination):
+        """
+        Copies if the directory 'src' to 'destination'
+        :param src: location of directory to copy
+        :param destination: new directory location
+        """
+        try:
+            shutil.copytree(src, destination)
+            log.debug("Directory [%s] copied to [%s]" % (src, destination))
+        except OSError as e:
+            log.error('Directory not copied. Error: %s' % e)
+
+    @staticmethod
+    def strip_trailing_slash(string):
+        """
+        If the string has a trailing '/', removes it
+        :param string: string to check
+        :return: string without a trailing '/'
+        :rtype: string
+        """
+        if string.endswith('/'):
+            return string[:-1]
+        return string
+
+    @staticmethod
+    def move_directory(src, destination):
+        """
+        Moves if the directory 'src' to 'destination'
+        :param src: location of directory to move
+        :param destination: new directory location
+        """
+        try:
+            shutil.move(src, destination)
+            log.debug("Directory [%s] moved to [%s]" % (src, destination))
+        except OSError as e:
+            log.error('Directory not moved. Error: %s' % e)
 
 class IncrementalCeilingListIterator(object):
     """

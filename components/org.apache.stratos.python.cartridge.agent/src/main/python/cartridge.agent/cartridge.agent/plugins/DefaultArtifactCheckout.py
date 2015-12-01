@@ -17,12 +17,12 @@
 
 from plugins.contracts import IArtifactCheckoutPlugin
 from modules.util.log import LogFactory
+from modules.util.cartridgeagentutils import Utils
 from modules.artifactmgt.git.agentgithandler import AgentGitHandler
 from config import Config
 import constants
 from exception import *
 import shutil
-import errno
 import os
 
 
@@ -94,8 +94,13 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
             self.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
                           git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
 
-            # copy default artifacts (if any) to a /tmp/default_artifacts
-            self.backupDefaultArtifacts(git_repo.local_repo_path, "/tmp/default_artifacts")
+            # copy default artifacts (if any) to a a temp location
+            # if directory name is dir, the backup directory name would be dir_backup
+            if self.initial_artifacts_exists(git_repo.local_repo_path):
+                self.log.info("Default artifacts exist at " + git_repo.local_repo_path)
+                self.backup_initial_artifacts(git_repo.local_repo_path)
+            else:
+                self.log.info("No default artifacts exist at " + git_repo.local_repo_path)
 
             try:
                 git_repo = AgentGitHandler.clone(git_repo)
@@ -109,17 +114,18 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                 AgentGitHandler.retry_clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
 
-    def backupDefaultArtifacts(src, dest):
+    def initial_artifacts_exists(self, dir):
         try:
-            if not os.path.isdir(src):
-                self.log.info ('Direcotry ' + src + ' does not exist')
-                return
-            if os.path.isdir(dest):
-                self.log.info('Directory ' + dest + ' already exists, will delete')
-                shutil.rmtree(dest)
-            self.log.info('Copying default artifacts from ' + src + ' to ' + dest)
-            shutil.copytree(src, dest)
+            return os.path.exists(dir) and os.listdir(dir)
+        except OSError as e:
+            self.log.error('Unable to check if directory exists | non-empty, error: %s' % e)
+            return False
+
+    def backup_initial_artifacts(self, src):
+        self.log.info('Initial artifacts exists, taking backup to ' + Utils.strip_trailing_slash(src)
+                      + constants.BACKUP_DIR_SUFFIX +
+                      ' directory')
+        try:
+            shutil.copytree(src, Utils.strip_trailing_slash(src) + constants.BACKUP_DIR_SUFFIX)
         except OSError as e:
             self.log.error('Directory not copied. Error: %s' % e)
-
-
