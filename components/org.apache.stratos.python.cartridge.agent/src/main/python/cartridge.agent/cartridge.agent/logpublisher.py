@@ -145,7 +145,7 @@ class LogPublisherManager(Thread):
         ports_active = cartridgeagentutils.wait_until_ports_active(
             DataPublisherConfiguration.get_instance().monitoring_server_ip,
             self.ports,
-            int(Config.read_property("port.check.timeout", critical=False)))
+            int(Config.port_check_timeout))
 
         if not ports_active:
             self.log.debug("Monitoring server is not active")

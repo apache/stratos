@@ -22,7 +22,7 @@ import sys
 from yapsy.PluginManager import PluginManager
 
 from modules.util.log import LogFactory
-from exception import ParameterNotFoundException
+from exception import ParameterNotFoundException, InvalidConfigValueException
 import constants
 from plugins.contracts import ICartridgeAgentPlugin, IArtifactCommitPlugin, IArtifactCheckoutPlugin, \
     IHealthStatReaderPlugin
@@ -148,6 +148,18 @@ class Config:
     """ :type : str """
     mb_publisher_timeout = None
     """ :type : int """
+    cep_username = None
+    """ :type : str """
+    cep_password = None
+    """ :type : str """
+    cep_urls = []
+    """ :type : list """
+    artifact_clone_retry_count = None
+    """ :type : str """
+    artifact_clone_retry_interval = None
+    """ :type : str """
+    port_check_timeout = None
+    """ :type : str """
 
     @staticmethod
     def read_conf_file():
@@ -351,8 +363,29 @@ class Config:
 
             Config.mb_username = Config.read_property(constants.MB_USERNAME, False)
             Config.mb_password = Config.read_property(constants.MB_PASSWORD, False)
-            Config.mb_urls = Config.read_property(constants.MB_URLS).split(",")
+            Config.mb_urls = Config.read_property(constants.MB_URLS)
             Config.mb_publisher_timeout = int(Config.read_property(constants.MB_PUBLISHER_TIMEOUT))
+
+            Config.cep_username = Config.read_property(constants.CEP_SERVER_ADMIN_USERNAME)
+            Config.cep_password = Config.read_property(constants.CEP_SERVER_ADMIN_PASSWORD)
+            Config.cep_urls = Config.read_property(constants.CEP_RECEIVER_URLS)
+
+            try:
+                Config.artifact_clone_retry_count = Config.read_property(constants.ARTIFACT_CLONE_RETRIES)
+            except ParameterNotFoundException:
+                Config.artifact_clone_retry_count = "5"
+
+            try:
+                Config.artifact_clone_retry_interval = Config.read_property(constants.ARTIFACT_CLONE_INTERVAL)
+            except ParameterNotFoundException:
+                Config.artifact_clone_retry_interval = "10"
+
+            try:
+                Config.port_check_timeout = Config.read_property(constants.PORT_CHECK_TIMEOUT)
+            except ParameterNotFoundException:
+                Config.port_check_timeout = "600000"
+
+            Config.validate_config()
         except ParameterNotFoundException as ex:
             raise RuntimeError(ex)
 
@@ -379,6 +412,52 @@ class Config:
         Config.log.info("Initializing plugins")
         Config.initialize_plugins()
         Config.extension_executor = Config.initialize_extensions()
+
+    @staticmethod
+    def validate_config():
+        try:
+            Config.validate_url_list(Config.mb_urls, constants.MB_URLS)
+            Config.validate_int(Config.mb_publisher_timeout, constants.MB_PUBLISHER_TIMEOUT)
+            Config.validate_url_list(Config.cep_urls, constants.CEP_RECEIVER_URLS)
+            Config.validate_int(Config.artifact_update_interval, constants.ARTIFACT_UPDATE_INTERVAL)
+            Config.validate_int(Config.artifact_clone_retry_count, constants.ARTIFACT_CLONE_RETRIES)
+            Config.validate_int(Config.artifact_clone_retry_interval, constants.ARTIFACT_CLONE_INTERVAL)
+            Config.validate_int(Config.port_check_timeout, constants.PORT_CHECK_TIMEOUT)
+        except ValueError as err:
+            raise InvalidConfigValueException("Invalid configuration for Cartridge Agent", err)
+
+    @staticmethod
+    def validate_url_list(urls, field_name):
+        """
+        host1:port1,host2:port2
+
+        :param urls:
+        :param field_name:
+        :return:
+        """
+        url_list = str(urls).split(",")
+        if len(url_list) < 1:
+            raise ValueError("Invalid value [field] \"%s\"" % field_name)
+
+        for single_url in url_list:
+            try:
+                url_ip, url_port = single_url.split(":")
+            except ValueError:
+                raise ValueError("Invalid host or port number value for [field] %s", field_name)
+
+    @staticmethod
+    def validate_int(int_value, field_name):
+        """
+        valid integer value
+
+        :param int_value:
+        :param field_name:
+        :return:
+        """
+        try:
+            int(int_value)
+        except ValueError:
+            raise ValueError("Invalid int value for [field] %s " % field_name)
 
     @staticmethod
     def initialize_plugins():
