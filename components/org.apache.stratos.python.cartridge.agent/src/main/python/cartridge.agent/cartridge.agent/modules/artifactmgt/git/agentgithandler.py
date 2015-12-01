@@ -173,8 +173,8 @@ class AgentGitHandler:
         """
         git_clone_successful = False
         # Read properties from agent.conf
-        max_retry_attempts = int(Config.read_property(constants.ARTIFACT_CLONE_RETRIES, 5))
-        retry_interval = int(Config.read_property(constants.ARTIFACT_CLONE_INTERVAL, 10))
+        max_retry_attempts = int(Config.artifact_clone_retry_count)
+        retry_interval = int(Config.artifact_clone_retry_interval)
         retry_attempts = 0
 
         # Iterate until git clone is successful or reaches max retry attempts
