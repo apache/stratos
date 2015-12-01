@@ -140,3 +140,5 @@ MONITORING_RECEIVER_PORT = "monitoring.server.port"
 MONITORING_RECEIVER_SECURE_PORT = "monitoring.server.secure.port"
 MONITORING_SERVER_ADMIN_USERNAME = "monitoring.server.admin.username"
 MONITORING_SERVER_ADMIN_PASSWORD = "monitoring.server.admin.password"
+
+BACKUP_DIR_SUFFIX = "_backup"

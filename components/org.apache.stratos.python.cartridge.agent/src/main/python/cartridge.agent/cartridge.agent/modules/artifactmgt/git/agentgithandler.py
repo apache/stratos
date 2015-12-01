@@ -28,10 +28,10 @@ import time
 from config import Config
 from exception import GitRepositorySynchronizationException
 from git import *
-import errno
 
 from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ...util.log import LogFactory
+from ...util.cartridgeagentutils import Utils
 
 
 class AgentGitHandler:
@@ -316,7 +316,9 @@ class AgentGitHandler:
                 "Could not remove repository folder for tenant:%s  %s" % (git_repo.tenant_id, e))
 
         # restore default artifacts
-        AgentGitHandler.restore_default_artifacts("/tmp/default_artifacts", git_repo.local_repo_path)
+        if Utils.directory_exists(Utils.strip_trailing_slash(git_repo.local_repo_path) +
+                                          constants.BACKUP_DIR_SUFFIX):
+            AgentGitHandler.restore_default_artifacts(git_repo.local_repo_path)
 
         AgentGitHandler.clear_repo(tenant_id)
         AgentGitHandler.log.info("Git repository deleted for tenant %s" % git_repo.tenant_id)
@@ -324,19 +326,13 @@ class AgentGitHandler:
         return True
 
     @staticmethod
-    def restore_default_artifacts (default_artifact_backup_location, local_repo_path):
+    def restore_default_artifacts(default_dir):
         try:
-            if os.path.isdir(default_artifact_backup_location):
-                # first remove all the artifacts in the local_repo_path
-                if os.listdir(local_repo_path):
-                    # non-empty
-                    filelist = [f for f in os.listdir(local_repo_path)]
-                    for f in filelist:
-                        GitUtils.delete_folder_tree(local_repo_path + '/' + f)
-            AgentGitHandler.log.info('Restoring default artifacts from ' + default_artifact_backup_location + ' to ' + local_repo_path)
-            shutil.copytree(default_artifact_backup_location, local_repo_path)
+            Utils.move_directory(Utils.strip_trailing_slash(default_dir) + constants.BACKUP_DIR_SUFFIX, default_dir)
+            AgentGitHandler.log.info('Restored contents from backup location ' +Utils.strip_trailing_slash(default_dir)
+                                     + constants.BACKUP_DIR_SUFFIX)
         except OSError as e:
-            AgentGitHandler.log.error('Contents of ' + default_artifact_backup_location + ' not restored. Error: %s' % e)
+            AgentGitHandler.log.error('Contents of ' + default_dir + ' not restored. Error: %s' % e)
 
     @staticmethod
     def execute_git_command(command, repo_path):
