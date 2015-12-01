@@ -83,6 +83,7 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                 git_repo.cloned = False
                 self.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
                                git_repo.tenant_id, git_repo.repo_url)
+
                 git_repo = AgentGitHandler.clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
                 self.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
@@ -94,13 +95,7 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
             self.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
                           git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
 
-            # copy default artifacts (if any) to a a temp location
-            # if directory name is dir, the backup directory name would be dir_backup
-            if self.initial_artifacts_exists(git_repo.local_repo_path):
-                self.log.info("Default artifacts exist at " + git_repo.local_repo_path)
-                self.backup_initial_artifacts(git_repo.local_repo_path)
-            else:
-                self.log.info("No default artifacts exist at " + git_repo.local_repo_path)
+            self.check_and_backup_initial_artifacts(git_repo.local_repo_path)
 
             try:
                 git_repo = AgentGitHandler.clone(git_repo)
@@ -113,6 +108,15 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
                 self.log.info("Retrying git clone operation...")
                 AgentGitHandler.retry_clone(git_repo)
                 AgentGitHandler.add_repo(git_repo)
+
+    def check_and_backup_initial_artifacts(self, initial_artifact_dir):
+        # copy default artifacts (if any) to a a temp location
+        # if directory name is dir, the backup directory name would be dir_backup
+        if self.initial_artifacts_exists(initial_artifact_dir):
+            self.log.info("Default artifacts exist at " + initial_artifact_dir)
+            self.backup_initial_artifacts(initial_artifact_dir)
+        else:
+            self.log.info("No default artifacts exist at " + initial_artifact_dir)
 
     def initial_artifacts_exists(self, dir):
         try:

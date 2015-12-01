@@ -143,8 +143,8 @@ def check_port_active(ip_address, port):
         log.debug("Port %s is not active" % port)
         return False
 
-class Utils (object):
 
+class Utils(object):
     @staticmethod
     def directory_exists(dir):
         """
@@ -196,6 +196,13 @@ class Utils (object):
             log.debug("Directory [%s] moved to [%s]" % (src, destination))
         except OSError as e:
             log.error('Directory not moved. Error: %s' % e)
+
+    @staticmethod
+    def print_dictionary(dic):
+        for x in dic:
+            print (x)
+            for y in dic[x]:
+                print (y, ':', dic[x][y])
 
 class IncrementalCeilingListIterator(object):
     """
