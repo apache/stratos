@@ -44,11 +44,9 @@ public class MockHealthStatisticsNotifier implements Runnable {
         this.mockMemberContext = mockMemberContext;
         this.healthStatisticsPublisher = HealthStatisticsPublisherFactory
                 .createHealthStatisticsPublisher(StatisticsPublisherType.WSO2CEP);
-        this.healthStatisticsPublisher.setEnabled(true);
 
         this.inFlightRequestPublisher = InFlightRequestPublisherFactory
                 .createInFlightRequestPublisher(StatisticsPublisherType.WSO2CEP);
-        this.inFlightRequestPublisher.setEnabled(true);
     }
 
     @Override
