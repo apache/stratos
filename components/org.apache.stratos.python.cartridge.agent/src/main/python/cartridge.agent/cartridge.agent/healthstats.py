@@ -62,7 +62,7 @@ class HealthStatisticsPublisherManager(Thread):
 
                 self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
                 self.publisher.publish_load_average(cartridge_stats.load_avg)
-            except Exception as e:
+            except Exception:
                 self.log.exception(
                     "Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
                 self.publisher = HealthStatisticsPublisher()
@@ -76,33 +76,17 @@ class HealthStatisticsPublisher:
     """
     log = LogFactory().get_log(__name__)
 
-    @staticmethod
-    def read_config(conf_key):
-        """
-        Read a given key from the cartridge agent configuration
-        :param conf_key: The key to look for in the CA config
-        :return: The value for the key from the CA config
-        :raise: RuntimeError if the given key is not found in the CA config
-        """
-        conf_value = Config.read_property(conf_key, False)
-
-        if conf_value is None or conf_value.strip() == "":
-            raise RuntimeError("System property not found: " + conf_key)
-
-        return conf_value
-
     def __init__(self):
 
         self.publishers = []
         self.deactive_publishers = []
-        self.cep_admin_username = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_USERNAME)
-        self.cep_admin_password = HealthStatisticsPublisher.read_config(constants.CEP_SERVER_ADMIN_PASSWORD)
+        self.cep_admin_username = Config.cep_username
+        self.cep_admin_password = Config.cep_password
         self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
         HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
 
         # 1.1.1.1:1883,2.2.2.2:1883
-        cep_urls = HealthStatisticsPublisher.read_config(constants.CEP_RECEIVER_URLS)
-        cep_urls = cep_urls.split(',')
+        cep_urls = Config.cep_urls.split(',')
         for cep_url in cep_urls:
 
             cep_active = self.is_cep_active(cep_url)
@@ -207,14 +191,10 @@ class HealthStatisticsPublisher:
         return true if active
         :param cep_url:
         """
-        ports = []
         cep_ip = cep_url.split(':')[0]
         cep_port = cep_url.split(':')[1]
-        ports.append(cep_port)
 
-        cep_active = cartridgeagentutils.check_ports_active(
-            cep_ip,
-            ports)
+        cep_active = cartridgeagentutils.check_port_active(cep_ip, cep_port)
 
         return cep_active
 
@@ -229,8 +209,8 @@ class HealthStatisticsPublisher:
             except Exception as ex:
                 raise ThriftReceiverOfflineException(ex)
 
-        deactive_ceps = self.deactive_publishers
-        for cep_url in deactive_ceps:
+        inactive_ceps = self.deactive_publishers
+        for cep_url in inactive_ceps:
             cep_active = self.is_cep_active(cep_url)
             if cep_active:
                 self.add_publishers(cep_url)

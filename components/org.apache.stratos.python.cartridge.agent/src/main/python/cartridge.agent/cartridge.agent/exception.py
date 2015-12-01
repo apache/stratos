@@ -21,17 +21,8 @@ class CartridgeAgentException(Exception):
     Exception super class to be used by specific exceptions thrown in the cartridge agent
     """
 
-    def __init__(self, message):
-        super(CartridgeAgentException, self).__init__(message)
-        self.__message = message
-
-    def get_message(self):
-        """
-        The message provided when the exception is raised
-        :return: message
-        :rtype: str
-        """
-        return self.__message
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
 
 
 class DataPublisherException(CartridgeAgentException):
@@ -39,8 +30,8 @@ class DataPublisherException(CartridgeAgentException):
     Exception to be used during log publishing operations
     """
 
-    def __init__(self, message):
-        super(DataPublisherException, self).__init__(message)
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)
 
 
 class PluginExecutionException(CartridgeAgentException):
@@ -48,8 +39,8 @@ class PluginExecutionException(CartridgeAgentException):
     Exception raised when a runtime error is met while executing an plugin script
     """
 
-    def __init__(self, message):
-        super(PluginExecutionException, self).__init__(message)
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)
 
 
 class GitRepositorySynchronizationException(CartridgeAgentException):
@@ -57,8 +48,8 @@ class GitRepositorySynchronizationException(CartridgeAgentException):
     Exception raised during a git repository related task
     """
 
-    def __init__(self, message):
-        super(GitRepositorySynchronizationException, self).__init__(message)
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)
 
 
 class ParameterNotFoundException(CartridgeAgentException):
@@ -67,8 +58,8 @@ class ParameterNotFoundException(CartridgeAgentException):
     of the cartridge agent
     """
 
-    def __init__(self, message):
-        super(ParameterNotFoundException, self).__init__(message)
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)
 
 
 class ThriftReceiverOfflineException(CartridgeAgentException):
@@ -76,8 +67,8 @@ class ThriftReceiverOfflineException(CartridgeAgentException):
     Exception raised when the connection to the Thrift receiver is dropped when publishing events
     """
 
-    def __init__(self, message):
-        super(ThriftReceiverOfflineException, self).__init__(message)
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)
 
 
 class CEPPublisherException(CartridgeAgentException):
@@ -85,5 +76,14 @@ class CEPPublisherException(CartridgeAgentException):
     Exception to be used during CEP publishing operations
     """
 
-    def __init__(self, message):
-        super(CEPPublisherException, self).__init__(message)
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)
+
+
+class InvalidConfigValueException(CartridgeAgentException):
+    """
+    Exception to be used when validating agent configuration
+    """
+
+    def __init__(self, *args, **kwargs):
+        CartridgeAgentException.__init__(self, *args, **kwargs)

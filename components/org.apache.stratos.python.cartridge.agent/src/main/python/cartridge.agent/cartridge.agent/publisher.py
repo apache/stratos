@@ -71,7 +71,7 @@ def publish_instance_activated_event():
         ports_active = cartridgeagentutils.wait_until_ports_active(
             listen_address,
             configuration_ports,
-            int(Config.read_property("port.check.timeout", critical=False)))
+            int(Config.port_check_timeout))
 
         if ports_active:
             log.info("Publishing instance activated event...")
@@ -226,7 +226,7 @@ class EventPublisher(object):
         while int(time.time()) - self.__start_time < (Config.mb_publisher_timeout * 1000):
             retry_interval = retry_iterator.get_next_retry_interval()
 
-            for mb_url in Config.mb_urls:
+            for mb_url in Config.mb_urls.split(","):
                 mb_ip, mb_port = mb_url.split(":")
 
                 # start a thread to execute publish event
