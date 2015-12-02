@@ -17,25 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.messaging.receiver;
+package org.apache.stratos.messaging.message.receiver;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
+import java.util.concurrent.ExecutorService;
 
-public class StratosManagerTopologyEventReceiver {
+public class StratosEventReceiver {
 
-    private static final Log log = LogFactory.getLog(StratosManagerTopologyEventReceiver.class);
+    protected ExecutorService executorService;
 
-    public StratosManagerTopologyEventReceiver() {
+    public StratosEventReceiver () {
     }
-
-//    @Override
-//    public void execute() {
-//        super.execute();
-//
-//        if (log.isInfoEnabled()) {
-//            log.info("Stratos manager topology event receiver thread started");
-//        }
-//    }
 }

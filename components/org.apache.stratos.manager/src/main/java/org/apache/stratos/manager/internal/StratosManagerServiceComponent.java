@@ -211,8 +211,8 @@ public class StratosManagerServiceComponent {
      */
     private void initializeTopologyEventReceiver() {
         topologyEventReceiver = new StratosManagerTopologyEventReceiver();
-        topologyEventReceiver.setExecutorService(executorService);
-        topologyEventReceiver.execute();
+//        topologyEventReceiver.setExecutorService(executorService);
+//        topologyEventReceiver.execute();
     }
 
     /**
