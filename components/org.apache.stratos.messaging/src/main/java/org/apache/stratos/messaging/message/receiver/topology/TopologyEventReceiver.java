@@ -21,11 +21,13 @@ package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.event.initializer.CompleteTopologyRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -34,26 +36,41 @@ import java.util.concurrent.ExecutorService;
  * A thread for receiving topology information from message broker and
  * build topology in topology manager.
  */
-public class TopologyEventReceiver {
+public class TopologyEventReceiver extends StratosEventReceiver {
 
     private static final Log log = LogFactory.getLog(TopologyEventReceiver.class);
 
     private TopologyEventMessageDelegator messageDelegator;
     private TopologyEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private ExecutorService executorService;
+    private static volatile TopologyEventReceiver instance;
 
-    public TopologyEventReceiver() {
+    private TopologyEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("topology-event-receiver", 100);
         TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
         this.messageDelegator = new TopologyEventMessageDelegator(messageQueue);
         this.messageListener = new TopologyEventMessageListener(messageQueue);
+        execute();
+    }
+
+    public static TopologyEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (TopologyEventReceiver.class) {
+                if (instance == null) {
+                    instance = new TopologyEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
     }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
@@ -101,11 +118,11 @@ public class TopologyEventReceiver {
         });
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

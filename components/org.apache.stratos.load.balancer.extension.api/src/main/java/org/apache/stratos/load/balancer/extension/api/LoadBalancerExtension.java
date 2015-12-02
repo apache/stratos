@@ -201,8 +201,6 @@ public class LoadBalancerExtension {
      */
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
-        applicationSignUpEventReceiver.setExecutorService(executorService);
-        applicationSignUpEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Application signup event receiver thread started");
         }

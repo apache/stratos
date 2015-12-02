@@ -21,11 +21,13 @@ package org.apache.stratos.messaging.message.receiver.application.signup;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.event.initializer.CompleteApplicationSignUpsRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -33,26 +35,41 @@ import java.util.concurrent.ExecutorService;
 /**
  * Application signup event receiver.
  */
-public class ApplicationSignUpEventReceiver {
+public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
 
     private static final Log log = LogFactory.getLog(ApplicationSignUpEventReceiver.class);
 
     private ApplicationSignUpEventMessageDelegator messageDelegator;
     private ApplicationSignUpEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private ExecutorService executorService;
+    private static volatile ApplicationSignUpEventReceiver instance;
 
-    public ApplicationSignUpEventReceiver() {
+    private ApplicationSignUpEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("application-signup-event-receiver", 100);
         ApplicationSignUpEventMessageQueue messageQueue = new ApplicationSignUpEventMessageQueue();
         this.messageDelegator = new ApplicationSignUpEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationSignUpEventMessageListener(messageQueue);
+        execute();
+    }
+
+    public static ApplicationSignUpEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (ApplicationSignUpEventReceiver.class) {
+                if (instance == null) {
+                    instance = new ApplicationSignUpEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
     }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(),
@@ -103,11 +120,11 @@ public class ApplicationSignUpEventReceiver {
         messageDelegator.terminate();
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
 
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

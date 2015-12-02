@@ -60,18 +60,18 @@ public class AutoscalerTopologyEventReceiver {
     private ExecutorService executorService;
 
     public AutoscalerTopologyEventReceiver() {
-        this.topologyEventReceiver = new TopologyEventReceiver();
+        this.topologyEventReceiver = TopologyEventReceiver.getInstance();
         addEventListeners();
     }
 
-    public void execute() {
-        //FIXME this activated before autoscaler deployer activated.
-        topologyEventReceiver.setExecutorService(getExecutorService());
-        topologyEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Autoscaler topology receiver thread started");
-        }
-    }
+//    public void execute() {
+//        //FIXME this activated before autoscaler deployer activated.
+//       // topologyEventReceiver.setExecutorService(getExecutorService());
+//        //topologyEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Autoscaler topology receiver thread started");
+//        }
+//    }
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
