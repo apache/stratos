@@ -279,10 +279,10 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         MemberFaultEventMap
                 .put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
 
-        executorService = StratosThreadPool
-                .getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY, CEP_EXTENSION_THREAD_POOL_SIZE);
-        cepTopologyEventReceiver.setExecutorService(executorService);
-        cepTopologyEventReceiver.execute();
+//        executorService = StratosThreadPool
+//                .getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY, CEP_EXTENSION_THREAD_POOL_SIZE);
+//        cepTopologyEventReceiver.setExecutorService(executorService);
+//        cepTopologyEventReceiver.execute();
 
         //Ordinary scheduling
         window.schedule();
@@ -322,7 +322,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     @Override
     public void destroy() {
         // terminate topology listener thread
-        cepTopologyEventReceiver.terminate();
+//        cepTopologyEventReceiver.terminate();
         window = null;
 
         // Shutdown executor service

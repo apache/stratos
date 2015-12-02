@@ -56,7 +56,7 @@ public class MetadataApiRegistry implements DataStore {
 
     public MetadataApiRegistry() {
         metadataTopologyEventReceiver = new MetadataTopologyEventReceiver();
-        metadataTopologyEventReceiver.execute();
+//        metadataTopologyEventReceiver.execute();
 
         metadataApplicationEventReceiver = new MetadataApplicationEventReceiver();
         metadataApplicationEventReceiver.execute();
@@ -417,9 +417,9 @@ public class MetadataApiRegistry implements DataStore {
         return applicationIdToReadWriteLockMap;
     }
 
-    public void stopTopologyReceiver() {
-        metadataTopologyEventReceiver.terminate();
-    }
+//    public void stopTopologyReceiver() {
+//        metadataTopologyEventReceiver.terminate();
+//    }
 
     public void stopApplicationReceiver() {
         metadataApplicationEventReceiver.terminate();

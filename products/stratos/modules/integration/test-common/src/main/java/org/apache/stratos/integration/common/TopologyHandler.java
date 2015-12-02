@@ -108,9 +108,9 @@ public class TopologyHandler {
     }
 
     private void initializeApplicationSignUpEventReceiver() {
-        applicationSignUpEventReceiver = new ApplicationSignUpEventReceiver();
-        applicationSignUpEventReceiver.setExecutorService(executorService);
-        applicationSignUpEventReceiver.execute();
+        applicationSignUpEventReceiver = ApplicationSignUpEventReceiver.getInstance();
+//        applicationSignUpEventReceiver.setExecutorService(executorService);
+//        applicationSignUpEventReceiver.execute();
     }
 
     private void initializeTenantEventReceiver() {
@@ -171,8 +171,8 @@ public class TopologyHandler {
      * Initialize Topology event receiver
      */
     private void initializeTopologyEventReceiver() {
-        topologyEventReceiver = new TopologyEventReceiver();
-        topologyEventReceiver.setExecutorService(executorService);
+        topologyEventReceiver = TopologyEventReceiver.getInstance();
+//        topologyEventReceiver.setExecutorService(executorService);
         topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -206,7 +206,7 @@ public class TopologyHandler {
                         clusterInstanceInactivateEvent.getClusterId()));
             }
         });
-        topologyEventReceiver.execute();
+        //topologyEventReceiver.execute();
     }
 
     /**

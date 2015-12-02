@@ -41,8 +41,9 @@ public class MetadataTopologyEventReceiver {
     private ExecutorService executorService;
 
     public MetadataTopologyEventReceiver() {
-        this.topologyEventReceiver = new TopologyEventReceiver();
-        executorService = StratosThreadPool.getExecutorService(Constants.METADATA_SERVICE_THREAD_POOL_ID, 20);
+        this.topologyEventReceiver = TopologyEventReceiver.getInstance();
+//        //executorService = StratosThreadPool.getExecutorService(Constants
+//                .METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
 
@@ -67,21 +68,21 @@ public class MetadataTopologyEventReceiver {
         });
     }
 
-    public void execute() {
-        topologyEventReceiver.setExecutorService(getExecutorService());
-        topologyEventReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Metadata service topology receiver started.");
-        }
-    }
-
-    public void terminate() {
-        topologyEventReceiver.terminate();
-        if (log.isInfoEnabled()) {
-            log.info("Metadata service topology receiver stopped.");
-        }
-    }
+//    public void execute() {
+//        topologyEventReceiver.setExecutorService(getExecutorService());
+//        topologyEventReceiver.execute();
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Metadata service topology receiver started.");
+//        }
+//    }
+//
+//    public void terminate() {
+//        topologyEventReceiver.terminate();
+//        if (log.isInfoEnabled()) {
+//            log.info("Metadata service topology receiver stopped.");
+//        }
+//    }
 
     public ExecutorService getExecutorService() {
         return executorService;

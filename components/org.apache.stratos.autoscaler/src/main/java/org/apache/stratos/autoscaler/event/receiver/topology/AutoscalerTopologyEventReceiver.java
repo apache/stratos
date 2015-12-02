@@ -510,16 +510,16 @@ public class AutoscalerTopologyEventReceiver {
     /**
      * Terminate load balancer topology receiver thread.
      */
-    public void terminate() {
-        topologyEventReceiver.terminate();
-        terminated = true;
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void terminate() {
+//        topologyEventReceiver.terminate();
+//        terminated = true;
+//    }
+//
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }
