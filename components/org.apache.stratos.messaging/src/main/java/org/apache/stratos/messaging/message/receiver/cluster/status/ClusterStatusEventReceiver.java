@@ -21,8 +21,10 @@ package org.apache.stratos.messaging.message.receiver.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -30,26 +32,39 @@ import java.util.concurrent.ExecutorService;
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class ClusterStatusEventReceiver {
+public class ClusterStatusEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(ClusterStatusEventReceiver.class);
     private final ClusterStatusEventMessageDelegator messageDelegator;
     private final ClusterStatusEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private boolean terminated;
-    private ExecutorService executorService;
+    private static volatile ClusterStatusEventReceiver instance;
 
-    public ClusterStatusEventReceiver() {
+    private ClusterStatusEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("clusterstatus-event-receiver", 100);
         ClusterStatusEventMessageQueue messageQueue = new ClusterStatusEventMessageQueue();
         this.messageDelegator = new ClusterStatusEventMessageDelegator(messageQueue);
         this.messageListener = new ClusterStatusEventMessageListener(messageQueue);
+        execute();
     }
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
     }
 
+    public static ClusterStatusEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (ClusterStatusEventReceiver.class) {
+                if (instance == null) {
+                    instance = new ClusterStatusEventReceiver();
+                }
+            }
+        }
 
-    public void execute() {
+        return instance;
+    }
+
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
@@ -77,17 +92,17 @@ public class ClusterStatusEventReceiver {
         return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
     }
 
-    public void terminate() {
-        eventSubscriber.terminate();
-        messageDelegator.terminate();
-        terminated = true;
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void terminate() {
+//        eventSubscriber.terminate();
+//        messageDelegator.terminate();
+//        terminated = true;
+//    }
+//
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

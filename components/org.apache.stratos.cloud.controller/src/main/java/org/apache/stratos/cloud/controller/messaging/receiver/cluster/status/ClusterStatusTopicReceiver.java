@@ -32,28 +32,27 @@ import java.util.concurrent.ExecutorService;
 public class ClusterStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
-    private ClusterStatusEventReceiver statusEventReceiver;
-    private boolean terminated;
-    private ExecutorService executorService;
+    private ClusterStatusEventReceiver clusterStatusEventReceiver;
+    //private boolean terminated;
+    //private ExecutorService executorService;
 
     public ClusterStatusTopicReceiver() {
-        this.statusEventReceiver = new ClusterStatusEventReceiver();
-
+        this.clusterStatusEventReceiver = ClusterStatusEventReceiver.getInstance();
         addEventListeners();
     }
 
-    public void execute() {
-        statusEventReceiver.setExecutorService(executorService);
-        statusEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller Cluster status thread started");
-        }
-
-    }
+//    public void execute() {
+//        clusterStatusEventReceiver.setExecutorService(executorService);
+//        clusterStatusEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Cloud controller Cluster status thread started");
+//        }
+//
+//    }
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
-        statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
+        clusterStatusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -64,14 +63,14 @@ public class ClusterStatusTopicReceiver {
             }
         });
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
+        clusterStatusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 //TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
             }
         });
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
+        clusterStatusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -82,7 +81,7 @@ public class ClusterStatusTopicReceiver {
             }
         });
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
+        clusterStatusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -93,7 +92,7 @@ public class ClusterStatusTopicReceiver {
             }
         });
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
+        clusterStatusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -104,7 +103,7 @@ public class ClusterStatusTopicReceiver {
             }
         });
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
+        clusterStatusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -116,15 +115,15 @@ public class ClusterStatusTopicReceiver {
         });
     }
 
-    public void setTerminated(boolean terminated) {
-        this.terminated = terminated;
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void setTerminated(boolean terminated) {
+//        this.terminated = terminated;
+//    }
+//
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }
