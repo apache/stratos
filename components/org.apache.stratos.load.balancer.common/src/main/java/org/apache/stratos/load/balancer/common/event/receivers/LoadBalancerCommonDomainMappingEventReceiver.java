@@ -34,13 +34,15 @@ import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappin
  * Load balancer common domain mapping event receiver updates the topology in the given topology provider
  * with the domains found in domain mapping events.
  */
-public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingEventReceiver {
+public class LoadBalancerCommonDomainMappingEventReceiver {
 
     private static final Log log = LogFactory.getLog(LoadBalancerCommonDomainMappingEventReceiver.class);
 
     private TopologyProvider topologyProvider;
+    private DomainMappingEventReceiver domainMappingEventReceiver;
 
     public LoadBalancerCommonDomainMappingEventReceiver(TopologyProvider topologyProvider) {
+        this.domainMappingEventReceiver = DomainMappingEventReceiver.getInstance();
         this.topologyProvider = topologyProvider;
         addEventListeners();
     }
@@ -57,7 +59,7 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
      * domain mapping events.
      */
     public void addEventListeners() {
-        addEventListener(new DomainMappingAddedEventListener() {
+        domainMappingEventReceiver.addEventListener(new DomainMappingAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 DomainMappingAddedEvent domainMappingAddedEvent = (DomainMappingAddedEvent) event;
@@ -75,7 +77,7 @@ public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingE
             }
         });
 
-        addEventListener(new DomainMappingRemovedEventListener() {
+        domainMappingEventReceiver.addEventListener(new DomainMappingRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 DomainMappingRemovedEvent domainMappingRemovedEvent = (DomainMappingRemovedEvent) event;

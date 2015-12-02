@@ -173,11 +173,11 @@ public class LoadBalancerServiceComponent {
         }
 
         domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver(topologyProvider);
-        domainMappingEventReceiver.setExecutorService(executorService);
-        domainMappingEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Domain mapping event receiver thread started");
-        }
+//        domainMappingEventReceiver.setExecutorService(executorService);
+//        domainMappingEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Domain mapping event receiver thread started");
+//        }
     }
 
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
@@ -275,13 +275,13 @@ public class LoadBalancerServiceComponent {
 //        }
 
         // Terminate domain mapping event receiver
-        if (domainMappingEventReceiver != null) {
-            try {
-                domainMappingEventReceiver.terminate();
-            } catch (Exception e) {
-                log.warn("An error occurred while terminating domain mapping event receiver", e);
-            }
-        }
+//        if (domainMappingEventReceiver != null) {
+//            try {
+//                domainMappingEventReceiver.terminate();
+//            } catch (Exception e) {
+//                log.warn("An error occurred while terminating domain mapping event receiver", e);
+//            }
+//        }
 
         // Terminate statistics notifier
         if (statisticsNotifier != null) {
