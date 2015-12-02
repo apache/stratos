@@ -186,8 +186,8 @@ public class LoadBalancerServiceComponent {
         }
 
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
-        applicationSignUpEventReceiver.setExecutorService(executorService);
-        applicationSignUpEventReceiver.execute();
+//        applicationSignUpEventReceiver.setExecutorService(executorService);
+//        applicationSignUpEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Application signup event receiver thread started");
         }
@@ -266,13 +266,13 @@ public class LoadBalancerServiceComponent {
         }
 
         // Terminate application signup event receiver
-        if (applicationSignUpEventReceiver != null) {
-            try {
-                applicationSignUpEventReceiver.terminate();
-            } catch (Exception e) {
-                log.warn("An error occurred while terminating application signup event receiver", e);
-            }
-        }
+//        if (applicationSignUpEventReceiver != null) {
+//            try {
+//                applicationSignUpEventReceiver.terminate();
+//            } catch (Exception e) {
+//                log.warn("An error occurred while terminating application signup event receiver", e);
+//            }
+//        }
 
         // Terminate domain mapping event receiver
         if (domainMappingEventReceiver != null) {

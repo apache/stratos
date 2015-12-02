@@ -103,10 +103,10 @@ public class CartridgeAgent implements Runnable {
         } */
 
         // Start application event receiver thread
-        registerApplicationEventListeners();
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent registering all event listeners ... done");
-        }
+        //registerApplicationEventListeners();
+//        if (log.isInfoEnabled()) {
+//            log.info("Cartridge agent registering all event listeners ... done");
+//        }
 
         // Execute instance started shell script
         extensionHandler.onInstanceStartedEvent();
@@ -197,29 +197,29 @@ public class CartridgeAgent implements Runnable {
         }
     }
 
-    protected void registerTenantEventListeners() {
-        if (log.isDebugEnabled()) {
-            log.debug("registerTenantEventListeners before");
-        }
+//    protected void registerTenantEventListeners() {
+//        if (log.isDebugEnabled()) {
+//            log.debug("registerTenantEventListeners before");
+//        }
+//
+//        eventListenerns.startTenantEventReceiver();
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("registerTenantEventListeners after");
+//        }
+//    }
 
-        eventListenerns.startTenantEventReceiver();
-
-        if (log.isDebugEnabled()) {
-            log.debug("registerTenantEventListeners after");
-        }
-    }
-
-    protected void registerApplicationEventListeners() {
-        if (log.isDebugEnabled()) {
-            log.debug("registerApplicationListeners before");
-        }
-
-        eventListenerns.startApplicationsEventReceiver();
-
-        if (log.isDebugEnabled()) {
-            log.debug("registerApplicationEventListeners after");
-        }
-    }
+//    protected void registerApplicationEventListeners() {
+//        if (log.isDebugEnabled()) {
+//            log.debug("registerApplicationListeners before");
+//        }
+//
+//        eventListenerns.startApplicationsEventReceiver();
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("registerApplicationEventListeners after");
+//        }
+//    }
 
     protected void validateRequiredSystemProperties() {
         String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);

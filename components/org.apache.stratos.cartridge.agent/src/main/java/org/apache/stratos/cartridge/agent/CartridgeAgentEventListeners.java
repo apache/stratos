@@ -72,11 +72,10 @@ public class CartridgeAgentEventListeners {
         if (log.isDebugEnabled()) {
             log.debug("Creating cartridge agent event listeners...");
         }
-        this.applicationsEventReceiver = new ApplicationSignUpEventReceiver();
-        this.applicationsEventReceiver.setExecutorService(eventListenerExecutorService);
+        this.applicationsEventReceiver = ApplicationSignUpEventReceiver.getInstance();
 
-        this.topologyEventReceiver = new TopologyEventReceiver();
-        this.topologyEventReceiver.setExecutorService(eventListenerExecutorService);
+        this.topologyEventReceiver = TopologyEventReceiver.getInstance();
+        //this.topologyEventReceiver.setExecutorService(eventListenerExecutorService);
 
         this.instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
 
@@ -151,24 +150,24 @@ public class CartridgeAgentEventListeners {
 
     }
 
-    public void startApplicationsEventReceiver() {
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting cartridge agent application event message receiver");
-        }
-
-        eventListenerExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                applicationsEventReceiver.execute();
-            }
-        });
-
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent application receiver thread started, waiting for event messages ...");
-        }
-
-    }
+//    public void startApplicationsEventReceiver() {
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Starting cartridge agent application event message receiver");
+//        }
+//
+//        eventListenerExecutorService.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                applicationsEventReceiver.execute();
+//            }
+//        });
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Cartridge agent application receiver thread started, waiting for event messages ...");
+//        }
+//
+//    }
 
 
     private void addInstanceNotifierEventListeners() {

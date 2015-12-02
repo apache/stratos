@@ -41,19 +41,20 @@ import org.apache.stratos.messaging.message.receiver.application.signup.Applicat
  * Load balancer common application signup event receiver updates the topology in the given topology provider
  * with the hostnames found in application signup events.
  */
-public class LoadBalancerCommonApplicationSignUpEventReceiver extends ApplicationSignUpEventReceiver {
+public class LoadBalancerCommonApplicationSignUpEventReceiver {
 
     private static final Log log = LogFactory.getLog(LoadBalancerCommonApplicationSignUpEventReceiver.class);
-
+    private ApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     private TopologyProvider topologyProvider;
 
     public LoadBalancerCommonApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
+        this.applicationSignUpEventReceiver = ApplicationSignUpEventReceiver.getInstance();
         this.topologyProvider = topologyProvider;
         addEventListeners();
     }
 
     private void addEventListeners() {
-        addEventListener(new CompleteApplicationSignUpsEventListener() {
+        applicationSignUpEventReceiver.addEventListener(new CompleteApplicationSignUpsEventListener() {
             private boolean initialized = false;
 
             @Override
@@ -96,7 +97,7 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
             }
         });
 
-        addEventListener(new ApplicationSignUpAddedEventListener() {
+        applicationSignUpEventReceiver.addEventListener(new ApplicationSignUpAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -110,7 +111,7 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
             }
         });
 
-        addEventListener(new ApplicationSignUpRemovedEventListener() {
+        applicationSignUpEventReceiver.addEventListener(new ApplicationSignUpRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {

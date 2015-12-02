@@ -108,7 +108,7 @@ public class MockInstance implements Serializable {
     }
 
     private void startTopologyEventReceiver() {
-        topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver = TopologyEventReceiver.getInstance();
         topologyEventReceiver.addEventListener(new MemberInitializedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -151,8 +151,8 @@ public class MockInstance implements Serializable {
                 }
             }
         });
-        topologyEventReceiver.setExecutorService(eventListenerExecutorService);
-        topologyEventReceiver.execute();
+//        topologyEventReceiver.setExecutorService(eventListenerExecutorService);
+//        topologyEventReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Mock instance topology event message receiver started for mock member [member-id] %s",

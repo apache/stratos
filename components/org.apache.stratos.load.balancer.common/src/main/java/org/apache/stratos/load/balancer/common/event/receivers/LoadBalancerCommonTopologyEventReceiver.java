@@ -38,15 +38,17 @@ import java.util.Properties;
  * Load balancer common topology receiver updates the topology in the given topology provider
  * according to topology events.
  */
-public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiver {
+public class LoadBalancerCommonTopologyEventReceiver {
 
     private static final Log log = LogFactory.getLog(LoadBalancerCommonTopologyEventReceiver.class);
 
     private TopologyProvider topologyProvider;
     private boolean initialized;
+    private TopologyEventReceiver topologyEventReceiver;
 
     public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
+        this.topologyEventReceiver = TopologyEventReceiver.getInstance();
         addEventListeners();
     }
 
@@ -57,12 +59,12 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         }
     }
 
-    public void execute() {
-        super.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Load balancer topology receiver thread started");
-        }
-    }
+//    public void execute() {
+//        super.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Load balancer topology receiver thread started");
+//        }
+//    }
 
     public void initializeTopology() {
         if (initialized) {
@@ -115,7 +117,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
      * Add default event listeners for updating the topology on topology events
      */
     public void addEventListeners() {
-        addEventListener(new CompleteTopologyEventListener() {
+        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
                 if (!initialized) {
@@ -124,7 +126,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
         });
 
-        addEventListener(new MemberActivatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -142,11 +144,10 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                     if (networkPartitionIdFilter != null && !networkPartitionIdFilter.equals("")) {
                         if (memberActivatedEvent.getNetworkPartitionId().equals(networkPartitionIdFilter)) {
                             addMember(serviceName, clusterId, memberId);
-                        }
-                        else{
+                        } else {
                             log.debug(String.format("Member exists in a different network partition." +
-                                    "[member id] %s [member network partition] %s [filter network partition] %s ",
-                                    memberId,memberActivatedEvent.getNetworkPartitionId(),networkPartitionIdFilter));
+                                            "[member id] %s [member network partition] %s [filter network partition] %s ",
+                                    memberId, memberActivatedEvent.getNetworkPartitionId(), networkPartitionIdFilter));
                         }
                     } else {
                         addMember(serviceName, clusterId, memberId);
@@ -159,7 +160,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
         });
 
-        addEventListener(new MemberMaintenanceListener() {
+        topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -181,7 +182,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
         });
 
-        addEventListener(new MemberSuspendedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -203,7 +204,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
         });
 
-        addEventListener(new MemberTerminatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -224,7 +225,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
         });
 
-        addEventListener(new ClusterRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -253,7 +254,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
         });
 
-        addEventListener(new ServiceRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
