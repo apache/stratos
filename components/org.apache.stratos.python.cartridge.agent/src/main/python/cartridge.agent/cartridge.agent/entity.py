@@ -18,6 +18,7 @@
 import constants
 import json
 
+
 class Topology:
     """
     Represents the topology provided by the Cloud Controller
@@ -497,6 +498,7 @@ class TopologyContext:
     Handles and maintains a model of the topology provided by the Cloud Controller
     """
     topology = Topology()
+    initialized = False
 
     @staticmethod
     def get_topology():
@@ -507,6 +509,7 @@ class TopologyContext:
     @staticmethod
     def update(topology):
         TopologyContext.topology = topology
+        TopologyContext.initialized = True
 
 
 class Tenant:

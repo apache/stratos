@@ -133,20 +133,13 @@ def on_artifact_updated_event(artifacts_updated_event):
     update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, True)
     auto_commit = Config.is_commits_enabled
     auto_checkout = Config.is_checkout_enabled
-    log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s"
-             % (update_artifacts, auto_commit, auto_checkout))
 
     if update_artifacts:
         try:
             update_interval = int(Config.artifact_update_interval)
         except ValueError:
-            log.exception("Invalid artifact sync interval specified: %s" % ValueError)
+            log.exception("Invalid artifact sync interval specified: %s, defaulting to 10 seconds" % ValueError)
             update_interval = 10
-
-        log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
-
-        log.info("Auto Commit is turned %s " % ("on" if auto_commit else "off"))
-        log.info("Auto Checkout is turned %s " % ("on" if auto_checkout else "off"))
 
         AgentGitHandler.schedule_artifact_update_task(
             repo_info,

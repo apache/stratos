@@ -239,7 +239,7 @@ class Handlers(object):
         Handlers.__log.debug("Member initialized event received: %r" % msg.payload)
         event_obj = MemberInitializedEvent.create_from_json(msg.payload)
 
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_handler.on_member_initialized_event(event_obj)
@@ -247,7 +247,7 @@ class Handlers(object):
     @staticmethod
     def on_member_activated(msg):
         Handlers.__log.debug("Member activated event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberActivatedEvent.create_from_json(msg.payload)
@@ -256,7 +256,7 @@ class Handlers(object):
     @staticmethod
     def on_member_terminated(msg):
         Handlers.__log.debug("Member terminated event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
@@ -265,7 +265,7 @@ class Handlers(object):
     @staticmethod
     def on_member_suspended(msg):
         Handlers.__log.debug("Member suspended event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
@@ -275,9 +275,9 @@ class Handlers(object):
     def on_complete_topology(msg):
         event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
         TopologyContext.update(event_obj.topology)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
+            TopologyContext.initialized = True
             Handlers.__log.info("Topology initialized from complete topology event")
-            TopologyContext.topology.initialized = True
             event_handler.on_complete_topology_event(event_obj)
 
         Handlers.__log.debug("Topology context updated with [topology] %r" % event_obj.topology.json_str)
@@ -285,7 +285,7 @@ class Handlers(object):
     @staticmethod
     def on_member_started(msg):
         Handlers.__log.debug("Member started event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberStartedEvent.create_from_json(msg.payload)
@@ -325,6 +325,7 @@ class Handlers(object):
         Handlers.__log.debug("Application signup removed event received: %r" % msg.payload)
         event_obj = ApplicationSignUpRemovedEvent.create_from_json(msg.payload)
         event_handler.on_application_signup_removed_event(event_obj)
+
 
 
 if __name__ == "__main__":
