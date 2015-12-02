@@ -34,17 +34,17 @@ public class InitializerTopicReceiver {
     private ExecutorService executorService;
 
     public InitializerTopicReceiver() {
-        this.initializerEventReceiver = new InitializerEventReceiver();
+        this.initializerEventReceiver = InitializerEventReceiver.getInstance();
         addEventListeners();
     }
 
-    public void execute() {
-        initializerEventReceiver.setExecutorService(executorService);
-        initializerEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Autoscaler initializer topic receiver started");
-        }
-    }
+//    public void execute() {
+//        initializerEventReceiver.setExecutorService(executorService);
+//        initializerEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Autoscaler initializer topic receiver started");
+//        }
+//    }
 
     private void addEventListeners() {
         initializerEventReceiver.addEventListener(new CompleteTopologyRequestEventListener() {
@@ -62,11 +62,11 @@ public class InitializerTopicReceiver {
         });
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

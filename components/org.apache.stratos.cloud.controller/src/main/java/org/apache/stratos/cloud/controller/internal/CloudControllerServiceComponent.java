@@ -170,8 +170,8 @@ public class CloudControllerServiceComponent {
         }
 
         initializerTopicReceiver = new InitializerTopicReceiver();
-        initializerTopicReceiver.setExecutorService(executorService);
-        initializerTopicReceiver.execute();
+//        initializerTopicReceiver.setExecutorService(executorService);
+//        initializerTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
             log.info("Initializer event receiver thread started");

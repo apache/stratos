@@ -193,8 +193,8 @@ public class StratosManagerServiceComponent {
 
     private void initializeInitializerEventReceiver() {
         initializerTopicReceiver = new StratosManagerInitializerTopicReceiver();
-        initializerTopicReceiver.setExecutorService(executorService);
-        initializerTopicReceiver.execute();
+//        initializerTopicReceiver.setExecutorService(executorService);
+//        initializerTopicReceiver.execute();
     }
 
     /**

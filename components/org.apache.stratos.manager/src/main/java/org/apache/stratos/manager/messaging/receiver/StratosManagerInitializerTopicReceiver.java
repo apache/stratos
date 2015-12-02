@@ -33,22 +33,22 @@ import java.util.concurrent.ExecutorService;
 public class StratosManagerInitializerTopicReceiver {
     private static final Log log = LogFactory.getLog(StratosManagerInitializerTopicReceiver.class);
     private InitializerEventReceiver initializerEventReceiver;
-    private ExecutorService executorService;
+    //private ExecutorService executorService;
     private ApplicationSignUpHandler applicationSignUpHandler;
 
     public StratosManagerInitializerTopicReceiver() {
-        this.initializerEventReceiver = new InitializerEventReceiver();
+        this.initializerEventReceiver = InitializerEventReceiver.getInstance();
         applicationSignUpHandler = new ApplicationSignUpHandler();
         addEventListeners();
     }
 
-    public void execute() {
-        initializerEventReceiver.setExecutorService(executorService);
-        initializerEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Stratos manager initializer topic receiver started");
-        }
-    }
+//    public void execute() {
+//        initializerEventReceiver.setExecutorService(executorService);
+//        initializerEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Stratos manager initializer topic receiver started");
+//        }
+//    }
 
     private void addEventListeners() {
         initializerEventReceiver.addEventListener(new CompleteTenantRequestEventListener() {
@@ -81,11 +81,11 @@ public class StratosManagerInitializerTopicReceiver {
         });
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }
