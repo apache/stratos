@@ -148,9 +148,9 @@ public abstract class PythonAgentIntegrationTest {
             }
         });
 
-        initializerEventReceiver = new InitializerEventReceiver();
-        initializerEventReceiver.setExecutorService(executorService);
-        initializerEventReceiver.execute();
+        initializerEventReceiver = InitializerEventReceiver.getInstance();
+//        initializerEventReceiver.setExecutorService(executorService);
+//        initializerEventReceiver.execute();
 
         this.eventReceiverInitialized = true;
 

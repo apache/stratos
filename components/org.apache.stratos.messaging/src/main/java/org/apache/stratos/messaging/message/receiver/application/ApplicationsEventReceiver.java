@@ -68,7 +68,7 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
         messageDelegator.removeEventListener(eventListener);
     }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(),
