@@ -49,7 +49,7 @@ import static org.testng.AssertJUnit.assertTrue;
  * Deploy a sample application on mock IaaS and load test metadata service with high load of concurrent read/write
  * operations from multiple clients
  */
-@Test(groups = { "application", "metadata" })
+@Test(groups = { "application", "metadata", "failed" })
 public class MetadataServiceTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(MetadataServiceTestCase.class);
     private static final String RESOURCES_PATH = "/metadata-service-test";
