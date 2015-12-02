@@ -94,24 +94,24 @@ public class CartridgeAgentEventListeners {
         }
     }
 
-    public void startTopologyEventReceiver() {
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting cartridge agent topology event message receiver");
-        }
-
-        eventListenerExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                topologyEventReceiver.execute();
-            }
-        });
-
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent topology receiver thread started, waiting for event messages ...");
-        }
-
-    }
+//    public void startTopologyEventReceiver() {
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Starting cartridge agent topology event message receiver");
+//        }
+//
+//        eventListenerExecutorService.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                topologyEventReceiver.execute();
+//            }
+//        });
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Cartridge agent topology receiver thread started, waiting for event messages ...");
+//        }
+//
+//    }
 
     public void startInstanceNotifierReceiver() {
 
@@ -131,24 +131,24 @@ public class CartridgeAgentEventListeners {
         }
     }
 
-    public void startTenantEventReceiver() {
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting cartridge agent tenant event message receiver");
-        }
-
-        eventListenerExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                topologyEventReceiver.execute();
-            }
-        });
-
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent tenant receiver thread started, waiting for event messages ...");
-        }
-
-    }
+//    public void startTenantEventReceiver() {
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Starting cartridge agent tenant event message receiver");
+//        }
+//
+//        eventListenerExecutorService.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                topologyEventReceiver.execute();
+//            }
+//        });
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Cartridge agent tenant receiver thread started, waiting for event messages ...");
+//        }
+//
+//    }
 
 //    public void startApplicationsEventReceiver() {
 //

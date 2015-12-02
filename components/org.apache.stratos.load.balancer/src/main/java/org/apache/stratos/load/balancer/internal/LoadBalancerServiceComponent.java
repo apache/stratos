@@ -199,11 +199,11 @@ public class LoadBalancerServiceComponent {
         }
 
         topologyEventReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
-        topologyEventReceiver.setExecutorService(executorService);
-        topologyEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Topology receiver thread started");
-        }
+//        topologyEventReceiver.setExecutorService(executorService);
+//        topologyEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Topology receiver thread started");
+//        }
 
         if (log.isInfoEnabled()) {
             if (TopologyServiceFilter.getInstance().isActive()) {
@@ -257,13 +257,13 @@ public class LoadBalancerServiceComponent {
         }
 
         // Terminate topology receiver
-        if (topologyEventReceiver != null) {
-            try {
-                topologyEventReceiver.terminate();
-            } catch (Exception e) {
-                log.warn("An error occurred while terminating topology event receiver", e);
-            }
-        }
+//        if (topologyEventReceiver != null) {
+//            try {
+//                topologyEventReceiver.terminate();
+//            } catch (Exception e) {
+//                log.warn("An error occurred while terminating topology event receiver", e);
+//            }
+//        }
 
         // Terminate application signup event receiver
 //        if (applicationSignUpEventReceiver != null) {

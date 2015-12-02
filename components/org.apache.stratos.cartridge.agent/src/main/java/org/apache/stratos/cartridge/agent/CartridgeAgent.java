@@ -60,10 +60,10 @@ public class CartridgeAgent implements Runnable {
         }
 
         // Start topology event receiver thread
-        registerTopologyEventListeners();
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent registerTopologyEventListeners done");
-        }
+//        registerTopologyEventListeners();
+//        if (log.isInfoEnabled()) {
+//            log.info("Cartridge agent registerTopologyEventListeners done");
+//        }
 
         if (log.isInfoEnabled()) {
             log.info("Waiting for CompleteTopologyEvent..");
@@ -186,16 +186,16 @@ public class CartridgeAgent implements Runnable {
         }
     }
 
-    protected void registerTopologyEventListeners() {
-        if (log.isDebugEnabled()) {
-            log.debug("registerTopologyEventListeners before");
-        }
-        eventListenerns.startTopologyEventReceiver();
-
-        if (log.isDebugEnabled()) {
-            log.debug("registerTopologyEventListeners after");
-        }
-    }
+//    protected void registerTopologyEventListeners() {
+//        if (log.isDebugEnabled()) {
+//            log.debug("registerTopologyEventListeners before");
+//        }
+//        eventListenerns.startTopologyEventReceiver();
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("registerTopologyEventListeners after");
+//        }
+//    }
 
 //    protected void registerTenantEventListeners() {
 //        if (log.isDebugEnabled()) {
