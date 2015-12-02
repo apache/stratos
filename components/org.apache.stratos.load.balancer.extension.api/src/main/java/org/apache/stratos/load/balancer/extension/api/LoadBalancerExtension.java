@@ -39,6 +39,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 
 import java.util.concurrent.ExecutorService;
 
@@ -123,8 +124,8 @@ public class LoadBalancerExtension {
         addTopologyEventListeners(topologyEventReceiver);
         // Add default topology provider event listeners
         topologyEventReceiver.addEventListeners();
-        topologyEventReceiver.setExecutorService(executorService);
-        topologyEventReceiver.execute();
+//        topologyEventReceiver.setExecutorService(executorService);
+//        topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
         }
@@ -212,12 +213,12 @@ public class LoadBalancerExtension {
      * @param topologyEventReceiver topology event receiver instance
      */
     private void addTopologyEventListeners(final LoadBalancerCommonTopologyEventReceiver topologyEventReceiver) {
-        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new CompleteTopologyEventListener() {
 
             @Override
             protected void onEvent(Event event) {
                 try {
-                  if (!loadBalancerStarted) {
+                    if (!loadBalancerStarted) {
                         configureAndStart();
                     }
                 } catch (Exception e) {
@@ -228,37 +229,37 @@ public class LoadBalancerExtension {
                 }
             }
         });
-        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new MemberSuspendedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
+        TopologyEventReceiver.getInstance().addEventListener(new MemberMaintenanceListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
@@ -338,12 +339,12 @@ public class LoadBalancerExtension {
      * Stop load balancer instance.
      */
     public void stop() {
-        try {
-            if (topologyEventReceiver != null) {
-                topologyEventReceiver.terminate();
-            }
-        } catch (Exception ignore) {
-        }
+//        try {
+//            if (topologyEventReceiver != null) {
+//                topologyEventReceiver.terminate();
+//            }
+//        } catch (Exception ignore) {
+//        }
 
         try {
             if (statisticsNotifier != null) {

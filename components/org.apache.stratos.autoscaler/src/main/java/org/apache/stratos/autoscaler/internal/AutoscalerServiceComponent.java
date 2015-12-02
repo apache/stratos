@@ -173,8 +173,8 @@ public class AutoscalerServiceComponent {
 
         // Start topology receiver
         asTopologyReceiver = new AutoscalerTopologyEventReceiver();
-        asTopologyReceiver.setExecutorService(executorService);
-        asTopologyReceiver.execute();
+//        asTopologyReceiver.setExecutorService(executorService);
+        //asTopologyReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug("Topology receiver executor service started");
         }
@@ -245,13 +245,13 @@ public class AutoscalerServiceComponent {
     }
 
     protected void deactivate(ComponentContext context) {
-        if (asTopologyReceiver != null) {
-            try {
-                asTopologyReceiver.terminate();
-            } catch (Exception e) {
-                log.warn("An error occurred while terminating autoscaler topology event receiver", e);
-            }
-        }
+//        if (asTopologyReceiver != null) {
+//            try {
+//                asTopologyReceiver.terminate();
+//            } catch (Exception e) {
+//                log.warn("An error occurred while terminating autoscaler topology event receiver", e);
+//            }
+//        }
 
         if (autoscalerHealthStatEventReceiver != null) {
             try {

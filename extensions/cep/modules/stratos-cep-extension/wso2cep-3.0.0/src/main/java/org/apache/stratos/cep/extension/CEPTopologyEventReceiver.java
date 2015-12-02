@@ -34,26 +34,28 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 /**
  * CEP Topology Receiver for Fault Handling Window Processor.
  */
-public class CEPTopologyEventReceiver extends TopologyEventReceiver {
+public class CEPTopologyEventReceiver {
 
     private static final Log log = LogFactory.getLog(CEPTopologyEventReceiver.class);
 
     private FaultHandlingWindowProcessor faultHandler;
+    private TopologyEventReceiver topologyEventReceiver;
 
     public CEPTopologyEventReceiver(FaultHandlingWindowProcessor faultHandler) {
         this.faultHandler = faultHandler;
+        this.topologyEventReceiver = TopologyEventReceiver.getInstance();
         addEventListeners();
     }
 
-    @Override
-    public void execute() {
-        super.execute();
-        log.info("CEP topology event receiver thread started");
-    }
+//    @Override
+//    public void execute() {
+//        super.execute();
+//        log.info("CEP topology event receiver thread started");
+//    }
 
     private void addEventListeners() {
         // Load member time stamp map from the topology as a one time task
-        addEventListener(new CompleteTopologyEventListener() {
+        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
             private boolean initialized;
 
             @Override
@@ -74,7 +76,7 @@ public class CEPTopologyEventReceiver extends TopologyEventReceiver {
         });
 
         // Remove member from the time stamp map when MemberTerminated event is received.
-        addEventListener(new MemberTerminatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
@@ -84,7 +86,7 @@ public class CEPTopologyEventReceiver extends TopologyEventReceiver {
         });
 
         // Add member to time stamp map whenever member is activated
-        addEventListener(new MemberActivatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
