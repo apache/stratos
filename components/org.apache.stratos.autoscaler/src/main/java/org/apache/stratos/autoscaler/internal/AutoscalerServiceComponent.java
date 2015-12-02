@@ -189,11 +189,11 @@ public class AutoscalerServiceComponent {
 
         // Start initializer receiver
         autoscalerInitializerTopicReceiver = new AutoscalerInitializerTopicReceiver();
-        autoscalerInitializerTopicReceiver.setExecutorService(executorService);
-        autoscalerInitializerTopicReceiver.execute();
-        if (log.isDebugEnabled()) {
-            log.debug("Initializer receiver thread started");
-        }
+//        autoscalerInitializerTopicReceiver.setExecutorService(executorService);
+//        autoscalerInitializerTopicReceiver.execute();
+//        if (log.isDebugEnabled()) {
+//            log.debug("Initializer receiver thread started");
+//        }
 
         if (log.isInfoEnabled()) {
             log.info("Scheduling tasks to publish applications");

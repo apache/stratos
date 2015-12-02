@@ -20,31 +20,49 @@ package org.apache.stratos.messaging.message.receiver.initializer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
 
-public class InitializerEventReceiver {
+public class InitializerEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(InitializerEventReceiver.class);
 
     private InitializerEventMessageDelegator messageDelegator;
     private InitializerEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private ExecutorService executorService;
+    private static volatile InitializerEventReceiver instance;
+    //private ExecutorService executorService;
 
-    public InitializerEventReceiver() {
+    private InitializerEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("initializer-event-receiver", 100);
         InitializerEventMessageQueue initializerEventMessageQueue = new InitializerEventMessageQueue();
         this.messageDelegator = new InitializerEventMessageDelegator(initializerEventMessageQueue);
         this.messageListener = new InitializerEventMessageListener(initializerEventMessageQueue);
+        execute();
+    }
+
+    public static InitializerEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (InitializerEventReceiver.class) {
+                if (instance == null) {
+                    instance = new InitializerEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
     }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INITIALIZER_TOPIC.getTopicName(),
@@ -68,11 +86,11 @@ public class InitializerEventReceiver {
         messageDelegator.terminate();
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

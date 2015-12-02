@@ -34,17 +34,17 @@ public class AutoscalerInitializerTopicReceiver {
     private ExecutorService executorService;
 
     public AutoscalerInitializerTopicReceiver() {
-        this.initializerEventReceiver = new InitializerEventReceiver();
+        this.initializerEventReceiver = InitializerEventReceiver.getInstance();
         addEventListeners();
     }
 
-    public void execute() {
-        initializerEventReceiver.setExecutorService(executorService);
-        initializerEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller initializer topic receiver started");
-        }
-    }
+//    public void execute() {
+//        initializerEventReceiver.setExecutorService(executorService);
+//        initializerEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Cloud controller initializer topic receiver started");
+//        }
+//    }
 
     private void addEventListeners() {
         initializerEventReceiver.addEventListener(new CompleteApplicationsRequestEventListener() {
