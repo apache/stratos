@@ -59,7 +59,7 @@ public class MetadataApiRegistry implements DataStore {
 //        metadataTopologyEventReceiver.execute();
 
         metadataApplicationEventReceiver = new MetadataApplicationEventReceiver();
-        metadataApplicationEventReceiver.execute();
+//        metadataApplicationEventReceiver.execute();
     }
 
     /**
@@ -421,7 +421,7 @@ public class MetadataApiRegistry implements DataStore {
 //        metadataTopologyEventReceiver.terminate();
 //    }
 
-    public void stopApplicationReceiver() {
-        metadataApplicationEventReceiver.terminate();
-    }
+//    public void stopApplicationReceiver() {
+//        metadataApplicationEventReceiver.terminate();
+//    }
 }
