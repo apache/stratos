@@ -21,8 +21,10 @@ package org.apache.stratos.messaging.message.receiver.domain.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -30,16 +32,18 @@ import java.util.concurrent.ExecutorService;
 /**
  * Domain mapping event receiver.
  */
-public class DomainMappingEventReceiver {
+public class DomainMappingEventReceiver extends StratosEventReceiver {
 
     private static final Log log = LogFactory.getLog(DomainMappingEventReceiver.class);
 
     private DomainMappingEventMessageDelegator messageDelegator;
     private DomainMappingEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private ExecutorService executorService;
+    private static volatile DomainMappingEventReceiver instance;
 
-    public DomainMappingEventReceiver() {
+    private DomainMappingEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("domainmapping-event-receiver", 100);
         DomainMappingEventMessageQueue messageQueue = new DomainMappingEventMessageQueue();
         this.messageDelegator = new DomainMappingEventMessageDelegator(messageQueue);
         this.messageListener = new DomainMappingEventMessageListener(messageQueue);
@@ -49,6 +53,17 @@ public class DomainMappingEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
+    public static DomainMappingEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (DomainMappingEventReceiver.class) {
+                if (instance == null) {
+                    instance = new DomainMappingEventReceiver();
+                }
+            }
+        }
+
+        return instance;
+    }
 
     public void execute() {
         try {
