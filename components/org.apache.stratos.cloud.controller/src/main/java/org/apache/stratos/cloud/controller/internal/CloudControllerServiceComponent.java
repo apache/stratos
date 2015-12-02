@@ -154,8 +154,8 @@ public class CloudControllerServiceComponent {
         }
 
         clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-        clusterStatusTopicReceiver.setExecutorService(executorService);
-        clusterStatusTopicReceiver.execute();
+//        clusterStatusTopicReceiver.setExecutorService(executorService);
+//        clusterStatusTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
             log.info("Cluster status event receiver thread started");

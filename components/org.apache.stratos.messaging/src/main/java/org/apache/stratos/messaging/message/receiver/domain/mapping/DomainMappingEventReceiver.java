@@ -47,6 +47,7 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
         DomainMappingEventMessageQueue messageQueue = new DomainMappingEventMessageQueue();
         this.messageDelegator = new DomainMappingEventMessageDelegator(messageQueue);
         this.messageListener = new DomainMappingEventMessageListener(messageQueue);
+        execute();
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -65,7 +66,7 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
         return instance;
     }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.DOMAIN_MAPPING_TOPIC.getTopicName(), messageListener);
@@ -91,16 +92,16 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
         }
     }
 
-    public void terminate() {
-        eventSubscriber.terminate();
-        messageDelegator.terminate();
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void terminate() {
+//        eventSubscriber.terminate();
+//        messageDelegator.terminate();
+//    }
+//
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }
