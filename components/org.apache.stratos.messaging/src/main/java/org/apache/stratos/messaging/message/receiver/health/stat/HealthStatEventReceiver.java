@@ -21,8 +21,10 @@ package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -30,19 +32,33 @@ import java.util.concurrent.ExecutorService;
 /**
  * A thread for receiving health stat information from message broker
  */
-public class HealthStatEventReceiver {
+public class HealthStatEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
 
     private final HealthStatEventMessageDelegator messageDelegator;
     private final HealthStatEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private boolean terminated;
-    private ExecutorService executorService;
+    private static volatile HealthStatEventReceiver instance;
 
-    public HealthStatEventReceiver() {
+    private HealthStatEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("healthstat-event-receiver", 100);
         HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
         this.messageDelegator = new HealthStatEventMessageDelegator(messageQueue);
         this.messageListener = new HealthStatEventMessageListener(messageQueue);
+        execute();
+    }
+
+    public static HealthStatEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (HealthStatEventReceiver.class) {
+                if (instance == null) {
+                    instance = new HealthStatEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -50,7 +66,7 @@ public class HealthStatEventReceiver {
     }
 
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
@@ -69,17 +85,17 @@ public class HealthStatEventReceiver {
         }
     }
 
-    public void terminate() {
-        eventSubscriber.terminate();
-        messageDelegator.terminate();
-        terminated = true;
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void terminate() {
+//        eventSubscriber.terminate();
+//        messageDelegator.terminate();
+//        terminated = true;
+//    }
+//
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

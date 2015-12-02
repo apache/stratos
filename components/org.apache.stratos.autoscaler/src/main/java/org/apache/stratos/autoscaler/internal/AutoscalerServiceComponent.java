@@ -181,8 +181,8 @@ public class AutoscalerServiceComponent {
 
         // Start health stat receiver
         autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
-        autoscalerHealthStatEventReceiver.setExecutorService(executorService);
-        autoscalerHealthStatEventReceiver.execute();
+//        autoscalerHealthStatEventReceiver.setExecutorService(executorService);
+//        autoscalerHealthStatEventReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug("Health statistics receiver thread started");
         }

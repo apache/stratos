@@ -45,18 +45,18 @@ public class AutoscalerHealthStatEventReceiver {
     private ExecutorService executorService;
 
     public AutoscalerHealthStatEventReceiver() {
-        this.healthStatEventReceiver = new HealthStatEventReceiver();
+        this.healthStatEventReceiver = HealthStatEventReceiver.getInstance();
         addEventListeners();
     }
 
-    public void execute() {
-        healthStatEventReceiver.setExecutorService(executorService);
-        healthStatEventReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Autoscaler health stat event receiver thread started");
-        }
-    }
+//    public void execute() {
+//        healthStatEventReceiver.setExecutorService(executorService);
+//        healthStatEventReceiver.execute();
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Autoscaler health stat event receiver thread started");
+//        }
+//    }
 
     private void addEventListeners() {
         // Listen to health stat events that affect clusters
