@@ -79,8 +79,8 @@ public class CartridgeAgentEventListeners {
 
         this.instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
 
-        this.tenantEventReceiver = new TenantEventReceiver();
-        this.tenantEventReceiver.setExecutorService(eventListenerExecutorService);
+        this.tenantEventReceiver = TenantEventReceiver.getInstance();
+//        this.tenantEventReceiver.setExecutorService(eventListenerExecutorService);
 
         extensionHandler = new DefaultExtensionHandler();
 

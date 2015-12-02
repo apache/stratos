@@ -21,11 +21,13 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.event.initializer.CompleteTenantRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -34,28 +36,43 @@ import java.util.concurrent.ExecutorService;
  * A thread for receiving tenant information from message broker and
  * build tenant information in tenant manager.
  */
-public class TenantEventReceiver {
+public class TenantEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(TenantEventReceiver.class);
     private TenantEventMessageDelegator messageDelegator;
     private TenantEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private ExecutorService executorService;
+    private static volatile TenantEventReceiver instance;
 
-    public TenantEventReceiver() {
+    private TenantEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("tenant-event-receiver", 100);
         TenantEventMessageQueue messageQueue = new TenantEventMessageQueue();
         this.messageDelegator = new TenantEventMessageDelegator(messageQueue);
         this.messageListener = new TenantEventMessageListener(messageQueue);
+        execute();
+    }
+
+    public static TenantEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (TenantEventReceiver.class) {
+                if (instance == null) {
+                    instance = new TenantEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
     }
 
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TENANT_TOPIC.getTopicName(), messageListener);
