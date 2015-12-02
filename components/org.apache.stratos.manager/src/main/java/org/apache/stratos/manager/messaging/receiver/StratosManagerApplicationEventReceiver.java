@@ -26,23 +26,22 @@ import org.apache.stratos.messaging.message.receiver.application.ApplicationsEve
 /**
  * Stratos manager application event receiver.
  */
-public class StratosManagerApplicationEventReceiver extends ApplicationsEventReceiver {
+public class StratosManagerApplicationEventReceiver {
 
     private static final Log log = LogFactory.getLog(StratosManagerApplicationEventReceiver.class);
 
     public StratosManagerApplicationEventReceiver() {
         addEventListeners();
-
     }
 
-    @Override
-    public void execute() {
-        super.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Stratos manager application event receiver thread started");
-        }
-    }
+//    @Override
+//    public void execute() {
+//        super.execute();
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Stratos manager application event receiver thread started");
+//        }
+//    }
 
     private void addEventListeners() {
     }

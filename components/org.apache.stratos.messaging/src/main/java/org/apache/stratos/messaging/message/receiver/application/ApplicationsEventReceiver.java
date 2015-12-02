@@ -20,27 +20,44 @@ package org.apache.stratos.messaging.message.receiver.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.event.initializer.CompleteApplicationsRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
 
-public class ApplicationsEventReceiver {
+public class ApplicationsEventReceiver extends StratosEventReceiver{
     private static final Log log = LogFactory.getLog(ApplicationsEventReceiver.class);
 
     private ApplicationsEventMessageDelegator messageDelegator;
     private ApplicationsEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private ExecutorService executorService;
+    private static volatile ApplicationsEventReceiver instance;
 
-    public ApplicationsEventReceiver() {
+    private ApplicationsEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("application-event-receiver", 100);
         ApplicationsEventMessageQueue messageQueue = new ApplicationsEventMessageQueue();
         this.messageDelegator = new ApplicationsEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationsEventMessageListener(messageQueue);
+        execute();
+    }
+
+    public static ApplicationsEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (ApplicationsEventReceiver.class) {
+                if (instance == null) {
+                    instance = new ApplicationsEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -101,11 +118,11 @@ public class ApplicationsEventReceiver {
         });
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

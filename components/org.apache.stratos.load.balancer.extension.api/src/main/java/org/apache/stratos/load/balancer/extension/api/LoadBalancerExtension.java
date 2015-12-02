@@ -150,9 +150,9 @@ public class LoadBalancerExtension {
     }
 
     private void startApplicationEventReceiver(ExecutorService executorService) {
-        applicationsEventReceiver = new ApplicationsEventReceiver();
-        applicationsEventReceiver.setExecutorService(executorService);
-        applicationsEventReceiver.execute();
+        applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
+//        applicationsEventReceiver.setExecutorService(executorService);
+//        applicationsEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Application event receiver thread started");
         }
