@@ -225,9 +225,9 @@ public class LoadBalancerServiceComponent {
 
     private void startTenantEventReceiver(ExecutorService executorService) {
 
-        tenantEventReceiver = new TenantEventReceiver();
-        tenantEventReceiver.setExecutorService(executorService);
-        tenantEventReceiver.execute();
+        tenantEventReceiver = TenantEventReceiver.getInstance();
+//        tenantEventReceiver.setExecutorService(executorService);
+//        tenantEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Tenant event receiver thread started");
         }
