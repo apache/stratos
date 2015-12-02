@@ -40,11 +40,12 @@ import java.util.concurrent.ExecutorService;
 public class MetadataApplicationEventReceiver {
     private static final Log log = LogFactory.getLog(MetadataApplicationEventReceiver.class);
     private ApplicationsEventReceiver applicationsEventReceiver;
-    private ExecutorService executorService;
+    //private ExecutorService executorService;
 
     public MetadataApplicationEventReceiver() {
-        this.applicationsEventReceiver = new ApplicationsEventReceiver();
-        executorService = StratosThreadPool.getExecutorService(Constants.METADATA_SERVICE_THREAD_POOL_ID, 20);
+        this.applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
+        //executorService = StratosThreadPool.getExecutorService(Constants
+        //        .METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
 
@@ -65,19 +66,19 @@ public class MetadataApplicationEventReceiver {
                 if (log.isDebugEnabled()) {
                     log.debug("Metadata service READ WRITE locks initialized on complete applications event.");
                 }
-                terminate();
+                //terminate();
             }
         });
     }
 
-    public void execute() {
-        applicationsEventReceiver.setExecutorService(getExecutorService());
-        applicationsEventReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Metadata service application receiver started.");
-        }
-    }
+//    public void execute() {
+//        applicationsEventReceiver.setExecutorService(getExecutorService());
+//        applicationsEventReceiver.execute();
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Metadata service application receiver started.");
+//        }
+//    }
 
     public void terminate() {
         applicationsEventReceiver.terminate();
@@ -86,8 +87,8 @@ public class MetadataApplicationEventReceiver {
         }
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
+ //   public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
 
 }

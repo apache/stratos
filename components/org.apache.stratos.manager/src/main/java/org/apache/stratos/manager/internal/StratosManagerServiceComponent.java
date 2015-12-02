@@ -220,8 +220,8 @@ public class StratosManagerServiceComponent {
      */
     private void initializeApplicationEventReceiver() {
         applicationEventReceiver = new StratosManagerApplicationEventReceiver();
-        applicationEventReceiver.setExecutorService(executorService);
-        applicationEventReceiver.execute();
+//        applicationEventReceiver.setExecutorService(executorService);
+//        applicationEventReceiver.execute();
     }
 
     /**

@@ -146,8 +146,8 @@ public class CloudControllerServiceComponent {
 
     private void executeCoordinatorTasks() {
         applicationEventReceiver = new ApplicationEventReceiver();
-        applicationEventReceiver.setExecutorService(executorService);
-        applicationEventReceiver.execute();
+//        applicationEventReceiver.setExecutorService(executorService);
+//        applicationEventReceiver.execute();
 
         if (log.isInfoEnabled()) {
             log.info("Application event receiver thread started");
