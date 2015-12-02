@@ -39,6 +39,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 
 import java.util.concurrent.ExecutorService;
@@ -170,8 +171,8 @@ public class LoadBalancerExtension {
         addDomainMappingsEventListeners(domainMappingEventReceiver);
         // Add default domain mapping event listeners
         domainMappingEventReceiver.addEventListeners();
-        domainMappingEventReceiver.setExecutorService(executorService);
-        domainMappingEventReceiver.execute();
+//        domainMappingEventReceiver.setExecutorService(executorService);
+//        domainMappingEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Domain mapping event receiver thread started");
         }
@@ -179,14 +180,14 @@ public class LoadBalancerExtension {
 
     private void addDomainMappingsEventListeners(final LoadBalancerCommonDomainMappingEventReceiver
                                                          domainMappingEventReceiver) {
-        domainMappingEventReceiver.addEventListener(new DomainMappingAddedEventListener() {
+        DomainMappingEventReceiver.getInstance().addEventListener(new DomainMappingAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
 
-        domainMappingEventReceiver.addEventListener(new DomainMappingRemovedEventListener() {
+        DomainMappingEventReceiver.getInstance().addEventListener(new DomainMappingRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
