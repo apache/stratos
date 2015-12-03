@@ -46,21 +46,21 @@ public class InstanceStatusTopicReceiver {
     private ExecutorService executorService;
 
     public InstanceStatusTopicReceiver() {
-        this.statusEventReceiver = new InstanceStatusEventReceiver();
+        this.statusEventReceiver = InstanceStatusEventReceiver.getInstance();
         addEventListeners();
     }
 
-    public void execute() {
-        statusEventReceiver.setExecutorService(executorService);
-        statusEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread started");
-        }
-
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread terminated");
-        }
-    }
+//    public void execute() {
+//        statusEventReceiver.setExecutorService(executorService);
+//        statusEventReceiver.execute();
+//        if (log.isInfoEnabled()) {
+//            log.info("Cloud controller application status thread started");
+//        }
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Cloud controller application status thread terminated");
+//        }
+//    }
 
     private void addEventListeners() {
         statusEventReceiver.addEventListener(new InstanceActivatedEventListener() {

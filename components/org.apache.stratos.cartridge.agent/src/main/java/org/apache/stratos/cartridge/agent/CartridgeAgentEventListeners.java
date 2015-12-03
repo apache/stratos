@@ -65,8 +65,8 @@ public class CartridgeAgentEventListeners {
     private ApplicationSignUpEventReceiver applicationsEventReceiver;
 
     private ExtensionHandler extensionHandler;
-    private static final ExecutorService eventListenerExecutorService =
-            StratosThreadPool.getExecutorService("cartridge.agent.event.listener.thread.pool", 10);
+//    private static final ExecutorService eventListenerExecutorService =
+//            StratosThreadPool.getExecutorService("cartridge.agent.event.listener.thread.pool", 10);
 
     public CartridgeAgentEventListeners() {
         if (log.isDebugEnabled()) {
@@ -77,7 +77,7 @@ public class CartridgeAgentEventListeners {
         this.topologyEventReceiver = TopologyEventReceiver.getInstance();
         //this.topologyEventReceiver.setExecutorService(eventListenerExecutorService);
 
-        this.instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
+        this.instanceNotifierEventReceiver = InstanceNotifierEventReceiver.getInstance();
 
         this.tenantEventReceiver = TenantEventReceiver.getInstance();
 //        this.tenantEventReceiver.setExecutorService(eventListenerExecutorService);
@@ -113,23 +113,23 @@ public class CartridgeAgentEventListeners {
 //
 //    }
 
-    public void startInstanceNotifierReceiver() {
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting cartridge agent instance notifier event message receiver");
-        }
-
-        eventListenerExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                instanceNotifierEventReceiver.execute();
-            }
-        });
-
-        if (log.isDebugEnabled()) {
-            log.debug("Cartridge agent Instance notifier event message receiver started, waiting for event messages ...");
-        }
-    }
+//    public void startInstanceNotifierReceiver() {
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Starting cartridge agent instance notifier event message receiver");
+//        }
+//
+//        eventListenerExecutorService.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                instanceNotifierEventReceiver.execute();
+//            }
+//        });
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Cartridge agent Instance notifier event message receiver started, waiting for event messages ...");
+//        }
+//    }
 
 //    public void startTenantEventReceiver() {
 //
@@ -521,9 +521,9 @@ public class CartridgeAgentEventListeners {
      * Terminate load balancer topology receiver thread.
      */
 
-    public void terminate() {
-        topologyEventReceiver.terminate();
-    }
+//    public void terminate() {
+//        topologyEventReceiver.terminate();
+//    }
 
 }
 

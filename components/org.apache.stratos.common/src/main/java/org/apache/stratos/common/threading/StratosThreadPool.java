@@ -50,8 +50,6 @@ public class StratosThreadPool {
         if (executorService == null) {
             synchronized (executorServiceMapLock) {
                 if (executorService == null) {
-//                    executorService = new ThreadPoolExecutor(25, threadPoolSize, 60L, TimeUnit.SECONDS,
-//                            new LinkedBlockingQueue<Runnable>(), new StratosThreadFactory(identifier));
                     executorService = Executors.newFixedThreadPool(threadPoolSize, new StratosThreadFactory(identifier));
                     executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));

@@ -21,27 +21,41 @@ package org.apache.stratos.messaging.message.receiver.instance.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class InstanceStatusEventReceiver {
+public class InstanceStatusEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(InstanceStatusEventReceiver.class);
     private final InstanceStatusEventMessageDelegator messageDelegator;
     private final InstanceStatusEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private boolean terminated;
-    private ExecutorService executorService;
+    private static volatile InstanceStatusEventReceiver instance;
 
-    public InstanceStatusEventReceiver() {
+    private InstanceStatusEventReceiver() {
+        // TODO: make pool size configurable
+        this.executorService = StratosThreadPool.getExecutorService("topology-event-receiver", 100);
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
         this.messageDelegator = new InstanceStatusEventMessageDelegator(messageQueue);
         this.messageListener = new InstanceStatusEventMessageListener(messageQueue);
+        execute();
+    }
+
+    public static InstanceStatusEventReceiver getInstance () {
+        if (instance == null) {
+            synchronized (InstanceStatusEventReceiver.class) {
+                if (instance == null) {
+                    instance = new InstanceStatusEventReceiver();
+                }
+            }
+        }
+
+        return instance;
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -49,7 +63,7 @@ public class InstanceStatusEventReceiver {
     }
 
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), messageListener);
@@ -77,14 +91,14 @@ public class InstanceStatusEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        terminated = true;
+       // terminated = true;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

@@ -128,9 +128,9 @@ public abstract class PythonAgentIntegrationTest {
 //        topologyEventReceiver.setExecutorService(executorService);
 //        topologyEventReceiver.execute();
 
-        instanceStatusEventReceiver = new InstanceStatusEventReceiver();
-        instanceStatusEventReceiver.setExecutorService(executorService);
-        instanceStatusEventReceiver.execute();
+        instanceStatusEventReceiver = InstanceStatusEventReceiver.getInstance();
+//        instanceStatusEventReceiver.setExecutorService(executorService);
+//        instanceStatusEventReceiver.execute();
 
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
             @Override

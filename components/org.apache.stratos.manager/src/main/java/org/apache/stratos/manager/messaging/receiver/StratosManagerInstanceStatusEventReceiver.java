@@ -37,32 +37,34 @@ import java.util.List;
 /**
  * Stratos manager instance status event receiver.
  */
-public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEventReceiver {
+public class StratosManagerInstanceStatusEventReceiver  {
 
     private static final Log log = LogFactory.getLog(StratosManagerInstanceStatusEventReceiver.class);
 
     private ApplicationSignUpHandler signUpManager;
     private ArtifactDistributionCoordinator artifactDistributionCoordinator;
+    private InstanceStatusEventReceiver instanceStatusEventReceiver;
 
 
     public StratosManagerInstanceStatusEventReceiver() {
         signUpManager = new ApplicationSignUpHandler();
         artifactDistributionCoordinator = new ArtifactDistributionCoordinator();
+        instanceStatusEventReceiver = InstanceStatusEventReceiver.getInstance();
 
         addEventListeners();
     }
 
-    @Override
-    public void execute() {
-        super.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Stratos manager instance status event receiver thread started");
-        }
-    }
+//    @Override
+//    public void execute() {
+//        super.execute();
+//
+//        if (log.isInfoEnabled()) {
+//            log.info("Stratos manager instance status event receiver thread started");
+//        }
+//    }
 
     private void addEventListeners() {
-        addEventListener(new InstanceStartedEventListener() {
+        instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 InstanceStartedEvent instanceStartedEvent = (InstanceStartedEvent) event;

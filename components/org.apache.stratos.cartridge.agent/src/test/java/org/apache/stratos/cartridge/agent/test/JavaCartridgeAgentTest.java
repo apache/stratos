@@ -126,9 +126,9 @@ public class JavaCartridgeAgentTest {
         //topologyEventReceiver.setExecutorService(executorService);
         //topologyEventReceiver.execute();
 
-        instanceStatusEventReceiver = new InstanceStatusEventReceiver();
-        instanceStatusEventReceiver.setExecutorService(executorService);
-        instanceStatusEventReceiver.execute();
+        instanceStatusEventReceiver = InstanceStatusEventReceiver.getInstance();
+//        instanceStatusEventReceiver.setExecutorService(executorService);
+//        instanceStatusEventReceiver.execute();
 
         instanceStarted = false;
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
@@ -191,8 +191,8 @@ public class JavaCartridgeAgentTest {
         } catch (Exception ignore) {
         }
 
-        this.instanceStatusEventReceiver.terminate();
-        this.topologyEventReceiver.terminate();
+        //this.instanceStatusEventReceiver.terminate();
+      //  this.topologyEventReceiver.terminate();
 
         this.instanceActivated = false;
         this.instanceStarted = false;
