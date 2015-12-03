@@ -31,9 +31,6 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceMaintenance
 import org.apache.stratos.messaging.listener.instance.status.InstanceReadyToShutdownEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * This will handle the instance status events
@@ -42,25 +39,11 @@ public class InstanceStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
 
     private InstanceStatusEventReceiver statusEventReceiver;
-    //private boolean terminated;
-    //private ExecutorService executorService;
 
     public InstanceStatusTopicReceiver() {
         this.statusEventReceiver = InstanceStatusEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    public void execute() {
-//        statusEventReceiver.setExecutorService(executor);
-//        statusEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Cloud controller application status thread started");
-//        }
-//
-//        if (log.isInfoEnabled()) {
-//            log.info("Cloud controller application status thread terminated");
-//        }
-//    }
 
     private void addEventListeners() {
         statusEventReceiver.addEventListener(new InstanceActivatedEventListener() {

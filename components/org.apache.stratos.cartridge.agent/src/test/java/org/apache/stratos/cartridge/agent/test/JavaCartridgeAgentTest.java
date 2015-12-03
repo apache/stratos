@@ -123,12 +123,8 @@ public class JavaCartridgeAgentTest {
 
 //        ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
         topologyEventReceiver = TopologyEventReceiver.getInstance();
-        //topologyEventReceiver.setExecutorService(executor);
-        //topologyEventReceiver.execute();
 
         instanceStatusEventReceiver = InstanceStatusEventReceiver.getInstance();
-//        instanceStatusEventReceiver.setExecutorService(executor);
-//        instanceStatusEventReceiver.execute();
 
         instanceStarted = false;
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
