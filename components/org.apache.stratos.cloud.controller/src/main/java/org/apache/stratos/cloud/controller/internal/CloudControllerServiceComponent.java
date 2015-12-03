@@ -162,8 +162,8 @@ public class CloudControllerServiceComponent {
         }
 
         instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
-        instanceStatusTopicReceiver.setExecutorService(executorService);
-        instanceStatusTopicReceiver.execute();
+//        instanceStatusTopicReceiver.setExecutorService(executorService);
+//        instanceStatusTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
             log.info("Instance status event receiver thread started");

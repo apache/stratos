@@ -56,19 +56,19 @@ public class GitHookTestCase extends StratosIntegrationTest {
     private static final String appPolicyId = "application-policy-git-hook-test";
     private static final String GIT_HOOK_ARTIFACT_FILENAME = "hook-req.json";
     private static final int ARTIFACT_UPDATED_EXPECTED_COUNT = 2;
-    private ExecutorService eventListenerExecutorService = StratosThreadPool
-            .getExecutorService("stratos.integration.test.git.thread.pool", 5);
+//    private ExecutorService eventListenerExecutorService = StratosThreadPool
+//            .getExecutorService("stratos.integration.test.git.thread.pool", 5);
 
     @Test(timeOut = DEFAULT_TEST_TIMEOUT)
     public void sendRepoNotify() throws Exception {
         deployArtifacts();
-        final InstanceNotifierEventReceiver instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
-        eventListenerExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                instanceNotifierEventReceiver.execute();
-            }
-        });
+        final InstanceNotifierEventReceiver instanceNotifierEventReceiver = InstanceNotifierEventReceiver.getInstance();
+//        eventListenerExecutorService.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                instanceNotifierEventReceiver.execute();
+//            }
+//        });
 
         ArtifactUpdateEventListener artifactUpdateEventListener = new ArtifactUpdateEventListener() {
             @Override
@@ -86,8 +86,8 @@ public class GitHookTestCase extends StratosIntegrationTest {
             Thread.sleep(1000);
         }
         TopologyHandler.getInstance().assertApplicationActiveStatus(applicationId);
-        instanceNotifierEventReceiver.terminate();
-        eventListenerExecutorService.shutdownNow();
+        //instanceNotifierEventReceiver.terminate();
+       // eventListenerExecutorService.shutdownNow();
         undeployArtifacts();
     }
 

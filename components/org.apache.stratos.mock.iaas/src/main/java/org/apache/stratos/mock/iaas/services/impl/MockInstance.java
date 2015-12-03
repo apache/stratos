@@ -161,7 +161,7 @@ public class MockInstance implements Serializable {
     }
 
     private void startInstanceNotifierEventReceiver() {
-        instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
+        instanceNotifierEventReceiver = InstanceNotifierEventReceiver.getInstance();
         instanceNotifierEventReceiver.addEventListener(new InstanceCleanupClusterEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -185,17 +185,17 @@ public class MockInstance implements Serializable {
         });
         // TODO: Fix InstanceNotifierEventReceiver to use executor service
         // do not remove this since execute() is a blocking call
-        eventListenerExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                instanceNotifierEventReceiver.execute();
-            }
-        });
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Mock instance instance notifier event message receiver started for mock member [member-id] %s",
-                    mockInstanceContext.getMemberId()));
-        }
+//        eventListenerExecutorService.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                instanceNotifierEventReceiver.execute();
+//            }
+//        });
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format(
+//                    "Mock instance instance notifier event message receiver started for mock member [member-id] %s",
+//                    mockInstanceContext.getMemberId()));
+//        }
     }
 
     private void handleMemberTermination() {
@@ -213,9 +213,9 @@ public class MockInstance implements Serializable {
         healthStatNotifierScheduledFuture.cancel(true);
     }
 
-    private void stopInstanceNotifierReceiver() {
-        instanceNotifierEventReceiver.terminate();
-    }
+//    private void stopInstanceNotifierReceiver() {
+//        instanceNotifierEventReceiver.terminate();
+//    }
 
     public MockInstanceContext getMockInstanceContext() {
         return mockInstanceContext;
@@ -223,7 +223,7 @@ public class MockInstance implements Serializable {
 
     public synchronized void terminate() {
         if (MemberStatus.Initialized.equals(memberStatus)) {
-            stopInstanceNotifierReceiver();
+            //stopInstanceNotifierReceiver();
             stopHealthStatisticsPublisher();
             memberStatus = MemberStatus.Terminated;
             if (log.isInfoEnabled()) {
