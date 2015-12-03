@@ -36,8 +36,8 @@ public class StratosThreadPool {
 
     private static final Log log = LogFactory.getLog(StratosThreadPool.class);
 
-    private static Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<String, ExecutorService>();
-    private static Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
+    private static volatile Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
+    private static volatile Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
     private static Object executorServiceMapLock = new Object();
     private static Object scheduledServiceMapLock = new Object();
 

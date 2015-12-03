@@ -90,10 +90,10 @@ public class CartridgeAgent implements Runnable {
         }
 
         // Start instance notifier listener thread
-        registerInstanceNotifierEventListeners();
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent registerInstanceNotifierEventListeners done");
-        }
+//        registerInstanceNotifierEventListeners();
+//        if (log.isInfoEnabled()) {
+//            log.info("Cartridge agent registerInstanceNotifierEventListeners done");
+//        }
 
         // Start tenant event receiver thread
         /*
@@ -174,17 +174,17 @@ public class CartridgeAgent implements Runnable {
         logPublisherManager.stop();
     }
 
-    protected void registerInstanceNotifierEventListeners() {
-        if (log.isDebugEnabled()) {
-            log.debug("SsubscribeToTopicsAndRegisterListeners before");
-        }
-
-        eventListenerns.startInstanceNotifierReceiver();
-
-        if (log.isDebugEnabled()) {
-            log.debug("SsubscribeToTopicsAndRegisterListeners after");
-        }
-    }
+//    protected void registerInstanceNotifierEventListeners() {
+//        if (log.isDebugEnabled()) {
+//            log.debug("SsubscribeToTopicsAndRegisterListeners before");
+//        }
+//
+//        eventListenerns.startInstanceNotifierReceiver();
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("SsubscribeToTopicsAndRegisterListeners after");
+//        }
+//    }
 
 //    protected void registerTopologyEventListeners() {
 //        if (log.isDebugEnabled()) {

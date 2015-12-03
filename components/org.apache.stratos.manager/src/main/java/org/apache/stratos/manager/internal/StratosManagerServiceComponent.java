@@ -202,8 +202,8 @@ public class StratosManagerServiceComponent {
      */
     private void initializeInstanceStatusEventReceiver() {
         instanceStatusEventReceiver = new StratosManagerInstanceStatusEventReceiver();
-        instanceStatusEventReceiver.setExecutorService(executorService);
-        instanceStatusEventReceiver.execute();
+//        instanceStatusEventReceiver.setExecutorService(executorService);
+//        instanceStatusEventReceiver.execute();
     }
 
     /**
