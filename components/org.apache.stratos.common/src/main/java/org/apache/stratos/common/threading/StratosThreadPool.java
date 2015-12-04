@@ -50,7 +50,7 @@ public class StratosThreadPool {
         if (executorService == null) {
             synchronized (executorServiceMapLock) {
                 if (executorService == null) {
-                    executorService = Executors.newFixedThreadPool(threadPoolSize, new StratosThreadFactory(identifier));
+                    executorService = Executors.newFixedThreadPool(threadPoolSize);
                     executorServiceMap.put(identifier, executorService);
                     log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
                 }
@@ -71,7 +71,7 @@ public class StratosThreadPool {
         if (scheduledExecutorService == null) {
             synchronized (scheduledServiceMapLock) {
                 if (scheduledExecutorService == null) {
-                    scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize, new StratosThreadFactory(identifier));
+                    scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize);
                     scheduledServiceMap.put(identifier, scheduledExecutorService);
                     log.info(String.format("Thread pool created: [type] Scheduled Executor Service [id] %s [size] %d",
                             identifier, threadPoolSize));
