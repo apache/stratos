@@ -59,6 +59,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -85,7 +86,7 @@ public class AutoscalerServiceComponent {
     private AutoscalerTopologyEventReceiver asTopologyReceiver;
     private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
     private AutoscalerInitializerTopicReceiver autoscalerInitializerTopicReceiver;
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
     private ScheduledExecutorService scheduler;
 
     protected void activate(ComponentContext componentContext) throws Exception {
@@ -96,8 +97,8 @@ public class AutoscalerServiceComponent {
             XMLConfiguration conf = ConfUtil.getInstance(AutoscalerConstants.COMPONENTS_CONFIG).getConfiguration();
             int threadPoolSize = conf
                     .getInt(AutoscalerConstants.THREAD_POOL_SIZE_KEY, AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
-            executorService = StratosThreadPool
-                    .getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID, threadPoolSize);
+            executor = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID, ((int) Math
+                    .ceil(threadPoolSize / 3)), threadPoolSize);
 
             int schedulerThreadPoolSize = conf.getInt(AutoscalerConstants.SCHEDULER_THREAD_POOL_SIZE_KEY,
                     AutoscalerConstants.AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE);
@@ -114,7 +115,7 @@ public class AutoscalerServiceComponent {
                         componentStartUpSynchronizer
                                 .waitForComponentActivation(Component.Autoscaler, Component.CloudController);
 
-                        ServiceReferenceHolder.getInstance().setExecutorService(executorService);
+                        ServiceReferenceHolder.getInstance().setExecutor(executor);
                         CartridgeConfigFileReader.readProperties();
                         if (AutoscalerContext.getInstance().isClustered()) {
                             Thread coordinatorElectorThread = new Thread() {
@@ -136,7 +137,7 @@ public class AutoscalerServiceComponent {
                                 }
                             };
                             coordinatorElectorThread.setName("Autoscaler coordinator elector thread");
-                            executorService.submit(coordinatorElectorThread);
+                            executor.submit(coordinatorElectorThread);
                         } else {
                             executeCoordinatorTasks();
                         }
@@ -173,7 +174,7 @@ public class AutoscalerServiceComponent {
 
         // Start topology receiver
         asTopologyReceiver = new AutoscalerTopologyEventReceiver();
-//        asTopologyReceiver.setExecutorService(executorService);
+//        asTopologyReceiver.setExecutor(executor);
         //asTopologyReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug("Topology receiver executor service started");
@@ -181,7 +182,7 @@ public class AutoscalerServiceComponent {
 
         // Start health stat receiver
         autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
-//        autoscalerHealthStatEventReceiver.setExecutorService(executorService);
+//        autoscalerHealthStatEventReceiver.setExecutor(executor);
 //        autoscalerHealthStatEventReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug("Health statistics receiver thread started");
@@ -189,7 +190,7 @@ public class AutoscalerServiceComponent {
 
         // Start initializer receiver
         autoscalerInitializerTopicReceiver = new AutoscalerInitializerTopicReceiver();
-//        autoscalerInitializerTopicReceiver.setExecutorService(executorService);
+//        autoscalerInitializerTopicReceiver.setExecutor(executor);
 //        autoscalerInitializerTopicReceiver.execute();
 //        if (log.isDebugEnabled()) {
 //            log.debug("Initializer receiver thread started");
@@ -275,9 +276,9 @@ public class AutoscalerServiceComponent {
     }
 
     private void shutdownExecutorService(String executorServiceId) {
-        ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
-        if (executorService != null) {
-            shutdownExecutorService(executorService);
+        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
+        if (executor != null) {
+            shutdownExecutorService(executor);
         }
     }
 

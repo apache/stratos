@@ -87,7 +87,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     // future to cancel it when destroying monitors
     private ScheduledFuture<?> schedulerFuture;
     //Executor service to maintain the thread pool
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveChildMonitorsMap = new ConcurrentHashMap<String, Monitor>();
@@ -109,8 +109,9 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
 
         // Create the executor service with identifier and thread pool size
-        executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
-                AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
+        executor = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
+                ((int)Math.ceil(AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE/3)),AutoscalerConstants
+                        .AUTOSCALER_THREAD_POOL_SIZE);
         networkPartitionContextsMap = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
 
@@ -864,7 +865,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                                              ApplicationChildContext context, List<String> parentInstanceIds) {
         if (!this.aliasToActiveChildMonitorsMap.containsKey(context.getId())) {
             pendingChildMonitorsList.add(context.getId());
-            executorService.submit(new MonitorAdder(parent, context, this.appId, parentInstanceIds));
+            executor.submit(new MonitorAdder(parent, context, this.appId, parentInstanceIds));
 
             String monitorTypeStr = AutoscalerUtil.findMonitorType(context).toString().toLowerCase();
             log.info(String.format("Monitor scheduled: [type] %s [component] %s ",

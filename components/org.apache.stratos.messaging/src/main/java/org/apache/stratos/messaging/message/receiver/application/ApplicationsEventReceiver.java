@@ -29,8 +29,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 public class ApplicationsEventReceiver extends StratosEventReceiver{
     private static final Log log = LogFactory.getLog(ApplicationsEventReceiver.class);
 
@@ -41,7 +39,7 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
 
     private ApplicationsEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("application-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("application-event-receiver", 35, 100);
         ApplicationsEventMessageQueue messageQueue = new ApplicationsEventMessageQueue();
         this.messageDelegator = new ApplicationsEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationsEventMessageListener(messageQueue);
@@ -73,14 +71,14 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(),
                     messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message receiver thread started");
             }
 
             // Start Application status event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
 
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message delegator thread started");
@@ -99,7 +97,7 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
     }
 
     public void initializeCompleteApplicationsModel() {
-        executorService.execute(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 while (!eventSubscriber.isSubscribed()) {
@@ -119,10 +117,10 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
     }
 
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

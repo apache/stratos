@@ -19,7 +19,9 @@
 
 package org.apache.stratos.common.threading;
 
-public class StratosThreadFactory {
+import java.util.concurrent.ThreadFactory;
+
+public class StratosThreadFactory implements ThreadFactory {
     private String prefix;
     private int counter;
 

@@ -24,6 +24,7 @@ import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * An executor service to asynchronously execute statistics update calls without blocking the
@@ -35,11 +36,12 @@ public class LoadBalancerStatisticsExecutor {
 
     private static volatile LoadBalancerStatisticsExecutor instance;
 
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
 
     private LoadBalancerStatisticsExecutor() {
-        executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
-                LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
+        executor = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
+                ((int)Math.ceil(LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE/3)), LoadBalancerConstants
+                        .LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
     }
 
     public static LoadBalancerStatisticsExecutor getInstance() {
@@ -53,7 +55,7 @@ public class LoadBalancerStatisticsExecutor {
         return instance;
     }
 
-    public ExecutorService getService() {
-        return executorService;
+    public ThreadPoolExecutor getService() {
+        return executor;
     }
 }

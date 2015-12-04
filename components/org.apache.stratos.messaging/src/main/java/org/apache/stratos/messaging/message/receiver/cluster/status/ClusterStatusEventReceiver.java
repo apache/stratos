@@ -27,8 +27,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A thread for receiving instance notifier information from message broker.
  */
@@ -41,7 +39,7 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
 
     private ClusterStatusEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("clusterstatus-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("clusterstatus-event-receiver", 35, 100);
         ClusterStatusEventMessageQueue messageQueue = new ClusterStatusEventMessageQueue();
         this.messageDelegator = new ClusterStatusEventMessageDelegator(messageQueue);
         this.messageListener = new ClusterStatusEventMessageListener(messageQueue);
@@ -68,14 +66,14 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
             }
 
             // Start instance notifier event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
@@ -99,10 +97,10 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
 //    }
 //
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

@@ -51,7 +51,6 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -843,7 +842,7 @@ public class AutoscalerUtil {
         AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
         if (autoscalerContext.getAppMonitor(applicationId) == null) {
             autoscalerContext.addApplicationPendingMonitor(applicationId);
-            ServiceReferenceHolder.getInstance().getExecutorService().submit(new ApplicationMonitorAdder(applicationId));
+            ServiceReferenceHolder.getInstance().getExecutor().submit(new ApplicationMonitorAdder(applicationId));
 
             log.info(String.format("Monitor scheduled: [application] %s ", applicationId));
         } else {

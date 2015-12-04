@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -66,7 +66,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
 
-    private final ExecutorService executorService;
+    private final ThreadPoolExecutor executor;
     //has scaling dependents
     protected boolean hasScalingDependents;
     //Indicates whether groupScaling enabled or not
@@ -85,8 +85,8 @@ public class GroupMonitor extends ParentComponentMonitor {
         super(group);
 
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
-        this.executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
+        this.executor = StratosThreadPool.getExecutorService(
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, ((int)Math.ceil(threadPoolSize/3)),threadPoolSize);
 
         this.groupScalingEnabled = group.isGroupScalingEnabled();
         this.appId = appId;
@@ -225,7 +225,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        executorService.execute(monitoringRunnable);
+        executor.execute(monitoringRunnable);
     }
 
     /**
@@ -336,7 +336,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                     appId);
                         }
                     };
-                    executorService.execute(sendScaleMaxOut);
+                    executor.execute(sendScaleMaxOut);
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -356,7 +356,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             appId);
                 }
             };
-            executorService.execute(sendScaleMaxOut);
+            executor.execute(sendScaleMaxOut);
         }
     }
 
@@ -488,7 +488,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        executorService.execute(monitoringRunnable);
+        executor.execute(monitoringRunnable);
 
     }
 
@@ -594,7 +594,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        executorService.execute(monitoringRunnable);
+        executor.execute(monitoringRunnable);
 
     }
 

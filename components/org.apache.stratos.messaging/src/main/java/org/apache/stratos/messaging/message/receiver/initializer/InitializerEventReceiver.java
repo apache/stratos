@@ -26,8 +26,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 public class InitializerEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(InitializerEventReceiver.class);
 
@@ -35,11 +33,11 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     private InitializerEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
     private static volatile InitializerEventReceiver instance;
-    //private ExecutorService executorService;
+    //private ExecutorService executor;
 
     private InitializerEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("initializer-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("initializer-event-receiver", 35, 100);
         InitializerEventMessageQueue initializerEventMessageQueue = new InitializerEventMessageQueue();
         this.messageDelegator = new InitializerEventMessageDelegator(initializerEventMessageQueue);
         this.messageListener = new InitializerEventMessageListener(initializerEventMessageQueue);
@@ -67,13 +65,13 @@ public class InitializerEventReceiver extends StratosEventReceiver {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INITIALIZER_TOPIC.getTopicName(),
                     messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Initializer event message delegator thread started");
             }
             // Start initializer event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Initializer receiver failed", e);
@@ -87,10 +85,10 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     }
 
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

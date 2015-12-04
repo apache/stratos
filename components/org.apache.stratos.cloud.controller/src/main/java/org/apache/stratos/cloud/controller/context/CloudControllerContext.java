@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -135,8 +136,8 @@ public class CloudControllerContext implements Serializable {
     /**
      * Thread pool used in this task to execute parallel tasks.
      */
-    private transient ExecutorService executorService = StratosThreadPool
-            .getExecutorService("cloud.controller.context.thread.pool", 10);
+    private transient ThreadPoolExecutor executor = StratosThreadPool
+            .getExecutorService("cloud.controller.context.thread.pool", 5, 10);
 
     /**
      * Map of registered {@link org.apache.stratos.cloud.controller.domain.Cartridge}s
@@ -495,9 +496,9 @@ public class CloudControllerContext implements Serializable {
         return removed;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
+//    public ExecutorService getExecutor() {
+//        return executor;
+//    }
 
     public List<String> getPartitionIds(String cartridgeType) {
         return cartridgeTypeToPartitionIdsMap.get(cartridgeType);

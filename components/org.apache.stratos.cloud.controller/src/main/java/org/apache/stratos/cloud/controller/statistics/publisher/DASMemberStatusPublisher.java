@@ -29,7 +29,7 @@ import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Publishing member status to DAS.
@@ -41,12 +41,13 @@ public class DASMemberStatusPublisher extends MemberStatusPublisher {
     private static final String DATA_STREAM_NAME = "member_lifecycle";
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
 
     private DASMemberStatusPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
-                CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_SIZE);
+        executor = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
+                ((int)Math.ceil(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_SIZE/3)), CloudControllerConstants
+                        .STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 
     public static DASMemberStatusPublisher getInstance() {
@@ -133,7 +134,7 @@ public class DASMemberStatusPublisher extends MemberStatusPublisher {
                 publish(payload.toArray());
             }
         };
-        executorService.execute(publisher);
+        executor.execute(publisher);
     }
 
 }

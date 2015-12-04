@@ -30,8 +30,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A thread for receiving topology information from message broker and
  * build topology in topology manager.
@@ -47,7 +45,7 @@ public class TopologyEventReceiver extends StratosEventReceiver {
 
     private TopologyEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("topology-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("topology-event-receiver", 35, 100);
         TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
         this.messageDelegator = new TopologyEventMessageDelegator(messageQueue);
         this.messageListener = new TopologyEventMessageListener(messageQueue);
@@ -74,14 +72,14 @@ public class TopologyEventReceiver extends StratosEventReceiver {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message receiver thread started");
             }
 
             // Start topology event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message delegator thread started");
             }
@@ -100,7 +98,7 @@ public class TopologyEventReceiver extends StratosEventReceiver {
     }
 
     public void initializeCompleteTopology() {
-        executorService.execute(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 while (!eventSubscriber.isSubscribed()) {
@@ -119,10 +117,10 @@ public class TopologyEventReceiver extends StratosEventReceiver {
     }
 
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

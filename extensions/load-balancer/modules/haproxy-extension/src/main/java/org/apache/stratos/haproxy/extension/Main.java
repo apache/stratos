@@ -26,14 +26,14 @@ import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * HAProxy extension main class.
  */
 public class Main {
 	private static final Log log = LogFactory.getLog(Main.class);
-	private static ExecutorService executorService;
+	private static ThreadPoolExecutor executor;
 
 	public static void main(String[] args) {
 
@@ -63,14 +63,14 @@ public class Main {
                 }
             });
 
-			executorService = StratosThreadPool.getExecutorService("haproxy.extension.thread.pool", 10);
+			executor = StratosThreadPool.getExecutorService("haproxy.extension.thread.pool", 5, 10);
 			// Validate runtime parameters
 			HAProxyContext.getInstance().validate();
             TopologyProvider topologyProvider = new TopologyProvider();
             HAProxyStatisticsReader statisticsReader = HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ?
                     new HAProxyStatisticsReader(topologyProvider) : null;
             extension = new LoadBalancerExtension(new HAProxy(), statisticsReader, topologyProvider);
-			extension.setExecutorService(executorService);
+			extension.setExecutorService(executor);
 			extension.execute();
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {

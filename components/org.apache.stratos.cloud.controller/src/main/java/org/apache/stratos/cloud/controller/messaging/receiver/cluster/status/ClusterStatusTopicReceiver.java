@@ -34,7 +34,7 @@ public class ClusterStatusTopicReceiver {
 
     private ClusterStatusEventReceiver clusterStatusEventReceiver;
     //private boolean terminated;
-    //private ExecutorService executorService;
+    //private ExecutorService executor;
 
     public ClusterStatusTopicReceiver() {
         this.clusterStatusEventReceiver = ClusterStatusEventReceiver.getInstance();
@@ -42,7 +42,7 @@ public class ClusterStatusTopicReceiver {
     }
 
 //    public void execute() {
-//        clusterStatusEventReceiver.setExecutorService(executorService);
+//        clusterStatusEventReceiver.setExecutorService(executor);
 //        clusterStatusEventReceiver.execute();
 //        if (log.isInfoEnabled()) {
 //            log.info("Cloud controller Cluster status thread started");
@@ -119,11 +119,11 @@ public class ClusterStatusTopicReceiver {
 //        this.terminated = terminated;
 //    }
 //
-//    public ExecutorService getExecutorService() {
-//        return executorService;
+//    public ExecutorService getExecutor() {
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

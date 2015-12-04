@@ -27,8 +27,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A thread for receiving health stat information from message broker
  */
@@ -42,7 +40,7 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
 
     private HealthStatEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("healthstat-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("healthstat-event-receiver", 35, 100);
         HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
         this.messageDelegator = new HealthStatEventMessageDelegator(messageQueue);
         this.messageListener = new HealthStatEventMessageListener(messageQueue);
@@ -71,13 +69,13 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
 
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Health stats event message delegator thread started");
             }
             // Start health stat event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Health stats receiver failed", e);
@@ -92,10 +90,10 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
 //    }
 //
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

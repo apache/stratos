@@ -42,7 +42,7 @@ public class AutoscalerHealthStatEventReceiver {
     private boolean terminated = false;
 
     private HealthStatEventReceiver healthStatEventReceiver;
-    private ExecutorService executorService;
+   // private ExecutorService executorService;
 
     public AutoscalerHealthStatEventReceiver() {
         this.healthStatEventReceiver = HealthStatEventReceiver.getInstance();
@@ -50,7 +50,7 @@ public class AutoscalerHealthStatEventReceiver {
     }
 
 //    public void execute() {
-//        healthStatEventReceiver.setExecutorService(executorService);
+//        healthStatEventReceiver.setExecutor(executor);
 //        healthStatEventReceiver.execute();
 //
 //        if (log.isInfoEnabled()) {
@@ -480,11 +480,11 @@ public class AutoscalerHealthStatEventReceiver {
         this.terminated = true;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutor() {
+//        return executorService;
+//    }
+//
+//    public void setExecutor(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

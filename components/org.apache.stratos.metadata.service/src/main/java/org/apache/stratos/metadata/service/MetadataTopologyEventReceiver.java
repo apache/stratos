@@ -38,11 +38,11 @@ import java.util.concurrent.ExecutorService;
 public class MetadataTopologyEventReceiver {
     private static final Log log = LogFactory.getLog(MetadataTopologyEventReceiver.class);
     private TopologyEventReceiver topologyEventReceiver;
-    private ExecutorService executorService;
+    //private ExecutorService executorService;
 
     public MetadataTopologyEventReceiver() {
         this.topologyEventReceiver = TopologyEventReceiver.getInstance();
-//        //executorService = StratosThreadPool.getExecutorService(Constants
+//        //executor = StratosThreadPool.getExecutorService(Constants
 //                .METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
@@ -84,7 +84,7 @@ public class MetadataTopologyEventReceiver {
 //        }
 //    }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
 }

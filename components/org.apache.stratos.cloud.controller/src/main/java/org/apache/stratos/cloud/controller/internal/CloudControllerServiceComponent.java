@@ -49,6 +49,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,7 +83,7 @@ public class CloudControllerServiceComponent {
     private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
     private ApplicationEventReceiver applicationEventReceiver;
     private InitializerTopicReceiver initializerTopicReceiver;
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
     private ScheduledExecutorService scheduler;
 
     protected void activate(final ComponentContext context) {
@@ -90,7 +91,8 @@ public class CloudControllerServiceComponent {
             log.debug("Activating CloudControllerServiceComponent...");
         }
         try {
-            executorService = StratosThreadPool.getExecutorService(THREAD_POOL_ID, THREAD_POOL_SIZE);
+            executor = StratosThreadPool.getExecutorService(THREAD_POOL_ID, ((int)Math.ceil
+                    (THREAD_POOL_SIZE/3)),THREAD_POOL_SIZE);
             scheduler = StratosThreadPool
                     .getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID, SCHEDULER_THREAD_POOL_SIZE);
 
@@ -123,7 +125,7 @@ public class CloudControllerServiceComponent {
                                 }
                             };
                             coordinatorElectorThread.setName("Cloud controller coordinator elector thread");
-                            executorService.submit(coordinatorElectorThread);
+                            executor.submit(coordinatorElectorThread);
                         } else {
                             executeCoordinatorTasks();
                         }
@@ -146,7 +148,7 @@ public class CloudControllerServiceComponent {
 
     private void executeCoordinatorTasks() {
         applicationEventReceiver = new ApplicationEventReceiver();
-//        applicationEventReceiver.setExecutorService(executorService);
+//        applicationEventReceiver.setExecutorService(executor);
 //        applicationEventReceiver.execute();
 
         if (log.isInfoEnabled()) {
@@ -154,7 +156,7 @@ public class CloudControllerServiceComponent {
         }
 
         clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-//        clusterStatusTopicReceiver.setExecutorService(executorService);
+//        clusterStatusTopicReceiver.setExecutorService(executor);
 //        clusterStatusTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
@@ -162,7 +164,7 @@ public class CloudControllerServiceComponent {
         }
 
         instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
-//        instanceStatusTopicReceiver.setExecutorService(executorService);
+//        instanceStatusTopicReceiver.setExecutorService(executor);
 //        instanceStatusTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
@@ -170,7 +172,7 @@ public class CloudControllerServiceComponent {
         }
 
         initializerTopicReceiver = new InitializerTopicReceiver();
-//        initializerTopicReceiver.setExecutorService(executorService);
+//        initializerTopicReceiver.setExecutorService(executor);
 //        initializerTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
@@ -269,9 +271,9 @@ public class CloudControllerServiceComponent {
     }
 
     private void shutdownExecutorService(String executorServiceId) {
-        ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
-        if (executorService != null) {
-            shutdownExecutorService(executorService);
+        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
+        if (executor != null) {
+            shutdownExecutorService(executor);
         }
     }
 

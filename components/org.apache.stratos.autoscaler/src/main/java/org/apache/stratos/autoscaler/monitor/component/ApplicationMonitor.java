@@ -55,7 +55,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -64,7 +64,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
-    private final ExecutorService executorService;
+    private final ThreadPoolExecutor executor;
 
     //Flag to set whether application is terminating
     private boolean isTerminating;
@@ -79,8 +79,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         super(application);
 
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
-        this.executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
+        this.executor = StratosThreadPool.getExecutorService(AutoscalerConstants.MONITOR_THREAD_POOL_ID,
+                ((int)Math.ceil(threadPoolSize/3)), threadPoolSize);
 
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
@@ -164,7 +164,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        executorService.execute(monitoringRunnable);
+        executor.execute(monitoringRunnable);
     }
 
     private void handleScalingMaxOut(ParentInstanceContext instanceContext,
@@ -476,7 +476,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        executorService.execute(monitoringRunnable);
+        executor.execute(monitoringRunnable);
 
     }
 

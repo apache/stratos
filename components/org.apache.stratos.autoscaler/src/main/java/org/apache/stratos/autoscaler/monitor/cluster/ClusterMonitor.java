@@ -87,7 +87,7 @@ public class ClusterMonitor extends Monitor {
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private final ScheduledExecutorService scheduler;
-    private final ExecutorService executorService;
+    private final ThreadPoolExecutor executor;
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;
     protected String serviceType;
@@ -109,8 +109,8 @@ public class ClusterMonitor extends Monitor {
 
         scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 50);
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
-        executorService = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.MONITOR_THREAD_POOL_ID, threadPoolSize);
+        executor = StratosThreadPool.getExecutorService(
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, ((int)Math.ceil(threadPoolSize/3)), threadPoolSize);
         this.clusterId = cluster.getClusterId();
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
@@ -407,7 +407,7 @@ public class ClusterMonitor extends Monitor {
 
                             }
                         };
-                        executorService.execute(monitoringRunnable);
+                        executor.execute(monitoringRunnable);
                     }
 
                     if (instance.getStatus() == ClusterStatus.Terminating) {
@@ -453,7 +453,7 @@ public class ClusterMonitor extends Monitor {
                                 }
                             }
                         };
-                        executorService.execute(monitoringRunnable);
+                        executor.execute(monitoringRunnable);
                     }
                 }
             }
@@ -523,7 +523,7 @@ public class ClusterMonitor extends Monitor {
             }
 
         };
-        executorService.execute(monitoringRunnable);
+        executor.execute(monitoringRunnable);
 
     }
 

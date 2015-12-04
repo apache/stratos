@@ -33,7 +33,7 @@ public class StratosThreadPool {
 
     private static final Log log = LogFactory.getLog(StratosThreadPool.class);
 
-    private static Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<String, ExecutorService>();
+    private static Map<String, ThreadPoolExecutor> executorMap = new ConcurrentHashMap<>();
     private static Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
     private static Object executorServiceMapLock = new Object();
     private static Object scheduledServiceMapLock = new Object();
@@ -42,21 +42,24 @@ public class StratosThreadPool {
      * Return the executor service based on the identifier and thread pool size
      *
      * @param identifier     Thread pool identifier name
-     * @param threadPoolSize Thread pool size
+     * @param maxSize Thread pool size
      * @return ExecutorService
      */
-    public static ExecutorService getExecutorService(String identifier, int threadPoolSize) {
-        ExecutorService executorService = executorServiceMap.get(identifier);
-        if (executorService == null) {
+    public static ThreadPoolExecutor getExecutorService(String identifier, int initialSize, int
+            maxSize) {
+        ThreadPoolExecutor executor = executorMap.get(identifier);
+        if (executor == null) {
             synchronized (executorServiceMapLock) {
-                if (executorService == null) {
-                    executorService = Executors.newFixedThreadPool(threadPoolSize);
-                    executorServiceMap.put(identifier, executorService);
-                    log.info(String.format("Thread pool created: [type] Executor Service [id] %s [size] %d", identifier, threadPoolSize));
+                if (executor == null) {
+                    executor = new ThreadPoolExecutor(initialSize, maxSize, 60L, TimeUnit.SECONDS,
+                            new LinkedBlockingQueue<Runnable>(), new StratosThreadFactory(identifier));
+                    executorMap.put(identifier, executor);
+                    log.info(String.format("Thread pool created: [type] Executor [id] %s " +
+                            "[initial size] %d [max size] %d", identifier, initialSize, maxSize));
                 }
             }
         }
-        return executorService;
+        return executor;
     }
 
     /**
@@ -71,7 +74,8 @@ public class StratosThreadPool {
         if (scheduledExecutorService == null) {
             synchronized (scheduledServiceMapLock) {
                 if (scheduledExecutorService == null) {
-                    scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize);
+                    scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize,
+                            new StratosThreadFactory(identifier));
                     scheduledServiceMap.put(identifier, scheduledExecutorService);
                     log.info(String.format("Thread pool created: [type] Scheduled Executor Service [id] %s [size] %d",
                             identifier, threadPoolSize));

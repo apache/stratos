@@ -89,10 +89,10 @@ public class LoadBalancerExtension {
             }
 
             // Start topology receiver thread
-            startTopologyEventReceiver(executorService, topologyProvider);
-            startApplicationEventReceiver(executorService);
-            startApplicationSignUpEventReceiver(executorService, topologyProvider);
-            startDomainMappingEventReceiver(executorService, topologyProvider);
+            startTopologyEventReceiver(topologyProvider);
+            startApplicationEventReceiver();
+            startApplicationSignUpEventReceiver(topologyProvider);
+            startDomainMappingEventReceiver(topologyProvider);
 
             if (statsReader != null) {
                 // Start stats notifier thread
@@ -115,17 +115,16 @@ public class LoadBalancerExtension {
     /**
      * Start topology event receiver thread.
      *
-     * @param executorService  executor service instance
      * @param topologyProvider topology provider instance
      */
-    private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startTopologyEventReceiver(TopologyProvider topologyProvider) {
         // Enforcing the listener order in order execute extension listener later
         topologyEventReceiver = new LoadBalancerCommonTopologyEventReceiver(topologyProvider, false);
         // Add load-balancer extension event listener
         addTopologyEventListeners(topologyEventReceiver);
         // Add default topology provider event listeners
         topologyEventReceiver.addEventListeners();
-//        topologyEventReceiver.setExecutorService(executorService);
+//        topologyEventReceiver.setExecutorService(executor);
 //        topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
@@ -149,9 +148,9 @@ public class LoadBalancerExtension {
         }
     }
 
-    private void startApplicationEventReceiver(ExecutorService executorService) {
+    private void startApplicationEventReceiver() {
         applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
-//        applicationsEventReceiver.setExecutorService(executorService);
+//        applicationsEventReceiver.setExecutorService(executor);
 //        applicationsEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Application event receiver thread started");
@@ -164,14 +163,14 @@ public class LoadBalancerExtension {
      * @param executorService  executor service instance
      * @param topologyProvider topology receiver instance
      */
-    private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startDomainMappingEventReceiver(TopologyProvider topologyProvider) {
         // Enforcing the listener order in order execute extension listener later
         domainMappingEventReceiver = new LoadBalancerCommonDomainMappingEventReceiver(topologyProvider, false);
         // Add extension event listeners
         addDomainMappingsEventListeners(domainMappingEventReceiver);
         // Add default domain mapping event listeners
         domainMappingEventReceiver.addEventListeners();
-//        domainMappingEventReceiver.setExecutorService(executorService);
+//        domainMappingEventReceiver.setExecutorService(executor);
 //        domainMappingEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Domain mapping event receiver thread started");
@@ -198,10 +197,9 @@ public class LoadBalancerExtension {
     /**
      * Start application signup event receiver thread.
      *
-     * @param executorService  executor service instance
      * @param topologyProvider topology provider instance
      */
-    private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
         if (log.isInfoEnabled()) {
             log.info("Application signup event receiver thread started");

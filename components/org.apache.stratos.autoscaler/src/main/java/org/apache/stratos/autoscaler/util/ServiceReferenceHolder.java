@@ -32,6 +32,7 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ServiceReferenceHolder {
 
@@ -43,7 +44,7 @@ public class ServiceReferenceHolder {
     private AxisConfiguration axisConfiguration;
     private DistributedObjectProvider distributedObjectProvider;
     private HazelcastInstance hazelcastInstance;
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
     private ComponentStartUpSynchronizer componentStartUpSynchronizer;
 
     private ServiceReferenceHolder() {
@@ -116,12 +117,12 @@ public class ServiceReferenceHolder {
         this.groupStatusProcessorChain = groupStatusProcessorChain;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
+    public ThreadPoolExecutor getExecutor() {
+        return executor;
     }
 
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
+    public void setExecutor(ThreadPoolExecutor executor) {
+        this.executor = executor;
     }
 
     public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {

@@ -30,8 +30,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A thread for receiving tenant information from message broker and
  * build tenant information in tenant manager.
@@ -45,7 +43,7 @@ public class TenantEventReceiver extends StratosEventReceiver {
 
     private TenantEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("tenant-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("tenant-event-receiver", 35, 100);
         TenantEventMessageQueue messageQueue = new TenantEventMessageQueue();
         this.messageDelegator = new TenantEventMessageDelegator(messageQueue);
         this.messageListener = new TenantEventMessageListener(messageQueue);
@@ -68,22 +66,22 @@ public class TenantEventReceiver extends StratosEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 
     private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TENANT_TOPIC.getTopicName(), messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Tenant event message receiver thread started");
             }
 
             // Start tenant event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("Tenant event message delegator thread started");
             }
@@ -97,7 +95,7 @@ public class TenantEventReceiver extends StratosEventReceiver {
     }
 
     public void initializeCompleteTenant() {
-        executorService.execute(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 while (!eventSubscriber.isSubscribed()) {

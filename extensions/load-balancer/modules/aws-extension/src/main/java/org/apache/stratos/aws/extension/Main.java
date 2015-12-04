@@ -26,7 +26,7 @@ import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * AWS extension main class.
@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 
 public class Main {
 	private static final Log log = LogFactory.getLog(Main.class);
-	private static ExecutorService executorService;
+	private static ThreadPoolExecutor executor;
 
 	public static void main(String[] args) {
 
@@ -48,8 +48,8 @@ public class Main {
 				log.info("AWS extension started");
 			}
 
-			executorService = StratosThreadPool.getExecutorService(
-					"aws.extension.thread.pool", 10);
+			executor = StratosThreadPool.getExecutorService(
+					"aws.extension.thread.pool", 5, 10);
 			// Validate runtime parameters
 			AWSExtensionContext.getInstance().validate();
 			TopologyProvider topologyProvider = new TopologyProvider();
@@ -58,7 +58,7 @@ public class Main {
 					topologyProvider) : null;
 			extension = new LoadBalancerExtension(new AWSLoadBalancer(),
 					statisticsReader, topologyProvider);
-			extension.setExecutorService(executorService);
+			extension.setExecutorService(executor);
 			extension.execute();
 
 			// Add shutdown hook

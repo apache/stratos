@@ -19,11 +19,11 @@
 
 package org.apache.stratos.messaging.message.receiver;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class StratosEventReceiver {
 
-    protected ExecutorService executorService;
+    protected ThreadPoolExecutor executor;
 
     public StratosEventReceiver () {
     }

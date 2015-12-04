@@ -57,7 +57,7 @@ public class AutoscalerTopologyEventReceiver {
     private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
     private boolean topologyInitialized;
-    private ExecutorService executorService;
+    //private ExecutorService executorService;
 
     public AutoscalerTopologyEventReceiver() {
         this.topologyEventReceiver = TopologyEventReceiver.getInstance();
@@ -66,7 +66,7 @@ public class AutoscalerTopologyEventReceiver {
 
 //    public void execute() {
 //        //FIXME this activated before autoscaler deployer activated.
-//       // topologyEventReceiver.setExecutorService(getExecutorService());
+//       // topologyEventReceiver.setExecutor(getExecutor());
 //        //topologyEventReceiver.execute();
 //        if (log.isInfoEnabled()) {
 //            log.info("Autoscaler topology receiver thread started");
@@ -515,11 +515,11 @@ public class AutoscalerTopologyEventReceiver {
 //        terminated = true;
 //    }
 //
-//    public ExecutorService getExecutorService() {
-//        return executorService;
+//    public ExecutorService getExecutor() {
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutor(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

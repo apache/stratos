@@ -43,7 +43,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -60,10 +60,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public static final String KUBERNETES_CLUSTER = "cluster";
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
 
     public CloudControllerServiceImpl() {
-        executorService = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread.pool", 50);
+        executor = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread" +
+                ".pool", 20, 50);
 
     }
 
@@ -496,7 +497,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 + "[member] %s [application-id] %s", instanceContext.getClusterId(),
                         instanceContext.getClusterInstanceId(), memberId, applicationId));
             }
-            executorService.execute(new InstanceCreator(memberContext, iaasProvider, payload.toString().getBytes()));
+            executor.execute(new InstanceCreator(memberContext, iaasProvider, payload.toString().getBytes()));
 
             return memberContext;
         } catch (Exception e) {
@@ -675,7 +676,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         }
                     }
                 }
-                executorService.execute(new InstanceTerminator(memberContext));
+                executor.execute(new InstanceTerminator(memberContext));
             } finally {
                 TopologyHolder.releaseWriteLock();
             }
@@ -726,7 +727,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         for (MemberContext memberContext : memberContexts) {
-            executorService.execute(new InstanceTerminator(memberContext));
+            executor.execute(new InstanceTerminator(memberContext));
         }
         return true;
     }

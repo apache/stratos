@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutorService;
 public class ApplicationEventReceiver {
     private static final Log log = LogFactory.getLog(ApplicationEventReceiver.class);
     private ApplicationsEventReceiver applicationsEventReceiver;
-   // private ExecutorService executorService;
+   // private ExecutorService executor;
 
     public ApplicationEventReceiver() {
         this.applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
@@ -48,7 +48,7 @@ public class ApplicationEventReceiver {
 //        if (log.isInfoEnabled()) {
 //            log.info("Cloud controller application event receiver thread started");
 //        }
-//        applicationsEventReceiver.setExecutorService(executorService);
+//        applicationsEventReceiver.setExecutorService(executor);
 //        applicationsEventReceiver.execute();
 //    }
 
@@ -76,7 +76,7 @@ public class ApplicationEventReceiver {
         });
     }
 
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

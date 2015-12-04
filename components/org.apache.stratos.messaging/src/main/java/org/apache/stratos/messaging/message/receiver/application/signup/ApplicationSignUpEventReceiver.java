@@ -30,8 +30,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * Application signup event receiver.
  */
@@ -46,7 +44,7 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
 
     private ApplicationSignUpEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("application-signup-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("application-signup-event-receiver", 35, 100);
         ApplicationSignUpEventMessageQueue messageQueue = new ApplicationSignUpEventMessageQueue();
         this.messageDelegator = new ApplicationSignUpEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationSignUpEventMessageListener(messageQueue);
@@ -75,14 +73,14 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(),
                     messageListener);
             // subscriber.setMessageListener(messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Application signup event message receiver thread started");
             }
 
             // Start topology event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("Application signup event message delegator thread started");
             }
@@ -96,7 +94,7 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
     }
 
     public void initializeCompleteApplicationSignUps() {
-        executorService.execute(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 while (!eventSubscriber.isSubscribed()) {
@@ -121,10 +119,10 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
     }
 
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

@@ -27,8 +27,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * Domain mapping event receiver.
  */
@@ -43,7 +41,8 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
 
     private DomainMappingEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("domainmapping-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("domainmapping-event-receiver", 35,
+                100);
         DomainMappingEventMessageQueue messageQueue = new DomainMappingEventMessageQueue();
         this.messageDelegator = new DomainMappingEventMessageDelegator(messageQueue);
         this.messageListener = new DomainMappingEventMessageListener(messageQueue);
@@ -71,7 +70,7 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.DOMAIN_MAPPING_TOPIC.getTopicName(), messageListener);
             // subscriber.setMessageListener(messageListener);
-            executorService.execute(eventSubscriber);
+            executor.execute(eventSubscriber);
 
 
             if (log.isDebugEnabled()) {
@@ -79,7 +78,7 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
             }
 
             // Start topology event message delegator thread
-            executorService.execute(messageDelegator);
+            executor.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("Domain mapping event message delegator thread started");
             }
@@ -98,10 +97,10 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
 //    }
 //
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

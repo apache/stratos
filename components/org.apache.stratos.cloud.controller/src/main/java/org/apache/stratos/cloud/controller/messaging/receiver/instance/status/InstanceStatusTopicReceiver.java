@@ -42,8 +42,8 @@ public class InstanceStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
 
     private InstanceStatusEventReceiver statusEventReceiver;
-    private boolean terminated;
-    private ExecutorService executorService;
+    //private boolean terminated;
+    //private ExecutorService executorService;
 
     public InstanceStatusTopicReceiver() {
         this.statusEventReceiver = InstanceStatusEventReceiver.getInstance();
@@ -51,7 +51,7 @@ public class InstanceStatusTopicReceiver {
     }
 
 //    public void execute() {
-//        statusEventReceiver.setExecutorService(executorService);
+//        statusEventReceiver.setExecutorService(executor);
 //        statusEventReceiver.execute();
 //        if (log.isInfoEnabled()) {
 //            log.info("Cloud controller application status thread started");
@@ -132,11 +132,11 @@ public class InstanceStatusTopicReceiver {
 
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
+//    public ExecutorService getExecutorService() {
+//        return executorService;
+//    }
+//
+//    public void setExecutorService(ExecutorService executorService) {
+//        this.executorService = executorService;
+//    }
 }

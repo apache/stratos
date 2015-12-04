@@ -29,7 +29,7 @@ import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * MemberInfoPublisher to publish member information/metadata to DAS.
@@ -42,12 +42,12 @@ public class DASScalingDecisionPublisher extends ScalingDecisionPublisher {
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
     private static final int STATS_PUBLISHER_THREAD_POOL_SIZE = 10;
-    private ExecutorService executorService;
+    private ThreadPoolExecutor executor;
 
     public DASScalingDecisionPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
-                STATS_PUBLISHER_THREAD_POOL_SIZE);
+        executor = StratosThreadPool.getExecutorService(AutoscalerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
+                ((int)Math.ceil(STATS_PUBLISHER_THREAD_POOL_SIZE/3)), STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 
     public static DASScalingDecisionPublisher getInstance() {
@@ -168,7 +168,7 @@ public class DASScalingDecisionPublisher extends ScalingDecisionPublisher {
             }
 
         };
-        executorService.execute(publisher);
+        executor.execute(publisher);
     }
 }
 

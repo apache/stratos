@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutorService;
 public class StratosManagerInitializerTopicReceiver {
     private static final Log log = LogFactory.getLog(StratosManagerInitializerTopicReceiver.class);
     private InitializerEventReceiver initializerEventReceiver;
-    //private ExecutorService executorService;
+    //private ExecutorService executor;
     private ApplicationSignUpHandler applicationSignUpHandler;
 
     public StratosManagerInitializerTopicReceiver() {
@@ -43,7 +43,7 @@ public class StratosManagerInitializerTopicReceiver {
     }
 
 //    public void execute() {
-//        initializerEventReceiver.setExecutorService(executorService);
+//        initializerEventReceiver.setExecutorService(executor);
 //        initializerEventReceiver.execute();
 //        if (log.isInfoEnabled()) {
 //            log.info("Stratos manager initializer topic receiver started");
@@ -82,10 +82,10 @@ public class StratosManagerInitializerTopicReceiver {
     }
 
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }

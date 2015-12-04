@@ -41,10 +41,7 @@ import org.apache.stratos.mock.iaas.event.publisher.MockMemberEventPublisher;
 import org.apache.stratos.mock.iaas.statistics.publisher.MockHealthStatisticsNotifier;
 
 import java.io.Serializable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -65,8 +62,8 @@ public class MockInstance implements Serializable {
     private final MockInstanceContext mockInstanceContext;
     private final AtomicBoolean hasGracefullyShutdown = new AtomicBoolean(false);
 
-    private static final ExecutorService eventListenerExecutorService = StratosThreadPool
-            .getExecutorService("mock.iaas.event.listener.thread.pool", 100);
+    private static final ThreadPoolExecutor eventListenerExecutor = StratosThreadPool
+            .getExecutorService("mock.iaas.event.listener.thread.pool", 35, 100);
     private static final ScheduledExecutorService healthStatNotifierExecutorService = StratosThreadPool
             .getScheduledExecutorService("mock.iaas.health.statistics.notifier.thread.pool", 100);
 
@@ -151,7 +148,7 @@ public class MockInstance implements Serializable {
                 }
             }
         });
-//        topologyEventReceiver.setExecutorService(eventListenerExecutorService);
+//        topologyEventReceiver.setExecutorService(eventListenerExecutor);
 //        topologyEventReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
@@ -185,7 +182,7 @@ public class MockInstance implements Serializable {
         });
         // TODO: Fix InstanceNotifierEventReceiver to use executor service
         // do not remove this since execute() is a blocking call
-//        eventListenerExecutorService.submit(new Runnable() {
+//        eventListenerExecutor.submit(new Runnable() {
 //            @Override
 //            public void run() {
 //                instanceNotifierEventReceiver.execute();

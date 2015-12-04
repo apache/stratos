@@ -40,11 +40,11 @@ import java.util.concurrent.ExecutorService;
 public class MetadataApplicationEventReceiver {
     private static final Log log = LogFactory.getLog(MetadataApplicationEventReceiver.class);
     private ApplicationsEventReceiver applicationsEventReceiver;
-    //private ExecutorService executorService;
+    //private ExecutorService executor;
 
     public MetadataApplicationEventReceiver() {
         this.applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
-        //executorService = StratosThreadPool.getExecutorService(Constants
+        //executor = StratosThreadPool.getExecutorService(Constants
         //        .METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
@@ -88,7 +88,7 @@ public class MetadataApplicationEventReceiver {
     }
 
  //   public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 
 }

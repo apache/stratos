@@ -49,8 +49,8 @@ import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.testng.AssertJUnit.*;
 
@@ -75,7 +75,8 @@ public class TopologyHandler {
     private TopologyEventReceiver topologyEventReceiver;
     private TenantEventReceiver tenantEventReceiver;
     private ApplicationSignUpEventReceiver applicationSignUpEventReceiver;
-    private ExecutorService executorService = StratosThreadPool.getExecutorService("stratos.integration.test.pool", 30);
+    private ThreadPoolExecutor executor = StratosThreadPool.getExecutorService("stratos.integration" +
+            ".test.pool", 20, 30);
     private Map<String, Long> terminatedMembers = new ConcurrentHashMap<>();
     private Map<String, Long> terminatingMembers = new ConcurrentHashMap<>();
     private Map<String, Long> createdMembers = new ConcurrentHashMap<String, Long>();
@@ -109,13 +110,13 @@ public class TopologyHandler {
 
     private void initializeApplicationSignUpEventReceiver() {
         applicationSignUpEventReceiver = ApplicationSignUpEventReceiver.getInstance();
-//        applicationSignUpEventReceiver.setExecutorService(executorService);
+//        applicationSignUpEventReceiver.setExecutorService(executor);
 //        applicationSignUpEventReceiver.execute();
     }
 
     private void initializeTenantEventReceiver() {
         tenantEventReceiver = TenantEventReceiver.getInstance();
-//        tenantEventReceiver.setExecutorService(executorService);
+//        tenantEventReceiver.setExecutorService(executor);
 //        tenantEventReceiver.execute();
     }
 
@@ -124,7 +125,7 @@ public class TopologyHandler {
      */
     private void initializeHealthStatsEventReceiver() {
         healthStatEventReceiver = HealthStatEventReceiver.getInstance();
-//        healthStatEventReceiver.setExecutorService(executorService);
+//        healthStatEventReceiver.setExecutorService(executor);
         healthStatEventReceiver.addEventListener(new MemberFaultEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -141,7 +142,7 @@ public class TopologyHandler {
      */
     private void initializeApplicationEventReceiver() {
         applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
-//        applicationsEventReceiver.setExecutorService(executorService);
+//        applicationsEventReceiver.setExecutorService(executor);
         applicationsEventReceiver.addEventListener(new ApplicationInstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -172,7 +173,7 @@ public class TopologyHandler {
      */
     private void initializeTopologyEventReceiver() {
         topologyEventReceiver = TopologyEventReceiver.getInstance();
-//        topologyEventReceiver.setExecutorService(executorService);
+//        topologyEventReceiver.setExecutorService(executor);
         topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -315,7 +316,7 @@ public class TopologyHandler {
         };
         applicationsEventReceiver.addEventListener(activatedEventListener);
 
-        Future future = executorService.submit(new Runnable() {
+        Future future = executor.submit(new Runnable() {
             @Override
             public void run() {
                 Application application = ApplicationManager.getApplications().getApplication(applicationId);
@@ -391,7 +392,7 @@ public class TopologyHandler {
         };
         applicationsEventReceiver.addEventListener(inactivatedEventListener);
 
-        Future future = executorService.submit(new Runnable() {
+        Future future = executor.submit(new Runnable() {
             @Override
             public void run() {
                 Application application = ApplicationManager.getApplications().getApplication(applicationId);

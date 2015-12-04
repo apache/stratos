@@ -64,6 +64,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import java.io.File;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
@@ -90,7 +91,7 @@ public class LoadBalancerServiceComponent {
     private static final Log log = LogFactory.getLog(LoadBalancerServiceComponent.class);
 
     private boolean activated = false;
-    private ExecutorService executorService;
+    //private ThreadPoolExecutor executor;
     private LoadBalancerTopologyEventReceiver topologyEventReceiver;
     private TenantEventReceiver tenantEventReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
@@ -126,8 +127,9 @@ public class LoadBalancerServiceComponent {
 
             int threadPoolSize = Integer.getInteger(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_SIZE_KEY,
                     LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
-            executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
-                    threadPoolSize);
+           // executor = StratosThreadPool.getExecutorService(LoadBalancerConstants
+            //                .LOAD_BALANCER_THREAD_POOL_ID,
+            //        ((int)Math.ceil(threadPoolSize/3)), threadPoolSize);
 
             TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
             if (topologyProvider == null) {
@@ -137,18 +139,18 @@ public class LoadBalancerServiceComponent {
 
             if (configuration.isMultiTenancyEnabled() || configuration.isDomainMappingEnabled()) {
                 // Start tenant & application signup event receivers
-                startTenantEventReceiver(executorService);
-                startApplicationSignUpEventReceiver(executorService, topologyProvider);
+                startTenantEventReceiver();
+                startApplicationSignUpEventReceiver(topologyProvider);
             }
 
             if (configuration.isDomainMappingEnabled()) {
                 // Start domain mapping event receiver
-                startDomainMappingEventReceiver(executorService, topologyProvider);
+                startDomainMappingEventReceiver(topologyProvider);
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
-                startTopologyEventReceiver(executorService, topologyProvider);
+                startTopologyEventReceiver(topologyProvider);
             }
 
             if (configuration.isCepStatsPublisherEnabled()) {
@@ -167,39 +169,39 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startDomainMappingEventReceiver( TopologyProvider topologyProvider) {
         if (domainMappingEventReceiver != null) {
             return;
         }
 
         domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver(topologyProvider);
-//        domainMappingEventReceiver.setExecutorService(executorService);
+//        domainMappingEventReceiver.setExecutorService(executor);
 //        domainMappingEventReceiver.execute();
 //        if (log.isInfoEnabled()) {
 //            log.info("Domain mapping event receiver thread started");
 //        }
     }
 
-    private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
         if (applicationSignUpEventReceiver != null) {
             return;
         }
 
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
-//        applicationSignUpEventReceiver.setExecutorService(executorService);
+//        applicationSignUpEventReceiver.setExecutorService(executor);
 //        applicationSignUpEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Application signup event receiver thread started");
         }
     }
 
-    private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startTopologyEventReceiver(TopologyProvider topologyProvider) {
         if (topologyEventReceiver != null) {
             return;
         }
 
         topologyEventReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
-//        topologyEventReceiver.setExecutorService(executorService);
+//        topologyEventReceiver.setExecutorService(executor);
 //        topologyEventReceiver.execute();
 //        if (log.isInfoEnabled()) {
 //            log.info("Topology receiver thread started");
@@ -223,10 +225,10 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startTenantEventReceiver(ExecutorService executorService) {
+    private void startTenantEventReceiver() {
 
         tenantEventReceiver = TenantEventReceiver.getInstance();
-//        tenantEventReceiver.setExecutorService(executorService);
+//        tenantEventReceiver.setExecutorService(executor);
 //        tenantEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Tenant event receiver thread started");
@@ -293,13 +295,13 @@ public class LoadBalancerServiceComponent {
         }
 
         // Shutdown executor service
-        if (executorService != null) {
-            try {
-                executorService.shutdownNow();
-            } catch (Exception e) {
-                log.warn("An error occurred while shutting down load balancer executor service", e);
-            }
-        }
+//        if (executor != null) {
+//            try {
+//                executor.shutdownNow();
+//            } catch (Exception e) {
+//                log.warn("An error occurred while shutting down load balancer executor service", e);
+//            }
+//        }
     }
 
     /**

@@ -39,7 +39,7 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
 
     private InstanceStatusEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("topology-event-receiver", 100);
+        this.executor = StratosThreadPool.getExecutorService("topology-event-receiver", 35, 100);
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
         this.messageDelegator = new InstanceStatusEventMessageDelegator(messageQueue);
         this.messageListener = new InstanceStatusEventMessageListener(messageQueue);
@@ -67,13 +67,13 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), messageListener);
-            executorService.submit(eventSubscriber);
+            executor.submit(eventSubscriber);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
             }
 
             // Start instance notifier event message delegate thread
-            executorService.submit(messageDelegator);
+            executor.submit(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
@@ -95,10 +95,10 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
     }
 
 //    public ExecutorService getExecutorService() {
-//        return executorService;
+//        return executor;
 //    }
 //
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
+//    public void setExecutorService(ExecutorService executor) {
+//        this.executor = executor;
 //    }
 }
