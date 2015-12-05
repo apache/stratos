@@ -23,7 +23,7 @@
     <parent>
         <artifactId>stratos-components-parent</artifactId>
         <groupId>org.apache.stratos</groupId>
-        <version>4.1.5-SNAPSHOT</version>
+        <version>4.1.5</version>
     </parent>
 
     <artifactId>org.apache.stratos.mock.iaas</artifactId>
