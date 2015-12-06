@@ -26,6 +26,7 @@ import org.apache.stratos.common.clustering.impl.HazelcastDistributedObjectProvi
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.common.util.StratosConfiguration;
 import org.osgi.framework.BundleContext;
@@ -135,7 +136,16 @@ public class CommonServiceComponent {
     }
 
     protected void deactivate(ComponentContext context) {
-        log.debug("Stratos common service is deactivated");
+
+        try {
+            // Shutdown all thread pools
+            StratosThreadPool.shutDownAllThreadPoolsGracefully();
+            StratosThreadPool.shutDownAllScheduledExecutorsGracefully();
+            log.debug("Stratos common service component is de-activated");
+        }
+        catch (Exception e) {
+            log.error("Could not de-activate Stratos common service component", e);
+        }
     }
 
     protected void setRegistryService(RegistryService registryService) {
