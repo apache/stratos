@@ -27,10 +27,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>apache-stratos-cep-artifacts</artifactId>
+    <artifactId>apache-stratos-cep-extension</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - CEP Artifacts</name>
-    <description>Apache Stratos CEP artifacts</description>
+    <name>Apache Stratos - CEP Extension</name>
+    <description>Apache Stratos CEP Extension</description>
 
     <profiles>
         <profile>
