@@ -85,7 +85,7 @@ public class RegistryManager {
         return instance;
     }
 
-    private synchronized Object retrieve(String resourcePath) {
+    private Object retrieve(String resourcePath) {
         try {
             Resource resource = registryService.get(resourcePath);
             return resource.getContent();
@@ -99,7 +99,7 @@ public class RegistryManager {
         }
     }
 
-    private synchronized void delete(String resourcePath) {
+    private void delete(String resourcePath) {
         try {
             registryService.beginTransaction();
             registryService.delete(resourcePath);
@@ -138,7 +138,7 @@ public class RegistryManager {
      * @param dataObj      object to be persisted.
      * @param resourcePath resource path to be persisted.
      */
-    private synchronized void persist(Object dataObj, String resourcePath) throws AutoScalerException {
+    private void persist(Object dataObj, String resourcePath) throws AutoScalerException {
 
         try {
             registryService.beginTransaction();
