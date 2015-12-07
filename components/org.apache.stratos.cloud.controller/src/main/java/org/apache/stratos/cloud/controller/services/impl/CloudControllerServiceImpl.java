@@ -645,41 +645,43 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new InvalidMemberException(msg);
             }
 
-            // check if status == active, if true, then this is a termination on member faulty
-            TopologyHolder.acquireWriteLock();
-            Topology topology = TopologyHolder.getTopology();
-            org.apache.stratos.messaging.domain.topology.Service service = topology
-                    .getService(memberContext.getCartridgeType());
+            try {
+                // check if status == active, if true, then this is a termination on member faulty
+                TopologyHolder.acquireWriteLock();
+                Topology topology = TopologyHolder.getTopology();
+                org.apache.stratos.messaging.domain.topology.Service service = topology
+                        .getService(memberContext.getCartridgeType());
 
-            if (service != null) {
-                Cluster cluster = service.getCluster(memberContext.getClusterId());
-                if (cluster != null) {
-                    Member member = cluster.getMember(memberId);
-                    if (member != null) {
+                if (service != null) {
+                    Cluster cluster = service.getCluster(memberContext.getClusterId());
+                    if (cluster != null) {
+                        Member member = cluster.getMember(memberId);
+                        if (member != null) {
 
-                        // check if ready to shutdown member is expired and send
-                        // member terminated if it is.
-                        if (isMemberExpired(member, memberContext.getObsoleteInitTime(),
-                                memberContext.getObsoleteExpiryTime())) {
-                            if (log.isInfoEnabled()) {
-                                log.info(String.format(
-                                        "Member pending termination in ReadyToShutdown state exceeded expiry time. "
-                                                + "This member has to be manually deleted: %s",
-                                        memberContext.getMemberId()));
+                            // check if ready to shutdown member is expired and send
+                            // member terminated if it is.
+                            if (isMemberExpired(member, memberContext.getObsoleteInitTime(),
+                                    memberContext.getObsoleteExpiryTime())) {
+                                if (log.isInfoEnabled()) {
+                                    log.info(String.format(
+                                            "Member pending termination in ReadyToShutdown state exceeded expiry time. "
+                                                    + "This member has to be manually deleted: %s",
+                                            memberContext.getMemberId()));
+                                }
+
+                                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
+                                return false;
                             }
-
-                            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
-                            return false;
                         }
                     }
                 }
+                executorService.execute(new InstanceTerminator(memberContext));
+            } finally {
+                TopologyHolder.releaseWriteLock();
             }
-            executorService.execute(new InstanceTerminator(memberContext));
         } catch (Exception e) {
             String message = "Could not terminate instance: [member-id] " + memberId;
             throw new CloudControllerException(message, e);
-        } finally {
-            TopologyHolder.releaseWriteLock();
         }
         return true;
     }
