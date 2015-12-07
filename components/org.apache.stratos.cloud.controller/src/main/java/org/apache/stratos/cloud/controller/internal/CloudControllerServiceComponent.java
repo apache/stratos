@@ -47,10 +47,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Registering Cloud Controller Service.
@@ -84,7 +81,7 @@ public class CloudControllerServiceComponent {
     private ApplicationEventReceiver applicationEventReceiver;
     private InitializerTopicReceiver initializerTopicReceiver;
     private ThreadPoolExecutor executor;
-    private ScheduledExecutorService scheduler;
+    private ScheduledThreadPoolExecutor scheduler;
 
     protected void activate(final ComponentContext context) {
         if (log.isDebugEnabled()) {
@@ -264,18 +261,18 @@ public class CloudControllerServiceComponent {
         }
 
         // Shutdown executor service
-        shutdownExecutorService(THREAD_POOL_ID);
+        //shutdownExecutorService(THREAD_POOL_ID);
 
         // Shutdown scheduler
         shutdownScheduledExecutorService(SCHEDULER_THREAD_POOL_ID);
     }
 
-    private void shutdownExecutorService(String executorServiceId) {
-        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
-        if (executor != null) {
-            shutdownExecutorService(executor);
-        }
-    }
+//    private void shutdownExecutorService(String executorServiceId) {
+//        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
+//        if (executor != null) {
+//            shutdownExecutorService(executor);
+//        }
+//    }
 
     private void shutdownScheduledExecutorService(String executorServiceId) {
         ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);

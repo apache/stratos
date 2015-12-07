@@ -62,9 +62,9 @@ public class MockInstance implements Serializable {
     private final MockInstanceContext mockInstanceContext;
     private final AtomicBoolean hasGracefullyShutdown = new AtomicBoolean(false);
 
-    private static final ThreadPoolExecutor eventListenerExecutor = StratosThreadPool
-            .getExecutorService("mock.iaas.event.listener.thread.pool", 35, 100);
-    private static final ScheduledExecutorService healthStatNotifierExecutorService = StratosThreadPool
+//    private static final ThreadPoolExecutor eventListenerExecutor = StratosThreadPool
+//            .getExecutorService("mock.iaas.event.listener.thread.pool", 35, 100);
+    private static final ScheduledThreadPoolExecutor healthStatNotifierExecutor = StratosThreadPool
             .getScheduledExecutorService("mock.iaas.health.statistics.notifier.thread.pool", 100);
 
     public MockInstance(MockInstanceContext mockInstanceContext) {
@@ -95,7 +95,7 @@ public class MockInstance implements Serializable {
             log.debug(String.format("Starting health statistics notifier: [member-id] %s",
                     mockInstanceContext.getMemberId()));
         }
-        healthStatNotifierScheduledFuture = healthStatNotifierExecutorService
+        healthStatNotifierScheduledFuture = healthStatNotifierExecutor
                 .scheduleAtFixedRate(mockHealthStatisticsNotifier, 0, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
         if (log.isDebugEnabled()) {

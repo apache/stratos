@@ -36,16 +36,16 @@ public class StratosThreadPool {
     private static final Log log = LogFactory.getLog(StratosThreadPool.class);
 
     private static Map<String, ThreadPoolExecutor> executorMap = new ConcurrentHashMap<>();
-    private static Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
-    private static Object executorServiceMapLock = new Object();
-    private static Object scheduledServiceMapLock = new Object();
+    private static Map<String, ScheduledThreadPoolExecutor> scheduledExecutorMap = new ConcurrentHashMap<>();
+    private static final Object executorServiceMapLock = new Object();
+    private static final Object scheduledServiceMapLock = new Object();
 
     /**
-     * Return the executor service based on the identifier and thread pool size
+     * Return the executor based on the identifier and thread pool size
      *
      * @param identifier     Thread pool identifier name
      * @param maxSize Thread pool size
-     * @return ExecutorService
+     * @return ThreadPoolExecutor
      */
     public static ThreadPoolExecutor getExecutorService(String identifier, int initialSize, int
             maxSize) {
@@ -69,23 +69,23 @@ public class StratosThreadPool {
      *
      * @param identifier     Thread pool identifier name
      * @param threadPoolSize Thread pool size
-     * @return
+     * @return ScheduledThreadPoolExecutor
      */
-    public static ScheduledExecutorService getScheduledExecutorService(String identifier, int threadPoolSize) {
-        ScheduledExecutorService scheduledExecutorService = scheduledServiceMap.get(identifier);
-        if (scheduledExecutorService == null) {
+    public static ScheduledThreadPoolExecutor getScheduledExecutorService(String identifier, int threadPoolSize) {
+        ScheduledThreadPoolExecutor scheduledExecutor = scheduledExecutorMap.get(identifier);
+        if (scheduledExecutor == null) {
             synchronized (scheduledServiceMapLock) {
-                if (scheduledExecutorService == null) {
-                    scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize,
+                if (scheduledExecutor == null) {
+                    scheduledExecutor = new ScheduledThreadPoolExecutor(threadPoolSize,
                             new StratosThreadFactory(identifier));
-                    scheduledServiceMap.put(identifier, scheduledExecutorService);
-                    log.info(String.format("Thread pool created: [type] Scheduled Executor Service [id] %s [size] %d",
+                    scheduledExecutorMap.put(identifier, scheduledExecutor);
+                    log.info(String.format("Thread pool created: [type] Scheduled Executor [id] %s [size] %d",
                             identifier, threadPoolSize));
                 }
             }
 
         }
-        return scheduledExecutorService;
+        return scheduledExecutor;
     }
 
     public static void shutDownAllThreadPoolsGracefully () {
@@ -102,7 +102,8 @@ public class StratosThreadPool {
         try {
             threadPoolTerminator = Executors.newFixedThreadPool(threadPoolCount);
             for (Map.Entry<String, ThreadPoolExecutor> entry : executorMap.entrySet()) {
-                threadPoolTerminatorFutures.add(threadPoolTerminator.submit(new GracefulThreadPoolTerminator(entry.getKey(),
+                threadPoolTerminatorFutures.add(threadPoolTerminator.submit(new
+                        GracefulThreadPoolTerminator(entry.getKey(),
                         entry.getValue())));
             }
             // use the Future to block until shutting down is done
@@ -130,7 +131,7 @@ public class StratosThreadPool {
 
     public static void shutDownAllScheduledExecutorsGracefully () {
 
-        int threadPoolCount = scheduledServiceMap.size();
+        int threadPoolCount = scheduledExecutorMap.size();
         if (threadPoolCount == 0) {
             log.info("No thread pools found to shut down");
             return;
@@ -141,10 +142,9 @@ public class StratosThreadPool {
 
         try {
             threadPoolTerminator = Executors.newFixedThreadPool(threadPoolCount);
-            for (Map.Entry<String, ScheduledExecutorService> entry : scheduledServiceMap.entrySet()) {
-                threadPoolTerminatorFutures.add(threadPoolTerminator.submit(new GracefulScheduledThreadPoolTerminator(entry.getKey(),
+            for (Map.Entry<String, ScheduledThreadPoolExecutor> entry : scheduledExecutorMap.entrySet())
+                threadPoolTerminatorFutures.add(threadPoolTerminator.submit(new GracefulThreadPoolTerminator(entry.getKey(),
                         entry.getValue())));
-            }
             // use the Future to block until shutting down is done
             for (Future<String> threadPoolTerminatorFuture : threadPoolTerminatorFutures) {
                 removeScheduledThreadPoolFromCache(threadPoolTerminatorFuture.get());
@@ -154,10 +154,12 @@ public class StratosThreadPool {
             log.error("Error in shutting down thread pools", e);
         } catch (ExecutionException e) {
             log.error("Error in shutting down thread pools", e);
+        } catch (Exception e) {
+            log.error("Error in shutting down thread pools", e);
         } finally {
             // if there are any remaining thread pools, shut down immediately
-            if (!scheduledServiceMap.isEmpty()) {
-                for (Map.Entry<String, ScheduledExecutorService> entry : scheduledServiceMap.entrySet()) {
+            if (!scheduledExecutorMap.isEmpty()) {
+                for (Map.Entry<String, ScheduledThreadPoolExecutor> entry : scheduledExecutorMap.entrySet()) {
                     entry.getValue().shutdownNow();
                     removeScheduledThreadPoolFromCache(entry.getKey());
                 }
@@ -176,59 +178,9 @@ public class StratosThreadPool {
     }
 
     private static void removeScheduledThreadPoolFromCache(String terminatedPoolId) {
-        if (scheduledServiceMap.remove(terminatedPoolId) != null) {
+        if (scheduledExecutorMap.remove(terminatedPoolId) != null) {
             log.info("Scheduled Thread pool [id] " + terminatedPoolId + " is successfully shut down" +
                     " and removed from the cache");
-        }
-    }
-
-    private static class GracefulThreadPoolTerminator implements Callable {
-
-        private String threadPoolId;
-        private ThreadPoolExecutor executor;
-
-        public GracefulThreadPoolTerminator (String threadPoolId, ThreadPoolExecutor executor) {
-            this.threadPoolId = threadPoolId;
-            this.executor = executor;
-        }
-
-        @Override
-        public String call() throws Exception {
-            log.info("Shutting down thread pool " + threadPoolId);
-            // try to shut down gracefully
-            executor.shutdown();
-            // wait 10 secs till terminated
-            if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
-                log.info("Thread Pool [id] " + threadPoolId + " did not finish all tasks before " +
-                        "timeout, forcefully shutting down");
-                executor.shutdownNow();
-            }
-            return threadPoolId;
-        }
-    }
-
-    private static class GracefulScheduledThreadPoolTerminator implements Callable {
-
-        private String threadPoolId;
-        private ScheduledExecutorService scheduledExecutor;
-
-        public GracefulScheduledThreadPoolTerminator (String threadPoolId, ScheduledExecutorService scheduledExecutor) {
-            this.threadPoolId = threadPoolId;
-            this.scheduledExecutor = scheduledExecutor;
-        }
-
-        @Override
-        public String call() throws Exception {
-            log.info("Shutting down scheduled thread pool " + threadPoolId);
-            // try to shut down gracefully
-            scheduledExecutor.shutdown();
-            // wait 10 secs till terminated
-            if (!scheduledExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
-                log.info("Scheduled thread Pool [id] " + threadPoolId + " did not finish all tasks before " +
-                        "timeout, forcefully shutting down");
-                scheduledExecutor.shutdownNow();
-            }
-            return threadPoolId;
         }
     }
 }

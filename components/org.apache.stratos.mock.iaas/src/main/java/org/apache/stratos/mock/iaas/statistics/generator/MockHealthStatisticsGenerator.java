@@ -26,10 +26,7 @@ import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Mock health statistics generator.
@@ -39,7 +36,7 @@ public class MockHealthStatisticsGenerator {
     private static final Log log = LogFactory.getLog(MockHealthStatisticsGenerator.class);
 
     private static volatile MockHealthStatisticsGenerator instance;
-    private static final ScheduledExecutorService scheduledExecutorService =
+    private static final ScheduledThreadPoolExecutor scheduledExecutor =
             StratosThreadPool.getScheduledExecutorService("mock.iaas.health.statistics.generator.thread.pool", 10);
 
     // Map<ServiceName, Map<ScalingFactor, ScheduledFuture>>
@@ -84,7 +81,7 @@ public class MockHealthStatisticsGenerator {
                     if (statisticsPattern.getCartridgeType().equals(serviceName) &&
                             (statisticsPattern.getSampleDuration() > 0)) {
                         MockHealthStatisticsUpdater runnable = new MockHealthStatisticsUpdater(statisticsPattern);
-                        ScheduledFuture<?> task = scheduledExecutorService.scheduleAtFixedRate(runnable, 0,
+                        ScheduledFuture<?> task = scheduledExecutor.scheduleAtFixedRate(runnable, 0,
                                 statisticsPattern.getSampleDuration(), TimeUnit.SECONDS);
                         taskList.put(statisticsPattern.getFactor().toString(), task);
                     }

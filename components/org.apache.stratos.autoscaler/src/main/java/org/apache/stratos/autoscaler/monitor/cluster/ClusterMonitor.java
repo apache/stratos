@@ -86,7 +86,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClusterMonitor extends Monitor {
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
-    private final ScheduledExecutorService scheduler;
+    private final ScheduledThreadPoolExecutor scheduler;
     private final ThreadPoolExecutor executor;
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;

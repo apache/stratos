@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -62,9 +63,9 @@ public class ReadWriteLock {
             readWriteLockMonitorInterval = Integer.getInteger("read.write.lock.monitor.interval", 30000);
             threadPoolSize = Integer.getInteger(READ_WRITE_LOCK_MONITOR_THREAD_POOL_SIZE_KEY, 10);
 
-            ScheduledExecutorService scheduledExecutorService = StratosThreadPool.getScheduledExecutorService(
+            ScheduledThreadPoolExecutor scheduledExecutor = StratosThreadPool.getScheduledExecutorService(
                     READ_WRITE_LOCK_MONITOR_THREAD_POOL, threadPoolSize);
-            scheduledExecutorService.scheduleAtFixedRate(new ReadWriteLockMonitor(this),
+            scheduledExecutor.scheduleAtFixedRate(new ReadWriteLockMonitor(this),
                     readWriteLockMonitorInterval, readWriteLockMonitorInterval, TimeUnit.MILLISECONDS);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Lock monitor scheduled: [lock-name] %s [interval] %d seconds",
