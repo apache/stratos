@@ -677,6 +677,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                 }
                 executor.execute(new InstanceTerminator(memberContext));
+
             } finally {
                 TopologyHolder.releaseWriteLock();
             }
