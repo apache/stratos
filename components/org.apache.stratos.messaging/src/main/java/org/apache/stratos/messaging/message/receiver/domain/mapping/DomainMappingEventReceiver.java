@@ -91,17 +91,4 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
             }
         }
     }
-
-//    public void terminate() {
-//        eventSubscriber.terminate();
-//        messageDelegator.terminate();
-//    }
-//
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-//
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }

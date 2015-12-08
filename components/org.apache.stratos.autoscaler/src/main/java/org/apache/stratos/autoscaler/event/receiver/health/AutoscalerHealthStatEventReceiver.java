@@ -39,16 +39,19 @@ import java.util.concurrent.ExecutorService;
 public class AutoscalerHealthStatEventReceiver {
 
     private static final Log log = LogFactory.getLog(AutoscalerHealthStatEventReceiver.class);
-    private boolean terminated = false;
 
     private HealthStatEventReceiver healthStatEventReceiver;
+<<<<<<< HEAD
     private ExecutorService executorService;
+=======
+>>>>>>> d4b35c0... removing unused methods
 
     public AutoscalerHealthStatEventReceiver() {
         this.healthStatEventReceiver = HealthStatEventReceiver.getInstance();
         addEventListeners();
     }
 
+<<<<<<< HEAD
 //    public void execute() {
 //        healthStatEventReceiver.setExecutorService(executorService);
 //        healthStatEventReceiver.execute();
@@ -58,6 +61,8 @@ public class AutoscalerHealthStatEventReceiver {
 //        }
 //    }
 
+=======
+>>>>>>> d4b35c0... removing unused methods
     private void addEventListeners() {
         // Listen to health stat events that affect clusters
         healthStatEventReceiver.addEventListener(new AverageLoadAverageEventListener() {
@@ -475,6 +480,7 @@ public class AutoscalerHealthStatEventReceiver {
             TopologyManager.releaseReadLock();
         }
     }
+<<<<<<< HEAD
 
     public void terminate() {
         this.terminated = true;
@@ -487,4 +493,6 @@ public class AutoscalerHealthStatEventReceiver {
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
+=======
+>>>>>>> d4b35c0... removing unused methods
 }

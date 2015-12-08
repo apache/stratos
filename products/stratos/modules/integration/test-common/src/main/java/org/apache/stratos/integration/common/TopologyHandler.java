@@ -114,17 +114,14 @@ public class TopologyHandler {
     }
 
     private void initializeTenantEventReceiver() {
-        tenantEventReceiver = new TenantEventReceiver();
-        tenantEventReceiver.setExecutorService(executorService);
-        tenantEventReceiver.execute();
+        tenantEventReceiver = TenantEventReceiver.getInstance();
     }
 
     /**
      * Initialize application event receiver
      */
     private void initializeHealthStatsEventReceiver() {
-        healthStatEventReceiver = new HealthStatEventReceiver();
-        healthStatEventReceiver.setExecutorService(executorService);
+        healthStatEventReceiver = HealthStatEventReceiver.getInstance();
         healthStatEventReceiver.addEventListener(new MemberFaultEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -133,15 +130,13 @@ public class TopologyHandler {
                         memberFaultEvent.getMemberId()));
             }
         });
-        healthStatEventReceiver.execute();
     }
 
     /**
      * Initialize application event receiver
      */
     private void initializeApplicationEventReceiver() {
-        applicationsEventReceiver = new ApplicationsEventReceiver();
-        applicationsEventReceiver.setExecutorService(executorService);
+        applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
         applicationsEventReceiver.addEventListener(new ApplicationInstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -164,7 +159,6 @@ public class TopologyHandler {
                         appInstanceInactivatedEvent.getInstanceId()));
             }
         });
-        applicationsEventReceiver.execute();
     }
 
     /**
