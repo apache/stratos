@@ -110,14 +110,10 @@ public class TopologyHandler {
 
     private void initializeApplicationSignUpEventReceiver() {
         applicationSignUpEventReceiver = ApplicationSignUpEventReceiver.getInstance();
-//        applicationSignUpEventReceiver.setExecutorService(executor);
-//        applicationSignUpEventReceiver.execute();
     }
 
     private void initializeTenantEventReceiver() {
         tenantEventReceiver = TenantEventReceiver.getInstance();
-//        tenantEventReceiver.setExecutorService(executor);
-//        tenantEventReceiver.execute();
     }
 
     /**
@@ -125,7 +121,6 @@ public class TopologyHandler {
      */
     private void initializeHealthStatsEventReceiver() {
         healthStatEventReceiver = HealthStatEventReceiver.getInstance();
-//        healthStatEventReceiver.setExecutorService(executor);
         healthStatEventReceiver.addEventListener(new MemberFaultEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -134,7 +129,6 @@ public class TopologyHandler {
                         memberFaultEvent.getMemberId()));
             }
         });
-//        healthStatEventReceiver.execute();
     }
 
     /**
@@ -142,7 +136,6 @@ public class TopologyHandler {
      */
     private void initializeApplicationEventReceiver() {
         applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
-//        applicationsEventReceiver.setExecutorService(executor);
         applicationsEventReceiver.addEventListener(new ApplicationInstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -165,7 +158,7 @@ public class TopologyHandler {
                         appInstanceInactivatedEvent.getInstanceId()));
             }
         });
-        //applicationsEventReceiver.execute();
+
     }
 
     /**
@@ -173,7 +166,6 @@ public class TopologyHandler {
      */
     private void initializeTopologyEventReceiver() {
         topologyEventReceiver = TopologyEventReceiver.getInstance();
-//        topologyEventReceiver.setExecutorService(executor);
         topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {

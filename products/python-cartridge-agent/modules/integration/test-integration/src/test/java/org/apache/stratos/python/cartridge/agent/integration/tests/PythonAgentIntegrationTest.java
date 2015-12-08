@@ -123,15 +123,9 @@ public abstract class PythonAgentIntegrationTest {
             startActiveMQInstance(Integer.parseInt(amqpBindPorts[i]), Integer.parseInt(mqttBindPorts[i]), true);
         }
 
-        //ExecutorService executorService = StratosThreadPool.getExecutorService
-        //        ("TEST_THREAD_POOL", testThreadPoolSize);
         topologyEventReceiver = TopologyEventReceiver.getInstance();
-//        topologyEventReceiver.setExecutorService(executorService);
-//        topologyEventReceiver.execute();
 
         instanceStatusEventReceiver = InstanceStatusEventReceiver.getInstance();
-//        instanceStatusEventReceiver.setExecutorService(executorService);
-//        instanceStatusEventReceiver.execute();
 
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
             @Override
@@ -150,8 +144,6 @@ public abstract class PythonAgentIntegrationTest {
         });
 
         initializerEventReceiver = InitializerEventReceiver.getInstance();
-//        initializerEventReceiver.setExecutorService(executorService);
-//        initializerEventReceiver.execute();
 
         this.eventReceiverInitialized = true;
 
@@ -217,10 +209,10 @@ public abstract class PythonAgentIntegrationTest {
             } catch (Exception ignore) {
             }
         }
-        log.info("Terminating event receivers...");
-        this.instanceStatusEventReceiver.terminate();
-        this.topologyEventReceiver.terminate();
-        this.initializerEventReceiver.terminate();
+//        log.info("Terminating event receivers...");
+//        this.instanceStatusEventReceiver.terminate();
+//        this.topologyEventReceiver.terminate();
+//        this.initializerEventReceiver.terminate();
 
         this.instanceStatusEventReceiver = null;
         this.topologyEventReceiver = null;
