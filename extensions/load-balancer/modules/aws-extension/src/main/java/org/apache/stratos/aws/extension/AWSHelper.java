@@ -957,7 +957,7 @@ public class AWSHelper {
      * Returns the Listeners required for the service. Listeners are derived
      * from the proxy port, port and protocol values of the service.
      *
-     * @param service
+     * @param member
      * @return list of listeners required for the service
      */
     public List<Listener> getRequiredListeners(Member member) throws LoadBalancerExtensionException {

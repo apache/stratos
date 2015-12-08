@@ -43,9 +43,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 
     private static final Log log = LogFactory.getLog(AWSLoadBalancer.class);
 
-    // A map <clusterId, load balancer info> to store load balancer information
-    // against the cluster id
-    private static ConcurrentHashMap<String, LoadBalancerInfo> clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LoadBalancerInfo>();
+    // A map <clusterId, load balancer info dto> to store load balancer information against the cluster id
+    private static ConcurrentHashMap<String, LBInfoDTO> clusterIdToLoadBalancerMap = new ConcurrentHashMap<String, LBInfoDTO>();
 
     // Object used to invoke methods related to AWS API
     private AWSHelper awsHelper;
@@ -93,6 +92,8 @@ public class AWSLoadBalancer implements LoadBalancer {
                     Collection<Member> clusterMembers = cluster.getMembers();
 
                     if (clusterMembers.size() > 0) {
+
+	                    //We assume all the members are in the same region.
                         Member aMember = clusterMembers.iterator().next();
 
                         // a unique load balancer name with user-defined prefix and a sequence number.
@@ -119,9 +120,10 @@ public class AWSLoadBalancer implements LoadBalancer {
                                 initialAvailabilityZones.add(region + zone);
                             }
                         }
+
+
 	                    String loadBalancerDNSName =
 			                    createAWSLoadBalancer(loadBalancerName, region, listenersForThisCluster,initialAvailabilityZones);
-
 
                         log.info(String.format("Load balancer %s  created for cluster %s " , loadBalancerDNSName, cluster.getClusterId()));
 
@@ -130,17 +132,17 @@ public class AWSLoadBalancer implements LoadBalancer {
 	                    }
 
                         // persist LB info
+
+	                    LBInfoDTO lbInfoDTO = new LBInfoDTO(loadBalancerName, cluster.getClusterId(), region);
                         try {
-                            persistenceManager.persist(new LBInfoDTO(loadBalancerName, cluster.getClusterId(), region));
+                            persistenceManager.persist(lbInfoDTO);
 
                         } catch (PersistenceException e) {
 	                        log.error(String.format(
 			                        "Unable to persist LB Information for %s , cluster id %s " + loadBalancerName,
 			                        cluster.getClusterId()));
                         }
-
-                        LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(loadBalancerName, region);
-                        clusterIdToLoadBalancerMap.put(cluster.getClusterId(),loadBalancerInfo);
+	                    clusterIdToLoadBalancerMap.put(cluster.getClusterId(), lbInfoDTO);
 
                     }
 
@@ -160,8 +162,7 @@ public class AWSLoadBalancer implements LoadBalancer {
                     clustersToRemoveFromMap.add(clusterId);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Load balancer for cluster " + clusterId
-                                + " needs to be removed.");
+                        log.debug(String.format("Load balancer for cluster %s needs to be removed.", clusterId));
                     }
 
                 }
@@ -179,8 +180,8 @@ public class AWSLoadBalancer implements LoadBalancer {
                     persistenceManager.remove(new LBInfoDTO(loadBalancerName, clusterId, region));
 
                 } catch (PersistenceException e) {
-                    log.error("Unable to persist LB Information for " + loadBalancerName + ", cluster id " +
-                            clusterId);
+                    log.error(String.format("Unable to persist LB Information for[Load Balancer Name] %s [Cluster ID] %s"
+                                            ,loadBalancerName, clusterId));
                 }
                 clusterIdToLoadBalancerMap.remove(clusterId);
             }
@@ -276,10 +277,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	private Boolean updateExistingLoadBalancer(Cluster cluster) {
 		Boolean isUpdated=false;
-		LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
+		LBInfoDTO lbInfoDTO = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
 
-		String loadBalancerName = loadBalancerInfo.getName();
-		String region = loadBalancerInfo.getRegion();
+		String loadBalancerName = lbInfoDTO.getName();
+		String region = lbInfoDTO.getRegion();
 
 		// Get all the instances attached - Attach newly added instances to load balancer
 
@@ -326,8 +327,7 @@ public class AWSLoadBalancer implements LoadBalancer {
                 LoadBalancerDescription lbDesc = awsHelper.getLoadBalancerDescription(lbInfoDTO.getName(),
                         lbInfoDTO.getRegion());
                 if (lbDesc != null) {
-                    clusterIdToLoadBalancerMap.put(lbInfoDTO.getClusterId(), new LoadBalancerInfo(lbInfoDTO.getName(),
-                            lbInfoDTO.getRegion()));
+                    clusterIdToLoadBalancerMap.put(lbInfoDTO.getClusterId(),lbInfoDTO);
                 } else {
                     // make debug
                     if (log.isInfoEnabled()) {
@@ -361,7 +361,7 @@ public class AWSLoadBalancer implements LoadBalancer {
     public void stop() throws LoadBalancerExtensionException {
         // Remove all load balancers if 'terminate.lbs.on.extension.stop' = true in aws-extension.sh
         if (AWSExtensionContext.getInstance().terminateLBsOnExtensionStop()) {
-            for (Map.Entry<String, LoadBalancerInfo> lbInfoEntry : clusterIdToLoadBalancerMap
+            for (Map.Entry<String, LBInfoDTO> lbInfoEntry : clusterIdToLoadBalancerMap
                     .entrySet()) {
                 // Remove load balancer
                 awsHelper.deleteLoadBalancer(lbInfoEntry.getValue().getName(),
@@ -392,30 +392,8 @@ public class AWSLoadBalancer implements LoadBalancer {
         }
     }
 
-    public static ConcurrentHashMap<String, LoadBalancerInfo> getClusterIdToLoadBalancerMap() {
+    public static ConcurrentHashMap<String, LBInfoDTO> getClusterIdToLoadBalancerMap() {
         return clusterIdToLoadBalancerMap;
     }
 }
 
-/**
- * Used to store load balancer name and the region in which it is created. This
- * helps in finding region while calling API methods to modify/delete a load
- * balancer.
- */
-class LoadBalancerInfo {
-    private String name;
-    private String region;
-
-    public LoadBalancerInfo(String name, String region) {
-        this.name = name;
-        this.region = region;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-}
