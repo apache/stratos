@@ -66,42 +66,6 @@ public class InstanceNotifierEventReceiver extends StratosEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
-//    public void execute() {
-//        synchronized (this) {
-//            if (terminated) {
-//                log.info("InstanceNotifierEventReceiver has been terminated. Event subscriber will not be created.");
-//                return;
-//            }
-//            try {
-//                Thread subscriberThread = new Thread(eventSubscriber);
-//                subscriberThread.start();
-//                if (log.isDebugEnabled()) {
-//                    log.debug("InstanceNotifier event message receiver thread started");
-//                }
-//
-//                // Start instance notifier event message delegator thread
-//                Thread receiverThread = new Thread(messageDelegator);
-//                receiverThread.start();
-//                if (log.isDebugEnabled()) {
-//                    log.debug("InstanceNotifier event message delegator thread started");
-//                }
-//            } catch (Exception e) {
-//                if (log.isErrorEnabled()) {
-//                    log.error("InstanceNotifier receiver failed", e);
-//                }
-//            }
-//        }
-//        log.info("InstanceNotifierEventReceiver started");
-//
-//        // Keep the thread live until terminated
-//        while (!terminated) {
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException ignore) {
-//            }
-//        }
-//    }
-
     private void execute() {
         try {
             // Start topic subscriber thread

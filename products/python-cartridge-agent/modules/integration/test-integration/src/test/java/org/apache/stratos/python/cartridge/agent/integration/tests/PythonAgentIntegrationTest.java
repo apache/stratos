@@ -124,7 +124,8 @@ public abstract class PythonAgentIntegrationTest {
             startActiveMQInstance(Integer.parseInt(amqpBindPorts[i]), Integer.parseInt(mqttBindPorts[i]), true);
         }
 
-        ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", testThreadPoolSize);
+        //ExecutorService executorService = StratosThreadPool.getExecutorService
+        // ("TEST_THREAD_POOL");
         topologyEventReceiver = TopologyEventReceiver.getInstance();
 //        topologyEventReceiver.setExecutorService(executorService);
 //        topologyEventReceiver.execute();
@@ -149,9 +150,7 @@ public abstract class PythonAgentIntegrationTest {
             }
         });
 
-        initializerEventReceiver = new InitializerEventReceiver();
-        initializerEventReceiver.setExecutorService(executorService);
-        initializerEventReceiver.execute();
+        initializerEventReceiver = InitializerEventReceiver.getInstance();
 
         this.eventReceiverInitialized = true;
 
